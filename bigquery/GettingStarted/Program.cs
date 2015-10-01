@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
+// [START all]
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Bigquery.v2;
 using Google.Apis.Bigquery.v2.Data;
@@ -45,7 +45,6 @@ namespace BQSample
                 ApplicationName = "DotNet Bigquery Samples",
             });
         }
-
         // [END build_service]
 
         // [START run_query]
@@ -112,3 +111,4 @@ namespace BQSample
         }
     }
 }
+// [END all]
