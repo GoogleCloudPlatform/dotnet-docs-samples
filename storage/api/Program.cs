@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 
 namespace GCSSearch
 {
-    internal class Program
+    public class Program
     {
         [STAThread]
         private static void Main(string[] args)
@@ -56,12 +56,8 @@ namespace GCSSearch
         private const int KB = 0x400;
         private const int DownloadChunkSize = 256 * KB;
 
-        private async Task Run()
+        public async Task Run(string projectId = @"", string bucketName = @"")
         {
-            // Enter values here so you don't have to type them every time.
-            string projectId = @"";
-            string bucketName = @"";
-
             if (String.IsNullOrWhiteSpace(projectId))
             {
                 Console.Write("Enter your project id: ");
