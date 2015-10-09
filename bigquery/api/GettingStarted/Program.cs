@@ -24,14 +24,14 @@ using System.Threading.Tasks;
 
 namespace BQSample
 {
-    internal class Program
+    public class Program
     {
         // [START build_service]
         /// <summary>
         /// Creates an authorized Bigquery client service using Application Default Credentials.
         /// </summary>
         /// <returns>an authorized Bigquery client</returns>
-        private static async Task<BigqueryService> CreateAuthorizedClientAsync()
+        public static async Task<BigqueryService> CreateAuthorizedClientAsync()
         {
             GoogleCredential credential = await GoogleCredential.GetApplicationDefaultAsync();
             // Inject the Bigquery scope if required.
@@ -55,7 +55,7 @@ namespace BQSample
         /// <param name="bigquery">the BigquerService object.</param>
         /// <param name="projectId">the id of the project under which to run the query.</param>
         /// <returns>a list of the results of the query.</returns>
-        private static async Task<IList<TableRow>> ExecuteQueryAsync(
+        public static async Task<IList<TableRow>> ExecuteQueryAsync(
             string querySql, BigqueryService bigquery, string projectId)
         {
             JobConfigurationQuery queryConfig = new JobConfigurationQuery { Query = querySql };
@@ -71,7 +71,7 @@ namespace BQSample
 
         // [START print_results]
         /// <summary>Prints the results to standard out.</summary>
-        private static void PrintResults(IList<TableRow> rows)
+        public static void PrintResults(IList<TableRow> rows)
         {
             Console.Write("\nQuery Results:\n------------\n");
             foreach (TableRow row in rows)
