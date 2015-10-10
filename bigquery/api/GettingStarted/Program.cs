@@ -13,12 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
-//////////////////////////////////////////////////////////////////////////////
-// This file is obsolete.  Please see the code in ../api/GettingStarted.
-// TODO: Remove this file from the repo after we have updated:
-// https://cloud.google.com/bigquery/bigquery-api-quickstart
-//////////////////////////////////////////////////////////////////////////////
 // [START all]
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Bigquery.v2;
