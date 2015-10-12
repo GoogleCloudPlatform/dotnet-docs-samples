@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cloudstorage", "cloudstorage.csproj", "{184A2C47-B141-4FA3-926C-B0C0CAAB09E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "storage", "storage.csproj", "{184A2C47-B141-4FA3-926C-B0C0CAAB09E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
