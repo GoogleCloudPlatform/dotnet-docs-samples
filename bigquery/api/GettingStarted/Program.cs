@@ -58,13 +58,14 @@ namespace BQSample
         public static async Task<IList<TableRow>> ExecuteQueryAsync(
             string querySql, BigqueryService bigquery, string projectId)
         {
-            JobConfigurationQuery queryConfig = new JobConfigurationQuery { Query = querySql };
-            JobConfiguration config = new JobConfiguration { Query = queryConfig };
-            Job job = new Job { Configuration = config };
-            JobsResource.InsertRequest insert = bigquery.Jobs.Insert(job, projectId);
-            JobReference jobRef = (await insert.ExecuteAsync()).JobReference;
+            var request = new Google.Apis.Bigquery.v2.JobsResource.QueryRequest(
+                bigquery, new Google.Apis.Bigquery.v2.Data.QueryRequest()
+                {
+                    Query = querySql,
+                }, projectId);
+            var query = await request.ExecuteAsync();
             GetQueryResultsResponse queryResult = await
-                bigquery.Jobs.GetQueryResults(projectId, jobRef.JobId).ExecuteAsync();
+                bigquery.Jobs.GetQueryResults(projectId, query.JobReference.JobId).ExecuteAsync();
             return queryResult.Rows;
         }
         // [END run_query]
