@@ -1,9 +1,4 @@
-# Google Cloud Storage Sample
-
-Sample code to issue several basic Google Cloud Store (GCS) operations
-using the Google Client Libraries.
-For more information, see documentation for Compute Storage .NET client
-https://cloud.google.com/storage/docs/json_api/v1/json-api-dotnet-samples
+# Google Cloud Pub/Sub Sample
 
 See our other [Google Cloud Platform github
 repos](https://github.com/GoogleCloudPlatform) for sample applications and
@@ -15,7 +10,7 @@ scaffolding for other frameworks and use cases.
     create a new project or choose an existing project.
 2.  In the [Google Developers Console](https://console.developers.google.com/),
     click **APIs & auth**, then click APIs.  Wait for a list of APIs to
-    appear, then click Cloud Storage.  If Cloud Storage is not already enabled,
+    appear, then click Google Cloud Pub/Sub.  If Cloud Pub/Sub is not already enabled,
     click the Enable API button.
 3.  In the [Google Developers Console](https://console.developers.google.com/),
     under **APIs & auth**, click Credentials.  Click the button to "Generate
