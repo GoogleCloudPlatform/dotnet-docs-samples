@@ -35,7 +35,9 @@ namespace test
         public void TestRun()
         {
             // Just observe that it doesn't throw an exception.
-            new GCSSearch.Program().Run(System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
+            new GCSSearch.Program().Run(
+                GCSSearch.Program.GetApplicationDefaultCredentialsAsync(),
+                System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
                 System.Environment.GetEnvironmentVariable("GOOGLE_BUCKET")).Wait();
         }
     }
