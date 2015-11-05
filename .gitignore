@@ -4,3 +4,4 @@ obj/
 packages/
 *.suo
 .nuget/
+TestResults/
