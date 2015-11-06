@@ -108,19 +108,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreateSubscriptionSample.cs" />
-    <Compile Include="SetSubscriptionPolicySample.cs" />
-    <Compile Include="TestSubscriptionPermissionsSample.cs" />
-    <Compile Include="TestTopicPermissionsSample.cs" />
-    <Compile Include="SetTopicPolicySample.cs" />
-    <Compile Include="GetTopicPolicySample.cs" />
-    <Compile Include="GetSubscriptionPolicySample.cs" />
-    <Compile Include="PullMessagesSample.cs" />
-    <Compile Include="PublishMessageSample.cs" />
-    <Compile Include="ListSubscriptionsSample.cs" />
+    <Compile Include="CreateSubscription.cs" />
+    <Compile Include="SetSubscriptionPolicy.cs" />
+    <Compile Include="TestSubscriptionPermissions.cs" />
+    <Compile Include="TestTopicPermissions.cs" />
+    <Compile Include="SetTopicPolicy.cs" />
+    <Compile Include="GetTopicPolicy.cs" />
+    <Compile Include="GetSubscriptionPolicy.cs" />
+    <Compile Include="PullMessages.cs" />
+    <Compile Include="PublishMessage.cs" />
+    <Compile Include="ListSubscriptions.cs" />
     <Compile Include="PubSubClient.cs" />
-    <Compile Include="CreateTopicSample.cs" />
-    <Compile Include="ListTopicsSample.cs" />
+    <Compile Include="CreateTopic.cs" />
+    <Compile Include="ListTopics.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
