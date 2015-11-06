@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 
-using Google.Apis.Services;
-using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
-// NOTE: PubSub API must be enabled
+// NOTE PubSub API must be enabled
 
 namespace PubSubSample
 {
@@ -35,24 +34,6 @@ namespace PubSubSample
         commandMethod.Invoke(null, commandArguments.ToArray());
     }
 
-    // TODO remove
-    static PubsubService PubSub
-    {
-      get
-      {
-        var credentials = Google.Apis.Auth.OAuth2.GoogleCredential.GetApplicationDefaultAsync().Result;
-        credentials = credentials.CreateScoped(new[] { PubsubService.Scope.Pubsub });
-
-        var serviceInitializer = new BaseClientService.Initializer()
-        {
-          ApplicationName = "PubSub Sample",
-          HttpClientInitializer = credentials
-        };
-
-        return new PubsubService(serviceInitializer);
-      }
-    }
-
     public static void CreateTopic(string topicName)
     {
       new CreateTopicSample().CreateTopic(ProjectID, topicName);
@@ -68,7 +49,6 @@ namespace PubSubSample
       new ListSubscriptionsSample().ListSubscriptions(ProjectID);
     }
 
-    // TODO Add PushConfig
     public static void CreateSubscription(string topicName, string subscriptionName)
     {
       new CreateSubscriptionSample().CreateSubscription(
@@ -94,72 +74,36 @@ namespace PubSubSample
 
     public static void GetSubscriptionPolicy(string subscriptionName)
     {
-      Console.WriteLine($"Getting IAM policy for subscription: {subscriptionName}");
-
-      var fullSubscriptionName = $"{PROJECT_NAME}/subscriptions/{subscriptionName}";
-
-      var policy = PubSub.Projects.Subscriptions.GetIamPolicy(fullSubscriptionName).Execute();
-
-      if (policy.Bindings != null)
-      {
-        foreach (var binding in policy.Bindings)
-        {
-          Console.WriteLine($"Role: {binding.Role}");
-          foreach (var member in binding.Members)
-            Console.WriteLine($" - {member}");
-        }
-      }
+      new GetSubscriptionPolicySample().GetSubscriptionPolicy(projectId: ProjectID, subscriptionName: subscriptionName);
     }
-
-    // NOTE This overwrites any existing policy on the subscription
-    //
-    // Usage: serviceAccount:myproject@appspot.gserviceaccount.com roles/pubsub.subscriber
+    
     public static void SetSubscriptionPolicy(string subscriptionName, string role, string member)
     {
-      Console.WriteLine($"Setting IAM policy for subscription: {subscriptionName}");
-      Console.WriteLine($"Add member {member} to role {role}");
-
-      var fullSubscriptionName = $"{PROJECT_NAME}/subscriptions/{subscriptionName}";
-      var policyRequest = new SetIamPolicyRequest()
+      IList<Binding> bindings = new[]
       {
-        Policy = new Policy()
+        new Binding()
         {
-          Bindings = new[] {
-            new Binding() {
-              Members = new[] { member },
-                      Role = role
-            }
-          }
+          Role = role,
+          Members = new[] { member }
         }
       };
 
-      var policy = PubSub.Projects.Subscriptions.SetIamPolicy(policyRequest, fullSubscriptionName).Execute();
-
-      Console.WriteLine("Set policy");
-      foreach (var binding in policy.Bindings)
-      {
-        Console.WriteLine($"Role: {binding.Role}");
-        foreach (var theMember in binding.Members)
-          Console.WriteLine($" - {theMember}");
-      }
+      new SetSubscriptionPolicySample().SetSubscriptionPolicy(
+        projectId: ProjectID,
+        subscriptionName: subscriptionName,
+        bindings: bindings
+      );
     }
 
+    // TODO rename Test*Permissions
     // Usage: pubsub.subscriptions.consume
     public static void TestSubscriptionPolicy(string subscriptionName, string permission)
     {
-      Console.WriteLine($"Checking if you have {permission} permission on subscription {subscriptionName}");
-
-      var fullSubscriptionName = $"{PROJECT_NAME}/subscriptions/{subscriptionName}";
-      var testPermissionsRequest = new TestIamPermissionsRequest()
-      {
-        Permissions = new[] { permission }
-      };
-
-      var response = PubSub.Projects.Subscriptions.TestIamPermissions(testPermissionsRequest, fullSubscriptionName).Execute();
-
-      Console.WriteLine("Caller has the following permissions (of those requested):");
-      foreach (var hasPermission in response.Permissions)
-        Console.WriteLine($" - {hasPermission}");
+      new TestSubscriptionPermissionsSample().TestSubscriptionPermissions(
+        projectId:ProjectID,
+        subscriptionName: subscriptionName,
+        permissions: new[] { permission }
+      );
     }
   }
 }

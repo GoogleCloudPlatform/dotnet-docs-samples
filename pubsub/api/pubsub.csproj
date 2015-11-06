@@ -109,6 +109,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreateSubscriptionSample.cs" />
+    <Compile Include="SetSubscriptionPolicySample.cs" />
+    <Compile Include="TestSubscriptionPermissionsSample.cs" />
+    <Compile Include="TestTopicPermissionsSample.cs" />
+    <Compile Include="SetTopicPolicySample.cs" />
+    <Compile Include="GetTopicPolicySample.cs" />
+    <Compile Include="GetSubscriptionPolicySample.cs" />
     <Compile Include="PullMessagesSample.cs" />
     <Compile Include="PublishMessageSample.cs" />
     <Compile Include="ListSubscriptionsSample.cs" />
