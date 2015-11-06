@@ -108,6 +108,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreateSubscriptionSample.cs" />
+    <Compile Include="PullMessagesSample.cs" />
+    <Compile Include="PublishMessageSample.cs" />
+    <Compile Include="ListSubscriptionsSample.cs" />
+    <Compile Include="PubSubClient.cs" />
+    <Compile Include="CreateTopicSample.cs" />
+    <Compile Include="ListTopicsSample.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

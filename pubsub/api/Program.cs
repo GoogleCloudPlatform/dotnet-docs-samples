@@ -13,11 +13,8 @@ namespace PubSubSample
 
   class Program
   {
-    static string PROJECT_NAME {
-      get {
-        return "projects/" + Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-      }
-    }
+    static string ProjectID { get { return Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"); } }
+    static string PROJECT_NAME { get { return $"projects/{ProjectID}"; }}
 
     static void Main(string[] args)
     {
@@ -27,6 +24,7 @@ namespace PubSubSample
         Environment.Exit(0);
       }
 
+      // TODO make explicit (not dynamic)
       var commandName = args.FirstOrDefault();
       var commandArguments = args.Skip(1);
       var commandMethod = typeof(Program).GetMethod(commandName, BindingFlags.Static | BindingFlags.Public);
@@ -37,6 +35,7 @@ namespace PubSubSample
         commandMethod.Invoke(null, commandArguments.ToArray());
     }
 
+    // TODO remove
     static PubsubService PubSub
     {
       get
@@ -54,96 +53,43 @@ namespace PubSubSample
       }
     }
 
-    public static void CreateTopic(string name)
+    public static void CreateTopic(string topicName)
     {
-      Console.WriteLine($"Creating topic: {name}");
-
-      var topicRequest = new Topic() { Name = name };
-      var topicFullName = $"{PROJECT_NAME}/topics/{name}";
-
-      var topic = PubSub.Projects.Topics.Create(topicRequest, topicFullName).Execute();
-
-      Console.WriteLine($"Created topic: {topic.Name}");
+      new CreateTopicSample().CreateTopic(ProjectID, topicName);
     }
 
     public static void ListTopics()
     {
-      Console.WriteLine("Listing topics");
-
-      var topics = PubSub.Projects.Topics.List(PROJECT_NAME).Execute();
-
-      if (topics != null)
-        foreach (var topic in topics.Topics)
-          Console.WriteLine(topic.Name);
+      new ListTopicsSample().ListTopics(ProjectID);
     }
 
     public static void ListSubscriptions()
     {
-      Console.WriteLine("Listing subscriptions");
-
-      var subscriptions = PubSub.Projects.Subscriptions.List(PROJECT_NAME).Execute();
-
-      if (subscriptions.Subscriptions != null)
-        foreach (var subscription in subscriptions.Subscriptions)
-          Console.WriteLine($"{subscription.Name} for topic {subscription.Topic}");
+      new ListSubscriptionsSample().ListSubscriptions(ProjectID);
     }
 
     // TODO Add PushConfig
-    public static void CreateSubscription(string topicName, string name)
+    public static void CreateSubscription(string topicName, string subscriptionName)
     {
-      Console.WriteLine($"Creating subscription {name} for topic {topicName}");
-
-      var fullTopicName = $"{PROJECT_NAME}/topics/{topicName}";
-      var subscriptionRequest = new Subscription()
-      {
-        Name = name,
-        Topic = fullTopicName
-      };
-      var fullSubscriptionName = $"{PROJECT_NAME}/subscriptions/{name}";
-
-      var subscription = PubSub.Projects.Subscriptions.Create(subscriptionRequest, fullSubscriptionName).Execute();
-
-      Console.WriteLine($"Created subscription: {subscription.Name} to topic {subscription.Topic}");
+      new CreateSubscriptionSample().CreateSubscription(
+        projectId: ProjectID,
+        topicName: topicName,
+        subscriptionName: subscriptionName
+      );
     }
 
     public static void PublishMessage(string topicName, string message)
     {
-      var publishRequest = new PublishRequest()
-      {
-        Messages = new[] { new PubsubMessage() { Data = message } }
-      };
-      var fullTopicName = $"{PROJECT_NAME}/topics/{topicName}";
-
-      var response = PubSub.Projects.Topics.Publish(publishRequest, fullTopicName).Execute();
-
-      Console.WriteLine($"Published message to {topicName}");
-      foreach (var id in response.MessageIds)
-        Console.WriteLine($"id: {id}");
+      new PublishMessageSample().PublishMessage(
+        projectId: ProjectID,
+        topicName: topicName,
+        message: message
+      );
     }
 
     public static void Pull(string subscriptionName)
     {
-      Console.WriteLine($"Pulling latest messages for subscription: {subscriptionName}");
-
-      var pullRequest = new PullRequest()
-      {
-        MaxMessages = 10,
-        ReturnImmediately = true
-      };
-      var fullSubscriptionName = $"{PROJECT_NAME}/subscriptions/{subscriptionName}";
-
-      var response = PubSub.Projects.Subscriptions.Pull(pullRequest, fullSubscriptionName).Execute();
-
-      if (response.ReceivedMessages != null)
-        foreach (var message in response.ReceivedMessages)
-        {
-          Console.WriteLine($"[{message.AckId}] {message.Message.Data}");
-          var ackRequest = new AcknowledgeRequest()
-          {
-            AckIds = new[] { message.AckId } // 1 by 1 for right now
-          };
-          PubSub.Projects.Subscriptions.Acknowledge(ackRequest, fullSubscriptionName);
-        }
+      new PullMessagesSample().PullMessages(projectId: ProjectID, subscriptionName: subscriptionName);
     }
 
     public static void GetSubscriptionPolicy(string subscriptionName)
