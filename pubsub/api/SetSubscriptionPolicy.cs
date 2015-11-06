@@ -8,11 +8,16 @@ class SetSubscriptionPolicySample
   // hmm.  TODO demonstrate clearly how to create simple policy bindings.
 
   // NOTE This overwrites any existing policy on the subscription
-  //
+
   // Usage: serviceAccount:myproject@appspot.gserviceaccount.com roles/pubsub.subscriber
-  public void SetSubscriptionPolicy(string projectId, string subscriptionName, IList<Binding> bindings)
+  public void SetSubscriptionPolicy(string projectId, string subscriptionName, IDictionary<string, string[]> rolesAndMembers)
   {
     PubsubService PubSub = PubSubClient.Create();
+
+    IList<Binding> bindings = new List<Binding>();
+
+    foreach (var roleName in rolesAndMembers.Keys)
+      bindings.Add(new Binding() { Role = roleName, Members = rolesAndMembers[roleName] });
 
     Policy policy = PubSub.Projects.Subscriptions.SetIamPolicy(
       resource: $"projects/{projectId}/subscriptions/{subscriptionName}",

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
-class PullMessagesSample
+class PullSample
 {
   // TODO Base64
-  public void PullMessages(string projectId, string subscriptionName)
+  public void Pull(string projectId, string subscriptionName)
   {
     PubsubService PubSub = PubSubClient.Create();
 

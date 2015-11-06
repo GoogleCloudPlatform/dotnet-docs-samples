@@ -115,7 +115,7 @@
     <Compile Include="SetTopicPolicy.cs" />
     <Compile Include="GetTopicPolicy.cs" />
     <Compile Include="GetSubscriptionPolicy.cs" />
-    <Compile Include="PullMessages.cs" />
+    <Compile Include="Pull.cs" />
     <Compile Include="PublishMessage.cs" />
     <Compile Include="ListSubscriptions.cs" />
     <Compile Include="PubSubClient.cs" />
