@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
+// Usage: pubsub.subscriptions.consume
 class TestSubscriptionPermissionsSample
 {
   public void TestSubscriptionPermissions(string projectId, string subscriptionName, IList<string> permissions)
