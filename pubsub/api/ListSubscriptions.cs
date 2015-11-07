@@ -13,7 +13,7 @@ class ListSubscriptionsSample
       project: $"projects/{projectId}"
     ).Execute();
 
-    if (response != null)
+    if (response.Subscriptions != null)
     {
       IList<Subscription> subscriptions = response.Subscriptions;
 

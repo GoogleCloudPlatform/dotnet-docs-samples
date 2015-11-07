@@ -1,7 +1,7 @@
 ﻿using Google.Apis.Services;
 using Google.Apis.Pubsub.v1;
 
-class PubSubClient
+public class PubSubClient
 {
   public static PubsubService Create()
   {

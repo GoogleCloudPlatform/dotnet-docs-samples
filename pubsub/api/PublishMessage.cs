@@ -10,6 +10,10 @@ class PublishMessageSample
   {
     PubsubService PubSub = PubSubClient.Create();
 
+    message = System.Convert.ToBase64String(
+      System.Text.Encoding.UTF8.GetBytes(message)  
+    );
+
     PublishResponse response = PubSub.Projects.Topics.Publish(
       topic: $"projects/{projectId}/topics/{topicName}",
       body: new PublishRequest()

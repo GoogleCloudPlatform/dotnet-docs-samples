@@ -59,6 +59,10 @@
       <HintPath>..\packages\Google.Apis.1.9.3\lib\net40\Google.Apis.PlatformServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Google.Apis.Pubsub.v1, Version=1.9.2.6, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Pubsub.v1.1.9.2.60\lib\portable-net40+sl50+win+wpa81+wp80\Google.Apis.Pubsub.v1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Google.Apis.Storage.v1, Version=1.9.2.48, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Storage.v1.1.9.2.480\lib\portable-net40+sl50+win+wpa81+wp80\Google.Apis.Storage.v1.dll</HintPath>
       <Private>True</Private>
@@ -115,6 +119,7 @@
   <ItemGroup>
     <Compile Include="ConsoleOutputReader.cs" />
     <Compile Include="PubSubSamplesTest.cs" />
+    <Compile Include="PubSubTestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

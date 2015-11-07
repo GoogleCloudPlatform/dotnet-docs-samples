@@ -20,14 +20,75 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 public class PubSubSamplesTest
 {
 
-  [TestMethod]
-  public void TestUsage()
+  // TODO helper method to call command and get output
+
+  PubSubTestHelper pubsub = new PubSubTestHelper();
+
+  string PubSubExe(params string[] args)
   {
     using (var output = new ConsoleOutputReader())
     {
-      PubSubSample.Program.Main(new string[] { });
-
-      StringAssert.Contains(output.ToString(), "Usage: PubSubSample.exe [command] [args]");
+      PubSubSample.Program.Main(args);
+      return output.ToString();
     }
+  }
+
+  [TestInitialize]
+  public void Setup()
+  {
+    pubsub.DeleteAllSubscriptions();
+    pubsub.DeleteAllTopics();
+  }
+
+  [TestMethod]
+  public void TestUsage()
+  {
+    StringAssert.Contains(PubSubExe(), "Usage: PubSubSample.exe [command] [args]");
+  }
+
+  [TestMethod]
+  public void TestCommandNotFound()
+  {
+    StringAssert.Contains(PubSubExe("InvalidCommand"), "Command not found: InvalidCommand");
+  }
+
+  [TestMethod]
+  public void TestListTopics_None()
+  {
+    StringAssert.Contains(PubSubExe("ListTopics"), "");
+  }
+
+  [TestMethod]
+  public void TestListTopics()
+  {
+    pubsub.CreateTopic("mytopic");
+
+    StringAssert.Contains(PubSubExe("ListTopics"), $"Found topics: projects/{pubsub.ProjectID}/topics/mytopic");
+  }
+
+  [TestMethod]
+  public void TestListSubscriptions_None()
+  {
+    StringAssert.Contains(PubSubExe("ListSubscriptions"), "");
+  }
+
+  [TestMethod]
+  public void TestListSubscriptions()
+  {
+    pubsub.CreateTopic("mytopic");
+    pubsub.CreateSubscription("mytopic", "mysubscription");
+
+    StringAssert.Contains(PubSubExe("ListSubscriptions"), $"Found subscription: projects/{pubsub.ProjectID}/subscriptions/mysubscription");
+  }
+
+  [TestMethod]
+  public void TestPublishMessage()
+  {
+    pubsub.CreateTopic("mytopic");
+    pubsub.CreateSubscription("mytopic", "mysubscription");
+
+    PubSubExe("PublishMessage", "mytopic", "Hello there!");
+
+    CollectionAssert.Contains(pubsub.PullMessages("mysubscription"), "Hello there!");
   }
 }

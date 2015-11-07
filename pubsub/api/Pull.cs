@@ -26,8 +26,11 @@ class PullSample
 
       foreach (var receivedMessage in receivedMessages)
       {
-        PubsubMessage message = receivedMessage.Message;
-        Console.WriteLine(message.Data);
+        string message = System.Text.Encoding.UTF8.GetString(
+          System.Convert.FromBase64String(receivedMessage.Message.Data)
+        );
+
+        Console.WriteLine(message);
 
         acknowledgeIds.Add(receivedMessage.AckId);
       }

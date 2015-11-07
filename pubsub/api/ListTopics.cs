@@ -13,7 +13,7 @@ class ListTopicsSample
       project: $"projects/{projectId}"
     ).Execute();
 
-    if (response != null)
+    if (response.Topics != null)
     {
       IList<Topic> topics = response.Topics;
 
