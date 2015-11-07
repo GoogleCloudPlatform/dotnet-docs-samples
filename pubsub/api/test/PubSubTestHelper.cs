@@ -70,4 +70,48 @@ class PubSubTestHelper
 
     return messages;
   }
+
+  public void PublishMessage(string topic, string message)
+  {
+    var base64 = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(message));
+
+    Pubsub.Projects.Topics.Publish(
+      new PublishRequest() { Messages = new[] { new PubsubMessage() { Data = base64 } } },
+      $"{ProjectResource}/topics/{topic}"
+    ).Execute();
+  }
+
+  public void SetTopicPolicy(string topic, IDictionary<string, string[]> roleMembers)
+  {
+    var bindings = new List<Binding>();
+    foreach (var role in roleMembers.Keys)
+      bindings.Add(new Binding() { Role = role, Members = roleMembers[role] });
+
+    Pubsub.Projects.Topics.SetIamPolicy(
+      new SetIamPolicyRequest() { Policy = new Policy() { Bindings = bindings } },
+      $"{ProjectResource}/topics/{topic}"
+    ).Execute();
+  }
+
+  public void SetSubscriptionPolicy(string subscription, IDictionary<string, string[]> roleMembers)
+  {
+    var bindings = new List<Binding>();
+    foreach (var role in roleMembers.Keys)
+      bindings.Add(new Binding() { Role = role, Members = roleMembers[role] });
+
+    Pubsub.Projects.Topics.SetIamPolicy(
+      new SetIamPolicyRequest() { Policy = new Policy() { Bindings = bindings } },
+      $"{ProjectResource}/subscriptions/{subscription}"
+    ).Execute();
+  }
+
+  public Policy GetTopicPolicy(string topic)
+  {
+    return Pubsub.Projects.Topics.GetIamPolicy($"{ProjectResource}/topics/{topic}").Execute();
+  }
+
+  public Policy GetSubscriptionPolicy(string subscription)
+  {
+    return Pubsub.Projects.Subscriptions.GetIamPolicy($"{ProjectResource}/subscriptions/{subscription}").Execute();
+  }
 }

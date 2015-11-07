@@ -9,13 +9,11 @@ class GetSubscriptionPolicySample
     PubsubService PubSub = PubSubClient.Create();
 
     Policy policy = PubSub.Projects.Subscriptions.GetIamPolicy(
-      resource: $"projects/{projectId}/subscriptions/{subscriptionName}"  
+      resource: $"projects/{projectId}/subscriptions/{subscriptionName}"
     ).Execute();
 
-    if (policy.Version != null)
+    if (policy.Bindings != null)
     {
-      Console.WriteLine($"Policy {policy.Version} for subscription");
-      
       foreach (Binding binding in policy.Bindings)
       {
         foreach (string member in binding.Members)

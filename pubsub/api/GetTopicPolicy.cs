@@ -9,10 +9,10 @@ class GetTopicPolicySample
     PubsubService PubSub = PubSubClient.Create();
 
     Policy policy = PubSub.Projects.Topics.GetIamPolicy(
-      resource: $"projects/{projectId}/subscriptions/{topicName}"  
+      resource: $"projects/{projectId}/topics/{topicName}"  
     ).Execute();
 
-    if (policy.Version != null)
+    if (policy.Bindings != null)
     {
       Console.WriteLine($"Policy {policy.Version} for subscription");
       
@@ -26,7 +26,7 @@ class GetTopicPolicySample
     }
     else
     {
-      Console.WriteLine("Subscription has no policy");
+      Console.WriteLine("Topic has no policy");
     }
   }
 }

@@ -90,8 +90,8 @@ namespace PubSubSample
 
           foreach (var arg in topicPolicyArguments)
           {
-            var roleName = arg.Split('"')[0];
-            var memberNames = arg.Split('"')[1].Split(',');
+            var roleName = arg.Split('=')[0];
+            var memberNames = arg.Split('=')[1].Split(',');
             topicRolesAndMembers[roleName] = memberNames;
           }
 
@@ -109,8 +109,8 @@ namespace PubSubSample
 
           foreach (var arg in subscriptionPolicyArguments)
           {
-            var roleName = arg.Split('"')[0];
-            var memberNames = arg.Split('"')[1].Split(',');
+            var roleName = arg.Split('=')[0];
+            var memberNames = arg.Split('=')[1].Split(',');
             subscriptionRolesAndMembers[roleName] = memberNames;
           }
 
