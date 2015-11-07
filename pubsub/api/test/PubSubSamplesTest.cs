@@ -13,28 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-using System;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace test
+[TestClass]
+public class PubSubSamplesTest
 {
-    /// <summary>
-    /// Tests the Pub/Sub sample.
-    /// 
-    /// How to run:
-    /// 1. Set the environment variables:
-    ///    GOOGLE_PROJECT_ID = your project id displayed on the Google Developers Console.
-    ///    GOOGLE_APPLICATION_CREDENTIALS = path to the .json file you downloaded from the
-    ///      Google Developers Console.
-    ///    ...
-    /// 2. MSTest /testcontainer:test.dll   
-    [TestClass]
-    public class Test
+
+  [TestMethod]
+  public void TestUsage()
+  {
+    using (var output = new ConsoleOutputReader())
     {
-        [TestMethod]
-        public void TestRun()
-        {
-            Assert.IsTrue(false);
-        }
+      PubSubSample.Program.Main(new string[] { });
+
+      StringAssert.Contains(output.ToString(), "Usage: PubSubSample.exe [command] [args]");
     }
+  }
 }

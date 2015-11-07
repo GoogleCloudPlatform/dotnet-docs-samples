@@ -113,18 +113,19 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Test.cs" />
+    <Compile Include="ConsoleOutputReader.cs" />
+    <Compile Include="PubSubSamplesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\pubsub.csproj">
       <Project>{184a2c47-b141-4fa3-926c-b0c0caab09e3}</Project>
       <Name>pubsub</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

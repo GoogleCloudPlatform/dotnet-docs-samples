@@ -1,17 +1,25 @@
-﻿using System;
+﻿// TODO ADD LICENSE HEADERS TO ALL FILES
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
 
 namespace PubSubSample
 {
 
-  class Program
+  public class Program
   {
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
       if (args.Length == 0)
-      {
-        Console.WriteLine(@"Usage: PubSubSample.exe [command] [args]
+        PrintUsage();
+      else
+        RunCommand(args.First(), args.Skip(1).ToArray());
+    }
+
+    static void PrintUsage()
+    {
+      Console.WriteLine(@"Usage: PubSubSample.exe [command] [args]
 
        ListTopics
        ListSubscriptions
@@ -26,15 +34,13 @@ namespace PubSubSample
        TestTopicPolicy        [topic]        [permission] [permission...]
        TestSubscriptionPolicy [subscription] [permission] [permission...]
 ");
-        Environment.Exit(0);
-      }
+    }
 
+    static void RunCommand(string command, string[] args)
+    {
       var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-      var commandName = args.FirstOrDefault();
-      var commandArguments = args.Skip(1).ToArray();
-
-      switch (commandName)
+      switch (command)
       {
         case "ListTopics":
           new ListTopicsSample().ListTopics(projectId);
@@ -46,39 +52,39 @@ namespace PubSubSample
 
         case "CreateTopic":
           new CreateTopicSample().CreateTopic(projectId,
-            topicName: commandArguments[0]
+            topicName: args[0]
           );
           break;
 
         case "CreateSubscription":
           new CreateSubscriptionSample().CreateSubscription(projectId,
-            topicName: commandArguments[0],
-            subscriptionName: commandArguments[1]
+            topicName: args[0],
+            subscriptionName: args[1]
           );
           break;
 
         case "PublishMessage":
           new PublishMessageSample().PublishMessage(projectId,
-            topicName: commandArguments[0],
-            message: commandArguments[1]
+            topicName: args[0],
+            message: args[1]
           );
           break;
 
         case "Pull":
-          new PullSample().Pull(projectId, subscriptionName: commandArguments[0]);
+          new PullSample().Pull(projectId, subscriptionName: args[0]);
           break;
 
         case "GetTopicPolicy":
-          new GetTopicPolicySample().GetTopicPolicy(projectId, topicName: commandArguments[0]);
+          new GetTopicPolicySample().GetTopicPolicy(projectId, topicName: args[0]);
           break;
 
         case "GetSubscriptionPolicy":
-          new GetSubscriptionPolicySample().GetSubscriptionPolicy(projectId, subscriptionName: commandArguments[0]);
+          new GetSubscriptionPolicySample().GetSubscriptionPolicy(projectId, subscriptionName: args[0]);
           break;
 
         case "SetTopicPolicy":
-          var topicName = commandArguments[0];
-          var topicPolicyArguments = commandArguments.Skip(1);
+          var topicName = args[0];
+          var topicPolicyArguments = args.Skip(1);
 
           var topicRolesAndMembers = new Dictionary<string, string[]>();
 
@@ -96,8 +102,8 @@ namespace PubSubSample
           break;
 
         case "SetSubscriptionPolicy":
-          var subscriptionName = commandArguments[0];
-          var subscriptionPolicyArguments = commandArguments.Skip(1);
+          var subscriptionName = args[0];
+          var subscriptionPolicyArguments = args.Skip(1);
 
           var subscriptionRolesAndMembers = new Dictionary<string, string[]>();
 
@@ -116,20 +122,20 @@ namespace PubSubSample
 
         case "TestTopicPolicy":
           new TestTopicPermissionsSample().TestTopicPermissions(projectId,
-            topicName: commandArguments[0],
-            permissions: commandArguments.Skip(1).ToList()
+            topicName: args[0],
+            permissions: args.Skip(1).ToList()
           );
           break;
 
         case "TestSubscriptionPolicy":
           new TestSubscriptionPermissionsSample().TestSubscriptionPermissions(projectId,
-            subscriptionName: commandArguments[0],
-            permissions: commandArguments.Skip(1).ToList()
+            subscriptionName: args[0],
+            permissions: args.Skip(1).ToList()
           );
           break;
 
         default:
-          Console.WriteLine($"Command not found: {commandName}");
+          Console.WriteLine($"Command not found: {command}");
           break;
       }
     }
