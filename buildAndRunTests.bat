@@ -18,6 +18,10 @@ CD ..\..\..\storage\api
 %NUGET% restore
 %MSBUILD% && %MSTEST% /testcontainer:test\bin\debug\test.dll || SET FAILED=1
 
+CD ..\..\pubsub\api
+%NUGET% restore
+%MSBUILD% && %MSTEST% /testcontainer:test\bin\debug\test.dll || SET FAILED=1
+
 @ECHO OFF
 IF %FAILED% NEQ 0 GOTO failed_case
 ENDLOCAL
