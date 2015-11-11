@@ -50,25 +50,25 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestUsage()
+  public void UsageTest()
   {
     StringAssert.Contains(PubSubExe(), "Usage: PubSubSample.exe [command] [args]");
   }
 
   [TestMethod]
-  public void TestCommandNotFound()
+  public void CommandNotFoundTest()
   {
     StringAssert.Contains(PubSubExe("InvalidCommand"), "Command not found: InvalidCommand");
   }
 
   [TestMethod]
-  public void TestListTopics_None()
+  public void NoTopics_ListTopicsTest()
   {
     StringAssert.Contains(PubSubExe("ListTopics"), "");
   }
 
   [TestMethod]
-  public void TestListTopics()
+  public void ListTopicsTest()
   {
     pubsub.CreateTopic("mytopic");
 
@@ -76,13 +76,13 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestListSubscriptions_None()
+  public void NoSubscriptions_ListSubscriptionsTest()
   {
     StringAssert.Contains(PubSubExe("ListSubscriptions"), "");
   }
 
   [TestMethod]
-  public void TestListSubscriptions()
+  public void ListSubscriptionsTest()
   {
     pubsub.CreateTopic("mytopic");
     pubsub.CreateSubscription("mytopic", "mysubscription");
@@ -91,7 +91,7 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestPublishMessage()
+  public void PublishMessageTest()
   {
     pubsub.CreateTopic("mytopic");
     pubsub.CreateSubscription("mytopic", "mysubscription");
@@ -101,7 +101,7 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestPullMessage()
+  public void PullMessageTest()
   {
     pubsub.CreateTopic("mytopic");
     pubsub.CreateSubscription("mytopic", "mysubscription");
@@ -110,10 +110,10 @@ public class PubSubSamplesTest
     StringAssert.Contains(PubSubExe("Pull", "mysubscription"), "Hello there.");
   }
 
-  public void TestPushMessage() { }
+  public void PushMessageTest() { }
 
   [TestMethod]
-  public void TestGetTopicPolic_None()
+  public void NoPolicy_GetTopicPolicyTest()
   {
     pubsub.CreateTopic("mytopic");
 
@@ -124,7 +124,7 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestGetTopicPolicy()
+  public void GetTopicPolicyTest()
   {
     pubsub.CreateTopic("mytopic");
 
@@ -140,7 +140,7 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestSetTopicPolicy()
+  public void SetTopicPolicyTest()
   {
     pubsub.CreateTopic("mytopic");
 
@@ -156,7 +156,7 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestTestTopicPermissions()
+  public void TestTopicPermissionsTest()
   {
     pubsub.CreateTopic("mytopic");
 
@@ -167,7 +167,7 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestGetSubscriptionPolicy_None()
+  public void NoPolicy_GetSubscriptionPolicyTest()
   {
     pubsub.CreateTopic("mytopic");
     pubsub.CreateSubscription("mytopic", "mysubscription");
@@ -179,7 +179,7 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestGetSubscriptionPolicy()
+  public void GetSubscriptionPolicyTest()
   {
     pubsub.CreateTopic("mytopic");
     pubsub.CreateSubscription("mytopic", "mysubscription");
@@ -196,7 +196,7 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestSetSubscriptionPolicy()
+  public void SetSubscriptionPolicyTest()
   {
     pubsub.CreateTopic("mytopic");
     pubsub.CreateSubscription("mytopic", "mysubscription");
@@ -213,7 +213,7 @@ public class PubSubSamplesTest
   }
 
   [TestMethod]
-  public void TestTestSubscriptionPermissions()
+  public void TestSubscriptionPermissionsTest()
   {
     pubsub.CreateTopic("mytopic");
     pubsub.CreateSubscription("mytopic", "mysubscription");
