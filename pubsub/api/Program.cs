@@ -23,16 +23,16 @@ namespace PubSubSample
 
        ListTopics
        ListSubscriptions
-       CreateTopic            [name]
-       CreateSubscription     [topic] [name]
-       PublishMessage         [topic] [message]
-       Pull                   [subscription]
-       GetTopicPolicy         [topic]
-       GetSubscriptionPolicy  [subscription]
-       SetTopicPolicy         [topic]        [role=member,member...] [role=...]
-       SetSubscriptionPolicy  [subscription] [role=member,member...] [role=...]
-       TestTopicPolicy        [topic]        [permission] [permission...]
-       TestSubscriptionPolicy [subscription] [permission] [permission...]
+       CreateTopic                 [name]
+       CreateSubscription          [topic] [name]
+       PublishMessage              [topic] [message]
+       Pull                        [subscription]
+       GetTopicPolicy              [topic]
+       GetSubscriptionPolicy       [subscription]
+       SetTopicPolicy              [topic]        [role=member,member...] [role=...]
+       SetSubscriptionPolicy       [subscription] [role=member,member...] [role=...]
+       TestTopicPermissions        [topic]        [permission] [permission...]
+       TestSubscriptionPermissions [subscription] [permission] [permission...]
 ");
     }
 
@@ -120,14 +120,14 @@ namespace PubSubSample
           );
           break;
 
-        case "TestTopicPolicy":
+        case "TestTopicPermissions":
           new TestTopicPermissionsSample().TestTopicPermissions(projectId,
             topicName: args[0],
             permissions: args.Skip(1).ToList()
           );
           break;
 
-        case "TestSubscriptionPolicy":
+        case "TestSubscriptionPermissions":
           new TestSubscriptionPermissionsSample().TestSubscriptionPermissions(projectId,
             subscriptionName: args[0],
             permissions: args.Skip(1).ToList()

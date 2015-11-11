@@ -10,7 +10,7 @@ class TestTopicPermissionsSample
   {
     PubsubService PubSub = PubSubClient.Create();
 
-    TestIamPermissionsResponse response = PubSub.Projects.Subscriptions.TestIamPermissions(
+    TestIamPermissionsResponse response = PubSub.Projects.Topics.TestIamPermissions(
       resource: $"projects/{projectId}/topics/{topicName}",
       body: new TestIamPermissionsRequest() { Permissions = permissions }
     ).Execute();

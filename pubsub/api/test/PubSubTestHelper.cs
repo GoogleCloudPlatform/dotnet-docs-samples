@@ -15,6 +15,7 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
@@ -99,7 +100,7 @@ class PubSubTestHelper
     foreach (var role in roleMembers.Keys)
       bindings.Add(new Binding() { Role = role, Members = roleMembers[role] });
 
-    Pubsub.Projects.Topics.SetIamPolicy(
+    Pubsub.Projects.Subscriptions.SetIamPolicy(
       new SetIamPolicyRequest() { Policy = new Policy() { Bindings = bindings } },
       $"{ProjectResource}/subscriptions/{subscription}"
     ).Execute();

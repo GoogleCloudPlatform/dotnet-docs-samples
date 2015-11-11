@@ -23,8 +23,6 @@ public class PubSubSamplesTest
 {
   string PubsubServiceAccount { get { return $"serviceAccount:{System.Environment.GetEnvironmentVariable("PUBSUB_SERVICE_ACCOUNT")}"; } }
 
-  // TODO helper method to call command and get output
-
   PubSubTestHelper pubsub = new PubSubTestHelper();
 
   string PubSubExe(params string[] args)
@@ -39,6 +37,14 @@ public class PubSubSamplesTest
   [TestInitialize]
   public void Setup()
   {
+    pubsub.DeleteAllSubscriptions();
+    pubsub.DeleteAllTopics();
+  }
+
+  [ClassCleanup]
+  public static void ClassCleanup()
+  {
+    var pubsub = new PubSubTestHelper();
     pubsub.DeleteAllSubscriptions();
     pubsub.DeleteAllTopics();
   }
@@ -121,6 +127,7 @@ public class PubSubSamplesTest
   public void TestGetTopicPolicy()
   {
     pubsub.CreateTopic("mytopic");
+
     pubsub.SetTopicPolicy("mytopic", new Dictionary<string, string[]>
     {
       ["roles/viewer"] = new[] { PubsubServiceAccount }
@@ -148,7 +155,16 @@ public class PubSubSamplesTest
     Assert.AreEqual(PubsubServiceAccount, binding.Members[0]);
   }
 
-  public void TestTestTopicPermissions() { }
+  [TestMethod]
+  public void TestTestTopicPermissions()
+  {
+    pubsub.CreateTopic("mytopic");
+
+    StringAssert.Contains(
+      PubSubExe("TestTopicPermissions", "mytopic", "pubsub.topics.publish"),
+      "Caller has permission pubsub.topics.publish"
+    );
+  }
 
   [TestMethod]
   public void TestGetSubscriptionPolicy_None()
@@ -167,6 +183,7 @@ public class PubSubSamplesTest
   {
     pubsub.CreateTopic("mytopic");
     pubsub.CreateSubscription("mytopic", "mysubscription");
+
     pubsub.SetSubscriptionPolicy("mysubscription", new Dictionary<string, string[]>
     {
       ["roles/viewer"] = new[] { PubsubServiceAccount }
@@ -195,5 +212,15 @@ public class PubSubSamplesTest
     Assert.AreEqual(PubsubServiceAccount, binding.Members[0]);
   }
 
-  public void TestTestSubscriptionPermissions() { }
+  [TestMethod]
+  public void TestTestSubscriptionPermissions()
+  {
+    pubsub.CreateTopic("mytopic");
+    pubsub.CreateSubscription("mytopic", "mysubscription");
+
+    StringAssert.Contains(
+      PubSubExe("TestSubscriptionPermissions", "mysubscription", "pubsub.subscriptions.consume"),
+      "Caller has permission pubsub.subscriptions.consume"
+    );
+  }
 }
