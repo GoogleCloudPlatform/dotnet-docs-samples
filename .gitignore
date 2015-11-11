@@ -4,3 +4,5 @@ obj/
 packages/
 *.suo
 .nuget/
+TestResults/
+*.csproj.user

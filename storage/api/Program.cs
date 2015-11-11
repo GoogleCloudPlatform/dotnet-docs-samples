@@ -23,12 +23,14 @@
 // [START all]
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Download;
+using Google.Apis.Http;
 using Google.Apis.Services;
 using Google.Apis.Storage.v1;
 using Google.Apis.Storage.v1.Data;
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GCSSearch
@@ -40,7 +42,12 @@ namespace GCSSearch
         {
             try
             {
-                new Program().Run().Wait();
+                // Choose with auth mechanism to ues based on command-line flag.
+                Task<IConfigurableHttpClientInitializer> credentials =
+                    Array.Find(args, arg => "--askForCredentials" == arg) == "--askForCredentials" ?
+                    GetInstalledApplicationCredentialsAsync() :
+                    GetApplicationDefaultCredentialsAsync();
+                new Program().Run(credentials).Wait();
             }
             catch (AggregateException ex)
             {
@@ -56,8 +63,40 @@ namespace GCSSearch
         private const int KB = 0x400;
         private const int DownloadChunkSize = 256 * KB;
 
-        public async Task Run(string projectId = @"", string bucketName = @"")
+        public static async Task<IConfigurableHttpClientInitializer> GetApplicationDefaultCredentialsAsync()
         {
+            GoogleCredential credential = await GoogleCredential.GetApplicationDefaultAsync();
+            if (credential.IsCreateScopedRequired)
+            {
+                credential = credential.CreateScoped(new[] { StorageService.Scope.DevstorageReadWrite });
+            }
+            return credential;
+        }
+
+        public static async Task<IConfigurableHttpClientInitializer> GetInstalledApplicationCredentialsAsync()
+        {
+            var secrets = new ClientSecrets
+            {
+                // Replace these values with your own to use Installed Application Credentials.
+                // Pass --askForCredentials on the command line.
+                // See https://developers.google.com/identity/protocols/OAuth2#installed
+                ClientId = "YOUR_CLIENT_ID.apps.googleusercontent.com",
+                ClientSecret = "YOUR_CLIENT_SECRET"
+            };
+            return await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                secrets, new[] { StorageService.Scope.DevstorageFullControl },
+                Environment.UserName, new CancellationTokenSource().Token);
+        }
+
+        public async Task Run(Task<IConfigurableHttpClientInitializer> credentialTask,
+            string projectId = @"", string bucketName = @"")
+        {
+            StorageService service = new StorageService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = await credentialTask,
+                ApplicationName = "GCS Sample",
+            });
+
             if (String.IsNullOrWhiteSpace(projectId))
             {
                 Console.Write("Enter your project id: ");
@@ -68,18 +107,6 @@ namespace GCSSearch
                 Console.Write("Enter your bucket name: ");
                 bucketName = Console.ReadLine().Trim();
             }
-
-            GoogleCredential credential = await GoogleCredential.GetApplicationDefaultAsync();
-            if (credential.IsCreateScopedRequired)
-            {
-                credential = credential.CreateScoped(new[] { StorageService.Scope.DevstorageReadWrite });
-            }
-
-            StorageService service = new StorageService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "GCS Sample",
-            });
 
             Console.WriteLine("List of buckets in current project");
             Buckets buckets = await service.Buckets.List(projectId).ExecuteAsync();
@@ -93,7 +120,7 @@ namespace GCSSearch
             Console.WriteLine("=============================");
 
             // using Google.Apis.Storage.v1.Data.Object to disambiguate from System.Object
-            Google.Apis.Storage.v1.Data.Object fileobj = 
+            Google.Apis.Storage.v1.Data.Object fileobj =
                 new Google.Apis.Storage.v1.Data.Object() { Name = "somefile.txt" };
 
             Console.WriteLine("Creating " + fileobj.Name + " in bucket " + bucketName);
