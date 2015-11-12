@@ -6,3 +6,4 @@ packages/
 .nuget/
 TestResults/
 *.csproj.user
+.vs
