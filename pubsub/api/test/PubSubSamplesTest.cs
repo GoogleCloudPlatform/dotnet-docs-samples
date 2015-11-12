@@ -14,6 +14,7 @@
  * the License.
  */
 
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,6 +32,23 @@ public class PubSubSamplesTest
     {
       PubSubSample.Program.Main(args);
       return output.ToString();
+    }
+  }
+
+  public void Retry(int times, Action assert)
+  {
+    for (var i = 0; i < times; i++)
+    {
+      try
+      {
+        assert();
+        return;
+      }
+      catch (AssertFailedException failure)
+      {
+        if (i == times - 1)
+          throw failure;
+      }
     }
   }
 
@@ -97,7 +115,9 @@ public class PubSubSamplesTest
     pubsub.CreateSubscription("mytopic", "mysubscription");
     PubSubExe("PublishMessage", "mytopic", "Hello there!");
 
-    CollectionAssert.Contains(pubsub.PullMessages("mysubscription"), "Hello there!");
+    Retry(times: 5, assert: () => {
+      CollectionAssert.Contains(pubsub.PullMessages("mysubscription"), "Hello there!");
+    });
   }
 
   [TestMethod]
@@ -107,7 +127,10 @@ public class PubSubSamplesTest
     pubsub.CreateSubscription("mytopic", "mysubscription");
     pubsub.PublishMessage("mytopic", "Hello there.");
 
-    StringAssert.Contains(PubSubExe("Pull", "mysubscription"), "Hello there.");
+    // Published messages may not show up right away.
+    Retry(times: 5, assert: () => {
+      StringAssert.Contains(PubSubExe("Pull", "mysubscription"), "Hello there.");
+    });
   }
 
   public void PushMessageTest() { }
