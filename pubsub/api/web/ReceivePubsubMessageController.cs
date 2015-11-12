@@ -52,6 +52,12 @@ public class PushMessage
 [Route("/")]
 public class ReceivePubsubMessageController : Controller
 {
+  [HttpGet]
+  public string Root()
+  {
+    return "Hello World (from web)";
+  }
+
   [HttpPost]
   public string ReceiveMessage([FromBody] PushMessage pushMessage)
   {
