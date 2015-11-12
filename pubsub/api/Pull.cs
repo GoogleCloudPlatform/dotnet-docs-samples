@@ -21,7 +21,6 @@ using Google.Apis.Pubsub.v1.Data;
 
 class PullSample
 {
-  // TODO Base64
   public void Pull(string projectId, string subscriptionName)
   {
     PubsubService PubSub = PubSubClient.Create();
