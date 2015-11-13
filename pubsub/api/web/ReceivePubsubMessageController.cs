@@ -52,15 +52,18 @@ public class PushMessage
 [Route("/")]
 public class ReceivePubsubMessageController : Controller
 {
-  [HttpGet]
-  public string Root()
-  {
-    return "Hello World (from web)";
-  }
-
   [HttpPost]
   public string ReceiveMessage([FromBody] PushMessage pushMessage)
   {
+    System.Console.WriteLine("HI THERE");
+    System.Diagnostics.Trace.WriteLine("HI THERE - TRACE");
+
+    // 200x
+    HttpContext.Response.StatusCode = 200;
+
+    if (pushMessage == null)
+      return "NULL PUSH MESSAGE!!";
+
     var message = pushMessage.Message;
 
     var output = $"Received Message Id: {message.Message_Id}\n" +

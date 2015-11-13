@@ -15,28 +15,41 @@
  */
 
 using Xunit;
-using Microsoft.AspNet.Builder;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Dnx.Runtime.Infrastructure;
-using System.Net;
 using Microsoft.AspNet.TestHost;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 public class PubSubPushMessageTest
 {
-  public PubSubPushMessageTest()
-  {
-    // var environment = CallContextServiceLocator.Locator.ServiceProvider.GetRequiredService.
-  }
-
   [Fact]
   public void PushMessageWebHandlerTest()
   {
-    // var server = Microsoft.AspNet.TestHost.TestServer.Create();
+    var pushRequestBody = new StringContent("{" + 
+      @"""subscription"":""SubscriptionName""," +
+      @"""message"":{" +
+        @"""message_id"":""1234""," +
+        @"""data"":""SGVsbG8gd29ybGQ=""," + // Base64 encoded "Hello world"
+        @"""attributes"":{" +
+          @"""attr1"":""value1""," +
+          @"""attr2"":""value2""" +
+        "}" +
+      "}" +
+    "}");
+    pushRequestBody.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
     var server = new TestServer(TestServer.CreateBuilder().UseStartup("web"));
     var client = server.CreateClient();
+    var response = client.PostAsync("/", pushRequestBody).Result;
 
-    var response = client.GetAsync("/").Result;
     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    Assert.Equal("<the response text>", response.Content.ReadAsStringAsync().Result);
+
+    var expectedResponse = "Received Message Id: 1234\n" +
+                           "Text: Hello world\n" +
+                           "From Subscription: SubscriptionName\n" +
+                           "Attribute attr1 = value1\n" +
+                           "Attribute attr2 = value2\n";
+
+    Assert.Equal(expectedResponse, response.Content.ReadAsStringAsync().Result);
   }
 }
