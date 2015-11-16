@@ -14,18 +14,22 @@
  * the License.
  */
 
-using Microsoft.AspNet.Builder;
-using Microsoft.Framework.DependencyInjection;
-
-public class Startup
+namespace PubSubSample
 {
-  public void ConfigureServices(IServiceCollection services)
-  {
-    services.AddMvc();
-  }
 
-  public void Configure(IApplicationBuilder app)
+  using Microsoft.AspNet.Builder;
+  using Microsoft.Framework.DependencyInjection;
+
+  public class Startup
   {
-    app.UseMvc();
+    public void ConfigureServices(IServiceCollection services)
+    {
+      services.AddMvc();
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+      app.UseMvc();
+    }
   }
 }

@@ -22,7 +22,7 @@ public class PubSubTestHelper
 {
   public string ProjectID = System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
   public string ProjectResource { get { return $"projects/{ProjectID}"; } }
-  public PubsubService Pubsub = PubSubClient.Create();
+  public PubsubService Pubsub = PubSubSample.PubSubClient.Create();
 
   public void DeleteAllSubscriptions()
   {

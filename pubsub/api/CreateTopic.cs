@@ -14,19 +14,25 @@
  * the License.
  */
 
-using Google.Apis.Pubsub.v1;
-using Google.Apis.Pubsub.v1.Data;
+namespace PubSubSample
+{
 
-public class CreateTopicSample {
-  
-  public void CreateTopic(string projectId, string topicName) {
-    PubsubService PubSub = PubSubClient.Create();
+  using Google.Apis.Pubsub.v1;
+  using Google.Apis.Pubsub.v1.Data;
 
-    Topic topic = PubSub.Projects.Topics.Create(
-      name: $"projects/{projectId}/topics/{topicName}",
-      body: new Topic() { Name = topicName }
-    ).Execute();
+  public class CreateTopicSample
+  {
 
-    System.Console.WriteLine($"Created: {topic.Name}");
+    public void CreateTopic(string projectId, string topicName)
+    {
+      PubsubService PubSub = PubSubClient.Create();
+
+      Topic topic = PubSub.Projects.Topics.Create(
+        name: $"projects/{projectId}/topics/{topicName}",
+        body: new Topic() { Name = topicName }
+      ).Execute();
+
+      System.Console.WriteLine($"Created: {topic.Name}");
+    }
   }
 }

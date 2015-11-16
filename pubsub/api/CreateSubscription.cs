@@ -14,16 +14,19 @@
  * the License.
  */
 
-using System;
-using Google.Apis.Pubsub.v1;
-using Google.Apis.Pubsub.v1.Data;
-
-// TODO Add PushConfig
-public class CreateSubscriptionSample
+namespace PubSubSample
 {
-  public void CreateSubscription(string projectId, string topicName, string subscriptionName)
+
+  using System;
+  using Google.Apis.Pubsub.v1;
+  using Google.Apis.Pubsub.v1.Data;
+
+  // TODO Add PushConfig
+  public class CreateSubscriptionSample
   {
-    PubsubService PubSub = PubSubClient.Create();
+    public void CreateSubscription(string projectId, string topicName, string subscriptionName)
+    {
+      PubsubService PubSub = PubSubClient.Create();
 
       Subscription subscription = PubSub.Projects.Subscriptions.Create(
         name: $"projects/{projectId}/subscriptions/{subscriptionName}",
@@ -35,5 +38,6 @@ public class CreateSubscriptionSample
       ).Execute();
 
       Console.WriteLine($"Created: {subscription.Name}");
+    }
   }
 }

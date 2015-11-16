@@ -14,28 +14,32 @@
  * the License.
  */
 
-using System;
-using System.Collections.Generic;
-using Google.Apis.Pubsub.v1;
-using Google.Apis.Pubsub.v1.Data;
-
-public class ListTopicsSample
+namespace PubSubSample
 {
-  public void ListTopics(string projectId)
+
+  using System;
+  using System.Collections.Generic;
+  using Google.Apis.Pubsub.v1;
+  using Google.Apis.Pubsub.v1.Data;
+
+  public class ListTopicsSample
   {
-    PubsubService PubSub = PubSubClient.Create();
-
-    ListTopicsResponse response = PubSub.Projects.Topics.List(
-      project: $"projects/{projectId}"
-    ).Execute();
-
-    if (response.Topics != null)
+    public void ListTopics(string projectId)
     {
-      IList<Topic> topics = response.Topics;
+      PubsubService PubSub = PubSubClient.Create();
 
-      foreach (var topic in topics)
+      ListTopicsResponse response = PubSub.Projects.Topics.List(
+        project: $"projects/{projectId}"
+      ).Execute();
+
+      if (response.Topics != null)
       {
-        Console.WriteLine($"Found topics: {topic.Name}");
+        IList<Topic> topics = response.Topics;
+
+        foreach (var topic in topics)
+        {
+          Console.WriteLine($"Found topics: {topic.Name}");
+        }
       }
     }
   }

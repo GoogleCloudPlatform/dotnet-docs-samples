@@ -14,22 +14,26 @@
  * the License.
  */
 
-using Google.Apis.Services;
-using Google.Apis.Pubsub.v1;
-
-public class PubSubClient
+namespace PubSubSample
 {
-  public static PubsubService Create()
+
+  using Google.Apis.Services;
+  using Google.Apis.Pubsub.v1;
+
+  public class PubSubClient
   {
-    var credentials = Google.Apis.Auth.OAuth2.GoogleCredential.GetApplicationDefaultAsync().Result;
-    credentials = credentials.CreateScoped(new[] { PubsubService.Scope.Pubsub });
-
-    var serviceInitializer = new BaseClientService.Initializer()
+    public static PubsubService Create()
     {
-      ApplicationName = "PubSub Sample",
-      HttpClientInitializer = credentials
-    };
+      var credentials = Google.Apis.Auth.OAuth2.GoogleCredential.GetApplicationDefaultAsync().Result;
+      credentials = credentials.CreateScoped(new[] { PubsubService.Scope.Pubsub });
 
-    return new PubsubService(serviceInitializer);
+      var serviceInitializer = new BaseClientService.Initializer()
+      {
+        ApplicationName = "PubSub Sample",
+        HttpClientInitializer = credentials
+      };
+
+      return new PubsubService(serviceInitializer);
+    }
   }
 }

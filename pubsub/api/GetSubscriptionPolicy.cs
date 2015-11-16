@@ -14,33 +14,37 @@
  * the License.
  */
 
-using System;
-using Google.Apis.Pubsub.v1;
-using Google.Apis.Pubsub.v1.Data;
-
-public class GetSubscriptionPolicySample
+namespace PubSubSample
 {
-  public void GetSubscriptionPolicy(string projectId, string subscriptionName)
+
+  using System;
+  using Google.Apis.Pubsub.v1;
+  using Google.Apis.Pubsub.v1.Data;
+
+  public class GetSubscriptionPolicySample
   {
-    PubsubService PubSub = PubSubClient.Create();
-
-    Policy policy = PubSub.Projects.Subscriptions.GetIamPolicy(
-      resource: $"projects/{projectId}/subscriptions/{subscriptionName}"
-    ).Execute();
-
-    if (policy.Bindings != null)
+    public void GetSubscriptionPolicy(string projectId, string subscriptionName)
     {
-      foreach (Binding binding in policy.Bindings)
+      PubsubService PubSub = PubSubClient.Create();
+
+      Policy policy = PubSub.Projects.Subscriptions.GetIamPolicy(
+        resource: $"projects/{projectId}/subscriptions/{subscriptionName}"
+      ).Execute();
+
+      if (policy.Bindings != null)
       {
-        foreach (string member in binding.Members)
+        foreach (Binding binding in policy.Bindings)
         {
-          Console.WriteLine($"{member} is member of role {binding.Role}");
+          foreach (string member in binding.Members)
+          {
+            Console.WriteLine($"{member} is member of role {binding.Role}");
+          }
         }
       }
-    }
-    else
-    {
-      Console.WriteLine("Subscription has no policy");
+      else
+      {
+        Console.WriteLine("Subscription has no policy");
+      }
     }
   }
 }

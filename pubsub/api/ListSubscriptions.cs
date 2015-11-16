@@ -14,28 +14,32 @@
  * the License.
  */
 
-using System;
-using System.Collections.Generic;
-using Google.Apis.Pubsub.v1;
-using Google.Apis.Pubsub.v1.Data;
-
-public class ListSubscriptionsSample
+namespace PubSubSample
 {
-  public void ListSubscriptions(string projectId)
+
+  using System;
+  using System.Collections.Generic;
+  using Google.Apis.Pubsub.v1;
+  using Google.Apis.Pubsub.v1.Data;
+
+  public class ListSubscriptionsSample
   {
-    PubsubService PubSub = PubSubClient.Create();
-
-    ListSubscriptionsResponse response = PubSub.Projects.Subscriptions.List(
-      project: $"projects/{projectId}"
-    ).Execute();
-
-    if (response.Subscriptions != null)
+    public void ListSubscriptions(string projectId)
     {
-      IList<Subscription> subscriptions = response.Subscriptions;
+      PubsubService PubSub = PubSubClient.Create();
 
-      foreach (var subscription in subscriptions)
+      ListSubscriptionsResponse response = PubSub.Projects.Subscriptions.List(
+        project: $"projects/{projectId}"
+      ).Execute();
+
+      if (response.Subscriptions != null)
       {
-        Console.WriteLine($"Found subscription: {subscription.Name}");
+        IList<Subscription> subscriptions = response.Subscriptions;
+
+        foreach (var subscription in subscriptions)
+        {
+          Console.WriteLine($"Found subscription: {subscription.Name}");
+        }
       }
     }
   }

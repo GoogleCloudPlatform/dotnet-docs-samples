@@ -14,39 +14,43 @@
  * the License.
  */
 
-using System;
-using System.Collections.Generic;
-using Google.Apis.Pubsub.v1;
-using Google.Apis.Pubsub.v1.Data;
-
-public class PublishMessageSample
+namespace PubSubSample
 {
-  public void PublishMessage(string projectId, string topicName, string message)
+
+  using System;
+  using System.Collections.Generic;
+  using Google.Apis.Pubsub.v1;
+  using Google.Apis.Pubsub.v1.Data;
+
+  public class PublishMessageSample
   {
-    PubsubService PubSub = PubSubClient.Create();
-
-    message = System.Convert.ToBase64String(
-      System.Text.Encoding.UTF8.GetBytes(message)  
-    );
-
-    PublishResponse response = PubSub.Projects.Topics.Publish(
-      topic: $"projects/{projectId}/topics/{topicName}",
-      body: new PublishRequest()
-      {
-        Messages = new[]
-        {
-          new PubsubMessage() { Data = message }
-        }
-      }
-    ).Execute();
-
-    if (response.MessageIds != null)
+    public void PublishMessage(string projectId, string topicName, string message)
     {
-      IList<string> messageIds = response.MessageIds;
+      PubsubService PubSub = PubSubClient.Create();
 
-      foreach (var messageId in messageIds)
+      message = System.Convert.ToBase64String(
+        System.Text.Encoding.UTF8.GetBytes(message)
+      );
+
+      PublishResponse response = PubSub.Projects.Topics.Publish(
+        topic: $"projects/{projectId}/topics/{topicName}",
+        body: new PublishRequest()
+        {
+          Messages = new[]
+          {
+          new PubsubMessage() { Data = message }
+          }
+        }
+      ).Execute();
+
+      if (response.MessageIds != null)
       {
-        Console.WriteLine($"Published message ID: {messageId}");
+        IList<string> messageIds = response.MessageIds;
+
+        foreach (var messageId in messageIds)
+        {
+          Console.WriteLine($"Published message ID: {messageId}");
+        }
       }
     }
   }
