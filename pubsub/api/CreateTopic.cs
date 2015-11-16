@@ -16,7 +16,7 @@
 
 namespace PubSubSample
 {
-
+  // [START create_topic]
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
 
@@ -35,4 +35,5 @@ namespace PubSubSample
       System.Console.WriteLine($"Created: {topic.Name}");
     }
   }
+  // [END create_topic]
 }

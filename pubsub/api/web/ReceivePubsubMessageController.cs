@@ -23,6 +23,7 @@
       -Body '{"subscription":"SubscriptionName","message":{"message_id":"1234","data":"SGVsbG8gd29ybGQ=","attributes":{"attr2":"value1","attr2":"value2"}}}'
  */
 
+// [START receive_push_message]
 using Microsoft.AspNet.Mvc;
 using System.Collections.Generic;
 
@@ -76,3 +77,4 @@ public class ReceivePubsubMessageController : Controller
     return output;
   }
 }
+// [END receive_push_message]

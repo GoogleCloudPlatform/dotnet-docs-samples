@@ -16,7 +16,7 @@
 
 namespace PubSubSample
 {
-
+  // [START publish_message]
   using System;
   using System.Collections.Generic;
   using Google.Apis.Pubsub.v1;
@@ -54,4 +54,5 @@ namespace PubSubSample
       }
     }
   }
+  // [END publish_message]
 }

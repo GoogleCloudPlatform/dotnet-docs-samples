@@ -16,7 +16,7 @@
 
 namespace PubSubSample
 {
-
+  // [START set_subscription_policy]
   using System.Collections.Generic;
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
@@ -40,4 +40,5 @@ namespace PubSubSample
       ).Execute();
     }
   }
+  // [END set_subscription_policy]
 }

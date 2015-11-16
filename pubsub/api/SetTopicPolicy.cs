@@ -16,7 +16,7 @@
 
 namespace PubSubSample
 {
-
+  // [START set_topic_policy]
   using System;
   using System.Collections.Generic;
   using Google.Apis.Pubsub.v1;
@@ -47,4 +47,5 @@ namespace PubSubSample
       }
     }
   }
+  // [END set_topic_policy]
 }

@@ -16,7 +16,7 @@
 
 namespace PubSubSample
 {
-
+  // [START get_topic_policy]
   using System;
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
@@ -49,4 +49,5 @@ namespace PubSubSample
       }
     }
   }
+  // [END get_topic_policy]
 }

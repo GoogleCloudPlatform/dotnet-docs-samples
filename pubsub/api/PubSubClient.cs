@@ -16,7 +16,7 @@
 
 namespace PubSubSample
 {
-
+  // [START create_pubsub_client]
   using Google.Apis.Services;
   using Google.Apis.Pubsub.v1;
 
@@ -36,4 +36,5 @@ namespace PubSubSample
       return new PubsubService(serviceInitializer);
     }
   }
+  // [END create_pubsub_client]
 }

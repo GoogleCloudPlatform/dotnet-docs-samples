@@ -16,7 +16,7 @@
 
 namespace PubSubSample
 {
-
+  // [START list_topics]
   using System;
   using System.Collections.Generic;
   using Google.Apis.Pubsub.v1;
@@ -43,4 +43,5 @@ namespace PubSubSample
       }
     }
   }
+  // [END list_topics]
 }

@@ -16,7 +16,6 @@
 
 namespace PubSubSample
 {
-
   using Microsoft.AspNet.Builder;
   using Microsoft.Framework.DependencyInjection;
 
