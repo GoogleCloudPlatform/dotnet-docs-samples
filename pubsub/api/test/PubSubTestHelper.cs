@@ -15,11 +15,10 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
 using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
-class PubSubTestHelper
+public class PubSubTestHelper
 {
   public string ProjectID = System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
   public string ProjectResource { get { return $"projects/{ProjectID}"; } }

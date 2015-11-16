@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
-class SetTopicPolicySample
+public class SetTopicPolicySample
 {
   public void SetTopicPolicy(string projectId, string topicName, IDictionary<string, string[]> rolesAndMembers)
   {

@@ -18,7 +18,7 @@ using System;
 using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
-class GetSubscriptionPolicySample
+public class GetSubscriptionPolicySample
 {
   public void GetSubscriptionPolicy(string projectId, string subscriptionName)
   {

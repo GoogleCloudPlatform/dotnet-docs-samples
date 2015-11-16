@@ -17,7 +17,7 @@
 using System;
 using System.IO;
 
-class ConsoleOutputReader : IDisposable
+public class ConsoleOutputReader : IDisposable
 {
   TextWriter _STDOUT;
   StringWriter _output = new StringWriter();

@@ -19,7 +19,7 @@ using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
 // TODO Add PushConfig
-class CreateSubscriptionSample
+public class CreateSubscriptionSample
 {
   public void CreateSubscription(string projectId, string topicName, string subscriptionName)
   {

@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
-class PullSample
+public class PullSample
 {
   public void Pull(string projectId, string subscriptionName)
   {

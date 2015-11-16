@@ -14,12 +14,11 @@
  * the License.
  */
 
-using System;
 using System.Collections.Generic;
 using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
-class SetSubscriptionPolicySample
+public class SetSubscriptionPolicySample
 {
   // TODO demonstrate clearly how to create simple policy bindings.
   // USAGE serviceAccount:myproject@appspot.gserviceaccount.com roles/pubsub.subscriber
