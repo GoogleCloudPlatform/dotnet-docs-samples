@@ -22,7 +22,6 @@ namespace PubSubSample
 
   public class CreateTopicSample
   {
-
     public void CreateTopic(string projectId, string topicName)
     {
       PubsubService PubSub = PubSubClient.Create();

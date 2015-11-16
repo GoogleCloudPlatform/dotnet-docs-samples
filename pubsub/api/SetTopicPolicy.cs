@@ -19,6 +19,7 @@ namespace PubSubSample
   // [START set_topic_policy]
   using System;
   using System.Collections.Generic;
+
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
 

@@ -17,8 +17,8 @@
 namespace PubSubSample
 {
   // [START list_subscriptions]
-  using System;
   using System.Collections.Generic;
+
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
 
@@ -38,7 +38,7 @@ namespace PubSubSample
 
         foreach (var subscription in subscriptions)
         {
-          Console.WriteLine($"Found subscription: {subscription.Name}");
+          System.Console.WriteLine($"Found subscription: {subscription.Name}");
         }
       }
     }

@@ -17,9 +17,9 @@
 namespace PubSubSample
 {
   // [START pull]
-  using System;
   using System.Linq;
   using System.Collections.Generic;
+
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
 
@@ -49,7 +49,7 @@ namespace PubSubSample
             System.Convert.FromBase64String(receivedMessage.Message.Data)
           );
 
-          Console.WriteLine(message);
+          System.Console.WriteLine(message);
         }
 
         // Acknowledge receipt of all messages
@@ -63,7 +63,7 @@ namespace PubSubSample
       }
       else
       {
-        Console.WriteLine("There were no messages");
+        System.Console.WriteLine("There were no messages");
       }
     }
   }

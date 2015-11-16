@@ -17,8 +17,8 @@
 namespace PubSubSample
 {
   // [START publish_message]
-  using System;
   using System.Collections.Generic;
+
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
 
@@ -49,7 +49,7 @@ namespace PubSubSample
 
         foreach (var messageId in messageIds)
         {
-          Console.WriteLine($"Published message ID: {messageId}");
+          System.Console.WriteLine($"Published message ID: {messageId}");
         }
       }
     }

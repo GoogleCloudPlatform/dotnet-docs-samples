@@ -137,14 +137,14 @@ namespace PubSubSample
         case "TestTopicPermissions":
           new TestTopicPermissionsSample().TestTopicPermissions(projectId,
             topicName: args[0],
-            permissions: args.Skip(1).ToList()
+            permissions: args.Skip(1).ToArray()
           );
           break;
 
         case "TestSubscriptionPermissions":
           new TestSubscriptionPermissionsSample().TestSubscriptionPermissions(projectId,
             subscriptionName: args[0],
-            permissions: args.Skip(1).ToList()
+            permissions: args.Skip(1).ToArray()
           );
           break;
 

@@ -17,8 +17,8 @@
 namespace PubSubSample
 {
   // [START list_topics]
-  using System;
   using System.Collections.Generic;
+
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
 
@@ -38,7 +38,7 @@ namespace PubSubSample
 
         foreach (var topic in topics)
         {
-          Console.WriteLine($"Found topics: {topic.Name}");
+          System.Console.WriteLine($"Found topics: {topic.Name}");
         }
       }
     }

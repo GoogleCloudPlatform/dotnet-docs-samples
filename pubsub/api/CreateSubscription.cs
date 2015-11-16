@@ -17,7 +17,6 @@
 namespace PubSubSample
 {
   // [START create_subscription]
-  using System;
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
 
@@ -37,7 +36,7 @@ namespace PubSubSample
         }
       ).Execute();
 
-      Console.WriteLine($"Created: {subscription.Name}");
+      System.Console.WriteLine($"Created: {subscription.Name}");
     }
   }
   // [END create_subscription]
