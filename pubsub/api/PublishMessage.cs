@@ -16,43 +16,44 @@
 
 namespace PubSubSample
 {
-  // [START publish_message]
-  using System.Collections.Generic;
+    // [START publish_message]
 
-  using Google.Apis.Pubsub.v1;
-  using Google.Apis.Pubsub.v1.Data;
+    using System.Collections.Generic;
 
-  public class PublishMessageSample
-  {
-    public void PublishMessage(string projectId, string topicName, string message)
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
+
+    public class PublishMessageSample
     {
-      PubsubService PubSub = PubSubClient.Create();
-
-      message = System.Convert.ToBase64String(
-        System.Text.Encoding.UTF8.GetBytes(message)
-      );
-
-      PublishResponse response = PubSub.Projects.Topics.Publish(
-        topic: $"projects/{projectId}/topics/{topicName}",
-        body: new PublishRequest()
+        public void PublishMessage(string projectId, string topicName, string message)
         {
-          Messages = new[]
-          {
+            PubsubService PubSub = PubSubClient.Create();
+
+            message = System.Convert.ToBase64String(
+              System.Text.Encoding.UTF8.GetBytes(message)
+            );
+
+            PublishResponse response = PubSub.Projects.Topics.Publish(
+              topic: $"projects/{projectId}/topics/{topicName}",
+              body: new PublishRequest()
+              {
+                  Messages = new[]
+                {
           new PubsubMessage() { Data = message }
-          }
-        }
-      ).Execute();
+                }
+              }
+            ).Execute();
 
-      if (response.MessageIds != null)
-      {
-        IList<string> messageIds = response.MessageIds;
+            if (response.MessageIds != null)
+            {
+                IList<string> messageIds = response.MessageIds;
 
-        foreach (var messageId in messageIds)
-        {
-          System.Console.WriteLine($"Published message ID: {messageId}");
+                foreach (var messageId in messageIds)
+                {
+                    System.Console.WriteLine($"Published message ID: {messageId}");
+                }
+            }
         }
-      }
     }
-  }
-  // [END publish_message]
+    // [END publish_message]
 }

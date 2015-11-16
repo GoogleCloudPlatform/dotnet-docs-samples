@@ -19,23 +19,23 @@ using System.IO;
 
 public class ConsoleOutputReader : IDisposable
 {
-  TextWriter _STDOUT;
-  StringWriter _output = new StringWriter();
+    private readonly TextWriter _STDOUT;
+    private readonly StringWriter _output = new StringWriter();
 
-  public ConsoleOutputReader()
-  {
-    _STDOUT = Console.Out;
-    Console.SetOut(_output);
-  }
+    public ConsoleOutputReader()
+    {
+        _STDOUT = Console.Out;
+        Console.SetOut(_output);
+    }
 
-  public void Dispose()
-  {
-    Console.SetOut(_STDOUT);
-    _output.Dispose();
-  }
+    public void Dispose()
+    {
+        Console.SetOut(_STDOUT);
+        _output.Dispose();
+    }
 
-  public override string ToString()
-  {
-    return _output.ToString();
-  }
+    public override string ToString()
+    {
+        return _output.ToString();
+    }
 }

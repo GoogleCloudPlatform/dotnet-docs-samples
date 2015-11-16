@@ -16,32 +16,33 @@
 
 namespace PubSubSample
 {
-  // [START list_subscriptions]
-  using System.Collections.Generic;
+    // [START list_subscriptions]
 
-  using Google.Apis.Pubsub.v1;
-  using Google.Apis.Pubsub.v1.Data;
+    using System.Collections.Generic;
 
-  public class ListSubscriptionsSample
-  {
-    public void ListSubscriptions(string projectId)
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
+
+    public class ListSubscriptionsSample
     {
-      PubsubService PubSub = PubSubClient.Create();
-
-      ListSubscriptionsResponse response = PubSub.Projects.Subscriptions.List(
-        project: $"projects/{projectId}"
-      ).Execute();
-
-      if (response.Subscriptions != null)
-      {
-        IList<Subscription> subscriptions = response.Subscriptions;
-
-        foreach (var subscription in subscriptions)
+        public void ListSubscriptions(string projectId)
         {
-          System.Console.WriteLine($"Found subscription: {subscription.Name}");
+            PubsubService PubSub = PubSubClient.Create();
+
+            ListSubscriptionsResponse response = PubSub.Projects.Subscriptions.List(
+              project: $"projects/{projectId}"
+            ).Execute();
+
+            if (response.Subscriptions != null)
+            {
+                IList<Subscription> subscriptions = response.Subscriptions;
+
+                foreach (var subscription in subscriptions)
+                {
+                    System.Console.WriteLine($"Found subscription: {subscription.Name}");
+                }
+            }
         }
-      }
     }
-  }
-  // [END list_subscriptions]
+    // [END list_subscriptions]
 }

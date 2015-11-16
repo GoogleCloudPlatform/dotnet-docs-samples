@@ -16,39 +16,40 @@
 
 namespace PubSubSample
 {
-  // [START get_topic_policy]
-  using System;
+    // [START get_topic_policy]
 
-  using Google.Apis.Pubsub.v1;
-  using Google.Apis.Pubsub.v1.Data;
+    using System;
 
-  public class GetTopicPolicySample
-  {
-    public void GetTopicPolicy(string projectId, string topicName)
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
+
+    public class GetTopicPolicySample
     {
-      PubsubService PubSub = PubSubClient.Create();
-
-      Policy policy = PubSub.Projects.Topics.GetIamPolicy(
-        resource: $"projects/{projectId}/topics/{topicName}"
-      ).Execute();
-
-      if (policy.Bindings != null)
-      {
-        Console.WriteLine($"Policy {policy.Version} for subscription");
-
-        foreach (Binding binding in policy.Bindings)
+        public void GetTopicPolicy(string projectId, string topicName)
         {
-          foreach (string member in binding.Members)
-          {
-            Console.WriteLine($"{member} is member of role {binding.Role}");
-          }
+            PubsubService PubSub = PubSubClient.Create();
+
+            Policy policy = PubSub.Projects.Topics.GetIamPolicy(
+              resource: $"projects/{projectId}/topics/{topicName}"
+            ).Execute();
+
+            if (policy.Bindings != null)
+            {
+                Console.WriteLine($"Policy {policy.Version} for subscription");
+
+                foreach (Binding binding in policy.Bindings)
+                {
+                    foreach (string member in binding.Members)
+                    {
+                        Console.WriteLine($"{member} is member of role {binding.Role}");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Topic has no policy");
+            }
         }
-      }
-      else
-      {
-        Console.WriteLine("Topic has no policy");
-      }
     }
-  }
-  // [END get_topic_policy]
+    // [END get_topic_policy]
 }

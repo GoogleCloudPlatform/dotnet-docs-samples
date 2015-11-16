@@ -16,23 +16,24 @@
 
 namespace PubSubSample
 {
-  // [START create_topic]
-  using Google.Apis.Pubsub.v1;
-  using Google.Apis.Pubsub.v1.Data;
+    // [START create_topic]
 
-  public class CreateTopicSample
-  {
-    public void CreateTopic(string projectId, string topicName)
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
+
+    public class CreateTopicSample
     {
-      PubsubService PubSub = PubSubClient.Create();
+        public void CreateTopic(string projectId, string topicName)
+        {
+            PubsubService PubSub = PubSubClient.Create();
 
-      Topic topic = PubSub.Projects.Topics.Create(
-        name: $"projects/{projectId}/topics/{topicName}",
-        body: new Topic() { Name = topicName }
-      ).Execute();
+            Topic topic = PubSub.Projects.Topics.Create(
+              name: $"projects/{projectId}/topics/{topicName}",
+              body: new Topic() { Name = topicName }
+            ).Execute();
 
-      System.Console.WriteLine($"Created: {topic.Name}");
+            System.Console.WriteLine($"Created: {topic.Name}");
+        }
     }
-  }
-  // [END create_topic]
+    // [END create_topic]
 }

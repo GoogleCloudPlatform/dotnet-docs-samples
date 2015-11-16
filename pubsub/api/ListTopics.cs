@@ -16,32 +16,33 @@
 
 namespace PubSubSample
 {
-  // [START list_topics]
-  using System.Collections.Generic;
+    // [START list_topics]
 
-  using Google.Apis.Pubsub.v1;
-  using Google.Apis.Pubsub.v1.Data;
+    using System.Collections.Generic;
 
-  public class ListTopicsSample
-  {
-    public void ListTopics(string projectId)
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
+
+    public class ListTopicsSample
     {
-      PubsubService PubSub = PubSubClient.Create();
-
-      ListTopicsResponse response = PubSub.Projects.Topics.List(
-        project: $"projects/{projectId}"
-      ).Execute();
-
-      if (response.Topics != null)
-      {
-        IList<Topic> topics = response.Topics;
-
-        foreach (var topic in topics)
+        public void ListTopics(string projectId)
         {
-          System.Console.WriteLine($"Found topics: {topic.Name}");
+            PubsubService PubSub = PubSubClient.Create();
+
+            ListTopicsResponse response = PubSub.Projects.Topics.List(
+              project: $"projects/{projectId}"
+            ).Execute();
+
+            if (response.Topics != null)
+            {
+                IList<Topic> topics = response.Topics;
+
+                foreach (var topic in topics)
+                {
+                    System.Console.WriteLine($"Found topics: {topic.Name}");
+                }
+            }
         }
-      }
     }
-  }
-  // [END list_topics]
+    // [END list_topics]
 }

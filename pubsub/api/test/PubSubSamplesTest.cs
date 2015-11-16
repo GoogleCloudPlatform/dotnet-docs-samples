@@ -22,228 +22,230 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass]
 public class PubSubSamplesTest
 {
-  string PubsubServiceAccount { get { return $"serviceAccount:{System.Environment.GetEnvironmentVariable("PUBSUB_SERVICE_ACCOUNT")}"; } }
+    private string PubsubServiceAccount { get { return $"serviceAccount:{System.Environment.GetEnvironmentVariable("PUBSUB_SERVICE_ACCOUNT")}"; } }
 
-  PubSubTestHelper pubsub = new PubSubTestHelper();
+    private PubSubTestHelper _pubsub = new PubSubTestHelper();
 
-  string PubSubExe(params string[] args)
-  {
-    using (var output = new ConsoleOutputReader())
+    private string PubSubExe(params string[] args)
     {
-      PubSubSample.Program.Main(args);
-      return output.ToString();
+        using (var output = new ConsoleOutputReader())
+        {
+            PubSubSample.Program.Main(args);
+            return output.ToString();
+        }
     }
-  }
 
-  public void Retry(int times, Action assert)
-  {
-    for (var i = 0; i < times; i++)
+    public void Retry(int times, Action assert)
     {
-      try
-      {
-        assert();
-        return;
-      }
-      catch (AssertFailedException failure)
-      {
-        if (i == times - 1)
-          throw failure;
-      }
+        for (var i = 0; i < times; i++)
+        {
+            try
+            {
+                assert();
+                return;
+            }
+            catch (AssertFailedException failure)
+            {
+                if (i == times - 1)
+                    throw failure;
+            }
+        }
     }
-  }
 
-  [TestInitialize]
-  public void Setup()
-  {
-    pubsub.DeleteAllSubscriptions();
-    pubsub.DeleteAllTopics();
-  }
-
-  [ClassCleanup]
-  public static void ClassCleanup()
-  {
-    var pubsub = new PubSubTestHelper();
-    pubsub.DeleteAllSubscriptions();
-    pubsub.DeleteAllTopics();
-  }
-
-  [TestMethod]
-  public void UsageTest()
-  {
-    StringAssert.Contains(PubSubExe(), "Usage: PubSubSample.exe [command] [args]");
-  }
-
-  [TestMethod]
-  public void CommandNotFoundTest()
-  {
-    StringAssert.Contains(PubSubExe("InvalidCommand"), "Command not found: InvalidCommand");
-  }
-
-  [TestMethod]
-  public void NoTopics_ListTopicsTest()
-  {
-    StringAssert.Contains(PubSubExe("ListTopics"), "");
-  }
-
-  [TestMethod]
-  public void ListTopicsTest()
-  {
-    pubsub.CreateTopic("mytopic");
-
-    StringAssert.Contains(PubSubExe("ListTopics"), $"Found topics: projects/{pubsub.ProjectID}/topics/mytopic");
-  }
-
-  [TestMethod]
-  public void NoSubscriptions_ListSubscriptionsTest()
-  {
-    StringAssert.Contains(PubSubExe("ListSubscriptions"), "");
-  }
-
-  [TestMethod]
-  public void ListSubscriptionsTest()
-  {
-    pubsub.CreateTopic("mytopic");
-    pubsub.CreateSubscription("mytopic", "mysubscription");
-
-    StringAssert.Contains(PubSubExe("ListSubscriptions"), $"Found subscription: projects/{pubsub.ProjectID}/subscriptions/mysubscription");
-  }
-
-  [TestMethod]
-  public void PublishMessageTest()
-  {
-    pubsub.CreateTopic("mytopic");
-    pubsub.CreateSubscription("mytopic", "mysubscription");
-    PubSubExe("PublishMessage", "mytopic", "Hello there!");
-
-    Retry(times: 5, assert: () => {
-      CollectionAssert.Contains(pubsub.PullMessages("mysubscription"), "Hello there!");
-    });
-  }
-
-  [TestMethod]
-  public void PullMessageTest()
-  {
-    pubsub.CreateTopic("mytopic");
-    pubsub.CreateSubscription("mytopic", "mysubscription");
-    pubsub.PublishMessage("mytopic", "Hello there.");
-
-    // Published messages may not show up right away.
-    Retry(times: 5, assert: () => {
-      StringAssert.Contains(PubSubExe("Pull", "mysubscription"), "Hello there.");
-    });
-  }
-
-  public void PushMessageTest() { }
-
-  [TestMethod]
-  public void NoPolicy_GetTopicPolicyTest()
-  {
-    pubsub.CreateTopic("mytopic");
-
-    StringAssert.Contains(
-      PubSubExe("GetTopicPolicy", "mytopic"),
-      "Topic has no policy"
-    );
-  }
-
-  [TestMethod]
-  public void GetTopicPolicyTest()
-  {
-    pubsub.CreateTopic("mytopic");
-
-    pubsub.SetTopicPolicy("mytopic", new Dictionary<string, string[]>
+    [TestInitialize]
+    public void Setup()
     {
-      ["roles/viewer"] = new[] { PubsubServiceAccount }
-    });
+        _pubsub.DeleteAllSubscriptions();
+        _pubsub.DeleteAllTopics();
+    }
 
-    StringAssert.Contains(
-      PubSubExe("GetTopicPolicy", "mytopic"),
-      $"{PubsubServiceAccount} is member of role roles/viewer"
-    );
-  }
-
-  [TestMethod]
-  public void SetTopicPolicyTest()
-  {
-    pubsub.CreateTopic("mytopic");
-
-    PubSubExe("SetTopicPolicy", "mytopic", $"roles/viewer={PubsubServiceAccount}");
-
-    var policy = pubsub.GetTopicPolicy("mytopic");
-    Assert.AreEqual(1, policy.Bindings.Count);
-
-    var binding = policy.Bindings.First();
-    Assert.AreEqual("roles/viewer", binding.Role);
-    Assert.AreEqual(1, binding.Members.Count);
-    Assert.AreEqual(PubsubServiceAccount, binding.Members[0]);
-  }
-
-  [TestMethod]
-  public void TestTopicPermissionsTest()
-  {
-    pubsub.CreateTopic("mytopic");
-
-    StringAssert.Contains(
-      PubSubExe("TestTopicPermissions", "mytopic", "pubsub.topics.publish"),
-      "Caller has permission pubsub.topics.publish"
-    );
-  }
-
-  [TestMethod]
-  public void NoPolicy_GetSubscriptionPolicyTest()
-  {
-    pubsub.CreateTopic("mytopic");
-    pubsub.CreateSubscription("mytopic", "mysubscription");
-
-    StringAssert.Contains(
-      PubSubExe("GetSubscriptionPolicy", "mysubscription"),
-      "Subscription has no policy"
-    );
-  }
-
-  [TestMethod]
-  public void GetSubscriptionPolicyTest()
-  {
-    pubsub.CreateTopic("mytopic");
-    pubsub.CreateSubscription("mytopic", "mysubscription");
-
-    pubsub.SetSubscriptionPolicy("mysubscription", new Dictionary<string, string[]>
+    [ClassCleanup]
+    public static void ClassCleanup()
     {
-      ["roles/viewer"] = new[] { PubsubServiceAccount }
-    });
+        var pubsub = new PubSubTestHelper();
+        pubsub.DeleteAllSubscriptions();
+        pubsub.DeleteAllTopics();
+    }
 
-    StringAssert.Contains(
-      PubSubExe("GetSubscriptionPolicy", "mysubscription"),
-      $"{PubsubServiceAccount} is member of role roles/viewer"
-    );
-  }
+    [TestMethod]
+    public void UsageTest()
+    {
+        StringAssert.Contains(PubSubExe(), "Usage: PubSubSample.exe [command] [args]");
+    }
 
-  [TestMethod]
-  public void SetSubscriptionPolicyTest()
-  {
-    pubsub.CreateTopic("mytopic");
-    pubsub.CreateSubscription("mytopic", "mysubscription");
+    [TestMethod]
+    public void CommandNotFoundTest()
+    {
+        StringAssert.Contains(PubSubExe("InvalidCommand"), "Command not found: InvalidCommand");
+    }
 
-    PubSubExe("SetSubscriptionPolicy", "mysubscription", $"roles/viewer={PubsubServiceAccount}");
+    [TestMethod]
+    public void NoTopics_ListTopicsTest()
+    {
+        StringAssert.Contains(PubSubExe("ListTopics"), "");
+    }
 
-    var policy = pubsub.GetSubscriptionPolicy("mysubscription");
-    Assert.AreEqual(1, policy.Bindings.Count);
+    [TestMethod]
+    public void ListTopicsTest()
+    {
+        _pubsub.CreateTopic("mytopic");
 
-    var binding = policy.Bindings.First();
-    Assert.AreEqual("roles/viewer", binding.Role);
-    Assert.AreEqual(1, binding.Members.Count);
-    Assert.AreEqual(PubsubServiceAccount, binding.Members[0]);
-  }
+        StringAssert.Contains(PubSubExe("ListTopics"), $"Found topics: projects/{_pubsub.ProjectID}/topics/mytopic");
+    }
 
-  [TestMethod]
-  public void TestSubscriptionPermissionsTest()
-  {
-    pubsub.CreateTopic("mytopic");
-    pubsub.CreateSubscription("mytopic", "mysubscription");
+    [TestMethod]
+    public void NoSubscriptions_ListSubscriptionsTest()
+    {
+        StringAssert.Contains(PubSubExe("ListSubscriptions"), "");
+    }
 
-    StringAssert.Contains(
-      PubSubExe("TestSubscriptionPermissions", "mysubscription", "pubsub.subscriptions.consume"),
-      "Caller has permission pubsub.subscriptions.consume"
-    );
-  }
+    [TestMethod]
+    public void ListSubscriptionsTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+        _pubsub.CreateSubscription("mytopic", "mysubscription");
+
+        StringAssert.Contains(PubSubExe("ListSubscriptions"), $"Found subscription: projects/{_pubsub.ProjectID}/subscriptions/mysubscription");
+    }
+
+    [TestMethod]
+    public void PublishMessageTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+        _pubsub.CreateSubscription("mytopic", "mysubscription");
+        PubSubExe("PublishMessage", "mytopic", "Hello there!");
+
+        Retry(times: 5, assert: () =>
+        {
+            CollectionAssert.Contains(_pubsub.PullMessages("mysubscription"), "Hello there!");
+        });
+    }
+
+    [TestMethod]
+    public void PullMessageTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+        _pubsub.CreateSubscription("mytopic", "mysubscription");
+        _pubsub.PublishMessage("mytopic", "Hello there.");
+
+        // Published messages may not show up right away.
+        Retry(times: 5, assert: () =>
+        {
+            StringAssert.Contains(PubSubExe("Pull", "mysubscription"), "Hello there.");
+        });
+    }
+
+    public void PushMessageTest() { }
+
+    [TestMethod]
+    public void NoPolicy_GetTopicPolicyTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+
+        StringAssert.Contains(
+          PubSubExe("GetTopicPolicy", "mytopic"),
+          "Topic has no policy"
+        );
+    }
+
+    [TestMethod]
+    public void GetTopicPolicyTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+
+        _pubsub.SetTopicPolicy("mytopic", new Dictionary<string, string[]>
+        {
+            ["roles/viewer"] = new[] { PubsubServiceAccount }
+        });
+
+        StringAssert.Contains(
+          PubSubExe("GetTopicPolicy", "mytopic"),
+          $"{PubsubServiceAccount} is member of role roles/viewer"
+        );
+    }
+
+    [TestMethod]
+    public void SetTopicPolicyTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+
+        PubSubExe("SetTopicPolicy", "mytopic", $"roles/viewer={PubsubServiceAccount}");
+
+        var policy = _pubsub.GetTopicPolicy("mytopic");
+        Assert.AreEqual(1, policy.Bindings.Count);
+
+        var binding = policy.Bindings.First();
+        Assert.AreEqual("roles/viewer", binding.Role);
+        Assert.AreEqual(1, binding.Members.Count);
+        Assert.AreEqual(PubsubServiceAccount, binding.Members[0]);
+    }
+
+    [TestMethod]
+    public void TestTopicPermissionsTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+
+        StringAssert.Contains(
+          PubSubExe("TestTopicPermissions", "mytopic", "pubsub.topics.publish"),
+          "Caller has permission pubsub.topics.publish"
+        );
+    }
+
+    [TestMethod]
+    public void NoPolicy_GetSubscriptionPolicyTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+        _pubsub.CreateSubscription("mytopic", "mysubscription");
+
+        StringAssert.Contains(
+          PubSubExe("GetSubscriptionPolicy", "mysubscription"),
+          "Subscription has no policy"
+        );
+    }
+
+    [TestMethod]
+    public void GetSubscriptionPolicyTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+        _pubsub.CreateSubscription("mytopic", "mysubscription");
+
+        _pubsub.SetSubscriptionPolicy("mysubscription", new Dictionary<string, string[]>
+        {
+            ["roles/viewer"] = new[] { PubsubServiceAccount }
+        });
+
+        StringAssert.Contains(
+          PubSubExe("GetSubscriptionPolicy", "mysubscription"),
+          $"{PubsubServiceAccount} is member of role roles/viewer"
+        );
+    }
+
+    [TestMethod]
+    public void SetSubscriptionPolicyTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+        _pubsub.CreateSubscription("mytopic", "mysubscription");
+
+        PubSubExe("SetSubscriptionPolicy", "mysubscription", $"roles/viewer={PubsubServiceAccount}");
+
+        var policy = _pubsub.GetSubscriptionPolicy("mysubscription");
+        Assert.AreEqual(1, policy.Bindings.Count);
+
+        var binding = policy.Bindings.First();
+        Assert.AreEqual("roles/viewer", binding.Role);
+        Assert.AreEqual(1, binding.Members.Count);
+        Assert.AreEqual(PubsubServiceAccount, binding.Members[0]);
+    }
+
+    [TestMethod]
+    public void TestSubscriptionPermissionsTest()
+    {
+        _pubsub.CreateTopic("mytopic");
+        _pubsub.CreateSubscription("mytopic", "mysubscription");
+
+        StringAssert.Contains(
+          PubSubExe("TestSubscriptionPermissions", "mysubscription", "pubsub.subscriptions.consume"),
+          "Caller has permission pubsub.subscriptions.consume"
+        );
+    }
 }

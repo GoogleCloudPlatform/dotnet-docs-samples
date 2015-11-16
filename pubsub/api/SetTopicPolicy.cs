@@ -16,37 +16,38 @@
 
 namespace PubSubSample
 {
-  // [START set_topic_policy]
-  using System;
-  using System.Collections.Generic;
+    // [START set_topic_policy]
 
-  using Google.Apis.Pubsub.v1;
-  using Google.Apis.Pubsub.v1.Data;
+    using System;
+    using System.Collections.Generic;
 
-  public class SetTopicPolicySample
-  {
-    public void SetTopicPolicy(string projectId, string topicName, IDictionary<string, string[]> rolesAndMembers)
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
+
+    public class SetTopicPolicySample
     {
-      PubsubService PubSub = PubSubClient.Create();
+        public void SetTopicPolicy(string projectId, string topicName, IDictionary<string, string[]> rolesAndMembers)
+        {
+            PubsubService PubSub = PubSubClient.Create();
 
-      IList<Binding> bindings = new List<Binding>();
+            IList<Binding> bindings = new List<Binding>();
 
-      foreach (var roleName in rolesAndMembers.Keys)
-        bindings.Add(new Binding() { Role = roleName, Members = rolesAndMembers[roleName] });
+            foreach (var roleName in rolesAndMembers.Keys)
+                bindings.Add(new Binding() { Role = roleName, Members = rolesAndMembers[roleName] });
 
-      Policy policy = PubSub.Projects.Topics.SetIamPolicy(
-        resource: $"projects/{projectId}/topics/{topicName}",
-        body: new SetIamPolicyRequest() { Policy = new Policy() { Bindings = bindings } }
-      ).Execute();
+            Policy policy = PubSub.Projects.Topics.SetIamPolicy(
+              resource: $"projects/{projectId}/topics/{topicName}",
+              body: new SetIamPolicyRequest() { Policy = new Policy() { Bindings = bindings } }
+            ).Execute();
 
-      Console.WriteLine("Set policy");
-      foreach (var binding in policy.Bindings)
-      {
-        Console.WriteLine($"Role: {binding.Role}");
-        foreach (var theMember in binding.Members)
-          Console.WriteLine($" - {theMember}");
-      }
+            Console.WriteLine("Set policy");
+            foreach (var binding in policy.Bindings)
+            {
+                Console.WriteLine($"Role: {binding.Role}");
+                foreach (var theMember in binding.Members)
+                    Console.WriteLine($" - {theMember}");
+            }
+        }
     }
-  }
-  // [END set_topic_policy]
+    // [END set_topic_policy]
 }

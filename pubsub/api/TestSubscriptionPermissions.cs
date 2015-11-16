@@ -16,29 +16,30 @@
 
 namespace PubSubSample
 {
-  // [START test_subscription_permissions]
-  using Google.Apis.Pubsub.v1;
-  using Google.Apis.Pubsub.v1.Data;
+    // [START test_subscription_permissions]
 
-  public class TestSubscriptionPermissionsSample
-  {
-    public void TestSubscriptionPermissions(string projectId, string subscriptionName, string[] permissions)
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
+
+    public class TestSubscriptionPermissionsSample
     {
-      PubsubService PubSub = PubSubClient.Create();
+        public void TestSubscriptionPermissions(string projectId, string subscriptionName, string[] permissions)
+        {
+            PubsubService PubSub = PubSubClient.Create();
 
-      TestIamPermissionsResponse response = PubSub.Projects.Subscriptions.TestIamPermissions(
-        resource: $"projects/{projectId}/subscriptions/{subscriptionName}",
-        body: new TestIamPermissionsRequest() { Permissions = permissions }
-      ).Execute();
+            TestIamPermissionsResponse response = PubSub.Projects.Subscriptions.TestIamPermissions(
+              resource: $"projects/{projectId}/subscriptions/{subscriptionName}",
+              body: new TestIamPermissionsRequest() { Permissions = permissions }
+            ).Execute();
 
-      foreach (var permission in permissions)
-      {
-        if (response.Permissions.Contains(permission))
-          System.Console.WriteLine($"Caller has permission {permission}");
-        else
-          System.Console.WriteLine($"Caller does not have persmission {permission}");
-      }
+            foreach (var permission in permissions)
+            {
+                if (response.Permissions.Contains(permission))
+                    System.Console.WriteLine($"Caller has permission {permission}");
+                else
+                    System.Console.WriteLine($"Caller does not have persmission {permission}");
+            }
+        }
     }
-  }
-  // [END test_subscription_permissions]
+    // [END test_subscription_permissions]
 }

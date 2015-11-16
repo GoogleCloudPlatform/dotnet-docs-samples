@@ -16,56 +16,57 @@
 
 namespace PubSubSample
 {
-  // [START pull]
-  using System.Linq;
-  using System.Collections.Generic;
+    // [START pull]
 
-  using Google.Apis.Pubsub.v1;
-  using Google.Apis.Pubsub.v1.Data;
+    using System.Linq;
+    using System.Collections.Generic;
 
-  public class PullSample
-  {
-    public void Pull(string projectId, string subscriptionName)
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
+
+    public class PullSample
     {
-      PubsubService PubSub = PubSubClient.Create();
-
-      PullResponse response = PubSub.Projects.Subscriptions.Pull(
-        subscription: $"projects/{projectId}/subscriptions/{subscriptionName}",
-        body: new PullRequest()
+        public void Pull(string projectId, string subscriptionName)
         {
-          MaxMessages = 10,
-          ReturnImmediately = true
+            PubsubService PubSub = PubSubClient.Create();
+
+            PullResponse response = PubSub.Projects.Subscriptions.Pull(
+              subscription: $"projects/{projectId}/subscriptions/{subscriptionName}",
+              body: new PullRequest()
+              {
+                  MaxMessages = 10,
+                  ReturnImmediately = true
+              }
+            ).Execute();
+
+            if (response.ReceivedMessages != null)
+            {
+                IList<ReceivedMessage> receivedMessages = response.ReceivedMessages;
+
+                // Print out all messages
+                foreach (var receivedMessage in receivedMessages)
+                {
+                    string message = System.Text.Encoding.UTF8.GetString(
+                      System.Convert.FromBase64String(receivedMessage.Message.Data)
+                    );
+
+                    System.Console.WriteLine(message);
+                }
+
+                // Acknowledge receipt of all messages
+                PubSub.Projects.Subscriptions.Acknowledge(
+                  subscription: $"projects/{projectId}/subscriptions/{subscriptionName}",
+                  body: new AcknowledgeRequest()
+                  {
+                      AckIds = receivedMessages.Select(m => m.AckId).ToList()
+                  }
+                ).Execute();
+            }
+            else
+            {
+                System.Console.WriteLine("There were no messages");
+            }
         }
-      ).Execute();
-
-      if (response.ReceivedMessages != null)
-      {
-        IList<ReceivedMessage> receivedMessages = response.ReceivedMessages;
-
-        // Print out all messages
-        foreach (var receivedMessage in receivedMessages)
-        {
-          string message = System.Text.Encoding.UTF8.GetString(
-            System.Convert.FromBase64String(receivedMessage.Message.Data)
-          );
-
-          System.Console.WriteLine(message);
-        }
-
-        // Acknowledge receipt of all messages
-        PubSub.Projects.Subscriptions.Acknowledge(
-          subscription: $"projects/{projectId}/subscriptions/{subscriptionName}",
-          body: new AcknowledgeRequest()
-          {
-            AckIds = receivedMessages.Select(m => m.AckId).ToList()
-          }
-        ).Execute();
-      }
-      else
-      {
-        System.Console.WriteLine("There were no messages");
-      }
     }
-  }
-  // [END pull]
+    // [END pull]
 }

@@ -16,37 +16,38 @@
 
 namespace PubSubSample
 {
-  // [START get_subscription_policy]
-  using System;
+    // [START get_subscription_policy]
 
-  using Google.Apis.Pubsub.v1;
-  using Google.Apis.Pubsub.v1.Data;
+    using System;
 
-  public class GetSubscriptionPolicySample
-  {
-    public void GetSubscriptionPolicy(string projectId, string subscriptionName)
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
+
+    public class GetSubscriptionPolicySample
     {
-      PubsubService PubSub = PubSubClient.Create();
-
-      Policy policy = PubSub.Projects.Subscriptions.GetIamPolicy(
-        resource: $"projects/{projectId}/subscriptions/{subscriptionName}"
-      ).Execute();
-
-      if (policy.Bindings != null)
-      {
-        foreach (Binding binding in policy.Bindings)
+        public void GetSubscriptionPolicy(string projectId, string subscriptionName)
         {
-          foreach (string member in binding.Members)
-          {
-            Console.WriteLine($"{member} is member of role {binding.Role}");
-          }
+            PubsubService PubSub = PubSubClient.Create();
+
+            Policy policy = PubSub.Projects.Subscriptions.GetIamPolicy(
+              resource: $"projects/{projectId}/subscriptions/{subscriptionName}"
+            ).Execute();
+
+            if (policy.Bindings != null)
+            {
+                foreach (Binding binding in policy.Bindings)
+                {
+                    foreach (string member in binding.Members)
+                    {
+                        Console.WriteLine($"{member} is member of role {binding.Role}");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Subscription has no policy");
+            }
         }
-      }
-      else
-      {
-        Console.WriteLine("Subscription has no policy");
-      }
     }
-  }
-  // [END get_subscription_policy]
+    // [END get_subscription_policy]
 }
