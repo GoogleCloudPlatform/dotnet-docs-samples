@@ -44,10 +44,10 @@ public class PubSubSamplesTest
                 assert();
                 return;
             }
-            catch (AssertFailedException failure)
+            catch (AssertFailedException)
             {
                 if (i == times - 1)
-                    throw failure;
+                    throw;
             }
         }
     }
