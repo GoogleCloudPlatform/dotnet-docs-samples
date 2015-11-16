@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("pubsub")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("pubsub")]
-[assembly: AssemblyCopyright("Copyright \u00A9  2015")]
+[assembly: AssemblyCompany("Google Inc")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("Copyright \u00A9 Google Inc 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
