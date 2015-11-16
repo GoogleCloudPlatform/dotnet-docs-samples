@@ -17,7 +17,6 @@
 namespace PubSubSample
 {
     // [START test_topic_permissions]
-
     using Google.Apis.Pubsub.v1;
     using Google.Apis.Pubsub.v1.Data;
 

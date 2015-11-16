@@ -17,7 +17,6 @@
 namespace PubSubSample
 {
     // [START create_topic]
-
     using Google.Apis.Pubsub.v1;
     using Google.Apis.Pubsub.v1.Data;
 

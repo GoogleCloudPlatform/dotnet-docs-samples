@@ -17,12 +17,11 @@
 namespace PubSubSample
 {
     // [START pull]
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
 
     using System.Linq;
     using System.Collections.Generic;
-
-    using Google.Apis.Pubsub.v1;
-    using Google.Apis.Pubsub.v1.Data;
 
     public class PullSample
     {

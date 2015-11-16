@@ -17,12 +17,11 @@
 namespace PubSubSample
 {
     // [START set_topic_policy]
+    using Google.Apis.Pubsub.v1;
+    using Google.Apis.Pubsub.v1.Data;
 
     using System;
     using System.Collections.Generic;
-
-    using Google.Apis.Pubsub.v1;
-    using Google.Apis.Pubsub.v1.Data;
 
     public class SetTopicPolicySample
     {

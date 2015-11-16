@@ -17,11 +17,10 @@
 namespace PubSubSample
 {
     // [START list_topics]
-
-    using System.Collections.Generic;
-
     using Google.Apis.Pubsub.v1;
     using Google.Apis.Pubsub.v1.Data;
+
+    using System.Collections.Generic;
 
     public class ListTopicsSample
     {

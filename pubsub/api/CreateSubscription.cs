@@ -17,7 +17,6 @@
 namespace PubSubSample
 {
     // [START create_subscription]
-
     using Google.Apis.Pubsub.v1;
     using Google.Apis.Pubsub.v1.Data;
 

@@ -17,7 +17,6 @@
 namespace PubSubSample
 {
     // [START create_pubsub_client]
-
     using Google.Apis.Services;
     using Google.Apis.Pubsub.v1;
 
