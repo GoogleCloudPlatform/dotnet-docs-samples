@@ -18,6 +18,7 @@ namespace PubSubSample
 {
   // [START pull]
   using System;
+  using System.Linq;
   using System.Collections.Generic;
   using Google.Apis.Pubsub.v1;
   using Google.Apis.Pubsub.v1.Data;
@@ -40,8 +41,8 @@ namespace PubSubSample
       if (response.ReceivedMessages != null)
       {
         IList<ReceivedMessage> receivedMessages = response.ReceivedMessages;
-        List<string> acknowledgeIds = new List<string>();
 
+        // Print out all messages
         foreach (var receivedMessage in receivedMessages)
         {
           string message = System.Text.Encoding.UTF8.GetString(
@@ -49,15 +50,14 @@ namespace PubSubSample
           );
 
           Console.WriteLine(message);
-
-          acknowledgeIds.Add(receivedMessage.AckId);
         }
 
+        // Acknowledge receipt of all messages
         PubSub.Projects.Subscriptions.Acknowledge(
           subscription: $"projects/{projectId}/subscriptions/{subscriptionName}",
           body: new AcknowledgeRequest()
           {
-            AckIds = acknowledgeIds
+            AckIds = receivedMessages.Select(m => m.AckId).ToList()
           }
         ).Execute();
       }
