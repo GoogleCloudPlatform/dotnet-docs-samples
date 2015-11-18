@@ -2,8 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "storage", "storage.csproj", "{184A2C47-B141-4FA3-926C-B0C0CAAB09E3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6C626495-5576-4BE7-98B9-E3BE830FC693} = {6C626495-5576-4BE7-98B9-E3BE830FC693}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{5B9CAC69-3488-419C-9452-97514A6D3A33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SamplesUtil", "..\..\util\SamplesUtil.csproj", "{6C626495-5576-4BE7-98B9-E3BE830FC693}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +24,10 @@ Global
 		{5B9CAC69-3488-419C-9452-97514A6D3A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B9CAC69-3488-419C-9452-97514A6D3A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B9CAC69-3488-419C-9452-97514A6D3A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C626495-5576-4BE7-98B9-E3BE830FC693}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C626495-5576-4BE7-98B9-E3BE830FC693}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C626495-5576-4BE7-98B9-E3BE830FC693}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C626495-5576-4BE7-98B9-E3BE830FC693}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
