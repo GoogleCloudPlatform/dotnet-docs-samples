@@ -7,8 +7,8 @@
     <ProjectGuid>{184A2C47-B141-4FA3-926C-B0C0CAAB09E3}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>cloudstorage</RootNamespace>
-    <AssemblyName>cloudstorage</AssemblyName>
+    <RootNamespace>GoogleCloudSamples</RootNamespace>
+    <AssemblyName>storage</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -112,6 +112,12 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\util\SamplesUtil.csproj">
+      <Project>{6c626495-5576-4be7-98b9-e3be830fc693}</Project>
+      <Name>SamplesUtil</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
