@@ -7,8 +7,8 @@
     <ProjectGuid>{7D442745-0D75-4681-96DB-AFB545734912}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BigQueryUtil</RootNamespace>
-    <AssemblyName>BigQueryUtil</AssemblyName>
+    <RootNamespace>GoogleCloudSamples</RootNamespace>
+    <AssemblyName>BigqueryUtil</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
