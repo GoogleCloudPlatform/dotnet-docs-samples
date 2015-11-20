@@ -13,26 +13,28 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 using Google.Apis.Bigquery.v2;
 using Google.Apis.Bigquery.v2.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace test
+namespace GoogleCloudSamples
 {
     [TestClass]
     public class Test
     {
-        private static string _countUniqueWordsQuery =
+        private static readonly string s_countUniqueWordsQuery =
             "SELECT TOP(corpus, 10) as title, COUNT(*) as unique_words " +
                     "FROM [publicdata:samples.shakespeare]";
 
-        private static string _projectId =
+        private static readonly string s_projectId =
             System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        private static BigqueryService _bigquery =
-            BigQuery.Util.CreateAuthorizedClient();
+        private static readonly BigqueryUtil s_util = new BigqueryUtil();
+        private static readonly BigqueryService s_bigquery =
+            s_util.CreateAuthorizedClient();
 
         private static bool IsShakespeare(IEnumerable<TableRow> rows)
         {
@@ -54,57 +56,56 @@ namespace test
         public void TestGetRows()
         {
             var query = new Google.Apis.Bigquery.v2.JobsResource.QueryRequest(
-                _bigquery, new Google.Apis.Bigquery.v2.Data.QueryRequest()
-            {
-                Query = _countUniqueWordsQuery,
-                MaxResults = 3,  // Small pages to test the paging code.
-            }, _projectId).Execute();
+                s_bigquery, new Google.Apis.Bigquery.v2.Data.QueryRequest()
+                {
+                    Query = s_countUniqueWordsQuery,
+                    MaxResults = 3,  // Small pages to test the paging code.
+                }, s_projectId).Execute();
             Assert.IsTrue(query.JobComplete ?? false);
-            var rows = BigQuery.Util.GetRows(_bigquery, query.JobReference, 3);
+            var rows = s_util.GetRows(query.JobReference, 3);
             Assert.IsTrue(IsShakespeare(rows));
         }
 
         [TestMethod]
         public void TestSyncQuery10Seconds()
         {
-            Assert.IsTrue(IsShakespeare(BigQuery.Util.SyncQuery(_bigquery, _projectId,
-                _countUniqueWordsQuery, 10000)));
+            Assert.IsTrue(IsShakespeare(s_util.SyncQuery(s_projectId,
+                s_countUniqueWordsQuery, 10000)));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(BigQuery.Util.TimeoutException))]
+        [ExpectedException(typeof(BigqueryUtil.TimeoutException))]
         public void TestSyncQueryTimeout()
         {
-            BigQuery.Util.SyncQuery(_bigquery, _projectId, _countUniqueWordsQuery, 1);
+            s_util.SyncQuery(s_projectId, s_countUniqueWordsQuery, 1);
         }
 
         [TestMethod]
         public void TestAsyncQuery()
         {
-            Job job = BigQuery.Util.AsyncQuery(_bigquery, _projectId, _countUniqueWordsQuery,
-                false);
-            var request = new JobsResource.GetRequest(_bigquery, _projectId,
+            Job job = s_util.AsyncQuery(s_projectId,
+                s_countUniqueWordsQuery, false);
+            var request = new JobsResource.GetRequest(s_bigquery, s_projectId,
                 job.JobReference.JobId);
-            job = BigQuery.Util.PollJob(request, 2000);
-            var rows = BigQuery.Util.GetRows(_bigquery, job.JobReference);
+            job = s_util.PollJob(request, 2000);
+            var rows = s_util.GetRows(job.JobReference);
             Assert.IsTrue(IsShakespeare(rows));
         }
 
         [TestMethod]
         public void TestListDatasets()
         {
-            var datasets = BigQuery.Util.ListDatasets(_bigquery, _projectId);
-            Trace.WriteLine("Datasets for " + _projectId + ":");
+            var datasets = s_util.ListDatasets(s_projectId);
+            Trace.WriteLine("Datasets for " + s_projectId + ":");
             foreach (var dataset in datasets)
                 Trace.WriteLine(dataset.FriendlyName);
             Trace.WriteLine("");
-            // TODO: Set up a project with datasets and Assert something about them here.
         }
 
         [TestMethod]
         public void TestListProjects()
         {
-            var projects = BigQuery.Util.ListProjects(_bigquery);
+            var projects = s_util.ListProjects();
             Trace.WriteLine("Projects:");
             int count = 0;
             foreach (var project in projects)

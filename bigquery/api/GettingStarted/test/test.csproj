@@ -123,9 +123,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BigQuery.csproj">
+    <ProjectReference Include="..\BigquerySample.csproj">
       <Project>{d56b4007-704d-4e1e-8c73-b976030d0885}</Project>
-      <Name>BigQuery</Name>
+      <Name>BigquerySample</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -18,16 +18,18 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Google.Apis.Bigquery.v2.Data;
 
-namespace BQTest
+namespace GoogleCloudSamples
 {
     /// <summary>
     /// Tests the BigQuery code in GettingStarted.
     /// 
     /// How to run:
     /// 1. Set the environment variables:
-    ///    GOOGLE_PROJECT_ID = your project id displayed on the Google Developers Console.
-    ///    GOOGLE_APPLICATION_CREDENTIALS = path to the .json file you downloaded from the
-    ///      Google Developers Console.
+    ///    GOOGLE_PROJECT_ID = your project id displayed on the Google
+    ///                        Developers Console.
+    ///    GOOGLE_APPLICATION_CREDENTIALS = path to the .json file you
+    ///                                     downloaded from the
+    ///                                     Google Developers Console.
     /// 2. MSTest /testcontainer:test.dll   
     /// </summary>
     [TestClass]
@@ -36,11 +38,12 @@ namespace BQTest
         [TestMethod]
         public void TestShakespeare()
         {
-            var bigquery = BQSample.Program.CreateAuthorizedClientAsync().Result;
-            var rows = BQSample.Program.ExecuteQueryAsync(
+            var sample = new BigquerySample();
+            var bigquery = sample.CreateAuthorizedClient();
+            var rows = sample.ExecuteQuery(
                 "SELECT TOP(corpus, 10) as title, COUNT(*) as unique_words " +
                 "FROM [publicdata:samples.shakespeare]", bigquery,
-                System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID")).Result;
+                System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"));
 
             // Make sure the results look like shakespeare.
             bool foundKingLear = false;
