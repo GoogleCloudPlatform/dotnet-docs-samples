@@ -6,7 +6,7 @@
     <ProjectGuid>{5B9CAC69-3488-419C-9452-97514A6D3A33}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>test</RootNamespace>
+    <RootNamespace>GoogleCloudSamples</RootNamespace>
     <AssemblyName>test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -127,9 +127,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\pubsub.csproj">
+    <ProjectReference Include="..\PubSubSample.csproj">
       <Project>{184a2c47-b141-4fa3-926c-b0c0caab09e3}</Project>
-      <Name>pubsub</Name>
+      <Name>PubSubSample</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

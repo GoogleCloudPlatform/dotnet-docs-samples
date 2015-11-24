@@ -14,11 +14,11 @@
  * the License.
  */
 
-namespace PubSubSample
-{
-  using Microsoft.AspNet.Builder;
-  using Microsoft.Framework.DependencyInjection;
+using Microsoft.AspNet.Builder;
+using Microsoft.Framework.DependencyInjection;
 
+namespace GoogleCloudSamples.PushMessageEndpointSample
+{
   public class Startup
   {
     public void ConfigureServices(IServiceCollection services)

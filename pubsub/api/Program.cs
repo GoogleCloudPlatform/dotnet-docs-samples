@@ -18,9 +18,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace PubSubSample
+namespace GoogleCloudSamples
 {
-    public class Program
+    public class PubSubProgram
     {
         public static void Main(string[] args)
         {
@@ -56,43 +56,43 @@ namespace PubSubSample
             switch (command)
             {
                 case "ListTopics":
-                    new ListTopicsSample().ListTopics(projectId);
+                    new PubSubSample().ListTopics(projectId);
                     break;
 
                 case "ListSubscriptions":
-                    new ListSubscriptionsSample().ListSubscriptions(projectId);
+                    new PubSubSample().ListSubscriptions(projectId);
                     break;
 
                 case "CreateTopic":
-                    new CreateTopicSample().CreateTopic(projectId,
+                    new PubSubSample().CreateTopic(projectId,
                       topicName: args[0]
                     );
                     break;
 
                 case "CreateSubscription":
-                    new CreateSubscriptionSample().CreateSubscription(projectId,
+                    new PubSubSample().CreateSubscription(projectId,
                       topicName: args[0],
                       subscriptionName: args[1]
                     );
                     break;
 
                 case "PublishMessage":
-                    new PublishMessageSample().PublishMessage(projectId,
+                    new PubSubSample().PublishMessage(projectId,
                       topicName: args[0],
                       message: args[1]
                     );
                     break;
 
                 case "Pull":
-                    new PullSample().Pull(projectId, subscriptionName: args[0]);
+                    new PubSubSample().Pull(projectId, subscriptionName: args[0]);
                     break;
 
                 case "GetTopicPolicy":
-                    new GetTopicPolicySample().GetTopicPolicy(projectId, topicName: args[0]);
+                    new PubSubSample().GetTopicPolicy(projectId, topicName: args[0]);
                     break;
 
                 case "GetSubscriptionPolicy":
-                    new GetSubscriptionPolicySample().GetSubscriptionPolicy(projectId, subscriptionName: args[0]);
+                    new PubSubSample().GetSubscriptionPolicy(projectId, subscriptionName: args[0]);
                     break;
 
                 case "SetTopicPolicy":
@@ -108,7 +108,7 @@ namespace PubSubSample
                         topicRolesAndMembers[roleName] = memberNames;
                     }
 
-                    new SetTopicPolicySample().SetTopicPolicy(projectId,
+                    new PubSubSample().SetTopicPolicy(projectId,
                       topicName: topicName,
                       rolesAndMembers: topicRolesAndMembers
                     );
@@ -127,21 +127,21 @@ namespace PubSubSample
                         subscriptionRolesAndMembers[roleName] = memberNames;
                     }
 
-                    new SetSubscriptionPolicySample().SetSubscriptionPolicy(projectId,
+                    new PubSubSample().SetSubscriptionPolicy(projectId,
                       subscriptionName: subscriptionName,
                       rolesAndMembers: subscriptionRolesAndMembers
                     );
                     break;
 
                 case "TestTopicPermissions":
-                    new TestTopicPermissionsSample().TestTopicPermissions(projectId,
+                    new PubSubSample().TestTopicPermissions(projectId,
                       topicName: args[0],
                       permissions: args.Skip(1).ToArray()
                     );
                     break;
 
                 case "TestSubscriptionPermissions":
-                    new TestSubscriptionPermissionsSample().TestSubscriptionPermissions(projectId,
+                    new PubSubSample().TestSubscriptionPermissions(projectId,
                       subscriptionName: args[0],
                       permissions: args.Skip(1).ToArray()
                     );

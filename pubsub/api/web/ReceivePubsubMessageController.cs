@@ -23,58 +23,59 @@
       -Body '{"subscription":"SubscriptionName","message":{"message_id":"1234","data":"SGVsbG8gd29ybGQ=","attributes":{"attr2":"value1","attr2":"value2"}}}'
  */
 
-// [START receive_push_message]
 using Microsoft.AspNet.Mvc;
 using System.Collections.Generic;
 
-public class Message
+namespace GoogleCloudSamples.PushMessageEndpointSample
 {
-  public string Data;
-  public string Message_Id;
-  public IDictionary<string, string> Attributes;
-
-  public string Text
-  {
-    get
+    public class Message
     {
-      return System.Text.Encoding.UTF8.GetString(
-        System.Convert.FromBase64String(Data)
-      );
+        public string Data;
+        public string Message_Id;
+        public IDictionary<string, string> Attributes;
+
+        public string Text
+        {
+            get
+            {
+                return System.Text.Encoding.UTF8.GetString(
+                  System.Convert.FromBase64String(Data)
+                );
+            }
+        }
     }
-  }
+
+    public class PushMessage
+    {
+        public Message Message;
+        public string Subscription;
+    }
+
+    [Route("/")]
+    public class ReceivePubsubMessageController : Controller
+    {
+        [HttpPost]
+        public string ReceiveMessage([FromBody] PushMessage pushMessage)
+        {
+            System.Console.WriteLine("HI THERE");
+            System.Diagnostics.Trace.WriteLine("HI THERE - TRACE");
+
+            // 200x
+            HttpContext.Response.StatusCode = 200;
+
+            if (pushMessage == null)
+                return "NULL PUSH MESSAGE!!";
+
+            var message = pushMessage.Message;
+
+            var output = $"Received Message Id: {message.Message_Id}\n" +
+                         $"Text: {message.Text}\n" +
+                         $"From Subscription: {pushMessage.Subscription}\n";
+
+            foreach (var attributeName in message.Attributes.Keys)
+                output += $"Attribute {attributeName} = {message.Attributes[attributeName]}\n";
+
+            return output;
+        }
+    }
 }
-
-public class PushMessage
-{
-  public Message Message;
-  public string Subscription;
-}
-
-[Route("/")]
-public class ReceivePubsubMessageController : Controller
-{
-  [HttpPost]
-  public string ReceiveMessage([FromBody] PushMessage pushMessage)
-  {
-    System.Console.WriteLine("HI THERE");
-    System.Diagnostics.Trace.WriteLine("HI THERE - TRACE");
-
-    // 200x
-    HttpContext.Response.StatusCode = 200;
-
-    if (pushMessage == null)
-      return "NULL PUSH MESSAGE!!";
-
-    var message = pushMessage.Message;
-
-    var output = $"Received Message Id: {message.Message_Id}\n" +
-                 $"Text: {message.Text}\n" +
-                 $"From Subscription: {pushMessage.Subscription}\n";
-
-    foreach (var attributeName in message.Attributes.Keys)
-      output += $"Attribute {attributeName} = {message.Attributes[attributeName]}\n";
-
-    return output;
-  }
-}
-// [END receive_push_message]

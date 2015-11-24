@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pubsub", "pubsub.csproj", "{184A2C47-B141-4FA3-926C-B0C0CAAB09E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSubSample", "PubSubSample.csproj", "{184A2C47-B141-4FA3-926C-B0C0CAAB09E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{5B9CAC69-3488-419C-9452-97514A6D3A33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSubSampleTests", "test\PubSubSampleTests.csproj", "{5B9CAC69-3488-419C-9452-97514A6D3A33}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "web", "web\web.xproj", "{8332E739-3283-4647-863E-3A1BD50E5FA8}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PushMessageEndpointSample", "web\PushMessageEndpointSample.xproj", "{8332E739-3283-4647-863E-3A1BD50E5FA8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "web_test", "web_test\web_test.xproj", "{61052CB0-5451-428B-AC93-3FA209A2ED13}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PushMessageEndpointSampleTests", "web_test\PushMessageEndpointSampleTests.xproj", "{61052CB0-5451-428B-AC93-3FA209A2ED13}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B607422-89C3-4A39-BF5A-D4EFD647FC8F}"
+	ProjectSection(SolutionItems) = preProject
+		web\global.json = web\global.json
+		web_test\global.json = web_test\global.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

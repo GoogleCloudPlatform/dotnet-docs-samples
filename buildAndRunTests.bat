@@ -1,7 +1,7 @@
 SETLOCAL
-SET MSBUILD="%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe"
-SET NUGET="%ProgramFiles(x86)%\MSBuild\14.0\Bin\Nuget.exe"
-SET MSTEST="%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\Common7\IDE\MSTest.exe"
+SET MSBUILD="MSBuild.exe"
+SET NUGET="Nuget.exe"
+SET MSTEST="MSTest.exe"
 REM Dump the environment variables.
 SET FAILED=0
 SET

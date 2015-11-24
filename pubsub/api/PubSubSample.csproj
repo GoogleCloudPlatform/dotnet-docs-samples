@@ -7,8 +7,8 @@
     <ProjectGuid>{184A2C47-B141-4FA3-926C-B0C0CAAB09E3}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>pubsub</RootNamespace>
-    <AssemblyName>pubsub</AssemblyName>
+    <RootNamespace>GoogleCloudSamples</RootNamespace>
+    <AssemblyName>PubSubSample</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -108,19 +108,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreateSubscription.cs" />
-    <Compile Include="SetSubscriptionPolicy.cs" />
-    <Compile Include="TestSubscriptionPermissions.cs" />
-    <Compile Include="TestTopicPermissions.cs" />
-    <Compile Include="SetTopicPolicy.cs" />
-    <Compile Include="GetTopicPolicy.cs" />
-    <Compile Include="GetSubscriptionPolicy.cs" />
-    <Compile Include="Pull.cs" />
-    <Compile Include="PublishMessage.cs" />
-    <Compile Include="ListSubscriptions.cs" />
-    <Compile Include="PubSubClient.cs" />
-    <Compile Include="CreateTopic.cs" />
-    <Compile Include="ListTopics.cs" />
+    <Compile Include="PubSubSample.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

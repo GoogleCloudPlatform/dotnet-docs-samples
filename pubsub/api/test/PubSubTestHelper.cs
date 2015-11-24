@@ -18,100 +18,103 @@ using System.Collections.Generic;
 using Google.Apis.Pubsub.v1;
 using Google.Apis.Pubsub.v1.Data;
 
-public class PubSubTestHelper
+namespace GoogleCloudSamples
 {
-    public string ProjectID = System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    public string ProjectResource { get { return $"projects/{ProjectID}"; } }
-    public PubsubService Pubsub = PubSubSample.PubSubClient.Create();
-
-    public void DeleteAllSubscriptions()
+    public class PubSubTestHelper
     {
-        var subscriptionsResponse = Pubsub.Projects.Subscriptions.List(ProjectResource).Execute();
-        if (subscriptionsResponse.Subscriptions != null)
-            foreach (var subscription in subscriptionsResponse.Subscriptions)
-                Pubsub.Projects.Subscriptions.Delete(subscription.Name).Execute();
-    }
+        public string ProjectID = System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public string ProjectResource { get { return $"projects/{ProjectID}"; } }
+        public PubsubService Pubsub = new PubSubSample().CreatePubSubClient();
 
-    public void DeleteAllTopics()
-    {
-        var topicsResponse = Pubsub.Projects.Topics.List(ProjectResource).Execute();
-        if (topicsResponse.Topics != null)
-            foreach (var topic in topicsResponse.Topics)
-                Pubsub.Projects.Topics.Delete(topic.Name).Execute();
-    }
-
-    public void CreateTopic(string name)
-    {
-        Pubsub.Projects.Topics.Create(new Topic() { Name = name }, $"{ProjectResource}/topics/{name}").Execute();
-    }
-
-    public void CreateSubscription(string topic, string name)
-    {
-        var subscription = new Subscription() { Name = name, Topic = $"{ProjectResource}/topics/{topic}" };
-        Pubsub.Projects.Subscriptions.Create(subscription, $"{ProjectResource}/subscriptions/{name}").Execute();
-    }
-
-    public List<string> PullMessages(string subscription)
-    {
-        var messages = new List<string>();
-        var response = Pubsub.Projects.Subscriptions.Pull(
-          new PullRequest() { MaxMessages = 100, ReturnImmediately = true },
-          $"{ProjectResource}/subscriptions/{subscription}"
-        ).Execute();
-
-        foreach (var message in response.ReceivedMessages)
+        public void DeleteAllSubscriptions()
         {
-            messages.Add(
-              System.Text.Encoding.UTF8.GetString(
-                System.Convert.FromBase64String(message.Message.Data)
-              )
-            );
+            var subscriptionsResponse = Pubsub.Projects.Subscriptions.List(ProjectResource).Execute();
+            if (subscriptionsResponse.Subscriptions != null)
+                foreach (var subscription in subscriptionsResponse.Subscriptions)
+                    Pubsub.Projects.Subscriptions.Delete(subscription.Name).Execute();
         }
 
-        return messages;
-    }
+        public void DeleteAllTopics()
+        {
+            var topicsResponse = Pubsub.Projects.Topics.List(ProjectResource).Execute();
+            if (topicsResponse.Topics != null)
+                foreach (var topic in topicsResponse.Topics)
+                    Pubsub.Projects.Topics.Delete(topic.Name).Execute();
+        }
 
-    public void PublishMessage(string topic, string message)
-    {
-        var base64 = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(message));
+        public void CreateTopic(string name)
+        {
+            Pubsub.Projects.Topics.Create(new Topic() { Name = name }, $"{ProjectResource}/topics/{name}").Execute();
+        }
 
-        Pubsub.Projects.Topics.Publish(
-          new PublishRequest() { Messages = new[] { new PubsubMessage() { Data = base64 } } },
-          $"{ProjectResource}/topics/{topic}"
-        ).Execute();
-    }
+        public void CreateSubscription(string topic, string name)
+        {
+            var subscription = new Subscription() { Name = name, Topic = $"{ProjectResource}/topics/{topic}" };
+            Pubsub.Projects.Subscriptions.Create(subscription, $"{ProjectResource}/subscriptions/{name}").Execute();
+        }
 
-    public void SetTopicPolicy(string topic, IDictionary<string, string[]> roleMembers)
-    {
-        var bindings = new List<Binding>();
-        foreach (var role in roleMembers.Keys)
-            bindings.Add(new Binding() { Role = role, Members = roleMembers[role] });
+        public List<string> PullMessages(string subscription)
+        {
+            var messages = new List<string>();
+            var response = Pubsub.Projects.Subscriptions.Pull(
+              new PullRequest() { MaxMessages = 100, ReturnImmediately = true },
+              $"{ProjectResource}/subscriptions/{subscription}"
+            ).Execute();
 
-        Pubsub.Projects.Topics.SetIamPolicy(
-          new SetIamPolicyRequest() { Policy = new Policy() { Bindings = bindings } },
-          $"{ProjectResource}/topics/{topic}"
-        ).Execute();
-    }
+            foreach (var message in response.ReceivedMessages)
+            {
+                messages.Add(
+                  System.Text.Encoding.UTF8.GetString(
+                    System.Convert.FromBase64String(message.Message.Data)
+                  )
+                );
+            }
 
-    public void SetSubscriptionPolicy(string subscription, IDictionary<string, string[]> roleMembers)
-    {
-        var bindings = new List<Binding>();
-        foreach (var role in roleMembers.Keys)
-            bindings.Add(new Binding() { Role = role, Members = roleMembers[role] });
+            return messages;
+        }
 
-        Pubsub.Projects.Subscriptions.SetIamPolicy(
-          new SetIamPolicyRequest() { Policy = new Policy() { Bindings = bindings } },
-          $"{ProjectResource}/subscriptions/{subscription}"
-        ).Execute();
-    }
+        public void PublishMessage(string topic, string message)
+        {
+            var base64 = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(message));
 
-    public Policy GetTopicPolicy(string topic)
-    {
-        return Pubsub.Projects.Topics.GetIamPolicy($"{ProjectResource}/topics/{topic}").Execute();
-    }
+            Pubsub.Projects.Topics.Publish(
+              new PublishRequest() { Messages = new[] { new PubsubMessage() { Data = base64 } } },
+              $"{ProjectResource}/topics/{topic}"
+            ).Execute();
+        }
 
-    public Policy GetSubscriptionPolicy(string subscription)
-    {
-        return Pubsub.Projects.Subscriptions.GetIamPolicy($"{ProjectResource}/subscriptions/{subscription}").Execute();
+        public void SetTopicPolicy(string topic, IDictionary<string, string[]> roleMembers)
+        {
+            var bindings = new List<Binding>();
+            foreach (var role in roleMembers.Keys)
+                bindings.Add(new Binding() { Role = role, Members = roleMembers[role] });
+
+            Pubsub.Projects.Topics.SetIamPolicy(
+              new SetIamPolicyRequest() { Policy = new Policy() { Bindings = bindings } },
+              $"{ProjectResource}/topics/{topic}"
+            ).Execute();
+        }
+
+        public void SetSubscriptionPolicy(string subscription, IDictionary<string, string[]> roleMembers)
+        {
+            var bindings = new List<Binding>();
+            foreach (var role in roleMembers.Keys)
+                bindings.Add(new Binding() { Role = role, Members = roleMembers[role] });
+
+            Pubsub.Projects.Subscriptions.SetIamPolicy(
+              new SetIamPolicyRequest() { Policy = new Policy() { Bindings = bindings } },
+              $"{ProjectResource}/subscriptions/{subscription}"
+            ).Execute();
+        }
+
+        public Policy GetTopicPolicy(string topic)
+        {
+            return Pubsub.Projects.Topics.GetIamPolicy($"{ProjectResource}/topics/{topic}").Execute();
+        }
+
+        public Policy GetSubscriptionPolicy(string subscription)
+        {
+            return Pubsub.Projects.Subscriptions.GetIamPolicy($"{ProjectResource}/subscriptions/{subscription}").Execute();
+        }
     }
 }
