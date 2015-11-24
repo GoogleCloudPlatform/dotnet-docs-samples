@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigQueryUtil", "BigQueryUtil.csproj", "{7D442745-0D75-4681-96DB-AFB545734912}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigqueryUtil", "BigqueryUtil.csproj", "{7D442745-0D75-4681-96DB-AFB545734912}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{20F223D4-10FE-4CD7-BC54-13D45E9992C3}"
 	ProjectSection(ProjectDependencies) = postProject

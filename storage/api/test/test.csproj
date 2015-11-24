@@ -6,7 +6,7 @@
     <ProjectGuid>{5B9CAC69-3488-419C-9452-97514A6D3A33}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>test</RootNamespace>
+    <RootNamespace>GoogleCloudSamples</RootNamespace>
     <AssemblyName>test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

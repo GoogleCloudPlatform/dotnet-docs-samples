@@ -119,9 +119,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BigQueryUtil.csproj">
+    <ProjectReference Include="..\BigqueryUtil.csproj">
       <Project>{7d442745-0d75-4681-96db-afb545734912}</Project>
-      <Name>BigQueryUtil</Name>
+      <Name>BigqueryUtil</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

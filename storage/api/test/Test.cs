@@ -13,21 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-using System;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace test
+namespace GoogleCloudSamples
 {
     /// <summary>
     /// Tests the cloudstorage sample.
-    /// 
+    ///
     /// How to run:
     /// 1. Set the environment variables:
-    ///    GOOGLE_PROJECT_ID = your project id displayed on the Google Developers Console.
-    ///    GOOGLE_APPLICATION_CREDENTIALS = path to the .json file you downloaded from the
-    ///      Google Developers Console.
+    ///    GOOGLE_PROJECT_ID = your project id displayed on the Google
+    ///                        Developers Console.
+    ///    GOOGLE_APPLICATION_CREDENTIALS = path to the .json file you
+    ///                                     downloaded from the
+    ///                                     Google Developers Console.
     ///    GOOGLE_BUCKET = the name of your bucket in Google Cloud Storage.
-    /// 2. MSTest /testcontainer:test.dll   
+    /// 2. MSTest /testcontainer:GoogleCloudSamples.dll
     [TestClass]
     public class Test
     {
@@ -35,10 +37,11 @@ namespace test
         public void TestRun()
         {
             // Just observe that it doesn't throw an exception.
-            new GCSSearch.Program().Run(
-                GCSSearch.Program.GetApplicationDefaultCredentialsAsync(),
+            var sample = new StorageSample();
+            sample.Run(
+                sample.GetApplicationDefaultCredentials(),
                 System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
-                System.Environment.GetEnvironmentVariable("GOOGLE_BUCKET")).Wait();
+                System.Environment.GetEnvironmentVariable("GOOGLE_BUCKET"));
         }
     }
 }

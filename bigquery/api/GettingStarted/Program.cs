@@ -14,6 +14,7 @@
  * the License.
  */
 // [START all]
+
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Bigquery.v2;
 using Google.Apis.Bigquery.v2.Data;
@@ -22,22 +23,30 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace BQSample
+namespace GoogleCloudSamples
 {
-    public class Program
+    public class BigquerySample
     {
+        const string usage = @"Usage:
+BigquerySample <project_id>
+";
         // [START build_service]
         /// <summary>
-        /// Creates an authorized Bigquery client service using Application Default Credentials.
+        /// Creates an authorized Bigquery client service using Application
+        /// Default Credentials.
         /// </summary>
         /// <returns>an authorized Bigquery client</returns>
-        public static async Task<BigqueryService> CreateAuthorizedClientAsync()
+        public BigqueryService CreateAuthorizedClient()
         {
-            GoogleCredential credential = await GoogleCredential.GetApplicationDefaultAsync();
+            GoogleCredential credential =
+                GoogleCredential.GetApplicationDefaultAsync().Result;
             // Inject the Bigquery scope if required.
             if (credential.IsCreateScopedRequired)
             {
-                credential = credential.CreateScoped(new[] { BigqueryService.Scope.Bigquery });
+                credential = credential.CreateScoped(new[]
+                {
+                    BigqueryService.Scope.Bigquery
+                });
             }
             return new BigqueryService(new BaseClientService.Initializer()
             {
@@ -53,26 +62,27 @@ namespace BQSample
         /// </summary>
         /// <param name="querySql">the query to execute.</param>
         /// <param name="bigquery">the BigquerService object.</param>
-        /// <param name="projectId">the id of the project under which to run the query.</param>
+        /// <param name="projectId">the id of the project under which to run the
+        /// query.</param>
         /// <returns>a list of the results of the query.</returns>
-        public static async Task<IList<TableRow>> ExecuteQueryAsync(
-            string querySql, BigqueryService bigquery, string projectId)
+        public IList<TableRow> ExecuteQuery(string querySql,
+            BigqueryService bigquery, string projectId)
         {
             var request = new Google.Apis.Bigquery.v2.JobsResource.QueryRequest(
                 bigquery, new Google.Apis.Bigquery.v2.Data.QueryRequest()
                 {
                     Query = querySql,
                 }, projectId);
-            var query = await request.ExecuteAsync();
-            GetQueryResultsResponse queryResult = await
-                bigquery.Jobs.GetQueryResults(projectId, query.JobReference.JobId).ExecuteAsync();
+            var query = request.Execute();
+            GetQueryResultsResponse queryResult = bigquery.Jobs.GetQueryResults(
+                projectId, query.JobReference.JobId).Execute();
             return queryResult.Rows;
         }
         // [END run_query]
 
         // [START print_results]
         /// <summary>Prints the results to standard out.</summary>
-        public static void PrintResults(IList<TableRow> rows)
+        public void PrintResults(IList<TableRow> rows)
         {
             Console.Write("\nQuery Results:\n------------\n");
             foreach (TableRow row in rows)
@@ -88,27 +98,32 @@ namespace BQSample
 
         private static void Main(string[] args)
         {
+            SamplesUtil.InvokeMain(() =>
+            {
+                var sample = new BigquerySample();
+                sample.MainFunction(args);
+            });
+        }
+
+        void MainFunction(string[] args)
+        {
+            BigquerySample sample = new BigquerySample();
             string projectId = null;
             if (args.Length == 0)
             {
-                // Prompt the user to enter the id of the project to run the queries under
-                Console.Write("Enter the project ID: ");
-                projectId = Console.ReadLine().Trim();
+                Console.WriteLine(usage);
+                return;
             }
-            else
-            {
-                projectId = args[0];
-            }
-            // Create a new Bigquery client authorized via Application Default Credentials.
-            BigqueryService bigquery = CreateAuthorizedClientAsync().Result;
+            projectId = args[0];
+            // Create a new Bigquery client authorized via Application Default 
+            // Credentials.
+            BigqueryService bigquery = sample.CreateAuthorizedClient();
 
-            IList<TableRow> rows = ExecuteQueryAsync(
+            IList<TableRow> rows = sample.ExecuteQuery(
                 "SELECT TOP(corpus, 10) as title, COUNT(*) as unique_words " +
-                "FROM [publicdata:samples.shakespeare]", bigquery, projectId).Result;
+                "FROM [publicdata:samples.shakespeare]", bigquery, projectId);
 
-            PrintResults(rows);
-            Console.WriteLine("Press any key...");
-            Console.ReadKey();
+            sample.PrintResults(rows);
         }
     }
 }
