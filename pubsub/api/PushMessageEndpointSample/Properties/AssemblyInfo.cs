@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("web_test")]
+[assembly: AssemblyTitle("PushMessageEndpointSample")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Google Inc")]
@@ -36,4 +36,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("61052cb0-5451-428b-ac93-3fa209a2ed13")]
+[assembly: Guid("8332e739-3283-4647-863e-3a1bd50e5fa8")]

@@ -15,20 +15,23 @@
  */
 
 using Microsoft.AspNet.Builder;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.AspNet.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GoogleCloudSamples.PushMessageEndpointSample
 {
-  public class Startup
-  {
-    public void ConfigureServices(IServiceCollection services)
+    public class Startup
     {
-      services.AddMvc();
-    }
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvc();
+        }
 
-    public void Configure(IApplicationBuilder app)
-    {
-      app.UseMvc();
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseMvc();
+        }
+
+        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
-  }
 }

@@ -20,7 +20,9 @@ CD ..\..\..\storage\api
 
 CD ..\..\pubsub\api
 %NUGET% restore
-%MSBUILD% && %MSTEST% /testcontainer:test\bin\debug\test.dll || SET FAILED=1
+%MSBUILD% pubsub.sln && %MSTEST% /testcontainer:PubSubSampleTests\bin\debug\test.dll || SET FAILED=1
+
+REM Run the Xunit tests too!
 
 @ECHO OFF
 IF %FAILED% NEQ 0 GOTO failed_case

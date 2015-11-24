@@ -40,7 +40,7 @@ namespace GoogleCloudSamples
             "}");
             pushRequestBody.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            var server = new TestServer(TestServer.CreateBuilder().UseStartup("web"));
+            var server = new TestServer(TestServer.CreateBuilder().UseStartup("PushMessageEndpointSample"));
             var client = server.CreateClient();
             var response = client.PostAsync("/", pushRequestBody).Result;
 
