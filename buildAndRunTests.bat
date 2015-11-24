@@ -1,7 +1,7 @@
 SETLOCAL
-SET MSBUILD="%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe"
-SET NUGET="%ProgramFiles(x86)%\MSBuild\14.0\Bin\Nuget.exe"
-SET MSTEST="%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\Common7\IDE\MSTest.exe"
+SET MSBUILD="MSBuild.exe"
+SET NUGET="Nuget.exe"
+SET MSTEST="MSTest.exe"
 REM Dump the environment variables.
 SET FAILED=0
 SET
@@ -17,6 +17,12 @@ CD ..\GettingStarted
 CD ..\..\..\storage\api
 %NUGET% restore
 %MSBUILD% && %MSTEST% /testcontainer:test\bin\debug\test.dll || SET FAILED=1
+
+CD ..\..\pubsub\api
+%NUGET% restore
+%MSBUILD% pubsub.sln && %MSTEST% /testcontainer:PubSubSampleTests\bin\debug\test.dll || SET FAILED=1
+
+REM Run the Xunit tests too!
 
 @ECHO OFF
 IF %FAILED% NEQ 0 GOTO failed_case
