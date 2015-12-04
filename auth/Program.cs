@@ -14,6 +14,7 @@
  * the License.
  */
 // [START all]
+
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Storage.v1;
 using Google.Apis.Storage.v1.Data;
@@ -25,7 +26,7 @@ namespace GoogleCloudSamples
 {
     public class AuthSample
     {
-        const string usage = @"Usage:AuthSample <bucket_name>";
+        private const string usage = @"Usage:AuthSample <bucket_name>";
         // [START build_service]
         /// <summary>
         /// Creates an authorized Cloud Storage client service using Application 
@@ -34,12 +35,12 @@ namespace GoogleCloudSamples
         /// <returns>an authorized Cloud Storage client.</returns>
         public static async Task<StorageService> CreateAuthorizedClientAsync()
         {
-            GoogleCredential credential = 
+            GoogleCredential credential =
                 await GoogleCredential.GetApplicationDefaultAsync();
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
-                credential = credential.CreateScoped(new[] 
+                credential = credential.CreateScoped(new[]
                 {
                     StorageService.Scope.DevstorageReadOnly
                 });
@@ -61,8 +62,8 @@ namespace GoogleCloudSamples
         public static async Task<Objects> ExecuteApiRequestAsync(
             StorageService storage, string bucket)
         {
-            var request = new 
-                Google.Apis.Storage.v1.ObjectsResource.ListRequest(storage, 
+            var request = new
+                Google.Apis.Storage.v1.ObjectsResource.ListRequest(storage,
                 bucket);
             var requestResult = await request.ExecuteAsync();
             return requestResult;
@@ -78,7 +79,7 @@ namespace GoogleCloudSamples
             });
         }
 
-        void MainFunction(string[] args)
+        private void MainFunction(string[] args)
         {
             AuthSample sample = new AuthSample();
             string bucket = null;
@@ -115,7 +116,7 @@ namespace GoogleCloudSamples
                         Console.WriteLine(
                             resultsList.Current.TimeCreated.ToString());
                         Console.WriteLine();
-                    } 
+                    }
                 }
             }
             catch (Exception ex)
@@ -123,11 +124,11 @@ namespace GoogleCloudSamples
                 if (ex is AggregateException || ex is NullReferenceException)
                 {
                     // No contents found for given bucket
-                    Console.WriteLine("No contents found for given bucket. " 
+                    Console.WriteLine("No contents found for given bucket. "
                         + "Sign in to the Google Developers Console");
                     Console.WriteLine(
                         "at: https://console.developers.google.com/storage ");
-                    Console.WriteLine("to confirm your bucket name is valid " 
+                    Console.WriteLine("to confirm your bucket name is valid "
                         + "and to upload some files to your bucket.");
                 }
             }
