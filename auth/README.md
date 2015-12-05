@@ -2,7 +2,7 @@
 
 A sample demonstrating how to authenticate with Google's APIs using Application Default Credentials
 [Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials)
-from C#. The sample authenticates and then makes an API request to the Compute Engine API.
+from C#. The sample authenticates and then makes an API request to the Cloud Storage API.
 
 
 See our other [Google Cloud Platform github
@@ -27,7 +27,7 @@ scaffolding for other frameworks and use cases.
     ```sh
     git clone https://github.com/GoogleCloudPlatform/csharp-docs-samples
     ```
-4.  Open csharp-docs-samples/auth/OAuth2.sln with
+4.  Open csharp-docs-samples/auth/AuthSample.sln with
     Microsoft Visual Studio version 2012 or later.
 5.  Build the Solution.
 6.  Run it locally by pressing F5 or choosing "Debug -> Start Debugging" from
