@@ -42,11 +42,9 @@ namespace AuthTest
             var bucket = Environment.GetEnvironmentVariable(
                 "GOOGLE_CLOUD_STORAGE_BUCKET"
                 );
-            StorageService storage =
-                GoogleCloudSamples.AuthSample
-                .CreateAuthorizedClientAsync().Result;
-            var result = GoogleCloudSamples.AuthSample
-                .ExecuteApiRequestAsync(storage, bucket).Result;
+            var sample = new GoogleCloudSamples.AuthSample();
+            StorageService storage = sample.CreateAuthorizedClient();
+            var result = sample.ExecuteApiRequest(storage, bucket);
 
             // Make sure the result is a valid list of Cloud Storage objects
             bool isStorageObjectsList = false;

@@ -26,17 +26,17 @@ namespace GoogleCloudSamples
 {
     public class AuthSample
     {
-        private const string usage = @"Usage:AuthSample <bucket_name>";
+        const string usage = @"Usage:AuthSample <bucket_name>";
         // [START build_service]
         /// <summary>
         /// Creates an authorized Cloud Storage client service using Application 
         /// Default Credentials.
         /// </summary>
         /// <returns>an authorized Cloud Storage client.</returns>
-        public static async Task<StorageService> CreateAuthorizedClientAsync()
+        public StorageService CreateAuthorizedClient()
         {
             GoogleCredential credential =
-                await GoogleCredential.GetApplicationDefaultAsync();
+                GoogleCredential.GetApplicationDefaultAsync().Result;
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
@@ -59,13 +59,13 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="bucket">the name of the Cloud Storage bucket.</param>
         ///<returns>a list of the contents of the specified bucket.</returns>
-        public static async Task<Objects> ExecuteApiRequestAsync(
+        public Objects ExecuteApiRequest(
             StorageService storage, string bucket)
         {
             var request = new
                 Google.Apis.Storage.v1.ObjectsResource.ListRequest(storage,
                 bucket);
-            var requestResult = await request.ExecuteAsync();
+            var requestResult = request.Execute();
             return requestResult;
         }
         // [END list_storage_bucket_contents]
@@ -79,7 +79,7 @@ namespace GoogleCloudSamples
             });
         }
 
-        private void MainFunction(string[] args)
+        void MainFunction(string[] args)
         {
             AuthSample sample = new AuthSample();
             string bucket = null;
@@ -91,13 +91,13 @@ namespace GoogleCloudSamples
             bucket = args[0];
             // Create a new Cloud Storage client authorized via Application 
             // Default Credentials
-            StorageService storage = CreateAuthorizedClientAsync().Result;
+            StorageService storage = CreateAuthorizedClient();
 
             try
             {
                 // Use the Cloud Storage client to get a list of objects for the
                 // given bucket name
-                Objects result = ExecuteApiRequestAsync(storage, bucket).Result;
+                Objects result = ExecuteApiRequest(storage, bucket);
 
                 // Get enumerator to loop through list of objects
                 var resultsList = result.Items.GetEnumerator();
@@ -121,7 +121,8 @@ namespace GoogleCloudSamples
             }
             catch (Exception ex)
             {
-                if (ex is AggregateException || ex is NullReferenceException)
+                if (ex is NullReferenceException ||
+                    ex is Google.GoogleApiException)
                 {
                     // No contents found for given bucket
                     Console.WriteLine("No contents found for given bucket. "
