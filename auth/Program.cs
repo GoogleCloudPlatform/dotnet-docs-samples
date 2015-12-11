@@ -59,7 +59,7 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="bucket">the name of the Cloud Storage bucket.</param>
         ///<returns>a list of the contents of the specified bucket.</returns>
-        public Objects ExecuteApiRequest(
+        public Objects ListBucketContents(
             StorageService storage, string bucket)
         {
             var request = new
@@ -97,7 +97,7 @@ namespace GoogleCloudSamples
             {
                 // Use the Cloud Storage client to get a list of objects for the
                 // given bucket name
-                Objects result = ExecuteApiRequest(storage, bucket);
+                Objects result = ListBucketContents(storage, bucket);
 
                 // Get enumerator to loop through list of objects
                 var resultsList = result.Items.GetEnumerator();

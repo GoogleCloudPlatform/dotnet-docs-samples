@@ -44,7 +44,7 @@ namespace AuthTest
                 );
             var sample = new GoogleCloudSamples.AuthSample();
             StorageService storage = sample.CreateAuthorizedClient();
-            var result = sample.ExecuteApiRequest(storage, bucket);
+            var result = sample.ListBucketContents(storage, bucket);
 
             // Make sure the result is a valid list of Cloud Storage objects
             bool isStorageObjectsList = false;
