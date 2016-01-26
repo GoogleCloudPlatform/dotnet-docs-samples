@@ -84,7 +84,7 @@ namespace GoogleCloudSamples
 
                 foreach (var topic in topics)
                 {
-                    Console.WriteLine($"Found topics: {topic.Name}");
+                    Console.WriteLine($"Found topic: {topic.Name}");
                 }
             }
         }
