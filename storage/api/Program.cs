@@ -21,19 +21,14 @@
  * https://cloud.google.com/storage/docs/json_api/v1/json-api-dotnet-samples
  */
 
-// [START all]
-
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Download;
-using Google.Apis.Http;
 using Google.Apis.Services;
 using Google.Apis.Storage.v1;
 using Google.Apis.Storage.v1.Data;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading;
 
 namespace GoogleCloudSamples
 {
@@ -41,53 +36,27 @@ namespace GoogleCloudSamples
     {
         const string Usage = @"
 Usage:
-  storage [--askForCredentials] project_id bucket_name
-
-Pass the flag --askForCredentials to use Installed Application Credentials
-instead of Application Default Credentials.
+  storage project_id bucket_name
 ";
 
         static void Main(string[] args)
         {
             SamplesUtil.InvokeMain(() =>
             {
-                var sample = new StorageSample();
-                sample.MainFunction(args);
+                if (args.Length < 2)
+                {
+                    Console.Out.Write(Usage);
+                    return;
+                }
+                new StorageSample().Run(args[0], args[1]);
             });
         }
 
-        void MainFunction(string[] args)
-        {
-            // Choose auth mechanism based on command-line flag.
-            int flagIndex =
-                Array.FindIndex(args, arg => "--askForCredentials" == arg);
-            IConfigurableHttpClientInitializer credentials;
-            if (flagIndex >= 0)
-            {
-                credentials = GetInstalledApplicationCredentials();
-                var argList = new List<string>(args);
-                argList.RemoveAt(flagIndex);
-                args = argList.ToArray();
-            }
-            else
-            {
-                credentials = GetApplicationDefaultCredentials();
-            }
-            if (args.Length != 2)
-            {
-                Console.Write(Usage);
-            }
-            else
-            {
-                Run(credentials, args[0], args[1]);
-            }
-        }
+        // [START all]
+        const int KB = 0x400;
+        const int DownloadChunkSize = 256 * KB;
 
-        private const int KB = 0x400;
-        private const int DownloadChunkSize = 256 * KB;
-
-        public IConfigurableHttpClientInitializer
-            GetApplicationDefaultCredentials()
+        public void Run(string projectId, string bucketName)
         {
             GoogleCredential credential =
                 GoogleCredential.GetApplicationDefaultAsync().Result;
@@ -97,30 +66,7 @@ instead of Application Default Credentials.
                     StorageService.Scope.DevstorageReadWrite
                 });
             }
-            return credential;
-        }
 
-        public IConfigurableHttpClientInitializer
-            GetInstalledApplicationCredentials()
-        {
-            var secrets = new ClientSecrets
-            {
-                // Replace these values with your own to use Installed
-                // Application Credentials.
-                // Pass --askForCredentials on the command line.
-                // See https://developers.google.com/identity/protocols/OAuth2#installed
-                ClientId = "YOUR_CLIENT_ID.apps.googleusercontent.com",
-                ClientSecret = "YOUR_CLIENT_SECRET"
-            };
-            return GoogleWebAuthorizationBroker.AuthorizeAsync(
-                secrets, new[] { StorageService.Scope.DevstorageFullControl },
-                Environment.UserName, new CancellationTokenSource().Token)
-                .Result;
-        }
-
-        public void Run(IConfigurableHttpClientInitializer credential,
-            string projectId, string bucketName)
-        {
             StorageService service = new StorageService(
                 new BaseClientService.Initializer()
                 {
@@ -201,7 +147,6 @@ instead of Application Default Credentials.
             }
             Console.WriteLine("=============================");
         }
+        // [END all]
     }
 }
-
-// [END all]
