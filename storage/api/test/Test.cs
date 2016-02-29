@@ -39,7 +39,6 @@ namespace GoogleCloudSamples
             // Just observe that it doesn't throw an exception.
             var sample = new StorageSample();
             sample.Run(
-                sample.GetApplicationDefaultCredentials(),
                 System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
                 System.Environment.GetEnvironmentVariable("GOOGLE_BUCKET"));
         }
