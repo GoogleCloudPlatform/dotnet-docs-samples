@@ -33,14 +33,6 @@ namespace GoogleCloudSamples
     [TestClass]
     public class Test
     {
-        [TestMethod]
-        public void TestRun()
-        {
-            // Just observe that it doesn't throw an exception.
-            var sample = new StorageSample();
-            sample.Run(
-                System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
-                System.Environment.GetEnvironmentVariable("GOOGLE_BUCKET"));
-        }
+        // TODO implement tests for new simplified sample
     }
 }
