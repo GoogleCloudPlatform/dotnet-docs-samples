@@ -97,7 +97,6 @@ namespace GoogleCloudSamples
                 stream: uploadStream,
                 contentType: "text/plain",
                 body: new Google.Apis.Storage.v1.Data.Object() { Name = "text-file.txt" }
-
             ).Upload();
 
             Console.WriteLine("Uploaded text-file.txt");
