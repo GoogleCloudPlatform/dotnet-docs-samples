@@ -66,5 +66,58 @@ namespace GoogleCloudSamples
             }
         }
         // [END list_buckets]
+
+        // [START list_objects]
+        public void ListObjects(string bucketName)
+        {
+            StorageService storage = CreateStorageClient();
+
+            var objects = storage.Objects.List(bucketName).Execute();
+
+            if (objects.Items != null)
+            {
+                foreach (var obj in objects.Items)
+                {
+                    Console.WriteLine($"Object: {obj.Name}");
+                }
+            }
+        }
+        // [END list_objects]
+
+        // [START upload_stream]
+        public void UploadStream(string bucketName)
+        {
+            StorageService storage = CreateStorageClient();
+
+            var content = "My text object content";
+            var uploadStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+            storage.Objects.Insert(
+                bucket: bucketName,
+                stream: uploadStream,
+                contentType: "text/plain",
+                body: new Google.Apis.Storage.v1.Data.Object() { Name = "text-file.txt" }
+
+            ).Upload();
+
+            Console.WriteLine("Uploaded text-file.txt");
+        }
+        // [END upload_stream]
+
+        // [START download_stream]
+        public void DownloadStream(string bucketName)
+        {
+            StorageService storage = CreateStorageClient();
+
+            using (var stream = new MemoryStream())
+            {
+                storage.Objects.Get(bucketName, "text-file.txt").Download(stream);
+
+                var content = Encoding.UTF8.GetString(stream.GetBuffer());
+
+                Console.WriteLine($"Downloaded text-file.txt with content: {content}");
+            }
+        }
+        // [END download_stream]
     }
 }

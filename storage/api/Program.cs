@@ -40,24 +40,30 @@ namespace GoogleCloudSamples
         {
             Console.WriteLine(@"Usage: StorageSample.exe [command] [args]
        ListBuckets
-       ...........                 [name]
+       ListObjects      [bucket name]
+       UploadStream     [bucket name]
+       DownloadStream   [bucket name]
 ");
         }
 
         private static void RunCommand(string command, string[] args)
         {
             var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
-            if (string.IsNullOrEmpty(projectId))
-            {
-                Console.WriteLine("GOOGLE_PROJECT_ID environment variable needs to be set");
-                return;
-            }
+            var bucketName = Environment.GetEnvironmentVariable("GOOGLE_BUCKET");
 
             switch (command)
             {
                 case "ListBuckets":
                     new StorageSample().ListBuckets(projectId);
+                    break;
+                case "ListObjects":
+                    new StorageSample().ListObjects(bucketName);
+                    break;
+                case "UploadStream":
+                    new StorageSample().UploadStream(bucketName);
+                    break;
+                case "DownloadStream":
+                    new StorageSample().DownloadStream(bucketName);
                     break;
                 default:
                     Console.WriteLine($"Command not found: {command}");

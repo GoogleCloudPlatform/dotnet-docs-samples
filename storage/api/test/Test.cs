@@ -28,11 +28,13 @@ namespace GoogleCloudSamples
     ///    GOOGLE_APPLICATION_CREDENTIALS = path to the .json file you
     ///                                     downloaded from the
     ///                                     Google Developers Console.
-    ///    GOOGLE_BUCKET = the name of your bucket in Google Cloud Storage.
     /// 2. MSTest /testcontainer:GoogleCloudSamples.dll
     [TestClass]
     public class Test
     {
         // TODO implement tests for new simplified sample
+
+        // TODO mock the bucket and project name used so that samples can display 
+        //      "my-project" and "my-bucket" instead of using method parameters
     }
 }
