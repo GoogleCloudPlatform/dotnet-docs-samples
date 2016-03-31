@@ -39,15 +39,17 @@ namespace GoogleCloudSamples
         private static void PrintUsage()
         {
             Console.WriteLine(@"Usage: StorageSample.exe [command]
-       ListBuckets
-       ListObjects
-       UploadStream
-       DownloadStream
-       DeleteObject
-
-         Required environment variables:
-            GOOGLE_PROJECT_ID     The ID of Google Developers Console project
-            GOOGLE_BUCKET         The name of Google Cloud Storage bucket
+            
+       Commands:
+         ListBuckets
+         ListObjects
+         UploadStream
+         DownloadStream
+         DeleteObject
+       
+       Environment variables:
+         GOOGLE_PROJECT_ID     The ID of Google Developers Console project
+         GOOGLE_BUCKET         The name of Google Cloud Storage bucket
 ");
         }
 
