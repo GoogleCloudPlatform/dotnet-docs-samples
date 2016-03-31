@@ -27,7 +27,6 @@ using System.Text;
 
 using Google.Apis.Services;
 using Google.Apis.Storage.v1;
-using Google.Apis.Download;
 
 namespace GoogleCloudSamples
 {

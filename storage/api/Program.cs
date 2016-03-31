@@ -43,6 +43,7 @@ namespace GoogleCloudSamples
        ListObjects
        UploadStream
        DownloadStream
+       DeleteObject
 
          Required environment variables:
             GOOGLE_PROJECT_ID     The ID of Google Developers Console project
