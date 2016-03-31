@@ -38,11 +38,15 @@ namespace GoogleCloudSamples
 
         private static void PrintUsage()
         {
-            Console.WriteLine(@"Usage: StorageSample.exe [command] [args]
+            Console.WriteLine(@"Usage: StorageSample.exe [command]
        ListBuckets
-       ListObjects      [bucket name]
-       UploadStream     [bucket name]
-       DownloadStream   [bucket name]
+       ListObjects
+       UploadStream
+       DownloadStream
+
+         Required environment variables:
+            GOOGLE_PROJECT_ID     The ID of Google Developers Console project
+            GOOGLE_BUCKET         The name of Google Cloud Storage bucket
 ");
         }
 
@@ -64,6 +68,9 @@ namespace GoogleCloudSamples
                     break;
                 case "DownloadStream":
                     new StorageSample().DownloadStream(bucketName);
+                    break;
+                case "DeleteObject":
+                    new StorageSample().DeleteObject(bucketName);
                     break;
                 default:
                     Console.WriteLine($"Command not found: {command}");

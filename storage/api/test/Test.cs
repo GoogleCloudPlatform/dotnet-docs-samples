@@ -14,27 +14,106 @@
  * the License.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.IO;
+using System.Text;
+using Xunit;
 
 namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Tests the cloudstorage sample.
-    ///
-    /// How to run:
-    /// 1. Set the environment variables:
-    ///    GOOGLE_PROJECT_ID = your project id displayed on the Google
-    ///                        Developers Console.
-    ///    GOOGLE_APPLICATION_CREDENTIALS = path to the .json file you
-    ///                                     downloaded from the
-    ///                                     Google Developers Console.
-    /// 2. MSTest /testcontainer:GoogleCloudSamples.dll
-    [TestClass]
-    public class Test
+    public class StorageSampleTest
     {
-        // TODO implement tests for new simplified sample
+        /// <summary>Runs StorageSample.exe with the provided arguments</summary>
+        /// <returns>The console output of this program</returns>
+        public string Run(params string[] arguments)
+        {
+            var standardOut = Console.Out;
+            
+            using (var output = new StringWriter())
+            {
+                Console.SetOut(output);
 
-        // TODO mock the bucket and project name used so that samples can display 
-        //      "my-project" and "my-bucket" instead of using method parameters
+                try
+                {
+                    StorageProgram.Main(arguments);
+                    return output.ToString();
+                }
+                finally
+                {
+                    Console.SetOut(standardOut);
+                }
+            }
+        }
+
+        [Fact]
+        public void CommandLinePrintsUsageTest()
+        {
+            Assert.Contains(
+                "Usage: StorageSample.exe [command]",
+                Run()
+            );
+        }
+
+        [Fact]
+        public void ListBucketsTest()
+        {
+            var bucketName = Environment.GetEnvironmentVariable("GOOGLE_BUCKET");
+
+            Assert.Contains(
+                $"Bucket: {bucketName}",
+                Run("ListBuckets")
+            );
+        }
+
+        [Fact]
+        public void ListObjectsTest()
+        {
+            Run("UploadStream");
+
+            Assert.Contains(
+                "Object: my-file.txt",
+                Run("ListObjects")
+            );
+        }
+
+        [Fact]
+        public void UploadAndDownloadStreamTest()
+        {
+            if (Run("ListObjects").Contains("Object: my-file.txt"))
+            {
+                Run("DeleteObject");
+            }
+
+            Assert.Contains(
+                "Uploaded my-file.txt",
+                Run("UploadStream")
+            );
+
+            Assert.Contains(
+                "Downloaded my-file.txt with content: My text object content",
+                Run("DownloadStream")
+            );
+        }
+
+        [Fact]
+        public void DeleteObjectTest()
+        {
+            Run("UploadStream");
+
+            Assert.Contains(
+                "Object: my-file.txt",
+                Run("ListObjects")
+            );
+
+            Assert.Contains(
+                "Deleted my-file.txt",
+                Run("DeleteObject")
+            );
+
+            Assert.DoesNotContain(
+                "Object: my-file.txt",
+                Run("ListObjects")
+            );
+        }
     }
 }

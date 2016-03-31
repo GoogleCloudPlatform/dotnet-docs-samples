@@ -21,14 +21,13 @@
  * https://cloud.google.com/storage/docs/json_api/v1/json-api-dotnet-samples
  */
 
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Download;
-using Google.Apis.Services;
-using Google.Apis.Storage.v1;
-using Google.Apis.Storage.v1.Data;
 using System;
 using System.IO;
 using System.Text;
+
+using Google.Apis.Services;
+using Google.Apis.Storage.v1;
+using Google.Apis.Download;
 
 namespace GoogleCloudSamples
 {
@@ -38,7 +37,11 @@ namespace GoogleCloudSamples
         public StorageService CreateStorageClient()
         {
             var credentials = Google.Apis.Auth.OAuth2.GoogleCredential.GetApplicationDefaultAsync().Result;
-            credentials = credentials.CreateScoped(new[] { StorageService.Scope.DevstorageFullControl });
+
+            if (credentials.IsCreateScopedRequired)
+            {
+                credentials = credentials.CreateScoped(new[] { StorageService.Scope.DevstorageFullControl });
+            }
 
             var serviceInitializer = new BaseClientService.Initializer()
             {
@@ -96,10 +99,10 @@ namespace GoogleCloudSamples
                 bucket: bucketName,
                 stream: uploadStream,
                 contentType: "text/plain",
-                body: new Google.Apis.Storage.v1.Data.Object() { Name = "text-file.txt" }
+                body: new Google.Apis.Storage.v1.Data.Object() { Name = "my-file.txt" }
             ).Upload();
 
-            Console.WriteLine("Uploaded text-file.txt");
+            Console.WriteLine("Uploaded my-file.txt");
         }
         // [END upload_stream]
 
@@ -110,13 +113,24 @@ namespace GoogleCloudSamples
 
             using (var stream = new MemoryStream())
             {
-                storage.Objects.Get(bucketName, "text-file.txt").Download(stream);
+                storage.Objects.Get(bucketName, "my-file.txt").Download(stream);
 
                 var content = Encoding.UTF8.GetString(stream.GetBuffer());
 
-                Console.WriteLine($"Downloaded text-file.txt with content: {content}");
+                Console.WriteLine($"Downloaded my-file.txt with content: {content}");
             }
         }
         // [END download_stream]
+
+        // [START delete_object]
+        public void DeleteObject(string bucketName)
+        {
+            StorageService storage = CreateStorageClient();
+
+            storage.Objects.Delete(bucketName, "my-file.txt").Execute();
+
+            Console.WriteLine("Deleted my-file.txt");
+        }
+        // [END delete_object]
     }
 }
