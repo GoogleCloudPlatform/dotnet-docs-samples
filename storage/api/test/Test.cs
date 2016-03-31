@@ -114,5 +114,30 @@ namespace GoogleCloudSamples
                 Run("ListObjects")
             );
         }
+
+        [Fact]
+        public void DownloadToFileTest()
+        {
+            Run("UploadStream");
+
+            if (File.Exists("downloaded-file.txt"))
+            {
+                File.Delete("downloaded-file.txt");
+            }
+
+            Assert.False(File.Exists("downloaded-file.txt"));
+
+            Assert.Contains(
+                "Downloaded my-file.txt to downloaded-file.txt",
+                Run("DownloadToFile")    
+            );
+
+            Assert.True(File.Exists("downloaded-file.txt"));
+
+            Assert.Equal(
+                "My text object content",
+                File.ReadAllText("downloaded-file.txt")
+            );
+        }
     }
 }

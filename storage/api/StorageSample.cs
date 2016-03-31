@@ -27,6 +27,7 @@ using System.Text;
 
 using Google.Apis.Services;
 using Google.Apis.Storage.v1;
+using Google.Apis.Download;
 
 namespace GoogleCloudSamples
 {
@@ -131,5 +132,31 @@ namespace GoogleCloudSamples
             Console.WriteLine("Deleted my-file.txt");
         }
         // [END delete_object]
+
+        // [START media_downloader]
+        public void DownloadToFile(string bucketName)
+        {
+            StorageService storage = CreateStorageClient();
+
+            var objectToDownload = storage.Objects.Get(bucketName, "my-file.txt").Execute();
+
+            var downloader = new MediaDownloader(storage);
+
+            downloader.ProgressChanged += progress =>
+            {
+                Console.WriteLine($"{progress.Status} {progress.BytesDownloaded} bytes");
+            };
+
+            using (var fileStream = new FileStream("downloaded-file.txt", FileMode.Create))
+            {
+                var progress = downloader.Download(objectToDownload.MediaLink, fileStream);
+
+                if (progress.Status == DownloadStatus.Completed)
+                {
+                    Console.WriteLine("Downloaded my-file.txt to downloaded-file.txt");
+                }
+            }
+        }
+        // [END media_downloader]
     }
 }

@@ -44,6 +44,7 @@ namespace GoogleCloudSamples
        UploadStream
        DownloadStream
        DeleteObject
+       DownloadToFile
 
          Required environment variables:
             GOOGLE_PROJECT_ID     The ID of Google Developers Console project
@@ -72,6 +73,9 @@ namespace GoogleCloudSamples
                     break;
                 case "DeleteObject":
                     new StorageSample().DeleteObject(bucketName);
+                    break;
+                case "DownloadToFile":
+                    new StorageSample().DownloadToFile(bucketName);
                     break;
                 default:
                     Console.WriteLine($"Command not found: {command}");
