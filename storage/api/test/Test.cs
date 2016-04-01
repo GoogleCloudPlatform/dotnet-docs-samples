@@ -14,34 +14,130 @@
  * the License.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.IO;
+using Xunit;
 
 namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Tests the cloudstorage sample.
-    ///
-    /// How to run:
-    /// 1. Set the environment variables:
-    ///    GOOGLE_PROJECT_ID = your project id displayed on the Google
-    ///                        Developers Console.
-    ///    GOOGLE_APPLICATION_CREDENTIALS = path to the .json file you
-    ///                                     downloaded from the
-    ///                                     Google Developers Console.
-    ///    GOOGLE_BUCKET = the name of your bucket in Google Cloud Storage.
-    /// 2. MSTest /testcontainer:GoogleCloudSamples.dll
-    [TestClass]
-    public class Test
+    public class StorageSampleTest
     {
-        [TestMethod]
-        public void TestRun()
+        /// <summary>Runs StorageSample.exe with the provided arguments</summary>
+        /// <returns>The console output of this program</returns>
+        public string Run(params string[] arguments)
         {
-            // Just observe that it doesn't throw an exception.
-            var sample = new StorageSample();
-            sample.Run(
-                sample.GetApplicationDefaultCredentials(),
-                System.Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
-                System.Environment.GetEnvironmentVariable("GOOGLE_BUCKET"));
+            var standardOut = Console.Out;
+            
+            using (var output = new StringWriter())
+            {
+                Console.SetOut(output);
+
+                try
+                {
+                    StorageProgram.Main(arguments);
+                    return output.ToString();
+                }
+                finally
+                {
+                    Console.SetOut(standardOut);
+                }
+            }
+        }
+
+        [Fact]
+        public void CommandLinePrintsUsageTest()
+        {
+            Assert.Contains(
+                "Usage: StorageSample.exe [command]",
+                Run()
+            );
+        }
+
+        [Fact]
+        public void ListBucketsTest()
+        {
+            var bucketName = Environment.GetEnvironmentVariable("GOOGLE_BUCKET");
+
+            Assert.Contains(
+                $"Bucket: {bucketName}",
+                Run("ListBuckets")
+            );
+        }
+
+        [Fact]
+        public void ListObjectsTest()
+        {
+            Run("UploadStream");
+
+            Assert.Contains(
+                "Object: my-file.txt",
+                Run("ListObjects")
+            );
+        }
+
+        [Fact]
+        public void UploadAndDownloadStreamTest()
+        {
+            if (Run("ListObjects").Contains("Object: my-file.txt"))
+            {
+                Run("DeleteObject");
+            }
+
+            Assert.Contains(
+                "Uploaded my-file.txt",
+                Run("UploadStream")
+            );
+
+            Assert.Contains(
+                "Downloaded my-file.txt with content: My text object content",
+                Run("DownloadStream")
+            );
+        }
+
+        [Fact]
+        public void DeleteObjectTest()
+        {
+            Run("UploadStream");
+
+            Assert.Contains(
+                "Object: my-file.txt",
+                Run("ListObjects")
+            );
+
+            Assert.Contains(
+                "Deleted my-file.txt",
+                Run("DeleteObject")
+            );
+
+            Assert.DoesNotContain(
+                "Object: my-file.txt",
+                Run("ListObjects")
+            );
+        }
+
+        [Fact]
+        public void DownloadToFileTest()
+        {
+            Run("UploadStream");
+
+            if (File.Exists("downloaded-file.txt"))
+            {
+                File.Delete("downloaded-file.txt");
+            }
+
+            Assert.False(File.Exists("downloaded-file.txt"));
+
+            Assert.Contains(
+                "Downloaded my-file.txt to downloaded-file.txt",
+                Run("DownloadToFile")    
+            );
+
+            Assert.True(File.Exists("downloaded-file.txt"));
+
+            Assert.Equal(
+                "My text object content",
+                File.ReadAllText("downloaded-file.txt")
+            );
         }
     }
 }
