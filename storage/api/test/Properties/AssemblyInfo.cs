@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Google Inc")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright © Google Inc 2015")]
+[assembly: AssemblyCopyright("Copyright \u00A9 Google Inc 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

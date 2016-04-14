@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
         public string Run(params string[] arguments)
         {
             var standardOut = Console.Out;
-            
+
             using (var output = new StringWriter())
             {
                 Console.SetOut(output);
@@ -129,7 +129,7 @@ namespace GoogleCloudSamples
 
             Assert.Contains(
                 "Downloaded my-file.txt to downloaded-file.txt",
-                Run("DownloadToFile")    
+                Run("DownloadToFile")
             );
 
             Assert.True(File.Exists("downloaded-file.txt"));
