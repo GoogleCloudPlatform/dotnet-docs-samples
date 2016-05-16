@@ -1,10 +1,11 @@
-# Cloud Storage Sample
+# BigQuery Sample
 
-A sample demonstrating how to invoke Google Cloud Storage from C#.
+A sample demonstrating how to invoke BigQuery from C#.
 
 ## Links
 
-- [Cloud Storage Reference Docs](https://developers.google.com/api-client-library/dotnet/apis/storage/v1)
+- [What is BigQuery?](https://cloud.google.com/bigquery/what-is-bigquery)
+- [BigQuery Reference Docs](https://developers.google.com/api-client-library/dotnet/apis/bigquery/v2)
 
 ## Build and Run
 
@@ -33,32 +34,22 @@ A sample demonstrating how to invoke Google Cloud Storage from C#.
     resources on Google Cloud Platform.
 
 4.  **Enable APIs for your project**.
-    [Click here](https://console.cloud.google.com/flows/enableapi?apiid=storage_api&showconfirmation=true)
-    to visit Cloud Platform Console and enable the Cloud Storage API.
+    [Click here](https://console.cloud.google.com/flows/enableapi?apiid=bigquery&showconfirmation=true)
+    to visit Cloud Platform Console and enable the BigQuery API.
 
-5.  **Create a Cloud Storage bucket for your project**.
-    Cloud Storage allows you to store and serve binary data.
-    A bucket is a high-level container for binary objects.
-    At a command prompt, type:
-
-    ```sh
-    C:\> gsutil mb gs://<your-project-id>
-    C:\> gsutil defacl set public-read gs://<your-project-id>
-    ```
-
-6.  Download or clone this repo with
+5.  Download or clone this repo with
 
     ```sh
     git clone https://github.com/GoogleCloudPlatform/dotnet-docs-samples
     ```
 
-6.  Open [storage.sln](storage.sln) with Microsoft Visual Studio version 2012 or later.
+6.  Open [GettingStarted/BigquerySample.sln](GettingStarted/BigquerySample.sln) with
+    Microsoft Visual Studio version 2012 or later.
 7.  Build the Solution.
-8.  From the command line, set environment variables and run:
+8.  Run it from the command line with your project id:
+
     ```sh
-    C:\...\bin\Debug> set GOOGLE_PROJECT_ID=your project id displayed on the Google Developers Console.
-    C:\...\bin\Debug> set GOOGLE_BUCKET=the name of the Google Cloud Storage bucket you created.
-    C:\...\bin\Debug> storage
+    C:\...\bin\Debug> GettingStarted my_project_id
     ```
 
 ## Contributing changes
