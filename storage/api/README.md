@@ -53,8 +53,11 @@ A sample demonstrating how to invoke Google Cloud Storage from C#.
     ```
 
 6.  Open [storage.sln](storage.sln) with Microsoft Visual Studio version 2012 or later.
+
 7.  Build the Solution.
+
 8.  From the command line, set environment variables and run:
+
     ```sh
     C:\...\bin\Debug> set GOOGLE_PROJECT_ID=your project id displayed on the Google Developers Console.
     C:\...\bin\Debug> set GOOGLE_BUCKET=the name of the Google Cloud Storage bucket you created.
