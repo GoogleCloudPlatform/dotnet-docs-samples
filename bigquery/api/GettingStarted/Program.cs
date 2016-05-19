@@ -97,33 +97,28 @@ BigquerySample <project_id>
         // [END print_results]
 
         private static void Main(string[] args)
-        {
-            SamplesUtil.InvokeMain(() =>
-            {
-                var sample = new BigquerySample();
-                sample.MainFunction(args);
-            });
-        }
-
-        void MainFunction(string[] args)
-        {
+        { 
             BigquerySample sample = new BigquerySample();
             string projectId = null;
             if (args.Length == 0)
             {
                 Console.WriteLine(usage);
-                return;
             }
-            projectId = args[0];
-            // Create a new Bigquery client authorized via Application Default 
-            // Credentials.
-            BigqueryService bigquery = sample.CreateAuthorizedClient();
+            else
+            {
+                projectId = args[0];
+                // Create a new Bigquery client authorized via Application Default 
+                // Credentials.
+                BigqueryService bigquery = sample.CreateAuthorizedClient();
 
-            IList<TableRow> rows = sample.ExecuteQuery(
-                "SELECT TOP(corpus, 10) as title, COUNT(*) as unique_words " +
-                "FROM [publicdata:samples.shakespeare]", bigquery, projectId);
+                IList<TableRow> rows = sample.ExecuteQuery(
+                    "SELECT TOP(corpus, 10) as title, COUNT(*) as unique_words " +
+                    "FROM [publicdata:samples.shakespeare]", bigquery, projectId);
 
-            sample.PrintResults(rows);
+                sample.PrintResults(rows);
+            }
+            Console.WriteLine("\nPress any key...");
+            Console.ReadKey();
         }
     }
 }
