@@ -97,7 +97,7 @@ BigquerySample <project_id>
         // [END print_results]
 
         private static void Main(string[] args)
-        { 
+        {
             BigquerySample sample = new BigquerySample();
             string projectId = null;
             if (args.Length == 0)

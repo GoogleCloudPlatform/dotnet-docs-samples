@@ -98,6 +98,13 @@ filter BuildSolution
     }
 }
 
+function Format-Code
+{
+    GetFiles -masks '*.csproj' | ForEach-Object {
+        codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis /rule-:ExplicitVisibility /rule:FieldNames /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation "/copyright:$(Join-Path $rootDir Copyright.txt)" $_.FullName
+    }
+}
+
 filter RunLint 
 {
     codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis /rule-:ExplicitVisibility /rule:FieldNames /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation /nocopyright $_.FullName
