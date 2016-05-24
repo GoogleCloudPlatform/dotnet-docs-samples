@@ -49,7 +49,7 @@ A sample demonstrating how to invoke BigQuery from C#.
 8.  Run it from the command line with your project id:
 
     ```sh
-    C:\...\bin\Debug> GettingStarted my_project_id
+    C:\...\bin\Debug> BigquerySample my_project_id
     ```
 
 ## Contributing changes
