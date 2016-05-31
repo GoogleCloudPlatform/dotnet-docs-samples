@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2016 Google Inc.
+ * Copyright (c) 2015 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -122,10 +122,13 @@ namespace GoogleCloudSamples
                 Console.WriteLine("Labels for image: " + imagePath);
                 // Loop through and output label annotations for the image
                 foreach (var response in result)
+                {
                     foreach (var label in response.LabelAnnotations)
+                    {
                         Console.WriteLine(label.Description + " (score:"
                         + label.Score + ")");
- 
+                    }
+                }
             }
             else
             {
