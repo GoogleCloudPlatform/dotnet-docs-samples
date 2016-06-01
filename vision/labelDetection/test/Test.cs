@@ -62,6 +62,5 @@ namespace GoogleCloudSamples
                 Assert.Fail();
             }
         }
-
     }
 }
