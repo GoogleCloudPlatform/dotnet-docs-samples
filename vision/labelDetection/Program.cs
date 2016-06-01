@@ -23,7 +23,6 @@ using Google.Apis.Vision.v1.Data;
 using System;
 using System.Collections.Generic;
 
-
 // [END import_libraries]
 
 namespace GoogleCloudSamples
@@ -86,7 +85,7 @@ namespace GoogleCloudSamples
                }
                 }).Execute();
             return responses.Responses;
-            // [START construct_request]
+            // [END construct_request]
         }
         // [END detect_labels]
 
