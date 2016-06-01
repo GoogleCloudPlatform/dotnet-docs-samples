@@ -92,15 +92,6 @@ namespace GoogleCloudSamples
         // [START run_application]
         private static void Main(string[] args)
         {
-            SamplesUtil.InvokeMain(() =>
-            {
-                var sample = new LabelDetectionSample();
-                sample.MainFunction(args);
-            });
-        }
-
-        void MainFunction(string[] args)
-        {
             LabelDetectionSample sample = new LabelDetectionSample();
             string imagePath = null;
             if (args.Length == 0)
@@ -111,10 +102,10 @@ namespace GoogleCloudSamples
             imagePath = args[0];
             // Create a new Cloud Vision client authorized via Application 
             // Default Credentials
-            VisionService vision = CreateAuthorizedClient();
+            VisionService vision = sample.CreateAuthorizedClient();
             // Use the client to get label annotations for the given image
             // [START parse_response]
-            IList<AnnotateImageResponse> result = DetectLabels(
+            IList<AnnotateImageResponse> result = sample.DetectLabels(
                 vision, imagePath);
             // Check if label annotations were found
             if (result != null)
