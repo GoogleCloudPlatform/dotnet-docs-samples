@@ -51,7 +51,7 @@ namespace GoogleCloudSamples
         [ExpectedException(typeof(System.NullReferenceException))]
         public void TestDetectLabelsForInvalidImage()
         {
-            var sample = new GoogleCloudSamples.LabelDetectionSample();;
+            var sample = new GoogleCloudSamples.LabelDetectionSample();
             VisionService vision = sample.CreateAuthorizedClient();
             // Confirm invalid image doesn't get labels and throws an exception 
             var result = sample.DetectLabels(vision, @"..\..\..\data\bad.txt");
