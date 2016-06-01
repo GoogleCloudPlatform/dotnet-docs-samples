@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2016 Google Inc.
+ * Copyright (c) 2015 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of  
@@ -16,6 +16,8 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Google.Apis.Vision.v1;
+using System.IO;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -37,9 +39,7 @@ namespace GoogleCloudSamples
         {
             var sample = new GoogleCloudSamples.LabelDetectionSample();
             VisionService vision = sample.CreateAuthorizedClient();
-            var result = sample.DetectLabels(vision, 
-                "..\\..\\..\\..\\..\\data\\cat.jpg");
-
+            var result = sample.DetectLabels(vision, @"..\..\..\data\cat.jpg");
             // Confirm that DetectLabels returns expected result for test image.
             var response = result[0];
             var label = response.LabelAnnotations[0];
@@ -51,11 +51,10 @@ namespace GoogleCloudSamples
         [ExpectedException(typeof(System.NullReferenceException))]
         public void TestDetectLabelsForInvalidImage()
         {
-            var sample = new GoogleCloudSamples.LabelDetectionSample();
+            var sample = new GoogleCloudSamples.LabelDetectionSample();;
             VisionService vision = sample.CreateAuthorizedClient();
             // Confirm invalid image doesn't get labels and throws an exception 
-            var result = sample.DetectLabels(vision, 
-                "..\\..\\..\\..\\..\\data\\bad.txt");
+            var result = sample.DetectLabels(vision, @"..\..\..\data\bad.txt");
             var response = result[0];
             var label = response.LabelAnnotations[0];
         }
