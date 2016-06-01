@@ -93,7 +93,7 @@ namespace GoogleCloudSamples
         private static void Main(string[] args)
         {
             LabelDetectionSample sample = new LabelDetectionSample();
-            string imagePath = null;
+            string imagePath;
             if (args.Length == 0)
             {
                 Console.WriteLine(usage);

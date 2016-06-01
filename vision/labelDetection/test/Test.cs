@@ -57,6 +57,10 @@ namespace GoogleCloudSamples
             var result = sample.DetectLabels(vision, @"..\..\..\data\bad.txt");
             var response = result[0];
             var label = response.LabelAnnotations[0];
+            if (!String.IsNullOrEmpty(label.Description))
+            {
+                Assert.Fail();
+            }
         }
 
     }
