@@ -10,6 +10,7 @@ The samples in this repo cover only a _small fraction_ of the total APIs that yo
  - [Auth](auth)
  - [Big Query](bigquery/api)
  - [Storage](storage/api)
+ - [Vision](vision/labelDetection)
 
 The [Auth](auth) sample will probably be useful no matter which API you call.
 
