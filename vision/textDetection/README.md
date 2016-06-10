@@ -41,9 +41,9 @@ A sample demonstrating how to invoke Cloud Vision text detection from C#.
         download its json credentials file, then set the appropriate environment
         variable:
 
-        ```sh
-        set GOOGLE_APPLICATION_CREDENTIALS=\path\to\your-project-credentials.json
-        ```
+    ```sh
+    set GOOGLE_APPLICATION_CREDENTIALS=\path\to\your-project-credentials.json
+    ```
 8.  Open [TextDetectionSample.sln](TextDetectionSample.sln) with Microsoft Visual Studio version 2012 or later.
 9.  Build the Solution.
 10.  From the command line, run:
