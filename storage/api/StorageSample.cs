@@ -134,7 +134,7 @@ namespace GoogleCloudSamples
 
             // Use the HttpClient in the storage object because it supplies all the
             // authentication headers we need.
-            var response = storage.HttpClient.SendAsync(request).Result;               
+            var response = storage.HttpClient.SendAsync(request).Result;
             var content = response.Content.ReadAsStringAsync().Result;
             Console.WriteLine($"Downloaded bytes 3-6 of my-file.txt with content: {content}");
         }
