@@ -47,6 +47,7 @@ namespace GoogleCloudSamples
     DownloadStream
     DeleteObject
     DownloadToFile
+    DownloadRange
        
   Environment variables:
     GOOGLE_PROJECT_ID     The ID of Google Developers Console project
@@ -78,6 +79,9 @@ namespace GoogleCloudSamples
                     break;
                 case "DownloadToFile":
                     new StorageSample().DownloadToFile(bucketName);
+                    break;
+                case "DownloadRange":
+                    new StorageSample().DownloadRange(bucketName);
                     break;
                 default:
                     Console.WriteLine($"Command not found: {command}");

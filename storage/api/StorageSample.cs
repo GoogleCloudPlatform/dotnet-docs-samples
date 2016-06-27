@@ -28,6 +28,7 @@ using System.Text;
 using Google.Apis.Services;
 using Google.Apis.Storage.v1;
 using Google.Apis.Download;
+using System.Net.Http;
 
 namespace GoogleCloudSamples
 {
@@ -121,6 +122,24 @@ namespace GoogleCloudSamples
             }
         }
         // [END download_stream]
+
+        // [START download_range]
+        public void DownloadRange(string bucketName)
+        {
+            // Create an HTTP request for the media, for a limited byte range.
+            StorageService storage = CreateStorageClient();
+            var uri = new Uri($"{storage.BaseUri}b/{bucketName}/o/my-file.txt?alt=media");
+            var request = new HttpRequestMessage() { RequestUri = uri };
+            request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(3, 6);
+
+            // Use the HttpClient in the storage object because it supplies all the
+            // authentication headers we need.
+            var response = storage.HttpClient.SendAsync(request).Result;               
+            var content = response.Content.ReadAsStringAsync().Result;
+            Console.WriteLine($"Downloaded bytes 3-6 of my-file.txt with content: {content}");
+        }
+        // [END download_range]
+
 
         // [START delete_object]
         public void DeleteObject(string bucketName)
