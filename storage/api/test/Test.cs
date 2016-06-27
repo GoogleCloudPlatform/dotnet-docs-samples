@@ -95,6 +95,25 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void UploadAndDownloadRangeTest()
+        {
+            if (Run("ListObjects").Contains("Object: my-file.txt"))
+            {
+                Run("DeleteObject");
+            }
+
+            Assert.Contains(
+                "Uploaded my-file.txt",
+                Run("UploadStream")
+            );
+
+            Assert.Contains(
+                "Downloaded bytes 3-6 of my-file.txt with content: text",
+                Run("DownloadRange")
+            );
+        }
+
+        [Fact]
         public void DeleteObjectTest()
         {
             Run("UploadStream");
