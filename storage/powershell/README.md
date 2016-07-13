@@ -1,6 +1,14 @@
 # Powershell Storage Sample
 
-Demonstrates how to copy files to and from Google Cloud Storage using powershell.
+The [Windows PowerShell cmdlets for the Google Cloud Platform]
+(http://googlecloudplatform.github.io/google-cloud-powershell/#/)
+let you upload, download, and delete objects from [Google Cloud Storage]
+[GCS].
+
+This sample is a larger application that recursively copies
+directories to and from [Google Cloud Storage][GCS].  In addition to
+showing you how to call cmdlets like `New-GcsObject`, it's also a
+really handy command line utility.
 
 ## Prerequisites
 
@@ -40,3 +48,5 @@ DESCRIPTION
 ## Testing
 
 * See [TESTING.md](../../TESTING.md)
+
+[GCS]: https://cloud.google.com/storage/docs/
