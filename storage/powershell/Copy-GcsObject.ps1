@@ -353,9 +353,6 @@ function Main {
 }
 
 if (Get-Command Find-GcsObject) {
-    # Synchronize the powershell current working directory and the .NET current
-    # working directory.
-    [System.IO.Directory]::SetCurrentDirectory((Get-Location).Path)
     Main
 } else {
     Write-Warning "Requires the Google Cloud SDK.  Download it from:
