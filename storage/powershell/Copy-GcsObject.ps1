@@ -46,6 +46,21 @@ param(
     [string][Parameter(Mandatory=$true)][ValidateNotNullOrEmpty()] $DestPath,
     [switch] $Force, [switch] $Recurse)
 
+# Google Cloud Storage has no concept of folder.  So to simulate having a
+# folder named foo, we create an empty file name foo_$folder$.  Many tools
+# use this convention.
+$SCRIPT:FOLDER_SUFFIX = '_$folder$'
+
+function Make-FolderName([string] $Path) {
+    if ($Path.EndsWith($SCRIPT:FOLDER_SUFFIX)) {
+        return $Path
+    }
+    if ($Path.EndsWith('/') -or $Path.EndsWith('\')) {
+        $Path = $Path.Substring(0, $Path.Length - 1);
+    }
+    return "$Path$SCRIPT:FOLDER_SUFFIX"
+}
+
 
 ##############################################################################
 #.SYNOPSIS
@@ -130,14 +145,14 @@ function Append-Slash([string] $Path, [string]$Slash = '\') {
 # The Cloud Storage object created.
 ##############################################################################
 function Make-GcsDirectory([string] $Path, [string] $Bucket, [switch] $Force) {
-    $dir = Append-Slash $Path '/'
+    $folder = Make-FolderName $Path
     if (-not $Force) {
-        $existing = Test-GcsObject -Bucket $Bucket -ObjectName $dir
+        $existing = Test-GcsObject -Bucket $Bucket -ObjectName $folder
         if ($existing -and $existing.Size -eq 0) {
             return # Directory already exists.
         }
     }
-    New-GcsObject -Bucket $Bucket -ObjectName $dir `
+    New-GcsObject -Bucket $Bucket -ObjectName $folder `
         -Contents "" -Force:$Force
 }
 
@@ -163,9 +178,10 @@ function Upload-Item([string] $SourcePath, [string] $DestPath,
     # destination directory already exist?  It takes a lot of logic
     # to match the behavior of cp and copy.
     $DestDir = Append-Slash $DestPath '/'
+    $DestFolder = Make-FolderName $DestPath
     if (Test-Path -Path $SourcePath -PathType Leaf) {
         # It's a file.
-        if (Test-GcsObject $Bucket $DestDir) {
+        if (Test-GcsObject $Bucket $DestFolder) {
             # Copying a single file to a directory.
             New-GcsObject -Bucket $Bucket `
                 -ObjectName "$DestDir$(Split-Path $SourcePath -Leaf)" `
@@ -181,7 +197,7 @@ function Upload-Item([string] $SourcePath, [string] $DestPath,
             throw [System.IO.FileNotFoundException] `
                 "Use the -Recurse flag to copy directories."
         }
-        if (Test-GcsObject $Bucket $DestDir) {
+        if (Test-GcsObject $Bucket $DestFolder) {
             # Copying a directory to an existing directory.
             $DestDir = "$DestDir$(Split-Path $SourcePath -Leaf)/"
         }
@@ -308,9 +324,10 @@ function Download-Dir([string] $SourcePath, [string] $DestPath,
         }
         $destFilePath = (Join-Path $DestPath $relPath)
         $DestDirPath = (Split-Path -Path $destFilePath)
-        if ($relPath.EndsWith('/')) {
+        if ($relPath.EndsWith($SCRIPT:FOLDER_SUFFIX)) {
             # It's a directory
-            New-Item -ItemType Directory -Force -Path $destFilePath
+            New-Item -ItemType Directory -Force -Path $destFilePath.Substring(
+                0, $destFilePath.Length - $SCRIPT:FOLDER_SUFFIX.Length)
         } else {
             # It's a file
             $DestDir = New-Item -ItemType Directory -Force -Path $DestDirPath
@@ -353,6 +370,9 @@ function Main {
 }
 
 if (Get-Command Find-GcsObject) {
+    # Synchronize the powershell current working directory and the .NET current
+    # working directory.
+    [System.IO.Directory]::SetCurrentDirectory((Get-Location).Path)
     Main
 } else {
     Write-Warning "Requires the Google Cloud SDK.  Download it from:
