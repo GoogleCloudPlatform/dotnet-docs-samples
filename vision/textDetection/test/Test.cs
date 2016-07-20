@@ -40,7 +40,7 @@ namespace GoogleCloudSamples
             var sample = new GoogleCloudSamples.TextDetectionSample();
             VisionService vision = sample.CreateAuthorizedClient();
             var result =
-                sample.DetectText(vision, @"..\..\..\data\succulents.jpg");
+                sample.DetectText(vision, @"..\..\..\test\data\succulents.jpg");
             // Confirm that DetectText returns expected result for test image.
             var response = result[0];
             var text = response.TextAnnotations[0];
@@ -55,7 +55,7 @@ namespace GoogleCloudSamples
             VisionService vision = sample.CreateAuthorizedClient();
             // Confirm text isn't found for image that contains no text. 
             var result = sample.DetectText(vision,
-                @"..\..\..\data\no-text.jpg");
+                @"..\..\..\test\data\no-text.jpg");
             if (result[0].Error == null)
             {
                 Assert.IsNull(result[0].TextAnnotations);
@@ -71,7 +71,7 @@ namespace GoogleCloudSamples
             // Confirm text isn't found for invalid image 
             // and that it throws an exception. 
             var result = sample.DetectText(vision,
-                @"..\..\..\data\not-an-image.txt");
+                @"..\..\..\test\data\not-an-image.txt");
             var response = result[0];
             var text = response.TextAnnotations[0];
             if (!String.IsNullOrEmpty(text.Description))

@@ -39,7 +39,7 @@ namespace GoogleCloudSamples
         {
             var sample = new GoogleCloudSamples.LabelDetectionSample();
             VisionService vision = sample.CreateAuthorizedClient();
-            var result = sample.DetectLabels(vision, @"..\..\..\data\cat.jpg");
+            var result = sample.DetectLabels(vision, @"..\..\..\test\data\cat.jpg");
             // Confirm that DetectLabels returns expected result for test image.
             var response = result[0];
             var label = response.LabelAnnotations[0];
@@ -54,7 +54,7 @@ namespace GoogleCloudSamples
             var sample = new GoogleCloudSamples.LabelDetectionSample();
             VisionService vision = sample.CreateAuthorizedClient();
             // Confirm invalid image doesn't get labels and throws an exception 
-            var result = sample.DetectLabels(vision, @"..\..\..\data\bad.txt");
+            var result = sample.DetectLabels(vision, @"..\..\..\test\data\bad.txt");
             var response = result[0];
             var label = response.LabelAnnotations[0];
             if (!String.IsNullOrEmpty(label.Description))
