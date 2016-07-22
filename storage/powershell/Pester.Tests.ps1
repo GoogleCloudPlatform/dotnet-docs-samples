@@ -20,7 +20,7 @@ $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 #.SYNOPSIS
 # Cleans out Google Cloud Storage directory.
 ##############################################################################
-function Clear-GcsTestDir([string]$TestDir = 'testdata/') {
+function Clear-GcsTestDir([string]$TestDir = 'testdata') {
     $objects = Find-GcsObject -Bucket $env:GOOGLE_BUCKET -Prefix $TestDir
     Write-Progress -Activity "Removing old objects" `
         -CurrentOperation "Finding objects" -PercentComplete 0
@@ -56,7 +56,7 @@ function Upload-Testdata([switch]$PassThru) {
 # Pester cannot compare arrays.  So, we have to join them into strings
 # and compare strings.
 function Groom-Expected($expected) {
-    $groomedLines = $expected.Trim().Split("`n") | ForEach-Object { $_.Trim() }
+    $groomedLines = $expected.Trim().Split("`n") | ForEach-Object { $_.Trim() } | Sort-Object
     [string]::Join("`n", $groomedLines)
 }
 
@@ -70,18 +70,18 @@ Describe "Uploads" {
     }
 
     It "uploads a new directory." {
-        (Upload-Testdata -PassThru).Name | Join-Output | Should Be `
-            (Groom-Expected "testdata/
+        (Upload-Testdata -PassThru).Name | Sort-Object `
+        | Join-Output | Should Be (Groom-Expected "testdata_`$folder`$
                 testdata/hello.txt
-                testdata/a/
-                testdata/a/b/
+                testdata/a_`$folder`$
+                testdata/a/b_`$folder`$
                 testdata/a/b/c.txt
-                testdata/a/empty/")
+                testdata/a/empty_`$folder`$")
     }
 
     It "uploads a single file to a directory." {
         Upload-Testdata
-        (.\Copy-GcsObject.ps1 testdata/hello.txt `
+        (.\Copy-GcsObject.ps1 testdata\hello.txt `
             gs://$env:GOOGLE_BUCKET/testdata/a `
             ).Name | Should Be "testdata/a/hello.txt"
     }
@@ -96,8 +96,8 @@ Describe "Uploads" {
         Upload-Testdata
         (.\Copy-GcsObject.ps1 testdata/a/b `
             gs://$env:GOOGLE_BUCKET/testdata/ `
-            -Recurse).Name | Join-Output | Should Be (Groom-Expected `
-            "testdata/b/
+            -Recurse).Name | Sort-Object | Join-Output | Should Be (Groom-Expected `
+            "testdata/b_`$folder`$
             testdata/b/c.txt")
     }
 }
@@ -112,7 +112,8 @@ Describe "Downloads" {
 
     It "downloads the testdata directory." {        
         .\Copy-GcsObject.ps1 gs://$env:GOOGLE_BUCKET/testdata $tempPath -Recurse `
-            | Join-Output | Should Be (Groom-Expected "$tempPath
+            | Sort-Object -Property FullName | Join-Output | Should Be (
+                Groom-Expected "$tempPath
                 $tempPath\a
                 $tempPath\a\b
                 $tempPath\a\b\c.txt
@@ -123,7 +124,8 @@ Describe "Downloads" {
     It "downloads the testdata directory to an existing directory." {        
         New-Item -ItemType Directory -Path $tempPath
         .\Copy-GcsObject.ps1 gs://$env:GOOGLE_BUCKET/testdata $tempPath -Recurse `
-            | Join-Output | Should Be (Groom-Expected "$tempPath\testdata
+            | Sort-Object -Property FullName | Join-Output | Should Be (
+                Groom-Expected "$tempPath\testdata
                 $tempPath\testdata\a
                 $tempPath\testdata\a\b
                 $tempPath\testdata\a\b\c.txt
@@ -146,30 +148,31 @@ Describe "Downloads" {
 Describe "Copies" {
     BeforeEach {
         Clear-GcsTestDir
-        Clear-GcsTestDir testdata2/
         Upload-Testdata
     }
 
     It "copies a whole directory." {        
         (.\Copy-GcsObject.ps1 gs://$env:GOOGLE_BUCKET/testdata `
             gs://$env:GOOGLE_BUCKET/testdata2 -Recurse).Name `
-            | Join-Output | Should Be (Groom-Expected "testdata2/
+            | Sort-Object | Join-Output | Should Be (
+                Groom-Expected "testdata2_`$folder`$
                 testdata2/hello.txt
-                testdata2/a/
-                testdata2/a/b/
+                testdata2/a_`$folder`$
+                testdata2/a/b_`$folder`$
                 testdata2/a/b/c.txt
-                testdata2/a/empty/")
+                testdata2/a/empty_`$folder`$")
 
         # Now that testdata2 exists, the same copy statement should copy
         # to an inner directory
         (.\Copy-GcsObject.ps1 gs://$env:GOOGLE_BUCKET/testdata `
             gs://$env:GOOGLE_BUCKET/testdata2 -Recurse).Name `
-            | Join-Output | Should Be (Groom-Expected "testdata2/testdata/
+            | Sort-Object | Join-Output | Should Be (
+                Groom-Expected "testdata2/testdata_`$folder`$
                 testdata2/testdata/hello.txt
-                testdata2/testdata/a/
-                testdata2/testdata/a/b/
+                testdata2/testdata/a_`$folder`$
+                testdata2/testdata/a/b_`$folder`$
                 testdata2/testdata/a/b/c.txt
-                testdata2/testdata/a/empty/")
+                testdata2/testdata/a/empty_`$folder`$")
     }
 
     It "copies one file." {        
