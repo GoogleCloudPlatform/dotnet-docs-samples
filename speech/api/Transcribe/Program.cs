@@ -13,8 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+// [START app]
 // [START import_libraries]
-
 using System;
 using System.Linq;
 using Google.Apis.CloudSpeechAPI.v1beta1;
@@ -85,3 +85,4 @@ namespace GoogleCloudSamples
         }
     }
 }
+// [END app]
