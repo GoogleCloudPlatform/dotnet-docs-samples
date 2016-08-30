@@ -12,7 +12,29 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-param([switch]$Lint, [switch]$UpdatePackages, [string]$PackageMask="Google.*")
+##############################################################################
+#.SYNOPSIS
+# Builds and runs tests in subdirectories.
+#
+#.PARAMETER Lint
+# Run the linter on projects in subdirectories.  Works be fixing the code in
+# place, and then looking for git diffs.  So, be sure the git client is clean
+# before running.
+#
+#.PARAMETER UpdatePackages
+# Update each project's NuGet packages to the latest version before running tests.
+#
+#.PARAMETER PackageMask
+# When UpdatePackages is set, specifies which packages to update.
+#
+#.PARAMETER Skip
+# Skip tests with the named like 'skiptest'
+#
+#.EXAMPLE
+# .\buildAndRunTests.ps1 -Lint
+##############################################################################
+param([switch]$Lint, [switch]$UpdatePackages, [string]$PackageMask="Google.*",
+    [switch]$Skip)
 
 $private:invocation = (Get-Variable MyInvocation -Scope 0).Value
 
@@ -29,7 +51,11 @@ if ($UpdatePackages) {
 }
 $private:modifiedConfigs = Update-Config
 Try {
-    $private:testScripts = Find-Files -Masks '*runtests*.ps1' 
+    $private:masks = '*runtests*.ps1', '*skiptests*.ps1'
+    if ($Skip) {
+        $masks = $masks[0]
+    }
+    $private:testScripts = Find-Files -Masks $masks
     # Avoid infinitely recursing and invoking this script.
     $testScripts | where {$_ -ne $invocation.MyCommand.Path} |  Run-TestScripts
 }
