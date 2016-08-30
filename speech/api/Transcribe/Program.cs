@@ -15,6 +15,7 @@
  */
 // [START app]
 // [START import_libraries]
+
 using System;
 using System.Linq;
 using Google.Apis.CloudSpeechAPI.v1beta1;
