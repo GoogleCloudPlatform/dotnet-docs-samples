@@ -665,7 +665,7 @@ namespace GoogleCloudSamples
             // [START limit]
             Query query = new Query("Task")
             {
-                Limit = 1,
+                Limit = 5,
             };
             // [END limit]
             Assert.Equal(1, _db.RunQuery(query).Count());
