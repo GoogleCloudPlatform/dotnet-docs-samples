@@ -116,7 +116,7 @@ namespace GoogleCloudSamples
             Entity task = new Entity()
             {
                 Key = taskKey,
-                ["type"] = "Personal",
+                ["category"] = "Personal",
                 ["done"] = false,
                 ["priority"] = 4,
                 ["description"] = "Learn Cloud Datastore"
@@ -132,7 +132,7 @@ namespace GoogleCloudSamples
             Entity task = new Entity()
             {
                 Key = _db.CreateKeyFactory("Task").CreateKey("sampleTask"),
-                ["type"] = "Personal",
+                ["category"] = "Personal",
                 ["created"] = new DateTime(1999, 01, 01, 0, 0, 0, DateTimeKind.Utc),
                 ["done"] = false,
                 ["priority"] = 4,
@@ -168,7 +168,7 @@ namespace GoogleCloudSamples
             Entity task = new Entity()
             {
                 Key = _db.CreateKeyFactory("Task").CreateKey("sampleTask"),
-                ["type"] = "Personal",
+                ["category"] = "Personal",
                 ["done"] = false,
                 ["priority"] = 4,
                 ["description"] = "Learn Cloud Datastore"
@@ -243,7 +243,7 @@ namespace GoogleCloudSamples
                 new Entity()
                 {
                     Key = taskKey1,
-                    ["type"] = "Personal",
+                    ["category"] = "Personal",
                     ["done"] = false,
                     ["priority"] = 4,
                     ["description"] = "Learn Cloud Datastore"
@@ -251,7 +251,7 @@ namespace GoogleCloudSamples
                 new Entity()
                 {
                     Key = taskKey2,
-                    ["type"] = "Personal",
+                    ["category"] = "Personal",
                     ["done"] = "false",
                     ["priority"] = 5,
                     ["description"] = "Integrate Cloud Datastore"
@@ -270,7 +270,7 @@ namespace GoogleCloudSamples
                 new Entity()
                 {
                     Key = _keyFactory.CreateIncompleteKey(),
-                    ["type"] = "Personal",
+                    ["category"] = "Personal",
                     ["done"] = false,
                     ["priority"] = 4,
                     ["description"] = "Learn Cloud Datastore"
@@ -278,7 +278,7 @@ namespace GoogleCloudSamples
                 new Entity()
                 {
                     Key = _keyFactory.CreateIncompleteKey(),
-                    ["type"] = "Personal",
+                    ["category"] = "Personal",
                     ["done"] = "false",
                     ["priority"] = 5,
                     ["description"] = "Integrate Cloud Datastore"
@@ -337,7 +337,7 @@ namespace GoogleCloudSamples
             Entity task = new Entity()
             {
                 Key = taskKey,
-                ["type"] = "Personal",
+                ["category"] = "Personal",
                 ["done"] = false,
                 ["completed"] = false,
                 ["priority"] = 4,
@@ -665,7 +665,7 @@ namespace GoogleCloudSamples
             // [START limit]
             Query query = new Query("Task")
             {
-                Limit = 1,
+                Limit = 5,
             };
             // [END limit]
             Assert.Equal(1, _db.RunQuery(query).Count());
