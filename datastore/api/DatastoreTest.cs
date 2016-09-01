@@ -521,7 +521,7 @@ namespace GoogleCloudSamples
             // [END keys_only_query]
             foreach (Entity task in _db.RunQuery(query))
             {
-                Assert.NotEqual(0, task.Key.Path[0].Id);
+                Assert.False(string.IsNullOrEmpty(task.Key.Path[0].Name));
                 Assert.Equal(0, task.Properties.Count);
                 break;
             };
@@ -668,7 +668,7 @@ namespace GoogleCloudSamples
                 Limit = 5,
             };
             // [END limit]
-            Assert.Equal(1, _db.RunQuery(query).Count());
+            Assert.InRange(_db.RunQuery(query).Count(), 1, 5);
         }
 
         [Fact]
