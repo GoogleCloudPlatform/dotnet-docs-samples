@@ -1,0 +1,10 @@
+# Deploy with gcloud datastore create-indexes index.yaml
+indexes:
+- kind: Task
+  properties:
+  - name: category
+    direction: asc
+  - name: priority
+    direction: asc
+  - name: created
+    direction: asc
