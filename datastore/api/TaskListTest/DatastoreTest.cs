@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Google.Datastore.V1Beta3;
-using System.Linq;
 using Google.Protobuf;
+using System;
+using System.Linq;
 using System.Collections.Generic;
 using Xunit;
 
