@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Google")]
 [assembly: AssemblyProduct("DatastoreTest")]
-[assembly: AssemblyCopyright("Copyright \u00A9 Google Inc. 2016")]
+[assembly: AssemblyCopyright("Copyright \u00A9 Google Inc 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
