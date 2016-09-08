@@ -102,7 +102,7 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Deletes a task entity.
         /// </summary>
-        /// <param name="id">he ID of the task entity as given by Key.</param>
+        /// <param name="id">The ID of the task entity as given by Key.</param>
         void DeleteTask(long id)
         {
             _db.Delete(_keyFactory.CreateKey(id));
