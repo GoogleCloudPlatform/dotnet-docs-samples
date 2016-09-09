@@ -221,53 +221,54 @@ namespace GoogleCloudSamples
 
         private void RetryRpc(Action action)
         {
-            RetryRpc(() => { action(); return 0; });
+            try {
+                RetryRpc(() => { action(); return 0; });
+            }
+            catch (AggregateException exceptions)
+            {
+                throw exceptions;
+            }
         }
 
-        public int RpcRetry(string topicId, string subscriptionId,
+        public void RpcRetry(string topicId, string subscriptionId,
             PublisherClient publisher, SubscriberClient subscriber)
         {
-            int tryCount = 0;
             string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
             string subscriptionName =
                 SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
-            RetryRpc(() =>
+            try
             {
-                //Create Topic only on second try
-                if (tryCount++ == 1)
+                RetryRpc(() =>
                 {
-                    //Create Topic
-                    publisher.CreateTopic(topicName);
+                    // Subscribe to Topic
+                    // This should fail since Topic has not yet been created
+                    subscriber.CreateSubscription(subscriptionName, topicName,
+                        pushConfig: null, ackDeadlineSeconds: 60);
+                });
+            }
+            catch (AggregateException exceptions)
+            {
+                if (exceptions.InnerExceptions.Count() == _retryCount)
+                {
+                    RetryRpc(() =>
+                    {
+                        //Create Topic
+                        publisher.CreateTopic(topicName);
+                    });
+                    RetryRpc(() =>
+                    {
+                        // Subscribe to Topic
+                        subscriber.CreateSubscription(subscriptionName, topicName,
+                            pushConfig: null, ackDeadlineSeconds: 60);
+                    });
                 }
-
-                // Subscribe to Topic
-                // First try should fail
-                subscriber.CreateSubscription(subscriptionName, topicName, 
-                    pushConfig: null, ackDeadlineSeconds: 60);
-
-            });
-            return tryCount;
+            }
         }
         // [END retry]
 
         private static bool IsEmptyResponse(PullResponse response)
         {
             foreach (var result in response.ReceivedMessages)
-                return false;
-            return true;
-        }
-
-        private static bool IsEmptyTopicsList(IEnumerable<Topic> topics)
-        {
-            foreach (var topic in topics)
-                return false;
-            return true;
-        }
-
-        private static bool IsEmptySubscriptionsList(IEnumerable<Subscription> 
-            subscriptions)
-        {
-            foreach (var subscription in subscriptions)
                 return false;
             return true;
         }
@@ -344,7 +345,7 @@ namespace GoogleCloudSamples
             string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
             CreateTopic(topicId, _publisher);
             IEnumerable<Topic> topics = ListProjectTopics(_publisher);
-            Assert.False(IsEmptyTopicsList(topics));
+            Assert.False(topics.Count() == 0);
             DeleteTopic(topicId, _publisher);
         }
 
@@ -360,7 +361,7 @@ namespace GoogleCloudSamples
             CreateSubscription(topicId, subscriptionId, _subscriber);
             IEnumerable<Subscription> subscriptions = ListSubscriptions(
                 _subscriber);
-            Assert.False(IsEmptySubscriptionsList(subscriptions));
+            Assert.False(subscriptions.Count() == 0);
             DeleteSubscription(subscriptionId, _subscriber);
             DeleteTopic(topicId, _publisher);
         }
@@ -370,12 +371,13 @@ namespace GoogleCloudSamples
         {
             string topicId = "testTopicForRpcRetry";
             string subscriptionId = "testSubscriptionForRpcRetry";
-            string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
+            RpcRetry(topicId, subscriptionId, _publisher,
+                _subscriber);
+            Subscription subscription = GetSubscription(subscriptionId,
+                _subscriber);
             string subscriptionName =
                 SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
-            int tryCount = RpcRetry(topicId, subscriptionId, _publisher, 
-                _subscriber);
-            Assert.Equal(2, tryCount);
+            Assert.Equal(subscriptionName, subscription.Name);
             DeleteSubscription(subscriptionId, _subscriber);
             DeleteTopic(topicId, _publisher);
         }
