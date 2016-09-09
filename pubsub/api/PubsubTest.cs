@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections;
 // [START create_publisher_client]
 using Google.Pubsub.V1;
 // [END create_publisher_client]
@@ -412,7 +411,7 @@ namespace GoogleCloudSamples
                 SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
             Assert.Equal(subscriptionName, subscription.Name);
             DeleteSubscription(subscriptionId, _subscriber);
-            //DeleteTopic(topicId, _publisher);
+            DeleteTopic(topicId, _publisher);
         }
 
         [Fact]
