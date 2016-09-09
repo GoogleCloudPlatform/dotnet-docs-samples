@@ -168,8 +168,9 @@ namespace GoogleCloudSamples
 
         static void Main(string[] args)
         {
-            string projectId = args.Length == 2 ? args[1] :
+            string projectId = args.Length == 1 ? args[0] :
                 Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            Console.WriteLine($"Using project {projectId}");
             if (string.IsNullOrWhiteSpace(projectId))
             {
                 Console.WriteLine("Set the environment variable " +
