@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections;
 // [START create_publisher_client]
 using Google.Pubsub.V1;
 // [END create_publisher_client]
@@ -229,6 +230,7 @@ namespace GoogleCloudSamples
                 throw exceptions;
             }
         }
+        // [END retry]
 
         public void RpcRetry(string topicId, string subscriptionId,
             PublisherClient publisher, SubscriberClient subscriber)
@@ -250,21 +252,52 @@ namespace GoogleCloudSamples
             {
                 if (exceptions.InnerExceptions.Count() == _retryCount)
                 {
-                    RetryRpc(() =>
+                    // [START retry]
+                    try
                     {
-                        //Create Topic
-                        publisher.CreateTopic(topicName);
-                    });
-                    RetryRpc(() =>
+                        RetryRpc(() =>
+                        {
+                            //Create Topic
+                            publisher.CreateTopic(topicName);
+                        });
+                    }
+                    catch (AggregateException ae)
                     {
-                        // Subscribe to Topic
-                        subscriber.CreateSubscription(subscriptionName, topicName,
-                            pushConfig: null, ackDeadlineSeconds: 60);
-                    });
+                        foreach (var e in ae.Flatten().InnerExceptions)
+                        {                    
+                            // A StatusCode of "AlreadyExists" is ok.  
+                            // It means the topic already exists.
+                            if(!e.Message.Contains("StatusCode=AlreadyExists"))
+                            {
+                                throw;
+                            }                    
+                        }
+                    }
+                    // [END retry]
+                    try
+                    {
+                        RetryRpc(() =>
+                        {
+                            // Subscribe to Topic
+                            subscriber.CreateSubscription(subscriptionName, topicName,
+                                pushConfig: null, ackDeadlineSeconds: 60);
+                        });
+                    }
+                    catch (AggregateException ae)
+                    {
+                        foreach (var e in ae.Flatten().InnerExceptions)
+                        {
+                            // A StatusCode of "AlreadyExists" is ok.  
+                            // It means the subscription already exists.
+                            if (!e.Message.Contains("StatusCode=AlreadyExists"))
+                            {
+                                throw;
+                            }
+                        }
+                    }
                 }
             }
         }
-        // [END retry]
 
         private static bool IsEmptyResponse(PullResponse response)
         {
@@ -379,7 +412,7 @@ namespace GoogleCloudSamples
                 SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
             Assert.Equal(subscriptionName, subscription.Name);
             DeleteSubscription(subscriptionId, _subscriber);
-            DeleteTopic(topicId, _publisher);
+            //DeleteTopic(topicId, _publisher);
         }
 
         [Fact]
