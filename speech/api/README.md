@@ -50,6 +50,8 @@ For example:
 
 ```sh
 > .\Transcribe\bin\Debug\Transcribe.exe .\resources\audio.raw
+
+> .\TranscribeAsync\bin\Debug\TranscribeAsync.exe .\resources\audio.raw
 ```
 
 You should see a response with the transcription result.
