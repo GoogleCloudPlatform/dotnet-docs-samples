@@ -18,6 +18,7 @@ using Google.Pubsub.V1;
 // [END create_publisher_client]
 using System.Linq;
 using Google.Protobuf;
+using Grpc.Core;
 using System.Collections.Generic;
 using Xunit;
 
@@ -207,10 +208,17 @@ namespace GoogleCloudSamples
                 {
                     return action();
                 }
-                catch (Grpc.Core.RpcException e)
+                catch (RpcException e)
                 {
+                    //If resource already exists then throw allowed exception
+                    if (e.Status.StatusCode == StatusCode.AlreadyExists)
+                    {
+                        throw;
+                    }
                     if (exceptions == null)
+                    {
                         exceptions = new List<Grpc.Core.RpcException>();
+                    }
                     exceptions.Add(e);
                 }
                 System.Threading.Thread.Sleep(delayMs);
@@ -260,17 +268,13 @@ namespace GoogleCloudSamples
                             publisher.CreateTopic(topicName);
                         });
                     }
-                    catch (AggregateException ae)
+                    catch (RpcException e) when 
+                        (e.Status.StatusCode != StatusCode.AlreadyExists)
                     {
-                        foreach (var e in ae.Flatten().InnerExceptions)
-                        {                    
-                            // A StatusCode of "AlreadyExists" is ok.  
-                            // It means the topic already exists.
-                            if(!e.Message.Contains("StatusCode=AlreadyExists"))
-                            {
-                                throw;
-                            }                    
-                        }
+                        // A StatusCode of "AlreadyExists" is ok.  
+                        // It means the Topic already exists. 
+                        // Otherwise throw exception.
+                        throw;
                     }
                     // [END retry]
                     try
@@ -282,17 +286,13 @@ namespace GoogleCloudSamples
                                 pushConfig: null, ackDeadlineSeconds: 60);
                         });
                     }
-                    catch (AggregateException ae)
+                    catch (RpcException e) when
+                        (e.Status.StatusCode != StatusCode.AlreadyExists)
                     {
-                        foreach (var e in ae.Flatten().InnerExceptions)
-                        {
-                            // A StatusCode of "AlreadyExists" is ok.  
-                            // It means the subscription already exists.
-                            if (!e.Message.Contains("StatusCode=AlreadyExists"))
-                            {
-                                throw;
-                            }
-                        }
+                        // A StatusCode of "AlreadyExists" is ok.  
+                        // It means the Subscription already exists. 
+                        // Otherwise throw exception.
+                        throw;
                     }
                 }
             }
