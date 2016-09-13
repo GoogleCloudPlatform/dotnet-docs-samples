@@ -243,7 +243,7 @@ namespace GoogleCloudSamples
                 {
                     break;
                 }
-                catch (RpcException) when (tries < 3)
+                catch (RpcException) when (tries < _retryCount)
                 {
                     System.Threading.Thread.Sleep(delayMs);
                     delayMs *= 2;  // Exponential back-off.
