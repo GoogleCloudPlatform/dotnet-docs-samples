@@ -55,7 +55,7 @@ namespace GoogleCloudSamples
         private static ClouderrorreportingService CreateErrorReportingClient()
         {
             // Get the Application Default Credentials.
-            GoogleCredential credential = Task.Run(() => GoogleCredential.GetApplicationDefaultAsync()).Result;
+            GoogleCredential credential = GoogleCredential.GetApplicationDefaultAsync().Result;
 
             // Add the needed scope to the credentials.
             credential.CreateScoped(ClouderrorreportingService.Scope.CloudPlatform);
