@@ -52,10 +52,10 @@ namespace GoogleCloudSamples
         /// with the Application Default Credentials and the proper scopes.
         /// See: https://developers.google.com/identity/protocols/application-default-credentials.
         /// </summary>
-        private static ClouderrorreportingService CreateErrorReportingClient()
+        private static async Task<ClouderrorreportingService> CreateErrorReportingClient()
         {
             // Get the Application Default Credentials.
-            GoogleCredential credential = Task.Run(() => GoogleCredential.GetApplicationDefaultAsync()).Result;
+            GoogleCredential credential = await GoogleCredential.GetApplicationDefaultAsync();
 
             // Add the needed scope to the credentials.
             credential.CreateScoped(ClouderrorreportingService.Scope.CloudPlatform);
@@ -71,10 +71,10 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Creates a <seealso cref="ReportRequest"/> from a given exception.
         /// </summary>
-        private static ReportRequest CreateReportRequest(Exception e)
+        private static async Task<ReportRequest> CreateReportRequest(Exception e)
         {
             // Create the service.
-            ClouderrorreportingService service = CreateErrorReportingClient();
+            ClouderrorreportingService service = await CreateErrorReportingClient();
 
             // Get the project ID from the environement variables.
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -101,10 +101,10 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Report an exception to the Error Reporting service.
         /// </summary>
-        private static void report(Exception e)
+        private static async void report(Exception e)
         {
             // Create the report and execute the request.
-            ReportRequest request = CreateReportRequest(e);
+            ReportRequest request = await CreateReportRequest(e);
             request.Execute();
         }
     }
