@@ -21,7 +21,7 @@ using Xunit;
 namespace GoogleCloudSamples
 {
     public class ErrorReportingSampleTest
-    {   
+    {
         /// <summary>Runs ErrorReporting.exe with the provided arguments</summary>
         /// <returns>The console output of this program</returns>
         public string Run(params string[] arguments)
