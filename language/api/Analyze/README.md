@@ -19,7 +19,7 @@ C:\>set GOOGLE_APPLICATION_CREDENTIALS=/path/to/your-project-credentials.json
 
 ## Run the sample
 
-With Visual Studio 2013 or later, open Analyze.sln and press F5.
+With Visual Studio 2013 or later, open Analyze.sln and build the solution.
 
 
 The script will write to STDOUT the json returned from the API for the requested feature.
