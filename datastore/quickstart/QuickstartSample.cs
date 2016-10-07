@@ -43,11 +43,10 @@ public class QuickstartSample
         using (DatastoreTransaction transaction = db.BeginTransaction())
         {
             // Saves the task
-            transaction.Insert(task);
-            var commitResponse = transaction.Commit();
-            var insertedKey = commitResponse.MutationResults[0].Key;
+            transaction.Upsert(task);
+            transaction.Commit();
 
-            Console.WriteLine($"Saved {insertedKey}: {(string)task["description"]}");
+            Console.WriteLine($"Saved {task.Key.Path[0].Name}: {(string)task["description"]}");
         }
     }
 }
