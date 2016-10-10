@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Datastore.V1Beta3;
+using Google.Datastore.V1;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -94,7 +94,7 @@ namespace GoogleCloudSamples
             {
                 Order = { { "created", PropertyOrder.Types.Direction.Descending } }
             };
-            return _db.RunQuery(query);
+            return _db.RunQuery(query).Entities;
         }
         // [END retrieve_entities]
 

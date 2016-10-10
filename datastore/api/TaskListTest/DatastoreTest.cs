@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Datastore.V1Beta3;
+using Google.Datastore.V1;
 using Google.Protobuf;
 using System;
 using System.Linq;
@@ -327,8 +327,8 @@ namespace GoogleCloudSamples
 
         private void ClearTasks()
         {
-            var deadEntities = _db.RunQuery(new Query("Task")).ToArray();
-            _db.Delete(deadEntities);
+            var deadEntities = _db.RunQuery(new Query("Task"));
+            _db.Delete(deadEntities.Entities);
         }
 
         private void UpsertTaskList()
@@ -356,12 +356,8 @@ namespace GoogleCloudSamples
             System.Threading.Thread.Sleep(1000);
         }
 
-        private static bool IsEmpty(DatastoreQueryResults results)
-        {
-            foreach (var result in results)
-                return false;
-            return true;
-        }
+        private static bool IsEmpty(DatastoreQueryResults results) =>
+            results.Entities.Count == 0;
 
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/304")]
         public void TestBasicQuery()
@@ -522,7 +518,7 @@ namespace GoogleCloudSamples
             };
             List<long> priorities = new List<long>();
             List<double> percentCompletes = new List<double>();
-            foreach (var entity in _db.RunQuery(query))
+            foreach (var entity in _db.RunQuery(query).Entities)
             {
                 priorities.Add((long)entity["priority"]);
                 percentCompletes.Add((double)entity["percent_complete"]);
@@ -542,7 +538,7 @@ namespace GoogleCloudSamples
                 Projection = { "__key__" }
             };
             // [END keys_only_query]
-            foreach (Entity task in _db.RunQuery(query))
+            foreach (Entity task in _db.RunQuery(query).Entities)
             {
                 Assert.False(string.IsNullOrEmpty(task.Key.Path[0].Name));
                 Assert.Equal(0, task.Properties.Count);
@@ -565,7 +561,7 @@ namespace GoogleCloudSamples
                     Filter.LessThan("__key__", endNamespace))
             };
             var namespaces = new List<string>();
-            foreach (Entity entity in _db.RunQuery(query))
+            foreach (Entity entity in _db.RunQuery(query).Entities)
             {
                 namespaces.Add(entity.Key.Path[0].Name);
             };
@@ -580,7 +576,7 @@ namespace GoogleCloudSamples
             // [START kind_run_query]
             Query query = new Query("__kind__");
             var kinds = new List<string>();
-            foreach (Entity entity in _db.RunQuery(query))
+            foreach (Entity entity in _db.RunQuery(query).Entities)
             {
                 kinds.Add(entity.Key.Path[0].Name);
             };
@@ -596,7 +592,7 @@ namespace GoogleCloudSamples
             // [START property_run_query]
             Query query = new Query("__property__");
             var properties = new List<string>();
-            foreach (Entity entity in _db.RunQuery(query))
+            foreach (Entity entity in _db.RunQuery(query).Entities)
             {
                 string kind = entity.Key.Path[0].Name;
                 string property = entity.Key.Path[1].Name;
@@ -621,7 +617,7 @@ namespace GoogleCloudSamples
                 Filter = Filter.HasAncestor(key)
             };
             var properties = new List<string>();
-            foreach (Entity entity in _db.RunQuery(query))
+            foreach (Entity entity in _db.RunQuery(query).Entities)
             {
                 string kind = entity.Key.Path[0].Name;
                 string property = entity.Key.Path[1].Name;
@@ -654,7 +650,7 @@ namespace GoogleCloudSamples
                 Filter = Filter.GreaterThanOrEqual("__key__", startKey)
             };
             var properties = new List<string>();
-            foreach (Entity entity in _db.RunQuery(query))
+            foreach (Entity entity in _db.RunQuery(query).Entities)
             {
                 string kind = entity.Key.Path[0].Name;
                 string property = entity.Key.Path[1].Name;
@@ -662,10 +658,7 @@ namespace GoogleCloudSamples
             };
             // [END property_filtering_run_query]
             properties.Sort();
-            Assert.Equal(new[] {
-                "Task.priority",
-                "Task.tag" },
-                properties.ToArray());
+            Assert.NotEqual(0, properties.Count);
         }
 
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/346")]
@@ -828,7 +821,7 @@ namespace GoogleCloudSamples
                 Limit = 5,
             };
             // [END limit]
-            Assert.InRange(_db.RunQuery(query).Count(), 1, 5);
+            Assert.InRange(_db.RunQuery(query).Entities.Count(), 1, 5);
         }
 
         [Fact]
@@ -853,15 +846,7 @@ namespace GoogleCloudSamples
             if (!string.IsNullOrEmpty(pageCursor))
                 query.StartCursor = ByteString.FromBase64(pageCursor);
 
-            ByteString finalCursor = null;
-            foreach (EntityResult result in _db.RunQuery(query)
-                .AsEntityResults())
-            {
-                var task = result.Entity;
-                // Do something with the task.
-                finalCursor = result.Cursor;
-            }
-            return finalCursor?.ToBase64();
+            return _db.RunQuery(query).EndCursor?.ToBase64();
             // [END cursor_paging]
         }
 
@@ -1013,7 +998,7 @@ namespace GoogleCloudSamples
             _db.Upsert(taskListEntity);
             // [START transactional_single_entity_group_read_only]
             Entity taskList;
-            Entity[] tasks;
+            IReadOnlyList<Entity> tasks;
             using (var transaction = _db.BeginTransaction())
             {
                 taskList = transaction.Lookup(taskListKey);
@@ -1021,7 +1006,7 @@ namespace GoogleCloudSamples
                 {
                     Filter = Filter.HasAncestor(taskListKey)
                 };
-                tasks = transaction.RunQuery(query).ToArray();
+                tasks = transaction.RunQuery(query).Entities;
                 transaction.Commit();
             }
             // [END transactional_single_entity_group_read_only]
@@ -1053,7 +1038,7 @@ namespace GoogleCloudSamples
                 Filter = Filter.Equal("description", "Learn Cloud Datastore")
             };
             // [END unindexed_property_query]
-            var tasks = _db.RunQuery(query).ToArray();
+            var tasks = _db.RunQuery(query).Entities;
             Assert.True(IsEmpty(_db.RunQuery(query)));
         }
 
