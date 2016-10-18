@@ -12,12 +12,10 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.CloudNaturalLanguageAPI.v1beta1;
-using Google.Apis.CloudNaturalLanguageAPI.v1beta1.Data;
-using Google.Apis.Services;
+using Google.Cloud.Language.V1Beta1;
 using System;
 using System.Collections.Generic;
+using static Google.Cloud.Language.V1Beta1.AnnotateTextRequest.Types;
 
 namespace GoogleCloudSamples
 {
@@ -33,39 +31,14 @@ Where command is one of
     everything
 ";
 
-        public static CloudNaturalLanguageAPIService
-            CreateNaturalLanguageAPIClient()
+        private static void AnalyzeEntities(string text)
         {
-            var credentials =
-                GoogleCredential.GetApplicationDefaultAsync().Result;
-            if (credentials.IsCreateScopedRequired)
+            var client = LanguageServiceClient.Create();
+            var response = client.AnalyzeEntities(new Document()
             {
-                credentials = credentials.CreateScoped(new[]
-                {
-                    CloudNaturalLanguageAPIService.Scope.CloudPlatform
-                });
-            }
-            var serviceInitializer = new BaseClientService.Initializer()
-            {
-                ApplicationName = "NL Sample",
-                HttpClientInitializer = credentials
-            };
-            return new CloudNaturalLanguageAPIService(serviceInitializer);
-        }
-
-        private static void AnalyzeEntities(string text, string encoding = "UTF16")
-        {
-            var service = CreateNaturalLanguageAPIClient();
-            var response = service.Documents.AnalyzeEntities(
-                new AnalyzeEntitiesRequest()
-                {
-                    Document = new Document()
-                    {
-                        Content = text,
-                        Type = "PLAIN_TEXT"
-                    },
-                    EncodingType = encoding
-                }).Execute();
+                Content = text,
+                Type = Document.Types.Type.PlainText
+            });
             WriteEntities(response.Entities);
         }
 
@@ -88,16 +61,12 @@ Where command is one of
 
         private static void AnalyzeSentiment(string text)
         {
-            var service = CreateNaturalLanguageAPIClient();
-            var response = service.Documents.AnalyzeSentiment(
-                new AnalyzeSentimentRequest()
-                {
-                    Document = new Document()
-                    {
-                        Content = text,
-                        Type = "PLAIN_TEXT"
-                    },
-                }).Execute();
+            var client = LanguageServiceClient.Create();
+            var response = client.AnalyzeSentiment(new Document()
+            {
+                Content = text,
+                Type = Document.Types.Type.PlainText
+            });
             WriteSentiment(response.DocumentSentiment);
         }
 
@@ -109,21 +78,13 @@ Where command is one of
 
         private static void AnalyzeSyntax(string text, string encoding = "UTF16")
         {
-            var service = CreateNaturalLanguageAPIClient();
-            var response = service.Documents.AnnotateText(
-                new AnnotateTextRequest()
-                {
-                    Document = new Document()
-                    {
-                        Content = text,
-                        Type = "PLAIN_TEXT"
-                    },
-                    EncodingType = encoding,
-                    Features = new Features()
-                    {
-                        ExtractSyntax = true
-                    }
-                }).Execute();
+            var client = LanguageServiceClient.Create();
+            var response = client.AnnotateText(new Document()
+            {
+                Content = text,
+                Type = Document.Types.Type.PlainText
+            },
+            new Features() { ExtractSyntax = true });
             WriteSentences(response.Sentences);
         }
 
@@ -138,23 +99,18 @@ Where command is one of
 
         private static void AnalyzeEverything(string text, string encoding = "UTF16")
         {
-            var service = CreateNaturalLanguageAPIClient();
-            var response = service.Documents.AnnotateText(
-                new AnnotateTextRequest()
-                {
-                    Document = new Document()
-                    {
-                        Content = text,
-                        Type = "PLAIN_TEXT"
-                    },
-                    EncodingType = encoding,
-                    Features = new Features()
-                    {
-                        ExtractSyntax = true,
-                        ExtractDocumentSentiment = true,
-                        ExtractEntities = true,
-                    }
-                }).Execute();
+            var client = LanguageServiceClient.Create();
+            var response = client.AnnotateText(new Document()
+            {
+                Content = text,
+                Type = Document.Types.Type.PlainText
+            },
+            new Features()
+            {
+                ExtractSyntax = true,
+                ExtractDocumentSentiment = true,
+                ExtractEntities = true,
+            });
             Console.WriteLine($"Language: {response.Language}");
             WriteSentiment(response.DocumentSentiment);
             WriteSentences(response.Sentences);
