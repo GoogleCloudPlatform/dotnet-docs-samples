@@ -112,7 +112,6 @@ namespace GoogleCloudSamples
         public void ImportDataFromCloudStorage(string projectId, string datasetId,
             string tableId, BigqueryClient client, string fileName, string folder = null)
         {
-
             StorageClient gcsClient = StorageClient.Create();
 
             using (var stream = new MemoryStream())
@@ -192,7 +191,6 @@ namespace GoogleCloudSamples
         // [START stream_row]
         public void UploadJson(string datasetId, string tableId, BigqueryClient client)
         {
-
             // Note that there's a single line per JSON object. This is not a JSON array.
             IEnumerable<string> jsonRows = new string[]
             {
@@ -220,7 +218,6 @@ namespace GoogleCloudSamples
         public void ExportJsonToGcs(
             string datasetId, string tableId, string bucketName, string fileName, BigqueryClient client)
         {
-
             StorageClient gcsClient = StorageClient.Create();
             string contentType = "application/json";
             // Get Table and append results into StringBuilder.
