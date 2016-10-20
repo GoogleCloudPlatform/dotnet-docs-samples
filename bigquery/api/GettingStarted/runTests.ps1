@@ -13,6 +13,7 @@
 # the License.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
+# TODO: Move this code into BuildTools.psm1 once we finalize the implementaion
 # Update Quickstart sample to include Project ID from Environment Variable
 $filePath = "QuickStart\Program.cs"
 $projectId = $env:GOOGLE_PROJECT_ID

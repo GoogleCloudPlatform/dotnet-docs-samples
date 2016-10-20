@@ -1,2 +1,5 @@
-{"title":"exampleJsonFromFile","unique_words":"1"}
-{"title":"moreExampleJsonFromFile","unique_words":"1"}
+[
+{"title":"exampleJsonFromFile","unique_words":"1"},
+{"title":"moreExampleJsonFromFile","unique_words":"1"},
+{"title":"additionalExampleJsonFromFile","unique_words":"9814072356"}
+]

@@ -36,7 +36,7 @@ namespace GoogleCloudSamples
 
         public BigqueryTest()
         {
-            // [START setup]
+            // [START create_bigquery_client]
             // By default, the Google.Bigquery.V2 library client will authenticate 
             // using the service account file (created in the Google Developers 
             // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS 
@@ -45,7 +45,7 @@ namespace GoogleCloudSamples
             // automatic.
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _client = BigqueryClient.Create(_projectId);
-            // [END setup]
+            // [END create_bigquery_client]
         }
 
 
@@ -69,31 +69,6 @@ namespace GoogleCloudSamples
         }
         // [END create_table]
 
-        public BigqueryDataset GetDataset(string datasetId, BigqueryClient client)
-        {
-            var dataset = client.GetDataset(datasetId);
-            return dataset;
-        }
-        public BigqueryTable GetTable(string datasetId, string tableId, BigqueryClient client)
-        {
-            var table = client.GetTable(datasetId, tableId);
-            return table;
-        }
-
-        public BigqueryTable GetTable(string projectId, string datasetId, string tableId, BigqueryClient client)
-        {
-            var table = client.GetTable(projectId, datasetId, tableId);
-            return table;
-        }
-
-        // [START list_tables]
-        public List<BigqueryTable> ListTables(string datasetId, BigqueryClient client)
-        {
-            var tables = client.ListTables(datasetId).ToList();
-            return tables;
-        }
-        // [END list_tables]
-
         public void DeleteDataset(string datasetId, BigqueryClient client)
         {
             client.DeleteDataset(datasetId);
@@ -112,6 +87,7 @@ namespace GoogleCloudSamples
         public void ImportDataFromCloudStorage(string projectId, string datasetId,
             string tableId, BigqueryClient client, string fileName, string folder = null)
         {
+
             StorageClient gcsClient = StorageClient.Create();
 
             using (var stream = new MemoryStream())
@@ -164,8 +140,7 @@ namespace GoogleCloudSamples
 
             // Then we can fetch the results, either via the job or by accessing
             // the destination table.
-            BigqueryResult result = client.GetQueryResults(job.Reference);
-            return result;
+            return client.GetQueryResults(job.Reference);
         }
         // [START async_query]
 
@@ -191,6 +166,7 @@ namespace GoogleCloudSamples
         // [START stream_row]
         public void UploadJson(string datasetId, string tableId, BigqueryClient client)
         {
+
             // Note that there's a single line per JSON object. This is not a JSON array.
             IEnumerable<string> jsonRows = new string[]
             {
@@ -218,6 +194,7 @@ namespace GoogleCloudSamples
         public void ExportJsonToGcs(
             string datasetId, string tableId, string bucketName, string fileName, BigqueryClient client)
         {
+
             StorageClient gcsClient = StorageClient.Create();
             string contentType = "application/json";
             // Get Table and append results into StringBuilder.
@@ -286,7 +263,6 @@ namespace GoogleCloudSamples
             var file = gcsClient.GetObject(bucket, fileName);
             return file.Name;
         }
-
 
         public void DeleteFileFromGcs(string bucket, string fileName)
         {
@@ -365,7 +341,7 @@ namespace GoogleCloudSamples
             Assert.Equal(outputParts.First(), expectedOutputFirstWord);
             Assert.Equal(outputParts.Last(), expectedOutputLastWord);
             //Delete QuickStart testing Dataset if it exists
-            var dataset = GetDataset(sampleDatasetUsedInQuickStart, _client);
+            var dataset = _client.GetDataset(sampleDatasetUsedInQuickStart);
             if (dataset != null) { DeleteDataset(sampleDatasetUsedInQuickStart, _client); };
         }
 
@@ -375,7 +351,7 @@ namespace GoogleCloudSamples
             string projectId = "bigquery-public-data";
             string datasetId = "samples";
             string tableId = "shakespeare";
-            var table = GetTable(projectId, datasetId, tableId, _client);
+            var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
             BigqueryResult results = SyncQuery(projectId, datasetId, tableId, query, 10000, _client);
             Assert.True(results.Rows.Count() > 0);
@@ -387,7 +363,7 @@ namespace GoogleCloudSamples
             string projectId = "bigquery-public-data";
             string datasetId = "samples";
             string tableId = "shakespeare";
-            var table = GetTable(projectId, datasetId, tableId, _client);
+            var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
             BigqueryResult results = AsyncQuery(projectId, datasetId, tableId, query, _client);
             Assert.True(results.Rows.Count() > 0);
@@ -423,7 +399,7 @@ namespace GoogleCloudSamples
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
             // Get created table.
-            var newTable = GetTable(datasetId, newTableId, _client);
+            var newTable = _client.GetTable(datasetId, newTableId);
             // Confirm created table name equals expected name.
             Assert.Equal(newTableId, newTable.Reference.TableId);
             DeleteTable(datasetId, newTableId, _client);
@@ -444,7 +420,7 @@ namespace GoogleCloudSamples
             ImportDataFromCloudStorage(_projectId, datasetId, newTableId, _client,
                 jsonGcsSampleFile, gcsFolder);
             // Run query to get table data.
-            var newTable = GetTable(datasetId, newTableId, _client);
+            var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable}";
             BigqueryResult results = AsyncQuery(_projectId, datasetId, newTableId,
                 query, _client);
@@ -462,7 +438,9 @@ namespace GoogleCloudSamples
             string newTableId = "tableForTestListTables";
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
-            var tables = ListTables(datasetId, _client);
+            // [START list_tables]
+            var tables = _client.ListTables(datasetId).ToList();
+            // [END list_tables]
             Assert.False(tables.Count() == 0);
             DeleteTable(datasetId, newTableId, _client);
             DeleteDataset(datasetId, _client);
@@ -480,7 +458,7 @@ namespace GoogleCloudSamples
             // Import data.
             UploadJsonFromFile(_projectId, datasetId, newTableId, filePath, _client);
             // Query table to get first row and confirm it contains the expected value
-            var newTable = GetTable(datasetId, newTableId, _client);
+            var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable}";
             BigqueryResult results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
             var row = results.Rows.First();
@@ -500,7 +478,7 @@ namespace GoogleCloudSamples
             // Import data.
             UploadJson(datasetId, newTableId, _client);
             // Query table to get first row and confirm it contains the expected value.
-            var newTable = GetTable(datasetId, newTableId, _client);
+            var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable}";
             BigqueryResult results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
             var row = results.Rows.First();
@@ -521,7 +499,7 @@ namespace GoogleCloudSamples
             CreateDataset(newDatasetId, _client);
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query.
-            var table = GetTable(projectId, datasetId, tableId, _client);
+            var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
             // Populate Table.
             PopulateTable(query, newDatasetId, newTableId, _client);
@@ -550,7 +528,7 @@ namespace GoogleCloudSamples
             CreateDataset(newDatasetId, _client);
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query
-            var table = GetTable(projectId, datasetId, tableId, _client);
+            var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
             // Populate Table
             PopulateTable(query, newDatasetId, newTableId, _client);
@@ -580,7 +558,7 @@ namespace GoogleCloudSamples
             CreateDataset(newDatasetId, _client);
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query.
-            var table = GetTable(projectId, datasetId, tableId, _client);
+            var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
             // Populate Table.
             PopulateTable(query, newDatasetId, newTableId, _client);
@@ -603,14 +581,14 @@ namespace GoogleCloudSamples
             CreateDataset(newDatasetId, _client);
             CreateTable(newDatasetId, sourceTableId, _client);
             // Create Query.
-            var table = GetTable(projectId, datasetId, tableId, _client);
+            var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
             // Populate Table.
             PopulateTable(query, newDatasetId, sourceTableId, _client);
             // Copy Table.
             CopyTable(newDatasetId, sourceTableId, copiedTableId, _client);
             // Get rows from new copied Table to confirm copy success.
-            var copyTable = GetTable(newDatasetId, copiedTableId, _client);
+            var copyTable = _client.GetTable(newDatasetId, copiedTableId);
             var result = copyTable.ListRows();
             Assert.False(result.Rows.Count() == 0);
             // Delete copied table.
