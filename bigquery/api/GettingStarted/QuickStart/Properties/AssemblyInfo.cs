@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BigQueryUtil")]
+[assembly: AssemblyTitle("QuickStart")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Google Inc")]
-[assembly: AssemblyProduct("BigQueryUtil")]
-[assembly: AssemblyCopyright("Copyright \u00A9 Google Inc 2015")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("QuickStart")]
+[assembly: AssemblyCopyright("Copyright \u00A9  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("49cf80ac-b681-4fd0-9edd-9d8a8bb6d17c")]
+[assembly: Guid("569d225b-83c3-4228-b418-a5242d49e54d")]
 
 // Version information for an assembly consists of the following four values:
 //
