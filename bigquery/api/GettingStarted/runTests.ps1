@@ -13,5 +13,14 @@
 # the License.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
+# Update Quickstart sample to include Project ID from Environment Variable
+$filePath = "QuickStart\Program.cs"
+$projectId = $env:GOOGLE_PROJECT_ID
+$projectIdPlaceholder = "YOUR_PROJECT_ID"
+(get-content $filePath) | foreach-object {$_ -replace $projectIdPlaceholder, $projectId} | set-content $filePath
+
 Build-Solution
-MSTest /testcontainer:test\bin\debug\test.dll
+packages\xunit.runner.console.2.1.0\tools\xunit.console.exe .\BigqueryTest\bin\Debug\BigqueryTest.dll
+
+# Update Quickstart sample to replace Project ID with original placeholder text
+(get-content $filePath) | foreach-object {$_ -replace $projectId, $projectIdPlaceholder} | set-content $filePath
