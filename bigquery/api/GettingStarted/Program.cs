@@ -34,7 +34,6 @@ BigquerySample <project_id>";
             }
             else
             {
-                
                 projectId = args[0];
                 // [START setup]
                 // By default, the Google.Bigquery.V2 library client will authenticate 
