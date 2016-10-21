@@ -20,7 +20,7 @@ Copy-Item -Force QuickStart\Program.cs $quickStartCopy
 try {
     Get-Content $quickStartCopy | ForEach-Object { 
         $_.Replace("YOUR-PROJECT-ID", $env:GOOGLE_PROJECT_ID)
-    } > QuickStart\Program.cs
+    } | Out-File -Encoding UTF8 QuickStart\Program.cs
 
     Build-Solution
     packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
