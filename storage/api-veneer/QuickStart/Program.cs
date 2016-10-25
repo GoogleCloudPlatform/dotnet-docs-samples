@@ -36,7 +36,7 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             if (bucketName == null)
                 bucketName = RandomBucketName();
-            storage.CreateBucket(s_projectId, new Bucket { Name = bucketName });
+            storage.CreateBucket(s_projectId, bucketName);
             _out.WriteLine($"Created {bucketName}.");
         }
         // [END storage_create_bucket]
@@ -56,7 +56,7 @@ namespace GoogleCloudSamples
         private void DeleteBucket(string bucketName)
         {
             var storage = StorageClient.Create();
-            storage.DeleteBucket(new Bucket { Name = bucketName });
+            storage.DeleteBucket(bucketName);
             _out.WriteLine($"Deleted {bucketName}.");
         }
         // [END storage_delete_bucket]
@@ -93,13 +93,9 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             using (var f = File.OpenRead(localPath))
             {
-                var storageObject = new Google.Apis.Storage.v1.Data.Object
-                {
-                    Bucket = bucketName,
-                    Name = objectName ?? Path.GetFileName(localPath)
-                };
-                storage.UploadObject(storageObject, f);
-                _out.WriteLine($"Uploaded {storageObject.Name}.");
+                objectName = objectName ?? Path.GetFileName(localPath);
+                storage.UploadObject(bucketName, objectName, null, f);
+                _out.WriteLine($"Uploaded {objectName}.");
             }
         }
         // [END storage_upload_file]
@@ -108,11 +104,7 @@ namespace GoogleCloudSamples
         private void DeleteObject(string bucketName, string objectName)
         {
             var storage = StorageClient.Create();
-            storage.DeleteObject(new Google.Apis.Storage.v1.Data.Object()
-            {
-                Bucket = bucketName,
-                Name = objectName,
-            });
+            storage.DeleteObject(bucketName, objectName);
             _out.WriteLine($"Deleted {objectName}.");
         }
         // [END storage_delete_file]
@@ -125,11 +117,7 @@ namespace GoogleCloudSamples
             localPath = localPath ?? Path.GetFileName(objectName);
             using (var outputFile = File.OpenWrite(localPath))
             {
-                storage.DownloadObject(new Google.Apis.Storage.v1.Data.Object()
-                {
-                    Bucket = bucketName,
-                    Name = objectName,
-                }, outputFile);
+                storage.DownloadObject(bucketName, objectName, outputFile);
             }
             _out.WriteLine($"downloaded {objectName} to {localPath}.");
         }
@@ -175,16 +163,12 @@ namespace GoogleCloudSamples
             var deleteTasks = new Task[objectList.Length];
             for (int i = 0; i < objectList.Length; ++i)
             {
-                deleteTasks[i] = storage.DeleteObjectAsync(
-                    new Google.Apis.Storage.v1.Data.Object()
-                    {
-                        Bucket = bucketName,
-                        Name = objectList[i].Name,
-                    });
+                deleteTasks[i] = storage.DeleteObjectAsync(bucketName,
+                    objectList[i].Name);
                 _out.WriteLine($"Deleting {objectList[i].Name}.");
             }
             Task.WaitAll(deleteTasks);
-            await storage.DeleteBucketAsync(new Bucket { Name = bucketName });
+            await storage.DeleteBucketAsync(bucketName);
             _out.WriteLine($"Deleted {bucketName}.");
         }
 
