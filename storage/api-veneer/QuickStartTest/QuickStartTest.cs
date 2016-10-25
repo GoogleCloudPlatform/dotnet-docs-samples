@@ -14,14 +14,15 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class QuickStartTest
+    public class BaseTest
     {
-        private struct RunResult
+        protected struct ConsoleOutput
         {
             public int ExitCode;
             public string Stdout;
@@ -29,33 +30,36 @@ namespace GoogleCloudSamples
 
         /// <summary>Runs StorageSample.exe with the provided arguments</summary>
         /// <returns>The console output of this program</returns>
-        private RunResult Run(params string[] arguments)
+        protected static ConsoleOutput Run(params string[] arguments)
         {
             Console.Write("QuickStart.exe ");
             Console.WriteLine(string.Join(" ", arguments));
-            var standardOut = Console.Out;
+
             using (var output = new StringWriter())
             {
-                Console.SetOut(output);
-                try
+                QuickStart quickStart = new QuickStart(output);
+                var consoleOutput = new ConsoleOutput()
                 {
-                    return new RunResult()
-                    {
-                        ExitCode = QuickStart.Main(arguments),
-                        Stdout = output.ToString()
-                    };
-                }
-                finally
-                {
-                    Console.SetOut(standardOut);
-                }
+                    ExitCode = quickStart.Run(arguments),
+                    Stdout = output.ToString()
+                };
+                Console.Write(consoleOutput.Stdout);
+                return consoleOutput;
             }
         }
 
+        protected static void AssertSucceeded(ConsoleOutput output)
+        {
+            Assert.True(0 == output.ExitCode,
+                $"Exit code: {output.ExitCode}\n{output.Stdout}");
+        }
+    }
+
+    public class BadCommandTests : BaseTest
+    {
         [Fact]
         public void TestNoArgs()
         {
-            // Create a randomly named bucket.
             var ran = Run();
             Assert.Equal(-1, ran.ExitCode);
             Assert.Contains("QuickStart", ran.Stdout);
@@ -64,7 +68,6 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestBadCommand()
         {
-            // Create a randomly named bucket.
             var ran = Run("throb");
             Assert.Equal(-1, ran.ExitCode);
             Assert.Contains("QuickStart", ran.Stdout);
@@ -73,68 +76,152 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestMissingDeleteArg()
         {
-            // Create a randomly named bucket.
             var ran = Run("delete");
             Assert.Equal(-1, ran.ExitCode);
             Assert.Contains("QuickStart", ran.Stdout);
         }
+    }
 
-        [Fact]
-        public void TestCreateAndDelete()
+    public class QuickStartTest : BaseTest, IDisposable
+    {
+        private readonly string _bucketName;
+        public QuickStartTest()
         {
-            // Create a randomly named bucket.
+            _bucketName = CreateRandomBucket();
+        }
+
+        public void Dispose()
+        {
+            Run("nuke", _bucketName);
+        }
+
+        public static string CreateRandomBucket()
+        {
             var created = Run("create");
-            Assert.Equal(0, created.ExitCode);
+            AssertSucceeded(created);
             var created_regex = new Regex(@"Created\s+(.+)\.\s*", RegexOptions.IgnoreCase);
             var match = created_regex.Match(created.Stdout);
             Assert.True(match.Success);
             string bucketName = match.Groups[1].Value;
-            RunResult deleted;
+            return bucketName;
+        }
+
+        [Fact]
+        public void TestCreateAndDeleteBucket()
+        {
+            ConsoleOutput deleted;
             try
             {
                 // Try creating another bucket with the same name.  Should fail.
-                var created_again = Run("create", bucketName);
+                var created_again = Run("create", _bucketName);
                 Assert.Equal(409, created_again.ExitCode);
 
                 // Try listing the buckets.  We should find the new one.
                 var listed = Run("list");
-                Assert.Equal(0, listed.ExitCode);
-                Assert.Contains(bucketName, listed.Stdout);
+                AssertSucceeded(listed);
+                Assert.Contains(_bucketName, listed.Stdout);
             }
             finally
             {
-                deleted = Run("delete", bucketName);
+                deleted = Run("delete", _bucketName);
             }
-            Assert.Equal(0, deleted.ExitCode);
+            AssertSucceeded(deleted);
             // Make sure a second attempt to delete fails.
-            Assert.Equal(404, Run("delete", bucketName).ExitCode);
+            Assert.Equal(404, Run("delete", _bucketName).ExitCode);
         }
 
         [Fact]
         public void TestListObjectsInBucket()
         {
-            var created = Run("create");
-            Assert.Equal(0, created.ExitCode);
-            var created_regex = new Regex(@"Created\s+(.+)\.\s*", RegexOptions.IgnoreCase);
-            var match = created_regex.Match(created.Stdout);
-            Assert.True(match.Success);
-            string bucketName = match.Groups[1].Value;
+            // Try listing the files.  There should be none.
+            var listed = Run("list", _bucketName);
+            AssertSucceeded(listed);
+            Assert.Equal("", listed.Stdout);
+
+            var uploaded = Run("upload", _bucketName, "Hello.txt");
+            AssertSucceeded(uploaded);
+
+            listed = Run("list", _bucketName);
+            AssertSucceeded(listed);
+            Assert.Contains("Hello.txt", listed.Stdout);
+
+            var deleted = Run("delete", _bucketName, "Hello.txt");
+            AssertSucceeded(deleted);
+        }
+
+        public string[] SplitOutput(string stdout) =>
+            stdout.Split('\n')
+                .Select((s) => s.Trim()).Where((s) => !string.IsNullOrEmpty(s))
+                .OrderBy((s) => s).ToArray();
+
+        [Fact]
+        public void TestListObjectsInBucketWithPrefix()
+        {
+            // Try listing the files.  There should be none.
+            var listed = Run("list", _bucketName, "a", null);
+            AssertSucceeded(listed);
+            Assert.Equal("", listed.Stdout);
+
+            // Upload 3 files.
+            var uploaded = Run("upload", _bucketName, "Hello.txt", "a/1.txt");
+            AssertSucceeded(uploaded);
+            uploaded = Run("upload", _bucketName, "Hello.txt", "a/2.txt");
+            AssertSucceeded(uploaded);
+            uploaded = Run("upload", _bucketName, "Hello.txt", "a/b/3.txt");
+            AssertSucceeded(uploaded);
+
+            // With no delimiter, we should get all 3 files.
+            listed = Run("list", _bucketName, "a/", null);
+            AssertSucceeded(listed);
+            Assert.Equal(new string[] {
+                "a/1.txt",
+                "a/2.txt",
+                "a/b/3.txt"
+            }, SplitOutput(listed.Stdout));
+
+            // With a delimeter, we should see only direct contents.
+            listed = Run("list", _bucketName, "a/", "/");
+            AssertSucceeded(listed);
+            Assert.Equal(new string[] {
+                "a/1.txt",
+                "a/2.txt",
+            }, SplitOutput(listed.Stdout));
+        }
+
+        [Fact]
+        public void TestDownloadObject()
+        {
+            var uploaded = Run("upload", _bucketName, "Hello.txt");
+            AssertSucceeded(uploaded);
+            uploaded = Run("upload", _bucketName, "Hello.txt", "Hello2.txt");
+            AssertSucceeded(uploaded);
+
+            var downloaded = Run("download", _bucketName, "Hello2.txt");
+            AssertSucceeded(downloaded);
             try
             {
-                // Try listing the files.  There should be none.
-                var listed = Run("list", bucketName);
-                Assert.Equal(0, listed.ExitCode);
-                Assert.Equal("", listed.Stdout);
-
-                var uploaded = Run("upload", bucketName, "Hello.txt");
-                Assert.Equal(0, uploaded.ExitCode);
-                var deleted = Run("delete", bucketName, "Hello.txt");
-                Assert.Equal(0, deleted.ExitCode);
+                Assert.Equal(File.ReadAllText("Hello.txt"),
+                    File.ReadAllText("Hello2.txt"));
+                downloaded = Run("download", _bucketName, "Hello.txt",
+                    "Hello2.txt");
+                AssertSucceeded(downloaded);
+                Assert.Equal(File.ReadAllText("Hello.txt"),
+                    File.ReadAllText("Hello2.txt"));
             }
             finally
             {
-                Assert.Equal(0, Run("delete", bucketName).ExitCode);
+                File.Delete("Hello2.txt");
             }
+        }
+
+        [Fact]
+        public void TestGetMetadata()
+        {
+            var uploaded = Run("upload", _bucketName, "Hello.txt");
+            var got = Run("get-metadata", _bucketName, "Hello.txt");
+            AssertSucceeded(got);
+            Assert.Contains("Generation", got.Stdout);
+            Assert.Contains("Size", got.Stdout);
         }
     }
 }
