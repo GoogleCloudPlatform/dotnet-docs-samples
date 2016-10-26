@@ -141,7 +141,7 @@ namespace GoogleCloudSamples
             // the destination table.
             return client.GetQueryResults(job.Reference);
         }
-        // [START async_query]
+        // [END async_query]
 
         // [START import_from_file]
         public void UploadJsonFromFile(string projectId, string datasetId, string tableId,
