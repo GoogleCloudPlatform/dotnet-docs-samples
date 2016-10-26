@@ -1,9 +1,12 @@
-﻿using Google.Apis.Storage.v1.Data;
+﻿using Google.Apis.Storage.v1;
+using Google.Apis.Storage.v1.Data;
 using Google.Storage.V1;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -24,6 +27,15 @@ namespace GoogleCloudSamples
                 "  QuickStart copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
                 "  QuickStart move bucket-name source-object-name dest-object-name\n" +
                 "  QuickStart download bucket-name object-name [local-file-path]\n" +
+                "  QuickStart download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
+                "  QuickStart print-acl bucket-name\n" +
+                "  QuickStart print-acl bucket-name object-name\n" +
+                "  QuickStart add-owner bucket-name user-email\n" +
+                "  QuickStart add-owner bucket-name object-name user-email\n" +
+                "  QuickStart add-default-owner bucket-name user-email\n" +
+                "  QuickStart remove-owner bucket-name user-email\n" +
+                "  QuickStart remove-owner bucket-name object-name user-email\n" +
+                "  QuickStart remove-default-owner bucket-name user-email\n" +
                 "  QuickStart delete bucket-name\n" +
                 "  QuickStart delete bucket-name object-name [object-name]\n";
 
@@ -130,6 +142,33 @@ namespace GoogleCloudSamples
         }
         // [END storage_download_file]
 
+        // [START storage_download_byte_range]
+        private void DownloadByteRange(string bucketName, string objectName,
+            long firstByte, long lastByte, string localPath = null)
+        {
+            var storageClient = StorageClient.Create();
+            localPath = localPath ??
+                $"{Path.GetFileName(objectName)}_{firstByte}-{lastByte}";
+
+            // Create an HTTP request for the media, for a limited byte range.
+            StorageService storage = storageClient.Service;
+            var uri = new Uri(
+                $"{storage.BaseUri}b/{bucketName}/o/{objectName}?alt=media");
+            var request = new HttpRequestMessage() { RequestUri = uri };
+            request.Headers.Range =
+                new System.Net.Http.Headers.RangeHeaderValue(firstByte,
+                lastByte);
+            using (var outputFile = File.OpenWrite(localPath))
+            {
+                // Use the HttpClient in the storage object because it supplies
+                // all the authentication headers we need.
+                var response = storage.HttpClient.SendAsync(request).Result;
+                response.Content.CopyToAsync(outputFile, null).Wait();
+                _out.WriteLine($"downloaded {objectName} to {localPath}.");
+            }
+        }
+        // [END storage_download_byte_range]
+
         // [START storage_get_metadata]
         private void GetMetadata(string bucketName, string objectName)
         {
@@ -198,6 +237,238 @@ namespace GoogleCloudSamples
         }
         // [END storage_copy_file]
 
+        // [START storage_print_bucket_acl]
+        private void PrintBucketAcl(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                Projection = Projection.Full
+            });
+            if (bucket.Acl != null)
+                foreach (var acl in bucket.Acl)
+                {
+                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                }
+        }
+        // [END storage_print_bucket_acl]
+
+        // [START storage_print_bucket_default_acl]
+        private void PrintBucketDefaultAcl(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                Projection = Projection.Full
+            });
+            if (bucket.Acl != null)
+                foreach (var acl in bucket.DefaultObjectAcl)
+                {
+                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                }
+        }
+        // [END storage_print_bucket_default_acl]
+
+        // [START storage_print_bucket_acl_for_user]
+        private void PrintBucketAclForUser(string bucketName, string userEmail)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                Projection = Projection.Full
+            });
+
+            if (bucket.Acl != null)
+                foreach (var acl in bucket.Acl.Where(
+(acl) => acl.Entity == $"user-{userEmail}"))
+                {
+                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                }
+        }
+        // [END storage_print_bucket_acl_for_user]
+
+        // [START storage_add_bucket_owner]
+        private void AddBucketOwner(string bucketName, string userEmail)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                Projection = Projection.Full
+            });
+            if (null == bucket.Acl)
+            {
+                bucket.Acl = new List<BucketAccessControl>();
+            }
+            bucket.Acl.Add(new BucketAccessControl()
+            {
+                Bucket = bucketName,
+                Entity = $"user-{userEmail}",
+                Role = "OWNER",
+            });
+            var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration,
+            });
+        }
+        // [END storage_add_bucket_owner]
+
+        // [START storage_remove_bucket_owner]
+        private void RemoveBucketOwner(string bucketName, string userEmail)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                Projection = Projection.Full
+            });
+            if (null == bucket.Acl)
+                return;
+            bucket.Acl = bucket.Acl.Where((acl) =>
+                !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")
+                ).ToList();
+            var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration,
+            });
+        }
+        // [END storage_remove_bucket_owner]
+
+        // [START storage_add_bucket_default_owner]
+        private void AddBucketDefaultOwner(string bucketName, string userEmail)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                Projection = Projection.Full
+            });
+            if (null == bucket.Acl)
+            {
+                bucket.Acl = new List<BucketAccessControl>();
+            }
+            if (null == bucket.DefaultObjectAcl)
+            {
+                bucket.DefaultObjectAcl = new List<ObjectAccessControl>();
+            }
+            bucket.DefaultObjectAcl.Add(new ObjectAccessControl()
+            {
+                Bucket = bucketName,
+                Entity = $"user-{userEmail}",
+                Role = "OWNER",
+            });
+            var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration,
+            });
+        }
+        // [END storage_add_bucket_default_owner]
+
+        // [START storage_remove_bucket_default_owner]
+        private void RemoveBucketDefaultOwner(string bucketName, string userEmail)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                Projection = Projection.Full
+            });
+            if (null == bucket.DefaultObjectAcl)
+                return;
+            if (null == bucket.Acl)
+            {
+                bucket.Acl = new List<BucketAccessControl>();
+            }
+            bucket.DefaultObjectAcl = bucket.DefaultObjectAcl.Where((acl) =>
+                 !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")
+                ).ToList();
+            var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration,
+            });
+        }
+        // [END storage_remove_bucket_default_owner]
+
+        // [START storage_print_file_acl]
+        private void PrintObjectAcl(string bucketName, string objectName)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetObject(bucketName, objectName,
+                new GetObjectOptions() { Projection = Projection.Full });
+            if (storageObject.Acl != null)
+            {
+                foreach (var acl in storageObject.Acl)
+                {
+                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                }
+            }
+        }
+        // [END storage_print_file_acl]
+
+        // [START storage_print_file_acl_for_user]
+        private void PrintObjectAclForUser(string bucketName, string objectName,
+            string userEmail)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetObject(bucketName, objectName,
+                new GetObjectOptions() { Projection = Projection.Full });
+            if (storageObject.Acl != null)
+            {
+                foreach (var acl in storageObject.Acl
+                    .Where((acl) => acl.Entity == $"user-{userEmail}"))
+                {
+                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                }
+            }
+        }
+        // [END storage_print_file_acl_for_user]
+
+        // [START storage_add_file_owner]
+        private void AddObjectOwner(string bucketName, string objectName,
+            string userEmail)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetObject(bucketName, objectName,
+                new GetObjectOptions() { Projection = Projection.Full });
+            if (null == storageObject.Acl)
+            {
+                storageObject.Acl = new List<ObjectAccessControl>();
+            }
+            storageObject.Acl.Add(new ObjectAccessControl()
+            {
+                Bucket = bucketName,
+                Entity = $"user-{userEmail}",
+                Role = "OWNER",
+            });
+            var updatedObject = storage.UpdateObject(storageObject, new UpdateObjectOptions()
+            {
+                // Avoid race conditions.
+                IfMetagenerationMatch = storageObject.Metageneration,
+            });
+        }
+        // [END storage_add_file_owner]
+
+        // [START storage_remove_file_owner]
+        private void RemoveObjectOwner(string bucketName, string objectName,
+            string userEmail)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetObject(bucketName, objectName,
+                new GetObjectOptions() { Projection = Projection.Full });
+            if (null == storageObject.Acl)
+                return;
+            storageObject.Acl = storageObject.Acl.Where((acl) =>
+                !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")
+                ).ToList();
+            var updatedObject = storage.UpdateObject(storageObject, new UpdateObjectOptions()
+            {
+                // Avoid race conditions.
+                IfMetagenerationMatch = storageObject.Metageneration,
+            });
+        }
+        // [END storage_remove_file_owner]
+
+
         public bool PrintUsage()
         {
             _out.WriteLine(s_usage);
@@ -259,6 +530,13 @@ namespace GoogleCloudSamples
                         DownloadObject(args[1], args[2], args.Length < 4 ? null : args[3]);
                         break;
 
+                    case "download-byte-range":
+                        if (args.Length < 5 && PrintUsage()) return -1;
+                        DownloadByteRange(args[1], args[2],
+                            long.Parse(args[3]), long.Parse(args[4]),
+                            args.Length < 6 ? null : args[4]);
+                        break;
+
                     case "get-metadata":
                         if (args.Length < 3 && PrintUsage()) return -1;
                         GetMetadata(args[1], args[2]);
@@ -277,6 +555,53 @@ namespace GoogleCloudSamples
                     case "copy":
                         if (args.Length < 5 && PrintUsage()) return -1;
                         CopyObject(args[1], args[2], args[3], args[4]);
+                        break;
+
+                    case "print-acl":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        if (args.Length < 3)
+                            PrintBucketAcl(args[1]);
+                        else
+                            PrintObjectAcl(args[1], args[2]);
+                        break;
+
+                    case "print-acl-for-user":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        if (args.Length < 4)
+                            PrintBucketAclForUser(args[1], args[2]);
+                        else
+                            PrintObjectAclForUser(args[1], args[2], args[3]);
+                        break;
+
+                    case "print-default-acl":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        PrintBucketDefaultAcl(args[1]);
+                        break;
+
+                    case "add-owner":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        if (args.Length < 4)
+                            AddBucketOwner(args[1], args[2]);
+                        else
+                            AddObjectOwner(args[1], args[2], args[3]);
+                        break;
+
+                    case "remove-owner":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        if (args.Length < 4)
+                            RemoveBucketOwner(args[1], args[2]);
+                        else
+                            RemoveObjectOwner(args[1], args[2], args[3]);
+                        break;
+
+                    case "add-default-owner":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        AddBucketDefaultOwner(args[1], args[2]);
+                        break;
+
+                    case "remove-default-owner":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        RemoveBucketDefaultOwner(args[1], args[2]);
                         break;
 
                     default:
