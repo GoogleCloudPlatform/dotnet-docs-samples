@@ -26,6 +26,7 @@ using System.Text;
 using Xunit;
 using System.IO;
 using System.Diagnostics;
+using Google.Apis.Bigquery.v2.Data;
 
 namespace GoogleCloudSamples
 {
@@ -48,11 +49,12 @@ namespace GoogleCloudSamples
             // [END create_bigquery_client]
         }
 
-
+        // [START create_dataset]
         public void CreateDataset(string datasetId, BigqueryClient client)
         {
             var dataset = client.GetOrCreateDataset(datasetId);
         }
+        // [END create_dataset]
 
         // [START create_table]
         public void CreateTable(string datasetId, string tableId, BigqueryClient client)
@@ -95,7 +97,6 @@ namespace GoogleCloudSamples
                 string bucket = projectId;
                 // If folder is passed in, add it to Cloud Storage File Path using "/" character
                 string filePath = string.IsNullOrEmpty(folder) ? fileName : folder + "/" + fileName;
-
                 // Download Google Cloud Storage object into stream
                 gcsClient.DownloadObject(projectId, filePath, stream);
 
@@ -107,27 +108,41 @@ namespace GoogleCloudSamples
                 // report errors etc.
 
                 // Wait for the job to complete.
-                job.Poll();
+                job.PollUntilCompleted();
             }
         }
         // [END import_file_from_gcs]
 
         // [START sync_query]
-        public BigqueryResult SyncQuery(string projectId, string datasetId, string tableId,
+        public BigqueryQueryJob SyncQuery(string projectId, string datasetId, string tableId,
             string query, double timeoutMs, BigqueryClient client)
         {
             var table = client.GetTable(projectId, datasetId, tableId);
             BigqueryJob job = client.CreateQueryJob(query,
                 new CreateQueryJobOptions { UseQueryCache = false });
             // Get the query result, waiting for the timespan specified in milliseconds.
-            BigqueryResult result = client.GetQueryResults(job.Reference,
+            BigqueryQueryJob result = client.GetQueryResults(job.Reference.JobId,
                 new GetQueryResultsOptions { Timeout = TimeSpan.FromMilliseconds(timeoutMs) });
             return result;
         }
         // [END sync_query]
 
+        // [START sync_query_legacy_sql]
+        public BigqueryQueryJob LegacySqlSyncQuery(string projectId, string datasetId,
+            string tableId, string query, double timeoutMs, BigqueryClient client)
+        {
+            var table = client.GetTable(projectId, datasetId, tableId);
+            BigqueryJob job = client.CreateQueryJob(query,
+                new CreateQueryJobOptions { UseLegacySql = true });
+            // Get the query result, waiting for the timespan specified in milliseconds.
+            BigqueryQueryJob result = client.GetQueryResults(job.Reference.JobId,
+                new GetQueryResultsOptions { Timeout = TimeSpan.FromMilliseconds(timeoutMs) });
+            return result;
+        }
+        // [END sync_query_legacy_sql]
+
         // [START async_query]
-        public BigqueryResult AsyncQuery(string projectId, string datasetId, string tableId,
+        public BigqueryQueryJob AsyncQuery(string projectId, string datasetId, string tableId,
             string query, BigqueryClient client)
         {
             var table = client.GetTable(projectId, datasetId, tableId);
@@ -135,13 +150,14 @@ namespace GoogleCloudSamples
                 new CreateQueryJobOptions { UseQueryCache = false });
 
             // Wait for the job to complete.
-            job.Poll();
+            job.PollUntilCompleted();
 
             // Then we can fetch the results, either via the job or by accessing
             // the destination table.
-            return client.GetQueryResults(job.Reference);
+            return client.GetQueryResults(job.Reference.JobId);
         }
-        // [END async_query]
+        // [START async_query]
+
 
         // [START import_from_file]
         public void UploadJsonFromFile(string projectId, string datasetId, string tableId,
@@ -157,7 +173,7 @@ namespace GoogleCloudSamples
                 // report errors etc.
 
                 // Wait for the job to complete.
-                job.Poll();
+                job.PollUntilCompleted();
             }
         }
         // [END import_from_file]
@@ -184,7 +200,7 @@ namespace GoogleCloudSamples
             // report errors etc.
 
             // Wait for the job to complete.
-            job.Poll();
+            job.PollUntilCompleted();
         }
         // [END stream_row]
 
@@ -195,9 +211,9 @@ namespace GoogleCloudSamples
             StorageClient gcsClient = StorageClient.Create();
             string contentType = "application/json";
             // Get Table and append results into StringBuilder.
-            BigqueryResult result = client.ListRows(datasetId, tableId);
+            var result = client.ListRows(datasetId, tableId);
             StringBuilder sb = new StringBuilder();
-            foreach (var row in result.Rows)
+            foreach (var row in result)
             {
                 sb.Append($"{{\"title\" : \"{row["title"]}\", \"unique_words\":\"{row["unique_words"]}\"}}{Environment.NewLine}");
             }
@@ -219,7 +235,7 @@ namespace GoogleCloudSamples
             StringBuilder sb = new StringBuilder();
             // Create header row.
             sb.Append($"title, unique_words,{Environment.NewLine}");
-            foreach (var row in result.Rows)
+            foreach (var row in result)
             {
                 sb.Append($"{row["title"]}, {row["unique_words"]},{Environment.NewLine}");
             }
@@ -237,7 +253,7 @@ namespace GoogleCloudSamples
             BigqueryJob job = client.CreateQueryJob(query,
                 new CreateQueryJobOptions { DestinationTable = destination });
             // Wait for the job to complete.
-            job.Poll();
+            job.PollQueryUntilCompleted();
         }
 
         // [START copy_table]
@@ -250,7 +266,7 @@ namespace GoogleCloudSamples
             BigqueryJob job = client.CreateQueryJob(query,
                 new CreateQueryJobOptions { DestinationTable = destination });
             // Wait for the job to complete.
-            job.Poll();
+            job.PollQueryUntilCompleted();
         }
         // [END copy_table]
 
@@ -275,6 +291,14 @@ namespace GoogleCloudSamples
         }
         // [END list_datasets]
 
+        // [START list_projects]
+        public List<CloudProject> ListProjects(BigqueryClient client)
+        {
+            var projects = client.ListProjects().ToList();
+            return projects;
+        }
+        // [END list_projects]
+
         // [START list_rows]
         public int ListRows(
             string projectId, string datasetId, string tableId, int numberOfRows, BigqueryClient client)
@@ -282,7 +306,7 @@ namespace GoogleCloudSamples
             int recordCount = 0;
             var result = client.ListRows(projectId, datasetId, tableId, null,
                 new ListRowsOptions { PageSize = numberOfRows });
-            foreach (var row in result.Rows.Take(numberOfRows))
+            foreach (var row in result.Take(numberOfRows))
             {
                 Console.WriteLine($"{row["word"]}: {row["corpus"]}");
                 recordCount++;
@@ -301,7 +325,7 @@ namespace GoogleCloudSamples
             // If there are more rows than were returned in the first page of results, 
             // iterating over the rows will lazily evaluate the results each time, 
             // making further requests as necessary.
-            foreach (var row in result.Rows)
+            foreach (var row in result)
             {
                 Console.WriteLine($"{row["title"]}: {row["unique_words"]}");
                 recordCount++;
@@ -349,9 +373,23 @@ namespace GoogleCloudSamples
             string datasetId = "samples";
             string tableId = "shakespeare";
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
-            BigqueryResult results = SyncQuery(projectId, datasetId, tableId, query, 10000, _client);
-            Assert.True(results.Rows.Count() > 0);
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table}
+                GROUP BY title ORDER BY unique_words DESC LIMIT 42";
+            BigqueryQueryJob results = SyncQuery(projectId, datasetId, tableId, query, 10000, _client);
+            Assert.True(results.GetRows().Count() > 0);
+        }
+
+        [Fact]
+        public void TestLegacySqlSyncQuery()
+        {
+            string projectId = "bigquery-public-data";
+            string datasetId = "samples";
+            string tableId = "shakespeare";
+            var table = _client.GetTable(projectId, datasetId, tableId);
+            string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM [{table.FullyQualifiedId}]";
+            BigqueryQueryJob results = LegacySqlSyncQuery(
+                projectId, datasetId, tableId, query, 10000, _client);
+            Assert.True(results.GetRows().Count() > 0);
         }
 
         [Fact]
@@ -361,9 +399,10 @@ namespace GoogleCloudSamples
             string datasetId = "samples";
             string tableId = "shakespeare";
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
-            BigqueryResult results = AsyncQuery(projectId, datasetId, tableId, query, _client);
-            Assert.True(results.Rows.Count() > 0);
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+                GROUP BY title ORDER BY unique_words DESC LIMIT 42";
+            BigqueryQueryJob results = AsyncQuery(projectId, datasetId, tableId, query, _client);
+            Assert.True(results.GetRows().Count() > 0);
         }
 
         [Fact]
@@ -376,6 +415,12 @@ namespace GoogleCloudSamples
             DeleteDataset(datasetId, _client);
         }
 
+        [Fact]
+        public void TestListProjects()
+        {
+            var projects = ListProjects(_client);
+            Assert.True(projects.Count() > 0);
+        }
 
         [Fact]
         public void TestBrowseRows()
@@ -388,7 +433,7 @@ namespace GoogleCloudSamples
             Assert.True(recordCount == numberOfRows);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443")]
+        [Fact]
         public void TestCreateTable()
         {
             string datasetId = "datasetForTestCreateTable";
@@ -403,7 +448,7 @@ namespace GoogleCloudSamples
             DeleteDataset(datasetId, _client);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443")]
+        [Fact]
         public void TestImportFromCloudStorage()
         {
             string datasetId = "datasetForTestImportFromCloudStorage";
@@ -419,16 +464,16 @@ namespace GoogleCloudSamples
             // Run query to get table data.
             var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable}";
-            BigqueryResult results = AsyncQuery(_projectId, datasetId, newTableId,
+            BigqueryQueryJob results = AsyncQuery(_projectId, datasetId, newTableId,
                 query, _client);
             // Get first row and confirm it contains the expected value.
-            var row = results.Rows.First();
+            var row = results.GetRows().First();
             Assert.Equal(gcsUploadTestWord, row["title"]);
             DeleteTable(datasetId, newTableId, _client);
             DeleteDataset(datasetId, _client);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443")]
+        [Fact]
         public void TestListTables()
         {
             string datasetId = "datasetForTestListTables";
@@ -443,12 +488,13 @@ namespace GoogleCloudSamples
             DeleteDataset(datasetId, _client);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443")]
+        [Fact]
         public void TestImportDataFromFile()
         {
             string datasetId = "datasetForTestImportDataFromFile";
             string newTableId = "tableForTestImportDataFromFile";
-            string gcsUploadTestWord = "exampleJsonFromFile";
+            string uploadTestWord = "additionalExampleJsonFromFile";
+            long uploadTestWordValue = 9814072356;
             string filePath = "..\\..\\..\\test\\data\\sample.json";
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
@@ -456,15 +502,15 @@ namespace GoogleCloudSamples
             UploadJsonFromFile(_projectId, datasetId, newTableId, filePath, _client);
             // Query table to get first row and confirm it contains the expected value
             var newTable = _client.GetTable(datasetId, newTableId);
-            string query = $"SELECT title, unique_words FROM {newTable}";
-            BigqueryResult results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
-            var row = results.Rows.First();
-            Assert.Equal(gcsUploadTestWord, row["title"]);
+            string query = $"SELECT title, unique_words FROM {newTable} WHERE title = '{uploadTestWord}'";
+            BigqueryQueryJob results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
+            var row = results.GetRows().Last();
+            Assert.Equal(uploadTestWordValue, row["unique_words"]);
             DeleteTable(datasetId, newTableId, _client);
             DeleteDataset(datasetId, _client);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443")]
+        [Fact]
         public void TestImportDataFromStream()
         {
             string datasetId = "datasetForTestImportDataFromStream";
@@ -477,14 +523,14 @@ namespace GoogleCloudSamples
             // Query table to get first row and confirm it contains the expected value.
             var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable}";
-            BigqueryResult results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
-            var row = results.Rows.First();
+            BigqueryQueryJob results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
+            var row = results.GetRows().First();
             Assert.Equal(gcsUploadTestWord, row["title"]);
             DeleteTable(datasetId, newTableId, _client);
             DeleteDataset(datasetId, _client);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443")]
+        [Fact]
         public void TestExportJsonToCloudStorage()
         {
             string projectId = "bigquery-public-data";
@@ -497,7 +543,8 @@ namespace GoogleCloudSamples
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query.
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+                GROUP BY title ORDER BY unique_words DESC LIMIT 42";
             // Populate Table.
             PopulateTable(query, newDatasetId, newTableId, _client);
             // Export Table to Cloud Storage.
@@ -513,7 +560,7 @@ namespace GoogleCloudSamples
             DeleteDataset(newDatasetId, _client);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443")]
+        [Fact]
         public void TestExportCsvToCloudStorage()
         {
             string projectId = "bigquery-public-data";
@@ -526,7 +573,8 @@ namespace GoogleCloudSamples
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+                GROUP BY title ORDER BY unique_words DESC LIMIT 42";
             // Populate Table
             PopulateTable(query, newDatasetId, newTableId, _client);
             // Export Table to Cloud Storage.
@@ -542,7 +590,7 @@ namespace GoogleCloudSamples
             DeleteDataset(newDatasetId, _client);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443")]
+        [Fact]
         public void TestBrowseTable()
         {
             string projectId = "bigquery-public-data";
@@ -556,7 +604,8 @@ namespace GoogleCloudSamples
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query.
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+                GROUP BY title ORDER BY unique_words DESC LIMIT 42";
             // Populate Table.
             PopulateTable(query, newDatasetId, newTableId, _client);
             // Get result from table to confirm expected number of records.
@@ -566,7 +615,7 @@ namespace GoogleCloudSamples
             DeleteDataset(newDatasetId, _client);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443")]
+        [Fact]
         public void TestCopyTable()
         {
             string projectId = "bigquery-public-data";
@@ -579,7 +628,8 @@ namespace GoogleCloudSamples
             CreateTable(newDatasetId, sourceTableId, _client);
             // Create Query.
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM {table}";
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+                GROUP BY title ORDER BY unique_words DESC LIMIT 42";
             // Populate Table.
             PopulateTable(query, newDatasetId, sourceTableId, _client);
             // Copy Table.
@@ -587,7 +637,7 @@ namespace GoogleCloudSamples
             // Get rows from new copied Table to confirm copy success.
             var copyTable = _client.GetTable(newDatasetId, copiedTableId);
             var result = copyTable.ListRows();
-            Assert.False(result.Rows.Count() == 0);
+            Assert.False(result.Count() == 0);
             // Delete copied table.
             DeleteTable(newDatasetId, copiedTableId, _client);
             // Delete source table.

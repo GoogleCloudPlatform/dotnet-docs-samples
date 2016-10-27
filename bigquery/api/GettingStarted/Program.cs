@@ -47,12 +47,13 @@ BigquerySample <project_id>";
                 // [START query]
                 var table = client.GetTable("bigquery-public-data", "samples", "shakespeare");
 
-                string query = $"SELECT TOP(corpus, 10) as title, COUNT(*) as unique_words FROM {table}";
-                BigqueryResult result = client.ExecuteQuery(query);
+                string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM `{table.FullyQualifiedId}` 
+                    GROUP BY title ORDER BY unique_words DESC LIMIT 42";
+                var result = client.ExecuteQuery(query);
                 // [END query]
                 // [START print_results]
                 Console.Write("\nQuery Results:\n------------\n");
-                foreach (var row in result.Rows)
+                foreach (var row in result.GetRows())
                 {
                     Console.WriteLine($"{row["title"]}: {row["unique_words"]}");
                 }
