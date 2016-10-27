@@ -196,7 +196,7 @@ namespace GoogleCloudSamples
         // [END storage_copy_file]
 
         /// <summary>
-        /// Delete all the files in a bucket, then delete the bucket.
+        /// Delete all the files in a bucket.
         /// </summary>
         /// <param name="bucketName"></param>
         private async Task NukeBucketAsync(string bucketName)
@@ -211,8 +211,6 @@ namespace GoogleCloudSamples
                 _out.WriteLine($"Deleting {objectList[i].Name}.");
             }
             Task.WaitAll(deleteTasks);
-            await storage.DeleteBucketAsync(bucketName);
-            _out.WriteLine($"Deleted {bucketName}.");
         }
 
         public bool PrintUsage()
@@ -298,7 +296,7 @@ namespace GoogleCloudSamples
 
                     case "nuke":
                         if (args.Length < 2 && PrintUsage()) return -1;
-                        Task.Run(() => NukeBucketAsync(args[1]));
+                        Task.Run(() => NukeBucketAsync(args[1])).Wait();
                         break;
 
                     default:

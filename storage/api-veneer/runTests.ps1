@@ -24,7 +24,8 @@ try {
 
     Build-Solution
     packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
-        .\QuickStartTest\bin\Debug\QuickStartTest.dll
+        .\QuickStartTest\bin\Debug\QuickStartTest.dll `
+        -parallel none
     $SUCCEEDED = $SUCCEEDED -and $LASTEXITCODE -eq 0
 } finally {
     Copy-Item -Force $quickStartCopy QuickStart\Program.cs

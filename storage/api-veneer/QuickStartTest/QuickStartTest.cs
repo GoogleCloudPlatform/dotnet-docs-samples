@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
 {
     public class BaseTest
     {
-        protected struct ConsoleOutput
+        public struct ConsoleOutput
         {
             public int ExitCode;
             public string Stdout;
@@ -31,7 +31,7 @@ namespace GoogleCloudSamples
 
         /// <summary>Runs StorageSample.exe with the provided arguments</summary>
         /// <returns>The console output of this program</returns>
-        protected static ConsoleOutput Run(params string[] arguments)
+        public static ConsoleOutput Run(params string[] arguments)
         {
             Console.Write("QuickStart.exe ");
             Console.WriteLine(string.Join(" ", arguments));
@@ -83,12 +83,27 @@ namespace GoogleCloudSamples
         }
     }
 
-    public class QuickStartTest : BaseTest, IDisposable
+    public class BucketFixture : IDisposable
+    {
+        public BucketFixture()
+        {
+            BucketName = QuickStartTest.CreateRandomBucket();
+        }
+        public void Dispose()
+        {
+            QuickStartTest.Run("nuke", BucketName);
+            QuickStartTest.Run("delete", BucketName);
+        }
+
+        public string BucketName { get; private set; }
+    }
+
+    public class QuickStartTest : BaseTest, IDisposable, IClassFixture<BucketFixture>
     {
         private readonly string _bucketName;
-        public QuickStartTest()
+        public QuickStartTest(BucketFixture fixture)
         {
-            _bucketName = CreateRandomBucket();
+            _bucketName = fixture.BucketName;
         }
 
         public void Dispose()
@@ -108,27 +123,16 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestCreateAndDeleteBucket()
+        public void TestCreateBucket()
         {
-            ConsoleOutput deleted;
-            try
-            {
-                // Try creating another bucket with the same name.  Should fail.
-                var created_again = Run("create", _bucketName);
-                Assert.Equal(409, created_again.ExitCode);
+            // Try creating another bucket with the same name.  Should fail.
+            var created_again = Run("create", _bucketName);
+            Assert.Equal(409, created_again.ExitCode);
 
-                // Try listing the buckets.  We should find the new one.
-                var listed = Run("list");
-                AssertSucceeded(listed);
-                Assert.Contains(_bucketName, listed.Stdout);
-            }
-            finally
-            {
-                deleted = Run("delete", _bucketName);
-            }
-            AssertSucceeded(deleted);
-            // Make sure a second attempt to delete fails.
-            Assert.Equal(404, Run("delete", _bucketName).ExitCode);
+            // Try listing the buckets.  We should find the new one.
+            var listed = Run("list");
+            AssertSucceeded(listed);
+            Assert.Contains(_bucketName, listed.Stdout);
         }
 
         [Fact]
@@ -267,17 +271,12 @@ namespace GoogleCloudSamples
         public void TestCopy()
         {
             Run("upload", _bucketName, "Hello.txt");
-            string otherBucketName = CreateRandomBucket();
-            try
+            using (var otherBucket = new BucketFixture())
             {
                 AssertSucceeded(Run("copy", _bucketName, "Hello.txt",
-                    otherBucketName, "Bye.txt"));
-                AssertSucceeded(Run("get-metadata", otherBucketName,
+                    otherBucket.BucketName, "Bye.txt"));
+                AssertSucceeded(Run("get-metadata", otherBucket.BucketName,
                     "Bye.txt"));
-            }
-            finally
-            {
-                AssertSucceeded(Run("nuke", otherBucketName));
             }
         }
     }
