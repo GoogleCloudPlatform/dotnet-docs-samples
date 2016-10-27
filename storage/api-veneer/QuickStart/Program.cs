@@ -18,7 +18,11 @@ namespace GoogleCloudSamples
                 "  QuickStart create [new-bucket-name]\n" +
                 "  QuickStart list\n" +
                 "  QuickStart list bucket-name [prefix] [delimiter]\n" +
+                "  QuickStart get-metadata bucket-name object-name\n" +
+                "  QuickStart make-public bucket-name object-name\n" +
                 "  QuickStart upload bucket-name local-file-path [object-name]\n" +
+                "  QuickStart copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
+                "  QuickStart move bucket-name source-object-name dest-object-name\n" +
                 "  QuickStart download bucket-name object-name [local-file-path]\n" +
                 "  QuickStart delete bucket-name\n" +
                 "  QuickStart delete bucket-name object-name\n";
@@ -152,8 +156,47 @@ namespace GoogleCloudSamples
         }
         // [END storage_get_metadata]
 
+        // [START storage_make_public]
+        private void MakePublic(string bucketName, string objectName)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetObject(bucketName, objectName);
+            storageObject.Acl = storageObject.Acl ?? new List<ObjectAccessControl>();
+            storage.UpdateObject(storageObject, new UpdateObjectOptions
+            {
+                PredefinedAcl = PredefinedObjectAcl.PublicRead
+            });
+            _out.WriteLine(objectName + " is now public an can be fetched from " +
+                storageObject.MediaLink);
+        }
+        // [END storage_make_public]
+
+        // [START storage_move_file]
+        private void MoveObject(string bucketName, string sourceObjectName,
+            string destObjectName)
+        {
+            var storage = StorageClient.Create();
+            storage.CopyObject(bucketName, sourceObjectName, bucketName,
+                destObjectName);
+            storage.DeleteObject(bucketName, sourceObjectName);
+            _out.WriteLine($"Moved {sourceObjectName} to {destObjectName}.");
+        }
+        // [END storage_move_file]
+
+        // [START storage_copy_file]
+        private void CopyObject(string sourceBucketName, string sourceObjectName,
+            string destBucketName, string destObjectName)
+        {
+            var storage = StorageClient.Create();
+            storage.CopyObject(sourceBucketName, sourceObjectName,
+                destBucketName, destObjectName);
+            _out.WriteLine($"Copied {sourceBucketName}/{sourceObjectName} to "
+                + $"{destBucketName}/{destObjectName}.");
+        }
+        // [END storage_copy_file]
+
         /// <summary>
-        /// Delete all the files in a bucket, then delete the bucket.
+        /// Delete all the files in a bucket.
         /// </summary>
         /// <param name="bucketName"></param>
         private async Task NukeBucketAsync(string bucketName)
@@ -168,8 +211,6 @@ namespace GoogleCloudSamples
                 _out.WriteLine($"Deleting {objectList[i].Name}.");
             }
             Task.WaitAll(deleteTasks);
-            await storage.DeleteBucketAsync(bucketName);
-            _out.WriteLine($"Deleted {bucketName}.");
         }
 
         public bool PrintUsage()
@@ -238,9 +279,24 @@ namespace GoogleCloudSamples
                         GetMetadata(args[1], args[2]);
                         break;
 
+                    case "make-public":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        MakePublic(args[1], args[2]);
+                        break;
+
+                    case "move":
+                        if (args.Length < 4 && PrintUsage()) return -1;
+                        MoveObject(args[1], args[2], args[3]);
+                        break;
+
+                    case "copy":
+                        if (args.Length < 5 && PrintUsage()) return -1;
+                        CopyObject(args[1], args[2], args[3], args[4]);
+                        break;
+
                     case "nuke":
                         if (args.Length < 2 && PrintUsage()) return -1;
-                        Task.Run(() => NukeBucketAsync(args[1]));
+                        Task.Run(() => NukeBucketAsync(args[1])).Wait();
                         break;
 
                     default:

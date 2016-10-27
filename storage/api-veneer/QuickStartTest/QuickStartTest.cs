@@ -15,6 +15,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -22,7 +23,7 @@ namespace GoogleCloudSamples
 {
     public class BaseTest
     {
-        protected struct ConsoleOutput
+        public struct ConsoleOutput
         {
             public int ExitCode;
             public string Stdout;
@@ -30,7 +31,7 @@ namespace GoogleCloudSamples
 
         /// <summary>Runs StorageSample.exe with the provided arguments</summary>
         /// <returns>The console output of this program</returns>
-        protected static ConsoleOutput Run(params string[] arguments)
+        public static ConsoleOutput Run(params string[] arguments)
         {
             Console.Write("QuickStart.exe ");
             Console.WriteLine(string.Join(" ", arguments));
@@ -82,12 +83,27 @@ namespace GoogleCloudSamples
         }
     }
 
-    public class QuickStartTest : BaseTest, IDisposable
+    public class BucketFixture : IDisposable
+    {
+        public BucketFixture()
+        {
+            BucketName = QuickStartTest.CreateRandomBucket();
+        }
+        public void Dispose()
+        {
+            QuickStartTest.Run("nuke", BucketName);
+            QuickStartTest.Run("delete", BucketName);
+        }
+
+        public string BucketName { get; private set; }
+    }
+
+    public class QuickStartTest : BaseTest, IDisposable, IClassFixture<BucketFixture>
     {
         private readonly string _bucketName;
-        public QuickStartTest()
+        public QuickStartTest(BucketFixture fixture)
         {
-            _bucketName = CreateRandomBucket();
+            _bucketName = fixture.BucketName;
         }
 
         public void Dispose()
@@ -107,27 +123,16 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestCreateAndDeleteBucket()
+        public void TestCreateBucket()
         {
-            ConsoleOutput deleted;
-            try
-            {
-                // Try creating another bucket with the same name.  Should fail.
-                var created_again = Run("create", _bucketName);
-                Assert.Equal(409, created_again.ExitCode);
+            // Try creating another bucket with the same name.  Should fail.
+            var created_again = Run("create", _bucketName);
+            Assert.Equal(409, created_again.ExitCode);
 
-                // Try listing the buckets.  We should find the new one.
-                var listed = Run("list");
-                AssertSucceeded(listed);
-                Assert.Contains(_bucketName, listed.Stdout);
-            }
-            finally
-            {
-                deleted = Run("delete", _bucketName);
-            }
-            AssertSucceeded(deleted);
-            // Make sure a second attempt to delete fails.
-            Assert.Equal(404, Run("delete", _bucketName).ExitCode);
+            // Try listing the buckets.  We should find the new one.
+            var listed = Run("list");
+            AssertSucceeded(listed);
+            Assert.Contains(_bucketName, listed.Stdout);
         }
 
         [Fact]
@@ -166,6 +171,8 @@ namespace GoogleCloudSamples
             var uploaded = Run("upload", _bucketName, "Hello.txt", "a/1.txt");
             AssertSucceeded(uploaded);
             uploaded = Run("upload", _bucketName, "Hello.txt", "a/2.txt");
+            AssertSucceeded(uploaded);
+            uploaded = Run("upload", _bucketName, "Hello.txt", "b/2.txt");
             AssertSucceeded(uploaded);
             uploaded = Run("upload", _bucketName, "Hello.txt", "a/b/3.txt");
             AssertSucceeded(uploaded);
@@ -222,6 +229,55 @@ namespace GoogleCloudSamples
             AssertSucceeded(got);
             Assert.Contains("Generation", got.Stdout);
             Assert.Contains("Size", got.Stdout);
+        }
+
+        [Fact]
+        public void TestMakePublic()
+        {
+            var uploaded = Run("upload", _bucketName, "Hello.txt");
+            var got = Run("get-metadata", _bucketName, "Hello.txt");
+            AssertSucceeded(got);
+            var medialink_regex = new Regex(@"MediaLink:\s?(.+)");
+            var match = medialink_regex.Match(got.Stdout);
+            Assert.True(match.Success);
+
+            // Before making the file public, fetching the medialink should
+            // throw an exception.
+            string medialink = match.Groups[1].Value.Trim();
+            WebClient webClient = new WebClient();
+            Assert.Throws<WebException>(() =>
+                webClient.DownloadString(medialink));
+
+            // Make it public and try fetching again.
+            var madePublic = Run("make-public", _bucketName, "Hello.txt");
+            AssertSucceeded(madePublic);
+            var text = webClient.DownloadString(medialink);
+            Assert.Equal(File.ReadAllText("Hello.txt"), text);
+        }
+
+        [Fact]
+        public void TestMove()
+        {
+            Run("upload", _bucketName, "Hello.txt");
+            // Make sure the file doesn't exist until we move it there.
+            var got = Run("get-metadata", _bucketName, "Bye.txt");
+            Assert.Equal(404, got.ExitCode);
+            // Now move it there.
+            AssertSucceeded(Run("move", _bucketName, "Hello.txt", "Bye.txt"));
+            AssertSucceeded(Run("get-metadata", _bucketName, "Bye.txt"));
+        }
+
+        [Fact]
+        public void TestCopy()
+        {
+            Run("upload", _bucketName, "Hello.txt");
+            using (var otherBucket = new BucketFixture())
+            {
+                AssertSucceeded(Run("copy", _bucketName, "Hello.txt",
+                    otherBucket.BucketName, "Bye.txt"));
+                AssertSucceeded(Run("get-metadata", otherBucket.BucketName,
+                    "Bye.txt"));
+            }
         }
     }
 }
