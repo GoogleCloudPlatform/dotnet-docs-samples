@@ -156,7 +156,7 @@ namespace GoogleCloudSamples
             // the destination table.
             return client.GetQueryResults(job.Reference.JobId);
         }
-        // [START async_query]
+        // [END async_query]
 
 
         // [START import_from_file]
