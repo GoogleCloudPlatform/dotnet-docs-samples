@@ -21,6 +21,8 @@ using Google.Protobuf;
 using Grpc.Core;
 using System.Collections.Generic;
 using Xunit;
+using Google.Api.Gax;
+using System.Diagnostics;
 
 namespace GoogleCloudSamples
 {
@@ -332,6 +334,32 @@ namespace GoogleCloudSamples
             IEnumerable<Topic> topics = ListProjectTopics(_publisher);
             Assert.False(topics.Count() == 0);
             DeleteTopic(topicId, _publisher);
+        }
+
+        [Fact]
+        public void TestListTopicPages()
+        {
+            string topicId = "testTopicForListingTopics";
+            string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
+            for (int i = 0; i < 5; ++i)
+            {
+                CreateTopic($"{topicId}{i}", _publisher);
+            }
+            string projectName = PublisherClient.FormatProjectName(_projectId);
+            var pages = _publisher.ListTopics(projectName).AsPages();
+            int pageCount = 0;
+            foreach (var page in pages)
+            {
+                Debug.Write($"Page {++pageCount}\n");
+                foreach (var topic in page)
+                {
+                    Debug.Write($"{topic.Name}\n");
+                }
+            }
+            for (int i = 0; i < 5; ++i)
+            {
+                DeleteTopic($"{topicId}{i}", _publisher);
+            }
         }
 
         [Fact]
