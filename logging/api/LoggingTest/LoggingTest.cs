@@ -25,11 +25,11 @@ namespace GoogleCloudSamples
 {
     public class BaseTest
     {
-        private readonly string s_projectId;
+        private readonly string _projectId;
 
         public BaseTest()
         {
-            s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         }
 
         public struct ConsoleOutput
@@ -137,7 +137,7 @@ namespace GoogleCloudSamples
             {
                 string sinkId = "sinkForTestCreateSink";
                 string logId = "logForTestCreateSink";
-                string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
+                string sinkName = $"projects/{_projectId}/sinks/{sinkId}";
                 // Try creating sink.
                 var created = Run("create-sink", sinkId, logId);
                 AssertSucceeded(created);
@@ -153,7 +153,7 @@ namespace GoogleCloudSamples
             {
                 string sinkId = "sinkForTestListSinks";
                 string logId = "logForTestListSinks";
-                string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
+                string sinkName = $"projects/{_projectId}/sinks/{sinkId}";
                 // Try creating sink.
                 var created = Run("create-sink", sinkId, logId);
                 AssertSucceeded(created);
@@ -170,7 +170,7 @@ namespace GoogleCloudSamples
                 string sinkId = "sinkForTestUpdateSink";
                 string logId = "logForTestUpdateSink";
                 string newLogId = "newlogForTestUpdateSink";
-                string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
+                string sinkName = $"projects/{_projectId}/sinks/{sinkId}";
                 // Try creating sink.
                 var created = Run("create-sink", sinkId, logId);
                 AssertSucceeded(created);
@@ -190,7 +190,7 @@ namespace GoogleCloudSamples
             {
                 string sinkId = "sinkForTestDeleteSink";
                 string logId = "logForTestDeleteSink";
-                string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
+                string sinkName = $"projects/{_projectId}/sinks/{sinkId}";
                 // Try creating sink.
                 var created = Run("create-sink", sinkId, logId);
                 AssertSucceeded(created);
