@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -33,6 +34,16 @@ namespace GoogleCloudSamples
         /// <returns>The console output of this program</returns>
         public static ConsoleOutput Run(params string[] arguments)
         {
+            if (arguments.Length > 0 && new[] { "list", "nuke" }
+                .Contains(arguments[0].ToLower()))
+            {
+                // Cloud Storage does not guarantee that new objects will be
+                // immediately listed, so there's a potential race.  Actually, 
+                // it doesn't guarantee they'll be visible after 2 seconds
+                // either, but that's enough time for our tests to pass
+                // consistently.
+                Thread.Sleep(2000);
+            }
             Console.Write("QuickStart.exe ");
             Console.WriteLine(string.Join(" ", arguments));
 
@@ -69,7 +80,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestBadCommand()
         {
-            var ran = Run("throb");
+            var ran = Run("throw");
             Assert.Equal(-1, ran.ExitCode);
             Assert.Contains("QuickStart", ran.Stdout);
         }
@@ -91,8 +102,16 @@ namespace GoogleCloudSamples
         }
         public void Dispose()
         {
-            QuickStartTest.Run("nuke", BucketName);
-            QuickStartTest.Run("delete", BucketName);
+            // Leaving a bucket around would be costly.  Therefore, if the 
+            // first attempt fails, try a couple more times.
+            var goodExitCodes = new[] { 0, 404 };
+            int exitCode = -1;
+            for (int tryCount = 0;
+                tryCount < 3 && !goodExitCodes.Contains(exitCode); ++tryCount)
+            {
+                QuickStartTest.Run("nuke", BucketName);
+                exitCode = QuickStartTest.Run("delete", BucketName).ExitCode;
+            }
         }
 
         public string BucketName { get; private set; }
@@ -101,6 +120,7 @@ namespace GoogleCloudSamples
     public class QuickStartTest : BaseTest, IDisposable, IClassFixture<BucketFixture>
     {
         private readonly string _bucketName;
+
         public QuickStartTest(BucketFixture fixture)
         {
             _bucketName = fixture.BucketName;
