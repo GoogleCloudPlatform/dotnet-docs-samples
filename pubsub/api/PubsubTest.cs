@@ -103,7 +103,15 @@ namespace GoogleCloudSamples
             // [START create_topic]
             string topicName = PublisherClient.FormatTopicName(_projectId,
                 topicId);
-            publisher.CreateTopic(topicName);
+            try
+            {
+                publisher.CreateTopic(topicName);
+            }
+            catch (RpcException e)
+            when (e.Status.StatusCode == StatusCode.AlreadyExists)
+            {
+                // Already exists.  That's fine.
+            }
             // [END create_topic]
         }
 
@@ -116,9 +124,17 @@ namespace GoogleCloudSamples
             string subscriptionName =
                 SubscriberClient.FormatSubscriptionName(_projectId,
                 subscriptionId);
-            Subscription subscription = subscriber.CreateSubscription(
-                subscriptionName, topicName, pushConfig: null,
-                ackDeadlineSeconds: 60);
+            try
+            {
+                Subscription subscription = subscriber.CreateSubscription(
+                    subscriptionName, topicName, pushConfig: null,
+                    ackDeadlineSeconds: 60);
+            }
+            catch (RpcException e)
+            when (e.Status.StatusCode == StatusCode.AlreadyExists)
+            {
+                // Already exists.  That's fine.
+            }
             // [END create_subscription]
         }
 
