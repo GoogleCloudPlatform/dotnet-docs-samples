@@ -13,22 +13,14 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
-$SUCCEEDED = $true
 
-$quickStartCopy = [System.IO.Path]::GetTempFileName()
-Copy-Item -Force QuickStart\Program.cs $quickStartCopy
-try {
-    Get-Content $quickStartCopy | ForEach-Object { 
-        $_.Replace("YOUR-PROJECT-ID", $env:GOOGLE_PROJECT_ID)
-    } | Out-File -Encoding UTF8 QuickStart\Program.cs
-
+BackupAndEdit-TextFile "QuickStart\Program.cs" `
+    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
+{       
     Build-Solution
     packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
         .\QuickStartTest\bin\Debug\QuickStartTest.dll `
         -parallel none
-    $SUCCEEDED = $SUCCEEDED -and $LASTEXITCODE -eq 0
-} finally {
-    Copy-Item -Force $quickStartCopy QuickStart\Program.cs
+    if ($LASTEXITCODE -ne 0) { throw "FAILED" }
 }
 
-if (-not $SUCCEEDED) { throw "FAILED" }
