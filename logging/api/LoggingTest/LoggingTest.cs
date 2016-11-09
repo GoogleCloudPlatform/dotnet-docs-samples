@@ -64,10 +64,8 @@ namespace GoogleCloudSamples
                 $"Exit code: {output.ExitCode}\n{output.Stdout}");
         }
 
-        public class LoggingTest : BaseTest, IDisposable
+        public class LoggingTest : BaseTest
         {
-            public void Dispose() { }
-
             [Fact]
             public void TestCreateLogEntry()
             {
@@ -219,7 +217,7 @@ namespace GoogleCloudSamples
             public void TestQuickStartConsoleApp()
             {
                 string output;
-                string filePath = "..\\..\\..\\QuickStart\\bin\\Debug\\QuickStart.exe";
+                string filePath = @"..\..\..\QuickStart\bin\Debug\QuickStart.exe";
                 string expectedOutput = "Log Entry created.";
                 // This logId should match the logId value set in QuickStart\QuickStart.cs
                 string logId = "my-log";

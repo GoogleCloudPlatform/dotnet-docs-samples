@@ -53,6 +53,12 @@ namespace GoogleCloudSamples
 
         public static int Main(string[] args)
         {
+            if (s_projectId == "YOUR-PROJECT" + "-ID")
+            {
+                Console.WriteLine("Update Program.cs and replace YOUR-PROJECT" +
+                    "-ID with your project id, and recompile.");
+                return -1;
+            }
             LoggingSample loggingSample = new LoggingSample(Console.Out);
             return loggingSample.Run(args);
         }
