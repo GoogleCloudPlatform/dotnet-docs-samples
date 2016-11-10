@@ -613,3 +613,97 @@ filter Update-Packages ([string] $Mask) {
         }
     }
 }
+
+##############################################################################
+#.SYNOPSIS
+# Make a backup copy of a file, run the script, and restore the file.
+#
+#.PARAMETER Files
+# A list of files to back up.
+#
+#.PARAMETER ScriptBlock
+# The script to execute.
+#
+#.EXAMPLE
+# Backup-File Program.cs { Build }
+##############################################################################
+function Backup-File(
+    [string[]][Parameter(Mandatory=$true,ValueFromPipeline=$true)] $Files,
+    [scriptblock][Parameter(Mandatory=$true)] $ScriptBlock) 
+{
+    $fileMap = @{}
+    try {
+        foreach ($file in $files) {
+            $tempCopy = [System.IO.Path]::GetTempFileName()
+            Copy-Item -Force $file $tempCopy
+            $fileMap[$file] = $tempCopy
+        }
+        . $ScriptBlock
+    }
+    finally {
+        foreach ($file in $files) {
+            Copy-Item -Force $fileMap[$file] $file
+        }
+    }
+}
+
+##############################################################################
+#.SYNOPSIS
+# Replace text in a text file.
+#
+#.PARAMETER Files
+# A list of files to pack up.
+#
+#.PARAMETER Replacements.
+# A hashtable.  Keys are the text to replace.  Values are replacements.
+#
+#.EXAMPLE
+# Edit-TextFile Program.cs @{'YOUR-PROJECT-ID', $env:GOOGLE_PROJECT_ID}
+##############################################################################
+function Edit-TextFile(
+    [string[]][Parameter(Mandatory=$true,ValueFromPipeline=$true)] $Files,
+    [hashtable][Parameter(Mandatory=$true)] $Replacements)
+{
+    foreach ($file in $files) {
+        $content = Get-Content $file | ForEach-Object {
+            $line = $_
+            foreach ($key in $Replacements.Keys) {
+                $line = $line.Replace($key, $Replacements[$key])
+            }
+            $line
+        }
+        $content | Out-File -Force -Encoding UTF8 $file
+    }
+}
+
+##############################################################################
+#.SYNOPSIS
+# Make a backup copy of a file, edit the file, run the script, and restore 
+# the file.
+#
+#.PARAMETER Files
+# A list of files to back up.
+#
+#.PARAMETER Replacements.
+# A hashtable.  Keys are the text to replace.  Values are replacements.
+#
+#.PARAMETER ScriptBlock
+# The script to execute.
+#
+#.EXAMPLE
+# BackupAndEdit-TextFile "QuickStart\Program.cs" `
+#     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
+# {
+#     Build-Solution
+# }
+##############################################################################
+function BackupAndEdit-TextFile(
+    [string[]][Parameter(Mandatory=$true,ValueFromPipeline=$true)] $Files,
+    [hashtable][Parameter(Mandatory=$true)] $Replacements,
+    [scriptblock][Parameter(Mandatory=$true)] $ScriptBlock)
+{
+    Backup-File $Files {
+        Edit-TextFile $Files $Replacements
+        . $ScriptBlock
+    }.GetNewClosure()
+}
