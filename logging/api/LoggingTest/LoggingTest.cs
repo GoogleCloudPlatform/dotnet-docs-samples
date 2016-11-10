@@ -20,6 +20,8 @@ using Xunit;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
+using System.Collections.Generic;
+using Grpc.Core;
 
 namespace GoogleCloudSamples
 {
@@ -73,7 +75,7 @@ namespace GoogleCloudSamples
                 try
                 {
                     // Delete all logs created from running the tests.
-                    foreach (string log in logsToDelete)
+                    foreach (string log in _logsToDelete)
                     {
                         Run("delete-log", log);
                     }
@@ -89,7 +91,7 @@ namespace GoogleCloudSamples
                 try
                 {
                     // Delete all the log sinks created from running the tests.
-                    foreach (string sink in sinksToDelete)
+                    foreach (string sink in _sinksToDelete)
                     {
                         Run("delete-sink", sink);
                     }
