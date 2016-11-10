@@ -25,7 +25,7 @@ namespace GoogleCloudSamples
                 "  QuickStart move bucket-name source-object-name dest-object-name\n" +
                 "  QuickStart download bucket-name object-name [local-file-path]\n" +
                 "  QuickStart delete bucket-name\n" +
-                "  QuickStart delete bucket-name object-name\n";
+                "  QuickStart delete bucket-name object-name [object-name]\n";
 
         public QuickStart(TextWriter stdout)
         {
@@ -105,11 +105,14 @@ namespace GoogleCloudSamples
         // [END storage_upload_file]
 
         // [START storage_delete_file]
-        private void DeleteObject(string bucketName, string objectName)
+        private void DeleteObject(string bucketName, IEnumerable<string> objectNames)
         {
             var storage = StorageClient.Create();
-            storage.DeleteObject(bucketName, objectName);
-            _out.WriteLine($"Deleted {objectName}.");
+            foreach (string objectName in objectNames)
+            {
+                storage.DeleteObject(bucketName, objectName);
+                _out.WriteLine($"Deleted {objectName}.");
+            }
         }
         // [END storage_delete_file]
 
@@ -195,24 +198,6 @@ namespace GoogleCloudSamples
         }
         // [END storage_copy_file]
 
-        /// <summary>
-        /// Delete all the files in a bucket.
-        /// </summary>
-        /// <param name="bucketName"></param>
-        private async Task NukeBucketAsync(string bucketName)
-        {
-            var storage = StorageClient.Create();
-            var objectList = await storage.ListObjectsAsync(bucketName, "").ToArray();
-            var deleteTasks = new Task[objectList.Length];
-            for (int i = 0; i < objectList.Length; ++i)
-            {
-                deleteTasks[i] = storage.DeleteObjectAsync(bucketName,
-                    objectList[i].Name);
-                _out.WriteLine($"Deleting {objectList[i].Name}.");
-            }
-            Task.WaitAll(deleteTasks);
-        }
-
         public bool PrintUsage()
         {
             _out.WriteLine(s_usage);
@@ -260,7 +245,7 @@ namespace GoogleCloudSamples
                         }
                         else
                         {
-                            DeleteObject(args[1], args[2]);
+                            DeleteObject(args[1], args.Skip(2));
                         }
                         break;
 
@@ -292,11 +277,6 @@ namespace GoogleCloudSamples
                     case "copy":
                         if (args.Length < 5 && PrintUsage()) return -1;
                         CopyObject(args[1], args[2], args[3], args[4]);
-                        break;
-
-                    case "nuke":
-                        if (args.Length < 2 && PrintUsage()) return -1;
-                        Task.Run(() => NukeBucketAsync(args[1])).Wait();
                         break;
 
                     default:
