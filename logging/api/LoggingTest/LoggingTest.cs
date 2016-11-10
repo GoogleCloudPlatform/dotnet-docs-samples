@@ -80,8 +80,7 @@ namespace GoogleCloudSamples
                         Run("delete-log", log);
                     }
                 }
-                catch (RpcException ex) 
-                    when (ex.Status.StatusCode == StatusCode.NotFound) {}
+                catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
                 try
                 {
                     // Delete all the log sinks created from running the tests.
@@ -90,8 +89,7 @@ namespace GoogleCloudSamples
                         Run("delete-sink", sink);
                     }
                 }
-                catch (RpcException ex)
-                    when (ex.Status.StatusCode == StatusCode.NotFound) {}
+                catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
             }
 
             [Fact]
