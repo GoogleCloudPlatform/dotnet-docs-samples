@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -34,16 +35,6 @@ namespace GoogleCloudSamples
         /// <returns>The console output of this program</returns>
         public static ConsoleOutput Run(params string[] arguments)
         {
-            if (arguments.Length > 0 && new[] { "list", "nuke" }
-                .Contains(arguments[0].ToLower()))
-            {
-                // Cloud Storage does not guarantee that new objects will be
-                // immediately listed, so there's a potential race.  Actually, 
-                // it doesn't guarantee they'll be visible after 2 seconds
-                // either, but that's enough time for our tests to pass
-                // consistently.
-                Thread.Sleep(2000);
-            }
             Console.Write("QuickStart.exe ");
             Console.WriteLine(string.Join(" ", arguments));
 
@@ -94,6 +85,10 @@ namespace GoogleCloudSamples
         }
     }
 
+    /// <summary>
+    /// Trying to create a bucket for each test will exceed our rate limit.
+    /// Therefore, share one bucket across all the tests.
+    /// </summary>
     public class BucketFixture : IDisposable
     {
         public BucketFixture()
@@ -102,16 +97,7 @@ namespace GoogleCloudSamples
         }
         public void Dispose()
         {
-            // Leaving a bucket around would be costly.  Therefore, if the 
-            // first attempt fails, try a couple more times.
-            var goodExitCodes = new[] { 0, 404 };
-            int exitCode = -1;
-            for (int tryCount = 0;
-                tryCount < 3 && !goodExitCodes.Contains(exitCode); ++tryCount)
-            {
-                QuickStartTest.Run("nuke", BucketName);
-                exitCode = QuickStartTest.Run("delete", BucketName).ExitCode;
-            }
+            QuickStartTest.DeleteBucket(BucketName);
         }
 
         public string BucketName { get; private set; }
@@ -120,15 +106,83 @@ namespace GoogleCloudSamples
     public class QuickStartTest : BaseTest, IDisposable, IClassFixture<BucketFixture>
     {
         private readonly string _bucketName;
+        /// <summary>
+        /// Maintain a list of objects that must be deleted at the end of the test.
+        /// </summary>
+        private readonly SortedDictionary<string, SortedSet<string>> _garbage =
+            new SortedDictionary<string, SortedSet<string>>();
 
         public QuickStartTest(BucketFixture fixture)
         {
             _bucketName = fixture.BucketName;
         }
 
+        /// <summary>
+        /// Add an object to delete at the end of the test.
+        /// </summary>
+        /// <returns>The objectName.</returns>
+        private string Collect(string bucketName, string objectName)
+        {
+            SortedSet<string> objectNames;
+            if (!_garbage.TryGetValue(bucketName, out objectNames))
+            {
+                objectNames = _garbage[bucketName] = new SortedSet<string>();
+            }
+            objectNames.Add(objectName);
+            return objectName;
+        }
+
+        /// <summary>
+        /// Add an object to delete at the end of the test.
+        /// </summary>
+        /// <returns>The objectName.</returns>
+        private string Collect(string objectName) => Collect(_bucketName, objectName);
+
+        public static void DeleteBucket(string bucketName)
+        {
+            Eventually(() => AssertSucceeded(Run("delete", bucketName)));
+        }
+
         public void Dispose()
         {
-            Run("nuke", _bucketName);
+            DeleteGarbage();
+        }
+
+        private void DeleteGarbage()
+        {
+            foreach (var bucket in _garbage)
+            {
+                List<string> args = new List<string>();
+                args.Add("delete");
+                args.Add(bucket.Key);
+                args.AddRange(bucket.Value);
+                AssertSucceeded(Run(args.ToArray()));
+            }
+            _garbage.Clear();
+        }
+
+        /// <summary>
+        /// Retry action.
+        /// Datastore guarantees only eventual consistency.  Many tests write
+        /// an entity and then query it afterward, but may not find it immediately.
+        /// </summary>
+        /// <param name="action"></param>
+        private static void Eventually(Action action)
+        {
+            int delayMs = 1000;
+            for (int i = 0; ; ++i)
+            {
+                try
+                {
+                    action();
+                    return;
+                }
+                catch (Xunit.Sdk.XunitException) when (i < 4)
+                {
+                    Thread.Sleep(delayMs);
+                    delayMs *= 2;
+                }
+            }
         }
 
         public static string CreateRandomBucket()
@@ -150,28 +204,34 @@ namespace GoogleCloudSamples
             Assert.Equal(409, created_again.ExitCode);
 
             // Try listing the buckets.  We should find the new one.
-            var listed = Run("list");
-            AssertSucceeded(listed);
-            Assert.Contains(_bucketName, listed.Stdout);
+            Eventually(() =>
+            {
+                var listed = Run("list");
+                AssertSucceeded(listed);
+                Assert.Contains(_bucketName, listed.Stdout);
+            });
         }
 
         [Fact]
         public void TestListObjectsInBucket()
         {
             // Try listing the files.  There should be none.
-            var listed = Run("list", _bucketName);
-            AssertSucceeded(listed);
-            Assert.Equal("", listed.Stdout);
+            Eventually(() =>
+            {
+                var listed = Run("list", _bucketName);
+                AssertSucceeded(listed);
+                Assert.Equal("", listed.Stdout);
+            });
 
-            var uploaded = Run("upload", _bucketName, "Hello.txt");
+            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
             AssertSucceeded(uploaded);
 
-            listed = Run("list", _bucketName);
-            AssertSucceeded(listed);
-            Assert.Contains("Hello.txt", listed.Stdout);
-
-            var deleted = Run("delete", _bucketName, "Hello.txt");
-            AssertSucceeded(deleted);
+            Eventually(() =>
+            {
+                var listed = Run("list", _bucketName);
+                AssertSucceeded(listed);
+                Assert.Contains("Hello.txt", listed.Stdout);
+            });
         }
 
         public string[] SplitOutput(string stdout) =>
@@ -183,44 +243,50 @@ namespace GoogleCloudSamples
         public void TestListObjectsInBucketWithPrefix()
         {
             // Try listing the files.  There should be none.
-            var listed = Run("list", _bucketName, "a", null);
-            AssertSucceeded(listed);
-            Assert.Equal("", listed.Stdout);
+            Eventually(() =>
+            {
+                var listed = Run("list", _bucketName);
+                AssertSucceeded(listed);
+                Assert.Equal("", listed.Stdout);
+            });
 
-            // Upload 3 files.
-            var uploaded = Run("upload", _bucketName, "Hello.txt", "a/1.txt");
+            // Upload 4 files.
+            var uploaded = Run("upload", _bucketName, "Hello.txt", Collect("a/1.txt"));
             AssertSucceeded(uploaded);
-            uploaded = Run("upload", _bucketName, "Hello.txt", "a/2.txt");
+            uploaded = Run("upload", _bucketName, "Hello.txt", Collect("a/2.txt"));
             AssertSucceeded(uploaded);
-            uploaded = Run("upload", _bucketName, "Hello.txt", "b/2.txt");
+            uploaded = Run("upload", _bucketName, "Hello.txt", Collect("b/2.txt"));
             AssertSucceeded(uploaded);
-            uploaded = Run("upload", _bucketName, "Hello.txt", "a/b/3.txt");
+            uploaded = Run("upload", _bucketName, "Hello.txt", Collect("a/b/3.txt"));
             AssertSucceeded(uploaded);
 
-            // With no delimiter, we should get all 3 files.
-            listed = Run("list", _bucketName, "a/", null);
-            AssertSucceeded(listed);
-            Assert.Equal(new string[] {
-                "a/1.txt",
-                "a/2.txt",
-                "a/b/3.txt"
-            }, SplitOutput(listed.Stdout));
+            Eventually(() =>
+            {
+                // With no delimiter, we should get all 3 files.
+                var listed = Run("list", _bucketName, "a/", null);
+                AssertSucceeded(listed);
+                Assert.Equal(new string[] {
+                    "a/1.txt",
+                    "a/2.txt",
+                    "a/b/3.txt"
+                }, SplitOutput(listed.Stdout));
 
-            // With a delimeter, we should see only direct contents.
-            listed = Run("list", _bucketName, "a/", "/");
-            AssertSucceeded(listed);
-            Assert.Equal(new string[] {
-                "a/1.txt",
-                "a/2.txt",
-            }, SplitOutput(listed.Stdout));
+                // With a delimeter, we should see only direct contents.
+                listed = Run("list", _bucketName, "a/", "/");
+                AssertSucceeded(listed);
+                Assert.Equal(new string[] {
+                    "a/1.txt",
+                    "a/2.txt",
+                }, SplitOutput(listed.Stdout));
+            });
         }
 
         [Fact]
         public void TestDownloadObject()
         {
-            var uploaded = Run("upload", _bucketName, "Hello.txt");
+            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
             AssertSucceeded(uploaded);
-            uploaded = Run("upload", _bucketName, "Hello.txt", "Hello2.txt");
+            uploaded = Run("upload", _bucketName, "Hello.txt", Collect("Hello2.txt"));
             AssertSucceeded(uploaded);
 
             var downloaded = Run("download", _bucketName, "Hello2.txt");
@@ -244,7 +310,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetMetadata()
         {
-            var uploaded = Run("upload", _bucketName, "Hello.txt");
+            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
             var got = Run("get-metadata", _bucketName, "Hello.txt");
             AssertSucceeded(got);
             Assert.Contains("Generation", got.Stdout);
@@ -254,7 +320,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestMakePublic()
         {
-            var uploaded = Run("upload", _bucketName, "Hello.txt");
+            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
             var got = Run("get-metadata", _bucketName, "Hello.txt");
             AssertSucceeded(got);
             var medialink_regex = new Regex(@"MediaLink:\s?(.+)");
@@ -278,25 +344,36 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestMove()
         {
-            Run("upload", _bucketName, "Hello.txt");
+            Run("upload", _bucketName, Collect("Hello.txt"));
             // Make sure the file doesn't exist until we move it there.
             var got = Run("get-metadata", _bucketName, "Bye.txt");
             Assert.Equal(404, got.ExitCode);
             // Now move it there.
-            AssertSucceeded(Run("move", _bucketName, "Hello.txt", "Bye.txt"));
+            AssertSucceeded(Run("move", _bucketName, "Hello.txt", Collect("Bye.txt")));
+            // If we try to clean up "Hello.txt", it will fail because it moved.
+            _garbage[_bucketName].Remove("Hello.txt");
             AssertSucceeded(Run("get-metadata", _bucketName, "Bye.txt"));
         }
 
         [Fact]
         public void TestCopy()
         {
-            Run("upload", _bucketName, "Hello.txt");
+            Run("upload", _bucketName, Collect("Hello.txt"));
             using (var otherBucket = new BucketFixture())
             {
-                AssertSucceeded(Run("copy", _bucketName, "Hello.txt",
-                    otherBucket.BucketName, "Bye.txt"));
-                AssertSucceeded(Run("get-metadata", otherBucket.BucketName,
-                    "Bye.txt"));
+                try
+                {
+                    AssertSucceeded(Run("copy", _bucketName, "Hello.txt",
+                        otherBucket.BucketName, "Bye.txt"));
+                    Collect(otherBucket.BucketName, "Bye.txt");
+                    AssertSucceeded(Run("get-metadata", otherBucket.BucketName,
+                        "Bye.txt"));
+                }
+                finally
+                {
+                    // Must delete garbage before trying to dispose otherBucket.
+                    DeleteGarbage();
+                }
             }
         }
     }
