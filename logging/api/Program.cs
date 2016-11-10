@@ -180,8 +180,8 @@ namespace GoogleCloudSamples
         private void DeleteSink(string sinkId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
-            _out.WriteLine("Preparing to delete sink");
-            sinkClient.DeleteSink(sinkId);
+            string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
+            sinkClient.DeleteSink(sinkName);
             _out.WriteLine($"Deleted {sinkId}.");
         }
         // [END delete_log_sink]

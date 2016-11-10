@@ -53,7 +53,7 @@ namespace GoogleCloudSamples
             // See the list of resource types at:
             // https://cloud.google.com/logging/docs/api/v2/resource-list
             // This sample uses resource type 'global' causing log entries to appear in the 
-            // "Custom Logs" resource list of the Developers Console Logs Viewer:
+            // "Global" resource list of the Developers Console Logs Viewer:
             //  https://console.cloud.google.com/logs/viewer
             MonitoredResource resource = new MonitoredResource();
             resource.Type = "global";
