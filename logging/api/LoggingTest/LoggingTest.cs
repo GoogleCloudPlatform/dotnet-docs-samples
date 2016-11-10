@@ -26,8 +26,8 @@ namespace GoogleCloudSamples
     public class BaseTest
     {
         private readonly string _projectId;
-        private List<string> logsToDelete = new List<string>();
-        private List<string> sinksToDelete = new List<string>();
+        private readonly List<string> _logsToDelete = new List<string>();
+        private readonly List<string> _sinksToDelete = new List<string>();
 
         public BaseTest()
         {
@@ -70,10 +70,10 @@ namespace GoogleCloudSamples
         {
             public void Dispose()
             {
-                try 
+                try
                 {
                     // Delete all logs created from running the tests.
-                    foreach(string log in logsToDelete)
+                    foreach (string log in logsToDelete)
                     {
                         Run("delete-log", log);
                     }
@@ -81,15 +81,15 @@ namespace GoogleCloudSamples
                 catch (RpcException ex)
                 {
                     // Not Found exceptions are allowed otherwise throw.
-                    if(ex.Status.StatusCode != StatusCode.NotFound)
+                    if (ex.Status.StatusCode != StatusCode.NotFound)
                     {
                         throw;
                     }
                 }
-                try 
+                try
                 {
                     // Delete all the log sinks created from running the tests.
-                    foreach(string sink in sinksToDelete)
+                    foreach (string sink in sinksToDelete)
                     {
                         Run("delete-sink", sink);
                     }
@@ -97,7 +97,7 @@ namespace GoogleCloudSamples
                 catch (RpcException ex)
                 {
                     // Not Found exceptions are allowed otherwise throw.
-                    if(ex.Status.StatusCode != StatusCode.NotFound)
+                    if (ex.Status.StatusCode != StatusCode.NotFound)
                     {
                         throw;
                     }
@@ -109,7 +109,7 @@ namespace GoogleCloudSamples
             {
                 string logId = "logForTestCreateLogEntry";
                 string message = "Example log entry.";
-                logsToDelete.Add(logId);
+                _logsToDelete.Add(logId);
                 // Try creating a log entry.
                 var created = Run("create-log-entry", logId, message);
                 AssertSucceeded(created);
@@ -128,7 +128,7 @@ namespace GoogleCloudSamples
                 string message1 = "Example log entry.";
                 string message2 = "Another example log entry.";
                 string message3 = "Additional example log entry.";
-                logsToDelete.Add(logId);
+                _logsToDelete.Add(logId);
                 // Try creating three log entries.
                 var created1 = Run("create-log-entry", logId, message1);
                 AssertSucceeded(created1);
@@ -175,8 +175,8 @@ namespace GoogleCloudSamples
                 string logId = "logForTestCreateSink";
                 string sinkName = $"projects/{_projectId}/sinks/{sinkId}";
                 string message = "Example log entry.";
-                sinksToDelete.Add(sinkId);
-                logsToDelete.Add(logId);
+                _sinksToDelete.Add(sinkId);
+                _logsToDelete.Add(logId);
                 // Try creating log with log entry.
                 var created1 = Run("create-log-entry", logId, message);
                 AssertSucceeded(created1);
@@ -196,8 +196,8 @@ namespace GoogleCloudSamples
                 string logId = "logForTestListSinks";
                 string sinkName = $"projects/{_projectId}/sinks/{sinkId}";
                 string message = "Example log entry.";
-                logsToDelete.Add(logId);
-                sinksToDelete.Add(sinkId);
+                _logsToDelete.Add(logId);
+                _sinksToDelete.Add(sinkId);
                 // Try creating log with log entry.
                 var created1 = Run("create-log-entry", logId, message);
                 AssertSucceeded(created1);
@@ -218,9 +218,9 @@ namespace GoogleCloudSamples
                 string newLogId = "newlogForTestUpdateSink";
                 string sinkName = $"projects/{_projectId}/sinks/{sinkId}";
                 string message = "Example log entry.";
-                sinksToDelete.Add(sinkId);
-                logsToDelete.Add(logId);
-                logsToDelete.Add(newLogId);
+                _sinksToDelete.Add(sinkId);
+                _logsToDelete.Add(logId);
+                _logsToDelete.Add(newLogId);
                 // Try creating logs with log entries.
                 var created1 = Run("create-log-entry", logId, message);
                 AssertSucceeded(created1);
@@ -246,7 +246,7 @@ namespace GoogleCloudSamples
                 string logId = "logForTestDeleteSink";
                 string sinkName = $"projects/{_projectId}/sinks/{sinkId}";
                 string message = "Example log entry.";
-                logsToDelete.Add(logId);
+                _logsToDelete.Add(logId);
                 // Try creating log with log entry.
                 var created1 = Run("create-log-entry", logId, message);
                 AssertSucceeded(created1);
@@ -283,7 +283,7 @@ namespace GoogleCloudSamples
                 // This logId should match the logId value set in QuickStart\QuickStart.cs
                 string logId = "my-log";
                 string message = "Hello World!";
-                logsToDelete.Add(logId);
+                _logsToDelete.Add(logId);
                 output = GetConsoleAppOutput(filePath).Trim();
                 Assert.Equal(expectedOutput, output);
                 // Pause for 5 seconds before trying to get newly added log entry.
