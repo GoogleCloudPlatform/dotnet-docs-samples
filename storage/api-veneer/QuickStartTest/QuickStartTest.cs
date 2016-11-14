@@ -177,7 +177,7 @@ namespace GoogleCloudSamples
                     action();
                     return;
                 }
-                catch (Xunit.Sdk.XunitException) when (i < 4)
+                catch (Xunit.Sdk.XunitException) when (i < 6)
                 {
                     Thread.Sleep(delayMs);
                     delayMs *= 2;
