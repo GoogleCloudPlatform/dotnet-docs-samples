@@ -23,6 +23,7 @@ namespace GoogleCloudSamples
     {
         public static string Usage = @"Usage:
 C:\> Analyze command text
+C:\> Analyze command gs://bucketName/objectName
 
 Where command is one of
     entities
@@ -31,7 +32,21 @@ Where command is one of
     everything
 ";
 
-        private static void AnalyzeEntities(string text)
+        // [START analyze_entities_from_file]
+        private static void AnalyzeEntitiesFromFile(string gcsUri)
+        {
+            var client = LanguageServiceClient.Create();
+            var response = client.AnalyzeEntities(new Document()
+            {
+                GcsContentUri = gcsUri,
+                Type = Document.Types.Type.PlainText
+            });
+            WriteEntities(response.Entities);
+        }
+        // [END analyze_entities_from_file]
+
+        // [START analyze_entities_from_string]
+        private static void AnalyzeEntitiesFromText(string text)
         {
             var client = LanguageServiceClient.Create();
             var response = client.AnalyzeEntities(new Document()
@@ -42,6 +57,7 @@ Where command is one of
             WriteEntities(response.Entities);
         }
 
+        // [START analyze_entities_from_file]
         private static void WriteEntities(IEnumerable<Entity> entities)
         {
             Console.WriteLine("Entities:");
@@ -58,8 +74,24 @@ Where command is one of
                     Console.WriteLine($"\t\t{keyval.Key}: {keyval.Value}");
             }
         }
+        // [END analyze_entities_from_file]
+        // [END analyze_entities_from_string]
 
-        private static void AnalyzeSentiment(string text)
+        // [START analyze_sentiment_from_file]
+        private static void AnalyzeSentimentFromFile(string gcsUri)
+        {
+            var client = LanguageServiceClient.Create();
+            var response = client.AnalyzeSentiment(new Document()
+            {
+                GcsContentUri = gcsUri,
+                Type = Document.Types.Type.PlainText
+            });
+            WriteSentiment(response.DocumentSentiment);
+        }
+        // [END analyze_sentiment_from_file]
+
+        // [START analyze_sentiment_from_string]
+        private static void AnalyzeSentimentFromText(string text)
         {
             var client = LanguageServiceClient.Create();
             var response = client.AnalyzeSentiment(new Document()
@@ -70,13 +102,31 @@ Where command is one of
             WriteSentiment(response.DocumentSentiment);
         }
 
+        // [START analyze_sentiment_from_file]
         private static void WriteSentiment(Sentiment sentiment)
         {
             Console.WriteLine($"Polarity: {sentiment.Polarity}");
             Console.WriteLine($"Magnitude: {sentiment.Magnitude}");
         }
+        // [END analyze_sentiment_from_file]
+        // [END analyze_sentiment_from_string]
 
-        private static void AnalyzeSyntax(string text, string encoding = "UTF16")
+        // [START analyze_syntax_from_file]
+        private static void AnalyzeSyntaxFromFile(string gcsUri)
+        {
+            var client = LanguageServiceClient.Create();
+            var response = client.AnnotateText(new Document()
+            {
+                GcsContentUri = gcsUri,
+                Type = Document.Types.Type.PlainText
+            },
+            new Features() { ExtractSyntax = true });
+            WriteSentences(response.Sentences);
+        }
+        // [END analyze_syntax_from_file]
+
+        // [START analyze_syntax_from_string]
+        private static void AnalyzeSyntaxFromText(string text)
         {
             var client = LanguageServiceClient.Create();
             var response = client.AnnotateText(new Document()
@@ -88,6 +138,7 @@ Where command is one of
             WriteSentences(response.Sentences);
         }
 
+        // [START analyze_syntax_from_file]
         private static void WriteSentences(IEnumerable<Sentence> sentences)
         {
             Console.WriteLine("Sentences:");
@@ -96,8 +147,10 @@ Where command is one of
                 Console.WriteLine($"\t{sentence.Text.BeginOffset}: {sentence.Text.Content}");
             }
         }
+        // [END analyze_syntax_from_file]
+        // [END analyze_syntax_from_string]
 
-        private static void AnalyzeEverything(string text, string encoding = "UTF16")
+        private static void AnalyzeEverything(string text)
         {
             var client = LanguageServiceClient.Create();
             var response = client.AnnotateText(new Document()
@@ -127,18 +180,28 @@ Where command is one of
             string command = args[0].ToLower();
             string text = string.Join(" ",
                 new ArraySegment<string>(args, 1, args.Length - 1));
+            string gcsUri = args[1].ToLower().StartsWith("gs://") ? args[1] : null;
             switch (command)
             {
                 case "entities":
-                    AnalyzeEntities(text);
+                    if (null == gcsUri)
+                        AnalyzeEntitiesFromText(text);
+                    else
+                        AnalyzeEntitiesFromFile(gcsUri);
                     break;
 
                 case "syntax":
-                    AnalyzeSyntax(text);
+                    if (null == gcsUri)
+                        AnalyzeSyntaxFromText(text);
+                    else
+                        AnalyzeSyntaxFromFile(gcsUri);
                     break;
 
                 case "sentiment":
-                    AnalyzeSentiment(text);
+                    if (null == gcsUri)
+                        AnalyzeSentimentFromText(text);
+                    else
+                        AnalyzeSentimentFromFile(gcsUri);
                     break;
 
                 case "everything":
