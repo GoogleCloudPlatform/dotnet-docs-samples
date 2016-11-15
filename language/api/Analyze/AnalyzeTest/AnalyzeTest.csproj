@@ -67,6 +67,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\QuickStart\QuickStart.csproj">
+      <Project>{faa57a34-7c5e-4944-a683-019608bc1e4a}</Project>
+      <Name>QuickStart</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Analyze.csproj">
       <Project>{2edbb5bb-c864-4c33-860d-70dfc6240322}</Project>
       <Name>Analyze</Name>
