@@ -26,6 +26,11 @@ namespace GoogleCloudSamples
         /// <returns>The console output of this program</returns>
         public string Run(params string[] arguments)
         {
+            return Run(Analyze.Main, arguments);
+        }
+
+        public string Run(Action<string[]> main, params string[] arguments)
+        {
             var standardOut = Console.Out;
 
             using (var output = new StringWriter())
@@ -34,7 +39,7 @@ namespace GoogleCloudSamples
 
                 try
                 {
-                    Analyze.Main(arguments);
+                    main(arguments);
                     return output.ToString();
                 }
                 finally
@@ -121,6 +126,13 @@ namespace GoogleCloudSamples
             Assert.Contains("55: It's so bad, it's good.", output);
             Assert.Contains("Entities:", output);
             Assert.Contains("Name: Santa Claus Conquers the Martians", output);
+        }
+
+        [Fact]
+        public void QuickStartTest()
+        {
+            var output = Run(QuickStart.Main);
+            Assert.Contains("Magnitude", output);
         }
     }
 }
