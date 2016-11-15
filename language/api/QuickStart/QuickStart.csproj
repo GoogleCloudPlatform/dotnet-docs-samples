@@ -71,8 +71,8 @@
       <HintPath>..\Analyze\packages\Google.Apis.1.18.0\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Cloud.Language.V1Beta1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
-      <HintPath>..\Analyze\packages\Google.Cloud.Language.V1Beta1.1.0.0-alpha03\lib\net45\Google.Cloud.Language.V1Beta1.dll</HintPath>
+    <Reference Include="Google.Cloud.Language.V1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
+      <HintPath>..\Analyze\packages\Google.Cloud.Language.V1.1.0.0-beta01\lib\net45\Google.Cloud.Language.V1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Protobuf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">

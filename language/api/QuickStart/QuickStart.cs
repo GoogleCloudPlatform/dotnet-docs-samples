@@ -14,7 +14,7 @@
 
 // [START language_quickstart]
 
-using Google.Cloud.Language.V1Beta1;
+using Google.Cloud.Language.V1;
 using System;
 
 namespace GoogleCloudSamples
@@ -32,7 +32,7 @@ namespace GoogleCloudSamples
                 Type = Document.Types.Type.PlainText
             });
             var sentiment = response.DocumentSentiment;
-            Console.WriteLine($"Polarity: {sentiment.Polarity}");
+            Console.WriteLine($"Score: {sentiment.Score}");
             Console.WriteLine($"Magnitude: {sentiment.Magnitude}");
         }
     }
