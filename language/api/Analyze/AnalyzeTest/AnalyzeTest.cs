@@ -48,6 +48,9 @@ namespace GoogleCloudSamples
             "Santa Claus Conquers the Martians is a terrible movie. "
             + "It's so bad, it's good.";
 
+        private static readonly string s_gcsUri =
+            "gs://silver-python2-testing/SantaClaus.txt";
+
         [Fact]
         public void CommandLinePrintsUsageTest()
         {
@@ -65,6 +68,14 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void EntitiesFromFileTest()
+        {
+            string output = Run("entities", s_gcsUri);
+            Assert.Contains("Entities:", output);
+            Assert.Contains("Name: Santa Claus Conquers the Martians", output);
+        }
+
+        [Fact]
         public void SyntaxTest()
         {
             string output = Run("syntax", s_text);
@@ -74,9 +85,26 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void SyntaxFromFileTest()
+        {
+            string output = Run("syntax", s_gcsUri);
+            Assert.Contains("Sentences:", output);
+            Assert.Contains("0: Santa Claus Conquers the Martians is a terrible movie.", output);
+            Assert.Contains("55: It's so bad, it's good.", output);
+        }
+
+        [Fact]
         public void SentimentTest()
         {
             string output = Run("sentiment", s_text);
+            Assert.Contains("Polarity: ", output);
+            Assert.Contains("Magnitude: ", output);
+        }
+
+        [Fact]
+        public void SentimentFromFileTest()
+        {
+            string output = Run("sentiment", s_gcsUri);
             Assert.Contains("Polarity: ", output);
             Assert.Contains("Magnitude: ", output);
         }
