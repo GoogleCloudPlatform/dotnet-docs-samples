@@ -102,7 +102,7 @@ namespace GoogleCloudSamples
         public void SentimentTest()
         {
             string output = Run("sentiment", s_text);
-            Assert.Contains("Polarity: ", output);
+            Assert.Contains("Score: ", output);
             Assert.Contains("Magnitude: ", output);
         }
 
@@ -110,7 +110,7 @@ namespace GoogleCloudSamples
         public void SentimentFromFileTest()
         {
             string output = Run("sentiment", s_gcsUri);
-            Assert.Contains("Polarity: ", output);
+            Assert.Contains("Score: ", output);
             Assert.Contains("Magnitude: ", output);
         }
 
@@ -119,7 +119,7 @@ namespace GoogleCloudSamples
         {
             string output = Run("everything", s_text);
             Assert.Contains("Language: en", output);
-            Assert.Contains("Polarity: ", output);
+            Assert.Contains("Score: ", output);
             Assert.Contains("Magnitude: ", output);
             Assert.Contains("Sentences:", output);
             Assert.Contains("0: Santa Claus Conquers the Martians is a terrible movie.", output);

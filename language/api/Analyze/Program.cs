@@ -12,10 +12,10 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using Google.Cloud.Language.V1Beta1;
+using Google.Cloud.Language.V1;
 using System;
 using System.Collections.Generic;
-using static Google.Cloud.Language.V1Beta1.AnnotateTextRequest.Types;
+using static Google.Cloud.Language.V1.AnnotateTextRequest.Types;
 
 namespace GoogleCloudSamples
 {
@@ -105,7 +105,7 @@ Where command is one of
         // [START analyze_sentiment_from_file]
         private static void WriteSentiment(Sentiment sentiment)
         {
-            Console.WriteLine($"Polarity: {sentiment.Polarity}");
+            Console.WriteLine($"Score: {sentiment.Score}");
             Console.WriteLine($"Magnitude: {sentiment.Magnitude}");
         }
         // [END analyze_sentiment_from_file]
