@@ -186,7 +186,6 @@ namespace GoogleCloudSamples
             _out.WriteLine($"Generation:\t{storageObject.Generation}");
             _out.WriteLine($"Id:\t{storageObject.Id}");
             _out.WriteLine($"Kind:\t{storageObject.Kind}");
-            _out.WriteLine($"KmsKeyName:\t{storageObject.KmsKeyName}");
             _out.WriteLine($"Md5Hash:\t{storageObject.Md5Hash}");
             _out.WriteLine($"MediaLink:\t{storageObject.MediaLink}");
             _out.WriteLine($"Metageneration:\t{storageObject.Metageneration}");
