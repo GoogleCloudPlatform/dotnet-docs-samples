@@ -134,6 +134,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\..\..\testutil\TestUtil.cs">
+      <Link>TestUtil.cs</Link>
+    </Compile>
     <Compile Include="DatastoreTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

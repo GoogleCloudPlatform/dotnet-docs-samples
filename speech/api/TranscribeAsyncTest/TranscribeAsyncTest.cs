@@ -27,27 +27,15 @@ namespace GoogleCloudSamples
 {
     public class TranscribeAsyncTest
     {
+        public CommandLineRunner _runner = new CommandLineRunner()
+        {
+            Command = "TranscribeAsync",
+            VoidMain = TranscribeAsync.Main
+        };
         /// <summary>Runs sample with the provided arguments</summary>
         /// <returns>The console output of this program</returns>
-        public string Run(params string[] arguments)
-        {
-            var standardOut = Console.Out;
-
-            using (var output = new StringWriter())
-            {
-                Console.SetOut(output);
-
-                try
-                {
-                    TranscribeAsync.Main(arguments);
-                    return output.ToString();
-                }
-                finally
-                {
-                    Console.SetOut(standardOut);
-                }
-            }
-        }
+        public string Run(params string[] arguments) =>
+            _runner.Run(arguments).Stdout;
 
         [Fact]
         public void CommandLinePrintsUsageTest()

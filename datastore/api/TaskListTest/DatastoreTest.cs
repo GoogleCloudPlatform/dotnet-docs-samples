@@ -38,6 +38,10 @@ namespace GoogleCloudSamples
         private readonly int _retryCount = 3;
         private readonly int _retryDelayMs = 500;
         // [END retry]
+        private readonly RetryRobot _retryRobot = new RetryRobot()
+        {
+            RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) }
+        };
 
         public DatastoreTest()
         {
@@ -57,23 +61,7 @@ namespace GoogleCloudSamples
         /// an entity and then query it afterward, but may not find it immediately.
         /// </summary>
         /// <param name="action"></param>
-        private void Eventually(Action action)
-        {
-            int delayMs = _retryDelayMs;
-            for (int i = 0; ; ++i)
-            {
-                try
-                {
-                    action();
-                    return;
-                }
-                catch (Xunit.Sdk.XunitException) when (i < _retryCount)
-                {
-                    Thread.Sleep(delayMs);
-                    delayMs *= 2;
-                }
-            }
-        }
+        private void Eventually(Action action) => _retryRobot.Eventually(action);
 
 
         private bool IsValidKey(Key key)
