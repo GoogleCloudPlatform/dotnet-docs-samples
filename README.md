@@ -6,7 +6,7 @@ Google Cloud services from C#.
 The [APIs and .NET Libraries page](https://cloud.google.com/dotnet/docs/apis)
 lists all the _Cloud_ APIs you can call from .NET.
 
-The samples in this repo cover only a _some_ of the total APIs that you can call from .NET.
+The samples in this repo cover only _some_ of the total APIs that you can call from .NET.
 
 [![Build Status](https://jenkins.on2flixcloud.tv/buildStatus/icon?job=dotnet-docs-samples)](https://jenkins.on2flixcloud.tv/job/dotnet-docs-samples/)
 
