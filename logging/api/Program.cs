@@ -100,7 +100,8 @@ namespace GoogleCloudSamples
             var client = LoggingServiceV2Client.Create();
             string logName = $"projects/{s_projectId}/logs/{logId}";
             IEnumerable<string> projectIds = new string[] { s_projectId };
-            var results = client.ListLogEntries(projectIds, logName, "timestamp desc");
+            var results = client.ListLogEntries(projectIds, $"logName={logName}",
+                "timestamp desc");
             foreach (var row in results)
             {
                 if (row != null && !String.IsNullOrEmpty(row.TextPayload.Trim()))
