@@ -13,31 +13,15 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
-$SUCCEEDED = $true
-
-$quickStartCopy1 = [System.IO.Path]::GetTempFileName()
-$quickStartCopy2 = [System.IO.Path]::GetTempFileName()
-Copy-Item -Force Program.cs $quickStartCopy1
-Copy-Item -Force QuickStart\QuickStart.cs $quickStartCopy2
-try {
-    Get-Content $quickStartCopy1 | ForEach-Object { 
-        $_.Replace("YOUR-PROJECT-ID", $env:GOOGLE_PROJECT_ID)
-    } | Out-File -Encoding UTF8 Program.cs
-	Get-Content $quickStartCopy2 | ForEach-Object { 
-        $_.Replace("YOUR-PROJECT-ID", $env:GOOGLE_PROJECT_ID)
-    } | Out-File -Encoding UTF8 QuickStart\QuickStart.cs
-
-	
+BackupAndEdit-TextFile @("QuickStart\QuickStart.cs", "Program.cs") `
+    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
+{	
     Build-Solution
+    if (-not $LASTEXITCODE -eq 0) { throw "FAILED" }
 
     packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
         .\LoggingTest\bin\Debug\LoggingTest.dll `
-        -parallel none
-	
-    $SUCCEEDED = $SUCCEEDED -and $LASTEXITCODE -eq 0
-} finally {
-    Copy-Item -Force $quickStartCopy1 Program.cs
-    Copy-Item -Force $quickStartCopy2 QuickStart\QuickStart.cs
+        -parallel none	
+    if (-not $LASTEXITCODE -eq 0) { throw "FAILED" }
 }
 
-if (-not $SUCCEEDED) { throw "FAILED" }

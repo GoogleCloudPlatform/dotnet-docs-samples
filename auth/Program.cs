@@ -70,14 +70,8 @@ namespace GoogleCloudSamples
         }
         // [END list_storage_bucket_contents]
 
-        private static void Main(string[] args)
-        {
-            SamplesUtil.InvokeMain(() =>
-            {
-                var sample = new AuthSample();
-                sample.MainFunction(args);
-            });
-        }
+        private static void Main(string[] args) =>
+            new AuthSample().MainFunction(args);
 
         void MainFunction(string[] args)
         {
