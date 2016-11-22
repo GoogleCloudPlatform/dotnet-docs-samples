@@ -48,7 +48,7 @@ namespace GoogleCloudSamples
                 when (ShouldCatch(e) && i < MaxTryCount)
                 {
                     Thread.Sleep(delayMs);
-                    delayMs *= (int) DelayMultiplier;
+                    delayMs *= (int)DelayMultiplier;
                 }
             }
         }

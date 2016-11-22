@@ -26,7 +26,7 @@ namespace GoogleCloudSamples
 {
     public class LoggingSample
     {
-        private static readonly string s_projectId = "bookshelf-dotnet"; // "YOUR-PROJECT-ID";
+        private static readonly string s_projectId = "YOUR-PROJECT-ID";
 
         private static readonly string s_usage =
                 "Usage: \n" +
