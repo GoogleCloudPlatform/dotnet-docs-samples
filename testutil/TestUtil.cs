@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -44,13 +45,24 @@ namespace GoogleCloudSamples
                     return func();
                 }
                 catch (Exception e)
-                when (ShouldRetry == null
-                    ? RetryWhenExceptions.Contains(e.GetType())
-                    : ShouldRetry(e)
-                    && i < MaxTryCount)
+                when (ShouldCatch(e) && i < MaxTryCount)
                 {
+                    Thread.Sleep(delayMs);
+                    delayMs *= (int) DelayMultiplier;
                 }
             }
+        }
+
+        private bool ShouldCatch(Exception e)
+        {
+            if (ShouldRetry != null)
+                return ShouldRetry(e);
+            foreach (var exceptionType in RetryWhenExceptions)
+            {
+                if (exceptionType.IsAssignableFrom(e.GetType()))
+                    return true;
+            }
+            return false;
         }
 
         public void Eventually(Action action)

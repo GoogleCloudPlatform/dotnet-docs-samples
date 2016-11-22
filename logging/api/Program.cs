@@ -26,7 +26,7 @@ namespace GoogleCloudSamples
 {
     public class LoggingSample
     {
-        private static readonly string s_projectId = "YOUR-PROJECT-ID";
+        private static readonly string s_projectId = "bookshelf-dotnet"; // "YOUR-PROJECT-ID";
 
         private static readonly string s_usage =
                 "Usage: \n" +
@@ -126,6 +126,8 @@ namespace GoogleCloudSamples
             // named 'cloud-logs@google.com' with 'Owner' access for the bucket.
             // If this is being run with a Google Cloud service account,
             // that account will need to be granted 'Owner' access to the Project.
+            // In Powershell, use this command:
+            // PS > Add-GcsBucketAcl <your-bucket-name> -Role OWNER -Group cloud-logs@google.com
             myLogSink.Destination = "storage.googleapis.com/" + s_projectId;
             string logName = $"projects/{s_projectId}/logs/{logId}";
             myLogSink.Filter = $"logName={logName}AND severity<=ERROR";
