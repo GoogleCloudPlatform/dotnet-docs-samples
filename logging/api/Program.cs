@@ -61,29 +61,19 @@ namespace GoogleCloudSamples
         private void WriteLogEntry(string logId, string message)
         {
             var client = LoggingServiceV2Client.Create();
-            string logName = $"projects/{s_projectId}/logs/{logId}";
-            LogEntry logEntry = new LogEntry();
-            logEntry.LogName = logName;
-            logEntry.Severity = LogSeverity.Info;
-            Type myType = typeof(LoggingSample);
-            string entrySeverity = logEntry.Severity.ToString().ToUpper();
-            logEntry.TextPayload =
-                $"{entrySeverity} {myType.Namespace}.LoggingSample - {message}";
-            // Set the resource type to control which GCP resource the log entry belongs to.
-            // See the list of resource types at:
-            // https://cloud.google.com/logging/docs/api/v2/resource-list
-            // This sample uses 'global' which will cause log entries to appear in the 
-            // "Global" resource list of the Developers Console Logs Viewer:
-            //  https://console.cloud.google.com/logs/viewer
-            MonitoredResource resource = new MonitoredResource();
-            resource.Type = "global";
-            // Create dictionary object to add custom labels to the log entry.
-            IDictionary<string, string> entryLabels = new Dictionary<string, string>();
-            entryLabels.Add("size", "large");
-            entryLabels.Add("color", "red");
-            // Add log entry to collection for writing. Multiple log entries can be added.
-            IEnumerable<LogEntry> logEntries = new LogEntry[] { logEntry };
-            client.WriteLogEntries(logName, resource, entryLabels, logEntries);
+            LogEntry logEntry = new LogEntry
+            {
+                LogName = $"projects/{s_projectId}/logs/{logId}",
+                Severity = LogSeverity.Info,
+                TextPayload = $"{typeof(LoggingSample).FullName} - {message}"
+            };
+            MonitoredResource resource = new MonitoredResource { Type = "global" };
+            IDictionary<string, string> entryLabels = new Dictionary<string, string>
+            {
+                { "size", "large" },
+                { "color", "red" }
+            };
+            client.WriteLogEntries(logEntry.LogName, resource, entryLabels, new[] { logEntry });
             Console.WriteLine($"Created log entry in log-id: {logId}.");
         }
         // [END write_log_entry]
