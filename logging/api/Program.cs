@@ -21,6 +21,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using Google.Api;
+using Google.Api.Gax.Grpc;
 
 namespace GoogleCloudSamples
 {
@@ -38,6 +39,15 @@ namespace GoogleCloudSamples
                 "  LoggingSample delete-log log-id\n" +
                 "  LoggingSample delete-sink sink-id \n";
 
+        private CallSettings RetryAWhile
+        {
+            get
+            {
+                return CallSettings.FromCallTiming(CallTiming.FromExpiration(
+                    Google.Api.Gax.Expiration.FromTimeout(
+                        TimeSpan.FromSeconds(20))));
+            }
+        }
 
         public bool PrintUsage()
         {
@@ -73,7 +83,8 @@ namespace GoogleCloudSamples
                 { "size", "large" },
                 { "color", "red" }
             };
-            client.WriteLogEntries(logEntry.LogName, resource, entryLabels, new[] { logEntry });
+            client.WriteLogEntries(logEntry.LogName, resource, entryLabels,
+                new[] { logEntry }, RetryAWhile);
             Console.WriteLine($"Created log entry in log-id: {logId}.");
         }
         // [END write_log_entry]
@@ -85,7 +96,7 @@ namespace GoogleCloudSamples
             string logName = $"projects/{s_projectId}/logs/{logId}";
             IEnumerable<string> projectIds = new string[] { s_projectId };
             var results = client.ListLogEntries(projectIds, $"logName={logName}",
-                "timestamp desc");
+                "timestamp desc", callSettings: RetryAWhile);
             foreach (var row in results)
             {
                 if (row != null && !String.IsNullOrEmpty(row.TextPayload.Trim()))
@@ -123,7 +134,7 @@ namespace GoogleCloudSamples
             myLogSink.Filter = $"logName={logName}AND severity<=ERROR";
             sinkRequest.Parent = $"projects/{s_projectId}";
             sinkRequest.Sink = myLogSink;
-            sinkClient.CreateSink(sinkRequest.Parent, myLogSink);
+            sinkClient.CreateSink(sinkRequest.Parent, myLogSink, RetryAWhile);
             Console.WriteLine($"Created sink: {sinkId}.");
         }
         // [END create_log_sink]
@@ -132,7 +143,8 @@ namespace GoogleCloudSamples
         private void ListSinks()
         {
             var sinkClient = ConfigServiceV2Client.Create();
-            var listOfSinks = sinkClient.ListSinks($"projects/{s_projectId}");
+            var listOfSinks = sinkClient.ListSinks($"projects/{s_projectId}",
+                callSettings: RetryAWhile);
             foreach (var sink in listOfSinks)
             {
                 Console.WriteLine($"{sink.Name} {sink.ToString()}");
@@ -146,9 +158,9 @@ namespace GoogleCloudSamples
             var sinkClient = ConfigServiceV2Client.Create();
             string logName = $"projects/{s_projectId}/logs/{logId}";
             string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
-            var sink = sinkClient.GetSink(sinkName);
+            var sink = sinkClient.GetSink(sinkName, RetryAWhile);
             sink.Filter = $"logName={logName}AND severity<=ERROR";
-            sinkClient.UpdateSink(sinkName, sink);
+            sinkClient.UpdateSink(sinkName, sink, RetryAWhile);
             Console.WriteLine($"Updated {sinkId} to export logs from {logId}.");
         }
         // [END update_log_sink]
@@ -158,7 +170,7 @@ namespace GoogleCloudSamples
         {
             var client = LoggingServiceV2Client.Create();
             string logName = $"projects/{s_projectId}/logs/{logId}";
-            client.DeleteLog(logName);
+            client.DeleteLog(logName, RetryAWhile);
             Console.WriteLine($"Deleted {logId}.");
         }
         // [END delete_log]
@@ -168,7 +180,7 @@ namespace GoogleCloudSamples
         {
             var sinkClient = ConfigServiceV2Client.Create();
             string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
-            sinkClient.DeleteSink(sinkName);
+            sinkClient.DeleteSink(sinkName, RetryAWhile);
             Console.WriteLine($"Deleted {sinkId}.");
         }
         // [END delete_log_sink]
