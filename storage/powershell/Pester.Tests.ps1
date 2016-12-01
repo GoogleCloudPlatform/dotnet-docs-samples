@@ -21,7 +21,7 @@ $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 # Cleans out Google Cloud Storage directory.
 ##############################################################################
 function Clear-GcsTestDir([string]$TestDir = 'testdata') {
-    $objects = Find-GcsObject -Bucket $env:GOOGLE_BUCKET -Prefix $TestDir
+    $objects = Get-GcsObject -Bucket $env:GOOGLE_BUCKET -Prefix $TestDir
     Write-Progress -Activity "Removing old objects" `
         -CurrentOperation "Finding objects" -PercentComplete 0
     foreach ($object in $objects) {
