@@ -100,7 +100,7 @@ function Find-GcResource([string]$ProjectId) {
         $buckets = Get-GcsBucket -Project $ProjectId
         $buckets
         foreach ($bucket in $buckets) {
-          Find-GcsObject -Bucket $bucket
+          Get-GcsObject -Bucket $bucket
         }
     }
 

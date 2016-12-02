@@ -77,33 +77,8 @@ function Make-FolderName([string] $Path) {
 ##############################################################################
 function Split-GcsPath([string] $Path) {
     $Path = $Path.replace('\', '/')
-    if ($Path -match '^[gG][sS]://([^/]+)/(.*)') {
-        $matches[1], $matches[2]
-    }
-}
-
-##############################################################################
-#.SYNOPSIS
-# Tests whether a Cloud Storage object with the given object name exists.
-#
-#.PARAMETER Bucket
-# The name of the Google Cloud Storage bucket.
-#
-#.PARAMETER ObjectName
-# The name of the Google Cloud Storage object.
-#
-#.OUTPUTS
-# True or False
-##############################################################################
-function Test-GcsObject([string] $Bucket, [string] $ObjectName) {
-    try { 
-        $obj = Get-GcsObject -Bucket $Bucket -ObjectName $ObjectName
-        return $obj
-    } catch {
-        if ($_.Exception.HttpStatusCode -eq "NotFound") {
-            return $False
-        }
-        throw
+    if ($Path -match '^[gG][sS]:/(/?)([^/]+)/(.*)') {
+        $matches[2], $matches[3]
     }
 }
 
@@ -130,7 +105,7 @@ function Append-Slash([string] $Path, [string]$Slash = '\') {
 #
 #.DESCRIPTION
 # There is no concept of a directory in Google Cloud Storage.  To simulate a
-# directory, we create a zero-length file that ends in a /.
+# directory, we create a zero-length file that ends in _$folder$.
 #
 # First checks to see if a directory by the same name already exists, and
 # reports no error if it does.
@@ -153,7 +128,7 @@ function Make-GcsDirectory([string] $Path, [string] $Bucket, [switch] $Force) {
         }
     }
     New-GcsObject -Bucket $Bucket -ObjectName $folder `
-        -Contents "" -Force:$Force
+        -Force:$Force -Value ""
 }
 
 ##############################################################################
@@ -309,7 +284,7 @@ function Download-Dir([string] $SourcePath, [string] $DestPath,
         Write-Progress -Activity "Downloading objects" `
             -CurrentOperation "Finding objects" -PercentComplete 0
     }
-    $objects = Find-GcsObject -Bucket $Bucket -Prefix $sourceDir
+    $objects = Get-GcsObject -Bucket $Bucket -Prefix $sourceDir
     foreach ($object in $objects) {
         if ($ShowProgress) {
             Write-Progress -Activity "Downloading objects" `
@@ -369,10 +344,7 @@ function Main {
     }        
 }
 
-if (Get-Command Find-GcsObject) {
-    # Synchronize the powershell current working directory and the .NET current
-    # working directory.
-    [System.IO.Directory]::SetCurrentDirectory((Get-Location).Path)
+if (Get-Command Get-GcsObject) {
     Main
 } else {
     Write-Warning "Requires the Google Cloud SDK.  Download it from:
