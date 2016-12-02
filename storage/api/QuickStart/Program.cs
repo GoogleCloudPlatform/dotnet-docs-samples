@@ -3,12 +3,10 @@ using Google.Apis.Storage.v1.Data;
 using Google.Storage.V1;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -39,13 +37,6 @@ namespace GoogleCloudSamples
                 "  QuickStart delete bucket-name\n" +
                 "  QuickStart delete bucket-name object-name [object-name]\n";
 
-        public QuickStart(TextWriter stdout)
-        {
-            _out = stdout;
-        }
-
-        readonly TextWriter _out;
-
         // [START storage_create_bucket]
         private void CreateBucket(string bucketName)
         {
@@ -53,7 +44,7 @@ namespace GoogleCloudSamples
             if (bucketName == null)
                 bucketName = RandomBucketName();
             storage.CreateBucket(s_projectId, bucketName);
-            _out.WriteLine($"Created {bucketName}.");
+            Console.WriteLine($"Created {bucketName}.");
         }
         // [END storage_create_bucket]
 
@@ -63,7 +54,7 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             foreach (var bucket in storage.ListBuckets(s_projectId))
             {
-                _out.WriteLine(bucket.Name);
+                Console.WriteLine(bucket.Name);
             }
         }
         // [END storage_list_buckets]
@@ -73,7 +64,7 @@ namespace GoogleCloudSamples
         {
             var storage = StorageClient.Create();
             storage.DeleteBucket(bucketName);
-            _out.WriteLine($"Deleted {bucketName}.");
+            Console.WriteLine($"Deleted {bucketName}.");
         }
         // [END storage_delete_bucket]
 
@@ -83,7 +74,7 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             foreach (var bucket in storage.ListObjects(bucketName, ""))
             {
-                _out.WriteLine(bucket.Name);
+                Console.WriteLine(bucket.Name);
             }
         }
         // [END storage_list_files]
@@ -97,7 +88,7 @@ namespace GoogleCloudSamples
             foreach (var storageObject in storage.ListObjects(
                 bucketName, prefix, options))
             {
-                _out.WriteLine(storageObject.Name);
+                Console.WriteLine(storageObject.Name);
             }
         }
         // [END storage_list_files_with_prefix]
@@ -111,7 +102,7 @@ namespace GoogleCloudSamples
             {
                 objectName = objectName ?? Path.GetFileName(localPath);
                 storage.UploadObject(bucketName, objectName, null, f);
-                _out.WriteLine($"Uploaded {objectName}.");
+                Console.WriteLine($"Uploaded {objectName}.");
             }
         }
         // [END storage_upload_file]
@@ -123,7 +114,7 @@ namespace GoogleCloudSamples
             foreach (string objectName in objectNames)
             {
                 storage.DeleteObject(bucketName, objectName);
-                _out.WriteLine($"Deleted {objectName}.");
+                Console.WriteLine($"Deleted {objectName}.");
             }
         }
         // [END storage_delete_file]
@@ -138,7 +129,7 @@ namespace GoogleCloudSamples
             {
                 storage.DownloadObject(bucketName, objectName, outputFile);
             }
-            _out.WriteLine($"downloaded {objectName} to {localPath}.");
+            Console.WriteLine($"downloaded {objectName} to {localPath}.");
         }
         // [END storage_download_file]
 
@@ -164,7 +155,7 @@ namespace GoogleCloudSamples
                 // all the authentication headers we need.
                 var response = storage.HttpClient.SendAsync(request).Result;
                 response.Content.CopyToAsync(outputFile, null).Wait();
-                _out.WriteLine($"downloaded {objectName} to {localPath}.");
+                Console.WriteLine($"downloaded {objectName} to {localPath}.");
             }
         }
         // [END storage_download_byte_range]
@@ -174,26 +165,26 @@ namespace GoogleCloudSamples
         {
             var storage = StorageClient.Create();
             var storageObject = storage.GetObject(bucketName, objectName);
-            _out.WriteLine($"Bucket:\t{storageObject.Bucket}");
-            _out.WriteLine($"CacheControl:\t{storageObject.CacheControl}");
-            _out.WriteLine($"ComponentCount:\t{storageObject.ComponentCount}");
-            _out.WriteLine($"ContentDisposition:\t{storageObject.ContentDisposition}");
-            _out.WriteLine($"ContentEncoding:\t{storageObject.ContentEncoding}");
-            _out.WriteLine($"ContentLanguage:\t{storageObject.ContentLanguage}");
-            _out.WriteLine($"ContentType:\t{storageObject.ContentType}");
-            _out.WriteLine($"Crc32c:\t{storageObject.Crc32c}");
-            _out.WriteLine($"ETag:\t{storageObject.ETag}");
-            _out.WriteLine($"Generation:\t{storageObject.Generation}");
-            _out.WriteLine($"Id:\t{storageObject.Id}");
-            _out.WriteLine($"Kind:\t{storageObject.Kind}");
-            _out.WriteLine($"Md5Hash:\t{storageObject.Md5Hash}");
-            _out.WriteLine($"MediaLink:\t{storageObject.MediaLink}");
-            _out.WriteLine($"Metageneration:\t{storageObject.Metageneration}");
-            _out.WriteLine($"Name:\t{storageObject.Name}");
-            _out.WriteLine($"Size:\t{storageObject.Size}");
-            _out.WriteLine($"StorageClass:\t{storageObject.StorageClass}");
-            _out.WriteLine($"TimeCreated:\t{storageObject.TimeCreated}");
-            _out.WriteLine($"Updated:\t{storageObject.Updated}");
+            Console.WriteLine($"Bucket:\t{storageObject.Bucket}");
+            Console.WriteLine($"CacheControl:\t{storageObject.CacheControl}");
+            Console.WriteLine($"ComponentCount:\t{storageObject.ComponentCount}");
+            Console.WriteLine($"ContentDisposition:\t{storageObject.ContentDisposition}");
+            Console.WriteLine($"ContentEncoding:\t{storageObject.ContentEncoding}");
+            Console.WriteLine($"ContentLanguage:\t{storageObject.ContentLanguage}");
+            Console.WriteLine($"ContentType:\t{storageObject.ContentType}");
+            Console.WriteLine($"Crc32c:\t{storageObject.Crc32c}");
+            Console.WriteLine($"ETag:\t{storageObject.ETag}");
+            Console.WriteLine($"Generation:\t{storageObject.Generation}");
+            Console.WriteLine($"Id:\t{storageObject.Id}");
+            Console.WriteLine($"Kind:\t{storageObject.Kind}");
+            Console.WriteLine($"Md5Hash:\t{storageObject.Md5Hash}");
+            Console.WriteLine($"MediaLink:\t{storageObject.MediaLink}");
+            Console.WriteLine($"Metageneration:\t{storageObject.Metageneration}");
+            Console.WriteLine($"Name:\t{storageObject.Name}");
+            Console.WriteLine($"Size:\t{storageObject.Size}");
+            Console.WriteLine($"StorageClass:\t{storageObject.StorageClass}");
+            Console.WriteLine($"TimeCreated:\t{storageObject.TimeCreated}");
+            Console.WriteLine($"Updated:\t{storageObject.Updated}");
         }
         // [END storage_get_metadata]
 
@@ -207,7 +198,7 @@ namespace GoogleCloudSamples
             {
                 PredefinedAcl = PredefinedObjectAcl.PublicRead
             });
-            _out.WriteLine(objectName + " is now public an can be fetched from " +
+            Console.WriteLine(objectName + " is now public an can be fetched from " +
                 storageObject.MediaLink);
         }
         // [END storage_make_public]
@@ -220,7 +211,7 @@ namespace GoogleCloudSamples
             storage.CopyObject(bucketName, sourceObjectName, bucketName,
                 destObjectName);
             storage.DeleteObject(bucketName, sourceObjectName);
-            _out.WriteLine($"Moved {sourceObjectName} to {destObjectName}.");
+            Console.WriteLine($"Moved {sourceObjectName} to {destObjectName}.");
         }
         // [END storage_move_file]
 
@@ -231,7 +222,7 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             storage.CopyObject(sourceBucketName, sourceObjectName,
                 destBucketName, destObjectName);
-            _out.WriteLine($"Copied {sourceBucketName}/{sourceObjectName} to "
+            Console.WriteLine($"Copied {sourceBucketName}/{sourceObjectName} to "
                 + $"{destBucketName}/{destObjectName}.");
         }
         // [END storage_copy_file]
@@ -247,7 +238,7 @@ namespace GoogleCloudSamples
             if (bucket.Acl != null)
                 foreach (var acl in bucket.Acl)
                 {
-                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                    Console.WriteLine($"{acl.Role}:{acl.Entity}");
                 }
         }
         // [END storage_print_bucket_acl]
@@ -263,7 +254,7 @@ namespace GoogleCloudSamples
             if (bucket.Acl != null)
                 foreach (var acl in bucket.DefaultObjectAcl)
                 {
-                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                    Console.WriteLine($"{acl.Role}:{acl.Entity}");
                 }
         }
         // [END storage_print_bucket_default_acl]
@@ -281,7 +272,7 @@ namespace GoogleCloudSamples
                 foreach (var acl in bucket.Acl.Where(
 (acl) => acl.Entity == $"user-{userEmail}"))
                 {
-                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                    Console.WriteLine($"{acl.Role}:{acl.Entity}");
                 }
         }
         // [END storage_print_bucket_acl_for_user]
@@ -398,7 +389,7 @@ namespace GoogleCloudSamples
             {
                 foreach (var acl in storageObject.Acl)
                 {
-                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                    Console.WriteLine($"{acl.Role}:{acl.Entity}");
                 }
             }
         }
@@ -416,7 +407,7 @@ namespace GoogleCloudSamples
                 foreach (var acl in storageObject.Acl
                     .Where((acl) => acl.Entity == $"user-{userEmail}"))
                 {
-                    _out.WriteLine($"{acl.Role}:{acl.Entity}");
+                    Console.WriteLine($"{acl.Role}:{acl.Entity}");
                 }
             }
         }
@@ -470,13 +461,13 @@ namespace GoogleCloudSamples
 
         public bool PrintUsage()
         {
-            _out.WriteLine(s_usage);
+            Console.WriteLine(s_usage);
             return true;
         }
 
         public static int Main(string[] args)
         {
-            QuickStart quickStart = new QuickStart(Console.Out);
+            QuickStart quickStart = new QuickStart();
             return quickStart.Run(args);
         }
 
@@ -484,7 +475,7 @@ namespace GoogleCloudSamples
         {
             if (s_projectId == "YOUR-PROJECT" + "-ID")
             {
-                _out.WriteLine("Update program.cs and replace YOUR-PROJECT" +
+                Console.WriteLine("Update program.cs and replace YOUR-PROJECT" +
                     "-ID with your project id, and recompile.");
                 return -1;
             }
@@ -611,7 +602,7 @@ namespace GoogleCloudSamples
             }
             catch (Google.GoogleApiException e)
             {
-                _out.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return e.Error.Code;
             }
         }

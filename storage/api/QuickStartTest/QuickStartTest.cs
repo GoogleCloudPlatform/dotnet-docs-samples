@@ -25,30 +25,23 @@ namespace GoogleCloudSamples
 {
     public class BaseTest
     {
-        public struct ConsoleOutput
+        private static readonly RetryRobot s_retryTransientRpcErrors = new RetryRobot
         {
-            public int ExitCode;
-            public string Stdout;
+            RetryWhenExceptions = new[] { typeof(Newtonsoft.Json.JsonReaderException) }
+        };
+
+        private static readonly CommandLineRunner s_runner = new CommandLineRunner
+        {
+            Command = "QuickStart.exe",
+            Main = QuickStart.Main,
         };
 
         /// <summary>Runs StorageSample.exe with the provided arguments</summary>
         /// <returns>The console output of this program</returns>
         public static ConsoleOutput Run(params string[] arguments)
         {
-            Console.Write("QuickStart.exe ");
-            Console.WriteLine(string.Join(" ", arguments));
-
-            using (var output = new StringWriter())
-            {
-                QuickStart quickStart = new QuickStart(output);
-                var consoleOutput = new ConsoleOutput()
-                {
-                    ExitCode = quickStart.Run(arguments),
-                    Stdout = output.ToString()
-                };
-                Console.Write(consoleOutput.Stdout);
-                return consoleOutput;
-            }
+            return s_retryTransientRpcErrors.Eventually(
+                () => s_runner.Run(arguments));
         }
 
         protected static void AssertSucceeded(ConsoleOutput output)
@@ -174,29 +167,20 @@ namespace GoogleCloudSamples
             _garbage.Clear();
         }
 
+        private static readonly RetryRobot s_retryFailedAssertions = new RetryRobot()
+        {
+            RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) },
+            MaxTryCount = 6,
+        };
+
         /// <summary>
         /// Retry action.
         /// Datastore guarantees only eventual consistency.  Many tests write
         /// an entity and then query it afterward, but may not find it immediately.
         /// </summary>
         /// <param name="action"></param>
-        private static void Eventually(Action action)
-        {
-            int delayMs = 1000;
-            for (int i = 0; ; ++i)
-            {
-                try
-                {
-                    action();
-                    return;
-                }
-                catch (Xunit.Sdk.XunitException) when (i < 6)
-                {
-                    Thread.Sleep(delayMs);
-                    delayMs *= 2;
-                }
-            }
-        }
+        private static void Eventually(Action action) =>
+            s_retryFailedAssertions.Eventually(action);
 
         public static string CreateRandomBucket()
         {
