@@ -333,7 +333,7 @@ function Run-TestScripts
                 throw "FAILED with exit code $LASTEXITCODE"
             }
         }
-        if (Wait-Job $job -Timeout 180) {
+        if (Wait-Job $job -Timeout 300) {
             Receive-Job $job
             if ($job.State -eq 'Failed') {
                 $failures += $relativePath
