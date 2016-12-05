@@ -330,7 +330,8 @@ function Run-TestScripts($MaxParallelJobCount = 2)
             $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
                 ('.\"{0}"' -f $script.Name) -Name $relativePath {
                 echo ("-" * 79)
-                echo $args[0]
+                echo ("Results for " + $args[0])
+                echo ("-" * 79)
                 Set-Location $args[1]
                 Invoke-Expression $args[2]
                 if ($LASTEXITCODE) {
@@ -343,7 +344,6 @@ function Run-TestScripts($MaxParallelJobCount = 2)
         if ($remoteJob = (Wait-Job $liveJobs -Timeout 300 -Any)) {
             $job = Get-Job $remoteJob.Name
             $liveJobs = $liveJobs -ne $job
-            echo "Done " + $job.Name
             Receive-Job $job
             if ($job.State -eq 'Failed') {
                 $failures += $job.Name
