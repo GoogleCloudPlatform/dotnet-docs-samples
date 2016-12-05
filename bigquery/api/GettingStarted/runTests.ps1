@@ -21,7 +21,9 @@ $projectIdPlaceholder = "YOUR_PROJECT_ID"
 (get-content $filePath) | foreach-object {$_ -replace $projectIdPlaceholder, $projectId} | set-content $filePath
 
 Build-Solution
-packages\xunit.runner.console.2.1.0\tools\xunit.console.exe .\BigqueryTest\bin\Debug\BigqueryTest.dll
+packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
+    .\BigqueryTest\bin\Debug\BigqueryTest.dll `
+    -parallel none
 
 # Update Quickstart sample to replace Project ID with original placeholder text
 (get-content $filePath) | foreach-object {$_ -replace $projectId, $projectIdPlaceholder} | set-content $filePath
