@@ -24,12 +24,12 @@ namespace GoogleCloudSamples
      * Datastore, create, modify, delete, and query entities.
      */
 
-    class TaskList
+    internal class TaskList
     {
         private readonly DatastoreDb _db;
         private readonly KeyFactory _keyFactory;
 
-        TaskList(string projectId)
+        private TaskList(string projectId)
         {
             // [START build_service]
             // Create an authorized Datastore service using Application Default Credentials.
@@ -45,7 +45,7 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="description">The task description.</param>
         /// <returns>The key of the entity.</returns>
-        Key AddTask(string description)
+        private Key AddTask(string description)
         {
             Entity task = new Entity()
             {
@@ -68,7 +68,7 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="id">The ID of the task entity as given by Key.</param>
         /// <returns>true if the task was found.</returns>
-        bool MarkDone(long id)
+        private bool MarkDone(long id)
         {
             using (var transaction = _db.BeginTransaction())
             {
@@ -88,7 +88,7 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Returns a list of all task entities in ascending order of creation time.
         /// </summary>
-        IEnumerable<Entity> ListTasks()
+        private IEnumerable<Entity> ListTasks()
         {
             Query query = new Query("Task")
             {
@@ -103,14 +103,14 @@ namespace GoogleCloudSamples
         /// Deletes a task entity.
         /// </summary>
         /// <param name="id">The ID of the task entity as given by Key.</param>
-        void DeleteTask(long id)
+        private void DeleteTask(long id)
         {
             _db.Delete(_keyFactory.CreateKey(id));
         }
         // [END delete_entity]
 
         // [START format_results]
-        static IEnumerable<string> FormatTasks(IEnumerable<Entity> tasks)
+        private static IEnumerable<string> FormatTasks(IEnumerable<Entity> tasks)
         {
             var results = new List<string>();
             foreach (Entity task in tasks)
@@ -124,7 +124,7 @@ namespace GoogleCloudSamples
         }
         // [END format_results]
 
-        void HandleCommandLine(string commandLine)
+        private void HandleCommandLine(string commandLine)
         {
             string[] args = commandLine.Split(null, 2);
             if (args.Length < 1)
@@ -166,7 +166,7 @@ namespace GoogleCloudSamples
             }
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             string projectId = args.Length == 1 ? args[0] :
                 Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");

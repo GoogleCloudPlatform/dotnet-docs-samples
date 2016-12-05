@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingSample", "LoggingSample.csproj", "{43FCF1C1-E0AB-4F7F-A336-A62CE5EAD692}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickStart", "QuickStart\QuickStart.csproj", "{FAE3A6F1-6292-4780-A631-6610487E8F16}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingTest", "LoggingTest\LoggingTest.csproj", "{DEBA8E76-4986-4C6C-957E-C77FCD910474}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log4Net", "Log4Net\Log4Net.csproj", "{3A32939B-6E76-4AE6-92E0-ED3E10C37ACE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +27,6 @@ Global
 		{DEBA8E76-4986-4C6C-957E-C77FCD910474}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEBA8E76-4986-4C6C-957E-C77FCD910474}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEBA8E76-4986-4C6C-957E-C77FCD910474}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A32939B-6E76-4AE6-92E0-ED3E10C37ACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A32939B-6E76-4AE6-92E0-ED3E10C37ACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A32939B-6E76-4AE6-92E0-ED3E10C37ACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A32939B-6E76-4AE6-92E0-ED3E10C37ACE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -161,13 +161,19 @@ filter Update-Config ([switch]$Yes) {
         Add-Setting $config 'GoogleCloudSamples:AuthClientSecret' $env:GoogleCloudSamples:AuthClientSecret
         $connectionString = Select-Xml -Xml $config.Node -XPath "connectionStrings/add[@name='LocalMySqlServer']"
         if ($connectionString) {
-            if ($env:GoogleCloudSamples:ConnectionString) {
-                $connectionString.Node.connectionString = $env:GoogleCloudSamples:ConnectionString;        
+            if ($env:GoogleCloudSamples:ConnectionStringCloudSql) {
+                $connectionString.Node.connectionString = $env:GoogleCloudSamples:ConnectionStringCloudSql;        
             } elseif ($env:Data:MySql:ConnectionString) {
                 # TODO: Stop checking this old environment variable name when we've
                 # updated all the scripts.
                 $connectionString.Node.connectionString = $env:Data:MySql:ConnectionString;        
             }
+        }
+        $connectionString = Select-Xml -Xml $config.Node -XPath "connectionStrings/add[@name='LocalSqlServer']"
+        if ($connectionString) {
+            if ($env:GoogleCloudSamples:ConnectionStringSqlServer) {
+                $connectionString.Node.connectionString = $env:GoogleCloudSamples:ConnectionStringSqlServer;        
+            } 
         }
         $config.Node.OwnerDocument.Save($config.Path);
         $config.Path
@@ -319,31 +325,29 @@ function Run-TestScripts
     # Array of strings: the relative path of the inner script.
     $successes = @()
     $failures = @()
-    $timeOuts = @()
     foreach ($script in $scripts) {
         $relativePath = Resolve-Path -Relative $script.FullName
-        echo "Starting $relativePath..."
-        $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
-            ('.\"{0}"' -f $script.Name) {
-            echo ("-" * 79)
-            echo $args[0]
-            Set-Location $args[1]
-            Invoke-Expression $args[2]
+        echo ("-" * 79)
+        echo $relativePath
+        Set-Location $script.Directory
+        # A script can fail two ways.
+        # 1. Throw an exception.
+        # 2. The last command it executed failed. 
+        Try {
+            Invoke-Expression (".\" + $script.Name)
             if ($LASTEXITCODE) {
-                throw "FAILED with exit code $LASTEXITCODE"
-            }
-        }
-        if (Wait-Job $job -Timeout 300) {
-            Receive-Job $job
-            if ($job.State -eq 'Failed') {
                 $failures += $relativePath
             } else {
                 $successes += $relativePath
             }
-        } else {
-            $timeOuts += $relativePath
         }
-        Remove-Job $job
+        Catch {
+            echo  $_.Exception.Message
+            $failures += $relativePath
+        }
+        Finally {
+            Set-Location $rootDir
+        }
     }
     # Print a final summary.
     echo ("=" * 79)
@@ -353,15 +357,9 @@ function Run-TestScripts
     $failureCount = $failures.Count
     echo "$failureCount FAILED"
     echo $failures
-    $timeOutCount = $timeOuts.Count
-    echo "$timeOutCount TIMED OUT"
-    echo $timeOuts
     # Throw an exception to set ERRORLEVEL to 1 in the calling process.
     if ($failureCount) {
         throw "$failureCount FAILED"
-    }
-    if ($timeOutCount) {
-        throw "$timeOutCount TIMED OUT"
     }
 }
 
@@ -403,7 +401,7 @@ function BuildAndRun-CoreTest($TestJs = "test.js") {
 filter Format-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
-        codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis /rule-:ExplicitVisibility /rule:FieldNames /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation /nocopyright $project
+        codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis /rule:ExplicitVisibility /rule:FieldNames /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation /nocopyright $project
         if ($LASTEXITCODE) {
             $project.FullName
             throw "codeformatter failed with exit code $LASTEXITCODE."
@@ -488,7 +486,7 @@ function Get-PortNumber($SiteName, $ApplicationhostConfig) {
 # The path to applicationhost.config.
 #
 #.OUTPUTS
-# The process object
+# The job object
 ##############################################################################
 function Run-IISExpress($SiteName, $ApplicationhostConfig) {
     if (!$SiteName) {
@@ -498,11 +496,16 @@ function Run-IISExpress($SiteName, $ApplicationhostConfig) {
         $ApplicationhostConfig = UpFind-File 'applicationhost.config'
     }
     # Applicationhost.config expects the environment variable
-    # GETTING_STARTED_DOTNET to point to the same directory containing
+    # DOTNET_DOCS_SAMPLES to point to the same directory containing
     # applicationhost.config.
-    $env:GETTING_STARTED_DOTNET = (Get-Item $ApplicationhostConfig).DirectoryName
-    $argList = ('/config:"' + $ApplicationhostConfig + '"'), "/site:$SiteName", "/apppool:Clr4IntegratedAppPool"
-    Start-Process iisexpress.exe  -ArgumentList $argList -PassThru
+    $env:DOTNET_DOCS_SAMPLES = `
+        (Get-Item $ApplicationhostConfig).DirectoryName
+    $argList = (Get-Location), ('/config:"' + $ApplicationhostConfig + '"'), `
+        "/site:$SiteName", "/apppool:Clr4IntegratedAppPool", "/trace:warning"
+    Start-Job { 
+        Set-Location $args[0]
+        iisexpress.exe  $args[1..$args.Length]
+    } -ArgumentList $argList
 }
 
 ##############################################################################
@@ -521,7 +524,7 @@ function Run-IISExpress($SiteName, $ApplicationhostConfig) {
 #
 ##############################################################################
 function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '', 
-    $TestJs = 'test.js', [switch]$LeaveRunning = $false) {
+    $TestJs = 'test.js', [switch]$LeaveRunning = $false, [int]$TryCount=3) {
     if (!$SiteName) {
         $SiteName = (get-item -Path ".\").Name
     }
@@ -530,19 +533,28 @@ function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
     }
 
     $port = Get-PortNumber $SiteName $ApplicationhostConfig
-    $webProcess = Run-IISExpress $SiteName $ApplicationhostConfig
+    $webJob = Run-IISExpress $SiteName $ApplicationhostConfig
     Try
     {
-        Start-Sleep -Seconds 4  # Wait for web process to start up.
-        casperjs $TestJs http://localhost:$port
-        if ($LASTEXITCODE) {
-            throw "Casperjs failed with error code $LASTEXITCODE"
+        $try = 0
+        while ($true) {
+            Start-Sleep -Seconds 4  # Wait for web process to start up.
+            casperjs $TestJs http://localhost:$port
+            if (0 -eq $LASTEXITCODE) {
+                break;
+            }
+            if (++$try -eq $TryCount) {
+                throw "Casperjs failed with error code $LASTEXITCODE"
+            }
         }
     }
     Finally
     {
         if (!$LeaveRunning) {
-            Stop-Process $webProcess
+            Stop-Job $webJob
+            Wait-Job $webJob
+            Receive-Job $webJob
+            Remove-Job $webJob
         }
     }
 }
@@ -556,8 +568,16 @@ function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
 #
 #.PARAMETER DllName
 # The name of the built binary.  Defaults to the current directory name.
+# 
+#.PARAMETER DllDir
+# The directory containing the built binary. Defaults to standard location of 'bin'.
+#
+#.PARAMETER Config
+# The Web.config file to use for the migration. 
+# Defaults to the expected location of the Web.config file.
+#
 ##############################################################################
-function Migrate-Database($DllName = '') {
+function Migrate-Database($DllName = '', $DllDir = 'bin', $Config = '..\Web.config') {
     if (!$DllName) {
         # Default to the name of the current directory + .dll
         # For example, if the current directory is 3-binary-data, then the
@@ -566,11 +586,11 @@ function Migrate-Database($DllName = '') {
     }
     # Migrate.exe cannot be run in place.  It must be copied to the bin directory
     # and run from there.
-    cp (Join-Path (UpFind-File packages) EntityFramework.*\tools\migrate.exe) bin\.
+    cp (Join-Path (UpFind-File packages) EntityFramework.*\tools\migrate.exe) $DllDir\.
     $originalDir = pwd
     Try {
-        cd bin
-        .\migrate.exe $dllName /startupConfigurationFile="..\Web.config"
+        cd $DllDir
+        .\migrate.exe $dllName /startupConfigurationFile="$Config"
         if ($LASTEXITCODE) {
             throw "migrate.exe failed with error code $LASTEXITCODE"
         }

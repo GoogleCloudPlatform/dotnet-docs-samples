@@ -22,7 +22,7 @@ namespace GoogleCloudSamples
 {
     public class BigquerySample
     {
-        const string usage = @"Usage:
+        private const string usage = @"Usage:
 BigquerySample <project_id>";
 
         private static void Main(string[] args)

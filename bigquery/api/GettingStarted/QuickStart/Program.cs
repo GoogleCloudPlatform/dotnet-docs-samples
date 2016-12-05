@@ -20,9 +20,9 @@ using Google.Bigquery.V2;
 
 namespace GoogleCloudSamples
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // Your Google Cloud Platform project ID
             string projectId = "YOUR_PROJECT_ID";
