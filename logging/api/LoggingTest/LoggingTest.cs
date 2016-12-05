@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Collections.Generic;
 using Grpc.Core;
+using System.Linq;
 
 namespace GoogleCloudSamples
 {
@@ -37,7 +38,19 @@ namespace GoogleCloudSamples
         };
         private readonly RetryRobot _retryRobot = new RetryRobot()
         {
-            RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) },
+            ShouldRetry = (Exception e) =>
+            {
+                if (e is Xunit.Sdk.XunitException)
+                    return true;
+                var rpcException = e as RpcException;
+                if (rpcException != null)
+                {
+                    return new[] { StatusCode.Aborted, StatusCode.Internal,
+                        StatusCode.Cancelled }
+                        .Contains(rpcException.Status.StatusCode);
+                }
+                return false;
+            },
             DelayMultiplier = 3
         };
 
