@@ -43,7 +43,7 @@ namespace GoogleCloudSamples
         /// <returns>
         /// A CallSettings instance.
         /// </returns>
-        private CallSettings newRetryCallSettings(int tryCount,
+        CallSettings newRetryCallSettings(int tryCount,
             params StatusCode[] finalStatusCodes)
         {
             var backoff = new BackoffSettings()

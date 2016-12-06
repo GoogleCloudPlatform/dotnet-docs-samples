@@ -13,15 +13,24 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
-$filesToProcess = "Program.cs", "QuickStart\QuickStart.cs"
+$filesToProcess = "Program.cs", "QuickStart\QuickStart.cs", "Log4Net\log4net.config.xml"
 
-BackupAndEdit-TextFile $filesToProcess `
-    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{       
-    Build-Solution
-    packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
-        .\LoggingTest\bin\Debug\LoggingTest.dll `
-        -parallel none
-    if ($LASTEXITCODE -ne 0) { throw "FAILED" }
-}
+$filesToProcessForLogging = "LoggingTest\LoggingTest.cs", "Log4Net\log4net.config.xml"
+$testLogIdPrefix = "sampleLog"
+[string]$testLogIdSuffix = Get-Random
+$testLogID = $testLogIdPrefix + $testLogIdSuffix
+
+BackupAndEdit-TextFile $filesToProcessForLogging `
+    @{"YOUR-LOG-ID" = $testLogID} `
+    {
+        BackupAndEdit-TextFile $filesToProcess `
+            @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
+        {       
+            Build-Solution
+            packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
+                .\LoggingTest\bin\Debug\LoggingTest.dll `
+                -parallel none
+            if ($LASTEXITCODE -ne 0) { throw "FAILED" }
+        }
+    }
 

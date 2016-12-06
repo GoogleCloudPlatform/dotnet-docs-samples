@@ -26,7 +26,7 @@ namespace GoogleCloudSamples
 {
     public class AuthSample
     {
-        private const string usage = @"Usage:AuthSample <bucket_name>";
+        const string usage = @"Usage:AuthSample <bucket_name>";
         // [START build_service]
         /// <summary>
         /// Creates an authorized Cloud Storage client service using Application 
@@ -73,7 +73,7 @@ namespace GoogleCloudSamples
         private static void Main(string[] args) =>
             new AuthSample().MainFunction(args);
 
-        private void MainFunction(string[] args)
+        void MainFunction(string[] args)
         {
             AuthSample sample = new AuthSample();
             string bucket = null;
