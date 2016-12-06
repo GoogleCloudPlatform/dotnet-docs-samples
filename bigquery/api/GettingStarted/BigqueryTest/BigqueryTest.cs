@@ -35,6 +35,18 @@ namespace GoogleCloudSamples
         private readonly string _projectId;
         private readonly BigqueryClient _client;
 
+        private readonly RetryRobot _retryDeleteBusy = new RetryRobot
+        {
+            ShouldRetry = (Exception e) =>
+            {
+                // Retry when we see:
+                // Dataset yada:yada is still in use [400]
+                var apiException = e as Google.GoogleApiException;
+                return apiException != null &&
+                    apiException.HttpStatusCode == System.Net.HttpStatusCode.BadRequest;
+            }
+        };
+
         public BigqueryTest()
         {
             // [START create_bigquery_client]
@@ -73,14 +85,12 @@ namespace GoogleCloudSamples
 
         public void DeleteDataset(string datasetId, BigqueryClient client)
         {
-            client.DeleteDataset(datasetId);
+            _retryDeleteBusy.Eventually(() => client.DeleteDataset(datasetId));
         }
 
         // [START delete_table]
         public void DeleteTable(string datasetId, string tableId, BigqueryClient client)
         {
-            // The Bigquery client method DeleteTable() is currently failing as noted in the following issue:
-            // https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/443
             client.DeleteTable(_projectId, datasetId, tableId);
         }
         // [END delete_table]
