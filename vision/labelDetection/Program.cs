@@ -29,7 +29,7 @@ namespace GoogleCloudSamples
 {
     public class LabelDetectionSample
     {
-        private const string usage = @"Usage:LabelDetectionSample <path_to_image>";
+        const string usage = @"Usage:LabelDetectionSample <path_to_image>";
         // [START authenticate]
         /// <summary>
         /// Creates an authorized Cloud Vision client service using Application 

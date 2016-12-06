@@ -26,7 +26,7 @@ namespace GoogleCloudSamples
 {
     public class QuickStart
     {
-        private static void Main(string[] args)
+        static void Main(string[] args)
         {
             // Your Google Cloud Platform project ID.
             string projectId = "YOUR-PROJECT-ID";

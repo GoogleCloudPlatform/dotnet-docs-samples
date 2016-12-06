@@ -25,7 +25,7 @@ namespace GoogleCloudSamples
 {
     public class TextDetectionSample
     {
-        private const string usage = @"Usage:TextDetectionSample <path_to_image>";
+        const string usage = @"Usage:TextDetectionSample <path_to_image>";
         /// <summary>
         /// Creates an authorized Cloud Vision client service using Application 
         /// Default Credentials.
