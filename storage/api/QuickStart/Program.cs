@@ -198,7 +198,7 @@ namespace GoogleCloudSamples
             {
                 PredefinedAcl = PredefinedObjectAcl.PublicRead
             });
-            Console.WriteLine(objectName + " is now public an can be fetched from " +
+            Console.WriteLine(objectName + " is now public and can be fetched from " +
                 storageObject.MediaLink);
         }
         // [END storage_make_public]
