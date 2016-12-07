@@ -1,4 +1,4 @@
-# Cloud Storage Sample
+# Google Cloud Datastore Sample
 
 A sample demonstrating how to invoke Google Cloud Datastore from C#.
 
