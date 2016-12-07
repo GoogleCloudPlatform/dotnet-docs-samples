@@ -311,7 +311,7 @@ function UpFind-File([string[]]$Masks = '*')
 #.EXAMPLE
 # Run-Tests
 ##############################################################################
-function Run-TestScripts($MaxParallelJobCount = 2)
+function Run-TestScripts
 {
     $scripts = When-Empty -ArgList ($input + $args) -ScriptBlock { Find-Files -Masks '*runtests*.ps1' } | Get-Item
     $rootDir = pwd
@@ -320,43 +320,31 @@ function Run-TestScripts($MaxParallelJobCount = 2)
     $successes = @()
     $failures = @()
     $timeOuts = @()
-    $liveJobs = @()
-    $i = 0
-    do {
-        if ($i -lt $scripts.Length) {
-            $script = $scripts[$i++]
-            $relativePath = Resolve-Path -Relative $script.FullName
-            echo "Starting $relativePath..."
-            $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
-                ('.\"{0}"' -f $script.Name) -Name $relativePath {
-                echo ("-" * 79)
-                echo ("Results for " + $args[0])
-                echo ("-" * 79)
-                Set-Location $args[1]
-                Invoke-Expression $args[2]
-                if ($LASTEXITCODE) {
-                    throw "FAILED with exit code $LASTEXITCODE"
-                }
+    foreach ($script in $scripts) {
+        $relativePath = Resolve-Path -Relative $script.FullName
+        echo "Starting $relativePath..."
+        $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
+            ('.\"{0}"' -f $script.Name) {
+            echo ("-" * 79)
+            echo $args[0]
+            Set-Location $args[1]
+            Invoke-Expression $args[2]
+            if ($LASTEXITCODE) {
+                throw "FAILED with exit code $LASTEXITCODE"
             }
-            $liveJobs += $job
-            if ($liveJobs.Length -lt $MaxParallelJobCount) { continue }
         }
-        if ($remoteJob = (Wait-Job $liveJobs -Timeout 300 -Any)) {
-            $job = Get-Job $remoteJob.Name
-            $liveJobs = $liveJobs -ne $job
+        if (Wait-Job $job -Timeout 300) {
             Receive-Job $job
             if ($job.State -eq 'Failed') {
-                $failures += $job.Name
+                $failures += $relativePath
             } else {
-                $successes += $job.Name
+                $successes += $relativePath
             }
-            Remove-Job $job
         } else {
-            $timeOuts += $liveJobs.Name
-            Remove-Job $liveJobs
-            break
+            $timeOuts += $relativePath
         }
-    } while ($liveJobs)
+        Remove-Job $job
+    }
     # Print a final summary.
     echo ("=" * 79)
     $successCount = $successes.Count
