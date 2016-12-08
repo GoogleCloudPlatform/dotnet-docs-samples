@@ -15,7 +15,7 @@ to log all of an ASP.NET web application's errors to the Error Reporting page in
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=clouderrorreporting.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Stackdriver Error Reporting API.
 
-3.  Open [Log4NetErrorReporting.sln](Log4NetErrorReporting.sln) with Microsoft Visual Studio version 2015 or later.
+3.  Open [ErrorReporting.sln](ErrorReporting.sln) with Microsoft Visual Studio version 2015 or later.
 
 4. In [WebApiConfig.cs](App_Start/WebApiConfig.cs) change the placeholder value of "YOUR-PROJECT-ID" to be your project id.
 
