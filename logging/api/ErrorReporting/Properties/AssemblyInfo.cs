@@ -19,11 +19,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Log4NetErrorReporting")]
+[assembly: AssemblyTitle("ErrorReporting")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Google")]
-[assembly: AssemblyProduct("Log4NetErrorReporting")]
+[assembly: AssemblyProduct("ErrorReporting")]
 [assembly: AssemblyCopyright("Copyright \u00A9 Google Inc 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
