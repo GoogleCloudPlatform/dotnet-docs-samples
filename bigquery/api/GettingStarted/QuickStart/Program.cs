@@ -16,7 +16,7 @@
 // [START bigquery_quickstart]
 
 using System;
-using Google.Bigquery.V2;
+using Google.Cloud.BigQuery.V2;
 
 namespace GoogleCloudSamples
 {
@@ -28,13 +28,13 @@ namespace GoogleCloudSamples
             string projectId = "YOUR_PROJECT_ID";
 
             // Instantiates a client
-            BigqueryClient client = BigqueryClient.Create(projectId);
+            BigQueryClient client = BigQueryClient.Create(projectId);
 
             // The id for the new dataset
             string datasetId = "my_new_dataset";
 
             // Creates the dataset
-            BigqueryDataset dataset = client.CreateDataset(datasetId);
+            BigQueryDataset dataset = client.CreateDataset(datasetId);
 
             Console.WriteLine($"Dataset {dataset.FullyQualifiedId} created.");
         }

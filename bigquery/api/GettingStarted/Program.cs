@@ -16,7 +16,7 @@
 // [START complete]
 
 using System;
-using Google.Bigquery.V2;
+using Google.Cloud.BigQuery.V2;
 
 namespace GoogleCloudSamples
 {
@@ -36,13 +36,13 @@ BigquerySample <project_id>";
             {
                 projectId = args[0];
                 // [START setup]
-                // By default, the Google.Bigquery.V2 library client will authenticate 
+                // By default, the Google.Cloud.BigQuery.V2 library client will authenticate 
                 // using the service account file (created in the Google Developers 
                 // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS 
                 // environment variable. If you are running on
                 // a Google Compute Engine VM, authentication is completely 
                 // automatic.
-                var client = BigqueryClient.Create(projectId);
+                var client = BigQueryClient.Create(projectId);
                 // [END setup]
                 // [START query]
                 var table = client.GetTable("bigquery-public-data", "samples", "shakespeare");
