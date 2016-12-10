@@ -17,8 +17,8 @@
 
 using System;
 // Imports the Google Cloud Logging client library
-using Google.Logging.V2;
-using Google.Logging.Type;
+using Google.Cloud.Logging.V2;
+using Google.Cloud.Logging.Type;
 using System.Collections.Generic;
 using Google.Api;
 
@@ -37,8 +37,9 @@ namespace GoogleCloudSamples
             // Prepare new log entry.
             LogEntry logEntry = new LogEntry();
             string logId = "my-log";
-            string logName = $"projects/{projectId}/logs/{logId}";
-            logEntry.LogName = logName;
+            LogName logName = new LogName(projectId, logId);
+            LogNameOneof logNameToWrite = LogNameOneof.From(logName);
+            logEntry.LogName = logName.ToString();
             logEntry.Severity = LogSeverity.Info;
 
             // Create log entry message.
@@ -67,7 +68,7 @@ namespace GoogleCloudSamples
             IEnumerable<LogEntry> logEntries = new LogEntry[] { logEntry };
 
             // Write new log entry.
-            client.WriteLogEntries(logName, resource, entryLabels, logEntries);
+            client.WriteLogEntries(logNameToWrite, resource, entryLabels, logEntries);
 
             Console.WriteLine("Log Entry created.");
         }
