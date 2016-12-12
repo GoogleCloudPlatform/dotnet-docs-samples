@@ -17,9 +17,9 @@
 
 using System;
 // [START create_bigquery_client]
-using Google.Bigquery.V2;
+using Google.Cloud.BigQuery.V2;
 // [END create_bigquery_client]
-using Google.Storage.V1;
+using Google.Cloud.Storage.V1;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,13 +27,14 @@ using Xunit;
 using System.IO;
 using System.Diagnostics;
 using Google.Apis.Bigquery.v2.Data;
+using Google.Api.Gax;
 
 namespace GoogleCloudSamples
 {
-    public class BigqueryTest
+    public class BigQueryTest
     {
         private readonly string _projectId;
-        private readonly BigqueryClient _client;
+        private readonly BigQueryClient _client;
 
         private readonly RetryRobot _retryDeleteBusy = new RetryRobot
         {
@@ -47,7 +48,7 @@ namespace GoogleCloudSamples
             }
         };
 
-        public BigqueryTest()
+        public BigQueryTest()
         {
             // [START create_bigquery_client]
             // By default, the Google.Bigquery.V2 library client will authenticate 
@@ -57,39 +58,39 @@ namespace GoogleCloudSamples
             // a Google Compute Engine VM, authentication is completely 
             // automatic.
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            _client = BigqueryClient.Create(_projectId);
+            _client = BigQueryClient.Create(_projectId);
             // [END create_bigquery_client]
         }
 
         // [START create_dataset]
-        public void CreateDataset(string datasetId, BigqueryClient client)
+        public void CreateDataset(string datasetId, BigQueryClient client)
         {
             var dataset = client.GetOrCreateDataset(datasetId);
         }
         // [END create_dataset]
 
         // [START create_table]
-        public void CreateTable(string datasetId, string tableId, BigqueryClient client)
+        public void CreateTable(string datasetId, string tableId, BigQueryClient client)
         {
             var dataset = client.GetDataset(datasetId);
             // Create schema for new table.
             var schema = new TableSchemaBuilder
             {
-                { "title", BigqueryDbType.String },
-                { "unique_words", BigqueryDbType.Integer }
+                { "title", BigQueryDbType.String },
+                { "unique_words", BigQueryDbType.Int64 }
             }.Build();
             // Create the table if it doesn't exist.
-            BigqueryTable table = dataset.GetOrCreateTable(tableId, schema);
+            BigQueryTable table = dataset.GetOrCreateTable(tableId, schema);
         }
         // [END create_table]
 
-        public void DeleteDataset(string datasetId, BigqueryClient client)
+        public void DeleteDataset(string datasetId, BigQueryClient client)
         {
             _retryDeleteBusy.Eventually(() => client.DeleteDataset(datasetId));
         }
 
         // [START delete_table]
-        public void DeleteTable(string datasetId, string tableId, BigqueryClient client)
+        public void DeleteTable(string datasetId, string tableId, BigQueryClient client)
         {
             client.DeleteTable(_projectId, datasetId, tableId);
         }
@@ -97,7 +98,7 @@ namespace GoogleCloudSamples
 
         // [START import_file_from_gcs]
         public void ImportDataFromCloudStorage(string projectId, string datasetId,
-            string tableId, BigqueryClient client, string fileName, string folder = null)
+            string tableId, BigQueryClient client, string fileName, string folder = null)
         {
             StorageClient gcsClient = StorageClient.Create();
 
@@ -113,7 +114,7 @@ namespace GoogleCloudSamples
                 // This example uploads data to an existing table. If the upload will create a new table
                 // or if the schema in the JSON isn't identical to the schema in the table,
                 // create a schema to pass into the call instead of passing in a null value.
-                BigqueryJob job = client.UploadJson(datasetId, tableId, null, stream);
+                BigQueryJob job = client.UploadJson(datasetId, tableId, null, stream);
                 // Use the job to find out when the data has finished being inserted into the table,
                 // report errors etc.
 
@@ -124,39 +125,39 @@ namespace GoogleCloudSamples
         // [END import_file_from_gcs]
 
         // [START sync_query]
-        public BigqueryQueryJob SyncQuery(string projectId, string datasetId, string tableId,
-            string query, double timeoutMs, BigqueryClient client)
+        public BigQueryResults SyncQuery(string projectId, string datasetId, string tableId,
+            string query, double timeoutMs, BigQueryClient client)
         {
             var table = client.GetTable(projectId, datasetId, tableId);
-            BigqueryJob job = client.CreateQueryJob(query,
+            BigQueryJob job = client.CreateQueryJob(query,
                 new CreateQueryJobOptions { UseQueryCache = false });
             // Get the query result, waiting for the timespan specified in milliseconds.
-            BigqueryQueryJob result = client.GetQueryResults(job.Reference.JobId,
+            BigQueryResults result = client.GetQueryResults(job.Reference.JobId,
                 new GetQueryResultsOptions { Timeout = TimeSpan.FromMilliseconds(timeoutMs) });
             return result;
         }
         // [END sync_query]
 
         // [START sync_query_legacy_sql]
-        public BigqueryQueryJob LegacySqlSyncQuery(string projectId, string datasetId,
-            string tableId, string query, double timeoutMs, BigqueryClient client)
+        public BigQueryResults LegacySqlSyncQuery(string projectId, string datasetId,
+            string tableId, string query, double timeoutMs, BigQueryClient client)
         {
             var table = client.GetTable(projectId, datasetId, tableId);
-            BigqueryJob job = client.CreateQueryJob(query,
+            BigQueryJob job = client.CreateQueryJob(query,
                 new CreateQueryJobOptions { UseLegacySql = true });
             // Get the query result, waiting for the timespan specified in milliseconds.
-            BigqueryQueryJob result = client.GetQueryResults(job.Reference.JobId,
+            BigQueryResults result = client.GetQueryResults(job.Reference.JobId,
                 new GetQueryResultsOptions { Timeout = TimeSpan.FromMilliseconds(timeoutMs) });
             return result;
         }
         // [END sync_query_legacy_sql]
 
         // [START async_query]
-        public BigqueryQueryJob AsyncQuery(string projectId, string datasetId, string tableId,
-            string query, BigqueryClient client)
+        public BigQueryResults AsyncQuery(string projectId, string datasetId, string tableId,
+            string query, BigQueryClient client)
         {
             var table = client.GetTable(projectId, datasetId, tableId);
-            BigqueryJob job = client.CreateQueryJob(query,
+            BigQueryJob job = client.CreateQueryJob(query,
                 new CreateQueryJobOptions { UseQueryCache = false });
 
             // Wait for the job to complete.
@@ -171,14 +172,14 @@ namespace GoogleCloudSamples
 
         // [START import_from_file]
         public void UploadJsonFromFile(string projectId, string datasetId, string tableId,
-            string fileName, BigqueryClient client)
+            string fileName, BigQueryClient client)
         {
             using (FileStream stream = File.Open(fileName, FileMode.Open))
             {
                 // This example uploads data to an existing table. If the upload will create a new table
                 // or if the schema in the JSON isn't identical to the schema in the table,
                 // create a schema to pass into the call instead of passing in a null value.
-                BigqueryJob job = client.UploadJson(datasetId, tableId, null, stream);
+                BigQueryJob job = client.UploadJson(datasetId, tableId, null, stream);
                 // Use the job to find out when the data has finished being inserted into the table,
                 // report errors etc.
 
@@ -189,7 +190,7 @@ namespace GoogleCloudSamples
         // [END import_from_file]
 
         // [START stream_row]
-        public void UploadJson(string datasetId, string tableId, BigqueryClient client)
+        public void UploadJson(string datasetId, string tableId, BigQueryClient client)
         {
             // Note that there's a single line per JSON object. This is not a JSON array.
             IEnumerable<string> jsonRows = new string[]
@@ -205,7 +206,7 @@ namespace GoogleCloudSamples
             // This example uploads data to an existing table. If the upload will create a new table
             // or if the schema in the JSON isn't identical to the schema in the table,
             // create a schema to pass into the call instead of passing in a null value.
-            BigqueryJob job = client.UploadJson(datasetId, tableId, null, stream);
+            BigQueryJob job = client.UploadJson(datasetId, tableId, null, stream);
             // Use the job to find out when the data has finished being inserted into the table,
             // report errors etc.
 
@@ -216,12 +217,13 @@ namespace GoogleCloudSamples
 
         // [START export_to_cloud_storage]
         public void ExportJsonToGcs(
-            string datasetId, string tableId, string bucketName, string fileName, BigqueryClient client)
+            string datasetId, string tableId, string bucketName, string fileName,
+            BigQueryClient client)
         {
             StorageClient gcsClient = StorageClient.Create();
             string contentType = "application/json";
             // Get Table and append results into StringBuilder.
-            var result = client.ListRows(datasetId, tableId);
+            PagedEnumerable<TableDataList, BigQueryRow> result = client.ListRows(datasetId, tableId);
             StringBuilder sb = new StringBuilder();
             foreach (var row in result)
             {
@@ -236,7 +238,7 @@ namespace GoogleCloudSamples
         // [END export_to_cloud_storage]
 
         public void ExportCsvToGcs(
-            string datasetId, string tableId, string bucketName, string fileName, BigqueryClient client)
+            string datasetId, string tableId, string bucketName, string fileName, BigQueryClient client)
         {
             StorageClient gcsClient = StorageClient.Create();
             string contentType = "text/csv";
@@ -257,10 +259,10 @@ namespace GoogleCloudSamples
         }
 
         public void PopulateTable(
-            string query, string datasetId, string newTableId, BigqueryClient client)
+            string query, string datasetId, string newTableId, BigQueryClient client)
         {
             var destination = client.GetTableReference(datasetId, newTableId);
-            BigqueryJob job = client.CreateQueryJob(query,
+            BigQueryJob job = client.CreateQueryJob(query,
                 new CreateQueryJobOptions { DestinationTable = destination });
             // Wait for the job to complete.
             job.PollQueryUntilCompleted();
@@ -268,12 +270,12 @@ namespace GoogleCloudSamples
 
         // [START copy_table]
         public void CopyTable(
-            string datasetId, string tableIdToBeCopied, string newTableId, BigqueryClient client)
+            string datasetId, string tableIdToBeCopied, string newTableId, BigQueryClient client)
         {
             var table = client.GetTable(datasetId, tableIdToBeCopied);
             string query = $"SELECT * FROM {table}";
             var destination = client.GetTableReference(datasetId, newTableId);
-            BigqueryJob job = client.CreateQueryJob(query,
+            BigQueryJob job = client.CreateQueryJob(query,
                 new CreateQueryJobOptions { DestinationTable = destination });
             // Wait for the job to complete.
             job.PollQueryUntilCompleted();
@@ -294,7 +296,7 @@ namespace GoogleCloudSamples
         }
 
         // [START list_datasets]
-        public List<BigqueryDataset> ListDatasets(BigqueryClient client)
+        public List<BigQueryDataset> ListDatasets(BigQueryClient client)
         {
             var datasets = client.ListDatasets().ToList();
             return datasets;
@@ -302,7 +304,7 @@ namespace GoogleCloudSamples
         // [END list_datasets]
 
         // [START list_projects]
-        public List<CloudProject> ListProjects(BigqueryClient client)
+        public List<CloudProject> ListProjects(BigQueryClient client)
         {
             var projects = client.ListProjects().ToList();
             return projects;
@@ -311,7 +313,8 @@ namespace GoogleCloudSamples
 
         // [START list_rows]
         public int ListRows(
-            string projectId, string datasetId, string tableId, int numberOfRows, BigqueryClient client)
+            string projectId, string datasetId, string tableId, int numberOfRows,
+            BigQueryClient client)
         {
             int recordCount = 0;
             var result = client.ListRows(projectId, datasetId, tableId, null,
@@ -327,7 +330,7 @@ namespace GoogleCloudSamples
 
         // [START browse_table]
         public int TableDataList(
-            string datasetId, string tableId, int pageSize, BigqueryClient client)
+            string datasetId, string tableId, int pageSize, BigQueryClient client)
         {
             int recordCount = 0;
             var result = client.ListRows(datasetId, tableId, null,
@@ -385,7 +388,7 @@ namespace GoogleCloudSamples
             var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table}
                 GROUP BY title ORDER BY unique_words DESC LIMIT 42";
-            BigqueryQueryJob results = SyncQuery(projectId, datasetId, tableId, query, 10000, _client);
+            BigQueryResults results = SyncQuery(projectId, datasetId, tableId, query, 10000, _client);
             Assert.True(results.GetRows().Count() > 0);
         }
 
@@ -397,7 +400,7 @@ namespace GoogleCloudSamples
             string tableId = "shakespeare";
             var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM [{table.FullyQualifiedId}]";
-            BigqueryQueryJob results = LegacySqlSyncQuery(
+            BigQueryResults results = LegacySqlSyncQuery(
                 projectId, datasetId, tableId, query, 10000, _client);
             Assert.True(results.GetRows().Count() > 0);
         }
@@ -411,7 +414,7 @@ namespace GoogleCloudSamples
             var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
                 GROUP BY title ORDER BY unique_words DESC LIMIT 42";
-            BigqueryQueryJob results = AsyncQuery(projectId, datasetId, tableId, query, _client);
+            BigQueryResults results = AsyncQuery(projectId, datasetId, tableId, query, _client);
             Assert.True(results.GetRows().Count() > 0);
         }
 
@@ -474,7 +477,7 @@ namespace GoogleCloudSamples
             // Run query to get table data.
             var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable}";
-            BigqueryQueryJob results = AsyncQuery(_projectId, datasetId, newTableId,
+            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId,
                 query, _client);
             // Get first row and confirm it contains the expected value.
             var row = results.GetRows().First();
@@ -513,7 +516,7 @@ namespace GoogleCloudSamples
             // Query table to get first row and confirm it contains the expected value
             var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable} WHERE title = '{uploadTestWord}'";
-            BigqueryQueryJob results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
+            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
             var row = results.GetRows().Last();
             Assert.Equal(uploadTestWordValue, row["unique_words"]);
             DeleteTable(datasetId, newTableId, _client);
@@ -533,7 +536,7 @@ namespace GoogleCloudSamples
             // Query table to get first row and confirm it contains the expected value.
             var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable}";
-            BigqueryQueryJob results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
+            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
             var row = results.GetRows().First();
             Assert.Equal(gcsUploadTestWord, row["title"]);
             DeleteTable(datasetId, newTableId, _client);
