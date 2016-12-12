@@ -19,8 +19,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Routing;
-using Google.Devtools.AspNet;
 using System.Web.Http.ExceptionHandling;
+using Google.Cloud.Diagnostics.AspNet;
 
 namespace GoogleCloudSamples
 {
@@ -64,7 +64,7 @@ namespace GoogleCloudSamples
             // [END _EXCLUDE]
             // Add a catch all for the uncaught exceptions.
             config.Services.Add(typeof(IExceptionLogger),
-                CloudErrorReportingExceptionLogger.Create(projectId, serviceName, version));
+                ErrorReportingExceptionLogger.Create(projectId, serviceName, version));
             // [START _EXCLUDE]
             var emptyDictionary = new HttpRouteValueDictionary();
             // Add our one HttpMessageHandler to the root path.

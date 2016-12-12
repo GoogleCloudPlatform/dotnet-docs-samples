@@ -49,15 +49,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Api.CommonProtos, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Api.CommonProtos.1.0.0-beta04\lib\net45\Google.Api.CommonProtos.dll</HintPath>
+      <HintPath>packages\Google.Api.CommonProtos.1.0.0-beta05\lib\net45\Google.Api.CommonProtos.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Api.Gax, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Api.Gax.1.0.0-beta04\lib\net45\Google.Api.Gax.dll</HintPath>
+      <HintPath>packages\Google.Api.Gax.1.0.0-beta05\lib\net45\Google.Api.Gax.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Api.Gax.Grpc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Api.Gax.Grpc.1.0.0-beta04\lib\net45\Google.Api.Gax.Grpc.dll</HintPath>
+      <HintPath>packages\Google.Api.Gax.Grpc.1.0.0-beta05\lib\net45\Google.Api.Gax.Grpc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis, Version=1.18.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
@@ -78,6 +78,18 @@
     </Reference>
     <Reference Include="Google.Apis.PlatformServices, Version=1.18.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>packages\Google.Apis.1.18.0\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Cloud.Diagnostics.AspNet, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Cloud.Diagnostics.AspNet.1.0.0-alpha01\lib\net45\Google.Cloud.Diagnostics.AspNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Cloud.ErrorReporting.V1Beta1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Cloud.ErrorReporting.V1Beta1.1.0.0-alpha01\lib\net45\Google.Cloud.ErrorReporting.V1Beta1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Cloud.Trace.V1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Cloud.Trace.V1.1.0.0-alpha01\lib\net45\Google.Cloud.Trace.V1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Devtools.AspNet, Version=0.2.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
@@ -115,7 +127,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Interactive.Async, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>packages\System.Interactive.Async.3.1.0-rc2\lib\net45\System.Interactive.Async.dll</HintPath>
+      <HintPath>packages\System.Interactive.Async.3.1.1\lib\net45\System.Interactive.Async.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.IO.Compression" />
