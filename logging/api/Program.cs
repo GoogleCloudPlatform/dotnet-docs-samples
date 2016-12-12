@@ -15,10 +15,9 @@
  */
 // [START complete]
 
-using Google.Logging.V2;
-using Google.Logging.Type;
+using Google.Cloud.Logging.V2;
+using Google.Cloud.Logging.Type;
 using System;
-using System.IO;
 using System.Collections.Generic;
 using Google.Api;
 using Google.Api.Gax.Grpc;
@@ -74,9 +73,10 @@ namespace GoogleCloudSamples
         private void WriteLogEntry(string logId, string message)
         {
             var client = LoggingServiceV2Client.Create();
+            LogName logName = new LogName(s_projectId, logId);
             LogEntry logEntry = new LogEntry
             {
-                LogName = $"projects/{s_projectId}/logs/{logId}",
+                LogName = logName.ToString(),
                 Severity = LogSeverity.Info,
                 TextPayload = $"{typeof(LoggingSample).FullName} - {message}"
             };
@@ -86,7 +86,7 @@ namespace GoogleCloudSamples
                 { "size", "large" },
                 { "color", "red" }
             };
-            client.WriteLogEntries(logEntry.LogName, resource, entryLabels,
+            client.WriteLogEntries(LogNameOneof.From(logName), resource, entryLabels,
                 new[] { logEntry }, RetryAWhile);
             Console.WriteLine($"Created log entry in log-id: {logId}.");
         }
@@ -96,9 +96,10 @@ namespace GoogleCloudSamples
         private void ListLogEntries(string logId)
         {
             var client = LoggingServiceV2Client.Create();
-            string logName = $"projects/{s_projectId}/logs/{logId}";
-            IEnumerable<string> projectIds = new string[] { s_projectId };
-            var results = client.ListLogEntries(projectIds, $"logName={logName}",
+            LogName logName = new LogName(s_projectId, logId);
+            ProjectName projectName = new ProjectName(s_projectId);
+            IEnumerable<string> projectIds = new string[] { projectName.ToString() };
+            var results = client.ListLogEntries(projectIds, $"logName={logName.ToString()}",
                 "timestamp desc", callSettings: RetryAWhile);
             foreach (var row in results)
             {
@@ -121,7 +122,6 @@ namespace GoogleCloudSamples
             var sinkClient = ConfigServiceV2Client.Create();
             CreateSinkRequest sinkRequest = new CreateSinkRequest();
             LogSink myLogSink = new LogSink();
-            string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
             myLogSink.Name = sinkId;
 
             // This creates a sink using a Google Cloud Storage bucket 
@@ -133,11 +133,11 @@ namespace GoogleCloudSamples
             // In Powershell, use this command:
             // PS > Add-GcsBucketAcl <your-bucket-name> -Role OWNER -Group cloud-logs@google.com
             myLogSink.Destination = "storage.googleapis.com/" + s_projectId;
-            string logName = $"projects/{s_projectId}/logs/{logId}";
-            myLogSink.Filter = $"logName={logName}AND severity<=ERROR";
-            sinkRequest.Parent = $"projects/{s_projectId}";
+            LogName logName = new LogName(s_projectId, logId);
+            myLogSink.Filter = $"logName={logName.ToString()}AND severity<=ERROR";
+            ProjectName projectName = new ProjectName(s_projectId);
             sinkRequest.Sink = myLogSink;
-            sinkClient.CreateSink(sinkRequest.Parent, myLogSink, RetryAWhile);
+            sinkClient.CreateSink(ParentNameOneof.From(projectName), myLogSink, RetryAWhile);
             Console.WriteLine($"Created sink: {sinkId}.");
         }
         // [END create_log_sink]
@@ -146,7 +146,8 @@ namespace GoogleCloudSamples
         private void ListSinks()
         {
             var sinkClient = ConfigServiceV2Client.Create();
-            var listOfSinks = sinkClient.ListSinks($"projects/{s_projectId}",
+            ProjectName projectName = new ProjectName(s_projectId);
+            var listOfSinks = sinkClient.ListSinks(ParentNameOneof.From(projectName),
                 callSettings: RetryAWhile);
             foreach (var sink in listOfSinks)
             {
@@ -159,11 +160,11 @@ namespace GoogleCloudSamples
         private void UpdateSinkLog(string sinkId, string logId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
-            string logName = $"projects/{s_projectId}/logs/{logId}";
-            string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
-            var sink = sinkClient.GetSink(sinkName, RetryAWhile);
-            sink.Filter = $"logName={logName}AND severity<=ERROR";
-            sinkClient.UpdateSink(sinkName, sink, RetryAWhile);
+            LogName logName = new LogName(s_projectId, logId);
+            SinkName sinkName = new SinkName(s_projectId, sinkId);
+            var sink = sinkClient.GetSink(SinkNameOneof.From(sinkName), RetryAWhile);
+            sink.Filter = $"logName={logName.ToString()}AND severity<=ERROR";
+            sinkClient.UpdateSink(SinkNameOneof.From(sinkName), sink, RetryAWhile);
             Console.WriteLine($"Updated {sinkId} to export logs from {logId}.");
         }
         // [END update_log_sink]
@@ -172,8 +173,8 @@ namespace GoogleCloudSamples
         private void DeleteLog(string logId)
         {
             var client = LoggingServiceV2Client.Create();
-            string logName = $"projects/{s_projectId}/logs/{logId}";
-            client.DeleteLog(logName, RetryAWhile);
+            LogName logName = new LogName(s_projectId, logId);
+            client.DeleteLog(LogNameOneof.From(logName), RetryAWhile);
             Console.WriteLine($"Deleted {logId}.");
         }
         // [END delete_log]
@@ -182,8 +183,8 @@ namespace GoogleCloudSamples
         private void DeleteSink(string sinkId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
-            string sinkName = $"projects/{s_projectId}/sinks/{sinkId}";
-            sinkClient.DeleteSink(sinkName, RetryAWhile);
+            SinkName sinkName = new SinkName(s_projectId, sinkId);
+            sinkClient.DeleteSink(SinkNameOneof.From(sinkName), RetryAWhile);
             Console.WriteLine($"Deleted {sinkId}.");
         }
         // [END delete_log_sink]
