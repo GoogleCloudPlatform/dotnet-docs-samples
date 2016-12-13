@@ -55,22 +55,22 @@ namespace GoogleCloudSamples
             string projectId = "YOUR-PROJECT-ID";
             string serviceName = "NAME-OF-YOUR-SERVICE";
             string version = "VERSION-OF-YOUR-SERVCICE";
-            // [START _EXCLUDE]
+            // [START_EXCLUDE]
             // Check to ensure that projectId has been changed from placeholder value.
             if (projectId == ("YOUR-PROJECT" + "-ID"))
             {
                 throw new Exception("Set string projectId above to be your project id.");
             }
-            // [END _EXCLUDE]
+            // [END_EXCLUDE]
             // Add a catch all for the uncaught exceptions.
             config.Services.Add(typeof(IExceptionLogger),
                 ErrorReportingExceptionLogger.Create(projectId, serviceName, version));
-            // [START _EXCLUDE]
+            // [START_EXCLUDE]
             var emptyDictionary = new HttpRouteValueDictionary();
             // Add our one HttpMessageHandler to the root path.
             config.Routes.MapHttpRoute("index", "", emptyDictionary, emptyDictionary,
                 new HelloWorldHandler());
-            // [END _EXCLUDE]
+            // [END_EXCLUDE]
         }
         // [END register_error_reporting]
         // [END sample]
