@@ -92,14 +92,6 @@
       <HintPath>packages\Google.Cloud.Trace.V1.1.0.0-alpha01\lib\net45\Google.Cloud.Trace.V1.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Devtools.AspNet, Version=0.2.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Devtools.AspNet.0.2.0\lib\net45\Google.Devtools.AspNet.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Devtools.Clouderrorreporting.V1Beta1, Version=0.3.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Devtools.Clouderrorreporting.V1Beta1.0.3.0\lib\net45\Google.Devtools.Clouderrorreporting.V1Beta1.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Google.Protobuf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>packages\Google.Protobuf.3.0.0\lib\net45\Google.Protobuf.dll</HintPath>
       <Private>True</Private>
