@@ -1,6 +1,6 @@
 # Stackdriver Error Reporting Sample
 
-A sample demonstrating how to use the Error Reporting nuget package
+A sample demonstrating how to use the Google Cloud Stackdriver Diagnostics ASP.NET NuGet package
 to log all of an ASP.NET web application's errors to the Error Reporting page in the Cloud Platform Console.
 
 ## Links
