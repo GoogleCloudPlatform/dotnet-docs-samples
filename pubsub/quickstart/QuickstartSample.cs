@@ -28,13 +28,13 @@ public class QuickstartSample
         string projectId = "YOUR_PROJECT_ID";
 
         // The name for the new topic
-        string topicName = "my-new-topic";
+        string projectTopic = "my-new-topic";
 
         // The fully qualified name for the new topic
-        string formattedTopicName = PublisherClient.FormatTopicName(projectId, topicName);
+        var topicName = new TopicName(projectId, projectTopic);
 
         // Creates the new topic
-        Topic topic = publisher.CreateTopic(formattedTopicName);
+        Topic topic = publisher.CreateTopic(topicName);
 
         Console.WriteLine($"Topic {topic.Name} created.");
     }
