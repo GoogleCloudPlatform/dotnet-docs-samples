@@ -349,8 +349,9 @@ function Run-TestScripts
     echo ("=" * 79)
     foreach ($key in $results.Keys) {
         $count = $results[$key].Length
-        $result = $key.Replace('Completed', 'Succeeded')
+        $result = $key.Replace('Completed', 'Succeeded').ToUpper()
         echo "$count $result"
+        echo $results[$key]
     }
     # Throw an exception to set ERRORLEVEL to 1 in the calling process.
     $failureCount = $results['Failed'].Length
