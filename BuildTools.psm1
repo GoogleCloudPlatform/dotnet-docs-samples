@@ -317,49 +317,47 @@ function Run-TestScripts
     $rootDir = pwd
     # Keep running lists of successes and failures.
     # Array of strings: the relative path of the inner script.
-    $successes = @()
-    $failures = @()
-    $timeOuts = @()
+    $results = @{}
     foreach ($script in $scripts) {
         $relativePath = Resolve-Path -Relative $script.FullName
-        echo "Starting $relativePath..."
-        $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
-            ('.\"{0}"' -f $script.Name) {
-            echo ("-" * 79)
-            echo $args[0]
-            Set-Location $args[1]
-            Invoke-Expression $args[2]
-            if ($LASTEXITCODE) {
-                throw "FAILED with exit code $LASTEXITCODE"
+        $verb = "Starting"
+        $jobState = 'Failed'  # Retry once on failure.
+        for ($try = 0; $try -lt 2 -and $jobState -eq 'Failed'; ++$try) {
+            echo "$verb $relativePath..."
+            $verb = "Retrying"
+            $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
+                ('.\"{0}"' -f $script.Name) {
+                echo ("-" * 79)
+                echo $args[0]
+                Set-Location $args[1]
+                Invoke-Expression $args[2]
+                if ($LASTEXITCODE) {
+                    throw "FAILED with exit code $LASTEXITCODE"
+                }
             }
-        }
-        if (Wait-Job $job -Timeout 300) {
-            Receive-Job $job
-            if ($job.State -eq 'Failed') {
-                $failures += $relativePath
+            if (Wait-Job $job -Timeout 300) {
+                Receive-Job $job
+                $jobState = $job.State
             } else {
-                $successes += $relativePath
+                $jobState = 'Timed Out'
             }
-        } else {
-            $timeOuts += $relativePath
+            Remove-Job $job
         }
-        Remove-Job $job
+        $results[$jobState] += @($relativePath)
     }
     # Print a final summary.
     echo ("=" * 79)
-    $successCount = $successes.Count
-    echo "$successCount SUCCEEDED"
-    echo $successes
-    $failureCount = $failures.Count
-    echo "$failureCount FAILED"
-    echo $failures
-    $timeOutCount = $timeOuts.Count
-    echo "$timeOutCount TIMED OUT"
-    echo $timeOuts
+    foreach ($key in $results.Keys) {
+        $count = $results[$key].Length
+        $result = $key.Replace('Completed', 'Succeeded')
+        echo "$count $result"
+    }
     # Throw an exception to set ERRORLEVEL to 1 in the calling process.
+    $failureCount = $results['Failed'].Length
     if ($failureCount) {
         throw "$failureCount FAILED"
     }
+    $timeOutCount = $results['Timed Out'].Length
     if ($timeOutCount) {
         throw "$timeOutCount TIMED OUT"
     }
