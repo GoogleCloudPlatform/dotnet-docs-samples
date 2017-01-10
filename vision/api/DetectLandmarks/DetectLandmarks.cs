@@ -20,6 +20,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
+    // [START all]
     public class DetectLandmarks
     {
         // [START run_application]
@@ -33,7 +34,7 @@ namespace GoogleCloudSamples
                 Console.WriteLine(s_usage);
                 return;
             }
-            // [END run_application
+            // [END run_application]
             // [START authenticate]
             var client = ImageAnnotatorClient.Create();
             // [END authenticate]
@@ -49,4 +50,5 @@ namespace GoogleCloudSamples
             // [END parse_response]
         }
     }
+    // [END all]
 }
