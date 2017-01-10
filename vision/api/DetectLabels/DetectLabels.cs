@@ -43,8 +43,11 @@ namespace GoogleCloudSamples
             // [START authenticate]
             var client = ImageAnnotatorClient.Create();
             // [END authenticate]
+            // [START construct_request]
+            var image = Image.FromFile(imageFilePath);
+            // [END construct_request]
             // [START detect_labels]
-            var response = client.DetectLabels(Image.FromFile(imageFilePath));
+            var response = client.DetectLabels(image);
             // [END detect_labels]
             // [START parse_response]
             foreach (var annotation in response)
