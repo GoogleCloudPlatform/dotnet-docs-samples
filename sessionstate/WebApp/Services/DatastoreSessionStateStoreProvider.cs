@@ -176,7 +176,7 @@ namespace WebApp.Services
                 sessionLock.TimeOutInMinutes = timeout;
                 sessionLock.DateLocked = DateTime.UtcNow;
                 sessionLock.LockCount = 0;
-                using (new LifetimeTimer(_log, "CreateUninitializedItem", 25))
+                using (new LifetimeTimer(_log, "CreateUninitializedItem"))
                 using (var transaction = _datastore.BeginTransaction(_callSettings))
                 {
                     transaction.Upsert(ToEntity(sessionLock));
@@ -212,7 +212,7 @@ namespace WebApp.Services
         {
             try
             {
-                using (new LifetimeTimer(_log, "GetItemImpl", 25))
+                using (new LifetimeTimer(_log, "GetItemImpl"))
                 using (var transaction = _datastore.BeginTransaction(_callSettings))
                 {
                     // Look up both entities in datastore.
@@ -276,7 +276,7 @@ namespace WebApp.Services
                 sessionItems.Id = id;
                 sessionItems.ReleaseCount = lockId.LockCount;
                 sessionItems.Items = lockId.Items;
-                using (new LifetimeTimer(_log, "ReleaseItemExclusive", 25))
+                using (new LifetimeTimer(_log, "ReleaseItemExclusive"))
                 using (var transaction = _datastore.BeginTransaction(_callSettings))
                 {
                     SessionLockEntity sessionLock = SessionLockFromEntity(
@@ -296,7 +296,7 @@ namespace WebApp.Services
             LogExceptions("RemoveItem()", () =>
             {
                 SessionLockEntity lockId = (SessionLockEntity)lockIdObject;
-                using (new LifetimeTimer(_log, "RemoveItem", 25))
+                using (new LifetimeTimer(_log, "RemoveItem"))
                 using (var transaction = _datastore.BeginTransaction(_callSettings))
                 {
                     SessionLockEntity sessionLock = SessionLockFromEntity(
@@ -343,7 +343,7 @@ namespace WebApp.Services
                         DateLocked = DateTime.UtcNow,
                         LockCount = 0
                     };
-                    using (new LifetimeTimer(_log, "SetAndReleaseItemExclusive(new)", 25))
+                    using (new LifetimeTimer(_log, "SetAndReleaseItemExclusive(new)"))
                     using (var transaction = _datastore.BeginTransaction(_callSettings))
                     {
                         transaction.Upsert(ToEntity(sessionItems), ToEntity(sessionLock));
@@ -351,7 +351,7 @@ namespace WebApp.Services
                     }
                     return;
                 }
-                using (new LifetimeTimer(_log, "SetAndReleaseItemExclusive", 25))
+                using (new LifetimeTimer(_log, "SetAndReleaseItemExclusive"))
                 using (var transaction = _datastore.BeginTransaction(_callSettings))
                 {
                     // Update existing session items.
@@ -608,7 +608,7 @@ namespace WebApp.Services
         readonly Stopwatch _stopWatch = new Stopwatch();
         readonly int _millisecondsTooLong;
         readonly ILog _log;
-        public LifetimeTimer(ILog log, string name, int millisecondsTooLong)
+        public LifetimeTimer(ILog log, string name, int millisecondsTooLong = 200)
         {
             _name = name;
             _log = log;
@@ -621,7 +621,7 @@ namespace WebApp.Services
             _stopWatch.Stop();
             if (_stopWatch.ElapsedMilliseconds >= _millisecondsTooLong)
             {
-                _log.WarnFormat("{0} took {1} milliseconds!",
+                _log.DebugFormat("{0} took {1} milliseconds!",
                     _name, _stopWatch.ElapsedMilliseconds);
             }
         }
