@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetectLandmarks", "DetectLa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetectFaces", "DetectFaces\DetectFaces.csproj", "{B666FE4A-23E9-49C7-959E-AAA52DC2C131}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Detect", "Detect\Detect.csproj", "{B0BBFA89-6E37-4E9B-8308-2CE4C18340C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B666FE4A-23E9-49C7-959E-AAA52DC2C131}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B666FE4A-23E9-49C7-959E-AAA52DC2C131}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B666FE4A-23E9-49C7-959E-AAA52DC2C131}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0BBFA89-6E37-4E9B-8308-2CE4C18340C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0BBFA89-6E37-4E9B-8308-2CE4C18340C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0BBFA89-6E37-4E9B-8308-2CE4C18340C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0BBFA89-6E37-4E9B-8308-2CE4C18340C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
