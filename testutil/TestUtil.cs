@@ -84,6 +84,8 @@ namespace GoogleCloudSamples
 
     public class CommandLineRunner
     {
+        // Use a lock to protect globally-shared stdout.
+        private static readonly object s_lock = new object();
         public Func<string[], int> Main { get; set; }
         public Action<string[]> VoidMain { get; set; }
         public string Command { get; set; }
@@ -92,30 +94,33 @@ namespace GoogleCloudSamples
         /// <returns>The console output of this program</returns>
         public ConsoleOutput Run(params string[] arguments)
         {
-            Console.Write($"{Command} ");
-            Console.WriteLine(string.Join(" ", arguments));
+            lock (s_lock)
+            {
+                Console.Write($"{Command} ");
+                Console.WriteLine(string.Join(" ", arguments));
 
-            TextWriter consoleOut = Console.Out;
-            StringWriter stringOut = new StringWriter();
-            Console.SetOut(stringOut);
-            try
-            {
-                int exitCode = 0;
-                if (null == VoidMain)
-                    exitCode = Main(arguments);
-                else
-                    VoidMain(arguments);
-                var consoleOutput = new ConsoleOutput()
+                TextWriter consoleOut = Console.Out;
+                StringWriter stringOut = new StringWriter();
+                Console.SetOut(stringOut);
+                try
                 {
-                    ExitCode = exitCode,
-                    Stdout = stringOut.ToString()
-                };
-                Console.Write(consoleOutput.Stdout);
-                return consoleOutput;
-            }
-            finally
-            {
-                Console.SetOut(consoleOut);
+                    int exitCode = 0;
+                    if (null == VoidMain)
+                        exitCode = Main(arguments);
+                    else
+                        VoidMain(arguments);
+                    var consoleOutput = new ConsoleOutput()
+                    {
+                        ExitCode = exitCode,
+                        Stdout = stringOut.ToString()
+                    };
+                    Console.Write(consoleOutput.Stdout);
+                    return consoleOutput;
+                }
+                finally
+                {
+                    Console.SetOut(consoleOut);
+                }
             }
         }
     }
