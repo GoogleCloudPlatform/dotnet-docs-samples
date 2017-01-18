@@ -261,4 +261,24 @@ namespace GoogleCloudSamples
             }
         }
     }
+
+    /// <summary>
+    /// Runs tests on local file.
+    /// </summary>
+    public class QuickStartTests
+    {
+        readonly CommandLineRunner _quickStart = new CommandLineRunner()
+        {
+            VoidMain = QuickStart.Main,
+            Command = "QuickStart"
+        };
+
+        [Fact]
+        public void TestRun()
+        {
+            var output = _quickStart.Run();
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("mammal", output.Stdout);
+        }
+    }
 }

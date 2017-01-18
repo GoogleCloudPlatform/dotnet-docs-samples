@@ -46,7 +46,7 @@ namespace GoogleCloudSamples
             // [END detect_face]
 
             // [START highlight_faces]
-            var image = System.Drawing.Image.FromFile(args[0]);
+            using (var image = System.Drawing.Image.FromFile(args[0]))
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(image))
             {
                 var cyanPen = new System.Drawing.Pen(System.Drawing.Color.
@@ -56,13 +56,13 @@ namespace GoogleCloudSamples
                     g.DrawPolygon(cyanPen, annotation.BoundingPoly.Vertices.Select(
                         (vertex) => new System.Drawing.Point(vertex.X, vertex.Y)).ToArray());
                 }
+                // [END highlight_faces]
+                int lastDot = args[0].LastIndexOf('.');
+                string outFilePath = lastDot < 0 ?
+                    args[0] + ".faces" :
+                    args[0].Substring(0, lastDot) + ".faces" + args[0].Substring(lastDot);
+                image.Save(outFilePath);
             }
-            // [END highlight_faces]
-            int lastDot = args[0].LastIndexOf('.');
-            string outFilePath = lastDot < 0 ?
-                args[0] + ".faces" :
-                args[0].Substring(0, lastDot) + ".faces" + args[0].Substring(lastDot);
-            image.Save(outFilePath);
         }
     }
 }
