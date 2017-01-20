@@ -8,8 +8,6 @@ A sample demonstrating how to invoke Google Cloud Storage from C#.
 
 ## Build and Run
 
-## Build and Run
-
 1.  **Follow the instructions in the [root README](../../README.md)**.
 
 4.  Enable APIs for your project.

@@ -28,53 +28,6 @@ namespace GoogleCloudSamples
             VoidMain = DetectFaces.Main,
             Command = "DetectFaces"
         };
-        readonly CommandLineRunner _detectLabels = new CommandLineRunner()
-        {
-            VoidMain = DetectLabels.Main,
-            Command = "DetectLabels"
-        };
-        readonly CommandLineRunner _detectLandmarks = new CommandLineRunner()
-        {
-            VoidMain = DetectLandmarks.Main,
-            Command = "DetectLandmarks"
-        };
-
-        [Fact]
-        public void TestLabelsWithCat()
-        {
-            var output = _detectLabels.Run(@"data\cat.jpg");
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("cat", output.Stdout);
-        }
-        [Fact]
-        public void TestLabelsWithNoArgs()
-        {
-            var output = _detectLabels.Run();
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Google Cloud Vision API", output.Stdout);
-        }
-
-        [Fact]
-        public void TestLandmarksWithCat()
-        {
-            var output = _detectLandmarks.Run(@"data\cat.jpg");
-            Assert.Equal(0, output.ExitCode);
-            Assert.Equal("", output.Stdout);  // No landmarks.
-        }
-        [Fact]
-        public void TestLandmarksWithTower()
-        {
-            var output = _detectLandmarks.Run(@"data\tower.jpg");
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Eiffel", output.Stdout);
-        }
-        [Fact]
-        public void TestLandmarksWithNoArgs()
-        {
-            var output = _detectLandmarks.Run();
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Google Cloud Vision API", output.Stdout);
-        }
 
         [Fact]
         public void TestFacesWithNoArgs()

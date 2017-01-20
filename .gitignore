@@ -10,3 +10,4 @@ TestResults/
 PublishProfiles/
 *.sln.DotSettings.user
 .vs/
+*~

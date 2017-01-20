@@ -195,14 +195,6 @@
       <Project>{b666fe4a-23e9-49c7-959e-aaa52dc2c131}</Project>
       <Name>DetectFaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DetectLabels\DetectLabels.csproj">
-      <Project>{5332aebb-bcf6-4745-b6b8-b9a0bb9d4fe0}</Project>
-      <Name>DetectLabels</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DetectLandmarks\DetectLandmarks.csproj">
-      <Project>{c02620e2-01c2-44e4-8488-1260ed41022b}</Project>
-      <Name>DetectLandmarks</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Detect\Detect.csproj">
       <Project>{b0bbfa89-6e37-4e9b-8308-2ce4c18340c6}</Project>
       <Name>Detect</Name>
