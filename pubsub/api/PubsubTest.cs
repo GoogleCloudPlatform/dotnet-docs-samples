@@ -14,14 +14,15 @@
 
 using System;
 // [START create_publisher_client]
-using Google.Pubsub.V1;
+using Google.Cloud.PubSub.V1;
 // [END create_publisher_client]
+using Google.Cloud.Iam.V1;
 using System.Linq;
 using Google.Protobuf;
 using Grpc.Core;
 using System.Collections.Generic;
 using Xunit;
-using Google.Api.Gax;
+using Google.Api.Gax.Grpc;
 
 namespace GoogleCloudSamples
 {
@@ -46,25 +47,20 @@ namespace GoogleCloudSamples
         CallSettings newRetryCallSettings(int tryCount,
             params StatusCode[] finalStatusCodes)
         {
-            var backoff = new BackoffSettings()
-            {
-                Delay = TimeSpan.FromMilliseconds(500),
-                DelayMultiplier = 2,
-                MaxDelay = TimeSpan.FromSeconds(3)
-            };
-            return new CallSettings()
-            {
-                Timing = CallTiming.FromRetry(new RetrySettings()
-                {
-                    RetryBackoff = backoff,
-                    TimeoutBackoff = backoff,
-                    RetryFilter = (RpcException e) => (
+            TimeSpan delay = TimeSpan.FromMilliseconds(500);
+            TimeSpan maxDelay = TimeSpan.FromSeconds(3);
+            double delayMultiplier = 2;
+            var backoff = new BackoffSettings(delay, maxDelay, delayMultiplier);
+
+            return new CallSettings(null, null,
+                CallTiming.FromRetry(new RetrySettings(backoff, backoff,
+                Google.Api.Gax.Expiration.None,
+                  (RpcException e) => (
                         StatusCode.OK != e.Status.StatusCode
                         && !finalStatusCodes.Contains(e.Status.StatusCode)
                         && --tryCount > 0),
-                    DelayJitter = RetrySettings.NoJitter,
-                })
-            };
+                    RetrySettings.NoJitter)),
+                metadata => metadata.Add("ClientVersion", "1.0.0"), null, null);
         }
         // [END retry]
 
@@ -101,8 +97,7 @@ namespace GoogleCloudSamples
         public void CreateTopic(string topicId, PublisherClient publisher)
         {
             // [START create_topic]
-            string topicName = PublisherClient.FormatTopicName(_projectId,
-                topicId);
+            TopicName topicName = new TopicName(_projectId, topicId);
             try
             {
                 publisher.CreateTopic(topicName);
@@ -119,10 +114,8 @@ namespace GoogleCloudSamples
             SubscriberClient subscriber)
         {
             // [START create_subscription]
-            string topicName = PublisherClient.FormatTopicName(_projectId,
-                topicId);
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId,
+            TopicName topicName = new TopicName(_projectId, topicId);
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
                 subscriptionId);
             try
             {
@@ -141,8 +134,7 @@ namespace GoogleCloudSamples
         public void CreateTopicMessage(string topicId, PublisherClient publisher)
         {
             // [START publish_message]
-            string topicName = PublisherClient.FormatTopicName(_projectId,
-                topicId);
+            TopicName topicName = new TopicName(_projectId, topicId);
             PubsubMessage message = new PubsubMessage
             {
                 // The data is any arbitrary ByteString. Here, we're using text.
@@ -162,8 +154,7 @@ namespace GoogleCloudSamples
             SubscriberClient subscriber)
         {
             // [START pull_messages]
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId,
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
                 subscriptionId);
             PullResponse response = subscriber.Pull(subscriptionName,
                 returnImmediately: true, maxMessages: 10);
@@ -176,8 +167,7 @@ namespace GoogleCloudSamples
             SubscriberClient subscriber,
             PullResponse response)
         {
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId,
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
                 subscriptionId);
             // [START pull_messages]
             subscriber.Acknowledge(subscriptionName,
@@ -187,8 +177,7 @@ namespace GoogleCloudSamples
 
         public Topic GetTopic(string topicId, PublisherClient publisher)
         {
-            string topicName = PublisherClient.FormatTopicName(_projectId,
-                topicId);
+            TopicName topicName = new TopicName(_projectId, topicId);
             Topic topic = _publisher.GetTopic(topicName);
             return topic;
         }
@@ -196,18 +185,116 @@ namespace GoogleCloudSamples
         public Subscription GetSubscription(string subscriptionId,
             SubscriberClient subscriber)
         {
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId,
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
                 subscriptionId);
             Subscription subscription = _subscriber.GetSubscription(
                 subscriptionName);
             return subscription;
         }
 
+        public Policy GetTopicIamPolicy(string topicId, PublisherClient publisher)
+        {
+            // [START pubsub_get_topic_policy]
+            TopicName topicName = new TopicName(_projectId, topicId);
+            Policy policy = _publisher.GetIamPolicy(topicName.ToString());
+            return policy;
+            // [END pubsub_get_topic_policy]
+        }
+
+        public Policy GetSubscriptionIamPolicy(string subscriptionId, PublisherClient publisher)
+        {
+            // [START pubsub_get_subscription_policy]
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId, subscriptionId);
+            Policy policy = _publisher.GetIamPolicy(subscriptionName.ToString());
+            return policy;
+            // [END pubsub_get_subscription_policy]
+        }
+
+        public Policy SetTopicIamPolicy(string topicId, PublisherClient publisher)
+        {
+            // [START pubsub_set_topic_policy]
+            Policy policy = new Policy
+            {
+                Bindings =
+                    {
+                        new Binding { Role = "roles/pubsub.editor",
+                            Members = { "group:cloud-logs@google.com" } },
+                        new Binding { Role = "roles/pubsub.viewer",
+                            Members = { "allUsers"} }
+                    }
+            };
+
+            SetIamPolicyRequest request = new SetIamPolicyRequest
+            {
+                Resource = new TopicName(_projectId, topicId).ToString(),
+                Policy = policy
+            };
+            Policy response = publisher.SetIamPolicy(request);
+            return response;
+            // [END pubsub_set_topic_policy]
+        }
+
+        public Policy SetSubscriptionIamPolicy(string subscriptionId, PublisherClient publisher)
+        {
+            // [START pubsub_set_subscription_policy]
+            Policy policy = new Policy
+            {
+                Bindings =
+                {
+                    new Binding { Role = "roles/pubsub.editor",
+                        Members = { "group:cloud-logs@google.com" } },
+                    new Binding { Role = "roles/pubsub.viewer",
+                        Members = { "allUsers" } }
+                }
+            };
+            SetIamPolicyRequest request = new SetIamPolicyRequest
+            {
+                Resource = new SubscriptionName(_projectId, subscriptionId).ToString(),
+                Policy = policy
+            };
+            Policy response = publisher.SetIamPolicy(request);
+            return response;
+            // [END pubsub_set_subscription_policy]
+        }
+
+        public TestIamPermissionsResponse TestTopicIamPermissionsResponse(string topicId,
+            PublisherClient publisher)
+        {
+            // [START pubsub_test_topic_permissons]
+            List<string> permissions = new List<string>();
+            permissions.Add("pubsub.topics.get");
+            permissions.Add("pubsub.topics.update");
+            TestIamPermissionsRequest request = new TestIamPermissionsRequest
+            {
+                Resource = new TopicName(_projectId, topicId).ToString(),
+                Permissions = { permissions }
+            };
+            TestIamPermissionsResponse response = publisher.TestIamPermissions(request);
+            return response;
+            // [END pubsub_test_topic_permissons]
+        }
+
+        public TestIamPermissionsResponse TestSubscriptionIamPermissionsResponse(
+            string subscriptionId, PublisherClient publisher)
+        {
+            // [START pubsub_test_subscription_permissons]
+            List<string> permissions = new List<string>();
+            permissions.Add("pubsub.subscriptions.get");
+            permissions.Add("pubsub.subscriptions.update");
+            TestIamPermissionsRequest request = new TestIamPermissionsRequest
+            {
+                Resource = new TopicName(_projectId, subscriptionId).ToString(),
+                Permissions = { permissions }
+            };
+            TestIamPermissionsResponse response = publisher.TestIamPermissions(request);
+            return response;
+            // [END pubsub_test_subscription_permissons]
+        }
+
         public IEnumerable<Topic> ListProjectTopics(PublisherClient publisher)
         {
             // [START list_topics]
-            string projectName = PublisherClient.FormatProjectName(_projectId);
+            ProjectName projectName = new ProjectName(_projectId);
             IEnumerable<Topic> topics = publisher.ListTopics(projectName);
             // [END list_topics]
             return topics;
@@ -217,7 +304,7 @@ namespace GoogleCloudSamples
             subscriber)
         {
             // [START list_subscriptions]
-            string projectName = PublisherClient.FormatProjectName(_projectId);
+            ProjectName projectName = new ProjectName(_projectId);
             IEnumerable<Subscription> subscriptions =
                 subscriber.ListSubscriptions(projectName);
             // [END list_subscriptions]
@@ -228,8 +315,7 @@ namespace GoogleCloudSamples
             subscriber)
         {
             // [START delete_subscription]
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId,
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
                 subscriptionId);
             subscriber.DeleteSubscription(subscriptionName);
             // [END delete_subscription]
@@ -238,8 +324,7 @@ namespace GoogleCloudSamples
         public void DeleteTopic(string topicId, PublisherClient publisher)
         {
             // [START delete_topic]
-            string topicName = PublisherClient.FormatTopicName(_projectId,
-                topicId);
+            TopicName topicName = new TopicName(_projectId, topicId);
             publisher.DeleteTopic(topicName);
             // [END delete_topic]
         }
@@ -248,11 +333,10 @@ namespace GoogleCloudSamples
         public void RpcRetry(string topicId, string subscriptionId,
             PublisherClient publisher, SubscriberClient subscriber)
         {
-            string topicName = PublisherClient.FormatTopicName(_projectId,
-                topicId);
-            string subscriptionName =
+            TopicName topicName = new TopicName(_projectId, topicId);
             // Create Subscription.
-            SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
+                subscriptionId);
             // Create Topic
             try
             {
@@ -297,9 +381,9 @@ namespace GoogleCloudSamples
         {
             string topicId = "testTopicForTopicCreation";
             CreateTopic(topicId, _publisher);
-            string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
+            TopicName topicName = new TopicName(_projectId, topicId);
             Topic topic = GetTopic(topicId, _publisher);
-            Assert.Equal(topicName, topic.Name);
+            Assert.Equal(topicName.ToString(), topic.Name);
             DeleteTopic(topicId, _publisher);
         }
 
@@ -308,13 +392,13 @@ namespace GoogleCloudSamples
         {
             string topicId = "testTopicForSubscriptionCreation";
             string subscriptionId = "testSubscriptionForSubscriptionCreation";
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
+                subscriptionId);
             CreateTopic(topicId, _publisher);
             CreateSubscription(topicId, subscriptionId, _subscriber);
             Subscription subscription = GetSubscription(subscriptionId,
                 _subscriber);
-            Assert.Equal(subscriptionName, subscription.Name);
+            Assert.Equal(subscriptionName.ToString(), subscription.Name);
             DeleteSubscription(subscriptionId, _subscriber);
             DeleteTopic(topicId, _publisher);
         }
@@ -324,8 +408,8 @@ namespace GoogleCloudSamples
         {
             string topicId = "testTopicForMessageCreation";
             string subscriptionId = "testSubscriptionForMessageCreation";
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
+                subscriptionId);
             CreateTopic(topicId, _publisher);
             CreateSubscription(topicId, subscriptionId, _subscriber);
             CreateTopicMessage(topicId, _publisher);
@@ -341,8 +425,8 @@ namespace GoogleCloudSamples
         {
             string topicId = "testTopicForMessageAcknowledgement";
             string subscriptionId = "testSubscriptionForMessageAcknowledgement";
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
+                subscriptionId);
             CreateTopic(topicId, _publisher);
             CreateSubscription(topicId, subscriptionId, _subscriber);
             CreateTopicMessage(topicId, _publisher);
@@ -361,7 +445,7 @@ namespace GoogleCloudSamples
         public void TestListTopics()
         {
             string topicId = "testTopicForListingTopics";
-            string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
+            TopicName topicName = new TopicName(_projectId, topicId);
             CreateTopic(topicId, _publisher);
             IEnumerable<Topic> topics = ListProjectTopics(_publisher);
             Assert.False(topics.Count() == 0);
@@ -373,14 +457,99 @@ namespace GoogleCloudSamples
         {
             string topicId = "testTopicForListingSubscriptions";
             string subscriptionId = "testSubscriptionForListingSubscriptions";
-            string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
+            TopicName topicName = new TopicName(_projectId, topicId);
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
+                subscriptionId);
             CreateTopic(topicId, _publisher);
             CreateSubscription(topicId, subscriptionId, _subscriber);
             IEnumerable<Subscription> subscriptions = ListSubscriptions(
                 _subscriber);
             Assert.False(subscriptions.Count() == 0);
+            DeleteSubscription(subscriptionId, _subscriber);
+            DeleteTopic(topicId, _publisher);
+        }
+
+        [Fact]
+        public void TestGetTopicIamPolicy()
+        {
+            string topicId = "testTopicForGetTopicIamPolicy";
+            CreateTopic(topicId, _publisher);
+            Policy policy = GetTopicIamPolicy(topicId, _publisher);
+            Assert.NotEmpty(policy.ToString());
+            DeleteTopic(topicId, _publisher);
+        }
+
+        [Fact]
+        public void TestGetSubscriptionIamPolicy()
+        {
+            string topicId = "testTopicForGetSubscriptionIamPolicy";
+            string subscriptionId = "testSubscriptionForGetSubscriptionIamPolicy";
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
+                subscriptionId);
+            CreateTopic(topicId, _publisher);
+            CreateSubscription(topicId, subscriptionId, _subscriber);
+            Policy policy = GetSubscriptionIamPolicy(subscriptionId, _publisher);
+            Assert.NotEmpty(policy.ToString());
+            DeleteSubscription(subscriptionId, _subscriber);
+            DeleteTopic(topicId, _publisher);
+        }
+
+        [Fact]
+        public void TestSetTopicIamPolicy()
+        {
+            string topicId = "testTopicForSetTopicIamPolicy";
+            string testMemberValueToConfirm = "cloud-logs@google.com";
+            string testRoleValueToConfirm = "roles/pubsub.editor";
+            CreateTopic(topicId, _publisher);
+            SetTopicIamPolicy(topicId, _publisher);
+            Policy policy = GetTopicIamPolicy(topicId, _publisher);
+            Assert.Contains(testRoleValueToConfirm, policy.Bindings.First().Role.ToString());
+            Assert.Contains(testMemberValueToConfirm,
+                policy.Bindings.First().Members.First().ToString());
+            DeleteTopic(topicId, _publisher);
+        }
+
+        [Fact]
+        public void TestSetSubscriptionIamPolicy()
+        {
+            string topicId = "testTopicForSetSubscriptionIamPolicy";
+            string subscriptionId = "testSubscriptionForSetSubscriptionIamPolicy";
+            string testMemberValueToConfirm = "cloud-logs@google.com";
+            string testRoleValueToConfirm = "roles/pubsub.editor";
+            CreateTopic(topicId, _publisher);
+            CreateSubscription(topicId, subscriptionId, _subscriber);
+            SetSubscriptionIamPolicy(subscriptionId, _publisher);
+            Policy policy = GetSubscriptionIamPolicy(subscriptionId, _publisher);
+            Assert.Contains(testRoleValueToConfirm, policy.Bindings.First().Role.ToString());
+            Assert.Contains(testMemberValueToConfirm,
+                policy.Bindings.First().Members.First().ToString());
+            DeleteSubscription(subscriptionId, _subscriber);
+            DeleteTopic(topicId, _publisher);
+        }
+
+        [Fact]
+        public void TestTopicIamPolicyPermissions()
+        {
+            string topicId = "testTopicForTestTopicIamPolicy";
+            CreateTopic(topicId, _publisher);
+            SetTopicIamPolicy(topicId, _publisher);
+            TestIamPermissionsResponse response =
+                TestTopicIamPermissionsResponse(topicId, _publisher);
+            Assert.NotEmpty(response.ToString());
+            DeleteTopic(topicId, _publisher);
+        }
+
+        [Fact]
+        public void TestSubscriptionIamPolicyPermissions()
+        {
+            string topicId = "testTopicForTestSubscriptionIamPolicy";
+            string subscriptionId = "testSubscriptionForTestSubscriptionIamPolicy";
+            CreateTopic(topicId, _publisher);
+            CreateSubscription(topicId, subscriptionId, _subscriber);
+            SetSubscriptionIamPolicy(subscriptionId, _publisher);
+            TestIamPermissionsResponse response =
+                TestSubscriptionIamPermissionsResponse(subscriptionId, _publisher);
+            Assert.NotEmpty(response.ToString());
             DeleteSubscription(subscriptionId, _subscriber);
             DeleteTopic(topicId, _publisher);
         }
@@ -392,9 +561,10 @@ namespace GoogleCloudSamples
             string subscriptionId = "testSubscriptionForRpcRetry";
             RpcRetry(topicId, subscriptionId, _publisher,
                 _subscriber);
-            string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
+            TopicName topicName = new TopicName(_projectId, topicId);
             Topic topic = GetTopic(topicId, _publisher);
-            Assert.Equal(topicName, topic.Name);
+            Assert.Equal(topicName.ToString(), topic.Name);
+            DeleteSubscription(subscriptionId, _subscriber);
             DeleteTopic(topicId, _publisher);
         }
 
@@ -402,7 +572,7 @@ namespace GoogleCloudSamples
         public void TestDeleteTopic()
         {
             string topicId = "testTopicForDeleteTopic";
-            string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
+            TopicName topicName = new TopicName(_projectId, topicId);
             CreateTopic(topicId, _publisher);
             DeleteTopic(topicId, _publisher);
             Exception ex = Assert.Throws<Grpc.Core.RpcException>(() =>
@@ -414,9 +584,9 @@ namespace GoogleCloudSamples
         {
             string topicId = "testTopicForDeleteSubscription";
             string subscriptionId = "testSubscriptionForDeleteSubscription";
-            string topicName = PublisherClient.FormatTopicName(_projectId, topicId);
-            string subscriptionName =
-                SubscriberClient.FormatSubscriptionName(_projectId, subscriptionId);
+            TopicName topicName = new TopicName(_projectId, topicId);
+            SubscriptionName subscriptionName = new SubscriptionName(_projectId,
+                subscriptionId);
             CreateTopic(topicId, _publisher);
             CreateSubscription(topicId, subscriptionId, _subscriber);
             DeleteSubscription(subscriptionId, _subscriber);
