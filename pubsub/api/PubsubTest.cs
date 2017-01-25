@@ -47,6 +47,8 @@ namespace GoogleCloudSamples
         CallSettings newRetryCallSettings(int tryCount,
             params StatusCode[] finalStatusCodes)
         {
+            // Initialize values for backoff settings to be used
+            // by the CallSettings for RPC retries
             TimeSpan delay = TimeSpan.FromMilliseconds(500);
             TimeSpan maxDelay = TimeSpan.FromSeconds(3);
             double delayMultiplier = 2;
