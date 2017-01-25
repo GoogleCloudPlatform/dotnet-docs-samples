@@ -64,8 +64,8 @@ namespace GoogleCloudSamples
         public static byte[] ToPngBytes(string imagePath)
         {
             var stream = new MemoryStream();
-            var image = Image.FromFile(imagePath);
-            image.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+            using (var image = Image.FromFile(imagePath))
+                image.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
             var buffer = new byte[stream.Length];
             stream.Read(buffer, 0, buffer.Length);
             return buffer;
