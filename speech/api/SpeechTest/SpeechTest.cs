@@ -39,7 +39,7 @@ namespace GoogleCloudSamples
     {
         readonly CommandLineRunner _recognize = new CommandLineRunner()
         {
-            Main = Recognize.Main,
+            VoidMain = Recognize.Main,
             Command = "Recognize"
         };
 
@@ -57,24 +57,6 @@ namespace GoogleCloudSamples
             var output = _recognize.Run("async", "audio.raw");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
-        }
-
-        [Fact]
-        public void TestStreaming()
-        {
-            var output = _recognize.Run("stream", "audio.raw");
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Brooklyn", output.Stdout);
-        }
-
-        [Fact(Skip = "Unreliable on automated test machines.")]
-        public void TestListen()
-        {
-            var output = _recognize.Run("listen", "3");
-            if (0 == output.ExitCode)
-                Assert.Contains("Speak now.", output.Stdout);
-            else
-                Assert.Contains("No microphone.", output.Stdout);
         }
     }
 }
