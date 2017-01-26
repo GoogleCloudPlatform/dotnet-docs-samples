@@ -59,7 +59,7 @@ namespace GoogleCloudSamples
             Assert.Contains("Brooklyn", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/723")]
         public void TestStreaming()
         {
             var output = _recognize.Run("stream", "audio.raw");
