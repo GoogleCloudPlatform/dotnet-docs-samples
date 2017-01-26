@@ -220,6 +220,20 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void TestInsertCompleteKey()
+        {
+            Entity task = new Entity()
+            {
+                Key = _keyFactory.CreateKey(new Random().Next())
+            };
+            task.Key = _db.Insert(task);
+            // This assertion should fail!
+            Assert.Equal(null, task.Key);
+            // Instead, this assertion should pass:
+            // Assert.Equal(task, _db.Lookup(task.Key));
+        }
+
+        [Fact]
         public void TestLookup()
         {
             _db.Upsert(_sampleTask);
