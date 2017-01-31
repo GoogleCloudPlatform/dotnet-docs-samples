@@ -1,7 +1,7 @@
-# Google Cloud Speech REST API Samples
+# Google Cloud Speech API Samples
 
 These samples show how to use the [Google Cloud Speech API](http://cloud.google.com/speech)
-to transcribe audio files, using the REST-based [Google API Client Library for
+to transcribe audio files, using the [Google API Client Library for
 .NET](https://developers.google.com/api-client-library/dotnet/).
 
 ## Build and Run
@@ -16,15 +16,47 @@ to transcribe audio files, using the REST-based [Google API Client Library for
 
 7.  Build the Solution.
 
-8.  Run the sample
-
-Each of the samples takes the audio file to transcribe as the first argument.
-For example:
-
-```ps1
-PS > .\Transcribe\bin\Debug\Transcribe.exe .\resources\audio.raw
-
-PS > .\TranscribeAsync\bin\Debug\TranscribeAsync.exe .\resources\audio.raw
-```
-
-You should see a response with the transcription result.
+8.  From the command line, run QuickStart.exe:
+    ```
+    PS C:\...\dotnet-docs-samples\speech\api> cd .\QuickStart\bin\Debug\
+    PS C:\...\dotnet-docs-samples\speech\api\QuickStart\bin\Debug> .\QuickStart.exe
+    how old is the Brooklyn Bridge
+    ```
+    
+9.  And run Recognize for more examples:
+    ```
+    PS C:\...\dotnet-docs-samples\speech\api\Recognize\bin\Debug> .\Recognize.exe
+    Recognize 1.0.0.0
+    Copyright c Google Inc 2017
+    
+    ERROR(S):
+      No verb selected.
+    
+      sync       Detects speech in an audio file.
+    
+      async      Creates a job to detect speech in an audio file, and waits for the job to complete.
+    
+      stream     Detects speech in an audio file by streaming it to the Speech API.
+    
+      listen     Detects speech in a microphone input stream.
+    
+      help       Display more information on a specific command.
+    
+      version    Display version information.
+    
+    PS C:\...\dotnet-docs-samples\speech\api\Recognize\bin\Debug> .\Recognize.exe listen 3
+    Speak now.
+    test
+    testing
+    testing one
+    testing
+     one
+    testing
+     one two
+    testing one
+     two
+    testing
+     1 2 3
+    testing 1 2 3
+    PS C:\...\dotnet-docs-samples\speech\api\Recognize\bin\Debug>
+    ```
