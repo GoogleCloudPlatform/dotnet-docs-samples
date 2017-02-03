@@ -311,8 +311,7 @@ function UpFind-File([string[]]$Masks = '*')
 #.EXAMPLE
 # Run-Tests
 ##############################################################################
-function Run-TestScripts
-{
+function Run-TestScripts($TimeoutSeconds=300) {
     $scripts = When-Empty -ArgList ($input + $args) -ScriptBlock { Find-Files -Masks '*runtests*.ps1' } | Get-Item
     $rootDir = pwd
     # Keep running lists of successes and failures.
@@ -335,10 +334,11 @@ function Run-TestScripts
                     throw "FAILED with exit code $LASTEXITCODE"
                 }
             }
-            if (Wait-Job $job -Timeout 300) {
+            if (Wait-Job $job -Timeout $TimeoutSeconds) {
                 Receive-Job $job
                 $jobState = $job.State
             } else {
+                Receive-Job $job
                 $jobState = 'Timed Out'
             }
             Remove-Job $job
@@ -544,6 +544,77 @@ function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
             Stop-Process $webProcess
         }
     }
+}
+
+##############################################################################
+#.SYNOPSIS
+# Run the website, then run the test javascript file with casper.
+#
+#.PARAMETER PortNumber
+# The port number to run the kestrel server on.
+#
+#.DESCRIPTION
+# Throws an exception if the test fails.
+#
+##############################################################################
+function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'test.js', [switch]$LeaveRunning = $false) {
+    $url = "http://localhost:$PortNumber"
+    $job = Start-Job -ArgumentList (Get-Location), $url -ScriptBlock { 
+        Set-Location $args[0]
+        $env:ASPNETCORE_URLS = $args[1]
+        dotnet run
+    }
+    Try
+    {
+        Run-CasperJs $TestJs, $Url
+    }
+    Finally
+    {
+        if (!$LeaveRunning) {
+            Stop-Job $job
+            Receive-Job $job
+            Remove-Job $job
+        }
+    }
+}
+
+function Run-CasperJs($TestJs='test.js', $Url) {
+    Start-Sleep -Seconds 2  # Wait for web process to start up.
+    casperjs $TestJs $Url
+    if ($LASTEXITCODE) {
+        # Try again
+        Start-Sleep -Seconds 2  # Wait for web process to start up.
+        casperjs $TestJs $Url
+        if ($LASTEXITCODE) {
+            throw "Casperjs failed with error code $LASTEXITCODE"
+        }
+    }
+}
+
+##############################################################################
+#.SYNOPSIS
+# Deploy a dotnet core application to appengine and test it.
+#
+#.DESCRIPTION
+# Assumes the app was already build with "dotnet publish."
+# Assumes there is a subdirectory called appengine containing app.yaml and Dockerfile.
+#
+#.PARAMETER DllName
+# The name of the built binary.  Defaults to the current directory name.
+##############################################################################
+function Deploy-CasperJsTest($testJs ='test.js') {
+    Copy-Item .\appengine\*.yaml, .\appengine\Dockerfile .\bin\debug\netcoreapp1.0\publish
+    while ($true) {
+        gcloud app deploy --quiet --no-promote -v deploytest .\bin\debug\netcoreapp1.0\publish\*.yaml
+        if ($LASTEXITCODE -eq 0) {
+            break
+        }
+        if (++$deployCount > 2) {
+            throw "gcloud app deploy failed with exit code $LASTEXITCODE"
+        }
+    }
+    gcloud app describe | where {$_ -match 'defaultHostName:\s+(\S+)' }
+    Run-CasperJs $testJs ("https://deploytest-dot-" + $matches[1])
 }
 
 ##############################################################################
