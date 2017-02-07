@@ -610,7 +610,7 @@ function Deploy-CasperJsTest($testJs ='test.js') {
         if ($LASTEXITCODE -eq 0) {
             break
         }
-        if (++$deployCount > 2) {
+        if (++$deployCount -gt 2) {
             throw "gcloud app deploy failed with exit code $LASTEXITCODE"
         }
     }
