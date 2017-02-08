@@ -7,6 +7,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "StaticContent", "StaticCont
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Analytics", "Analytics\Analytics.xproj", "{8782139D-68A2-485D-89DE-4CB7DAE17A1E}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RedisCache", "RedisCache\RedisCache.xproj", "{6E430843-E06E-47C5-ADC2-475C8EDE81DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8782139D-68A2-485D-89DE-4CB7DAE17A1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8782139D-68A2-485D-89DE-4CB7DAE17A1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8782139D-68A2-485D-89DE-4CB7DAE17A1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E430843-E06E-47C5-ADC2-475C8EDE81DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E430843-E06E-47C5-ADC2-475C8EDE81DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E430843-E06E-47C5-ADC2-475C8EDE81DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E430843-E06E-47C5-ADC2-475C8EDE81DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

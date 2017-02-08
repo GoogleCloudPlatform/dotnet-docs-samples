@@ -11,3 +11,4 @@ PublishProfiles/
 *.sln.DotSettings.user
 .vs/
 *~
+*.xproj.user
