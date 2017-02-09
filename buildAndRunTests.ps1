@@ -34,7 +34,8 @@
 # .\buildAndRunTests.ps1 -Lint
 ##############################################################################
 param([switch]$Lint, [switch]$UpdatePackages, [string]$PackageMask="Google.*",
-    [switch]$Skip)
+    [switch]$Skip, [switch]$Deploy, 
+    [string[]]$TestMasks=@('*runtest*.ps1', '*skiptest*.ps1'))
 
 $private:invocation = (Get-Variable MyInvocation -Scope 0).Value
 
@@ -51,13 +52,18 @@ if ($UpdatePackages) {
 }
 $private:modifiedConfigs = Update-Config
 Try {
-    $private:masks = '*runtests*.ps1', '*skiptests*.ps1'
-    if ($Skip) {
-        $masks = $masks[0]
+    $timeoutSeconds = 300
+    $masks = if ($Skip) {
+        "*runTest*.ps1"
+    } elseif ($Deploy) {
+        "*deployTest*.ps1"
+        $timeoutSeconds = 1200
+    } else {
+        $TestMasks
     }
     $private:testScripts = Find-Files -Masks $masks
     # Avoid infinitely recursing and invoking this script.
-    $testScripts | where {$_ -ne $invocation.MyCommand.Path} |  Run-TestScripts
+    $testScripts | where {$_ -ne $invocation.MyCommand.Path} |  Run-TestScripts $timeoutSeconds
 }
 Finally {
     Revert-Config $modifiedConfigs
