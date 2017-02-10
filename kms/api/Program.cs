@@ -463,9 +463,9 @@ string fileToEncrypt, string fileToOutput)
             // Output decypted data to a file
             File.WriteAllBytes(fileToOutput, Convert.FromBase64String(result.Plaintext));
             Console.Write($"Encypted file created: {fileToOutput}");
-            // [END kms_decrypt]
             return 0;
         }
+        // [END kms_decrypt]
 
         public static void Main(string[] args)
         {
