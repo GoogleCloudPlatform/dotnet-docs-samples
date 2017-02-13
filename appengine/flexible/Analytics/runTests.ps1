@@ -15,5 +15,9 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
-dotnet build
-Run-KestrelTest 5558
+BackupAndEdit-TextFile "appsettings.json" `
+    @{"your-google-analytics-tracking-id" = $env:TEST_GA_TRACKING_ID} `
+{
+	dotnet build
+	Run-KestrelTest 5558
+}

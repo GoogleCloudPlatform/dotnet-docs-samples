@@ -15,9 +15,9 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
-dotnet publish
-BackupAndEdit-TextFile "app.yaml" `
-    @{"your-google-analytics-tracking-id" = $env:GA_TRACKING_ID} `
+BackupAndEdit-TextFile "appsettings.json" `
+    @{"your-google-analytics-tracking-id" = $env:TEST_GA_TRACKING_ID} `
 {
+	dotnet publish
     Deploy-CasperJsTest
 }

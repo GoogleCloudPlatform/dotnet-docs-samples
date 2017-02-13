@@ -15,5 +15,9 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
-dotnet build
-Run-KestrelTest 5565
+BackupAndEdit-TextFile "appsettings.json" `
+    @{"your-sendgrid-api-key" = $env:TEST_SENDGRID_API_KEY} `
+{
+	dotnet build
+	Run-KestrelTest 5565
+}
