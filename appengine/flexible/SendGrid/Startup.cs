@@ -43,9 +43,9 @@ namespace SendGrid
         {
             // Add framework services.
             services.AddMvc();
+            // [BEGIN sendgrid_startup]
             services.AddSingleton(new SendGridApiKey()
                 { Key = Configuration["SENDGRID_API_KEY"] });
-            // [BEGIN sendgrid_startup]
             // [END sendgrid_startup]
         }
 
