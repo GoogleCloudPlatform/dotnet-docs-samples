@@ -49,8 +49,39 @@ namespace GoogleCloudSamples
         public int Seconds { get; set; } = int.MaxValue;
     }
 
+    [Verb("rec", HelpText = "Detects speech in an audio file. Supports other file formats.")]
+    class RecOptions : Options
+    {
+        [Option('b', Default = 16000, HelpText = "Sample rate in bits per second.")]
+        public int BitRate { get; set; }
+
+        [Option('e', Default = RecognitionConfig.Types.AudioEncoding.Linear16,
+            HelpText = "Audio file encoding format.")]
+        public RecognitionConfig.Types.AudioEncoding Encoding { get; set; }
+    }
+
+
     public class Recognize
     {
+        static object Rec(string filePath, int bitRate,
+            RecognitionConfig.Types.AudioEncoding encoding)
+        {
+            var speech = SpeechClient.Create();
+            var response = speech.SyncRecognize(new RecognitionConfig()
+            {
+                Encoding = encoding,
+                SampleRate = bitRate,
+            }, RecognitionAudio.FromFile(filePath));
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine(alternative.Transcript);
+                }
+            }
+            return 0;
+        }
+
         // [START speech_sync_recognize]
         static object SyncRecognize(string filePath)
         {
@@ -233,12 +264,14 @@ namespace GoogleCloudSamples
         {
             return (int)Parser.Default.ParseArguments<
                 SyncOptions, AsyncOptions,
-                StreamingOptions, ListenOptions
+                StreamingOptions, ListenOptions,
+                RecOptions
                 >(args).MapResult(
                 (SyncOptions opts) => SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => AsyncRecognize(opts.FilePath),
                 (StreamingOptions opts) => StreamingRecognizeAsync(opts.FilePath).Result,
                 (ListenOptions opts) => StreamingMicRecognizeAsync(opts.Seconds).Result,
+                (RecOptions opts) => Rec(opts.FilePath, opts.BitRate, opts.Encoding),
                 errs => 1);
         }
     }
