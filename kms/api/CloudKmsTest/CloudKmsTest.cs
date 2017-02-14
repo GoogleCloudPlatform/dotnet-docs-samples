@@ -25,8 +25,6 @@ namespace GoogleCloudSamples
     public class CommonTests
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private readonly int _retryCount = 3;
-        private readonly int _retryDelayMs = 500;
 
         readonly CommandLineRunner _cloudKms = new CommandLineRunner()
         {
@@ -147,11 +145,31 @@ namespace GoogleCloudSamples
             var getCryptoKeyOutput = Run("getCryptoKey", s_projectId, "global", keyRing, cryptoKey);
             Eventually(() => Assert.Equal(0, getCryptoKeyOutput.ExitCode));
             var disableCryptoKeyVersionOutput = Run("disableCryptoKeyVersion", s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
-            var getCryptoKeyVersionDisabledTest = Run("getCryptoKeyVersion", s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
-            Eventually(() => Assert.Contains("State: DISABLED", getCryptoKeyVersionDisabledTest.Stdout));
+            using (StringWriter sw = new StringWriter())
+            {
+                // Redirect Standard Out to StringWriter for test.
+                Console.SetOut(sw);
+                var getCryptoKeyVersionEnabledTest = CloudKmsSample.GetCryptoKeyVersion(s_projectId, "global", keyRing,
+                    cryptoKey, versionToTest.ToString());
+                Eventually(() => Assert.Contains("State: DISABLED", sw.ToString()));
+                // Redirect Standard Out back to Console.Out.
+                var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+                standardOutput.AutoFlush = true;
+                Console.SetOut(standardOutput);
+            }
             var enableCryptoKeyVersionOutput = Run("enableCryptoKeyVersion", s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
-            var getCryptoKeyVersionEnabledTest = Run("getCryptoKeyVersion", s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
-            Eventually(() => Assert.Contains("State: ENABLED", getCryptoKeyVersionEnabledTest.Stdout));
+            using (StringWriter sw = new StringWriter())
+            {
+                // Redirect Standard Out to StringWriter for test.
+                Console.SetOut(sw);
+                var getCryptoKeyVersionEnabledTest = CloudKmsSample.GetCryptoKeyVersion(s_projectId, "global", keyRing,
+                    cryptoKey, versionToTest.ToString());
+                Eventually(() => Assert.Contains("State: ENABLED", sw.ToString()));
+                // Redirect Standard Out back to Console.Out.
+                var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+                standardOutput.AutoFlush = true;
+                Console.SetOut(standardOutput);
+            }
         }
 
         [Fact]
@@ -166,15 +184,100 @@ namespace GoogleCloudSamples
             var getCryptoKeyOutput = Run("getCryptoKey", s_projectId, "global", keyRing, cryptoKey);
             Eventually(() => Assert.Equal(0, getCryptoKeyOutput.ExitCode));
             var destroyCryptoKeyVersionOutput = Run("destroyCryptoKeyVersion", s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
-            var getCryptoKeyVersionDestroyedTest = Run("getCryptoKeyVersion", s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
-            Eventually(() =>
+            using (StringWriter sw = new StringWriter())
             {
-                Assert.Contains("State: DESTROY_SCHEDULED", getCryptoKeyVersionDestroyedTest.Stdout);
-            });
+                // Redirect Standard Out to StringWriter for test.
+                Console.SetOut(sw);
+                var getCryptoKeyVersionDestroyedTest = CloudKmsSample.GetCryptoKeyVersion(s_projectId, "global", keyRing,
+                    cryptoKey, versionToTest.ToString());
+                Eventually(() => Assert.Contains("State: DESTROY_SCHEDULED", sw.ToString()));
+                // Redirect Standard Out back to Console.Out.
+                var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+                standardOutput.AutoFlush = true;
+                Console.SetOut(standardOutput);
+            }
             var restoreCryptoKeyVersionOutput = Run("restoreCryptoKeyVersion", s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
             Eventually(() => Assert.Equal(0, restoreCryptoKeyVersionOutput.ExitCode));
-            var getCryptoKeyVersionEnabledTest = Run("getCryptoKeyVersion", s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
-            Eventually(() => Assert.Contains("State: DISABLED", getCryptoKeyVersionEnabledTest.Stdout));
+            using (StringWriter sw = new StringWriter())
+            {
+                // Redirect Standard Out to StringWriter for test.
+                Console.SetOut(sw);
+                var getCryptoKeyVersionEnabledTest = CloudKmsSample.GetCryptoKeyVersion(s_projectId, "global", keyRing,
+                    cryptoKey, versionToTest.ToString());
+                Eventually(() => Assert.Contains("State: DISABLED", sw.ToString()));
+                // Redirect Standard Out back to Console.Out.
+                var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+                standardOutput.AutoFlush = true;
+                Console.SetOut(standardOutput);
+            }
+        }
+
+        [Fact]
+        public void TestIamAddAndRemoveMembers()
+        {
+            string timeStamp = $"-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
+            string cryptoKey = $"testCryptoKey{timeStamp}";
+            string keyRing = $"testKeyRing{timeStamp}";
+            string testRole = "roles/viewer";
+            string testMember = "allUsers";
+            var createKeyRingOutput = Run("createKeyRing", s_projectId, "global", keyRing);
+            var createCryptoKeyOutput = Run("createCryptoKey", s_projectId, "global", keyRing, cryptoKey);
+            var getCryptoKeyOutput = Run("getCryptoKey", s_projectId, "global", keyRing, cryptoKey);
+            Eventually(() => Assert.Equal(0, getCryptoKeyOutput.ExitCode));
+            // Add role/member to policy.
+            var addMemberOutput = Run("addMemberToCryptoKeyPolicy", s_projectId, "global", keyRing, cryptoKey,
+                testRole, testMember);
+            Eventually(() => Assert.Equal(0, addMemberOutput.ExitCode));
+            // Get policy and confirm member is present.
+            var getPolicyAddMemberTest = Run("getCryptoKeyIamPolicy", s_projectId, "global", keyRing, cryptoKey);
+            Eventually(() => Assert.Equal(0, getPolicyAddMemberTest.ExitCode));
+            Assert.True(AssertRoleAndMemberPresent(getPolicyAddMemberTest.Stdout, testRole, testMember));
+            // Remove role/member from policy.
+            var removeMemberOutput = Run("removeMemberFromCryptoKeyPolicy", s_projectId, "global", keyRing, cryptoKey,
+                testRole, testMember);
+            Eventually(() => Assert.Equal(0, removeMemberOutput.ExitCode));
+            // Get policy and confirm member is absent.
+            var getPolicyRemoveMemberTest = Run("getCryptoKeyIamPolicy", s_projectId, "global", keyRing, cryptoKey);
+            Eventually(() => Assert.Equal(0, getPolicyRemoveMemberTest.ExitCode));
+            Assert.False(AssertRoleAndMemberPresent(getPolicyRemoveMemberTest.Stdout, testRole, testMember));
+        }
+
+        private bool AssertRoleAndMemberPresent(string response, string role, string member)
+        {
+            string[] lines = response.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            bool foundRole = false;
+            bool foundMember = false;
+            foreach (var line in lines)
+            {
+                if (!foundRole)
+                {
+                    // Check response for Role
+                    if (line.IndexOf(role) != -1)
+                    {
+                        foundRole = true;
+                        continue;
+                    }
+                }
+                else
+                {
+                    // Check to make sure that next Role was not encountered, otherwise member was not found for role.
+                    if (line.IndexOf("Role:") == -1)
+                    {
+                        // Check response for Member
+                        if (line.IndexOf(member) != -1)
+                        {
+                            foundMember = true;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        //Next 'Role:' entry in policy was encountered meaning member was not found for role, so exit.
+                        break;
+                    }
+                }
+            }
+            return (foundRole && foundMember);
         }
     }
 
