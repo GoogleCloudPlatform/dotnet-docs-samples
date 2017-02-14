@@ -39,7 +39,9 @@
     "include": [
       "wwwroot",
       "web.config",
-      "appsettings.json"
+      "appsettings.json",
+      "Dockerfile",
+      "app.yaml"
     ]
   },
 
