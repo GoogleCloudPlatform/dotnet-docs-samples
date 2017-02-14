@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatastoreTest", "TaskListTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskList", "TaskList\TaskList.csproj", "{3890B4ED-9626-4B69-BE52-49FF33FBA444}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickStart", "QuickStart\QuickStart.csproj", "{C50921E1-F350-4269-B821-FED296C751B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickStartTest", "QuickStartTest\QuickStartTest.csproj", "{73B80BB3-26F9-4164-806E-C6BF6BE08869}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{3890B4ED-9626-4B69-BE52-49FF33FBA444}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3890B4ED-9626-4B69-BE52-49FF33FBA444}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3890B4ED-9626-4B69-BE52-49FF33FBA444}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C50921E1-F350-4269-B821-FED296C751B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C50921E1-F350-4269-B821-FED296C751B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C50921E1-F350-4269-B821-FED296C751B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C50921E1-F350-4269-B821-FED296C751B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73B80BB3-26F9-4164-806E-C6BF6BE08869}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73B80BB3-26F9-4164-806E-C6BF6BE08869}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73B80BB3-26F9-4164-806E-C6BF6BE08869}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73B80BB3-26F9-4164-806E-C6BF6BE08869}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

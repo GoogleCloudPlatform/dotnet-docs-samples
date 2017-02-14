@@ -13,7 +13,12 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
-Build-Solution
-packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
-    .\TaskListTest\bin\Debug\DatastoreTest.dll `
-    -parallel none
+BackupAndEdit-TextFile ".\QuickStart\QuickStart.cs" `
+    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
+{
+    Build-Solution
+    packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
+        .\QuickStartTest\bin\Debug\QuickStartTest.dll `
+        .\TaskListTest\bin\Debug\DatastoreTest.dll `
+        -parallel none
+}
