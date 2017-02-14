@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Datastore.V1;
+using Google.Cloud.Datastore.V1;
 using Google.Protobuf;
 using System;
 using System.Linq;
