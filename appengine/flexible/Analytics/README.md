@@ -42,11 +42,8 @@ PS > gcloud app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 ### Using Visual Studio
 
 1.  In Solution Explorer, right-click the **Analytics** project and choose **Publish Analytics to Google Cloud**.
-    ![Use Google Cloud Tools to Publish to App Engine](publish.png)
 
 2.  Click **App Engine Flex**.
-    ![Click App Engine Flex](choosetarget.png)
 
 3.  Click **Publish**.
-    ![Click Publish](version.png)
 
