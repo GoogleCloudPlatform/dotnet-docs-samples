@@ -15,9 +15,9 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
-dotnet publish
-BackupAndEdit-TextFile "app.yaml" `
-    @{"your-sendgrid-api-key" = $env:SENDGRID_API_KEY} `
+BackupAndEdit-TextFile "appsettings.json" `
+    @{"your-sendgrid-api-key" = $env:TEST_SENDGRID_API_KEY} `
 {
+	dotnet publish
     Deploy-CasperJsTest
 }

@@ -1,5 +1,2 @@
 ﻿runtime: custom
 env: flex
-
-env_variables:
-  SENDGRID_API_KEY: your-sendgrid-api-key
