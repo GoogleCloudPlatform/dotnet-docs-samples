@@ -46,7 +46,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSync()
         {
-            var output = _recognize.Run("sync", "audio.raw");
+            var output = _recognize.Run("sync", @"resources\audio.raw");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
@@ -54,7 +54,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestAsync()
         {
-            var output = _recognize.Run("async", "audio.raw");
+            var output = _recognize.Run("async", @"resources\audio.raw");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
@@ -62,7 +62,7 @@ namespace GoogleCloudSamples
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/723")]
         public void TestStreaming()
         {
-            var output = _recognize.Run("stream", "audio.raw");
+            var output = _recognize.Run("stream", @"resources\audio.raw");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
@@ -75,6 +75,14 @@ namespace GoogleCloudSamples
                 Assert.Contains("Speak now.", output.Stdout);
             else
                 Assert.Contains("No microphone.", output.Stdout);
+        }
+
+        [Fact]
+        public void TestFlac()
+        {
+            var output = _recognize.Run("rec", "-e", "Flac", @"resources\audio.flac");
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Brooklyn", output.Stdout);
         }
     }
 }
