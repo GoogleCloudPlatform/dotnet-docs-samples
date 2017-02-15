@@ -387,6 +387,7 @@ namespace GoogleCloudSamples
             var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Get(parent).Execute();
             Console.WriteLine($"Name: {result.Name}");
             Console.WriteLine($"Created: {result.CreateTime}");
+            Console.WriteLine($"State: {result.State}");
             return 0;
         }
         // [END kms_get_cryptokey_version]
@@ -438,7 +439,7 @@ namespace GoogleCloudSamples
                     Console.WriteLine($"Role: {response.Role}");
                     response.Members.ToList().ForEach(member =>
                     {
-                        Console.WriteLine($"  Member: {member.ToString()}");
+                        Console.WriteLine($"  Member: {member}");
                     });
                 });
             }
