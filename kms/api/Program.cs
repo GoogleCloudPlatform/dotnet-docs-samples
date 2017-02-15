@@ -259,25 +259,17 @@ namespace GoogleCloudSamples
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the parent to use for listing crypto keys.
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}";
-            try
+            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.List(parent).Execute();
+            Console.WriteLine("Crypto Keys: ");
+            result.CryptoKeys.ToList().ForEach(response =>
             {
-                var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.List(parent).Execute();
-                Console.WriteLine("Crypto Keys: ");
-                result.CryptoKeys.ToList().ForEach(response =>
-                {
-                    Console.WriteLine(response.Name);
-                    Console.WriteLine($"  Created:{response.CreateTime}");
-                    Console.WriteLine($"  Purpose: {response.Purpose}");
-                    Console.WriteLine($"  Primary: {response.Primary}");
-                    Console.WriteLine($"    State: {response.Primary.State}");
-                    Console.WriteLine($"    Created: {response.Primary.CreateTime}");
-                });
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+                Console.WriteLine(response.Name);
+                Console.WriteLine($"  Created:{response.CreateTime}");
+                Console.WriteLine($"  Purpose: {response.Purpose}");
+                Console.WriteLine($"  Primary: {response.Primary}");
+                Console.WriteLine($"    State: {response.Primary.State}");
+                Console.WriteLine($"    Created: {response.Primary.CreateTime}");
+            });
             return 0;
         }
         // [END kms_list_cryptokeys]
@@ -292,16 +284,8 @@ namespace GoogleCloudSamples
             var request = new ProjectsResource.LocationsResource.KeyRingsResource.CreateRequest(
                 cloudKms, keyRingToCreate, parent);
             request.KeyRingId = keyRing;
-            try
-            {
-                var result = request.Execute();
-                Console.Write($"Created Key Ring: {result.Name}");
-            }
-            catch (Exception ex)
-            when (ex.Message.Contains("[409]"))
-            {
-                Console.Write($"Key Ring with ID of '{keyRing}' already exists at: {parent}");
-            }
+            var result = request.Execute();
+            Console.Write($"Created Key Ring: {result.Name}");
             return 0;
         }
         // [END kms_create_keyring]
@@ -312,17 +296,9 @@ namespace GoogleCloudSamples
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the parent to use for getting the key ring.
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}";
-            try
-            {
-                var result = cloudKms.Projects.Locations.KeyRings.Get(parent).Execute();
-                Console.WriteLine($"Found KeyRing: {result.Name}");
-                Console.WriteLine($"  Created on:{result.CreateTime}");
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            var result = cloudKms.Projects.Locations.KeyRings.Get(parent).Execute();
+            Console.WriteLine($"Found KeyRing: {result.Name}");
+            Console.WriteLine($"  Created on:{result.CreateTime}");
             return 0;
         }
         // [END kms_get_keyring]
@@ -333,21 +309,13 @@ namespace GoogleCloudSamples
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the parent to use for getting the key ring.
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}";
-            try
-            {
-                var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Get(parent).Execute();
-                Console.WriteLine($"Name: {result.Name}");
-                Console.WriteLine($"Created: {result.CreateTime}");
-                Console.WriteLine($"Purpose:{result.Purpose}");
-                Console.WriteLine($"Primary: {result.Primary}");
-                Console.WriteLine($"  State: { result.Primary.State}");
-                Console.WriteLine($"  Created: { result.Primary.CreateTime}");
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Get(parent).Execute();
+            Console.WriteLine($"Name: {result.Name}");
+            Console.WriteLine($"Created: {result.CreateTime}");
+            Console.WriteLine($"Purpose:{result.Purpose}");
+            Console.WriteLine($"Primary: {result.Primary}");
+            Console.WriteLine($"  State: { result.Primary.State}");
+            Console.WriteLine($"  Created: { result.Primary.CreateTime}");
             return 0;
         }
         // [END kms_get_cryptokey]
@@ -363,16 +331,8 @@ namespace GoogleCloudSamples
             var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource.CreateRequest(
                 cloudKms, cryptoKeyToCreate, parent);
             request.CryptoKeyId = cryptoKey;
-            try
-            {
-                var result = request.Execute();
-                Console.Write($"Created Crypto Key: {result.Name}");
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            var result = request.Execute();
+            Console.Write($"Created Crypto Key: {result.Name}");
             return 0;
         }
         // [END kms_create_cryptokey]
@@ -387,21 +347,13 @@ namespace GoogleCloudSamples
             // Get crypto key version.
             var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
                 .CryptoKeyVersionsResource.GetRequest(cloudKms, parent);
-            try
-            {
-                var result = request.Execute();
-                result.State = "DISABLED";
-                var patchRequest = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                    .CryptoKeyVersionsResource.PatchRequest(cloudKms, result, parent);
-                patchRequest.UpdateMask = "state";
-                var patchResult = patchRequest.Execute();
-                Console.Write($"Disabled Crypto Key Version: {patchResult.Name}");
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            var result = request.Execute();
+            result.State = "DISABLED";
+            var patchRequest = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
+                .CryptoKeyVersionsResource.PatchRequest(cloudKms, result, parent);
+            patchRequest.UpdateMask = "state";
+            var patchResult = patchRequest.Execute();
+            Console.Write($"Disabled Crypto Key Version: {patchResult.Name}");
             return 0;
         }
         // [END kms_disable_cryptokey_version]
@@ -414,22 +366,14 @@ namespace GoogleCloudSamples
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}/cryptoKeyVersions/{version}";
             // Get crypto key version.
             var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.GetRequest(cloudKms, parent);
-            try
-            {
-                var result = request.Execute();
-                result.State = "ENABLED";
-                var patchRequest = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                    .CryptoKeyVersionsResource.PatchRequest(cloudKms, result, parent);
-                patchRequest.UpdateMask = "state";
-                var patchResult = patchRequest.Execute();
-                Console.Write($"Enabled Crypto Key Version: {patchResult.Name}");
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            .CryptoKeyVersionsResource.GetRequest(cloudKms, parent);
+            var result = request.Execute();
+            result.State = "ENABLED";
+            var patchRequest = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
+                .CryptoKeyVersionsResource.PatchRequest(cloudKms, result, parent);
+            patchRequest.UpdateMask = "state";
+            var patchResult = patchRequest.Execute();
+            Console.Write($"Enabled Crypto Key Version: {patchResult.Name}");
             return 0;
         }
         // [END kms_enable_cryptokey_version]
@@ -440,18 +384,9 @@ namespace GoogleCloudSamples
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the parent to use for getting the crypto key Version.
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}/cryptoKeyVersions/{version}";
-            try
-            {
-                var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Get(parent).Execute();
-                Console.WriteLine($"Name: {result.Name}");
-                Console.WriteLine($"Created: {result.CreateTime}");
-                Console.WriteLine($"State: {result.State}");
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Get(parent).Execute();
+            Console.WriteLine($"Name: {result.Name}");
+            Console.WriteLine($"Created: {result.CreateTime}");
             return 0;
         }
         // [END kms_get_cryptokey_version]
@@ -466,16 +401,8 @@ namespace GoogleCloudSamples
             // Destroy crypto key version.
             var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
                 .CryptoKeyVersionsResource.DestroyRequest(cloudKms, destroyRequest, parent);
-            try
-            {
-                var result = request.Execute();
-                Console.Write($"Destroyed Crypto Key Version: {result.Name}");
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            var result = request.Execute();
+            Console.Write($"Destroyed Crypto Key Version: {result.Name}");
             return 0;
         }
         // [END kms_destroy_cryptokey_version]
@@ -490,16 +417,8 @@ namespace GoogleCloudSamples
             // Restore crypto key version.
             var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
                 .CryptoKeyVersionsResource.RestoreRequest(cloudKms, restoreRequest, parent);
-            try
-            {
-                var result = request.Execute();
-                Console.Write($"Restored Crypto Key Version: {result.Name}");
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            var result = request.Execute();
+            Console.Write($"Restored Crypto Key Version: {result.Name}");
             return 0;
         }
         // [END kms_restore_cryptokey_version]
@@ -511,29 +430,21 @@ namespace GoogleCloudSamples
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the parent to use for getting the crypto key IAM policy.
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}";
-            try
+            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
+            if (result.Bindings != null)
             {
-                var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-                if (result.Bindings != null)
+                result.Bindings.ToList().ForEach(response =>
                 {
-                    result.Bindings.ToList().ForEach(response =>
+                    Console.WriteLine($"Role: {response.Role}");
+                    response.Members.ToList().ForEach(member =>
                     {
-                        Console.WriteLine($"Role: {response.Role}");
-                        response.Members.ToList().ForEach(member =>
-                        {
-                            Console.WriteLine($"  Member: {member.ToString()}");
-                        });
+                        Console.WriteLine($"  Member: {member.ToString()}");
                     });
-                }
-                else
-                {
-                    Console.WriteLine($"Empty IAM policy found for CryptoKey: {parent}");
-                }
+                });
             }
-            catch (Google.GoogleApiException e)
+            else
             {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
+                Console.WriteLine($"Empty IAM policy found for CryptoKey: {parent}");
             }
             return 0;
         }
@@ -546,51 +457,42 @@ namespace GoogleCloudSamples
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the parent to use for updating the crypto key IAM policy.
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}";
-            try
+            SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
+            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
+            if (result.Bindings != null)
             {
-                SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
-                var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-                if (result.Bindings != null)
+                // Policy already exists, so add a new Binding to it.
+                Binding bindingToAdd = new Binding();
+                bindingToAdd.Role = role;
+                string[] testMembers = { member };
+                bindingToAdd.Members = testMembers;
+                result.Bindings.Add(bindingToAdd);
+                setIamPolicyRequest.Policy = result;
+            }
+            else
+            {
+                // Policy does not yet exist, so create a new one.
+                Policy newPolicy = new Policy();
+                newPolicy.Bindings = new List<Binding>();
+                Binding bindingToAdd = new Binding();
+                bindingToAdd.Role = role;
+                string[] testMembers = { member };
+                bindingToAdd.Members = testMembers;
+                newPolicy.Bindings.Add(bindingToAdd);
+                setIamPolicyRequest.Policy = newPolicy;
+            }
+            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
+                .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
+            var setIamPolicyResult = request.Execute();
+            var updateResult = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
+            updateResult.Bindings.ToList().ForEach(response =>
+            {
+                Console.WriteLine($"Role: {response.Role}");
+                response.Members.ToList().ForEach(memberFound =>
                 {
-                    // Policy already exists, so add a new Binding to it.
-                    Binding bindingToAdd = new Binding();
-                    bindingToAdd.Role = role;
-                    string[] testMembers = { member };
-                    bindingToAdd.Members = testMembers;
-                    result.Bindings.Add(bindingToAdd);
-                    setIamPolicyRequest.Policy = result;
-                }
-                else
-                {
-                    // Policy does not yet exist, so create a new one.
-                    Policy newPolicy = new Policy();
-                    newPolicy.Bindings = new List<Binding>();
-                    Binding bindingToAdd = new Binding();
-                    bindingToAdd.Role = role;
-                    string[] testMembers = { member };
-                    bindingToAdd.Members = testMembers;
-                    newPolicy.Bindings.Add(bindingToAdd);
-                    setIamPolicyRequest.Policy = newPolicy;
-                }
-                var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                    .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
-                var setIamPolicyResult = request.Execute();
-                var updateResult = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-                updateResult.Bindings.ToList().ForEach(response =>
-                {
-                    Console.WriteLine($"Role: {response.Role}");
-
-                    response.Members.ToList().ForEach(memberFound =>
-                    {
-                        Console.WriteLine($"  Member: {memberFound.ToString()}");
-                    });
+                    Console.WriteLine($"  Member: {memberFound}");
                 });
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            });
             return 0;
         }
         // [END kms_add_member_to_cryptokey_policy]
@@ -602,53 +504,45 @@ namespace GoogleCloudSamples
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the parent to use for updating the crypto key IAM policy.
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}";
-            try
+            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
+            if (result.Bindings != null)
             {
-                var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-                if (result.Bindings != null)
+                result.Bindings.ToList().ForEach(response =>
                 {
-                    result.Bindings.ToList().ForEach(response =>
+                    if (response.Role == role)
                     {
-                        if (response.Role == role)
-                        {
-                            // Remove the role/member combo from the crypto key IAM policy.
-                            response.Members = response.Members.Where(m => m != member).ToList();
-                        }
-                    });
-                    // Set the modified crypto key IAM policy to be the cryto key's current IAM policy.
-                    SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
-                    setIamPolicyRequest.Policy = result;
-                    var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                        .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
-                    var setIamPolicyResult = request.Execute();
-                    // Get and display the modified crypto key IAM policy.
-                    var resultAfterUpdate = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-                    if (resultAfterUpdate.Bindings != null)
+                        // Remove the role/member combo from the crypto key IAM policy.
+                        response.Members = response.Members.Where(m => m != member).ToList();
+                    }
+                });
+                // Set the modified crypto key IAM policy to be the cryto key's current IAM policy.
+                SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
+                setIamPolicyRequest.Policy = result;
+                var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
+                    .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
+                var setIamPolicyResult = request.Execute();
+                // Get and display the modified crypto key IAM policy.
+                var resultAfterUpdate = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
+                if (resultAfterUpdate.Bindings != null)
+                {
+                    Console.WriteLine($"Policy Bindings: {resultAfterUpdate.Bindings}");
+                    resultAfterUpdate.Bindings.ToList().ForEach(response =>
                     {
-                        Console.WriteLine($"Policy Bindings: {resultAfterUpdate.Bindings}");
-                        resultAfterUpdate.Bindings.ToList().ForEach(response =>
+                        Console.WriteLine($"Role: {response.Role}");
+                        response.Members.ToList().ForEach(memberAfterUpdate =>
                         {
-                            Console.WriteLine($"Role: {response.Role}");
-                            response.Members.ToList().ForEach(memberAfterUpdate =>
-                            {
-                                Console.WriteLine($"  Member: {memberAfterUpdate.ToString()}");
-                            });
+                            Console.WriteLine($"  Member: {memberAfterUpdate}");
                         });
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Empty IAM policy found for CryptoKey: {parent}");
-                    }
+                    });
                 }
                 else
                 {
                     Console.WriteLine($"Empty IAM policy found for CryptoKey: {parent}");
                 }
             }
-            catch (Google.GoogleApiException e)
+            else
             {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
+                Console.WriteLine($"Empty IAM policy found for CryptoKey: {parent}");
             }
             return 0;
         }
@@ -660,31 +554,23 @@ namespace GoogleCloudSamples
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the parent to use for getting the key ring IAM policy.
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}";
-            try
+            var result = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
+            if (result.Bindings != null)
             {
-                var result = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
-                if (result.Bindings != null)
+                Console.WriteLine($"Policy Bindings: {result.Bindings}");
+                result.Bindings.ToList().ForEach(response =>
                 {
-                    Console.WriteLine($"Policy Bindings: {result.Bindings}");
-                    result.Bindings.ToList().ForEach(response =>
-                    {
-                        Console.WriteLine($"Role: {response.Role}");
+                    Console.WriteLine($"Role: {response.Role}");
 
-                        response.Members.ToList().ForEach(member =>
-                        {
-                            Console.WriteLine($"  Member: {member.ToString()}");
-                        });
+                    response.Members.ToList().ForEach(member =>
+                    {
+                        Console.WriteLine($"  Member: {member}");
                     });
-                }
-                else
-                {
-                    Console.WriteLine($"Empty IAM policy found for KeyRing: {parent}");
-                }
+                });
             }
-            catch (Google.GoogleApiException e)
+            else
             {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
+                Console.WriteLine($"Empty IAM policy found for KeyRing: {parent}");
             }
             return 0;
         }
@@ -697,50 +583,42 @@ namespace GoogleCloudSamples
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the parent to use for updating the key ring IAM policy.
             var parent = $"projects/{projectId}/locations/{location}/keyRings/{keyRing}";
-            try
+            SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
+            var result = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
+            if (result.Bindings != null)
             {
-                SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
-                var result = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
-                if (result.Bindings != null)
+                // Policy already exists, so add a new Binding to it.
+                Binding bindingToAdd = new Binding();
+                bindingToAdd.Role = role;
+                string[] testMembers = { member };
+                bindingToAdd.Members = testMembers;
+                result.Bindings.Add(bindingToAdd);
+                setIamPolicyRequest.Policy = result;
+            }
+            else
+            {
+                // Policy does not yet exist, so create a new one
+                Policy newPolicy = new Policy();
+                newPolicy.Bindings = new List<Binding>();
+                Binding bindingToAdd = new Binding();
+                bindingToAdd.Role = role;
+                string[] testMembers = { member };
+                bindingToAdd.Members = testMembers;
+                newPolicy.Bindings.Add(bindingToAdd);
+                setIamPolicyRequest.Policy = newPolicy;
+            }
+            var request = new ProjectsResource.LocationsResource.KeyRingsResource
+                .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
+            var setIamPolicyResult = request.Execute();
+            var updateResult = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
+            updateResult.Bindings.ToList().ForEach(response =>
+            {
+                Console.WriteLine($"Role: {response.Role}");
+                response.Members.ToList().ForEach(memberFound =>
                 {
-                    // Policy already exists, so add a new Binding to it.
-                    Binding bindingToAdd = new Binding();
-                    bindingToAdd.Role = role;
-                    string[] testMembers = { member };
-                    bindingToAdd.Members = testMembers;
-                    result.Bindings.Add(bindingToAdd);
-                    setIamPolicyRequest.Policy = result;
-                }
-                else
-                {
-                    // Policy does not yet exist, so create a new one
-                    Policy newPolicy = new Policy();
-                    newPolicy.Bindings = new List<Binding>();
-                    Binding bindingToAdd = new Binding();
-                    bindingToAdd.Role = role;
-                    string[] testMembers = { member };
-                    bindingToAdd.Members = testMembers;
-                    newPolicy.Bindings.Add(bindingToAdd);
-                    setIamPolicyRequest.Policy = newPolicy;
-                }
-                var request = new ProjectsResource.LocationsResource.KeyRingsResource
-                    .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
-                var setIamPolicyResult = request.Execute();
-                var updateResult = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
-                updateResult.Bindings.ToList().ForEach(response =>
-                {
-                    Console.WriteLine($"Role: {response.Role}");
-                    response.Members.ToList().ForEach(memberFound =>
-                    {
-                        Console.WriteLine($"  Member: {memberFound.ToString()}");
-                    });
+                    Console.WriteLine($"  Member: {memberFound}");
                 });
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
+            });
             return 0;
         }
         // [END kms_add_member_to_keyring_policy]
