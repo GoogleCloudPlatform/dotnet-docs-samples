@@ -16,7 +16,7 @@ Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
 BackupAndEdit-TextFile "appsettings.json" `
-    @{"your-redis-config-string" = $env:TEST_REDIS_CONFIG} `
+    @{"your-redis-endpoint" = $env:TEST_REDIS_CONFIG} `
 {
 	dotnet publish
     Deploy-CasperJsTest

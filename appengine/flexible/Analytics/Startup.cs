@@ -63,7 +63,7 @@ namespace Analytics
 
         private async Task HomePage(HttpContext context)
         {
-            string trackingId = Configuration["GA_TRACKING_ID"];
+            string trackingId = Configuration["GaTrackingId"];
             if (new string[] { null, "", "your-google-analytics-tracking-id" }.Contains(trackingId))
             {
                 await context.Response.WriteAsync(@"
@@ -71,8 +71,9 @@ namespace Analytics
                 <head><title>Error</title></head>
                 <body>
                 <p>
-                Set the environment variable GA_TRACKING_ID to your Google Analytics tracking id.
-                <p>
+                Set the configuration variable GaTrackingId to your Google Analytics tracking id.
+                <p>See the README.md in the project directory for more information.
+
                 </body>
                 </html>
                 ");
@@ -86,7 +87,7 @@ namespace Analytics
             var content = new FormUrlEncodedContent(
                 new Dictionary<string, string>() {
                     { "v" , "1" },  // API Version.
-                    { "tid" , Configuration["GA_TRACKING_ID"] },  // Tracking ID / Property ID.
+                    { "tid" , Configuration["GaTrackingId"] },  // Tracking ID / Property ID.
                     // Anonymous Client Identifier. Ideally, this should be a UUID that
                     // is associated with particular user, device, or browser instance.
                     { "cid" , "555" },

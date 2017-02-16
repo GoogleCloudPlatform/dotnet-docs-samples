@@ -15,10 +15,9 @@
  */
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SendGrid.ViewModels;
-using System;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -27,9 +26,9 @@ namespace SendGrid.Controllers
     public class HomeController : Controller
     {
         string _sendgridApiKey;
-        public HomeController(SendGridApiKey key)
+        public HomeController(IOptions<SendGridOptions> options)
         {
-            _sendgridApiKey = key.Key;
+            _sendgridApiKey = options.Value.ApiKey;
         }
 
         [HttpGet]

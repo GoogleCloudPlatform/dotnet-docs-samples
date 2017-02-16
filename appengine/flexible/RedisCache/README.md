@@ -25,7 +25,7 @@ when running in Google App Engine Flexible Environment.
     accessible.  Note the Endpoint for the database.
 
 4.  Edit [appsettings.json](appsettings.json).  Replace 
-    `your-redis-config-string` with your Redis Endpoint.
+    `your-redis-endpoint` with your Redis Endpoint.
 
 ## Run Locally
 
@@ -36,7 +36,8 @@ PS > dotnet run
 ```
 
 ### Using Visual Studio
-Press F5.
+1.  In Solution Explorer, right-click the **RedisCache** project and choose **Set as StartUp Project**
+2.  Press F5.
 
 ## Deploy to App Engine
 

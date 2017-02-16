@@ -16,6 +16,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Redis;
+using Microsoft.Extensions.Options;
 using RedisCache.ViewModels;
 
 namespace RedisCache.Controllers
@@ -23,9 +25,11 @@ namespace RedisCache.Controllers
     public class HomeController : Controller
     {
         private IDistributedCache _cache;
-        public HomeController(IDistributedCache cache)
+        private RedisCacheOptions _redisOptions;
+        public HomeController(IDistributedCache cache, IOptions<RedisCacheOptions> options)
         {
             _cache = cache;
+            _redisOptions = options.Value;
         }
 
         // [BEGIN redis_cache]
@@ -33,6 +37,10 @@ namespace RedisCache.Controllers
         [HttpPost]
         public IActionResult Index(WhoForm whoForm)
         {
+            if (_redisOptions == null || string.IsNullOrEmpty(_redisOptions.Configuration))
+            {
+                return View(new WhoCount() { MissingRedisEndpoint = true });
+            }
             var model = new WhoCount()
             {
                 Who = _cache.GetString("who") ?? "",

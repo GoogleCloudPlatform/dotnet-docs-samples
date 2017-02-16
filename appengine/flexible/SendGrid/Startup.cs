@@ -41,12 +41,11 @@ namespace SendGrid
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            services.Configure<SendGridOptions>(
+                Configuration.GetSection("SendGrid"));
             // Add framework services.
             services.AddMvc();
-            // [BEGIN sendgrid_startup]
-            services.AddSingleton(new SendGridApiKey()
-                { Key = Configuration["SENDGRID_API_KEY"] });
-            // [END sendgrid_startup]
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
