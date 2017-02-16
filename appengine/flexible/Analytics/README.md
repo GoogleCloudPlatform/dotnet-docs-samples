@@ -1,6 +1,6 @@
 # Google Analytics and Google App Engine Flexible Environment
 
-This sample application demonstrates how track events with Google Analytics
+This sample application demonstrates how to track events with Google Analytics
 when running in Google App Engine Flexible Environment.
 
 ## Prerequisites
