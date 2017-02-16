@@ -1,6 +1,6 @@
 # Static Content sample for Google App Engine Flexible Environment
 
-This sample application demonstrates how to server static content with 
+This sample application demonstrates how to serve static content with 
 Google App Engine Flexible Environment.
 
 ## Prerequisites
@@ -25,7 +25,8 @@ PS > dotnet run
 ```
 
 ### Using Visual Studio
-Press F5.
+1.  In Solution Explorer, right-click the **StaticContent** project and choose **Set as StartUp Project**
+2.  Press F5.
 
 ## Deploy to App Engine
 

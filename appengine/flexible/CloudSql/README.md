@@ -20,6 +20,8 @@ when running in Google App Engine Flexible Environment.
     https://cloud.google.com/sql/docs/mysql/instance-access-control)
 
 6.  Edit [appsettings.json](appsettings.json).  Replace `your-cloud-sql-connection-string` with your cloud sql connection string.
+    See [Connecting to Cloud SQL from External Applications](https://cloud.google.com/sql/docs/external)
+	for help connecting to your Cloud SQL instance and composing the connection string.
 
 ## Run Locally
 
@@ -30,7 +32,8 @@ PS > dotnet run
 ```
 
 ### Using Visual Studio
-Press F5.
+1.  In Solution Explorer, right-click the **CloudSql** project and choose **Set as StartUp Project**
+2.  Press F5.
 
 ## Deploy to App Engine
 

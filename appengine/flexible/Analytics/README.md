@@ -27,7 +27,8 @@ PS > dotnet run
 ```
 
 ### Using Visual Studio
-Press F5.
+1.  In Solution Explorer, right-click the **Analytics** project and choose **Set as StartUp Project**
+2.  Press F5.
 
 ## Deploy to App Engine
 
