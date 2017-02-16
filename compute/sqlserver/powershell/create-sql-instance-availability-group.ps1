@@ -210,9 +210,9 @@ $ErrorActionPreference = 'stop'
 # need to be created.
 ################################################################################
 Write-Host "$(Get-Date) Creating routes in GCP"
-$objNetwork = Get-GceNetwork -Name $network
-$objNode1 = Get-GceInstance -Name $node1
-$objNode2 = Get-GceInstance -Name $node2
+$objNetwork = Get-GceNetwork -Name $network 
+$objNode1 = Get-GceInstance -Name $node1 -Zone $zone
+$objNode2 = Get-GceInstance -Name $node2 -Zone $zone
 Add-GceRoute -Name $node1-route-listener -Network $objNetwork `
   -DestinationIpRange "$ip_ag_listener1/32" -NextHopInstance $objNode1 -Priority 1 | 
     SELECT Name, DestRange | Format-Table
@@ -406,6 +406,10 @@ Write-Host "                    $node2 - $ip_address2"
 # Create a Windows Failover Cluster (WSFC) and Availability Group
 # Needs to run from a computer member of the domain in order to use CredSSP
 ################################################################################
+# We need RSAT-AD-PowerShell to check if the computer is member of domain
+Install-WindowsFeature RSAT-AD-PowerShell
+Import-Module ActiveDirectory
+
 If ( Get-ADDomain | Where Forest -eq $domain ) {
 
   # Only continue if SQL Server is installed

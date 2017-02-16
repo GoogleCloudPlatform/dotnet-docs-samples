@@ -90,7 +90,7 @@ Invoke-Command -ScriptBlock {
   }
   
   if ( !( Get-GceNetwork | Where {$_.Name -eq $network -and `
-    $_.Subnetworks -like "*$subnet1_name" } ) ) {
+    $_.Subnetworks -like "*$subnet2_name" } ) ) {
 
     gcloud compute networks subnets create $subnet2_name `
       --network $network `
@@ -101,14 +101,14 @@ Invoke-Command -ScriptBlock {
   }
   
   if ( !( Get-GceNetwork | Where {$_.Name -eq $network -and `
-    $_.Subnetworks -like "*$subnet1_name" } ) ) {
+    $_.Subnetworks -like "*$subnet3_name" } ) ) {
 
     gcloud compute networks subnets create $subnet3_name `
       --network $network `
       --region $region `
       --range $subnet3
   } else {
-     Write-Host "  The subnetwork: $subnet2_name already exist"
+     Write-Host "  The subnetwork: $subnet3_name already exist"
   }
 } 2> $null
 $ErrorActionPreference = 'Stop'
