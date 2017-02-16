@@ -1,7 +1,6 @@
-# Google Analytics and Google App Engine Flexible Environment
+# Hello World for Google App Engine Flexible Environment
 
-This sample application demonstrates how to track events with Google Analytics
-when running in Google App Engine Flexible Environment.
+This sample application is ready to deploy to Google App Engine Flexible Environment.
 
 ## Prerequisites
 
@@ -13,11 +12,6 @@ when running in Google App Engine Flexible Environment.
 3.  (Optional) Visual Studio is not required, but [Google Cloud Tools for Visual Studio](https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
     make it easy to deploy to App Engine.  Install them if you are running Visual Studio.
 
-4.  [Create a Google Analytics Property and obtain the Tracking ID](
-    https://support.google.com/analytics/answer/1042508?ref_topic=1009620).
-
-4.  Edit [appsettings.json](appsettings.json).  Replace `your-google-analytics-tracking-id` with your google analytics tracking id.
-
 ## Run Locally
 
 ### Using PowerShell
@@ -27,8 +21,7 @@ PS > dotnet run
 ```
 
 ### Using Visual Studio
-1.  In Solution Explorer, right-click the **Analytics** project and choose **Set as StartUp Project**
-2.  Press F5.
+Press F5.
 
 ## Deploy to App Engine
 
@@ -42,7 +35,7 @@ PS > gcloud app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 
 ### Using Visual Studio
 
-1.  In Solution Explorer, right-click the **Analytics** project and choose **Publish Analytics to Google Cloud**.
+1.  In Solution Explorer, right-click the **HelloWorld** project and choose **Publish HelloWorld to Google Cloud**.
 
 2.  Click **App Engine Flex**.
 

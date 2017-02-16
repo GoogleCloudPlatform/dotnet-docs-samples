@@ -1,6 +1,6 @@
-# Google Analytics and Google App Engine Flexible Environment
+# Google Cloud SQL and Google App Engine Flexible Environment
 
-This sample application demonstrates how to track events with Google Analytics
+This sample application demonstrates how to store data in Google Cloud SQL
 when running in Google App Engine Flexible Environment.
 
 ## Prerequisites
@@ -13,10 +13,15 @@ when running in Google App Engine Flexible Environment.
 3.  (Optional) Visual Studio is not required, but [Google Cloud Tools for Visual Studio](https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
     make it easy to deploy to App Engine.  Install them if you are running Visual Studio.
 
-4.  [Create a Google Analytics Property and obtain the Tracking ID](
-    https://support.google.com/analytics/answer/1042508?ref_topic=1009620).
+4.  [Create a second generation Google Cloud SQL instance.](
+    https://cloud.google.com/sql/docs/mysql/create-instance).
 
-4.  Edit [appsettings.json](appsettings.json).  Replace `your-google-analytics-tracking-id` with your google analytics tracking id.
+5.  [Configure access to the Google Cloud SQL instance.](
+    https://cloud.google.com/sql/docs/mysql/instance-access-control)
+
+6.  Edit [appsettings.json](appsettings.json).  Replace `your-cloud-sql-connection-string` with your cloud sql connection string.
+    See [Connecting to Cloud SQL from External Applications](https://cloud.google.com/sql/docs/external)
+	for help connecting to your Cloud SQL instance and composing the connection string.
 
 ## Run Locally
 
@@ -27,7 +32,7 @@ PS > dotnet run
 ```
 
 ### Using Visual Studio
-1.  In Solution Explorer, right-click the **Analytics** project and choose **Set as StartUp Project**
+1.  In Solution Explorer, right-click the **CloudSql** project and choose **Set as StartUp Project**
 2.  Press F5.
 
 ## Deploy to App Engine
@@ -42,7 +47,7 @@ PS > gcloud app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 
 ### Using Visual Studio
 
-1.  In Solution Explorer, right-click the **Analytics** project and choose **Publish Analytics to Google Cloud**.
+1.  In Solution Explorer, right-click the **CloudSql** project and choose **Publish CloudSql to Google Cloud**.
 
 2.  Click **App Engine Flex**.
 
