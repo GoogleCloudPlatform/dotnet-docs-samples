@@ -25,19 +25,19 @@ when running in Google App Engine Flexible Environment.
 
 ## Run Locally
 
-### Using PowerShell
+### ![PowerShell](../.resources/powershell.png)Using PowerShell
 ```psm1
 PS > dotnet restore
 PS > dotnet run
 ```
 
-### Using Visual Studio
+### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
 1.  In Solution Explorer, right-click the **CloudStorage** project and choose **Set as StartUp Project**
 2.  Press F5.
 
 ## Deploy to App Engine
 
-### Using PowerShell
+### ![PowerShell](../.resources/powershell.png)Using PowerShell
 
 ```psm1
 PS > dotnet restore
@@ -45,7 +45,7 @@ PS > dotnet publish
 PS > gcloud app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 ```
 
-### Using Visual Studio
+### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
 
 1.  In Solution Explorer, right-click the **CloudStorage** project and choose **Publish CloudStorage to Google Cloud**.
 
