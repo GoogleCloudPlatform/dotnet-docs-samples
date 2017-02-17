@@ -36,8 +36,8 @@ PS > dotnet run
 ```
 
 ### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
-
-Press F5.
+1.  In Solution Explorer, right-click the **RedisCache** project and choose **Set as StartUp Project**
+2.  Press F5.
 
 ## Deploy to App Engine
 
