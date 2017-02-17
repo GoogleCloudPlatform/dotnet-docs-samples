@@ -40,7 +40,9 @@
   "publishOptions": {
     "include": [
       "wwwroot",
-      "web.config"
+      "web.config",
+      "Dockerfile",
+      "app.yaml"
     ]
   },
 

@@ -16,6 +16,8 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -43,10 +45,13 @@ namespace RedisCache
         {
             // Add framework services.
             services.AddMvc();
+            string redisEndpoint = Configuration["RedisEndpoint"];
+            redisEndpoint = new string[] { null, "", "your-redis-endpoint" }.Contains(redisEndpoint) ?
+                "" : WorkAroundIssue463(redisEndpoint);
             // [BEGIN redis_startup]
             services.AddDistributedRedisCache(options =>
             {
-                options.Configuration = WorkAroundIssue463(Configuration["REDIS_CONFIG"] ?? "localhost:6379");
+                options.Configuration = redisEndpoint;
                 options.InstanceName = "master";
             });
             // [END redis_startup]

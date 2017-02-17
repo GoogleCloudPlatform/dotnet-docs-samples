@@ -14,8 +14,8 @@
 
 namespace SendGrid
 {
-    public class SendGridApiKey
+    public class SendGridOptions
     {
-        public string Key { get; set; }
+        public string ApiKey { get; set; }
     }
 }

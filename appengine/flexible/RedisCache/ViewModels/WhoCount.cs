@@ -23,6 +23,7 @@ namespace RedisCache.ViewModels
 
     public class WhoCount : WhoForm
     {
+        public bool MissingRedisEndpoint { get; set; } = false;
         public int Count { get; set; }
     }
 }

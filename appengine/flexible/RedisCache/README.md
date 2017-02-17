@@ -25,7 +25,7 @@ when running in Google App Engine Flexible Environment.
     accessible.  Note the Endpoint for the database.
 
 4.  Edit [appsettings.json](appsettings.json).  Replace 
-    `your-redis-config-string` with your Redis Endpoint.
+    `your-redis-endpoint` with your Redis Endpoint.
 
 ## Run Locally
 

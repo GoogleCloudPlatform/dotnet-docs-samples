@@ -59,8 +59,9 @@ namespace CloudSql
             MySqlConnection connection;
             try
             {
+                string connectionString = Configuration["CloudSqlConnectionString"];
                 // [START example]
-                connection = new MySqlConnection(Configuration["CLOUDSQL_CONNECTION_STRING"]);
+                connection = new MySqlConnection(connectionString);
                 connection.Open();
                 var createTableCommand = new MySqlCommand(@"CREATE TABLE IF NOT EXISTS visits
                 (time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, user_ip CHAR(64))", connection);
@@ -73,7 +74,10 @@ namespace CloudSql
                 {
                     await context.Response.WriteAsync(string.Format(@"<html>
                         <head><title>Error</title></head>
-                        <body><p>Set CLOUDSQL_CONNECTION_STRING to a valid connection string.<p>{0}</body>
+                        <body><p>Set CloudSqlConnectionString to a valid connection string.
+                              <p>{0}
+                              p>See the README.md in the project directory for more information.</p>
+                        </body>
                         </html>", WebUtility.HtmlEncode(e.Message)));
                 });
                 return;
