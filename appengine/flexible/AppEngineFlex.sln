@@ -15,6 +15,11 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CloudSql", "CloudSql\CloudS
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CloudStorage", "CloudStorage\CloudStorage.xproj", "{826B9A99-F8D8-4105-ACD6-D1562984684B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{908A2679-B7CF-4E8B-89A7-D2865C00C8F6}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
