@@ -14,18 +14,19 @@ This sample application is ready to deploy to Google App Engine Flexible Environ
 
 ## Run Locally
 
-### Using PowerShell
+### ![PowerShell](../.resources/powershell.png)Using PowerShell
 ```psm1
 PS > dotnet restore
 PS > dotnet run
 ```
 
-### Using Visual Studio
+### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
+
 Press F5.
 
 ## Deploy to App Engine
 
-### Using PowerShell
+### ![PowerShell](../.resources/powershell.png)Using PowerShell
 
 ```psm1
 PS > dotnet restore
@@ -33,7 +34,8 @@ PS > dotnet publish
 PS > gcloud app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 ```
 
-### Using Visual Studio
+### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
+
 
 1.  In Solution Explorer, right-click the **HelloWorld** project and choose **Publish HelloWorld to Google Cloud**.
 
