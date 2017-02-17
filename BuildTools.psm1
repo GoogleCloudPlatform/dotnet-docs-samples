@@ -548,6 +548,25 @@ function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
 
 ##############################################################################
 #.SYNOPSIS
+# Run the website.
+#
+#.PARAMTER url
+# The partial url to serve.  It should contain the scheme and host.  For
+# example: https://localhost:2342
+#
+#.RETURNS
+# The job running kestrel.
+##############################################################################
+function Run-Kestrel([Parameter(mandatory=$true)][string]$url) {
+    Start-Job -ArgumentList (Get-Location), $url -ScriptBlock { 
+        Set-Location $args[0]
+        $env:ASPNETCORE_URLS = $args[1]
+        dotnet run
+    }
+}
+
+##############################################################################
+#.SYNOPSIS
 # Run the website, then run the test javascript file with casper.
 #
 #.PARAMETER PortNumber
@@ -559,11 +578,7 @@ function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
 ##############################################################################
 function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'test.js', [switch]$LeaveRunning = $false) {
     $url = "http://localhost:$PortNumber"
-    $job = Start-Job -ArgumentList (Get-Location), $url -ScriptBlock { 
-        Set-Location $args[0]
-        $env:ASPNETCORE_URLS = $args[1]
-        dotnet run
-    }
+    $job = Run-Kestrel($url)
     Try
     {
         Run-CasperJs $TestJs, $Url
