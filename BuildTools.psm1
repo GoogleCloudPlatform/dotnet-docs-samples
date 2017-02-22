@@ -630,7 +630,13 @@ function Deploy-CasperJsTest($testJs ='test.js') {
         }
     }
     gcloud app describe | where {$_ -match 'defaultHostName:\s+(\S+)' }
-    Run-CasperJs $testJs ("https://deploytest-dot-" + $matches[1])
+    try {
+        Run-CasperJs $testJs ("https://deploytest-dot-" + $matches[1])
+        return
+    } catch {
+      # Work around issue 35673193.
+        Run-CasperJs $testJs ("https://deploytest-dot-" + $matches[1].Replace('appspot.com', 'appspot-preview.com'))
+    }
 }
 
 ##############################################################################
