@@ -58,6 +58,7 @@ If ( !($node1_sql_server) -Or !($node2_sql_server) ) {
 }
 
 # Only continue if script is ran from a computer that is member of the domain
+# Enable-WSManCredSSP will fail if the computer is not member of domain
 if ( !( Get-ADDomain | Where Forest -eq $domain ) ) {
   Throw "Need to run script from a computer member of the '$domain' domain."
 }
@@ -150,14 +151,16 @@ Invoke-Command -ComputerName $node2_fqdn -Credential $cred -ScriptBlock {
 # Enable CredSSP in local computer
 Write-Host "$(Get-Date) Enable CredSSP Client in local machine"
 Enable-WSManCredSSP Client -DelegateComputer * -Force | Out-Null
-Start-Sleep 15
+
+# Wait 15 secs before enabling CredSSP in both servers
+# On ocassions got errors when running the command that follows without waiting
+Start-Sleep -s 15
 
 # Enable CredSSP Server in remote nodes
 Write-Host "$(Get-Date) Enable CredSSP Server nodes: $node1_fqdn, $node2_fqdn"
 Invoke-Command -ComputerName $node1_fqdn,$node2_fqdn -ScriptBlock { 
   Enable-WSManCredSSP Server -Force 
 } -Credential $cred -SessionOption $session_options | Out-Null
-Start-Sleep 15
 
 
 # We may need to remove AD objects, so we will need the RSAT-AD-PowerShell
@@ -190,7 +193,7 @@ if (!( Get-Service -ComputerName $node1 -DisplayName 'Cluster Service' |
   Write-Host "$(Get-Date) Creating WSFC:$name_wsfc; Nodes($node1, $node2)"
   Invoke-Command -ComputerName $node1_fqdn -Authentication Credssp `
     -Credential $cred -ScriptBlock {
-    param($name_wsfc, $node1, $node2, $ip_wsfc1, $ip_wsfc2)
+    param($name_wsfc, $node1, $node2, $ip_wsfc1, $ip_wsfc2, $domain_cntr)
 
     $hostname = [System.Net.Dns]::GetHostName()
 
@@ -202,10 +205,15 @@ if (!( Get-Service -ComputerName $node1 -DisplayName 'Cluster Service' |
     New-Cluster -Name $name_wsfc -Node $node1,$node2 -NoStorage `
       -StaticAddress $ip_wsfc1,$ip_wsfc2 | Format-Table
 
+    # It is recommended to have a Witness in a 2-node cluster
+    # We use a file share called "quorum" in the domain controller
+    # Uncomment this command if using a fileshare witness
+    #Get-Cluster | Set-ClusterQuorum -NodeAndFileShareMajority "\\$($domain_cntr)\quorum"
+
     # Enable Always-On on both nodes
     Enable-SqlAlwaysOn -ServerInstance $node1 -Force
     Enable-SqlAlwaysOn -ServerInstance $node2 -Force
-  } -ArgumentList $name_wsfc, $node1_fqdn, $node2_fqdn, $ip_wsfc1, $ip_wsfc2
+  } -ArgumentList $name_wsfc, $node1_fqdn, $node2_fqdn, $ip_wsfc1, $ip_wsfc2, $domain_cntr
 }
 else {
   Write-Host "$(Get-Date) $hostname - Skipping the creation of the cluster"

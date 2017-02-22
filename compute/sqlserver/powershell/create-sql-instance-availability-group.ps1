@@ -19,6 +19,7 @@
 #
 #.DESCRIPTION
 # This script will automate the steps described on:
+# "Configuring SQL Server Availability Groups"
 # https://cloud.google.com/compute/docs/instances/sql-server/configure-availability
 #
 # PREREQUISITES:
@@ -146,7 +147,7 @@ $creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput |
 $n = 20
 while (!($creation_status)) {
   Write-Host "$(Get-Date) Waiting for instance $node1 to be created"
-  Start-Sleep 15
+  Start-Sleep -s 15
   $n -= 1
   if ($n -eq 0) {break}
 
@@ -160,7 +161,7 @@ $creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput |
 $n = 20
 while (!($creation_status)) {
   Write-Host "$(Get-Date) Waiting for instance $node2 to be created"
-  Start-Sleep 15
+  Start-Sleep -s 15
   $n -= 1
   if ($n -eq 0) {break} 
 
@@ -294,7 +295,7 @@ Remove-Variable session1
 Remove-PSSession $session2
 Remove-Variable session2
 
-Start-Sleep 30
+Start-Sleep -s 30
 # Create a remote session in each server again
 Write-Host "$(Get-Date) Creating remote session to $node1 - $ip_address1"
 $session1 = New-PSSession -ComputerName $ip_address1 -UseSSL `
@@ -365,7 +366,7 @@ $creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput |
 $n = 20
 while (!($creation_status)) {
   Write-Host "$(Get-Date) Waiting for instance $node1 to restart"
-  Start-Sleep 15
+  Start-Sleep -s 15
   $n -= 1
   if ($n -eq 0) {break}
 
@@ -378,7 +379,7 @@ $creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput |
 $n = 20
 while (!($creation_status)) {
   Write-Host "$(Get-Date) Waiting for instance $node2 to restart"
-  Start-Sleep 15
+  Start-Sleep -s 15
   $n -= 1
   if ($n -eq 0) {break}
 
@@ -395,7 +396,7 @@ Remove-Variable session2
 # Get-PSSession
 
 # Wait a minute to make sure all services have started
-Start-Sleep 60
+Start-Sleep -s 60
 
 Write-Host "$(Get-Date) Ready now to create a Windows Failover Cluster (WSFC)"
 Write-Host "                    $node1 - $ip_address1"

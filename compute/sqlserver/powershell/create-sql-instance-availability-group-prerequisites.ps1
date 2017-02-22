@@ -19,10 +19,12 @@
 #   create-sql-instance-availability-group.ps1
 #
 #.DESCRIPTION
-# The script create-sql-instance-availability-group.ps1 assumes you have 
+# The script create-sql-instance-availability-group.ps1 assumes you have a
 # custom network with 3 subnetworks. It also expects a Windows AD domain.
+# This script can be used to create all of those prerequisites.
 # 
-# This script can be used to create all of those prerequisites
+# For more information see "Configuring SQL Server Availability Groups" at:
+# https://cloud.google.com/compute/docs/instances/sql-server/configure-availability
 #
 # You should run this script one section at a time since not all sections
 # may apply in your case
@@ -33,7 +35,10 @@
 
 
 ################################################################################
-# Specify the parameters
+# Specify the parameters:
+# You can change these parameters to match your requirements. They are
+# pre-configured to match the instructions on:
+# "Configuring SQL Server Availability Groups (See URL listed above)
 ################################################################################
 # Network configuration
 $network      = 'wsfcnet'      # Name of the Custom network
@@ -59,7 +64,7 @@ $zone   = "us-central1-f"
 $region = "us-central1"
 
 
-# Get the passwords for Domain Admin and SQL Server service account
+# Get the passwords for Domain Admin
 if (!($admin_pwd)) {
   $admin_pwd = Read-Host -AsSecureString "Password for Domain Administrator"
 }
@@ -158,11 +163,11 @@ if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-rdp"} ) ) {
 $tcp = New-GceFirewallProtocol -IPProtocol tcp -Port 5986
 
 if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-winrm"} ) ) {
-Add-GceFirewall `
-  -Name "allow-winrm" `
-  -Network $network_url `
-  -SourceRange "0.0.0.0/0" `
-  -AllowedProtocol $tcp 
+  Add-GceFirewall `
+    -Name "allow-winrm" `
+    -Network $network_url `
+    -SourceRange "0.0.0.0/0" `
+    -AllowedProtocol $tcp 
 } else {
   Write-Host "  The firewall: allow-winrm already exist"
 }
@@ -172,7 +177,6 @@ Add-GceFirewall `
 $tcp = New-GceFirewallProtocol -IPProtocol tcp -Port 5986
 
 if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-winrm-current-ip"} ) ) {
-  #Remove-GceFirewall -FirewallName "allow-winrm-current-ip"
   Add-GceFirewall `
     -Name "allow-winrm-current-ip" `
     -Network $network_url `
@@ -187,7 +191,6 @@ if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-winrm-current-ip"} ) ) {
 $tcp = New-GceFirewallProtocol -IPProtocol tcp -Port 3389
 
 if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-rdp-current-ip"} ) ) {
-  #Remove-GceFirewall -FirewallName "allow-rdp-current-ip"
   Add-GceFirewall `
     -Name "allow-rdp-current-ip" `
     -Network $network_url `
@@ -198,11 +201,9 @@ if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-rdp-current-ip"} ) ) {
 }
 
 
-
-
 ################################################################################
 # Create a windows instance to be the domain controller
-# Then create the domain and assign a password for the domain admin
+# Then create the domain and assign a password for the domain administrator
 ################################################################################
 Write-Host "$(Get-Date) Create Instance: $domain_cntr"
 $ErrorActionPreference = 'continue' #To skip non-error reported by PowerShell
@@ -227,7 +228,7 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
 
   while (!($creation_status)) {
     Write-Host "$(Get-Date) Waiting for instance $domain_cntr to be created"
-    Start-Sleep 15
+    Start-Sleep -s 15
     $creation_status = Get-GceInstance -zone $zone -Name $domain_cntr -SerialPortOutput |
       Select-String -Pattern 'Finished running startup scripts' -Quiet
   }
@@ -266,7 +267,7 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
 
 
   ################################################################################
-  # Create the Windows domain dbeng.com
+  # Create the Windows domain
   ################################################################################
   Write-Host "$(Get-Date) Promote $domain_cntr to a Domain Controller"
   Invoke-Command -Session $session -ScriptBlock {
@@ -307,20 +308,20 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
 
 
   ################################################################################
-  # Wait until the instances is restarted
+  # Wait until the instance is restarted
   ################################################################################
   $creation_status = Get-GceInstance -zone $zone -Name $domain_cntr -SerialPortOutput | 
     Select-String -Pattern 'Finished running shutdown scripts' -Quiet
   while (!($creation_status)) {
     Write-Host "$(Get-Date) Waiting for instance $domain_cntr to restart"
-    Start-Sleep 15
+    Start-Sleep -s 15
 
     $creation_status = Get-GceInstance -zone $zone -Name $domain_cntr -SerialPortOutput | 
       Select-String -Pattern 'Finished running shutdown scripts' -Quiet
   }
 
   # Wait a minute to make sure all AD services are running before we continue
-  Start-Sleep 60
+  Start-Sleep -s 60
 
   ################################################################################
   # Create a remote session to the domain controller
@@ -360,25 +361,15 @@ Write-Host "IMPORTANT: You are now ready to run the script  create-sql-instance-
 Write-Host "           It is recommended to run it from an instance that is a member of the domain: $DomainName"
 Write-Host "           if you want to automatically setup the SQL Server Availability Group."
 
-# Remove firewall rule to allow current IP
-#Get-GceFirewall -FirewallName "allow-winrm-current-ip" | Remove-GceFirewall
 
-##### Cleanup - Run with caution as everything will be deleted #####
+# Remove firewall rules that allow current IP to RDP and WinRM
+# Uncomment if you don't want to keep those firewall rules
 <#
-$ErrorActionPreference = 'continue'
+if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-winrm-current-ip"} ) ) {
+  Remove-GceFirewall -FirewallName "allow-winrm-current-ip"
+}
 
-# Delete instance
-Get-GceInstance -Zone $zone | Where Name -EQ $domain_cntr | Remove-GceInstance
-
-# Delete the 3 subnetworks
-Invoke-Command -ScriptBlock { gcloud compute networks subnets delete wsfcsubnet1 --quiet 2> $null }
-Invoke-Command -ScriptBlock { gcloud compute networks subnets delete wsfcsubnet2 --quiet 2> $null }
-Invoke-Command -ScriptBlock { gcloud compute networks subnets delete wsfcsubnet3 --quiet 2> $null } 
-
-# Delete the firewall rules, routes and custom network
-Get-GceFirewall | Where-Object Network -Like "*wsfcnet" | Remove-GceFirewall
-Get-GceRoute | Where-Object Network -Like "*wsfcnet" | Remove-GceRoute
-Invoke-Command -ScriptBlock { gcloud compute networks delete wsfcnet --quiet 2> $null } 
-
+if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-rdp-current-ip"} ) ) {
+  Remove-GceFirewall -FirewallName "allow-rdp-current-ip"
+}
 #>
-
