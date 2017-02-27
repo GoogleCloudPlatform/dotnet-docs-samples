@@ -17,7 +17,6 @@
 // [START speech_quickstart]
 
 using Google.Cloud.Speech.V1Beta1;
-// [END speech_quickstart]
 using System;
 
 namespace GoogleCloudSamples
@@ -26,7 +25,6 @@ namespace GoogleCloudSamples
     {
         public static void Main(string[] args)
         {
-            // [START speech_quickstart]
             var speech = SpeechClient.Create();
             var response = speech.SyncRecognize(new RecognitionConfig()
             {
@@ -40,7 +38,7 @@ namespace GoogleCloudSamples
                     Console.WriteLine(alternative.Transcript);
                 }
             }
-            // [END speech_quickstart]
         }
     }
 }
+// [END speech_quickstart]
