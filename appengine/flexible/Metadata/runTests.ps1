@@ -16,4 +16,16 @@ Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
 dotnet build
-Run-KestrelTest 5571 localTest.js
+# Detect if I'm running in the Google Cloud.
+$runningInCloud = $false
+try {
+	$metadataResponse = Invoke-WebRequest `
+		"http://metadata.google.internal/computeMetadata/v1/" `
+		-Headers @{"Metadata-Flavor"="Google"}
+	if ($metadataResponse.StatusCode -eq 200) {
+		$runningInCloud = $true
+	}
+} catch {
+}
+$jsTest = if ($runningInCloud) {"cloudTest.js"} else {"localTest.js"}
+Run-KestrelTest 5571 $jsTest
