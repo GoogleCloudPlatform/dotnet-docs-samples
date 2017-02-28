@@ -9,7 +9,14 @@ This sample application is ready to deploy to Google App Engine Flexible Environ
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.
 
-3.  (Optional) Visual Studio is not required, but [Google Cloud Tools for Visual Studio](https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
+2.  Install the [.NET Core SDK, version LTS](https://www.microsoft.com/net/download/core#/lts).
+
+2.  Visual Studio is not required, but to build and run .NET *core* applications,
+    Visual Studio users need to download and install 
+	[.NET Core tools](https://www.microsoft.com/net/core#windowsvs2015).
+
+3.  [Google Cloud Tools for Visual Studio](
+	https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
     make it easy to deploy to App Engine.  Install them if you are running Visual Studio.
 
 ## Run Locally
