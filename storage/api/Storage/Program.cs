@@ -10,32 +10,32 @@ using System.Security.Cryptography;
 
 namespace GoogleCloudSamples
 {
-    public class QuickStart
+    public class Storage
     {
         private static readonly string s_projectId = "YOUR-PROJECT-ID";
 
         private static readonly string s_usage =
                 "Usage: \n" +
-                "  QuickStart create [new-bucket-name]\n" +
-                "  QuickStart list\n" +
-                "  QuickStart list bucket-name [prefix] [delimiter]\n" +
-                "  QuickStart get-metadata bucket-name object-name\n" +
-                "  QuickStart make-public bucket-name object-name\n" +
-                "  QuickStart upload bucket-name local-file-path [object-name]\n" +
-                "  QuickStart copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
-                "  QuickStart move bucket-name source-object-name dest-object-name\n" +
-                "  QuickStart download bucket-name object-name [local-file-path]\n" +
-                "  QuickStart download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
-                "  QuickStart print-acl bucket-name\n" +
-                "  QuickStart print-acl bucket-name object-name\n" +
-                "  QuickStart add-owner bucket-name user-email\n" +
-                "  QuickStart add-owner bucket-name object-name user-email\n" +
-                "  QuickStart add-default-owner bucket-name user-email\n" +
-                "  QuickStart remove-owner bucket-name user-email\n" +
-                "  QuickStart remove-owner bucket-name object-name user-email\n" +
-                "  QuickStart remove-default-owner bucket-name user-email\n" +
-                "  QuickStart delete bucket-name\n" +
-                "  QuickStart delete bucket-name object-name [object-name]\n";
+                "  Storage create [new-bucket-name]\n" +
+                "  Storage list\n" +
+                "  Storage list bucket-name [prefix] [delimiter]\n" +
+                "  Storage get-metadata bucket-name object-name\n" +
+                "  Storage make-public bucket-name object-name\n" +
+                "  Storage upload bucket-name local-file-path [object-name]\n" +
+                "  Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
+                "  Storage move bucket-name source-object-name dest-object-name\n" +
+                "  Storage download bucket-name object-name [local-file-path]\n" +
+                "  Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
+                "  Storage print-acl bucket-name\n" +
+                "  Storage print-acl bucket-name object-name\n" +
+                "  Storage add-owner bucket-name user-email\n" +
+                "  Storage add-owner bucket-name object-name user-email\n" +
+                "  Storage add-default-owner bucket-name user-email\n" +
+                "  Storage remove-owner bucket-name user-email\n" +
+                "  Storage remove-owner bucket-name object-name user-email\n" +
+                "  Storage remove-default-owner bucket-name user-email\n" +
+                "  Storage delete bucket-name\n" +
+                "  Storage delete bucket-name object-name [object-name]\n";
 
         // [START storage_create_bucket]
         private void CreateBucket(string bucketName)
@@ -467,8 +467,8 @@ namespace GoogleCloudSamples
 
         public static int Main(string[] args)
         {
-            QuickStart quickStart = new QuickStart();
-            return quickStart.Run(args);
+            Storage Storage = new Storage();
+            return Storage.Run(args);
         }
 
         public int Run(string[] args)
