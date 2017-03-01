@@ -369,6 +369,8 @@ namespace GoogleCloudSamples
             alignmentPeriod.Seconds = 600;
             aggregation.AlignmentPeriod = alignmentPeriod;
             aggregation.PerSeriesAligner = Aggregation.Types.Aligner.AlignMean;
+            // Add the aggregation to the request.
+            request.Aggregation = aggregation;
             // Make the request.
             PagedEnumerable<ListTimeSeriesResponse, TimeSeries> response =
                 metricServiceClient.ListTimeSeries(request);
@@ -412,13 +414,14 @@ namespace GoogleCloudSamples
             interval.StartTime = startTimeStamp;
             interval.EndTime = endTimeStamp;
             request.Interval = interval;
-            // Aggregate results per matching instance
+            // Aggregate results per matching instance.
             Aggregation aggregation = new Aggregation();
             Duration alignmentPeriod = new Duration();
             alignmentPeriod.Seconds = 600;
             aggregation.AlignmentPeriod = alignmentPeriod;
             aggregation.CrossSeriesReducer = Aggregation.Types.Reducer.ReduceMean;
             aggregation.PerSeriesAligner = Aggregation.Types.Aligner.AlignMean;
+            // Add the aggregation to the request.
             request.Aggregation = aggregation;
             // Make the request.
             PagedEnumerable<ListTimeSeriesResponse, TimeSeries> response =
