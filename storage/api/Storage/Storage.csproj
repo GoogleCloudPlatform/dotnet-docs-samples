@@ -7,8 +7,8 @@
     <ProjectGuid>{F60A3B32-FFE2-4FCB-BE8D-21A1AD11EF78}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QuickStart</RootNamespace>
-    <AssemblyName>QuickStart</AssemblyName>
+    <RootNamespace>GoogleCloudSamples</RootNamespace>
+    <AssemblyName>Storage</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

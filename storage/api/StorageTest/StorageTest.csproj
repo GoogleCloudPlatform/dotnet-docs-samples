@@ -8,8 +8,8 @@
     <ProjectGuid>{F113E2A3-923B-47E2-B78E-8FD2481AD8E5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QuickStartTest</RootNamespace>
-    <AssemblyName>QuickStartTest</AssemblyName>
+    <RootNamespace>GoogleCloudSamples</RootNamespace>
+    <AssemblyName>StorageTest</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -66,14 +66,14 @@
     <Compile Include="..\..\..\testutil\TestUtil.cs">
       <Link>TestUtil.cs</Link>
     </Compile>
-    <Compile Include="QuickStartTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StorageTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QuickStart\QuickStart.csproj">
+    <ProjectReference Include="..\Storage\Storage.csproj">
       <Project>{f60a3b32-ffe2-4fcb-be8d-21a1ad11ef78}</Project>
       <Name>QuickStart</Name>
     </ProjectReference>

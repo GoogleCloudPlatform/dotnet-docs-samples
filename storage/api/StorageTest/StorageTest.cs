@@ -32,8 +32,8 @@ namespace GoogleCloudSamples
 
         private static readonly CommandLineRunner s_runner = new CommandLineRunner
         {
-            Command = "QuickStart.exe",
-            Main = QuickStart.Main,
+            Command = "Storage.exe",
+            Main = Storage.Main,
         };
 
         /// <summary>Runs StorageSample.exe with the provided arguments</summary>
@@ -58,7 +58,7 @@ namespace GoogleCloudSamples
         {
             var ran = Run();
             Assert.Equal(-1, ran.ExitCode);
-            Assert.Contains("QuickStart", ran.Stdout);
+            Assert.Contains("Storage", ran.Stdout);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace GoogleCloudSamples
         {
             var ran = Run("throw");
             Assert.Equal(-1, ran.ExitCode);
-            Assert.Contains("QuickStart", ran.Stdout);
+            Assert.Contains("Storage", ran.Stdout);
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace GoogleCloudSamples
         {
             var ran = Run("delete");
             Assert.Equal(-1, ran.ExitCode);
-            Assert.Contains("QuickStart", ran.Stdout);
+            Assert.Contains("Storage", ran.Stdout);
         }
     }
 
@@ -86,11 +86,11 @@ namespace GoogleCloudSamples
     {
         public BucketFixture()
         {
-            BucketName = QuickStartTest.CreateRandomBucket();
+            BucketName = StorageTest.CreateRandomBucket();
         }
         public void Dispose()
         {
-            QuickStartTest.DeleteBucket(BucketName);
+            StorageTest.DeleteBucket(BucketName);
         }
 
         public string BucketName { get; private set; }
@@ -98,8 +98,8 @@ namespace GoogleCloudSamples
 
     public class GarbageCollector : IDisposable
     {
-        private readonly QuickStartTest _test;
-        public GarbageCollector(QuickStartTest test)
+        private readonly StorageTest _test;
+        public GarbageCollector(StorageTest test)
         {
             _test = test;
         }
@@ -109,7 +109,7 @@ namespace GoogleCloudSamples
         }
     }
 
-    public class QuickStartTest : BaseTest, IDisposable, IClassFixture<BucketFixture>
+    public class StorageTest : BaseTest, IDisposable, IClassFixture<BucketFixture>
     {
         private readonly string _bucketName;
         /// <summary>
@@ -118,7 +118,7 @@ namespace GoogleCloudSamples
         private readonly SortedDictionary<string, SortedSet<string>> _garbage =
             new SortedDictionary<string, SortedSet<string>>();
 
-        public QuickStartTest(BucketFixture fixture)
+        public StorageTest(BucketFixture fixture)
         {
             _bucketName = fixture.BucketName;
         }

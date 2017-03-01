@@ -14,12 +14,12 @@
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
 
-BackupAndEdit-TextFile "QuickStart\Program.cs" `
+BackupAndEdit-TextFile "Storage\Program.cs" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {       
     Build-Solution
     packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
-        .\QuickStartTest\bin\Debug\QuickStartTest.dll `
+        .\StorageTest\bin\Debug\StorageTest.dll `
         -parallel none
     if ($LASTEXITCODE -ne 0) { throw "FAILED" }
 }
