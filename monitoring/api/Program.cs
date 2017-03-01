@@ -207,13 +207,8 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"{ metric }");
             }
             catch (Grpc.Core.RpcException ex)
-            {
-                if (ex.Status.StatusCode == Grpc.Core.StatusCode.NotFound)
-                {
-                    // Metric descriptor 'Not Found' and that's fine.
-                }
-                else { throw; }
-            }
+                when (ex.Status.StatusCode == Grpc.Core.StatusCode.NotFound)
+            { }
             return 0;
         }
         // [END monitoring_get_descriptor]
