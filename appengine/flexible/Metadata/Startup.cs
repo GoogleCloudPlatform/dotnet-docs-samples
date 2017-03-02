@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Metadata
 {
@@ -40,26 +41,42 @@ namespace Metadata
             }
             app.Run(async (context) =>
             {
+                string myGoogleIpAddress = await GetMyGoogleCloudIpAddressAsync();
                 string text;
-                var metadataClient = Google.Cloud.Metadata.V1.MetadataClient.Create();
-                try
-                {
-                    var result = await metadataClient.GetMetadataAsync(
-                        "instance/network-interfaces/0/access-configs/0/external-ip");
-                    text = string.Format(@"<html><head><title>Metadata Succeeded</title></head>
-                    <body>My public IP address is {0}</body></html>",
-                        result.Content.ToString());
-                }
-                catch (System.Net.Http.HttpRequestException)
-                {
+                if (null == myGoogleIpAddress) {
                     // Must not be running on App Engine.
                     text = @"<html><head><title>Metadata Error</title></head>
                     <body>I am not running in the Google Cloud.
                     </body></html>";
+                } else {
+                    text = string.Format(@"<html><head><title>Metadata Succeeded</title></head>
+                        <body>My public IP address is {0}</body></html>", myGoogleIpAddress);
                 }
                 context.Response.ContentType = "text/html";
                 await context.Response.WriteAsync(text);
             });
         }
+
+        // [BEGIN get_my_ip]
+        /// <summary>
+        /// Query the metadata server to find my ip address.
+        /// </summary>
+        /// <returns>My ip address, or null if not running on Google Cloud.</returns>
+        async Task<string> GetMyGoogleCloudIpAddressAsync()
+        {
+            var metadataClient = Google.Cloud.Metadata.V1.MetadataClient.Create();
+            try
+            {
+                var result = await metadataClient.GetMetadataAsync(
+                    "instance/network-interfaces/0/access-configs/0/external-ip");
+                return result.Content.ToString();
+            }
+            catch (System.Net.Http.HttpRequestException)
+            {
+                // Must not be running on App Engine.
+            }
+            return null;
+        }
+        // [END get_my_ip]
     }
 }
