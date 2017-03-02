@@ -1,0 +1,48 @@
+﻿@{
+// Copyright 2017 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+}
+@model Pubsub.ViewModels.MessageList
+
+@if (Model.MissingProjectId)
+{
+    <h1>Error</h1>
+    <p>Set the ProjectId in appsettings.json.</p>
+    <p>See the README.md in the project directory for more information.</p>
+}
+else
+{
+    <H1>Google AppEngine Pubsub Sample</H1>
+    <div>
+        @if (Model.PublishedMessage != null)
+        {
+            <p>Your message <span id="PublishedMessage">@Model.PublishedMessage</span> was published.</p>
+        }
+        <p>Messages received by this instance:</p>
+        <ul>
+            @foreach (string message in Model.Messages)
+            {
+                <li>@message</li>
+            }
+        </ul>
+        <p><small>Note: because your application is likely running multiple instances, each instance will have a different list of messages.</small></p>
+    </div>
+    <!-- [START form] -->
+    <form asp-controller="Home" asp-action="Index" id="MessageForm">
+        <textarea asp-for="Message" placeholder="Enter message here"></textarea>
+        <input id="Submit" type="submit">
+    </form>
+    <!-- [END form] -->
+}
