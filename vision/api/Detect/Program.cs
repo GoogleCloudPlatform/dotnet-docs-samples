@@ -84,7 +84,7 @@ namespace GoogleCloudSamples
         private static object DetectFaces(string bucketName, string objectName)
         {
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromStorageUri($"gs://{bucketName}/{objectName}");
+            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectFaces(image);
             int count = 1;
             foreach (var faceAnnotation in response)
@@ -122,7 +122,7 @@ namespace GoogleCloudSamples
         private static object DetectLabels(string bucketName, string objectName)
         {
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromStorageUri($"gs://{bucketName}/{objectName}");
+            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectLabels(image);
             foreach (var annotation in response)
             {
@@ -152,7 +152,7 @@ namespace GoogleCloudSamples
         private static object DetectSafeSearch(string bucketName, string objectName)
         {
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromStorageUri($"gs://{bucketName}/{objectName}");
+            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectSafeSearch(image);
             Console.WriteLine("Adult: {0}", response.Adult.ToString());
             Console.WriteLine("Spoof: {0}", response.Spoof.ToString());
@@ -180,7 +180,7 @@ namespace GoogleCloudSamples
         private static object DetectProperties(string bucketName, string objectName)
         {
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromStorageUri($"gs://{bucketName}/{objectName}");
+            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectImageProperties(image);
             string header = "Red\tGreen\tBlue\tAlpha\n";
             foreach (var color in response.DominantColors.Colors)
@@ -218,7 +218,7 @@ namespace GoogleCloudSamples
         private static object DetectLandmarks(string bucketName, string objectName)
         {
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromStorageUri($"gs://{bucketName}/{objectName}");
+            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectLandmarks(image);
             foreach (var annotation in response)
             {
@@ -248,7 +248,7 @@ namespace GoogleCloudSamples
         private static object DetectText(string bucketName, string objectName)
         {
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromStorageUri($"gs://{bucketName}/{objectName}");
+            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectText(image);
             foreach (var annotation in response)
             {
@@ -278,7 +278,7 @@ namespace GoogleCloudSamples
         private static object DetectLogos(string bucketName, string objectName)
         {
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromStorageUri($"gs://{bucketName}/{objectName}");
+            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectLogos(image);
             foreach (var annotation in response)
             {
