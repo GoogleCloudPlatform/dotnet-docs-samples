@@ -23,12 +23,65 @@ when running in Google App Engine Flexible Environment.
 4.  [Create a second generation Google Cloud SQL instance.](
     https://cloud.google.com/sql/docs/mysql/create-instance).
 
-5.  [Configure access to the Google Cloud SQL instance.](
-    https://cloud.google.com/sql/docs/mysql/instance-access-control)
+5.  Create a new database in your Google Cloud SQL instance.
+    
+    1.  Open your [Cloud SQL's Databases](
+        https://pantheon.corp.google.com/sql/instances/napoo/databases) and
+        click **New database**.
 
-6.  Edit [appsettings.json](appsettings.json).  Replace `your-cloud-sql-connection-string` with your cloud sql connection string.
-    See [Connecting to Cloud SQL from External Applications](https://cloud.google.com/sql/docs/external)
-	for help connecting to your Cloud SQL instance and composing the connection string.
+    2.  For **Database name**, enter `visitors`.
+
+    3.  Click **ADD**.
+
+5.  Configure SSL access to the Google Cloud SQL instance.
+
+    1.  Open your [Cloud SQL's SSL settings.](
+        https://console.cloud.google.com/sql/instances/napoo/access-control/ssl)
+
+    2.  Click **Allow only SSL connections.**
+
+    3.  Click **Create a client certificate.**
+
+    4.  Enter a name like `aspnetcert` and click **ADD**.
+
+    5.  Click the links to download `client-key.pem`, `client-cert.pem`, 
+        and `server-ca.pem`.
+
+    6.  Click **Close**.
+
+    7.  Click **Users**.
+    
+    8.  Click **Create user account**.
+
+    9.  Enter a name like `aspnetuser` and a password.
+
+    10. Click **Create**.
+
+    11. Click **Authorization**.
+
+    12. Click **+ Add Network**.
+
+    13. For the name, enter `all`.
+
+    14. For the network, enter `0.0.0.0/0`.
+
+    15. Click **Done**.
+
+    16. Click **Save**.
+
+    17. At a command prompt, type:
+
+        ```bash
+        openssl pkcs12 -export -in client-cert.pem -inkey client-key.pem -certfile server-ca.pem -out client.pfx
+        ```
+
+        If you don't have a machine with openssl installed, use
+        [Google Cloud Shell](https://cloud.google.com/shell/docs/quickstart).
+
+    18. Copy the `client.pfx` file into this directory.
+
+6.  Edit [appsettings.json](appsettings.json).  Update the connection string
+    with your user, password, server ip address, etc.
 
 ## Run Locally
 

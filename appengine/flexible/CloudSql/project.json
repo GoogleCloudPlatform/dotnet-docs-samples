@@ -44,7 +44,8 @@
       "web.config",
       "appsettings.json",
       "Dockerfile",
-      "app.yaml"
+      "app.yaml",
+      "client.pfx"
     ]
   },
 
