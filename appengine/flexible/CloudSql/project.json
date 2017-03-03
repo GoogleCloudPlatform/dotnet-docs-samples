@@ -8,7 +8,7 @@
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
     "Microsoft.Extensions.Logging.Console": "1.0.0",
-    "MySql.Data": "7.0.6-IR31",
+    "MySql.Data": "7.0.6-ir31",
     "System.Linq": "4.3.0"
   },
 
@@ -35,7 +35,9 @@
       "System.GC.Server": true
     }
   },
-
+  "runtimes": {
+    "ubuntu.14.04-x64": {}
+  },
   "publishOptions": {
     "include": [
       "wwwroot",

@@ -12,3 +12,4 @@ PublishProfiles/
 .vs/
 *~
 *.xproj.user
+project.lock.json
