@@ -16,7 +16,7 @@ Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
 BackupAndEdit-TextFile "appsettings.json" `
-    @{"your-cloud-sql-connection-string" = $env:TEST_CLOUD_SQL_CONNECTION_STRING} `
+    @{'Uid=aspnetuser;Database=visitors;Pwd=ASPNETUSERS-PASSWORD;Host=YOUR-SQL-INSTANCE-IP4-ADDRESS;CertificateFile=client.pfx;CertificatePassword=YOUR-CERT-PASSWORD;SSL Mode=Required' = $env:TEST_CLOUD_SQL_CONNECTION_STRING} `
 {
 	dotnet build
 	Run-KestrelTest 5567
