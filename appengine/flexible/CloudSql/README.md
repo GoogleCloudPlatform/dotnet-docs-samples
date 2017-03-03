@@ -78,7 +78,7 @@ when running in Google App Engine Flexible Environment.
         If you don't have a machine with openssl installed, use
         [Google Cloud Shell](https://cloud.google.com/shell/docs/quickstart).
 
-    18. Copy the `client.pfx` file into this directory.
+    18. Replace the `client.pfx` file in this directory with the `client.pfx` you created.
 
 6.  Edit [appsettings.json](appsettings.json).  Update the connection string
     with your user, password, server ip address, etc.
