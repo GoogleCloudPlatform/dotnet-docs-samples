@@ -57,7 +57,7 @@ namespace Metadata
             });
         }
 
-        // [BEGIN get_my_ip]
+        // [START get_my_ip]
         /// <summary>
         /// Query the metadata server to find my ip address.
         /// </summary>
