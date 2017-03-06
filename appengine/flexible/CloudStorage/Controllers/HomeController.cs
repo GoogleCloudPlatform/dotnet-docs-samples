@@ -26,7 +26,7 @@ using Google;
 
 namespace CloudStorage.Controllers
 {
-    // [BEGIN cloud_storage]
+    // [START cloud_storage]
     public class HomeController : Controller
     {
         // Contains the bucket name and object name
