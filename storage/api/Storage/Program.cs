@@ -1,6 +1,6 @@
 ﻿using Google.Apis.Storage.v1;
 using Google.Apis.Storage.v1.Data;
-using Google.Storage.V1;
+using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,11 +21,12 @@ namespace GoogleCloudSamples
                 "  Storage list bucket-name [prefix] [delimiter]\n" +
                 "  Storage get-metadata bucket-name object-name\n" +
                 "  Storage make-public bucket-name object-name\n" +
-                "  Storage upload bucket-name local-file-path [object-name]\n" +
+                "  Storage upload [-key encryption-key] bucket-name local-file-path [object-name]\n" +
                 "  Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
                 "  Storage move bucket-name source-object-name dest-object-name\n" +
-                "  Storage download bucket-name object-name [local-file-path]\n" +
+                "  Storage download [-key encryption-key] bucket-name object-name [local-file-path]\n" +
                 "  Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
+                "  Storage generate-signed-url bucket-name object-name" +
                 "  Storage print-acl bucket-name\n" +
                 "  Storage print-acl bucket-name object-name\n" +
                 "  Storage add-owner bucket-name user-email\n" +
@@ -35,7 +36,8 @@ namespace GoogleCloudSamples
                 "  Storage remove-owner bucket-name object-name user-email\n" +
                 "  Storage remove-default-owner bucket-name user-email\n" +
                 "  Storage delete bucket-name\n" +
-                "  Storage delete bucket-name object-name [object-name]\n";
+                "  Storage delete bucket-name object-name [object-name]\n" +
+                "  Storage generate-encryption-key";
 
         // [START storage_create_bucket]
         private void CreateBucket(string bucketName)
@@ -107,6 +109,25 @@ namespace GoogleCloudSamples
         }
         // [END storage_upload_file]
 
+        // [START storage_upload_encrypted_file]
+        private void UploadEncryptedFile(string key, string bucketName,
+            string localPath, string objectName = null)
+        {
+            var storage = StorageClient.Create();
+            using (var f = File.OpenRead(localPath))
+            {
+                objectName = objectName ?? Path.GetFileName(localPath);
+                storage.UploadObject(bucketName, objectName, null, f,
+                    new UploadObjectOptions()
+                    {
+                        EncryptionKey = EncryptionKey.Create(
+                        Convert.FromBase64String(key))
+                    });
+                Console.WriteLine($"Uploaded {objectName}.");
+            }
+        }
+        // [END storage_upload_encrypted_file]
+
         // [START storage_delete_file]
         private void DeleteObject(string bucketName, IEnumerable<string> objectNames)
         {
@@ -132,6 +153,25 @@ namespace GoogleCloudSamples
             Console.WriteLine($"downloaded {objectName} to {localPath}.");
         }
         // [END storage_download_file]
+
+        // [START storage_download_encrypted_file]
+        private void DownloadEncryptedObject(string key, string bucketName,
+            string objectName, string localPath = null)
+        {
+            var storage = StorageClient.Create();
+            localPath = localPath ?? Path.GetFileName(objectName);
+            using (var outputFile = File.OpenWrite(localPath))
+            {
+                storage.DownloadObject(bucketName, objectName, outputFile,
+                    new DownloadObjectOptions()
+                    {
+                        EncryptionKey = EncryptionKey.Create(
+                            Convert.FromBase64String(key))
+                    });
+            }
+            Console.WriteLine($"downloaded {objectName} to {localPath}.");
+        }
+        // [END storage_download_encrypted_file]
 
         // [START storage_download_byte_range]
         private void DownloadByteRange(string bucketName, string objectName,
@@ -458,6 +498,23 @@ namespace GoogleCloudSamples
         }
         // [END storage_remove_file_owner]
 
+        // [START storage_generate_signed_url]
+        private void GenerateSignedUrl(string bucketName, string objectName)
+        {
+            UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(Environment
+                .GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
+            string url =
+                urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), null);
+            Console.WriteLine(url);
+        }
+        // [END storage_generate_signed_url]
+
+        // [START storage_generate_encryption_key]                
+        void GenerateEncryptionKey()
+        {
+            Console.Write(EncryptionKey.Generate().Base64Key);
+        }
+        // [END storage_generate_encryption_key]
 
         public bool PrintUsage()
         {
@@ -471,8 +528,26 @@ namespace GoogleCloudSamples
             return Storage.Run(args);
         }
 
+        string PullEncryptionKey(ref string[] args)
+        {
+            string key = null;
+            var newArgs = new List<string>();
+            for (int i = 0; i < args.Count(); ++i)
+            {
+                if (new string[] { "-key", "--key" }.Contains(args[i].ToLower()))
+                {
+                    key = args[i + 1];
+                    i += 2;
+                }
+                newArgs.Add(args[i]);
+            }
+            args = newArgs.ToArray();
+            return key;
+        }
+
         public int Run(string[] args)
         {
+            string encryptionKey;
             if (s_projectId == "YOUR-PROJECT" + "-ID")
             {
                 Console.WriteLine("Update program.cs and replace YOUR-PROJECT" +
@@ -511,13 +586,29 @@ namespace GoogleCloudSamples
                         break;
 
                     case "upload":
+                        encryptionKey = PullEncryptionKey(ref args);
                         if (args.Length < 3 && PrintUsage()) return -1;
-                        UploadFile(args[1], args[2], args.Length < 4 ? null : args[3]);
+                        if (encryptionKey == null)
+                        {
+                            UploadFile(args[1], args[2], args.Length < 4 ? null : args[3]);
+                        }
+                        else
+                        {
+                            UploadEncryptedFile(encryptionKey, args[1], args[2], args.Length < 4 ? null : args[3]);
+                        }
                         break;
 
                     case "download":
+                        encryptionKey = PullEncryptionKey(ref args);
                         if (args.Length < 3 && PrintUsage()) return -1;
-                        DownloadObject(args[1], args[2], args.Length < 4 ? null : args[3]);
+                        if (encryptionKey == null)
+                        {
+                            DownloadObject(args[1], args[2], args.Length < 4 ? null : args[3]);
+                        }
+                        else
+                        {
+                            DownloadEncryptedObject(encryptionKey, args[1], args[2], args.Length < 4 ? null : args[3]);
+                        }
                         break;
 
                     case "download-byte-range":
@@ -594,6 +685,15 @@ namespace GoogleCloudSamples
                         RemoveBucketDefaultOwner(args[1], args[2]);
                         break;
 
+                    case "generate-signed-url":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        GenerateSignedUrl(args[1], args[2]);
+                        break;
+
+                    case "generate-encryption-key":
+                        GenerateEncryptionKey();
+                        break;
+
                     default:
                         PrintUsage();
                         return -1;
@@ -603,7 +703,7 @@ namespace GoogleCloudSamples
             catch (Google.GoogleApiException e)
             {
                 Console.WriteLine(e.Message);
-                return e.Error.Code;
+                return null == e.Error ? -1 : e.Error.Code;
             }
         }
 

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
@@ -521,6 +522,45 @@ namespace GoogleCloudSamples
             printedAcl = Run("print-acl", _bucketName, "Hello.txt");
             AssertSucceeded(printedAcl);
             Assert.DoesNotContain(userEmail, printedAcl.Stdout);
+        }
+
+        [Fact]
+        public void TestSignUrl()
+        {
+            Run("upload", _bucketName, Collect("Hello.txt"));
+            var output = Run("generate-signed-url", _bucketName, "Hello.txt");
+            AssertSucceeded(output);
+            // Try fetching the url to make sure it works.
+            var client = new HttpClient();
+            var response = client.GetAsync(output.Stdout).Result;
+            Assert.InRange((int)response.StatusCode, 200, 299);
+        }
+
+        [Fact]
+        public void TestGenerateEncryptionKey()
+        {
+            var output = Run("generate-encryption-key");
+            AssertSucceeded(output);
+        }
+
+        [Fact]
+        public void TestEncryptUploadAndDownload()
+        {
+            var output = Run("generate-encryption-key");
+            AssertSucceeded(output);
+            string key = output.Stdout.Trim();
+            output = Run("upload", "-key", key, _bucketName,
+                Collect("Hello.txt"));
+            AssertSucceeded(output);
+            // Downloading without the key should fail.
+            output = Run("download", _bucketName, "Hello.txt");
+            Assert.NotEqual(0, output.ExitCode);
+            // Downloading with the key should yield the original file.
+            output = Run("download", "-key", key, _bucketName, "Hello.txt",
+                "Hello-downloaded.txt");
+            AssertSucceeded(output);
+            Assert.Equal(File.ReadAllText("Hello.txt"),
+                File.ReadAllText("Hello-downloaded.txt"));
         }
     }
 }
