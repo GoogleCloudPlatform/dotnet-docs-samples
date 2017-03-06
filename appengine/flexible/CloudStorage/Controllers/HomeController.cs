@@ -15,11 +15,8 @@
  */
 
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using CloudStorage.ViewModels;
-using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
 using Google.Cloud.Storage.V1;
@@ -29,10 +26,14 @@ using Google;
 
 namespace CloudStorage.Controllers
 {
+    // [BEGIN cloud_storage]
     public class HomeController : Controller
     {
+        // Contains the bucket name and object name
         readonly CloudStorageOptions _options;
+        // The Google Cloud Storage client.
         readonly StorageClient _storage;
+
         public HomeController(IOptions<CloudStorageOptions> options)
         {
             _options = options.Value;
@@ -43,16 +44,22 @@ namespace CloudStorage.Controllers
         public async Task<IActionResult> Index()
         {
             var model = new HomeIndex();
+            // [END cloud_storage]
             if (new string[] { null, "", "your-google-bucket-name" }
                 .Contains(_options.BucketName))
             {
                 model.MissingBucketName = true;
                 return View(model);
             }
-            try {
+            // [BEGIN cloud_storage]
+            try
+            {
+                // Get the storage object.
                 var storageObject = 
                     await _storage.GetObjectAsync(_options.BucketName, _options.ObjectName);
+                // Get a direct link to the storage object.
                 model.MediaLink = storageObject.MediaLink;
+                // Download the storage object.
                 MemoryStream m = new MemoryStream();
                 await _storage.DownloadObjectAsync(
                     _options.BucketName, _options.ObjectName, m);
@@ -73,6 +80,8 @@ namespace CloudStorage.Controllers
         public async Task<IActionResult> Index(Form sendForm)
         {
             var model = new HomeIndex();
+            // Take the content uploaded in the form and upload it to
+            // Google Cloud Storage.
             await _storage.UploadObjectAsync(
                 _options.BucketName, _options.ObjectName, "text/plain",
                 new MemoryStream(Encoding.UTF8.GetBytes(sendForm.Content)));
@@ -83,11 +92,14 @@ namespace CloudStorage.Controllers
             model.MediaLink = storageObject.MediaLink;
             return View(model);
         }
+        // [END cloud_storage]
 
 
         public IActionResult Error()
         {
             return View();
         }
+        // [BEGIN cloud_storage]
     }
+    // [END cloud_storage]
 }
