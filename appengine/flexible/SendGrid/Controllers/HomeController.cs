@@ -49,7 +49,7 @@ namespace SendGrid.Controllers
             return View(model);
         }
 
-        // [BEGIN sendgrid]
+        // [START sendgrid]
         Task<HttpResponseMessage> CallSendGrid(string recipient)
         {
             // As of 2017-02-09, the sendgrid Nuget package is not compatible
