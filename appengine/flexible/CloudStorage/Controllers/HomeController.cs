@@ -26,7 +26,7 @@ using Google;
 
 namespace CloudStorage.Controllers
 {
-    // [BEGIN cloud_storage]
+    // [START cloud_storage]
     public class HomeController : Controller
     {
         // Contains the bucket name and object name
@@ -51,7 +51,7 @@ namespace CloudStorage.Controllers
                 model.MissingBucketName = true;
                 return View(model);
             }
-            // [BEGIN cloud_storage]
+            // [START cloud_storage]
             try
             {
                 // Get the storage object.
@@ -99,7 +99,7 @@ namespace CloudStorage.Controllers
         {
             return View();
         }
-        // [BEGIN cloud_storage]
+        // [START cloud_storage]
     }
     // [END cloud_storage]
 }
