@@ -620,8 +620,8 @@ function Run-CasperJs($TestJs='test.js', $Url) {
 function Deploy-CasperJsTest($testJs ='test.js') {
     while ($true) {
 		$yamls = Get-Item .\bin\debug\netcoreapp1.0\publish\*.yaml | Resolve-Path -Relative
-		echo "gcloud app deploy --quiet --no-promote -v deploytest $yamls"
-        gcloud app deploy --quiet --no-promote -v deploytest $yamls
+		echo "gcloud beta app deploy --quiet --no-promote -v deploytest $yamls"
+        gcloud beta app deploy --quiet --no-promote -v deploytest $yamls
         if ($LASTEXITCODE -eq 0) {
             break
         }
