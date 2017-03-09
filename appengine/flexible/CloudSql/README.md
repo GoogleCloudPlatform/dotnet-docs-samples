@@ -102,7 +102,7 @@ PS > dotnet run
 ```psm1
 PS > dotnet restore
 PS > dotnet publish
-PS > gcloud app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
+PS > gcloud beta app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 ```
 
 ### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
