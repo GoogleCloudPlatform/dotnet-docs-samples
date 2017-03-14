@@ -434,6 +434,11 @@ filter Lint-Code {
             throw "Lint failed for $_"
         }
     }
+    $utf16 = Find-Utf16
+    if ($utf16) {
+        $utf16
+        throw "Found UTF-16 encoded source files. Run Find-Utf16 | ConvertTo-Utf8 to fix."
+    }
 }
 
 ##############################################################################
@@ -798,4 +803,38 @@ function BackupAndEdit-TextFile(
         Edit-TextFile $Files $Replacements
         . $ScriptBlock
     }.GetNewClosure()
+}
+
+##############################################################################
+#.SYNOPSIS
+# Find files that are utf16 encoded.
+#
+#.PARAMETER Path
+# A list of paths or masks for files to check.
+#
+#.EXAMPLE
+# Find-Utf16
+##############################################################################
+function Find-Utf16($Path=@('*.yaml', '*.cs', '*.xml')) {
+    foreach ($file in (Get-ChildItem -Recurse -Path $Path)) {
+        $bytes =  [System.IO.File]::ReadAllBytes($file.FullName)
+        if ($bytes[0] -eq 255 -and $bytes[1] -eq 254) {
+            $file
+        }
+    }
+}
+
+##############################################################################
+#.SYNOPSIS
+# Converts a file to utf8 encoding.
+#
+#.INPUT
+# Files that are encoded some other way.
+#
+#.EXAMPLE
+# Find-Utf16 | ConvertTo-Utf8
+##############################################################################
+filter ConvertTo-Utf8 {
+    $lines = [System.IO.File]::ReadAllLines($_)
+    [System.IO.File]::WriteAllLines($_, $lines)
 }
