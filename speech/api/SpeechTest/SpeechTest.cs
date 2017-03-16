@@ -14,6 +14,7 @@
  * the License.
  */
 
+using System.IO;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -35,18 +36,26 @@ namespace GoogleCloudSamples
         }
     }
 
-    public class RecognizeTest
+
+    public abstract class CommonRecognizeTests
     {
-        readonly CommandLineRunner _recognize = new CommandLineRunner()
+        protected readonly CommandLineRunner _recognize = new CommandLineRunner()
         {
             Main = Recognize.Main,
             Command = "Recognize"
         };
+        /// <summary>
+        /// Derived classes implement this function to examine the file
+        /// locally, or first upload it to Google Cloud Storage and then
+        /// examine it.
+        /// </summary>
+        /// <param name="args">Command line arguments to Main().</param>
+        protected abstract ConsoleOutput Run(params string[] args);
 
         [Fact]
         public void TestSync()
         {
-            var output = _recognize.Run("sync", @"resources\audio.raw");
+            var output = Run("sync", @"resources\audio.raw");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
@@ -54,10 +63,16 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestAsync()
         {
-            var output = _recognize.Run("async", @"resources\audio.raw");
+            var output = Run("async", @"resources\audio.raw");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
+    }
+
+    public class LocalRecognizeTests : CommonRecognizeTests
+    {
+        protected override ConsoleOutput Run(params string[] args) =>
+            _recognize.Run(args);
 
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/723")]
         public void TestStreaming()
@@ -85,4 +100,27 @@ namespace GoogleCloudSamples
             Assert.Contains("Brooklyn", output.Stdout);
         }
     }
+
+    public class CloudStorageRecognizeTests : CommonRecognizeTests, IClassFixture<RandomBucketFixture>
+    {
+        readonly string _bucketName;
+
+        public CloudStorageRecognizeTests(RandomBucketFixture bucketFixture)
+        {
+            _bucketName = bucketFixture.BucketName;
+        }
+
+        protected override ConsoleOutput Run(params string[] args)
+        {
+            string objectName = Path.GetFileName(args[1]);
+            string[] cmdArgs = { args[0], $"gs://{_bucketName}/{objectName}" };
+            using (var collector = new BucketCollector(_bucketName))
+            {
+                collector.CopyToBucket(args[1], objectName);
+                return _recognize.Run(cmdArgs);
+            }
+        }
+    }
+
 }
+
