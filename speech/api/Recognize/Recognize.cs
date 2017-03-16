@@ -17,7 +17,6 @@
 using CommandLine;
 using Google.Cloud.Speech.V1Beta1;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,12 +30,22 @@ namespace GoogleCloudSamples
         public string FilePath { get; set; }
     }
 
+    class StorageOptions
+    {
+        [Value(0, HelpText = "A path to a sound file. "
+            + "Can be a local file path or a Google Cloud Storage path like "
+            + "gs://my-bucket/my-object. "
+            + "Encoding must be "
+            + "Linear16 with a sample rate of 16000.", Required = true)]
+        public string FilePath { get; set; }
+    }
+
     [Verb("sync", HelpText = "Detects speech in an audio file.")]
-    class SyncOptions : Options { }
+    class SyncOptions : StorageOptions { }
 
     [Verb("async", HelpText = "Creates a job to detect speech in an audio "
         + "file, and waits for the job to complete.")]
-    class AsyncOptions : Options { }
+    class AsyncOptions : StorageOptions { }
 
     [Verb("stream", HelpText = "Detects speech in an audio file by streaming "
         + "it to the Speech API.")]
@@ -102,6 +111,26 @@ namespace GoogleCloudSamples
         }
         // [END speech_sync_recognize]
 
+        // [START speech_sync_recognize_gcs]
+        static object SyncRecognizeGcs(string storageUri)
+        {
+            var speech = SpeechClient.Create();
+            var response = speech.SyncRecognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                SampleRate = 16000,
+            }, RecognitionAudio.FromStorageUri(storageUri));
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine(alternative.Transcript);
+                }
+            }
+            return 0;
+        }
+        // [END speech_sync_recognize_gcs]
+
         // [START speech_async_recognize]
         static object AsyncRecognize(string filePath)
         {
@@ -123,6 +152,28 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_async_recognize]
+
+        // [START speech_async_recognize_gcs]
+        static object AsyncRecognizeGcs(string storageUri)
+        {
+            var speech = SpeechClient.Create();
+            var longOperation = speech.AsyncRecognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                SampleRate = 16000,
+            }, RecognitionAudio.FromStorageUri(storageUri));
+            longOperation = longOperation.PollUntilCompleted();
+            var response = longOperation.Result;
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine(alternative.Transcript);
+                }
+            }
+            return 0;
+        }
+        // [END speech_async_recognize_gcs]
 
         /// <summary>
         /// Stream the content of the file to the API in 32kb chunks.
@@ -260,6 +311,8 @@ namespace GoogleCloudSamples
         }
         // [END speech_streaming_mic_recognize]
 
+        static bool IsStorageUri(string s) => s.Substring(0, 4).ToLower() == "gs:/";
+
         public static int Main(string[] args)
         {
             return (int)Parser.Default.ParseArguments<
@@ -267,8 +320,10 @@ namespace GoogleCloudSamples
                 StreamingOptions, ListenOptions,
                 RecOptions
                 >(args).MapResult(
-                (SyncOptions opts) => SyncRecognize(opts.FilePath),
-                (AsyncOptions opts) => AsyncRecognize(opts.FilePath),
+                (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
+                    SyncRecognizeGcs(opts.FilePath) : SyncRecognize(opts.FilePath),
+                (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
+                    AsyncRecognizeGcs(opts.FilePath) : AsyncRecognize(opts.FilePath),
                 (StreamingOptions opts) => StreamingRecognizeAsync(opts.FilePath).Result,
                 (ListenOptions opts) => StreamingMicRecognizeAsync(opts.Seconds).Result,
                 (RecOptions opts) => Rec(opts.FilePath, opts.BitRate, opts.Encoding),
