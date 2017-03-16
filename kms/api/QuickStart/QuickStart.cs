@@ -20,8 +20,8 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using System;
 // Imports the Google Cloud KMS client library
-using Google.Apis.CloudKMS.v1beta1;
-using Google.Apis.CloudKMS.v1beta1.Data;
+using Google.Apis.CloudKMS.v1;
+using Google.Apis.CloudKMS.v1.Data;
 using System.Linq;
 
 namespace GoogleCloudSamples
@@ -47,7 +47,7 @@ namespace GoogleCloudSamples
             {
                 credential = credential.CreateScoped(new[]
                 {
-                    Google.Apis.CloudKMS.v1beta1.CloudKMSService.Scope.CloudPlatform
+                    Google.Apis.CloudKMS.v1.CloudKMSService.Scope.CloudPlatform
                 });
             }
             // Instantiate the Cloud Key Management Service API.
