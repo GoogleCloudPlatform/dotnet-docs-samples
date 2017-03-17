@@ -1,4 +1,4 @@
-runtime: custom
+runtime: aspnetcore
 env: flex
 
 endpoints_api_service:

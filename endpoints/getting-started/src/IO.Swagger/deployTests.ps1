@@ -26,7 +26,7 @@ BackupAndEdit-TextFile "openapi.yaml" `
 		"ENDPOINTS CONFIG ID" = $configId
 	} {
 		dotnet publish
-		gcloud app deploy --quiet --no-promote --version=deploytest .\bin\Debug\netcoreapp1.0\publish\app.yaml		
+		gcloud beta app deploy --quiet --no-promote --version=deploytest .\bin\Debug\netcoreapp1.0\publish\app.yaml		
 		.\Test.ps1 "https://deploytest-dot-$env:GOOGLE_PROJECT_ID.appspot.com/echo?key=$env:TEST_GOOGLE_ENDPOINTS_APIKEY"
 	}
  }
