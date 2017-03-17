@@ -32,10 +32,15 @@ namespace Pubsub.Controllers
         // Keep the received messages in a list.
         static List<string> s_receivedMessages = new List<string>();
         static bool s_topicAndSubscriptionExist = false;
+        readonly PublisherClient _publisher;
+        readonly SubscriberClient _subscriber;
 
-        public HomeController(IOptions<PubsubOptions> options)
+        public HomeController(IOptions<PubsubOptions> options, 
+            PublisherClient publisher, SubscriberClient subscriber)
         {
             _options = options.Value;
+            _publisher = publisher;
+            _subscriber = subscriber;
         }
 
         // [START index]
@@ -54,18 +59,17 @@ namespace Pubsub.Controllers
             if (!string.IsNullOrEmpty(messageForm.Message))
             {
                 // Publish the message.
-                var publisher = PublisherClient.Create();
                 var topicName = new TopicName(_options.ProjectId, 
                     _options.TopicId);
                 // [END index]
-                lock(s_lock) CreateTopicAndSubscriptionOnce(publisher, topicName);
+                lock(s_lock) CreateTopicAndSubscriptionOnce(_publisher, topicName);
                 // [START index]
                 var pubsubMessage = new PubsubMessage()
                 {
                     Data = ByteString.CopyFromUtf8(messageForm.Message)
                 };
                 pubsubMessage.Attributes["token"] = _options.VerificationToken;
-                publisher.Publish(topicName, new[] { pubsubMessage });
+                _publisher.Publish(topicName, new[] { pubsubMessage });
                 model.PublishedMessage = messageForm.Message;
             }
             // Render the current list of messages.
@@ -121,16 +125,15 @@ namespace Pubsub.Controllers
             {
                 PushEndpoint = $"https://{_options.ProjectId}.appspot.com/Push"
             };
-            SubscriberClient subscriber = SubscriberClient.Create();
             try
             {
-                subscriber.CreateSubscription(subscriptionName, topicName,
+                _subscriber.CreateSubscription(subscriptionName, topicName,
                     pushConfig, 20);
             }
             catch (Grpc.Core.RpcException e)
             when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists)
             {
-                subscriber.ModifyPushConfig(subscriptionName, pushConfig);
+                _subscriber.ModifyPushConfig(subscriptionName, pushConfig);
             }
             s_topicAndSubscriptionExist = true;
         }

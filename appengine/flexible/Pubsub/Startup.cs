@@ -14,6 +14,7 @@
  * the License.
  */
 
+using Google.Cloud.PubSub.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -48,6 +49,8 @@ namespace Pubsub
             services.Configure<PubsubOptions>(
                 Configuration.GetSection("Pubsub"));
             services.AddMvc();
+            services.AddSingleton((provider) => PublisherClient.Create());
+            services.AddSingleton((provider) => SubscriberClient.Create());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
