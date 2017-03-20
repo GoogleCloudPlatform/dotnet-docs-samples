@@ -57,8 +57,6 @@ namespace GoogleCloudSamples
         private void CreateBucket(string bucketName)
         {
             var storage = StorageClient.Create();
-            if (bucketName == null)
-                bucketName = RandomBucketName();
             storage.CreateBucket(s_projectId, bucketName);
             Console.WriteLine($"Created {bucketName}.");
         }
@@ -574,7 +572,7 @@ namespace GoogleCloudSamples
                 switch (args[0].ToLower())
                 {
                     case "create":
-                        CreateBucket(args.Length < 2 ? null : args[1]);
+                        CreateBucket(args.Length < 2 ? RandomBucketName() : args[1]);
                         break;
 
                     case "list":
