@@ -15,7 +15,6 @@
  */
 
 using CommandLine;
-using Google.Api.Gax.Grpc;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Speech.V1Beta1;
 using Grpc.Auth;
@@ -50,15 +49,14 @@ namespace GoogleCloudSamples
         + "file, and waits for the job to complete.")]
     class AsyncOptions : StorageOptions { }
 
-    [Verb("creds", HelpText = "Detects speech in an audio file.")]
-    class CredsOptions
+    [Verb("sync-creds", HelpText = "Detects speech in an audio file.")]
+    class SyncOptionsWithCreds
     {
         [Value(0, HelpText = "A path to a sound file.  Encoding must be "
             + "Linear16 with a sample rate of 16000.", Required = true)]
         public string FilePath { get; set; }
 
-        [Value(1, HelpText = "A path to a Google credentials json file.",
-            Required = true)]
+        [Value(1, HelpText = "Path to Google credentials json file.", Required = true)]
         public string CredentialsFilePath { get; set; }
     }
 
@@ -126,9 +124,8 @@ namespace GoogleCloudSamples
         }
         // [END speech_sync_recognize]
 
-        static object SyncRecognizeWithCredentialsFromFile(string filePath, string credentialsFilePath)
+        static object SyncRecognizeWithCredentials(string filePath, string credentialsFilePath)
         {
-            // new ServiceEndpoint();
             GoogleCredential googleCredential;
             using (Stream m = new FileStream(credentialsFilePath, FileMode.Open))
                 googleCredential = GoogleCredential.FromStream(m);
@@ -357,7 +354,7 @@ namespace GoogleCloudSamples
             return (int)Parser.Default.ParseArguments<
                 SyncOptions, AsyncOptions,
                 StreamingOptions, ListenOptions,
-                RecOptions, CredsOptions
+                RecOptions, SyncOptionsWithCreds
                 >(args).MapResult(
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     SyncRecognizeGcs(opts.FilePath) : SyncRecognize(opts.FilePath),
@@ -366,7 +363,7 @@ namespace GoogleCloudSamples
                 (StreamingOptions opts) => StreamingRecognizeAsync(opts.FilePath).Result,
                 (ListenOptions opts) => StreamingMicRecognizeAsync(opts.Seconds).Result,
                 (RecOptions opts) => Rec(opts.FilePath, opts.BitRate, opts.Encoding),
-                (CredsOptions opts) => SyncRecognizeWithCredentialsFromFile(
+                (SyncOptionsWithCreds opts) => SyncRecognizeWithCredentials(
                     opts.FilePath, opts.CredentialsFilePath),
                 errs => 1);
         }

@@ -100,14 +100,13 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestWithCreds()
+        public void TestSyncWithCredentials()
         {
-            var output = Run("creds", @"resources\audio.raw",
+            var output = Run("sync-creds", @"resources\audio.raw",
                 System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
-
     }
 
     public class CloudStorageRecognizeTests : CommonRecognizeTests, IClassFixture<RandomBucketFixture>
