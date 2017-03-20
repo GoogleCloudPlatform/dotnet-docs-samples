@@ -15,7 +15,9 @@
  */
 
 using CommandLine;
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Speech.V1Beta1;
+using Grpc.Auth;
 using System;
 using System.IO;
 using System.Threading;
@@ -46,6 +48,17 @@ namespace GoogleCloudSamples
     [Verb("async", HelpText = "Creates a job to detect speech in an audio "
         + "file, and waits for the job to complete.")]
     class AsyncOptions : StorageOptions { }
+
+    [Verb("sync-creds", HelpText = "Detects speech in an audio file.")]
+    class SyncOptionsWithCreds
+    {
+        [Value(0, HelpText = "A path to a sound file.  Encoding must be "
+            + "Linear16 with a sample rate of 16000.", Required = true)]
+        public string FilePath { get; set; }
+
+        [Value(1, HelpText = "Path to Google credentials json file.", Required = true)]
+        public string CredentialsFilePath { get; set; }
+    }
 
     [Verb("stream", HelpText = "Detects speech in an audio file by streaming "
         + "it to the Speech API.")]
@@ -110,6 +123,29 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_sync_recognize]
+
+        static object SyncRecognizeWithCredentials(string filePath, string credentialsFilePath)
+        {
+            GoogleCredential googleCredential;
+            using (Stream m = new FileStream(credentialsFilePath, FileMode.Open))
+                googleCredential = GoogleCredential.FromStream(m);
+            var channel = new Grpc.Core.Channel(SpeechClient.DefaultEndpoint.Host,
+                googleCredential.ToChannelCredentials());
+            var speech = SpeechClient.Create(channel);
+            var response = speech.SyncRecognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                SampleRate = 16000,
+            }, RecognitionAudio.FromFile(filePath));
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine(alternative.Transcript);
+                }
+            }
+            return 0;
+        }
 
         // [START speech_sync_recognize_gcs]
         static object SyncRecognizeGcs(string storageUri)
@@ -318,7 +354,7 @@ namespace GoogleCloudSamples
             return (int)Parser.Default.ParseArguments<
                 SyncOptions, AsyncOptions,
                 StreamingOptions, ListenOptions,
-                RecOptions
+                RecOptions, SyncOptionsWithCreds
                 >(args).MapResult(
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     SyncRecognizeGcs(opts.FilePath) : SyncRecognize(opts.FilePath),
@@ -327,6 +363,8 @@ namespace GoogleCloudSamples
                 (StreamingOptions opts) => StreamingRecognizeAsync(opts.FilePath).Result,
                 (ListenOptions opts) => StreamingMicRecognizeAsync(opts.Seconds).Result,
                 (RecOptions opts) => Rec(opts.FilePath, opts.BitRate, opts.Encoding),
+                (SyncOptionsWithCreds opts) => SyncRecognizeWithCredentials(
+                    opts.FilePath, opts.CredentialsFilePath),
                 errs => 1);
         }
     }
