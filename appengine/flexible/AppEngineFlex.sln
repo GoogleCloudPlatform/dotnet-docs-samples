@@ -24,6 +24,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Metadata", "Metadata\Metada
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Datastore", "Datastore\Datastore.xproj", "{DA8C823E-9166-491F-8567-528131A9000A}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Pubsub", "Pubsub\Pubsub.xproj", "{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{DA8C823E-9166-491F-8567-528131A9000A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA8C823E-9166-491F-8567-528131A9000A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA8C823E-9166-491F-8567-528131A9000A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
