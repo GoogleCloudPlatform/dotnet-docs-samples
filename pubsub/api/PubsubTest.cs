@@ -31,6 +31,13 @@ namespace GoogleCloudSamples
         private readonly string _projectId;
         private readonly PublisherClient _publisher;
         private readonly SubscriberClient _subscriber;
+        private readonly RetryRobot _retryRobot = new RetryRobot()
+        {
+            RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) }
+        };
+
+        void Eventually(Action action) => _retryRobot.Eventually(action);
+
         // [START retry]
         /// <summary>
         /// Creates new CallSettings that will retry an RPC that fails.
@@ -416,8 +423,11 @@ namespace GoogleCloudSamples
             CreateSubscription(topicId, subscriptionId, _subscriber);
             CreateTopicMessage(topicId, _publisher);
             //Pull the Message to confirm it is valid
-            PullResponse response = PullTopicMessage(subscriptionId, _subscriber);
-            Assert.False(IsEmptyResponse(response));
+            Eventually(() =>
+            {
+                PullResponse response = PullTopicMessage(subscriptionId, _subscriber);
+                Assert.False(IsEmptyResponse(response));
+            });
             DeleteSubscription(subscriptionId, _subscriber);
             DeleteTopic(topicId, _publisher);
         }
@@ -433,12 +443,19 @@ namespace GoogleCloudSamples
             CreateSubscription(topicId, subscriptionId, _subscriber);
             CreateTopicMessage(topicId, _publisher);
             //Pull the Message
-            PullResponse response = PullTopicMessage(subscriptionId, _subscriber);
-            //Acknowledge the Message
-            AcknowledgeTopicMessage(subscriptionId, _subscriber, response);
-            //Pull the Message to confirm it is gone after it is acknowledged
-            response = PullTopicMessage(subscriptionId, _subscriber);
-            Assert.True(IsEmptyResponse(response));
+            Eventually(() =>
+            {
+                PullResponse response = PullTopicMessage(subscriptionId, _subscriber);
+                Assert.True(response.ReceivedMessages.Count > 0);
+                //Acknowledge the Message
+                AcknowledgeTopicMessage(subscriptionId, _subscriber, response);
+            });
+            Eventually(() =>
+            {
+                //Pull the Message to confirm it is gone after it is acknowledged
+                PullResponse response = PullTopicMessage(subscriptionId, _subscriber);
+                Assert.True(IsEmptyResponse(response));
+            });
             DeleteSubscription(subscriptionId, _subscriber);
             DeleteTopic(topicId, _publisher);
         }
@@ -450,7 +467,7 @@ namespace GoogleCloudSamples
             TopicName topicName = new TopicName(_projectId, topicId);
             CreateTopic(topicId, _publisher);
             IEnumerable<Topic> topics = ListProjectTopics(_publisher);
-            Assert.False(topics.Count() == 0);
+            Eventually(() => Assert.False(topics.Count() == 0));
             DeleteTopic(topicId, _publisher);
         }
 
@@ -466,7 +483,7 @@ namespace GoogleCloudSamples
             CreateSubscription(topicId, subscriptionId, _subscriber);
             IEnumerable<Subscription> subscriptions = ListSubscriptions(
                 _subscriber);
-            Assert.False(subscriptions.Count() == 0);
+            Eventually(() => Assert.False(subscriptions.Count() == 0));
             DeleteSubscription(subscriptionId, _subscriber);
             DeleteTopic(topicId, _publisher);
         }
