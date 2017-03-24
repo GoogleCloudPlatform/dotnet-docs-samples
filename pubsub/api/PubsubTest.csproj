@@ -143,6 +143,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\..\testutil\TestUtil.cs">
+      <Link>TestUtil.cs</Link>
+    </Compile>
     <Compile Include="PubsubTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
