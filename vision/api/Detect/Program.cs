@@ -18,73 +18,91 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    class CloudStorageOptions
+    class ImageOptions
     {
-        [Value(0,
-            HelpText = "The name of the Google Cloud Storage bucket that contains the image to be examined.",
-            Required = false)]
-        public string BucketName { get; set; }
-
-        [Value(1, HelpText = "The object name.", Required = true)]
-        public string ObjectName { get; set; }
-    }
-
-    class LocalOptions
-    {
-        [Value(0, HelpText = "The path to the image file.", Required = true)]
+        [Value(0, HelpText = "The path to the image file. " +
+            "May be a local file path or a Google Cloud Storage uri.",
+            Required = true)]
         public string FilePath { get; set; }
     }
 
-    [Verb("labels", HelpText = "Detect labels in a local image file.")]
-    class DetectLocalLabelsOptions : LocalOptions { }
+    [Verb("labels", HelpText = "Detect labels.")]
+    class DetectLabelsOptions : ImageOptions { }
 
-    [Verb("labels-gcs", HelpText = "Detect labels in an image stored in Google Cloud Storage.")]
-    class DetectCloudStorageLabelsOptions : CloudStorageOptions { }
+    [Verb("safe-search", HelpText = "Detect safe-search.")]
+    class DetectSafeSearchOptions : ImageOptions { }
 
-    [Verb("safe-search", HelpText = "Detect safe-search in a local image file.")]
-    class DetectLocalSafeSearchOptions : LocalOptions { }
+    [Verb("properties", HelpText = "Detect properties.")]
+    class DetectPropertiesOptions : ImageOptions { }
 
-    [Verb("safe-search-gcs", HelpText = "Detect safe-search in an image stored in Google Cloud Storage.")]
-    class DetectCloudStorageSafeSearchOptions : CloudStorageOptions { }
+    [Verb("faces", HelpText = "Detect faces.")]
+    class DetectFacesOptions : ImageOptions { }
 
-    [Verb("properties", HelpText = "Detect properties in a local image file.")]
-    class DetectLocalPropertiesOptions : LocalOptions { }
+    [Verb("landmarks", HelpText = "Detect landmarks.")]
+    class DetectLandmarksOptions : ImageOptions { }
 
-    [Verb("properties-gcs", HelpText = "Detect properties in an image stored in Google Cloud Storage.")]
-    class DetectCloudStoragePropertiesOptions : CloudStorageOptions { }
+    [Verb("text", HelpText = "Detect text.")]
+    class DetectTextOptions : ImageOptions { }
 
-    [Verb("faces", HelpText = "Detect faces in a local image file.")]
-    class DetectLocalFacesOptions : LocalOptions { }
-
-    [Verb("faces-gcs", HelpText = "Detect faces in an image stored in Google Cloud Storage.")]
-    class DetectCloudStorageFacesOptions : CloudStorageOptions { }
-
-    [Verb("landmarks", HelpText = "Detect landmarks in a local image file.")]
-    class DetectLocalLandmarksOptions : LocalOptions { }
-
-    [Verb("landmarks-gcs", HelpText = "Detect landmarks in an image stored in Google Cloud Storage.")]
-    class DetectCloudStorageLandmarksOptions : CloudStorageOptions { }
-
-    [Verb("text", HelpText = "Detect text in a local image file.")]
-    class DetectLocalTextOptions : LocalOptions { }
-
-    [Verb("text-gcs", HelpText = "Detect text in an image stored in Google Cloud Storage.")]
-    class DetectCloudStorageTextOptions : CloudStorageOptions { }
-
-    [Verb("logos", HelpText = "Detect logos in a local image file.")]
-    class DetectLocalLogosOptions : LocalOptions { }
-
-    [Verb("logos-gcs", HelpText = "Detect logos in an image stored in Google Cloud Storage.")]
-    class DetectCloudStorageLogosOptions : CloudStorageOptions { }
+    [Verb("logos", HelpText = "Detect logos.")]
+    class DetectLogosOptions : ImageOptions { }
 
 
     public class DetectProgram
     {
-        // [START vision_face_detection_gcs]
-        private static object DetectFaces(string bucketName, string objectName)
+        static Image ImageFromArg(string arg)
         {
+            return arg.ToLower().StartsWith("gs:/") ?
+                ImageFromUri(arg) : ImageFromFile(arg);
+        }
+
+        static Image ImageFromUri(string uri)
+        {
+            // [START vision_logo_detection_gcs]
+            // [START vision_text_detection_gcs]
+            // [START vision_landmark_detection_gcs]
+            // [START vision_image_property_detection_gcs]
+            // [START vision_safe_search_detection_gcs]
+            // [START vision_label_detection_gcs]
+            // [START vision_face_detection_gcs]
+            // Specify a Google Cloud Storage uri for the image.
+            var image = Image.FromUri(uri);
+            // [END vision_face_detection_gcs]
+            // [END vision_label_detection_gcs]
+            // [END vision_safe_search_detection_gcs]
+            // [END vision_image_property_detection_gcs]
+            // [END vision_landmark_detection_gcs]
+            // [END vision_text_detection_gcs]
+            // [END vision_logo_detection_gcs]
+            return image;
+        }
+
+        static Image ImageFromFile(string filePath)
+        {
+            // [START vision_logo_detection]
+            // [START vision_text_detection]
+            // [START vision_landmark_detection]
+            // [START vision_image_property_detection]
+            // [START vision_safe_search_detection]
+            // [START vision_label_detection]
+            // [START vision_face_detection]
+            // Load an image from a local file.
+            var image = Image.FromFile(filePath);
+            // [END vision_face_detection]
+            // [END vision_label_detection]
+            // [END vision_safe_search_detection]
+            // [END vision_image_property_detection]
+            // [END vision_landmark_detection]
+            // [END vision_text_detection]
+            // [END vision_logo_detection]
+            return image;
+        }
+
+        private static object DetectFaces(Image image)
+        {
+            // [START vision_face_detection]
+            // [START vision_face_detection_gcs]
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectFaces(image);
             int count = 1;
             foreach (var faceAnnotation in response)
@@ -95,92 +113,47 @@ namespace GoogleCloudSamples
                 Console.WriteLine("  Sorrow: {0}", faceAnnotation.SorrowLikelihood);
                 Console.WriteLine("  Surprise: {0}", faceAnnotation.SurpriseLikelihood);
             }
+            // [END vision_face_detection_gcs]
+            // [END vision_face_detection]
             return 0;
         }
-        // [END vision_face_detection_gcs]
 
-        // [START vision_face_detection]
-        private static object DetectFaces(string filePath)
+        private static object DetectLabels(Image image)
         {
+            // [START vision_label_detection]
+            // [START vision_label_detection_gcs]
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromFile(filePath);
-            var response = client.DetectFaces(image);
-            int count = 1;
-            foreach (var faceAnnotation in response)
-            {
-                Console.WriteLine("Face {0}:", count++);
-                Console.WriteLine("  Joy: {0}", faceAnnotation.JoyLikelihood);
-                Console.WriteLine("  Anger: {0}", faceAnnotation.AngerLikelihood);
-                Console.WriteLine("  Sorrow: {0}", faceAnnotation.SorrowLikelihood);
-                Console.WriteLine("  Surprise: {0}", faceAnnotation.SurpriseLikelihood);
-            }
-            return 0;
-        }
-        // [END vision_face_detection]
-
-        // [START vision_label_detection_gcs]
-        private static object DetectLabels(string bucketName, string objectName)
-        {
-            var client = ImageAnnotatorClient.Create();
-            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectLabels(image);
             foreach (var annotation in response)
             {
                 if (annotation.Description != null)
                     Console.WriteLine(annotation.Description);
             }
+            // [END vision_label_detection_gcs]
+            // [END vision_label_detection]
             return 0;
         }
-        // [END vision_label_detection_gcs]
 
-        // [START vision_label_detection]
-        private static object DetectLabels(string filePath)
+        private static object DetectSafeSearch(Image image)
         {
+            // [START vision_safe_search_detection]
+            // [START vision_safe_search_detection_gcs]
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromFile(filePath);
-            var response = client.DetectLabels(image);
-            foreach (var annotation in response)
-            {
-                if (annotation.Description != null)
-                    Console.WriteLine(annotation.Description);
-            }
-            return 0;
-        }
-        // [END vision_label_detection]
-
-        // [START vision_safe_search_detection_gcs]
-        private static object DetectSafeSearch(string bucketName, string objectName)
-        {
-            var client = ImageAnnotatorClient.Create();
-            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectSafeSearch(image);
             Console.WriteLine("Adult: {0}", response.Adult.ToString());
             Console.WriteLine("Spoof: {0}", response.Spoof.ToString());
             Console.WriteLine("Medical: {0}", response.Medical.ToString());
             Console.WriteLine("Violence: {0}", response.Violence.ToString());
+            // [END vision_safe_search_detection_gcs]
+            // [END vision_safe_search_detection]
             return 0;
         }
-        // [END vision_safe_search_detection_gcs]
 
-        // [START vision_safe_search_detection]
-        private static object DetectSafeSearch(string filePath)
+        private static object DetectProperties(Image image)
         {
+            // [START vision_image_property_detection]
+            // [START vision_image_property_detection_gcs]
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromFile(filePath);
-            var response = client.DetectSafeSearch(image);
-            Console.WriteLine("Adult: {0}", response.Adult.ToString());
-            Console.WriteLine("Spoof: {0}", response.Spoof.ToString());
-            Console.WriteLine("Medical: {0}", response.Medical.ToString());
-            Console.WriteLine("Violence: {0}", response.Violence.ToString());
-            return 0;
-        }
-        // [END vision_safe_search_detection]
-
-        // [START vision_image_property_detection_gcs]
-        private static object DetectProperties(string bucketName, string objectName)
-        {
-            var client = ImageAnnotatorClient.Create();
-            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectImageProperties(image);
             string header = "Red\tGreen\tBlue\tAlpha\n";
             foreach (var color in response.DominantColors.Colors)
@@ -191,145 +164,79 @@ namespace GoogleCloudSamples
                     color.Color.Red, color.Color.Green, color.Color.Blue,
                     color.Color.Alpha);
             }
+            // [END vision_image_property_detection_gcs]
+            // [END vision_image_property_detection]
             return 0;
         }
-        // [END vision_image_property_detection_gcs]
 
-        // [START vision_image_property_detection]
-        private static object DetectProperties(string filePath)
+        private static object DetectLandmarks(Image image)
         {
+            // [START vision_landmark_detection]
+            // [START vision_landmark_detection_gcs]
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromFile(filePath);
-            var response = client.DetectImageProperties(image);
-            string header = "Red\tGreen\tBlue\tAlpha\n";
-            foreach (var color in response.DominantColors.Colors)
-            {
-                Console.Write(header);
-                header = "";
-                Console.WriteLine("{0}\t{0}\t{0}\t{0}",
-                    color.Color.Red, color.Color.Green, color.Color.Blue,
-                    color.Color.Alpha);
-            }
-            return 0;
-        }
-        // [END vision_image_property_detection]
-
-        // [START vision_landmark_detection_gcs]
-        private static object DetectLandmarks(string bucketName, string objectName)
-        {
-            var client = ImageAnnotatorClient.Create();
-            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectLandmarks(image);
             foreach (var annotation in response)
             {
                 if (annotation.Description != null)
                     Console.WriteLine(annotation.Description);
             }
+            // [END vision_landmark_detection_gcs]
+            // [END vision_landmark_detection]
             return 0;
         }
-        // [END vision_landmark_detection_gcs]
 
-        // [START vision_landmark_detection]
-        private static object DetectLandmarks(string filePath)
+        private static object DetectText(Image image)
         {
+            // [START vision_text_detection]
+            // [START vision_text_detection_gcs]
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromFile(filePath);
-            var response = client.DetectLandmarks(image);
-            foreach (var annotation in response)
-            {
-                if (annotation.Description != null)
-                    Console.WriteLine(annotation.Description);
-            }
-            return 0;
-        }
-        // [END vision_landmark_detection]
-
-        // [START vision_text_detection_gcs]
-        private static object DetectText(string bucketName, string objectName)
-        {
-            var client = ImageAnnotatorClient.Create();
-            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectText(image);
             foreach (var annotation in response)
             {
                 if (annotation.Description != null)
                     Console.WriteLine(annotation.Description);
             }
+            // [END vision_text_detection_gcs]
+            // [END vision_text_detection]
             return 0;
         }
-        // [END vision_text_detection_gcs]
 
-        // [START vision_text_detection]
-        private static object DetectText(string filePath)
-        {
-            var client = ImageAnnotatorClient.Create();
-            var image = Image.FromFile(filePath);
-            var response = client.DetectText(image);
-            foreach (var annotation in response)
-            {
-                if (annotation.Description != null)
-                    Console.WriteLine(annotation.Description);
-            }
-            return 0;
-        }
-        // [END vision_text_detection]
 
-        // [START vision_logo_detection_gcs]
-        private static object DetectLogos(string bucketName, string objectName)
+        private static object DetectLogos(Image image)
         {
+            // [START vision_logo_detection]
+            // [START vision_logo_detection_gcs]
             var client = ImageAnnotatorClient.Create();
-            var image = Image.FromUri($"gs://{bucketName}/{objectName}");
             var response = client.DetectLogos(image);
             foreach (var annotation in response)
             {
                 if (annotation.Description != null)
                     Console.WriteLine(annotation.Description);
             }
+            // [END vision_logo_detection_gcs]
+            // [END vision_logo_detection]
             return 0;
         }
-        // [END vision_logo_detection_gcs]
-
-        // [START vision_logo_detection]
-        private static object DetectLogos(string filePath)
-        {
-            var client = ImageAnnotatorClient.Create();
-            var image = Image.FromFile(filePath);
-            var response = client.DetectLogos(image);
-            foreach (var annotation in response)
-            {
-                if (annotation.Description != null)
-                    Console.WriteLine(annotation.Description);
-            }
-            return 0;
-        }
-        // [END vision_logo_detection]
 
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<
-                DetectLocalLabelsOptions, DetectCloudStorageLabelsOptions,
-                DetectLocalSafeSearchOptions, DetectCloudStorageSafeSearchOptions,
-                DetectLocalPropertiesOptions, DetectCloudStoragePropertiesOptions,
-                DetectLocalFacesOptions, DetectCloudStorageFacesOptions,
-                DetectLocalTextOptions, DetectCloudStorageTextOptions,
-                DetectLocalLogosOptions, DetectCloudStorageLogosOptions,
-                DetectLocalLandmarksOptions, DetectCloudStorageLandmarksOptions
+                DetectLabelsOptions,
+                DetectSafeSearchOptions,
+                DetectPropertiesOptions,
+                DetectFacesOptions,
+                DetectTextOptions,
+                DetectLogosOptions,
+                DetectLandmarksOptions
                 >(args)
               .MapResult(
-                (DetectLocalLabelsOptions opts) => DetectLabels(opts.FilePath),
-                (DetectCloudStorageLabelsOptions opts) => DetectLabels(opts.BucketName, opts.ObjectName),
-                (DetectLocalSafeSearchOptions opts) => DetectSafeSearch(opts.FilePath),
-                (DetectCloudStorageSafeSearchOptions opts) => DetectSafeSearch(opts.BucketName, opts.ObjectName),
-                (DetectLocalPropertiesOptions opts) => DetectProperties(opts.FilePath),
-                (DetectCloudStoragePropertiesOptions opts) => DetectProperties(opts.BucketName, opts.ObjectName),
-                (DetectLocalFacesOptions opts) => DetectFaces(opts.FilePath),
-                (DetectCloudStorageFacesOptions opts) => DetectFaces(opts.BucketName, opts.ObjectName),
-                (DetectLocalLandmarksOptions opts) => DetectLandmarks(opts.FilePath),
-                (DetectCloudStorageLandmarksOptions opts) => DetectLandmarks(opts.BucketName, opts.ObjectName),
-                (DetectLocalTextOptions opts) => DetectText(opts.FilePath),
-                (DetectCloudStorageTextOptions opts) => DetectText(opts.BucketName, opts.ObjectName),
-                (DetectLocalLogosOptions opts) => DetectLogos(opts.FilePath),
-                (DetectCloudStorageLogosOptions opts) => DetectLogos(opts.BucketName, opts.ObjectName),
+                (DetectLabelsOptions opts) => DetectLabels(ImageFromArg(opts.FilePath)),
+                (DetectSafeSearchOptions opts) => DetectSafeSearch(ImageFromArg(opts.FilePath)),
+                (DetectPropertiesOptions opts) => DetectProperties(ImageFromArg(opts.FilePath)),
+                (DetectFacesOptions opts) => DetectFaces(ImageFromArg(opts.FilePath)),
+                (DetectLandmarksOptions opts) => DetectLandmarks(ImageFromArg(opts.FilePath)),
+                (DetectTextOptions opts) => DetectText(ImageFromArg(opts.FilePath)),
+                (DetectLogosOptions opts) => DetectLogos(ImageFromArg(opts.FilePath)),
                 errs => 1);
         }
     }

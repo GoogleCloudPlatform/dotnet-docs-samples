@@ -206,7 +206,7 @@ namespace GoogleCloudSamples
         protected override ConsoleOutput Run(params string[] args)
         {
             string objectName = "VisionTest/" + Path.GetFileName(args[1]);
-            string[] cmdArgs = { args[0] + "-gcs", _bucketName, objectName };
+            string[] cmdArgs = { args[0], $"gs://{_bucketName}/{objectName}" };
             using (var collector = new BucketCollector(_bucketName))
             {
                 collector.CopyToBucket(args[1], objectName);
