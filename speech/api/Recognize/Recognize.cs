@@ -218,9 +218,9 @@ namespace GoogleCloudSamples
         static async Task<object> StreamingRecognizeAsync(string filePath)
         {
             var speech = SpeechClient.Create();
-            var streamingCall = speech.GrpcClient.StreamingRecognize();
+            var streamingCall = speech.StreamingRecognize();
             // Write the initial request with the config.
-            await streamingCall.RequestStream.WriteAsync(
+            await streamingCall.WriteAsync(
                 new StreamingRecognizeRequest()
                 {
                     StreamingConfig = new StreamingRecognitionConfig()
@@ -259,7 +259,7 @@ namespace GoogleCloudSamples
                 while ((bytesRead = await fileStream.ReadAsync(
                     buffer, 0, buffer.Length)) > 0)
                 {
-                    await streamingCall.RequestStream.WriteAsync(
+                    await streamingCall.WriteAsync(
                         new StreamingRecognizeRequest()
                         {
                             AudioContent = Google.Protobuf.ByteString
@@ -268,7 +268,7 @@ namespace GoogleCloudSamples
                     await Task.Delay(500);
                 };
             }
-            await streamingCall.RequestStream.CompleteAsync();
+            await streamingCall.WriteCompleteAsync();
             await printResponses;
             return 0;
         }
@@ -283,9 +283,9 @@ namespace GoogleCloudSamples
                 return -1;
             }
             var speech = SpeechClient.Create();
-            var streamingCall = speech.GrpcClient.StreamingRecognize();
+            var streamingCall = speech.StreamingRecognize();
             // Write the initial request with the config.
-            await streamingCall.RequestStream.WriteAsync(
+            await streamingCall.WriteAsync(
                 new StreamingRecognizeRequest()
                 {
                     StreamingConfig = new StreamingRecognitionConfig()
@@ -327,7 +327,7 @@ namespace GoogleCloudSamples
                     lock (writeLock)
                     {
                         if (!writeMore) return;
-                        streamingCall.RequestStream.WriteAsync(
+                        streamingCall.WriteAsync(
                             new StreamingRecognizeRequest()
                             {
                                 AudioContent = Google.Protobuf.ByteString
@@ -341,7 +341,7 @@ namespace GoogleCloudSamples
             // Stop recording and shut down.
             waveIn.StopRecording();
             lock (writeLock) writeMore = false;
-            await streamingCall.RequestStream.CompleteAsync();
+            await streamingCall.WriteCompleteAsync();
             await printResponses;
             return 0;
         }
