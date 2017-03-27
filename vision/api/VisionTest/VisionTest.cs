@@ -185,6 +185,17 @@ namespace GoogleCloudSamples
             Assert.Contains("vertices", output.Stdout);
             Assert.Contains("symbol", output.Stdout);
         }
+
+        [Fact]
+        public void DetectCropHint()
+        {
+            var output = Run("crop-hint", @"data\face.png");
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Confidence:", output.Stdout);
+            Assert.Contains("Bounding Polygon:", output.Stdout);
+            Assert.Contains("\tX:", output.Stdout);
+            Assert.Contains("\tY:", output.Stdout);
+        }
     }
 
     /// <summary>
@@ -201,17 +212,6 @@ namespace GoogleCloudSamples
         protected override ConsoleOutput Run(params string[] args)
         {
             return _detect.Run(args);
-        }
-
-        [Fact]
-        public void DetectCropHint()
-        {
-            var output = Run("crop-hint", @"data\face.png");
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Confidence:", output.Stdout);
-            Assert.Contains("Bounding Polygon:", output.Stdout);
-            Assert.Contains("\tX:", output.Stdout);
-            Assert.Contains("\tY:", output.Stdout);
         }
     }
 
