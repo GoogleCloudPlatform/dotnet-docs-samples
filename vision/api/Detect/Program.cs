@@ -47,6 +47,14 @@ namespace GoogleCloudSamples
     [Verb("logos", HelpText = "Detect logos.")]
     class DetectLogosOptions : ImageOptions { }
 
+    [Verb("crop-hint", HelpText = "Detect crop hint in a local image file.")]
+    class DetectCropHintOptions : ImageOptions { }
+
+    [Verb("web", HelpText = "Find web pages with matching images.")]
+    class DetectWebOptions : ImageOptions { }
+
+    [Verb("doc-text", HelpText = "Detect text in a document image.")]
+    class DetectDocTextOptions : ImageOptions { }
 
     public class DetectProgram
     {
@@ -58,6 +66,8 @@ namespace GoogleCloudSamples
 
         static Image ImageFromUri(string uri)
         {
+            // [START vision_fulltext_detection_gcs]
+            // [START vision_web_detection_gcs]
             // [START vision_logo_detection_gcs]
             // [START vision_text_detection_gcs]
             // [START vision_landmark_detection_gcs]
@@ -74,11 +84,16 @@ namespace GoogleCloudSamples
             // [END vision_landmark_detection_gcs]
             // [END vision_text_detection_gcs]
             // [END vision_logo_detection_gcs]
+            // [END vision_web_detection_gcs]
+            // [END vision_fulltext_detection_gcs]
             return image;
         }
 
         static Image ImageFromFile(string filePath)
         {
+            // [START vision_fulltext_detection]
+            // [START vision_web_detection]
+            // [START vision_crop_hint_detection]
             // [START vision_logo_detection]
             // [START vision_text_detection]
             // [START vision_landmark_detection]
@@ -95,6 +110,9 @@ namespace GoogleCloudSamples
             // [END vision_landmark_detection]
             // [END vision_text_detection]
             // [END vision_logo_detection]
+            // [END vision_crop_hint_detection]
+            // [END vision_web_detection]
+            // [END vision_fulltext_detection]
             return image;
         }
 
@@ -218,6 +236,78 @@ namespace GoogleCloudSamples
             return 0;
         }
 
+        private static object DetectCropHint(Image image)
+        {
+            // [START vision_crop_hint_detection]
+            var client = ImageAnnotatorClient.Create();
+            CropHintsAnnotation annotation = client.DetectCropHints(image);
+            foreach (CropHint hint in annotation.CropHints)
+            {
+                Console.WriteLine("Confidence: {0}", hint.Confidence);
+                Console.WriteLine("ImportanceFraction: {0}", hint.ImportanceFraction);
+                Console.WriteLine("Bounding Polygon:");
+                foreach (Vertex vertex in hint.BoundingPoly.Vertices)
+                {
+                    Console.WriteLine("\tX:\t{0}\tY:\t{1}", vertex.X, vertex.Y);
+                }
+            }
+            // [END vision_crop_hint_detection]
+            return 0;
+        }
+
+        private static object DetectWeb(Image image)
+        {
+            // [START vision_web_detection_gcs]
+            // [START vision_web_detection]
+            var client = ImageAnnotatorClient.Create();
+            WebDetection annotation = client.DetectWebInformation(image);
+            foreach (var matchingImage in annotation.FullMatchingImages)
+            {
+                Console.WriteLine("MatchingImage Score:\t{0}\tUrl:\t{1}",
+                    matchingImage.Score, matchingImage.Url);
+            }
+            foreach (var page in annotation.PagesWithMatchingImages)
+            {
+                Console.WriteLine("PageWithMatchingImage Score:\t{0}\tUrl:\t{1}",
+                    page.Score, page.Url);
+            }
+            foreach (var matchingImage in annotation.PartialMatchingImages)
+            {
+                Console.WriteLine("PartialMatchingImage Score:\t{0}\tUrl:\t{1}",
+                    matchingImage.Score, matchingImage.Url);
+            }
+            foreach (var entity in annotation.WebEntities)
+            {
+                Console.WriteLine("WebEntity Score:\t{0}\tId:\t{1}\tDescription:\t{2}",
+                    entity.Score, entity.EntityId, entity.Description);
+            }
+            // [END vision_web_detection]
+            // [END vision_web_detection_gcs]
+            return 0;
+        }
+
+        private static object DetectDocText(Image image)
+        {
+            // [START vision_fulltext_detection]
+            // [START vision_fulltext_detection_gcs]
+            var client = ImageAnnotatorClient.Create();
+            var response = client.DetectDocumentText(image);
+            foreach (var page in response.Pages)
+            {
+                foreach (var block in page.Blocks)
+                {
+                    foreach (var paragraph in block.Paragraphs)
+                    {
+                        Console.WriteLine(string.Join("\n", paragraph.Words));
+                    }
+                }
+            }
+            // [END vision_fulltext_detection_gcs]
+            // [END vision_fulltext_detection]
+            return 0;
+        }
+
+
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<
@@ -227,7 +317,10 @@ namespace GoogleCloudSamples
                 DetectFacesOptions,
                 DetectTextOptions,
                 DetectLogosOptions,
-                DetectLandmarksOptions
+                DetectLandmarksOptions,
+                DetectCropHintOptions,
+                DetectWebOptions,
+                DetectDocTextOptions
                 >(args)
               .MapResult(
                 (DetectLabelsOptions opts) => DetectLabels(ImageFromArg(opts.FilePath)),
@@ -237,6 +330,9 @@ namespace GoogleCloudSamples
                 (DetectLandmarksOptions opts) => DetectLandmarks(ImageFromArg(opts.FilePath)),
                 (DetectTextOptions opts) => DetectText(ImageFromArg(opts.FilePath)),
                 (DetectLogosOptions opts) => DetectLogos(ImageFromArg(opts.FilePath)),
+                (DetectCropHintOptions opts) => DetectCropHint(ImageFromArg(opts.FilePath)),
+                (DetectWebOptions opts) => DetectWeb(ImageFromArg(opts.FilePath)),
+                (DetectDocTextOptions opts) => DetectDocText(ImageFromArg(opts.FilePath)),
                 errs => 1);
         }
     }
