@@ -66,6 +66,7 @@ namespace GoogleCloudSamples
 
         static Image ImageFromUri(string uri)
         {
+            // [START vision_crop_hint_detection_gcs]
             // [START vision_fulltext_detection_gcs]
             // [START vision_web_detection_gcs]
             // [START vision_logo_detection_gcs]
@@ -86,6 +87,7 @@ namespace GoogleCloudSamples
             // [END vision_logo_detection_gcs]
             // [END vision_web_detection_gcs]
             // [END vision_fulltext_detection_gcs]
+            // [END vision_crop_hint_detection_gcs]
             return image;
         }
 
@@ -238,6 +240,7 @@ namespace GoogleCloudSamples
 
         private static object DetectCropHint(Image image)
         {
+            // [START vision_crop_hint_detection_gcs]
             // [START vision_crop_hint_detection]
             var client = ImageAnnotatorClient.Create();
             CropHintsAnnotation annotation = client.DetectCropHints(image);
@@ -252,6 +255,7 @@ namespace GoogleCloudSamples
                 }
             }
             // [END vision_crop_hint_detection]
+            // [END vision_crop_hint_detection_gcs]
             return 0;
         }
 
