@@ -476,7 +476,8 @@ namespace GoogleCloudSamples
                 jsonGcsSampleFile, gcsFolder);
             // Run query to get table data.
             var newTable = _client.GetTable(datasetId, newTableId);
-            string query = $"SELECT title, unique_words FROM {newTable}";
+            string query = $"SELECT title, unique_words FROM {newTable} " +
+                "ORDER BY unique_words, title";
             BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId,
                 query, _client);
             // Get first row and confirm it contains the expected value.
@@ -535,7 +536,7 @@ namespace GoogleCloudSamples
             UploadJson(datasetId, newTableId, _client);
             // Query table to get first row and confirm it contains the expected value.
             var newTable = _client.GetTable(datasetId, newTableId);
-            string query = $"SELECT title, unique_words FROM {newTable}";
+            string query = $"SELECT title, unique_words FROM {newTable} ORDER BY title";
             BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
             var row = results.GetRows().First();
             Assert.Equal(gcsUploadTestWord, row["title"]);
