@@ -14,7 +14,7 @@
 
 // [START pubsub_quickstart]
 
-using Google.Cloud.PubSub.V1;
+using Google.Apis.Pubsub.v1;
 using System;
 using System.Diagnostics;
 
