@@ -16,7 +16,7 @@
 
 using CommandLine;
 using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Speech.V1Beta1;
+using Google.Cloud.Speech.V1;
 using Grpc.Auth;
 using System;
 using System.IO;
@@ -89,10 +89,11 @@ namespace GoogleCloudSamples
             RecognitionConfig.Types.AudioEncoding encoding)
         {
             var speech = SpeechClient.Create();
-            var response = speech.SyncRecognize(new RecognitionConfig()
+            var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = encoding,
-                SampleRate = bitRate,
+                SampleRateHertz = bitRate,
+                LanguageCode = "en",
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
             {
@@ -108,10 +109,11 @@ namespace GoogleCloudSamples
         static object SyncRecognize(string filePath)
         {
             var speech = SpeechClient.Create();
-            var response = speech.SyncRecognize(new RecognitionConfig()
+            var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                SampleRate = 16000,
+                SampleRateHertz = 16000,
+                LanguageCode = "en",
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
             {
@@ -132,10 +134,11 @@ namespace GoogleCloudSamples
             var channel = new Grpc.Core.Channel(SpeechClient.DefaultEndpoint.Host,
                 googleCredential.ToChannelCredentials());
             var speech = SpeechClient.Create(channel);
-            var response = speech.SyncRecognize(new RecognitionConfig()
+            var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                SampleRate = 16000,
+                SampleRateHertz = 16000,
+                LanguageCode = "en",
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
             {
@@ -151,10 +154,11 @@ namespace GoogleCloudSamples
         static object SyncRecognizeGcs(string storageUri)
         {
             var speech = SpeechClient.Create();
-            var response = speech.SyncRecognize(new RecognitionConfig()
+            var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                SampleRate = 16000,
+                SampleRateHertz = 16000,
+                LanguageCode = "en",
             }, RecognitionAudio.FromStorageUri(storageUri));
             foreach (var result in response.Results)
             {
@@ -168,13 +172,14 @@ namespace GoogleCloudSamples
         // [END speech_sync_recognize_gcs]
 
         // [START speech_async_recognize]
-        static object AsyncRecognize(string filePath)
+        static object LongRunningRecognize(string filePath)
         {
             var speech = SpeechClient.Create();
-            var longOperation = speech.AsyncRecognize(new RecognitionConfig()
+            var longOperation = speech.LongRunningRecognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                SampleRate = 16000,
+                SampleRateHertz = 16000,
+                LanguageCode = "en",
             }, RecognitionAudio.FromFile(filePath));
             longOperation = longOperation.PollUntilCompleted();
             var response = longOperation.Result;
@@ -193,10 +198,11 @@ namespace GoogleCloudSamples
         static object AsyncRecognizeGcs(string storageUri)
         {
             var speech = SpeechClient.Create();
-            var longOperation = speech.AsyncRecognize(new RecognitionConfig()
+            var longOperation = speech.LongRunningRecognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                SampleRate = 16000,
+                SampleRateHertz = 16000,
+                LanguageCode = "en",
             }, RecognitionAudio.FromStorageUri(storageUri));
             longOperation = longOperation.PollUntilCompleted();
             var response = longOperation.Result;
@@ -229,7 +235,8 @@ namespace GoogleCloudSamples
                         {
                             Encoding =
                             RecognitionConfig.Types.AudioEncoding.Linear16,
-                            SampleRate = 16000,
+                            SampleRateHertz = 16000,
+                            LanguageCode = "en",
                         },
                         InterimResults = true,
                     }
@@ -294,7 +301,8 @@ namespace GoogleCloudSamples
                         {
                             Encoding =
                             RecognitionConfig.Types.AudioEncoding.Linear16,
-                            SampleRate = 16000,
+                            SampleRateHertz = 16000,
+                            LanguageCode = "en",
                         },
                         InterimResults = true,
                     }
@@ -359,7 +367,7 @@ namespace GoogleCloudSamples
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     SyncRecognizeGcs(opts.FilePath) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
-                    AsyncRecognizeGcs(opts.FilePath) : AsyncRecognize(opts.FilePath),
+                    AsyncRecognizeGcs(opts.FilePath) : LongRunningRecognize(opts.FilePath),
                 (StreamingOptions opts) => StreamingRecognizeAsync(opts.FilePath).Result,
                 (ListenOptions opts) => StreamingMicRecognizeAsync(opts.Seconds).Result,
                 (RecOptions opts) => Rec(opts.FilePath, opts.BitRate, opts.Encoding),
