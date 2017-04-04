@@ -36,11 +36,17 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestTranslatePremium()
         {
-            // TODO: update when 
-            // https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/961
-            // gets fixed.
-            Assert.Throws<Google.GoogleApiException>(() =>
-            _runner.Run("translate", "-p", "Hello World"));
+            try
+            {
+                ConsoleOutput output = _runner.Run("translate", "-p", "Hello World");
+                Assert.Equal(0, output.ExitCode);
+                Assert.Contains("\u041F\u0440\u0438\u0432\u0435\u0442", output.Stdout);
+            }
+            catch (Google.GoogleApiException e)
+            {
+                // The user has not signed up for premium.
+                Assert.Contains(e.Error.Code, new[] { 403, 401 });
+            }
         }
 
         [Fact]
