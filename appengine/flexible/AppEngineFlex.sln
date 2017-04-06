@@ -26,6 +26,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Datastore", "Datastore\Data
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Pubsub", "Pubsub\Pubsub.xproj", "{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CloudSql-PostgreSql", "CloudSql-PostgreSql\CloudSql-PostgreSql.xproj", "{ED886031-607A-4FBF-B46D-8940490B89BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED886031-607A-4FBF-B46D-8940490B89BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED886031-607A-4FBF-B46D-8940490B89BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED886031-607A-4FBF-B46D-8940490B89BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED886031-607A-4FBF-B46D-8940490B89BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
