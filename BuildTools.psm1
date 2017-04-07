@@ -341,7 +341,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
                 Receive-Job $job
                 $jobState = 'Timed Out'
             }
-            Remove-Job $job
+            Remove-Job -Force $job
         }
         $results[$jobState] += @($relativePath)
     }
