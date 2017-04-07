@@ -312,13 +312,13 @@ function UpFind-File([string[]]$Masks = '*')
 # Run-Tests
 ##############################################################################
 function Run-TestScripts($TimeoutSeconds=300) {
-    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
     $scripts = When-Empty -ArgList ($input + $args) -ScriptBlock { Find-Files -Masks '*runtests*.ps1' } | Get-Item
     $rootDir = pwd
     # Keep running lists of successes and failures.
     # Array of strings: the relative path of the inner script.
     $results = @{}
     foreach ($script in $scripts) {
+        $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
         $relativePath = Resolve-Path -Relative $script.FullName
         $verb = "Starting"
         $jobState = 'Failed'  # Retry once on failure.
@@ -343,6 +343,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
                 $jobState = $job.State
                 if ($jobState -eq 'Running') {
                     if ((Get-Date) -gt $deadline) {
+                        echo "TIME OUT"
                         $jobState = 'Timed Out'
                         break
                     }

@@ -60,7 +60,7 @@ Try {
         "*runTest*.ps1"
     } elseif ($Deploy) {
         "*deployTest*.ps1"
-        $timeoutSeconds = 900
+        $timeoutSeconds = 600
     } else {
         $TestMasks
     }
