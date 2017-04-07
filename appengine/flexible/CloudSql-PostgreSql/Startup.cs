@@ -93,7 +93,7 @@ namespace CloudSql
                         <head><title>Error</title></head>
                         <body><p>Set CloudSqlConnectionString to a valid connection string.
                               <p>{0}
-                              p>See the README.md in the project directory for more information.</p>
+                              <p>See the README.md in the project directory for more information.</p>
                         </body>
                         </html>", WebUtility.HtmlEncode(e.Message)));
                 });
