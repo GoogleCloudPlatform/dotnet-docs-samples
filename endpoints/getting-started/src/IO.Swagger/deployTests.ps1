@@ -15,11 +15,12 @@
 Import-Module -DisableNameChecking ..\..\..\..\BuildTools.psm1
 
 dotnet restore
-BackupAndEdit-TextFile "openapi.yaml" `
-    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
+$projectId = gcloud config get-value project
+BackupAndEdit-TextFile "..\..\openapi.yaml" `
+    @{"YOUR-PROJECT-ID" = $projectId} `
 {
-	gcloud service-management deploy openapi.yaml
-	$configs = gcloud service-management configs list --service=echo-api.endpoints.$env:GOOGLE_PROJECT_ID.cloud.goog --sort-by=~CONFIG_ID
+	gcloud service-management deploy ..\..\openapi.yaml
+	$configs = gcloud service-management configs list --service=echo-api.endpoints.$projectId.cloud.goog --sort-by=~CONFIG_ID
 	$configId, $serviceName = $configs[1].split()
 	BackupAndEdit-TextFile "app.yaml" @{
 		"ENDPOINTS SERVICE NAME" = $serviceName;
@@ -27,6 +28,6 @@ BackupAndEdit-TextFile "openapi.yaml" `
 	} {
 		dotnet publish
 		gcloud beta app deploy --quiet --no-promote --version=deploytest .\bin\Debug\netcoreapp1.0\publish\app.yaml		
-		.\Test.ps1 "https://deploytest-dot-$env:GOOGLE_PROJECT_ID.appspot.com/echo?key=$env:TEST_GOOGLE_ENDPOINTS_APIKEY"
+		.\Test.ps1 "https://deploytest-dot-$projectId.appspot.com/echo?key=$env:TEST_GOOGLE_ENDPOINTS_APIKEY"
 	}
  }
