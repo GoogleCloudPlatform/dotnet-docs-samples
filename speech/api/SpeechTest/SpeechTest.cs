@@ -58,14 +58,6 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
-
-        [Fact]
-        public void TestAsync()
-        {
-            var output = Run("async", @"resources\audio.raw");
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Brooklyn", output.Stdout);
-        }
     }
 
     public class LocalRecognizeTests : CommonRecognizeTests
@@ -127,6 +119,14 @@ namespace GoogleCloudSamples
                 collector.CopyToBucket(args[1], objectName);
                 return _recognize.Run(cmdArgs);
             }
+        }
+
+        [Fact]
+        public void TestAsync()
+        {
+            var output = Run("async", @"resources\audio.raw");
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Brooklyn", output.Stdout);
         }
     }
 }
