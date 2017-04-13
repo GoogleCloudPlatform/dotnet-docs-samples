@@ -58,70 +58,89 @@ namespace GoogleCloudSamples
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             Parser.Default.ParseArguments<TranslateArgs, ListArgs,
                 DetectArgs>(args).MapResult(
-                (TranslateArgs targs) => targs.PremiumModel ? TranslateWithModel(targs) : Translate(targs),
-                (ListArgs largs) => largs.TargetLanguage == null ? ListLanguageCodes() : ListLanguages(largs.TargetLanguage),
+                (TranslateArgs targs) => targs.PremiumModel ?
+                    TranslateWithModel(targs) :
+                    Translate(targs),
+                (ListArgs largs) => largs.TargetLanguage == null ?
+                    ListLanguageCodes() :
+                    ListLanguages(largs.TargetLanguage),
                 (DetectArgs dargs) => DetectLanguage(dargs.Text),
                 errs => 1);
         }
 
+        // [START translate_translate_text]
+        static void Translate(string text, string targetLanguageCode,
+            string sourceLanguageCode)
+        {
+            TranslationClient client = TranslationClient.Create();
+            var response = client.TranslateText(text, targetLanguageCode,
+                sourceLanguageCode);
+            Console.WriteLine(response.TranslatedText);
+        }
+        // [END translate_translate_text]
+
         static object Translate(TranslateArgs args)
         {
-            // [START translate_translate_text]
-            TranslationClient client = TranslationClient.Create();
-            var response = client.TranslateText(args.Text,
-                args.TargetLanguage, args.SourceLanguage);
-            Console.WriteLine(response.TranslatedText);
-            // [END translate_translate_text]
+            Translate(args.Text, args.TargetLanguage, args.SourceLanguage);
             return 0;
         }
 
+        // [START translate_list_codes]
         static object ListLanguageCodes()
         {
-            // [START translate_list_codes]
             TranslationClient client = TranslationClient.Create();
             foreach (var language in client.ListLanguages())
             {
                 Console.WriteLine("{0}", language.Code);
             }
-            // [END translate_list_codes]
             return 0;
         }
+        // [END translate_list_codes]
 
+        // [START translate_list_language_names]
         static object ListLanguages(string targetLanguageCode)
         {
-            // [START translate_list_language_names]
             TranslationClient client = TranslationClient.Create();
             foreach (var language in client.ListLanguages(targetLanguageCode))
             {
                 Console.WriteLine("{0}\t{1}", language.Code, language.Name);
             }
-            // [END translate_list_language_names]
             return 0;
         }
+        // [END translate_list_language_names]
 
+        // [START translate_detect_language]
         static object DetectLanguage(string text)
         {
-            // [START translate_detect_language]
             TranslationClient client = TranslationClient.Create();
             foreach (var detection in client.DetectLanguage(text))
             {
-                Console.WriteLine("{0}\tConfidence: {1}", detection.Language, detection.Confidence);
+                Console.WriteLine("{0}\tConfidence: {1}",
+                    detection.Language, detection.Confidence);
             }
-            // [END translate_detect_language]
             return 0;
         }
+        // [END translate_detect_language]
 
         static object TranslateWithModel(TranslateArgs args)
         {
-            // [START translate_text_with_model]
-            TranslationClient client = TranslationClient.Create();
-            var response = client.TranslateText(args.Text,
-                args.TargetLanguage, args.SourceLanguage,
+            TranslateWithModel(args.Text, args.TargetLanguage,
+                args.SourceLanguage,
                 TranslationModel.NeuralMachineTranslation);
-            Console.WriteLine("Model: {0}", response.Model);
-            Console.WriteLine(response.TranslatedText);
-            // [END translate_text_with_model]
             return 0;
         }
+
+        // [START translate_text_with_model]
+        static void TranslateWithModel(string text,
+            string targetLanguageCode, string sourceLanguageCode,
+            TranslationModel model)
+        {
+            TranslationClient client = TranslationClient.Create();
+            var response = client.TranslateText(text,
+                targetLanguageCode, sourceLanguageCode, model);
+            Console.WriteLine("Model: {0}", response.Model);
+            Console.WriteLine(response.TranslatedText);
+        }
+        // [END translate_text_with_model]
     }
 }
