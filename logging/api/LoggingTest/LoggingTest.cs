@@ -142,15 +142,8 @@ namespace GoogleCloudSamples
                     // Confirm returned log entry contains expected value.
                     Assert.Contains(message, results.Stdout);
                 });
-                // Try deleting log.
+                // Try deleting log and assert on success.
                 Run("delete-log", logId).AssertSucceeded();
-                Eventually(() =>
-                {
-                    // Try listing the log entries.  There should be none.
-                    var listed = Run("list-log-entries", logId);
-                    listed.AssertSucceeded();
-                    Assert.Equal("", listed.Stdout.Trim());
-                });
             }
 
             [Fact]
