@@ -103,15 +103,7 @@ namespace GoogleCloudSamples
                 "timestamp desc", callSettings: RetryAWhile);
             foreach (var row in results)
             {
-                if (row != null && !String.IsNullOrEmpty(row.TextPayload.Trim()))
-                {
-                    Console.WriteLine($"{row.TextPayload.Trim()}");
-                }
-                else
-                {
-                    results.GetEnumerator().Dispose();
-                    break;
-                }
+                Console.WriteLine($"{row.TextPayload.Trim()}");
             }
         }
         // [END list_log_entries]
