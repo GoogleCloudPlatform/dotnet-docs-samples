@@ -135,13 +135,6 @@ namespace GoogleCloudSamples
                 //Try creating a log entry
                 var created = Run("create-log-entry", logId, message);
                 created.AssertSucceeded();
-                Eventually(() =>
-                {
-                    // Retrieve the log entry just added, using the logId as a filter.
-                    var results = Run("list-log-entries", logId);
-                    // Confirm returned log entry contains expected value.
-                    Assert.Contains(message, results.Stdout);
-                });
                 // Try deleting log and assert on success.
                 Run("delete-log", logId).AssertSucceeded();
             }
