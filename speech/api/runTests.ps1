@@ -14,8 +14,6 @@
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
 Build-Solution
-packages\xunit.runner.console.2.1.0\tools\xunit.console.exe `
-    .\TranscribeTest\bin\Debug\TranscribeTest.dll `
-    .\TranscribeAsyncTest\bin\Debug\TranscribeAsyncTest.dll `
+.\packages\xunit.runner.console.2.2.0-beta5-build3474\tools\xunit.console.exe `
     .\SpeechTest\bin\Debug\SpeechTest.dll `
     -parallel none
