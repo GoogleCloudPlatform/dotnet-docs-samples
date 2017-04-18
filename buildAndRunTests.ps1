@@ -55,12 +55,11 @@ if ($UpdatePackages) {
 }
 $private:modifiedConfigs = Update-Config
 Try {
-    $timeoutSeconds = 300
+    $timeoutSeconds = 600
     $masks = if ($Skip) {
         "*runTest*.ps1"
     } elseif ($Deploy) {
         "*deployTest*.ps1"
-        $timeoutSeconds = 600
     } else {
         $TestMasks
     }
