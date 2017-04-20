@@ -101,7 +101,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetMonitoredResourceDescriptor()
         {
-            string testResourceDisplayName = "API Endpoint";
+            string testResourceDisplayName = "Produced API";
             var output = _cloudMonitoring.Run("getResource", s_projectId, "api");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains(testResourceDisplayName, output.Stdout);
