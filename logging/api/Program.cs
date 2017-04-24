@@ -45,7 +45,7 @@ namespace GoogleCloudSamples
                 return CallSettings.FromCallTiming(CallTiming.FromRetry(new RetrySettings(
                     new BackoffSettings(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10), 2.0),
                     new BackoffSettings(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10)),
-                    Google.Api.Gax.Expiration.FromTimeout(TimeSpan.FromSeconds(30)),
+                    Google.Api.Gax.Expiration.FromTimeout(TimeSpan.FromSeconds(90)),
                     (Grpc.Core.RpcException e) => e.Status.StatusCode == Grpc.Core.StatusCode.Internal
                     )));
             }
