@@ -184,8 +184,11 @@ Where command is one of
             Console.WriteLine("Entity Sentiment:");
             foreach (var entity in entities)
             {
-                Console.WriteLine($"{entity.Name} ({(int)(entity.Salience * 100)}%)");
-                Console.WriteLine($"  Sentiment score: {entity.Sentiment.Score}; magnitude: {entity.Sentiment.Magnitude}");
+                Console.WriteLine($"{entity.Name} "
+                    + $"({(int)(entity.Salience * 100)}%)");
+                Console.WriteLine("  Sentiment score: "
+                    + $"{entity.Sentiment.Score}"
+                    + $"magnitude { entity.Sentiment.Magnitude}");
             }
         }
         // [END analyze_entity_sentiment_from_file]
