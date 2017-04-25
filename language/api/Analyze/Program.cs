@@ -29,6 +29,7 @@ Where command is one of
     entities
     sentiment
     syntax
+    entity-sentiment
     everything
 ";
 
@@ -71,7 +72,9 @@ Where command is one of
                     Console.WriteLine($"\t\t{mention.Text.BeginOffset}: {mention.Text.Content}");
                 Console.WriteLine("\tMetadata:");
                 foreach (var keyval in entity.Metadata)
+                {
                     Console.WriteLine($"\t\t{keyval.Key}: {keyval.Value}");
+                }
             }
         }
         // [END analyze_entities_from_file]
@@ -150,6 +153,45 @@ Where command is one of
         // [END analyze_syntax_from_file]
         // [END analyze_syntax_from_string]
 
+        // [START analyze_entity_sentiment_from_file]
+        private static void AnalyzeEntitySentimentFromFile(string gcsUri)
+        {
+            var client = LanguageServiceClient.Create();
+            var response = client.AnalyzeEntitySentiment(new Document()
+            {
+                GcsContentUri = gcsUri,
+                Type = Document.Types.Type.PlainText
+            });
+            WriteEntitySentiment(response.Entities);
+        }
+        // [END analyze_entity_sentiment_from_file]
+
+        // [START analyze_entity_sentiment_from_string]
+        private static void AnalyzeEntitySentimentFromText(string text)
+        {
+            var client = LanguageServiceClient.Create();
+            var response = client.AnalyzeEntitySentiment(new Document()
+            {
+                Content = text,
+                Type = Document.Types.Type.PlainText
+            });
+            WriteEntitySentiment(response.Entities);
+        }
+
+        // [START analyze_entity_sentiment_from_file]
+        private static void WriteEntitySentiment(IEnumerable<Entity> entities)
+        {
+            Console.WriteLine("Entity Sentiment:");
+            foreach (var entity in entities)
+            {
+                Console.WriteLine($"{entity.Name} ({(int)(entity.Salience * 100)}%)");
+                Console.WriteLine($"  Sentiment score: {entity.Sentiment.Score}; magnitude: {entity.Sentiment.Magnitude}");
+            }
+        }
+        // [END analyze_entity_sentiment_from_file]
+        // [END analyze_entity_sentiment_from_string]
+
+        // [START analyze_entities_from_file]
         private static void AnalyzeEverything(string text)
         {
             var client = LanguageServiceClient.Create();
@@ -163,11 +205,13 @@ Where command is one of
                 ExtractSyntax = true,
                 ExtractDocumentSentiment = true,
                 ExtractEntities = true,
+                ExtractEntitySentiment = true
             });
             Console.WriteLine($"Language: {response.Language}");
             WriteSentiment(response.DocumentSentiment);
             WriteSentences(response.Sentences);
             WriteEntities(response.Entities);
+            WriteEntitySentiment(response.Entities);
         }
 
         public static void Main(string[] args)
@@ -202,6 +246,13 @@ Where command is one of
                         AnalyzeSentimentFromText(text);
                     else
                         AnalyzeSentimentFromFile(gcsUri);
+                    break;
+
+                case "entity-sentiment":
+                    if (null == gcsUri)
+                        AnalyzeEntitySentimentFromText(text);
+                    else
+                        AnalyzeEntitySentimentFromFile(text);
                     break;
 
                 case "everything":

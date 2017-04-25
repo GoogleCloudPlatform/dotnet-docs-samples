@@ -114,6 +114,21 @@ namespace GoogleCloudSamples
             Assert.Contains("Magnitude: ", output);
         }
 
+        public void EntitySentimentTest()
+        {
+            string output = Run("entity-sentiment", s_text);
+            Assert.Contains("Entity Sentiment:", output);
+            Assert.Contains("Santa Claus Conquers the Martians (100%)", output);
+        }
+
+        [Fact]
+        public void EntitySentimentFromFileTest()
+        {
+            string output = Run("entity-sentiment", s_gcsUri);
+            Assert.Contains("Entity Sentiment:", output);
+            Assert.Contains("Santa Claus Conquers the Martians (100%)", output);
+        }
+
         [Fact]
         public void EverythingTest()
         {
