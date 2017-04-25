@@ -16,6 +16,7 @@ using Google.Cloud.Language.V1;
 using System;
 using System.Collections.Generic;
 using static Google.Cloud.Language.V1.AnnotateTextRequest.Types;
+using Google.Protobuf.Collections;
 
 namespace GoogleCloudSamples
 {
@@ -89,7 +90,7 @@ Where command is one of
                 GcsContentUri = gcsUri,
                 Type = Document.Types.Type.PlainText
             });
-            WriteSentiment(response.DocumentSentiment);
+            WriteSentiment(response.DocumentSentiment, response.Sentences);
         }
         // [END analyze_sentiment_from_file]
 
@@ -102,14 +103,22 @@ Where command is one of
                 Content = text,
                 Type = Document.Types.Type.PlainText
             });
-            WriteSentiment(response.DocumentSentiment);
+            WriteSentiment(response.DocumentSentiment, response.Sentences);
         }
 
         // [START analyze_sentiment_from_file]
-        private static void WriteSentiment(Sentiment sentiment)
+        private static void WriteSentiment(Sentiment sentiment,
+            RepeatedField<Sentence> sentences)
         {
-            Console.WriteLine($"Score: {sentiment.Score}");
-            Console.WriteLine($"Magnitude: {sentiment.Magnitude}");
+            Console.WriteLine("Overall document sentiment:");
+            Console.WriteLine($"\tScore: {sentiment.Score}");
+            Console.WriteLine($"\tMagnitude: {sentiment.Magnitude}");
+            Console.WriteLine("Sentence level sentiment:");
+            foreach (var sentence in sentences)
+            {
+                Console.WriteLine($"\t{sentence.Text.Content}: "
+                    + $"({sentence.Sentiment.Score})");
+            }
         }
         // [END analyze_sentiment_from_file]
         // [END analyze_sentiment_from_string]
@@ -124,7 +133,7 @@ Where command is one of
                 Type = Document.Types.Type.PlainText
             },
             new Features() { ExtractSyntax = true });
-            WriteSentences(response.Sentences);
+            WriteSentences(response.Sentences, response.Tokens);
         }
         // [END analyze_syntax_from_file]
 
@@ -138,16 +147,22 @@ Where command is one of
                 Type = Document.Types.Type.PlainText
             },
             new Features() { ExtractSyntax = true });
-            WriteSentences(response.Sentences);
+            WriteSentences(response.Sentences, response.Tokens);
         }
 
         // [START analyze_syntax_from_file]
-        private static void WriteSentences(IEnumerable<Sentence> sentences)
+        private static void WriteSentences(IEnumerable<Sentence> sentences,
+            RepeatedField<Token> tokens)
         {
             Console.WriteLine("Sentences:");
             foreach (var sentence in sentences)
             {
                 Console.WriteLine($"\t{sentence.Text.BeginOffset}: {sentence.Text.Content}");
+            }
+            Console.WriteLine("Tokens:");
+            foreach (var token in tokens)
+            {
+                Console.WriteLine($"{token.PartOfSpeech.Tag} {token.Text.Content}");
             }
         }
         // [END analyze_syntax_from_file]
@@ -188,7 +203,7 @@ Where command is one of
                     + $"({(int)(entity.Salience * 100)}%)");
                 Console.WriteLine("  Sentiment score: "
                     + $"{entity.Sentiment.Score}"
-                    + $"magnitude { entity.Sentiment.Magnitude}");
+                    + $" magnitude { entity.Sentiment.Magnitude}");
             }
         }
         // [END analyze_entity_sentiment_from_file]
@@ -211,8 +226,8 @@ Where command is one of
                 ExtractEntitySentiment = true
             });
             Console.WriteLine($"Language: {response.Language}");
-            WriteSentiment(response.DocumentSentiment);
-            WriteSentences(response.Sentences);
+            WriteSentiment(response.DocumentSentiment, response.Sentences);
+            WriteSentences(response.Sentences, response.Tokens);
             WriteEntities(response.Entities);
             WriteEntitySentiment(response.Entities);
         }
