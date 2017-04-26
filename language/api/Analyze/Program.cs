@@ -162,7 +162,8 @@ Where command is one of
             Console.WriteLine("Tokens:");
             foreach (var token in tokens)
             {
-                Console.WriteLine($"{token.PartOfSpeech.Tag} {token.Text.Content}");
+                Console.WriteLine($"{token.PartOfSpeech.Tag} "
+                    + $"{token.Text.Content}");
             }
         }
         // [END analyze_syntax_from_file]
