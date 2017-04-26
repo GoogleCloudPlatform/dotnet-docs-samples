@@ -68,7 +68,7 @@ namespace GoogleCloudSamples
     class ListenOptions
     {
         [Value(0, HelpText = "Number of seconds to listen for.", Required = false)]
-        public int Seconds { get; set; } = int.MaxValue;
+        public int Seconds { get; set; } = 3;
     }
 
     [Verb("rec", HelpText = "Detects speech in an audio file. Supports other file formats.")]
