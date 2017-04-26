@@ -87,6 +87,9 @@ namespace GoogleCloudSamples
             Assert.Contains("Sentences:", output);
             Assert.Contains("0: Santa Claus Conquers the Martians is a terrible movie.", output);
             Assert.Contains("55: It's so bad, it's good.", output);
+            Assert.Contains("Tokens:", output);
+            Assert.Contains("Noun Santa", output);
+            Assert.Contains("Verb Conquers", output);
         }
 
         [Fact]
@@ -104,6 +107,8 @@ namespace GoogleCloudSamples
             string output = Run("sentiment", s_text);
             Assert.Contains("Score: ", output);
             Assert.Contains("Magnitude: ", output);
+            Assert.Contains("Sentence level sentiment:", output);
+            Assert.Contains("a terrible movie.: (-0.8)", output);
         }
 
         [Fact]
