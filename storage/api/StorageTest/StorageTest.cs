@@ -544,7 +544,7 @@ namespace GoogleCloudSamples
                 role, $"{memberType}:{member}");
             AssertSucceeded(addedMember);
 
-            // Make sure we print-acl shows us the user.
+            // Make sure view-bucket-iam-members shows us the user.
             var printedIamMembers = Run("view-bucket-iam-members", _bucketName);
             AssertSucceeded(printedIamMembers);
             Assert.Contains(member, printedIamMembers.Stdout);
