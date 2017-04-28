@@ -40,7 +40,10 @@ namespace GoogleCloudSamples
                 "  Storage move bucket-name source-object-name dest-object-name\n" +
                 "  Storage download [-key encryption-key] bucket-name object-name [local-file-path]\n" +
                 "  Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
-                "  Storage generate-signed-url bucket-name object-name" +
+                "  Storage generate-signed-url bucket-name object-name\n" +
+                "  Storage view-bucket-iam-members bucket-name\n" +
+                "  Storage add-bucket-iam-member bucket-name member\n" +
+                "  Storage remove-bucket-iam-member bucket-name role member\n" +
                 "  Storage print-acl bucket-name\n" +
                 "  Storage print-acl bucket-name object-name\n" +
                 "  Storage add-owner bucket-name user-email\n" +
@@ -431,6 +434,67 @@ namespace GoogleCloudSamples
         }
         // [END storage_remove_bucket_default_owner]
 
+        // [START view_bucket_iam_members]
+        private void ViewBucketIamMembers(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName);
+            foreach (var binding in policy.Bindings)
+            {
+                Console.WriteLine($"  Role: {binding.Role}");
+                Console.WriteLine("  Members:");
+                foreach (var member in binding.Members)
+                {
+                    Console.WriteLine($"    {member}");
+                }
+            }
+        }
+        // [END view_bucket_iam_members]
+
+        // [START add_bucket_iam_member]
+        private void AddBucketIamMember(string bucketName,
+            string role, string member)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName);
+            Policy.BindingsData bindingToAdd = new Policy.BindingsData();
+            bindingToAdd.Role = role;
+            string[] members = { member };
+            bindingToAdd.Members = members;
+            policy.Bindings.Add(bindingToAdd);
+            storage.SetBucketIamPolicy(bucketName, policy);
+            Console.WriteLine($"Added {member} with role {role} "
+                + $"to {bucketName}");
+        }
+        // [END add_bucket_iam_member]
+
+        // [START remove_bucket_iam_member]
+        private void RemoveBucketIamMember(string bucketName,
+            string role, string member)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName);
+            policy.Bindings.ToList().ForEach(response =>
+            {
+                if (response.Role == role)
+                {
+                    // Remove the role/member combo from the IAM policy.
+                    response.Members = response.Members
+                        .Where(m => m != member).ToList();
+                    // Remove role if it contains no members.
+                    if (response.Members.Count == 0)
+                    {
+                        policy.Bindings.Remove(response);
+                    }
+                }
+            });
+            // Set the modified IAM policy to be the current IAM policy.
+            storage.SetBucketIamPolicy(bucketName, policy);
+            Console.WriteLine($"Removed {member} with role {role} "
+                + $"to {bucketName}");
+        }
+        // [END remove_bucket_iam_member]
+
         // [START storage_print_file_acl]
         private void PrintObjectAcl(string bucketName, string objectName)
         {
@@ -695,6 +759,21 @@ namespace GoogleCloudSamples
                     case "remove-default-owner":
                         if (args.Length < 3 && PrintUsage()) return -1;
                         RemoveBucketDefaultOwner(args[1], args[2]);
+                        break;
+
+                    case "view-bucket-iam-members":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        ViewBucketIamMembers(args[1]);
+                        break;
+
+                    case "add-bucket-iam-member":
+                        if (args.Length < 4 && PrintUsage()) return -1;
+                        AddBucketIamMember(args[1], args[2], args[3]);
+                        break;
+
+                    case "remove-bucket-iam-member":
+                        if (args.Length < 4 && PrintUsage()) return -1;
+                        RemoveBucketIamMember(args[1], args[2], args[3]);
                         break;
 
                     case "generate-signed-url":
