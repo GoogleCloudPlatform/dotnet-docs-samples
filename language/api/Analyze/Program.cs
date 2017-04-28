@@ -210,27 +210,43 @@ Where command is one of
         // [END analyze_entity_sentiment_from_file]
         // [END analyze_entity_sentiment_from_string]
 
-        // [START analyze_entities_from_file]
-        private static void AnalyzeEverything(string text)
+        private static void AnalyzeEverything(string text,
+            bool isEntitySentimentAvailable)
         {
             var client = LanguageServiceClient.Create();
-            var response = client.AnnotateText(new Document()
+            try
             {
-                Content = text,
-                Type = Document.Types.Type.PlainText
-            },
-            new Features()
+                var response = client.AnnotateText(new Document()
+                {
+                    Content = text,
+                    Type = Document.Types.Type.PlainText
+                },
+                new Features()
+                {
+                    ExtractSyntax = true,
+                    ExtractDocumentSentiment = true,
+                    ExtractEntities = true,
+                    ExtractEntitySentiment = isEntitySentimentAvailable
+                });
+                Console.WriteLine($"Language: {response.Language}");
+                WriteSentiment(response.DocumentSentiment, response.Sentences);
+                WriteSentences(response.Sentences, response.Tokens);
+                WriteEntities(response.Entities);
+                if (isEntitySentimentAvailable)
+                {
+                    WriteEntitySentiment(response.Entities);
+                }
+                else
+                {
+                    Console.WriteLine("Entity Sentiment: Non-English language "
+                        + "detected. While this feature is currently in Beta "
+                        + "only English is supported.");
+                }
+            }
+            catch (Grpc.Core.RpcException)
             {
-                ExtractSyntax = true,
-                ExtractDocumentSentiment = true,
-                ExtractEntities = true,
-                ExtractEntitySentiment = true
-            });
-            Console.WriteLine($"Language: {response.Language}");
-            WriteSentiment(response.DocumentSentiment, response.Sentences);
-            WriteSentences(response.Sentences, response.Tokens);
-            WriteEntities(response.Entities);
-            WriteEntitySentiment(response.Entities);
+                AnalyzeEverything(text, false);
+            }
         }
 
         public static void Main(string[] args)
@@ -275,7 +291,7 @@ Where command is one of
                     break;
 
                 case "everything":
-                    AnalyzeEverything(text);
+                    AnalyzeEverything(text, true);
                     break;
 
                 default:
