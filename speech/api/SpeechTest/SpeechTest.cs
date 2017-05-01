@@ -99,6 +99,15 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
+
+        [Fact]
+        public void TestWithContext()
+        {
+            string stdin = "Good day!\nBye bye.\n\n";
+            var output = _recognize.RunWithStdIn(stdin, "with-context", @"resources\audio.raw");
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Brooklyn", output.Stdout);
+        }
     }
 
     public class CloudStorageRecognizeTests : CommonRecognizeTests, IClassFixture<RandomBucketFixture>

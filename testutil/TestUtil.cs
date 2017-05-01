@@ -144,5 +144,40 @@ namespace GoogleCloudSamples
                 }
             }
         }
+
+        public ConsoleOutput RunWithStdIn(string stdIn, params string[] arguments)
+        {
+            lock (s_lock)
+            {
+                Console.Write($"{Command} ");
+                Console.WriteLine(string.Join(" ", arguments));
+
+                TextWriter consoleOut = Console.Out;
+                TextReader consoleIn = Console.In;
+                StringWriter stringOut = new StringWriter();
+                Console.SetOut(stringOut);
+                Console.SetIn(new StringReader(stdIn));
+                try
+                {
+                    int exitCode = 0;
+                    if (null == VoidMain)
+                        exitCode = Main(arguments);
+                    else
+                        VoidMain(arguments);
+                    var consoleOutput = new ConsoleOutput()
+                    {
+                        ExitCode = exitCode,
+                        Stdout = stringOut.ToString()
+                    };
+                    Console.Write(consoleOutput.Stdout);
+                    return consoleOutput;
+                }
+                finally
+                {
+                    Console.SetOut(consoleOut);
+                    Console.SetIn(consoleIn);
+                }
+            }
+        }
     }
 }
