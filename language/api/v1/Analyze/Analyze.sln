@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyzeTest", "AnalyzeTest\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5438451C-825F-49E7-98E8-989F1C6D434A}"
 	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
+		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickStart", "..\QuickStart\QuickStart.csproj", "{FAA57A34-7C5E-4944-A683-019608BC1E4A}"
