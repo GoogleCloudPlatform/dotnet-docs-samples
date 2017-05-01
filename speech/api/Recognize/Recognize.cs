@@ -19,6 +19,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Speech.V1;
 using Grpc.Auth;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,6 +45,10 @@ namespace GoogleCloudSamples
 
     [Verb("sync", HelpText = "Detects speech in an audio file.")]
     class SyncOptions : StorageOptions { }
+
+    [Verb("with-context", HelpText = "Detects speech in an audio file."
+        + " Add additional context on stdin.")]
+    class OptionsWithContext : StorageOptions { }
 
     [Verb("async", HelpText = "Creates a job to detect speech in an audio "
         + "file, and waits for the job to complete.")]
@@ -125,6 +130,50 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_sync_recognize]
+
+
+        /// <summary>
+        /// Reads a list of phrases from stdin.
+        /// </summary>
+        static List<string> ReadPhrases()
+        {
+            Console.Write("Reading phrases from stdin.  Finish with blank line.\n> ");
+            var phrases = new List<string>();
+            string line = Console.ReadLine();
+            while (!string.IsNullOrWhiteSpace(line))
+            {
+                phrases.Add(line.Trim());
+                Console.Write("> ");
+                line = Console.ReadLine();
+            }
+            return phrases;
+        }
+
+        static object RecognizeWithContext(string filePath, IEnumerable<string> phrases)
+        {
+            var speech = SpeechClient.Create();
+            var context = new SpeechContext();
+            context.Phrases.AddRange(phrases);
+            var config = new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                SampleRateHertz = 16000,
+                LanguageCode = "en"
+            };
+            config.SpeechContexts.Add(context);
+            var audio = IsStorageUri(filePath) ?
+                RecognitionAudio.FromStorageUri(filePath) :
+                RecognitionAudio.FromFile(filePath);
+            var response = speech.Recognize(config, audio);
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine(alternative.Transcript);
+                }
+            }
+            return 0;
+        }
 
         static object SyncRecognizeWithCredentials(string filePath, string credentialsFilePath)
         {
@@ -362,7 +411,8 @@ namespace GoogleCloudSamples
             return (int)Parser.Default.ParseArguments<
                 SyncOptions, AsyncOptions,
                 StreamingOptions, ListenOptions,
-                RecOptions, SyncOptionsWithCreds
+                RecOptions, SyncOptionsWithCreds,
+                OptionsWithContext
                 >(args).MapResult(
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     SyncRecognizeGcs(opts.FilePath) : SyncRecognize(opts.FilePath),
@@ -373,6 +423,7 @@ namespace GoogleCloudSamples
                 (RecOptions opts) => Rec(opts.FilePath, opts.BitRate, opts.Encoding),
                 (SyncOptionsWithCreds opts) => SyncRecognizeWithCredentials(
                     opts.FilePath, opts.CredentialsFilePath),
+                (OptionsWithContext opts) => RecognizeWithContext(opts.FilePath, ReadPhrases()),
                 errs => 1);
         }
     }
