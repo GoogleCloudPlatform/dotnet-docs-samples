@@ -152,15 +152,13 @@ namespace GoogleCloudSamples
         static object RecognizeWithContext(string filePath, IEnumerable<string> phrases)
         {
             var speech = SpeechClient.Create();
-            var context = new SpeechContext();
-            context.Phrases.AddRange(phrases);
             var config = new RecognitionConfig()
             {
+                SpeechContexts = { new SpeechContext() { Phrases = { phrases } } },
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 SampleRateHertz = 16000,
                 LanguageCode = "en"
             };
-            config.SpeechContexts.Add(context);
             var audio = IsStorageUri(filePath) ?
                 RecognitionAudio.FromStorageUri(filePath) :
                 RecognitionAudio.FromFile(filePath);
