@@ -463,24 +463,27 @@ namespace GoogleCloudSamples
             if (result.Bindings != null)
             {
                 // Policy already exists, so add a new Binding to it.
-                Binding bindingToAdd = new Binding();
-                bindingToAdd.Role = role;
-                string[] testMembers = { member };
-                bindingToAdd.Members = testMembers;
-                result.Bindings.Add(bindingToAdd);
+                result.Bindings.Add(new Binding()
+                {
+                    Role = role,
+                    Members = { member }
+                });
                 setIamPolicyRequest.Policy = result;
             }
             else
             {
                 // Policy does not yet exist, so create a new one.
-                Policy newPolicy = new Policy();
-                newPolicy.Bindings = new List<Binding>();
-                Binding bindingToAdd = new Binding();
-                bindingToAdd.Role = role;
-                string[] testMembers = { member };
-                bindingToAdd.Members = testMembers;
-                newPolicy.Bindings.Add(bindingToAdd);
-                setIamPolicyRequest.Policy = newPolicy;
+                setIamPolicyRequest.Policy = new Policy()
+                {
+                    Bindings = new List<Binding>()
+                    {
+                        new Binding()
+                        {
+                            Role = role,
+                            Members = { member }
+                        }
+                    }
+                };
             }
             var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
                 .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
@@ -589,24 +592,27 @@ namespace GoogleCloudSamples
             if (result.Bindings != null)
             {
                 // Policy already exists, so add a new Binding to it.
-                Binding bindingToAdd = new Binding();
-                bindingToAdd.Role = role;
-                string[] testMembers = { member };
-                bindingToAdd.Members = testMembers;
-                result.Bindings.Add(bindingToAdd);
+                result.Bindings.Add(new Binding()
+                {
+                    Role = role,
+                    Members = { member }
+                });
                 setIamPolicyRequest.Policy = result;
             }
             else
             {
-                // Policy does not yet exist, so create a new one
-                Policy newPolicy = new Policy();
-                newPolicy.Bindings = new List<Binding>();
-                Binding bindingToAdd = new Binding();
-                bindingToAdd.Role = role;
-                string[] testMembers = { member };
-                bindingToAdd.Members = testMembers;
-                newPolicy.Bindings.Add(bindingToAdd);
-                setIamPolicyRequest.Policy = newPolicy;
+                // Policy does not yet exist, so create a new one.
+                setIamPolicyRequest.Policy = new Policy()
+                {
+                    Bindings = new List<Binding>()
+                    {
+                        new Binding()
+                        {
+                            Role = role,
+                            Members = { member }
+                        }
+                    }
+                };
             }
             var request = new ProjectsResource.LocationsResource.KeyRingsResource
                 .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
