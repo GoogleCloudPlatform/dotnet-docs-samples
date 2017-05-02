@@ -168,7 +168,6 @@ Where command is one of
         // [END analyze_syntax_from_file]
         // [END analyze_syntax_from_string]
 
-        // [START analyze_entities_from_file]
         private static void AnalyzeEverything(string text)
         {
             var client = LanguageServiceClient.Create();
