@@ -14,11 +14,8 @@
  * the License.
  */
 
-using Google.Api.Gax;
-using Google.Api.Gax.Grpc;
 using Google.Api;
 using Google.Cloud.Logging.V2;
-using Google.Cloud.Logging.Type;
 using Google.Cloud.Logging.Type;
 using Google.Cloud.DevTools.Source.V1;
 using System;
@@ -35,8 +32,7 @@ namespace GoogleCloudSamples
     public static class StackdriverLogWritter
     {
         private const string LogId = "YOUR-LOG-ID";
-        // private const string ProjectId = "YOUR-PROJECT-ID"
-        private const string ProjectId = "mars-148601";
+        private const string ProjectId = "YOUR-PROJECT-ID";
 
         [MethodImpl(methodImplOptions: MethodImplOptions.NoInlining)]
         public static string WriteLog(
