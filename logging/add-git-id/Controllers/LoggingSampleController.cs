@@ -36,6 +36,7 @@ namespace GoogleCloudSamples.Controllers
         {
             if (count > 0 && count <= 100)
             {
+                StackdriverLogWritter.WriteLog("Write log test -- replace with your own message.");
                 return Content($"Inserted {count} logs");
             }
             else
