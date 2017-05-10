@@ -38,7 +38,7 @@ namespace GoogleCloudSamples.Controllers
             {
                 for (int i = 0; i < count; ++i)
                 {
-                    StackdriverLogWritter.WriteLog("Write log test -- replace with your own message.");
+                    StackdriverLogWritter.WriteLog("Test. Replace with your own message.");
                 }
                 return Content($"Inserted {count} logs");
             }
