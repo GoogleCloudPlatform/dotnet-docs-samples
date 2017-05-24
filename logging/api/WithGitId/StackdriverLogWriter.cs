@@ -20,10 +20,8 @@ using Google.Cloud.Logging.Type;
 using Google.Cloud.DevTools.Source.V1;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Reflection;
 using System.Security;
 using Google.Protobuf;
 
@@ -32,7 +30,7 @@ namespace GoogleCloudSamples
     public static class StackdriverLogWriter
     {
         private const string LogId = "YOUR-LOG-ID";
-        private const string ProjectId = "YOUR-PROJECT-ID";
+        private const string ProjectId = "pacific-wind";
 
         public static string WriteLog(
             string msg,
@@ -87,6 +85,10 @@ namespace GoogleCloudSamples
                 {
                     labels.Add(SourceContext.GitRevisionIdLogLabel, gitId);
                 }
+                else
+                {
+                    Debug.WriteLine($"No valid git revision id found. Make sure you have source-context.json published with the application.");
+                }
             }
             catch (Exception ex) when (
                 ex is SecurityException
@@ -95,6 +97,7 @@ namespace GoogleCloudSamples
                 || ex is UnauthorizedAccessException)
             {
                 // This is best-effort only, exceptions from reading/parsing the source_context.json are ignored.
+                Debug.WriteLine($"Exception at TryAddGitRevisionId. {ex}");
             }
         }
     }
