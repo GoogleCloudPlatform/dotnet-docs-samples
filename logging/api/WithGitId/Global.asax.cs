@@ -13,21 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+ 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
 
-var myApp = angular.module('myApp', []);
-myApp.controller('mainCtrl', ['$scope', '$http', function ($scope, $http) {
-    $scope.logCount = 1;
-    $scope.doLogging = function () {
-        var url = '/LoggingSample/Log?count=' + $scope.logCount;
-
-        // HTTP request.
-        $http.get(url)
-            .then(function (response) {
-                //First function handles success
-                $scope.submitResult = response.data;
-            }, function (response) {
-                //Second function handles error
-                $scope.submitResult = "Something went wrong";
-            });
+namespace GoogleCloudSamples
+{
+    public class MvcApplication : System.Web.HttpApplication
+    {
+        protected void Application_Start()
+        {
+            AreaRegistration.RegisterAllAreas();
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+        }
     }
-}]);
+}

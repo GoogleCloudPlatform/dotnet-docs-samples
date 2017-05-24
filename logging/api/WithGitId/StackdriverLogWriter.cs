@@ -29,12 +29,11 @@ using Google.Protobuf;
 
 namespace GoogleCloudSamples
 {
-    public static class StackdriverLogWritter
+    public static class StackdriverLogWriter
     {
         private const string LogId = "YOUR-LOG-ID";
         private const string ProjectId = "YOUR-PROJECT-ID";
 
-        [MethodImpl(methodImplOptions: MethodImplOptions.NoInlining)]
         public static string WriteLog(
             string msg,
             [CallerFilePath] string sourceFilePath = "",
