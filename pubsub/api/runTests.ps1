@@ -14,4 +14,4 @@
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
 Build-Solution
-packages\xunit.runner.console.2.1.0\tools\xunit.console.exe .\bin\Debug\PubsubTest.dll
+packages\xunit.runner.console.2.1.0\tools\xunit.console.exe .\PubsubTest\bin\Debug\PubsubTest.dll
