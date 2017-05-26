@@ -21,8 +21,7 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
-    "Google.Cloud.Diagnostics.AspNetCore": "1.0.0-alpha08"
-  },
+    "Google.Cloud.Diagnostics.AspNetCore": "1.0.0-beta10"},
 
   "tools": {
     "BundlerMinifier.Core": "2.0.238",
