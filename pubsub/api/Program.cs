@@ -1,4 +1,18 @@
-﻿using CommandLine;
+﻿// Copyright 2017 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using CommandLine;
 using Google.Api.Gax.Grpc;
 using Google.Cloud.Iam.V1;
 using Google.Cloud.PubSub.V1;
@@ -175,8 +189,6 @@ namespace GoogleCloudSamples
         public string topicId { get; set; }
     }
 
-
-
     public class Program
     {
         public static object CreateTopic(string projectId, string topicId)
@@ -284,7 +296,7 @@ namespace GoogleCloudSamples
         {
             SubscriberClient subscriber = SubscriberClient.Create();
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
-     subscriptionId);
+                subscriptionId);
             // [START pull_messages]
             subscriber.Acknowledge(subscriptionName,
                 response.ReceivedMessages.Select(m => m.AckId));
@@ -306,7 +318,7 @@ namespace GoogleCloudSamples
         {
             SubscriberClient subscriber = SubscriberClient.Create();
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
-    subscriptionId);
+                subscriptionId);
             Subscription subscription = subscriber.GetSubscription(
                 subscriptionName);
             Console.WriteLine($"Subscription found:" +
@@ -321,7 +333,7 @@ namespace GoogleCloudSamples
             TopicName topicName = new TopicName(projectId, topicId);
             Policy policy = publisher.GetIamPolicy(topicName.ToString());
             Console.WriteLine($"Topic IAM Policy found for {topicId}:");
-            Console.WriteLine($"{ policy.Bindings.ToString()}");
+            Console.WriteLine(policy.Bindings);
             // [END pubsub_get_topic_policy]
             return 0;
         }
@@ -334,7 +346,7 @@ namespace GoogleCloudSamples
             SubscriptionName subscriptionName = new SubscriptionName(projectId, subscriptionId);
             Policy policy = publisher.GetIamPolicy(subscriptionName.ToString());
             Console.WriteLine($"Subscription IAM Policy found for {subscriptionId}:");
-            Console.WriteLine($"{ policy.Bindings.ToString()}");
+            Console.WriteLine(policy.Bindings);
             // [END pubsub_get_subscription_policy]
             return 0;
         }
