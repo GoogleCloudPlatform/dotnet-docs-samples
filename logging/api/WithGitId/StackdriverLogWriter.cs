@@ -29,8 +29,9 @@ namespace GoogleCloudSamples
 {
     public static class StackdriverLogWriter
     {
-        private const string LogId = "YOUR-LOG-ID";
-        private const string ProjectId = "YOUR-PROJECT-ID";
+        public  static string LogId { get; set; } = "YOUR-LOG-ID";
+
+        public static string ProjectId { get; set; } = "YOUR-PROJECT-ID";
 
         public static string WriteLog(
             string msg,

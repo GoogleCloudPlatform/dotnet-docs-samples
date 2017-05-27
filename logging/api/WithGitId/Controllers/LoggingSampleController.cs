@@ -34,17 +34,29 @@ namespace GoogleCloudSamples.Controllers
         [HttpGet]
         public ActionResult Log(int? count)
         {
-            if (count > 0 && count <= 100)
+            try
             {
-                for (int i = 0; i < count; ++i)
+                if (StackdriverLogWriter.ProjectId == "YOUR-PROJECT-ID")
                 {
-                    StackdriverLogWriter.WriteLog("Hello, Stackdriver!");
+                    throw new Exception("Please update the YOUR-PROJECT-ID with your real project id and try again");
                 }
-                return Content($"Inserted {count} logs");
+
+                if (count > 0 && count <= 100)
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        StackdriverLogWriter.WriteLog("Hello, Stackdriver!");
+                    }
+                    return Content($"Inserted {count} logs");
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException("Pleae limit count in range of 1 ~ 100");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                throw new ArgumentOutOfRangeException("Pleae limit count in range of 1 ~ 100");
+                return Content(ex.ToString());
             }
         }
     }
