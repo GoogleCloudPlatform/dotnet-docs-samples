@@ -14,9 +14,9 @@ A sample demonstrating how to add source context git id to Stackdriver log entri
 
 ## Build and Run
 
-1.  **Follow the instructions in the [root README](../../README.md)**.
+1.  **Follow the instructions in the [root README](../../../README.md)**.
 
-2.  Open [WithGitId.csproj](LoggingSample.csproj) 
+2.  Open [WithGitId project](WithGitId.csproj) 
 
 3.  Edit `StackdriverLogWriter.cs`, and replace YOUR-PROJECT-ID with id
     of the project you created in step 1.  
@@ -25,8 +25,8 @@ A sample demonstrating how to add source context git id to Stackdriver log entri
 4.  Build and deploy the solution
 * In Solution explorer, select project WithGitId. 
 * Right click and select "Set as default project"
-* Right click the project again, select "Publish to Google Cloud" 
- # Make sure to select "launch web page after deployment"
+* Right click the project again, select "Publish to Google Cloud"  
+  Make sure to select "launch web page after deployment"
 * Follow the steps and deploy it to the VM you just created using ASP.NET image.
 
 5. By the end of deployment, you should be able to see the test web page. 
