@@ -82,14 +82,9 @@ namespace GoogleCloudSamples
             try
             {
                 var gitId = SourceContext.AppSourceContext?.Git?.RevisionId;
-                if (!String.IsNullOrWhiteSpace(gitId))
-                {
-                    labels.Add(SourceContext.GitRevisionIdLogLabel, gitId);
-                }
-                else
-                {
-                    Debug.WriteLine($"No valid git revision id found. Make sure you have source-context.json published with the application.");
-                }
+                Debug.Assert(!String.IsNullOrWhiteSpace(gitId), "No valid git revision id found.",
+                    "Make sure you have source-context.json published with the application.");
+                labels.Add(SourceContext.GitRevisionIdLogLabel, gitId);
             }
             catch (Exception ex) when (
                 ex is SecurityException
@@ -98,7 +93,7 @@ namespace GoogleCloudSamples
                 || ex is UnauthorizedAccessException)
             {
                 // This is best-effort only, exceptions from reading/parsing the source_context.json are ignored.
-                Debug.Assert(false, $"Exception at TryAddGitRevisionId. {ex}");
+                Debug.Fail("Exception at TryAddGitRevisionId.", ex.ToString());
             }
         }
     }
