@@ -98,7 +98,7 @@ namespace GoogleCloudSamples
                 || ex is UnauthorizedAccessException)
             {
                 // This is best-effort only, exceptions from reading/parsing the source_context.json are ignored.
-                Debug.WriteLine($"Exception at TryAddGitRevisionId. {ex}");
+                Debug.Assert(false, $"Exception at TryAddGitRevisionId. {ex}");
             }
         }
     }
