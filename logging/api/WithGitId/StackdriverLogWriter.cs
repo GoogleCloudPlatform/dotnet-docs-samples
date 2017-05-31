@@ -81,7 +81,7 @@ namespace GoogleCloudSamples
         {
             try
             {
-                var gitId = SourceContext.AppSourceContext?.Git?.RevisionId;
+                var gitId = SourceContext.AppSourceContext?.Git?.RevisionId ?? "";
                 Debug.Assert(!String.IsNullOrWhiteSpace(gitId), "No valid git revision id found.",
                     "Make sure you have source-context.json published with the application.");
                 labels.Add(SourceContext.GitRevisionIdLogLabel, gitId);
