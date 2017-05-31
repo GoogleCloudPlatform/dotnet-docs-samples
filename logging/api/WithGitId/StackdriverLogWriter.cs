@@ -29,7 +29,7 @@ namespace GoogleCloudSamples
 {
     public static class StackdriverLogWriter
     {
-        public  static string LogId { get; set; } = "YOUR-LOG-ID";
+        public static string LogId { get; set; } = "YOUR-LOG-ID";
 
         public static string ProjectId { get; set; } = "YOUR-PROJECT-ID";
 
@@ -70,9 +70,9 @@ namespace GoogleCloudSamples
 
             client.WriteLogEntries(
                 logName: LogNameOneof.From(logName),
-                resource: resource, 
-                labels: entryLabels, 
-                entries: new[] { logEntry }, 
+                resource: resource,
+                labels: entryLabels,
+                entries: new[] { logEntry },
                 callSettings: null);
             return logEntry.ToString();
         }
