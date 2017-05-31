@@ -1,0 +1,22 @@
+﻿@inherits System.Web.Mvc.WebViewPage
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Cloud Stackdriver Logs by .NET</title>
+    <meta charset="utf-8" />
+    <script src="http://code.angularjs.org/1.2.13/angular.min.js"></script>
+    <script src="/Scripts/main.js"></script>
+</head>
+<body>
+    <section ng-app="myApp" ng-controller="mainCtrl">
+        <h3>Enter a count, click sumit to generate log item samples.</h3>
+        <p></p>
+        <form ng-submit="doLogging()">
+            <label for="LogCount">count</label>
+            <input type="number" min="1" max="100" id="LogCount" ng-model="logCount">
+            <input type="submit" />
+        </form>
+        <p>{{submitResult}}</p>
+    </section>
+</body>
+</html>

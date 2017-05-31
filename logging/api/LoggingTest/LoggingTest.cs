@@ -128,6 +128,22 @@ namespace GoogleCloudSamples
             }
 
             [Fact]
+            public void TestWithLogId()
+            {
+                StackdriverLogWriter.ProjectId = _projectId;
+                StackdriverLogWriter.LogId = "TestWithLogId";
+                string message1 = "TestWithLogId test example";
+                StackdriverLogWriter.WriteLog("TestWithLogId test example");
+                Eventually(() =>
+                {
+                    // Retrieve the log entries just added, using the logId as a filter.
+                    var results = Run("list-log-entries", StackdriverLogWriter.LogId);
+                    // Confirm returned log entry contains expected value.
+                    Assert.Contains(message1, results.Stdout);
+                });
+            }
+
+            [Fact]
             public void TestDeleteLog()
             {
                 string logId = "logForTestDeleteLog";
