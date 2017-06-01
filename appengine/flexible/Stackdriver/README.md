@@ -20,7 +20,7 @@ when running in Google App Engine Flexible Environment.
 	https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
     make it easy to deploy to App Engine.  Install them if you are running Visual Studio.
 	
-5.  Edit [appsettings.json](appsettings.json).  Replace `your-google-project-id` with your project id.
+5.  Edit [appsettings.json](appsettings.json).  Replace `YOUR-GOOGLE-PROJECT-ID` with your project id.
 	
 
 ## Run Locally
