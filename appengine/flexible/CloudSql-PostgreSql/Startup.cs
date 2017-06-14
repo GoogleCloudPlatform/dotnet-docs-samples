@@ -50,7 +50,7 @@ namespace CloudSql
 
         NpgsqlConnection NewConnection()
         {
-            // [START example]
+            // [START connection]
             var connectionString = new NpgsqlConnectionStringBuilder(Configuration["CloudSqlConnectionString"])
             {
                 SslMode = SslMode.Require,
@@ -61,7 +61,7 @@ namespace CloudSql
             connection.ProvideClientCertificatesCallback +=
                 (X509CertificateCollection certs) => certs.Add(new X509Certificate2("client.pfx"));            
             connection.Open();
-            // [END example]
+            // [END connection]
             return connection;
         }
 
