@@ -29,8 +29,8 @@ Hang in there.
 	to enable [Google Cloud Key Management Service](https://cloud.google.com/kms/)
 	for your project.
 
-7.  Make the App Engine default service account a 
-	Cloud KMS CryptoKey Encrypter/Decrypter.
+7.  Make the App Engine default service account and Compute Engine default service accounts
+	Cloud KMS CryptoKey Encrypter/Decrypters.
 	
 	1.  Visit [the IAM section of Google Cloud Console](https://console.cloud.google.com/iam-admin/iam/project).
 
@@ -40,10 +40,16 @@ Hang in there.
 
 	4.  Click **Save**.
 
+	5.  Click the `Roles` dropdown next to `Compute Engine default service account`.  
+
+	6.  Under `Cloud KMS`, click **Cloud KMS CryptoKey Encrypter/Decrypter**.
+
+	7.  Click **Save**.
+
 8.  Deploy an SQL Server instance on Google Cloud Platform.
 	Follow the instructions 
 	[here](https://cloud.google.com/dotnet/docs/getting-started/using-sql-server),
-	but **stop** when you reach the **Configuration Settings** section that talks 
+	but **stop** when you reach the **Configuring settings** section that talks 
 	about `Web.config.`  .NET core applications do not use `Web.config` for
 	configuration.
 
@@ -58,6 +64,7 @@ Hang in there.
 9.  Initialize your database by running:
 
 	```
+	PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> dotnet ef migrations add init
 	PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> dotnet ef database update
 	```
 
@@ -96,28 +103,30 @@ PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> dotnet run
 
 ## Deploy to App Engine
 
-Before deploying to app engine, you must copy your user secrets to your Google
-project metadata with commands like this:
+### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
 
-```
-PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> .\Upload-UserSecrets
-```
+1.  In Solution Explorer, right-click the **SocialAuth** project and choose 
+    **Publish...**.
+
+2.  Under `Select a publish target`, click **Custom**.
+
+3.  For `Profile name:` type `local` and click **OK**.
+
+4.  Leave `Publish Method:` set to `File System` and leave the `Target location:` set to its default.
+
+5.  Click **Publish**.
 
 ### ![PowerShell](../.resources/powershell.png)Using PowerShell
 
+6.  Before deploying to app engine, you must copy your user secrets to your Google
+project metadata with commands like this:
 
-```psm1
-PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> dotnet restore
-PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> dotnet publish
-PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> gcloud beta app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
-```
+	```psm1
+	PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> .\Upload-UserSecrets
+	```
 
-### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
+7.  Deploy with gcloud:
 
-
-1.  In Solution Explorer, right-click the **SocialAuth** project and choose 
-    **Publish SocialAuth to Google Cloud**.
-
-2.  Click **App Engine Flex**.
-
-3.  Click **Publish**.
+	```psm1
+	PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> gcloud beta app deploy .\bin\Release\PublishOutput\app.yaml
+	```
