@@ -23,7 +23,7 @@ $secretLine = "info: ($secrets) = (.*)"
 foreach ($line in (dotnet user-secrets list )) {
 	if ($line -match $secretLine ) {
 		$key = $matches[1].replace(':', '-')
-		$value = "'" + $matches[2] + "'"
+		$value = $matches[2]
 		echo "gcloud compute project-info add-metadata --metadata=$key=..."
 		gcloud compute project-info add-metadata --metadata=$key=$value
 	}
