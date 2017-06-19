@@ -15,7 +15,7 @@ later.
 4. Build and Run the solution.
 
 5. Visual Studio will open a web browser loading the sample web app which will
-display a confirmation that trace is configured along with a link to intiate
+display a confirmation that trace is configured along with a link to initiate
 a trace like:
 
   ```
@@ -31,7 +31,7 @@ a trace like:
 7. Go back to Visual Studio and stop the program which will still be running.
 
 8. The sample trace is viewable on the
-[Stackdriver Logging](https://console.cloud.google.com/traces) page in the
+[Stackdriver Trace](https://console.cloud.google.com/traces) page in the
 Cloud Platform Console.
 
 ## Deploy to a Google Cloud Platform Windows VM
@@ -41,8 +41,8 @@ For instructions on how to deploy this sample application to a Google Cloud base
 
 ## Contributing changes
 
-* See [CONTRIBUTING.md](../../../CONTRIBUTING.md)
+* See [CONTRIBUTING.md](../../CONTRIBUTING.md)
 
 ## Licensing
 
-* See [LICENSE](../../../LICENSE)
+* See [LICENSE](../../LICENSE)
