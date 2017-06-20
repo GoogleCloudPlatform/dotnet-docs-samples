@@ -34,9 +34,9 @@ a trace like:
 [Stackdriver Trace](https://console.cloud.google.com/traces) page in the
 Cloud Platform Console.
 
-## Deploy to a Google Cloud Platform Windows VM
+## Deploy to Google Compute Engine
 
-For instructions on how to deploy this sample application to a Google Cloud based Windows VM instance, follow the same steps used to deploy the hello-world sample application in the
+For instructions on how to deploy this sample application to a Google Compute Engine Windows VM instance, follow the same steps used to deploy the hello-world sample application in the
 [Hello World tutorial](https://cloud.google.com/dotnet/docs/getting-started/hello-world#running_hello_world_on_google_cloud_platform).
 
 ## Contributing changes
