@@ -1,6 +1,6 @@
 # .NET Cloud Vision Samples
 
-A collection of samples that demonstrate how to call the 
+A collection of samples that demonstrate how to call the
 [Google Cloud Vision API](https://cloud.google.com/vision/docs/) from C#.
 
 ## Build and Run
@@ -34,43 +34,48 @@ A collection of samples that demonstrate how to call the
     ERROR(S):
       No verb selected.
 
-      labels             Detect labels in a local image file.
+      labels         Detect labels.
 
-      labels-gcs         Detect labels in an image stored in Google Cloud Storage.
+      safe-search    Detect safe-search.
 
-      safe-search        Detect safe-search in a local image file.
+      properties     Detect properties.
 
-      safe-search-gcs    Detect safe-search in an image stored in Google Cloud Storage.
+      faces          Detect faces.
 
-      properties         Detect properties in a local image file.
+      text           Detect text.
 
-      properties-gcs     Detect properties in an image stored in Google Cloud Storage.
+      logos          Detect logos.
 
-      faces              Detect faces in a local image file.
+      landmarks      Detect landmarks.
 
-      faces-gcs          Detect faces in an image stored in Google Cloud Storage.
+      crop-hint      Detect crop hint in a local image file.
 
-      text               Detect text in a local image file.
+      web            Find web pages with matching images.
 
-      text-gcs           Detect text in an image stored in Google Cloud Storage.
+      doc-text       Detect text in a document image.
 
-      logos              Detect logos in a local image file.
+      help           Display more information on a specific command.
 
-      logos-gcs          Detect logos in an image stored in Google Cloud Storage.
-
-      landmarks          Detect landmarks in a local image file.
-
-      landmarks-gcs      Detect landmarks in an image stored in Google Cloud Storage.
-
-      help               Display more information on a specific command.
-
-      version            Display version information.
+      version        Display version information.
 
     PS C:\...\dotnet-docs-samples\vision\api\Detect\bin\Debug> .\Detect text ..\..\..\VisionTest\d
     ata\bonito.gif
     Bonito: dried and
     fermented for months, but
     Still lively on your plate.
+
+    Bonito:
+    dried
+    and
+    fermented
+    for
+    months,
+    but
+    Still
+    lively
+    on
+    your
+    plate.
     ```
 
 ## Contributing changes
