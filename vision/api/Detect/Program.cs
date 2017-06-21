@@ -21,7 +21,8 @@ namespace GoogleCloudSamples
     class ImageOptions
     {
         [Value(0, HelpText = "The path to the image file. " +
-            "May be a local file path or a Google Cloud Storage uri.",
+            "May be a local file path, a Google Cloud Storage uri, or " +
+            "a publicly accessible HTTP or HTTPS uri",
             Required = true)]
         public string FilePath { get; set; }
     }
@@ -60,8 +61,13 @@ namespace GoogleCloudSamples
     {
         static Image ImageFromArg(string arg)
         {
-            return arg.ToLower().StartsWith("gs:/") ?
-                ImageFromUri(arg) : ImageFromFile(arg);
+            bool isFromUri = false;
+            if (arg.ToLower().StartsWith("gs:/") ||
+                arg.ToLower().StartsWith("http"))
+            {
+                isFromUri = true;
+            }
+            return isFromUri ? ImageFromUri(arg) : ImageFromFile(arg);
         }
 
         static Image ImageFromUri(string uri)
@@ -76,7 +82,8 @@ namespace GoogleCloudSamples
             // [START vision_safe_search_detection_gcs]
             // [START vision_label_detection_gcs]
             // [START vision_face_detection_gcs]
-            // Specify a Google Cloud Storage uri for the image.
+            // Specify a Google Cloud Storage uri for the image
+            // or a publicly accessible HTTP or HTTPS uri.
             var image = Image.FromUri(uri);
             // [END vision_face_detection_gcs]
             // [END vision_label_detection_gcs]

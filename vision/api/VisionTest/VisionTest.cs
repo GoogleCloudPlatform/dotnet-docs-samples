@@ -216,7 +216,8 @@ namespace GoogleCloudSamples
     }
 
     /// <summary>
-    /// Uploads the local file to Google Cloud Storage, then 
+    /// Uploads the local file to Google Cloud Storage, then runs test
+    /// using the Cloud Storage location prefixed with "gs://".
     /// </summary>
     public class CloudStorageTests : CommonTests, IClassFixture<RandomBucketFixture>
     {
@@ -241,6 +242,29 @@ namespace GoogleCloudSamples
                 collector.CopyToBucket(args[1], objectName);
                 return _detect.Run(cmdArgs);
             }
+        }
+    }
+
+    /// <summary>
+    /// Runs tests using files on public URIs.
+    /// </summary>
+    public class PublicUriTests : CommonTests
+    {
+        readonly CommandLineRunner _detect = new CommandLineRunner()
+        {
+            VoidMain = DetectProgram.Main,
+            Command = "Detect"
+        };
+
+        protected override ConsoleOutput Run(params string[] args)
+        {
+            string uriPrefix =
+                "https://raw.githubusercontent.com/GoogleCloudPlatform/";
+            string uriSampleFilePath =
+                "dotnet-docs-samples/master/vision/api/VisionTest/data/";
+            string filePublicUri =
+                uriPrefix + uriSampleFilePath + Path.GetFileName(args[1]);
+            return _detect.Run(args[0], filePublicUri);
         }
     }
 
