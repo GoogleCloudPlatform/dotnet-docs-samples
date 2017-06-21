@@ -1,8 +1,11 @@
 # Social Authentication and Google App Engine Flexible Environment
 
-This sample application demonstrates how to let users login into your application
+This is the companion sample for a [medium.com story](
+	https://medium.com/@SurferJeff/adding-social-login-to-your-net-app-engine-application-9b7f4149eb73).
+
+This sample application demonstrates how to let users log in into your application
 running in Google App Engine Flexible Environment with their Facebook or Google
-log in.
+log in.  
 
 ## Prerequisites
 
