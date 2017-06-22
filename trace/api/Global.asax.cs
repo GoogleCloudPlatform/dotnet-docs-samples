@@ -29,8 +29,8 @@ namespace Trace
         // [START configure_services_trace]
         public override void Init()
         {
-            // [START_EXCLUDE]
             string projectId = ConfigurationManager.AppSettings["projectId"];
+            // [START_EXCLUDE]
             // Confirm that projectId has been changed from placeholder value.
             if (projectId == ("YOUR-PROJECT-ID"))
             {
