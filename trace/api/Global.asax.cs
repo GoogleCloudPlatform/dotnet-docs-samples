@@ -32,10 +32,11 @@ namespace Trace
             string projectId = ConfigurationManager.AppSettings["projectId"];
             // [START_EXCLUDE]
             // Confirm that projectId has been changed from placeholder value.
-            if (projectId == ("YOUR-PROJECT-ID"))
+            if (projectId == ("YOUR-GOOGLE-PROJECT-ID"))
             {
                 throw new Exception("Update Web.config and replace "
-                    + "YOUR-PROJECT-ID with your project id, and recompile.");
+                    + "YOUR-GOOGLE-PROJECT-ID with your project id, "
+                    + "and recompile.");
             }
             // [END_EXCLUDE]
             base.Init();
