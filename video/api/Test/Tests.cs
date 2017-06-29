@@ -53,7 +53,7 @@ namespace GoogleCloudSamples.VideoIntelligence
                 "gs://cloudmleap/video/next/fox-snatched.mp4");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Start Time Offset", output.Stdout);
-            Assert.Contains("End Time Offset", output.Stdout);           
+            Assert.Contains("End Time Offset", output.Stdout);
         }
 
         [Fact]

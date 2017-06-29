@@ -13,6 +13,7 @@
 // the License.
 
 // [START videointelligence_quickstart]
+
 using Google.Cloud.VideoIntelligence.V1Beta1;
 using System;
 
