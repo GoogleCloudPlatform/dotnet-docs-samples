@@ -65,7 +65,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Contains("Cat", output.Stdout);
         }
 
-        [Fact]
+        // TODO: Make a [FACT] when faces feature is publicly available.
         void TestFacesNotWhitelisted()
         {
             // Analyzing faces is a feature that requires your

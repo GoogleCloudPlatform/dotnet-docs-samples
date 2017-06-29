@@ -110,14 +110,15 @@ namespace GoogleCloudSamples.VideoIntelligence
 
         public static void Main(string[] args)
         {
+            // TODO: add faces command when it becomes publicly available.
             Parser.Default.ParseArguments<
                 AnalyzeShotsOptions,
-                AnalyzeLabelsOptions,
-                AnalyzeFacesOptions
+                // AnalyzeFacesOptions,
+                AnalyzeLabelsOptions
                 >(args).MapResult(
                 (AnalyzeShotsOptions opts) => AnalyzeShots(opts.Uri),
+                // (AnalyzeFacesOptions opts) => AnalyzeFaces(opts.Uri),
                 (AnalyzeLabelsOptions opts) => AnalyzeLabels(opts.Uri),
-                (AnalyzeFacesOptions opts) => AnalyzeFaces(opts.Uri),
                 errs => 1);
         }
     }
