@@ -53,7 +53,7 @@ BigquerySample <project_id>";
                 // [END query]
                 // [START print_results]
                 Console.Write("\nQuery Results:\n------------\n");
-                foreach (var row in result.GetRows())
+                foreach (var row in result)
                 {
                     Console.WriteLine($"{row["title"]}: {row["unique_words"]}");
                 }
