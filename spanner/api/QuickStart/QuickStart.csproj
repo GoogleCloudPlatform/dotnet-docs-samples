@@ -39,12 +39,12 @@
       <HintPath>..\packages\Google.Api.CommonProtos.1.1.0\lib\net45\Google.Api.CommonProtos.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Api.Gax, Version=2.0.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Api.Gax.2.0.0\lib\net45\Google.Api.Gax.dll</HintPath>
+    <Reference Include="Google.Api.Gax, Version=2.1.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Api.Gax.2.1.0-beta01\lib\net45\Google.Api.Gax.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Api.Gax.Grpc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Api.Gax.Grpc.2.0.0\lib\net45\Google.Api.Gax.Grpc.dll</HintPath>
+    <Reference Include="Google.Api.Gax.Grpc, Version=2.1.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Api.Gax.Grpc.2.1.0-beta01\lib\net45\Google.Api.Gax.Grpc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis, Version=1.27.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
@@ -72,19 +72,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Cloud.Spanner.Admin.Database.V1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Cloud.Spanner.Admin.Database.V1.1.0.0-alpha03\lib\net45\Google.Cloud.Spanner.Admin.Database.V1.dll</HintPath>
+      <HintPath>..\packages\Google.Cloud.Spanner.Admin.Database.V1.1.0.0-beta01\lib\net45\Google.Cloud.Spanner.Admin.Database.V1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Cloud.Spanner.Admin.Instance.V1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Cloud.Spanner.Admin.Instance.V1.1.0.0-alpha03\lib\net45\Google.Cloud.Spanner.Admin.Instance.V1.dll</HintPath>
+      <HintPath>..\packages\Google.Cloud.Spanner.Admin.Instance.V1.1.0.0-beta01\lib\net45\Google.Cloud.Spanner.Admin.Instance.V1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Cloud.Spanner.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Cloud.Spanner.Data.1.0.0-alpha03\lib\net45\Google.Cloud.Spanner.Data.dll</HintPath>
+      <HintPath>..\packages\Google.Cloud.Spanner.Data.1.0.0-beta01\lib\net45\Google.Cloud.Spanner.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Cloud.Spanner.V1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Cloud.Spanner.V1.1.0.0-alpha03\lib\net45\Google.Cloud.Spanner.V1.dll</HintPath>
+      <HintPath>..\packages\Google.Cloud.Spanner.V1.1.0.0-beta01\lib\net45\Google.Cloud.Spanner.V1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.LongRunning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">

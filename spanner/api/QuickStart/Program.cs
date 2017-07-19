@@ -32,7 +32,7 @@ namespace GoogleCloudSamples.Spanner
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}/"
                 + $"databases/{databaseId}";
-            // Create connection to spanner.
+            // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
             {
                 // Execute a simple SQL statement.
@@ -42,7 +42,7 @@ namespace GoogleCloudSamples.Spanner
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine(reader.GetValue(0));
+                        Console.WriteLine(reader["test"]);
                     }
                 }
             }
