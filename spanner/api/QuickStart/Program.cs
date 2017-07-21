@@ -38,11 +38,12 @@ namespace GoogleCloudSamples.Spanner
                 // Execute a simple SQL statement.
                 var cmd = connection.CreateSelectCommand(
                     @"SELECT ""Hello World"" as test");
-                using (var reader = cmd.ExecuteReader())
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine(reader["test"]);
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("test"));
                     }
                 }
             }
