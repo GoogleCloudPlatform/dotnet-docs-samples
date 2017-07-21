@@ -236,7 +236,6 @@ namespace GoogleCloudSamples.Spanner
                 cmd = connection.CreateDdlCommand(createTableStatement);
                 await cmd.ExecuteNonQueryAsync();
             }
-            return;
             // [END create_database]
         }
 
@@ -257,7 +256,6 @@ namespace GoogleCloudSamples.Spanner
                 await createCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the AlbumsByAlbumTitle index.");
-            return;
             // [END create_index]
         }
 
@@ -279,7 +277,6 @@ namespace GoogleCloudSamples.Spanner
                 await createCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the AlbumsByAlbumTitle2 index.");
-            return;
             // [END create_storing_index]
         }
 
@@ -291,16 +288,15 @@ namespace GoogleCloudSamples.Spanner
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/"
                 + $"{instanceId}/databases/{databaseId}";
-            string createStatement =
+            string alterStatement =
                 "ALTER TABLE Albums ADD COLUMN MarketingBudget INT64";
             // Make the request.
             using (var connection = new SpannerConnection(connectionString))
             {
-                var updateCmd = connection.CreateDdlCommand(createStatement);
+                var updateCmd = connection.CreateDdlCommand(alterStatement);
                 await updateCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the MarketingBudget column.");
-            return;
             // [END add_column]
         }
 
@@ -329,7 +325,6 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            return;
             // [END query_data]
         }
 
@@ -368,7 +363,6 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            return;
             // [END read_data_with_index]
             // [END query_data_with_index]
         }
@@ -407,7 +401,6 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            return;
             // [END read_data_with_storing_index]
         }
 
@@ -461,7 +454,6 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
                 scope.Complete();
-                return;
                 // [END read_only_transaction]
             }
         }
@@ -511,7 +503,6 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             Console.WriteLine("Updated data.");
-            return;
             // [END update_data]
         }
 
@@ -540,14 +531,14 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            return;
             // [END query_data_with_new_column]
         }
 
         internal class CustomTransientErrorDetectionStrategy
             : ITransientErrorDetectionStrategy
         {
-            public bool IsTransient(Exception ex) => ex.IsTransientSpannerFault();
+            public bool IsTransient(Exception ex) =>
+                ex.IsTransientSpannerFault();
         }
 
         public static async Task ReadWriteWithTransactionAsync(
@@ -633,7 +624,6 @@ namespace GoogleCloudSamples.Spanner
                     // Yield Task thread back to the current context.
                     await Task.Yield();
                     Console.WriteLine("Transaction complete.");
-                    return;
                     // [END read_write_transaction]
                     // TODO - Remove the above Task.Yield() statement. 
                     // A pending client library update will not require this
@@ -719,7 +709,6 @@ namespace GoogleCloudSamples.Spanner
                 cmd.Parameters["AlbumTitle"].Value = "Terrified";
                 await cmd.ExecuteNonQueryAsync();
                 Console.WriteLine("Inserted data.");
-                return;
             }
             // [END insert_data]
         }
@@ -738,7 +727,6 @@ namespace GoogleCloudSamples.Spanner
                 var cmd = connection.CreateDdlCommand(createStatement);
                 await cmd.ExecuteNonQueryAsync();
             }
-            return;
             // [END create_custom_database]
         }
 
