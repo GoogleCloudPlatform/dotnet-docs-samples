@@ -189,6 +189,12 @@ namespace GoogleCloudSamples.Spanner
 
     public class Program
     {
+        enum ExitCode : int
+        {
+            Success = 0,
+            InvalidParameter = 1,
+        }
+
         public static async Task CreateSampleDatabaseAsync(
             string projectId, string instanceId, string databaseId)
         {
@@ -243,7 +249,7 @@ namespace GoogleCloudSamples.Spanner
                 $"Data Source=projects/{projectId}/instances/"
                 + $"{instanceId}/databases/{databaseId}";
             string createStatement =
-                $"CREATE INDEX AlbumsByAlbumTitle ON Albums(AlbumTitle)";
+                "CREATE INDEX AlbumsByAlbumTitle ON Albums(AlbumTitle)";
             // Make the request.
             using (var connection = new SpannerConnection(connectionString))
             {
@@ -256,7 +262,7 @@ namespace GoogleCloudSamples.Spanner
         }
 
         public static async Task AddStoringIndexAsync(
-    string projectId, string instanceId, string databaseId)
+            string projectId, string instanceId, string databaseId)
         {
             // [START create_storing_index]
             // Initialize request argument(s).
@@ -264,7 +270,7 @@ namespace GoogleCloudSamples.Spanner
                 $"Data Source=projects/{projectId}/instances/"
                 + $"{instanceId}/databases/{databaseId}";
             string createStatement =
-                $"CREATE INDEX AlbumsByAlbumTitle2 ON Albums(AlbumTitle) "
+                "CREATE INDEX AlbumsByAlbumTitle2 ON Albums(AlbumTitle) "
                 + "STORING (MarketingBudget)";
             // Make the request.
             using (var connection = new SpannerConnection(connectionString))
@@ -272,12 +278,13 @@ namespace GoogleCloudSamples.Spanner
                 var createCmd = connection.CreateDdlCommand(createStatement);
                 await createCmd.ExecuteNonQueryAsync();
             }
+            Console.WriteLine("Added the AlbumsByAlbumTitle2 index.");
             return;
             // [END create_storing_index]
         }
 
         public static async Task AddColumnAsync(
-    string projectId, string instanceId, string databaseId)
+            string projectId, string instanceId, string databaseId)
         {
             // [START add_column]
             // Initialize request argument(s).
@@ -285,12 +292,12 @@ namespace GoogleCloudSamples.Spanner
                 $"Data Source=projects/{projectId}/instances/"
                 + $"{instanceId}/databases/{databaseId}";
             string createStatement =
-                $"ALTER TABLE Albums ADD COLUMN MarketingBudget INT64";
+                "ALTER TABLE Albums ADD COLUMN MarketingBudget INT64";
             // Make the request.
             using (var connection = new SpannerConnection(connectionString))
             {
-                var createCmd = connection.CreateDdlCommand(createStatement);
-                await createCmd.ExecuteNonQueryAsync();
+                var updateCmd = connection.CreateDdlCommand(createStatement);
+                await updateCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the MarketingBudget column.");
             return;
@@ -313,9 +320,12 @@ namespace GoogleCloudSamples.Spanner
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine($"SingerId : {reader["SingerId"]} "
-                        + $"AlbumId : {reader["AlbumId"]} "
-                        + $"AlbumTitle : {reader["AlbumTitle"]}");
+                        Console.WriteLine("SingerId : "
+                            + reader.GetFieldValue<string>("SingerId")
+                            + " AlbumId : "
+                            + reader.GetFieldValue<string>("AlbumId")
+                            + " AlbumTitle : "
+                            + reader.GetFieldValue<string>("AlbumTitle"));
                     }
                 }
             }
@@ -323,12 +333,10 @@ namespace GoogleCloudSamples.Spanner
             // [END query_data]
         }
 
-
         public static async Task QueryDataWithIndexAsync(
             string projectId, string instanceId, string databaseId,
             string startTitle = "Aardvark", string endTitle = "Goo")
         {
-            Console.WriteLine("Running QueryDataWithIndex...");
             // [START query_data_with_index]
             // [START read_data_with_index]
             string connectionString =
@@ -340,15 +348,23 @@ namespace GoogleCloudSamples.Spanner
                 var cmd = connection.CreateSelectCommand(
                     "SELECT AlbumId, AlbumTitle, MarketingBudget FROM Albums@ "
                     + "{FORCE_INDEX=AlbumsByAlbumTitle} "
-                    + $"WHERE AlbumTitle >= '{startTitle}' "
-                    + $"AND AlbumTitle < '{endTitle}'");
+                    + $"WHERE AlbumTitle >= @startTitle "
+                    + $"AND AlbumTitle < @endTitle",
+                    new SpannerParameterCollection {
+                        {"startTitle", SpannerDbType.String},
+                        {"endTitle", SpannerDbType.String} });
+                cmd.Parameters["startTitle"].Value = startTitle;
+                cmd.Parameters["endTitle"].Value = endTitle;
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine($"AlbumId : {reader["AlbumId"]} "
-                        + $"AlbumTitle : {reader["AlbumTitle"]} "
-                        + $"MarketingBudget : {reader["MarketingBudget"]}");
+                        Console.WriteLine("AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + " AlbumTitle : "
+                        + reader.GetFieldValue<string>("AlbumTitle")
+                        + " MarketingBudget : "
+                        + reader.GetFieldValue<string>("MarketingBudget"));
                     }
                 }
             }
@@ -371,15 +387,23 @@ namespace GoogleCloudSamples.Spanner
                 var cmd = connection.CreateSelectCommand(
                     "SELECT AlbumId, AlbumTitle, MarketingBudget FROM Albums@ "
                     + "{FORCE_INDEX=AlbumsByAlbumTitle2} "
-                    + $"WHERE AlbumTitle >= '{startTitle}' "
-                    + $"AND AlbumTitle < '{endTitle}'");
+                    + $"WHERE AlbumTitle >= @startTitle "
+                    + $"AND AlbumTitle < @endTitle",
+                    new SpannerParameterCollection {
+                        {"startTitle", SpannerDbType.String},
+                        {"endTitle", SpannerDbType.String} });
+                cmd.Parameters["startTitle"].Value = startTitle;
+                cmd.Parameters["endTitle"].Value = endTitle;
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine($"AlbumId : {reader["AlbumId"]} "
-                        + $"AlbumTitle : {reader["AlbumTitle"]} "
-                        + $"MarketingBudget : {reader["MarketingBudget"]}");
+                        Console.WriteLine("AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + " AlbumTitle : "
+                        + reader.GetFieldValue<string>("AlbumTitle")
+                        + " MarketingBudget : "
+                        + reader.GetFieldValue<string>("MarketingBudget"));
                     }
                 }
             }
@@ -388,7 +412,7 @@ namespace GoogleCloudSamples.Spanner
         }
 
         public static async Task QueryDataWithTransactionAsync(
-    string projectId, string instanceId, string databaseId)
+            string projectId, string instanceId, string databaseId)
         {
             // [START read_only_transaction]
             string connectionString =
@@ -400,13 +424,11 @@ namespace GoogleCloudSamples.Spanner
                 TransactionScopeAsyncFlowOption.Enabled))
             {
                 // Create connection to Cloud Spanner.
-                var connection = new SpannerConnection(
-                    connectionString);
-                // Open connection as read only within the scope 
-                // of the current transaction.
-                connection.OpenAsReadOnly();
-                using (connection)
+                using (var connection = new SpannerConnection(connectionString))
                 {
+                    // Open connection as read only within the scope 
+                    // of the current transaction.
+                    await connection.OpenAsReadOnlyAsync().ConfigureAwait(false);
                     var cmd = connection.CreateSelectCommand(
                         "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
                     // Read #1.
@@ -414,10 +436,12 @@ namespace GoogleCloudSamples.Spanner
                     {
                         while (await reader.ReadAsync())
                         {
-                            Console.WriteLine(
-                                $"SingerId : {reader["SingerId"]}"
-                                + $" AlbumId : {reader["AlbumId"]}"
-                                + $" AlbumTitle : {reader["AlbumTitle"]}");
+                            Console.WriteLine("SingerId : "
+                                + reader.GetFieldValue<string>("SingerId")
+                                + " AlbumId : "
+                                + reader.GetFieldValue<string>("AlbumId")
+                                + " AlbumTitle : "
+                                + reader.GetFieldValue<string>("AlbumTitle"));
                         }
                     }
                     // Read #2. Even if changes occur in-between the reads, 
@@ -427,23 +451,23 @@ namespace GoogleCloudSamples.Spanner
                     {
                         while (await reader.ReadAsync())
                         {
-                            Console.WriteLine(
-                                $"SingerId : {reader["SingerId"]}"
-                                + $" AlbumId : {reader["AlbumId"]}"
-                                + $" AlbumTitle : {reader["AlbumTitle"]}");
+                            Console.WriteLine("SingerId : "
+                                + reader.GetFieldValue<string>("SingerId")
+                                + " AlbumId : "
+                                + reader.GetFieldValue<string>("AlbumId")
+                                + " AlbumTitle : "
+                                + reader.GetFieldValue<string>("AlbumTitle"));
                         }
                     }
                 }
-                //scope.Complete();
+                scope.Complete();
                 return;
                 // [END read_only_transaction]
-                // TODO - Unncomment the above line containing scope.Complete().
-                // A pending client library update will enable this.
             }
         }
 
         public static async Task WriteDataToNewColumnAsync(
-    string projectId, string instanceId, string databaseId)
+            string projectId, string instanceId, string databaseId)
         {
             // [START update_data]
             string connectionString =
@@ -464,21 +488,22 @@ namespace GoogleCloudSamples.Spanner
                 {
                     while (await reader.ReadAsync())
                     {
-                        if (reader.GetInt64(0) == 1 && reader.GetInt64(1) == 1)
+                        if (reader.GetFieldValue<int>("SingerId") == 1
+                            && reader.GetFieldValue<int>("AlbumId") == 1)
                         {
                             cmd.Parameters["SingerId"].Value =
-                                reader.GetInt64(0);
+                                reader.GetFieldValue<int>("SingerId");
                             cmd.Parameters["AlbumId"].Value =
-                                reader.GetInt64(1);
+                                reader.GetFieldValue<int>("AlbumId");
                             cmd.Parameters["MarketingBudget"].Value = 100000;
                             await cmd.ExecuteNonQueryAsync();
                         }
                         if (reader.GetInt64(0) == 2 && reader.GetInt64(1) == 2)
                         {
                             cmd.Parameters["SingerId"].Value =
-                                reader.GetInt64(0);
+                                reader.GetFieldValue<int>("SingerId");
                             cmd.Parameters["AlbumId"].Value =
-                                reader.GetInt64(1);
+                                reader.GetFieldValue<int>("AlbumId");
                             cmd.Parameters["MarketingBudget"].Value = 500000;
                             await cmd.ExecuteNonQueryAsync();
                         }
@@ -506,9 +531,12 @@ namespace GoogleCloudSamples.Spanner
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine($"SingerId : {reader["SingerId"]} "
-                        + $"AlbumId : {reader["AlbumId"]} "
-                        + $"MarketingBudget : {reader["MarketingBudget"]}");
+                        Console.WriteLine("SingerId : "
+                        + reader.GetFieldValue<string>("SingerId")
+                        + " AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + " MarketingBudget : "
+                        + reader.GetFieldValue<string>("MarketingBudget"));
                     }
                 }
             }
@@ -519,12 +547,7 @@ namespace GoogleCloudSamples.Spanner
         internal class CustomTransientErrorDetectionStrategy
             : ITransientErrorDetectionStrategy
         {
-            public bool IsTransient(Exception ex)
-            {
-                if (ex.IsTransientSpannerFault())
-                    return true;
-                return false;
-            }
+            public bool IsTransient(Exception ex) => ex.IsTransientSpannerFault();
         }
 
         public static async Task ReadWriteWithTransactionAsync(
@@ -562,11 +585,10 @@ namespace GoogleCloudSamples.Spanner
                         {
                             // Read the second album's budget.
                             secondBudget =
-                                decimal.Parse(reader["MarketingBudget"]
-                                    .ToString());
-                            // Confirm second Album has > 300,000 and if not
-                            // raise an exception. Raising an exception will 
-                            // automatically roll back the transaction.
+                                reader.GetFieldValue<decimal>("MarketingBudget");
+                            // Confirm second Album's budget is sufficient and
+                            // if not raise an exception. Raising an exception
+                            // will automatically roll back the transaction.
                             if (secondBudget < minimumAmountToTransfer)
                             {
                                 throw new Exception("The second album's "
@@ -584,8 +606,7 @@ namespace GoogleCloudSamples.Spanner
                         while (await reader.ReadAsync())
                         {
                             firstBudget =
-                                decimal.Parse(reader["MarketingBudget"]
-                                    .ToString());
+                                reader.GetFieldValue<decimal>("MarketingBudget");
                         }
                     }
 
@@ -597,13 +618,13 @@ namespace GoogleCloudSamples.Spanner
                         {"MarketingBudget", SpannerDbType.Int64},
                     });
                     // Update second album to remove the transfer amount.
-                    secondBudget = secondBudget - transferAmount;
+                    secondBudget -= transferAmount;
                     cmd.Parameters["SingerId"].Value = 2;
                     cmd.Parameters["AlbumId"].Value = 2;
                     cmd.Parameters["MarketingBudget"].Value = secondBudget;
                     await cmd.ExecuteNonQueryAsync();
                     // Update first album to add the transfer amount.
-                    firstBudget = firstBudget + transferAmount;
+                    firstBudget += transferAmount;
                     cmd.Parameters["SingerId"].Value = 1;
                     cmd.Parameters["AlbumId"].Value = 1;
                     cmd.Parameters["MarketingBudget"].Value = firstBudget;
@@ -625,6 +646,8 @@ namespace GoogleCloudSamples.Spanner
             string projectId, string instanceId, string databaseId)
         {
             // [START insert_data]
+            const int firstSingerId = 1;
+            const int secondSingerId = 2;
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -638,20 +661,30 @@ namespace GoogleCloudSamples.Spanner
                         {"FirstName", SpannerDbType.String},
                         {"LastName", SpannerDbType.String}
                     });
-                // Insert first row
-                cmd.Parameters["SingerId"].Value = 1;
-                cmd.Parameters["FirstName"].Value = "Summerian";
-                cmd.Parameters["LastName"].Value = " Chanter";
+                // Insert first row.
+                cmd.Parameters["SingerId"].Value = firstSingerId;
+                cmd.Parameters["FirstName"].Value = "Marc";
+                cmd.Parameters["LastName"].Value = " Richards";
                 await cmd.ExecuteNonQueryAsync();
-                // Insert second row
-                cmd.Parameters["SingerId"].Value = 2;
-                cmd.Parameters["FirstName"].Value = "African";
-                cmd.Parameters["LastName"].Value = "Artist";
+                // Insert second row.
+                cmd.Parameters["SingerId"].Value = secondSingerId;
+                cmd.Parameters["FirstName"].Value = "Catalina";
+                cmd.Parameters["LastName"].Value = "Smith";
                 await cmd.ExecuteNonQueryAsync();
-                // Insert third row
+                // Insert third row.
                 cmd.Parameters["SingerId"].Value = 3;
-                cmd.Parameters["FirstName"].Value = "Indigenous";
-                cmd.Parameters["LastName"].Value = "Star";
+                cmd.Parameters["FirstName"].Value = "Alice";
+                cmd.Parameters["LastName"].Value = "Trentor";
+                await cmd.ExecuteNonQueryAsync();
+                // Insert forth row.
+                cmd.Parameters["SingerId"].Value = 4;
+                cmd.Parameters["FirstName"].Value = "Lea";
+                cmd.Parameters["LastName"].Value = "Martin";
+                await cmd.ExecuteNonQueryAsync();
+                // Insert fifth row.
+                cmd.Parameters["SingerId"].Value = 5;
+                cmd.Parameters["FirstName"].Value = "David";
+                cmd.Parameters["LastName"].Value = "Lomond";
                 await cmd.ExecuteNonQueryAsync();
                 // Insert rows into the Albums table.
                 cmd = connection.CreateInsertCommand("Albums",
@@ -661,29 +694,29 @@ namespace GoogleCloudSamples.Spanner
                         {"AlbumTitle", SpannerDbType.String}
                     });
                 // Insert first row.
-                cmd.Parameters["SingerId"].Value = 1;
+                cmd.Parameters["SingerId"].Value = firstSingerId;
                 cmd.Parameters["AlbumId"].Value = 1;
-                cmd.Parameters["AlbumTitle"].Value = "Good Hurrian Songs";
+                cmd.Parameters["AlbumTitle"].Value = "Go, Go, Go";
                 await cmd.ExecuteNonQueryAsync();
                 // Insert second row.
-                cmd.Parameters["SingerId"].Value = 1;
+                cmd.Parameters["SingerId"].Value = firstSingerId;
                 cmd.Parameters["AlbumId"].Value = 2;
-                cmd.Parameters["AlbumTitle"].Value = "Cuneiform Chorus";
+                cmd.Parameters["AlbumTitle"].Value = "Total Junk";
                 await cmd.ExecuteNonQueryAsync();
                 // Insert third row.
-                cmd.Parameters["SingerId"].Value = 2;
+                cmd.Parameters["SingerId"].Value = secondSingerId;
                 cmd.Parameters["AlbumId"].Value = 1;
-                cmd.Parameters["AlbumTitle"].Value = "Zany Mbira Music";
+                cmd.Parameters["AlbumTitle"].Value = "Green";
                 await cmd.ExecuteNonQueryAsync();
                 // Insert fourth row.
-                cmd.Parameters["SingerId"].Value = 2;
+                cmd.Parameters["SingerId"].Value = secondSingerId;
                 cmd.Parameters["AlbumId"].Value = 2;
-                cmd.Parameters["AlbumTitle"].Value = "Ambient Sistrum Sirens";
+                cmd.Parameters["AlbumTitle"].Value = "Forever Hold your Peace";
                 await cmd.ExecuteNonQueryAsync();
                 // Insert fifth row.
-                cmd.Parameters["SingerId"].Value = 2;
+                cmd.Parameters["SingerId"].Value = secondSingerId;
                 cmd.Parameters["AlbumId"].Value = 3;
-                cmd.Parameters["AlbumTitle"].Value = "Congo Carols";
+                cmd.Parameters["AlbumTitle"].Value = "Terrified";
                 await cmd.ExecuteNonQueryAsync();
                 Console.WriteLine("Inserted data.");
                 return;
@@ -710,39 +743,38 @@ namespace GoogleCloudSamples.Spanner
         }
 
         public static object CreateSampleDatabase(string projectId,
-    string instanceId, string databaseId)
+            string instanceId, string databaseId)
         {
-            var response = Task.Run(async () =>
-                await CreateSampleDatabaseAsync(
-                    projectId, instanceId, databaseId));
+            var response =
+                CreateSampleDatabaseAsync(projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Operation status: {response.Status}");
             Console.WriteLine($"Created sample database {databaseId} on "
                 + $"instance {instanceId}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object InsertSampleData(string projectId,
-string instanceId, string databaseId)
+            string instanceId, string databaseId)
         {
-            var response = Task.Run(async () => await InsertSampleDataAsync(
-                projectId, instanceId, databaseId));
+            var response = InsertSampleDataAsync(
+                projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Operation status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object QuerySampleData(string projectId,
-string instanceId, string databaseId)
+            string instanceId, string databaseId)
         {
-            var response = Task.Run(async () => await QuerySampleDataAsync(
-                projectId, instanceId, databaseId));
+            var response = QuerySampleDataAsync(
+                projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Operation status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object QueryDataWithIndex(string projectId,
@@ -756,8 +788,8 @@ string instanceId, string databaseId)
             {
                 // startTitle not provided, exclude startTitle and endTitle from 
                 // method call to use default values for both.
-                response = Task.Run(async () => await QueryDataWithIndexAsync(
-                        projectId, instanceId, databaseId));
+                response = QueryDataWithIndexAsync(
+                        projectId, instanceId, databaseId);
             }
             else if (!string.IsNullOrEmpty(startTitle)
                 && string.IsNullOrEmpty(endTitle))
@@ -769,57 +801,55 @@ string instanceId, string databaseId)
                     + "of the title index and the end of the title index.");
                 Console.WriteLine("Or you can exclude both to run the "
                     + "query with default values.");
-                return 0;
+                return ExitCode.InvalidParameter;
             }
             else if (!string.IsNullOrEmpty(startTitle)
                 && !string.IsNullOrEmpty(endTitle))
             {
                 // Both startTitle and endTitle provided, include them both in
                 // the method call to QueryDataWithIndexAsync.
-                response = Task.Run(async () => await QueryDataWithIndexAsync(
+                response = QueryDataWithIndexAsync(
                         projectId, instanceId, databaseId,
-                        startTitle, endTitle));
+                        startTitle, endTitle);
             }
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Operation status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object CreateDatabase(string projectId,
             string instanceId, string databaseId)
         {
-            var response = Task.Run(async () => await CreateDatabaseAsync(
-                projectId, instanceId, databaseId));
+            var response = CreateDatabaseAsync(
+                projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Response status: {response.Status}");
             Console.WriteLine($"Created database {databaseId} on instance "
                 + $"{instanceId}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object AddIndex(string projectId,
-    string instanceId, string databaseId)
+            string instanceId, string databaseId)
         {
-            var response = Task.Run(async () =>
-            await AddIndexAsync(
-                projectId, instanceId, databaseId));
+            var response = AddIndexAsync(
+                projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Response status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
         public static object AddStoringIndex(string projectId,
-string instanceId, string databaseId)
+            string instanceId, string databaseId)
         {
-            var response = Task.Run(async () =>
-            await AddStoringIndexAsync(
-                projectId, instanceId, databaseId));
+            var response = AddStoringIndexAsync(
+                projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Response status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object QueryDataWithStoringIndex(string projectId,
@@ -832,9 +862,8 @@ string instanceId, string databaseId)
             {
                 // startTitle not provided, exclude startTitle and endTitle from 
                 // method call to use default values for both.
-                response = Task.Run(async () =>
-                    await QueryDataWithStoringIndexAsync(
-                        projectId, instanceId, databaseId));
+                response = QueryDataWithStoringIndexAsync(
+                        projectId, instanceId, databaseId);
             }
             else if (!string.IsNullOrEmpty(startTitle)
                 && string.IsNullOrEmpty(endTitle))
@@ -846,70 +875,68 @@ string instanceId, string databaseId)
                     + "of the title index and the end of the title index.");
                 Console.WriteLine("Or you can exclude both to run the "
                     + "query with default values.");
-                return 0;
+                return ExitCode.InvalidParameter;
             }
             else if (!string.IsNullOrEmpty(startTitle)
                 && !string.IsNullOrEmpty(endTitle))
             {
                 // Both startTitle and endTitle provided, include them both in
                 // the method call to QueryDataWithIndexAsync.
-                response = Task.Run(async () =>
-                    await QueryDataWithStoringIndexAsync(
+                response = QueryDataWithStoringIndexAsync(
                         projectId, instanceId, databaseId,
-                        startTitle, endTitle));
+                        startTitle, endTitle);
             }
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Operation status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object AddColumn(string projectId,
-string instanceId, string databaseId)
+            string instanceId, string databaseId)
         {
-            var response = Task.Run(async () =>
-            await AddColumnAsync(
-                projectId, instanceId, databaseId));
+            var response = AddColumnAsync(
+                projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Response status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object WriteDataToNewColumn(string projectId,
-string instanceId, string databaseId)
+            string instanceId, string databaseId)
         {
-            var response = Task.Run(async () =>
-            await WriteDataToNewColumnAsync(
-                projectId, instanceId, databaseId));
+            var response = WriteDataToNewColumnAsync(
+                projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Response status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object QueryNewColumn(string projectId,
-string instanceId, string databaseId)
+            string instanceId, string databaseId)
         {
-            var response = Task.Run(async () =>
-            await QueryNewColumnAsync(
-                projectId, instanceId, databaseId));
+            var response = QueryNewColumnAsync(projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Response status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object QueryDataWithTransaction(string projectId,
-string instanceId, string databaseId)
+            string instanceId, string databaseId)
         {
-            var response = Task.Run(async () =>
+            var retryPolicy =
+                new RetryPolicy<CustomTransientErrorDetectionStrategy>
+                    (RetryStrategy.DefaultExponential);
+            var response = retryPolicy.ExecuteAction(async () =>
                 await QueryDataWithTransactionAsync(
                     projectId, instanceId, databaseId));
             Console.WriteLine("Waiting for operation to complete...");
             Task.WaitAll(response);
             Console.WriteLine($"Operation status: {response.Status}");
-            return 0;
+            return ExitCode.Success;
         }
 
         public static object ReadWriteWithTransaction(string projectId,
@@ -917,10 +944,12 @@ string instanceId, string databaseId)
         {
             try
             {
-                int retryCount = 3;
-                var retryStrategy = new Incremental(retryCount, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
-                var retryPolicy = new RetryPolicy<CustomTransientErrorDetectionStrategy>(retryStrategy);
-                var response = retryPolicy.ExecuteAction(async () => await ReadWriteWithTransactionAsync(projectId, instanceId, databaseId));
+                var retryPolicy =
+                    new RetryPolicy<CustomTransientErrorDetectionStrategy>
+                        (RetryStrategy.DefaultExponential);
+                var response = retryPolicy.ExecuteAction(async () =>
+                await ReadWriteWithTransactionAsync(
+                    projectId, instanceId, databaseId));
                 Console.WriteLine("Waiting for operation to complete...");
                 Task.WaitAll(response);
                 Console.WriteLine($"Response status: {response.Status}");
@@ -930,7 +959,7 @@ string instanceId, string databaseId)
                 Console.WriteLine(e.Message);
             }
 
-            return 0;
+            return ExitCode.Success;
         }
 
 
