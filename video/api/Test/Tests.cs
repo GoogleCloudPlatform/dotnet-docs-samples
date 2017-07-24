@@ -12,6 +12,9 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace GoogleCloudSamples.VideoIntelligence
@@ -31,8 +34,10 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
     }
 
-    public class AnalyzeTests
+    public class AnalyzeTests : IDisposable
     {
+        readonly List<string> _tempFiles = new List<string>();
+
         readonly CommandLineRunner _analyze = new CommandLineRunner()
         {
             VoidMain = Analyzer.Main,
@@ -46,8 +51,46 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Equal(0, output.ExitCode);
         }
 
+        static string SplitGcsUri(string uri, out string bucket)
+        {
+            string[] chunks = uri.Split(new char[] {'/'} , 4);
+            bucket = chunks[2];
+            return chunks[3];
+        }
+
         [Fact]
-        void TestShots()
+        void TestSplitGcsUri()
+        {
+            string bucket;
+            string objectName = SplitGcsUri("gs://cloudmleap/video/next/fox-snatched.mp4", 
+                out bucket);
+            Assert.Equal("cloudmleap", bucket);
+            Assert.Equal("video/next/fox-snatched.mp4", objectName);
+        }
+
+        string DownloadGcsObject(string uri)
+        {
+            var storage = Google.Cloud.Storage.V1.StorageClient.Create();
+            string tempFilePath = Path.GetTempFileName();
+            using (Stream m = File.OpenWrite(tempFilePath))
+            {
+                string bucket;
+                string objectName = SplitGcsUri(uri, out bucket);
+                storage.DownloadObject(bucket, objectName, m);
+            }
+            _tempFiles.Add(tempFilePath);
+            return tempFilePath;
+        }
+
+        [Fact]
+        void TestShotsNotWhiteListed()
+        {
+            Assert.Throws<Grpc.Core.RpcException>(() =>
+                _analyze.Run("shots", DownloadGcsObject("gs://demomaker/gbikes_dinosaur.mp4")));
+        }
+
+        [Fact]
+        void TestShotsGcs()
         {
             ConsoleOutput output = _analyze.Run("shots",
                 "gs://cloudmleap/video/next/fox-snatched.mp4");
@@ -60,19 +103,40 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestLabels()
         {
             ConsoleOutput output = _analyze.Run("labels",
+                DownloadGcsObject(@"gs://demomaker/cat.mp4"));
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Cat", output.Stdout);
+        }
+
+        [Fact]
+        void TestLabelsGcs()
+        {
+            ConsoleOutput output = _analyze.Run("labels",
                 @"gs://demomaker/cat.mp4");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Cat", output.Stdout);
         }
 
-        // TODO: Make a [FACT] when faces feature is publicly available.
-        void TestFacesNotWhitelisted()
+        void TestFaces()
         {
-            // Analyzing faces is a feature that requires your
-            // project id appear on a whitelist.
-            Assert.Throws<Grpc.Core.RpcException>(() =>
-                _analyze.Run("faces",
-                "gs://cloudmleap/video/next/fox-snatched.mp4"));
+            ConsoleOutput output =
+                _analyze.Run("faces", DownloadGcsObject("gs://demomaker/gbike.mp4"));
+            Assert.Equal(0, output.ExitCode);
+        }
+
+        void TestFacesGcs()
+        {
+            ConsoleOutput output =
+                _analyze.Run("faces", "gs://demomaker/gbike.mp4");
+            Assert.Equal(0, output.ExitCode);
+        }
+
+        void IDisposable.Dispose()
+        {
+            foreach(string tempFilePath in _tempFiles)
+            {
+                File.Delete(tempFilePath);
+            }
         }
     }
 }
