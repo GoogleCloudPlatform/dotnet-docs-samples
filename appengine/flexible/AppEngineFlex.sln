@@ -1,41 +1,47 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26114.2
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "StaticContent", "StaticContent\StaticContent.xproj", "{AA79AC27-079E-4145-96E8-449A219B9527}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaticContent", "StaticContent\StaticContent.csproj", "{AA79AC27-079E-4145-96E8-449A219B9527}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Analytics", "Analytics\Analytics.xproj", "{8782139D-68A2-485D-89DE-4CB7DAE17A1E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analytics", "Analytics\Analytics.csproj", "{8782139D-68A2-485D-89DE-4CB7DAE17A1E}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RedisCache", "RedisCache\RedisCache.xproj", "{6E430843-E06E-47C5-ADC2-475C8EDE81DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisCache", "RedisCache\RedisCache.csproj", "{6E430843-E06E-47C5-ADC2-475C8EDE81DB}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SendGrid", "SendGrid\SendGrid.xproj", "{0C33CDB9-DC3C-4832-AA81-83FE5CAFEF57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendGrid", "SendGrid\SendGrid.csproj", "{0C33CDB9-DC3C-4832-AA81-83FE5CAFEF57}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CloudSql", "CloudSql\CloudSql.xproj", "{8C5AFE04-4497-451B-892B-B3C378C803B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudSql", "CloudSql\CloudSql.csproj", "{8C5AFE04-4497-451B-892B-B3C378C803B8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CloudStorage", "CloudStorage\CloudStorage.xproj", "{826B9A99-F8D8-4105-ACD6-D1562984684B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudStorage", "CloudStorage\CloudStorage.csproj", "{826B9A99-F8D8-4105-ACD6-D1562984684B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{908A2679-B7CF-4E8B-89A7-D2865C00C8F6}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Metadata", "Metadata\Metadata.xproj", "{B4BA0EA1-6809-4B9B-939E-2B90A438BC34}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metadata", "Metadata\Metadata.csproj", "{B4BA0EA1-6809-4B9B-939E-2B90A438BC34}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Datastore", "Datastore\Datastore.xproj", "{DA8C823E-9166-491F-8567-528131A9000A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Datastore", "Datastore\Datastore.csproj", "{DA8C823E-9166-491F-8567-528131A9000A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Pubsub", "Pubsub\Pubsub.xproj", "{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pubsub", "Pubsub\Pubsub.csproj", "{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CloudSql-PostgreSql", "CloudSql-PostgreSql\CloudSql-PostgreSql.xproj", "{ED886031-607A-4FBF-B46D-8940490B89BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudSql-PostgreSql", "CloudSql-PostgreSql\CloudSql-PostgreSql.csproj", "{ED886031-607A-4FBF-B46D-8940490B89BC}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Stackdriver", "Stackdriver\Stackdriver.xproj", "{A1C2BF5B-155F-495B-8C91-09D601861744}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stackdriver", "Stackdriver\Stackdriver.csproj", "{A1C2BF5B-155F-495B-8C91-09D601861744}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SocialAuth", "SocialAuth\SocialAuth.xproj", "{9F39AD2D-594A-4905-A834-74C7F5C48640}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialAuth", "SocialAuth\SocialAuth.csproj", "{9F39AD2D-594A-4905-A834-74C7F5C48640}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "HelloWorld\HelloWorld.csproj", "{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AA79AC27-079E-4145-96E8-449A219B9527}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -86,6 +92,18 @@ Global
 		{9F39AD2D-594A-4905-A834-74C7F5C48640}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F39AD2D-594A-4905-A834-74C7F5C48640}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F39AD2D-594A-4905-A834-74C7F5C48640}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Debug|x64.ActiveCfg = Debug|x64
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Debug|x64.Build.0 = Debug|x64
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Debug|x86.ActiveCfg = Debug|x86
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Debug|x86.Build.0 = Debug|x86
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x64.ActiveCfg = Release|x64
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x64.Build.0 = Release|x64
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x86.ActiveCfg = Release|x86
+		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
