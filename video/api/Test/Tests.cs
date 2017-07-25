@@ -53,7 +53,7 @@ namespace GoogleCloudSamples.VideoIntelligence
 
         static string SplitGcsUri(string uri, out string bucket)
         {
-            string[] chunks = uri.Split(new char[] {'/'} , 4);
+            string[] chunks = uri.Split(new char[] { '/' }, 4);
             bucket = chunks[2];
             return chunks[3];
         }
@@ -62,7 +62,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestSplitGcsUri()
         {
             string bucket;
-            string objectName = SplitGcsUri("gs://cloudmleap/video/next/fox-snatched.mp4", 
+            string objectName = SplitGcsUri("gs://cloudmleap/video/next/fox-snatched.mp4",
                 out bucket);
             Assert.Equal("cloudmleap", bucket);
             Assert.Equal("video/next/fox-snatched.mp4", objectName);
@@ -133,7 +133,7 @@ namespace GoogleCloudSamples.VideoIntelligence
 
         void IDisposable.Dispose()
         {
-            foreach(string tempFilePath in _tempFiles)
+            foreach (string tempFilePath in _tempFiles)
             {
                 File.Delete(tempFilePath);
             }
