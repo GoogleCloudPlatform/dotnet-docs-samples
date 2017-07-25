@@ -48,7 +48,7 @@ gcloud info
 # First, lint everything.  If the lint fails, don't waste time running
 # tests.
 if ($Lint) {
-    Lint-Code
+    Find-Files -Masks *.csproj -AntiMasks appengine | Lint-Code
 }
 if ($UpdatePackages) {
     Update-Packages $PackageMask
