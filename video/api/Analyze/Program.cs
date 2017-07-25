@@ -185,11 +185,11 @@ namespace GoogleCloudSamples.VideoIntelligence
             // TODO: add faces command when it becomes publicly available.
             Parser.Default.ParseArguments<
                 AnalyzeShotsOptions,
-                AnalyzeFacesOptions,
+                // AnalyzeFacesOptions,
                 AnalyzeLabelsOptions
                 >(args).MapResult(
                 (AnalyzeShotsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeShotsGcs(opts.Uri) : AnalyzeShots(opts.Uri),
-                (AnalyzeFacesOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeFacesGcs(opts.Uri) : AnalyzeFaces(opts.Uri),
+                // (AnalyzeFacesOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeFacesGcs(opts.Uri) : AnalyzeFaces(opts.Uri),
                 (AnalyzeLabelsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeLabelsGcs(opts.Uri) : AnalyzeLabels(opts.Uri),
                 errs => 1);
         }
