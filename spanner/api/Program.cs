@@ -20,6 +20,7 @@ using Google.Cloud.Spanner.Data;
 using CommandLine;
 using System.Transactions;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
+using System.Collections.Generic;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -194,6 +195,22 @@ namespace GoogleCloudSamples.Spanner
             Success = 0,
             InvalidParameter = 1,
         }
+
+        // [START insert_data]
+        public class Singer
+        {
+            public int singerId { get; set; }
+            public string firstName { get; set; }
+            public string lastName { get; set; }
+        }
+
+        public class Album
+        {
+            public int singerId { get; set; }
+            public int albumId { get; set; }
+            public string albumTitle { get; set; }
+        }
+        // [END insert_data]
 
         public static async Task CreateSampleDatabaseAsync(
             string projectId, string instanceId, string databaseId)
@@ -454,6 +471,7 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
                 scope.Complete();
+                Console.WriteLine("Transaction complete.");
                 // [END read_only_transaction]
             }
         }
@@ -632,15 +650,39 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
+        // [START insert_data]
         public static async Task InsertSampleDataAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START insert_data]
             const int firstSingerId = 1;
             const int secondSingerId = 2;
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
+            List<Singer> singers = new List<Singer> {
+                new Singer {singerId = firstSingerId, firstName = "Marc",
+                    lastName = "Richards"},
+                new Singer {singerId = secondSingerId, firstName = "Catalina",
+                    lastName = "Smith"},
+                new Singer {singerId = 3, firstName = "Alice",
+                    lastName = "Trentor"},
+                new Singer {singerId = 4, firstName = "Lea",
+                    lastName = "Martin"},
+                new Singer {singerId = 5, firstName = "David",
+                    lastName = "Lomond"},
+            };
+            List<Album> albums = new List<Album> {
+                new Album {singerId = firstSingerId, albumId = 1,
+                    albumTitle = "Go, Go, Go"},
+                new Album {singerId = firstSingerId, albumId = 2,
+                    albumTitle = "Total Junk"},
+                new Album {singerId = secondSingerId, albumId = 1,
+                    albumTitle = "Green"},
+                new Album {singerId = secondSingerId, albumId = 2,
+                    albumTitle = "Forever Hold your Peace"},
+                new Album {singerId = secondSingerId, albumId = 3,
+                    albumTitle = "Terrified"},
+            };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
             {
@@ -650,68 +692,32 @@ namespace GoogleCloudSamples.Spanner
                         {"SingerId", SpannerDbType.Int64},
                         {"FirstName", SpannerDbType.String},
                         {"LastName", SpannerDbType.String}
-                    });
-                // Insert first row.
-                cmd.Parameters["SingerId"].Value = firstSingerId;
-                cmd.Parameters["FirstName"].Value = "Marc";
-                cmd.Parameters["LastName"].Value = " Richards";
-                await cmd.ExecuteNonQueryAsync();
-                // Insert second row.
-                cmd.Parameters["SingerId"].Value = secondSingerId;
-                cmd.Parameters["FirstName"].Value = "Catalina";
-                cmd.Parameters["LastName"].Value = "Smith";
-                await cmd.ExecuteNonQueryAsync();
-                // Insert third row.
-                cmd.Parameters["SingerId"].Value = 3;
-                cmd.Parameters["FirstName"].Value = "Alice";
-                cmd.Parameters["LastName"].Value = "Trentor";
-                await cmd.ExecuteNonQueryAsync();
-                // Insert forth row.
-                cmd.Parameters["SingerId"].Value = 4;
-                cmd.Parameters["FirstName"].Value = "Lea";
-                cmd.Parameters["LastName"].Value = "Martin";
-                await cmd.ExecuteNonQueryAsync();
-                // Insert fifth row.
-                cmd.Parameters["SingerId"].Value = 5;
-                cmd.Parameters["FirstName"].Value = "David";
-                cmd.Parameters["LastName"].Value = "Lomond";
-                await cmd.ExecuteNonQueryAsync();
+                });
+                foreach (var singer in singers)
+                {
+                    cmd.Parameters["SingerId"].Value = singer.singerId;
+                    cmd.Parameters["FirstName"].Value = singer.firstName;
+                    cmd.Parameters["LastName"].Value = singer.lastName;
+                    await cmd.ExecuteNonQueryAsync();
+                }
                 // Insert rows into the Albums table.
                 cmd = connection.CreateInsertCommand("Albums",
                     new SpannerParameterCollection {
                         {"SingerId", SpannerDbType.Int64},
                         {"AlbumId", SpannerDbType.Int64},
                         {"AlbumTitle", SpannerDbType.String}
-                    });
-                // Insert first row.
-                cmd.Parameters["SingerId"].Value = firstSingerId;
-                cmd.Parameters["AlbumId"].Value = 1;
-                cmd.Parameters["AlbumTitle"].Value = "Go, Go, Go";
-                await cmd.ExecuteNonQueryAsync();
-                // Insert second row.
-                cmd.Parameters["SingerId"].Value = firstSingerId;
-                cmd.Parameters["AlbumId"].Value = 2;
-                cmd.Parameters["AlbumTitle"].Value = "Total Junk";
-                await cmd.ExecuteNonQueryAsync();
-                // Insert third row.
-                cmd.Parameters["SingerId"].Value = secondSingerId;
-                cmd.Parameters["AlbumId"].Value = 1;
-                cmd.Parameters["AlbumTitle"].Value = "Green";
-                await cmd.ExecuteNonQueryAsync();
-                // Insert fourth row.
-                cmd.Parameters["SingerId"].Value = secondSingerId;
-                cmd.Parameters["AlbumId"].Value = 2;
-                cmd.Parameters["AlbumTitle"].Value = "Forever Hold your Peace";
-                await cmd.ExecuteNonQueryAsync();
-                // Insert fifth row.
-                cmd.Parameters["SingerId"].Value = secondSingerId;
-                cmd.Parameters["AlbumId"].Value = 3;
-                cmd.Parameters["AlbumTitle"].Value = "Terrified";
-                await cmd.ExecuteNonQueryAsync();
+                });
+                foreach (var album in albums)
+                {
+                    cmd.Parameters["SingerId"].Value = album.singerId;
+                    cmd.Parameters["AlbumId"].Value = album.albumId;
+                    cmd.Parameters["AlbumTitle"].Value = album.albumTitle;
+                    await cmd.ExecuteNonQueryAsync();
+                }
                 Console.WriteLine("Inserted data.");
             }
-            // [END insert_data]
         }
+        // [END insert_data]
 
         public static async Task CreateDatabaseAsync(
             string projectId, string instanceId, string databaseId)
