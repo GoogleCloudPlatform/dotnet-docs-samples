@@ -20,7 +20,8 @@ using System.Linq;
 
 namespace GoogleCloudSamples.VideoIntelligence
 {
-    class VideoOptions
+    [Verb("labels", HelpText = "Print a list of labels found in the video.")]
+    class AnalyzeLabelsOptions
     {
         [Value(0, HelpText = "The uri of the video to examine. "
             + "Can be path to a local file or a Cloud storage uri like "
@@ -29,39 +30,28 @@ namespace GoogleCloudSamples.VideoIntelligence
         public string Uri { get; set; }
     }
 
-    [Verb("labels", HelpText = "Print a list of labels found in the video.")]
-    class AnalyzeLabelsOptions : VideoOptions { }
-
     [Verb("shots", HelpText = "Print a list shot changes.")]
-    class AnalyzeShotsOptions : VideoOptions { }
+    class AnalyzeShotsOptions
+    {
+        [Value(0, HelpText = "The uri of the video to examine. "
+            + "Must be a Cloud storage uri like "
+            + "gs://bucket/object.",
+            Required = true)]
+        public string Uri { get; set; }
+    }
 
-    [Verb("faces", HelpText = "Print the offsets when faces appear.")]
-    class AnalyzeFacesOptions : VideoOptions { }
+    [Verb("safesearch", HelpText = "Analyze the content of the video.")]
+    class AnalyzeSafeSearchOptions
+    {
+        [Value(0, HelpText = "The uri of the video to examine. "
+            + "Must be a Cloud storage uri like "
+            + "gs://bucket/object.",
+            Required = true)]
+        public string Uri { get; set; }
+    }
 
     public class Analyzer
     {
-        // [START analyze_shots]
-        public static object AnalyzeShots(string path)
-        {
-            var client = VideoIntelligenceServiceClient.Create();
-            var request = new AnnotateVideoRequest()
-            {
-                InputContent = Convert.ToBase64String(File.ReadAllBytes(path)),
-                Features = { Feature.ShotChangeDetection }
-            };
-            var op = client.AnnotateVideo(request).PollUntilCompleted();
-            foreach (var result in op.Result.AnnotationResults)
-            {
-                foreach (var annotation in result.ShotAnnotations)
-                {
-                    Console.Out.WriteLine("Start Time Offset: {0}\tEnd Time Offset: {1}",
-                        annotation.StartTimeOffset, annotation.EndTimeOffset);
-                }
-            }
-            return 0;
-        }
-        // [END analyze_shots]
-
         // [START analyze_shots_gcs]
         public static object AnalyzeShotsGcs(string uri)
         {
@@ -126,70 +116,42 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
         // [END analyze_labels_gcs]
 
-        // [START analyze_faces]
-        public static object AnalyzeFaces(string path)
-        {
-            var client = VideoIntelligenceServiceClient.Create();
-            var request = new AnnotateVideoRequest()
-            {
-                InputContent = Convert.ToBase64String(File.ReadAllBytes(path)),
-                Features = { Feature.FaceDetection }
-            };
-            var op = client.AnnotateVideo(request).PollUntilCompleted();
-            char faceLabel = 'A';
-            foreach (var result in op.Result.AnnotationResults)
-            {
-                foreach (var annotation in result.FaceAnnotations)
-                {
-                    Console.WriteLine("Face {0} seen at offsets:", faceLabel);
-                    foreach (var segment in annotation.Segments)
-                    {
-                        Console.WriteLine("{0}-{1}", segment.StartTimeOffset, segment.EndTimeOffset);
-                    }
-                    ++faceLabel;
-                }
-            }
-            return 0;
-        }
-        // [END analyze_faces]
-
-        // [START analyze_faces_gcs]
-        public static object AnalyzeFacesGcs(string uri)
+        // [START analyze_safesearch_gcs]
+        public static object AnalyzeSafeSearchGcs(string uri)
         {
             var client = VideoIntelligenceServiceClient.Create();
             var request = new AnnotateVideoRequest()
             {
                 InputUri = uri,
-                Features = { Feature.FaceDetection }
+                Features = { Feature.SafeSearchDetection }
             };
             var op = client.AnnotateVideo(request).PollUntilCompleted();
-            char faceLabel = 'A';
             foreach (var result in op.Result.AnnotationResults)
             {
-                foreach (var annotation in result.FaceAnnotations)
+                foreach (SafeSearchAnnotation annotation in result.SafeSearchAnnotations)
                 {
-                    Console.WriteLine("Face {0} seen at offsets:", faceLabel);
-                    foreach (var segment in annotation.Segments)
-                    {
-                        Console.WriteLine("{0}-{1}", segment.StartTimeOffset, segment.EndTimeOffset);
-                    }
-                    ++faceLabel;
+                    Console.WriteLine("Time Offset: {0}", annotation.TimeOffset);
+                    Console.WriteLine("Adult: {0}", annotation.Adult);
+                    Console.WriteLine("Medical: {0}", annotation.Medical);
+                    Console.WriteLine("Racy: {0}", annotation.Racy);
+                    Console.WriteLine("Spoof: {0}", annotation.Spoof);
+                    Console.WriteLine("Violent: {0}", annotation.Violent);
+                    Console.WriteLine();
                 }
             }
             return 0;
         }
-        // [END analyze_faces_gcs]
+        // [END analyze_safesearch_gcs]
 
         public static void Main(string[] args)
         {
-            // TODO: add faces command when it becomes publicly available.
             Parser.Default.ParseArguments<
                 AnalyzeShotsOptions,
-                // AnalyzeFacesOptions,
+                AnalyzeSafeSearchOptions,
                 AnalyzeLabelsOptions
                 >(args).MapResult(
-                (AnalyzeShotsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeShotsGcs(opts.Uri) : AnalyzeShots(opts.Uri),
-                // (AnalyzeFacesOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeFacesGcs(opts.Uri) : AnalyzeFaces(opts.Uri),
+                (AnalyzeShotsOptions opts) => AnalyzeShotsGcs(opts.Uri),
+                (AnalyzeSafeSearchOptions opts) => AnalyzeSafeSearchGcs(opts.Uri),
                 (AnalyzeLabelsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeLabelsGcs(opts.Uri) : AnalyzeLabels(opts.Uri),
                 errs => 1);
         }

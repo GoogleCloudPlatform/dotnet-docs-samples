@@ -83,13 +83,6 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
 
         [Fact]
-        void TestShotsNotWhiteListed()
-        {
-            Assert.Throws<Grpc.Core.RpcException>(() =>
-                _analyze.Run("shots", DownloadGcsObject("gs://demomaker/gbikes_dinosaur.mp4")));
-        }
-
-        [Fact]
         void TestShotsGcs()
         {
             ConsoleOutput output = _analyze.Run("shots",
@@ -124,11 +117,13 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Equal(0, output.ExitCode);
         }
 
-        void TestFacesGcs()
+        [Fact]
+        void TestSafeSearchGcs()
         {
             ConsoleOutput output =
-                _analyze.Run("faces", "gs://demomaker/gbike.mp4");
+                _analyze.Run("safesearch", "gs://demomaker/gbike.mp4");
             Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Adult:", output.Stdout);
         }
 
         void IDisposable.Dispose()
