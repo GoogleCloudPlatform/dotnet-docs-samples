@@ -113,11 +113,9 @@ namespace GoogleCloudSamples
         static object DetectLanguage(string text)
         {
             TranslationClient client = TranslationClient.Create();
-            foreach (var detection in client.DetectLanguage(text))
-            {
-                Console.WriteLine("{0}\tConfidence: {1}",
-                    detection.Language, detection.Confidence);
-            }
+            var detection = client.DetectLanguage(text);
+            Console.WriteLine("{0}\tConfidence: {1}",
+                detection.Language, detection.Confidence);
             return 0;
         }
         // [END translate_detect_language]
