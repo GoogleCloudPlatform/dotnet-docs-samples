@@ -413,6 +413,7 @@ function BuildAndRun-CoreTest($TestJs = "test.js") {
 filter Format-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
+        echo "codeformatter.exe $project"
         codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis /rule-:ExplicitVisibility /rule:FieldNames /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation /nocopyright $project
         if ($LASTEXITCODE) {
             $project.FullName
