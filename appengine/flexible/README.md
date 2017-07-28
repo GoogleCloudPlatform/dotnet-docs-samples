@@ -13,7 +13,7 @@ App Engine is not the only way to run .NET applications on Google Cloud Platform
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.
 
-2.  Install [.NET Core 1.0.3 SDK Preview 2 build 3156](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.0.3-preview2-download.md).
+2.  Install the [.NET Core SDK](https://www.microsoft.com/net/download/core).
 
 2.  Visual Studio is not required, but to build and run .NET *core* applications,
     Visual Studio users need to download and install 
