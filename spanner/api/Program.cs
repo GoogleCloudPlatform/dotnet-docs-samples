@@ -478,6 +478,7 @@ namespace GoogleCloudSamples.Spanner
                 // TODO - Remove the above Task.Yield() statement. 
                 // A pending client library update will not require this
                 // for transactions.
+                // Link to issue: https://github.com/grpc/grpc/issues/11824
             }
         }
 
@@ -651,6 +652,7 @@ namespace GoogleCloudSamples.Spanner
                     // TODO - Remove the above Task.Yield() statement. 
                     // A pending client library update will not require this
                     // for transactions.
+                    // Link to issue: https://github.com/grpc/grpc/issues/11824
                 }
             }
         }

@@ -65,7 +65,7 @@ namespace GoogleCloudSamples.Spanner
         //}
         // TODO: Uncomment the above test when the client library is updated
         // for transactions which will enable this test to run consistently
-        // without transient issues.
+        // without transient issues. https://github.com/grpc/grpc/issues/11824
 
 
         [Fact]
