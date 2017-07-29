@@ -471,8 +471,14 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
                 scope.Complete();
+                // Yield Task thread back to the current context.
+                await Task.Yield();
                 Console.WriteLine("Transaction complete.");
                 // [END read_only_transaction]
+                // TODO - Remove the above Task.Yield() statement. 
+                // A pending client library update will not require this
+                // for transactions.
+                // Link to issue: https://github.com/grpc/grpc/issues/11824
             }
         }
 
@@ -646,6 +652,7 @@ namespace GoogleCloudSamples.Spanner
                     // TODO - Remove the above Task.Yield() statement. 
                     // A pending client library update will not require this
                     // for transactions.
+                    // Link to issue: https://github.com/grpc/grpc/issues/11824
                 }
             }
         }
@@ -924,11 +931,11 @@ namespace GoogleCloudSamples.Spanner
             var retryPolicy =
                 new RetryPolicy<CustomTransientErrorDetectionStrategy>
                     (RetryStrategy.DefaultExponential);
-            var response = retryPolicy.ExecuteAction(async () =>
-                await QueryDataWithTransactionAsync(
+            var response = retryPolicy.ExecuteAsync(async () =>
+               await QueryDataWithTransactionAsync(
                     projectId, instanceId, databaseId));
             Console.WriteLine("Waiting for operation to complete...");
-            Task.WaitAll(response);
+            response.Wait();
             Console.WriteLine($"Operation status: {response.Status}");
             return ExitCode.Success;
         }
@@ -941,7 +948,7 @@ namespace GoogleCloudSamples.Spanner
                 var retryPolicy =
                     new RetryPolicy<CustomTransientErrorDetectionStrategy>
                         (RetryStrategy.DefaultExponential);
-                var response = retryPolicy.ExecuteAction(async () =>
+                var response = retryPolicy.ExecuteAsync(async () =>
                 await ReadWriteWithTransactionAsync(
                     projectId, instanceId, databaseId));
                 Console.WriteLine("Waiting for operation to complete...");

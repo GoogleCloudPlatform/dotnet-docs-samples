@@ -45,13 +45,6 @@ namespace GoogleCloudSamples.Spanner
         };
 
         [Fact]
-        void TestSpannerNoArgsSucceeds()
-        {
-            ConsoleOutput output = _spanner.Run();
-            Assert.Equal(0, output.ExitCode);
-        }
-
-        [Fact]
         void TestQuery()
         {
             ConsoleOutput output = _spanner.Run("querySampleData",
@@ -61,14 +54,26 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
         }
 
+        //[Fact]
+        //void TestQueryTransaction()
+        //{
+        //    ConsoleOutput output = _spanner.Run("queryDataWithTransaction",
+        //        s_projectId, _instanceId, _databseId);
+        //    Assert.Equal(0, output.ExitCode);
+        //    Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
+        //    Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        //}
+        // TODO: Uncomment the above test when the client library is updated
+        // for transactions which will enable this test to run consistently
+        // without transient issues. 
+        // Link to issue: https://github.com/grpc/grpc/issues/11824
+
+
         [Fact]
-        void TestQueryTransaction()
+        void TestSpannerNoArgsSucceeds()
         {
-            ConsoleOutput output = _spanner.Run("queryDataWithTransaction",
-                s_projectId, _instanceId, _databseId);
+            ConsoleOutput output = _spanner.Run();
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
-            Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
         }
     }
 }
