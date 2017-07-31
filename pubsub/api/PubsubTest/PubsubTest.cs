@@ -296,10 +296,12 @@ namespace GoogleCloudSamples
                 topicId, subscriptionId);
             var listProjectSubscriptionsOutput = Run("listSubscriptions",
                 _projectId);
-            Eventually(() => Assert.Equal(0,
-                listProjectSubscriptionsOutput.ExitCode));
-            Assert.Contains(subscriptionId,
-                listProjectSubscriptionsOutput.Stdout);
+            Eventually(() =>
+            {
+                Assert.Equal(0, listProjectSubscriptionsOutput.ExitCode);
+                Assert.Contains(subscriptionId,
+                    listProjectSubscriptionsOutput.Stdout);
+            });
             Run("deleteSubscription", _projectId, subscriptionId);
             Run("deleteTopic", _projectId, topicId);
         }
