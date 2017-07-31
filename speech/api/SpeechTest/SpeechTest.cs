@@ -136,7 +136,7 @@ namespace GoogleCloudSamples
             var output = Run("async", @"resources\audio.raw");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
-            Assert.Contains("how", output.Stdout); 
+            Assert.Contains("how", output.Stdout);
             Assert.Contains("EndTime: \"0.300s\"", output.Stdout);
             Assert.Contains("StartTime: \"0s\"", output.Stdout);
         }
