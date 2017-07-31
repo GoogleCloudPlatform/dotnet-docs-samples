@@ -73,7 +73,6 @@
     </Reference>
     <Reference Include="Google.Cloud.Speech.V1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Cloud.Speech.V1.1.0.0-beta11\lib\net45\Google.Cloud.Speech.V1.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Google.LongRunning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=185c282632e132a0, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.LongRunning.1.0.0-beta10\lib\net45\Google.LongRunning.dll</HintPath>
