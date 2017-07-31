@@ -250,6 +250,7 @@ namespace GoogleCloudSamples
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 SampleRateHertz = 16000,
                 LanguageCode = "en",
+                EnableWordTimeOffsets = true,
             }, RecognitionAudio.FromStorageUri(storageUri));
             longOperation = longOperation.PollUntilCompleted();
             var response = longOperation.Result;
@@ -257,7 +258,15 @@ namespace GoogleCloudSamples
             {
                 foreach (var alternative in result.Alternatives)
                 {
-                    Console.WriteLine(alternative.Transcript);
+                    Console.WriteLine($"Transcript: { alternative.Transcript}");
+                    Console.WriteLine("Word details:");
+                    Console.WriteLine($" Word count:{alternative.Words.Count}");
+                    foreach (var item in alternative.Words)
+                    {
+                        Console.WriteLine($"  {item.Word}");
+                        Console.WriteLine($"    StartTime: {item.StartTime}");
+                        Console.WriteLine($"    EndTime: {item.EndTime}");
+                    }
                 }
             }
             return 0;
