@@ -278,9 +278,11 @@ namespace GoogleCloudSamples
             string topicId = "testTopicForListingTopics";
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var listProjectTopicsOutput = Run("listProjectTopics", _projectId);
-            Eventually(() => Assert.Equal(0,
-                listProjectTopicsOutput.ExitCode));
-            Assert.Contains(topicId, listProjectTopicsOutput.Stdout);
+            Eventually(() =>
+            {
+                Assert.Equal(0, listProjectTopicsOutput.ExitCode);
+                Assert.Contains(topicId, listProjectTopicsOutput.Stdout);
+            });
             Run("deleteTopic", _projectId, topicId);
         }
 
@@ -294,10 +296,12 @@ namespace GoogleCloudSamples
                 topicId, subscriptionId);
             var listProjectSubscriptionsOutput = Run("listSubscriptions",
                 _projectId);
-            Eventually(() => Assert.Equal(0,
-                listProjectSubscriptionsOutput.ExitCode));
-            Assert.Contains(subscriptionId,
-                listProjectSubscriptionsOutput.Stdout);
+            Eventually(() =>
+            {
+                Assert.Equal(0, listProjectSubscriptionsOutput.ExitCode);
+                Assert.Contains(subscriptionId,
+                    listProjectSubscriptionsOutput.Stdout);
+            });
             Run("deleteSubscription", _projectId, subscriptionId);
             Run("deleteTopic", _projectId, topicId);
         }
