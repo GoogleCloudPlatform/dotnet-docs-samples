@@ -28,11 +28,13 @@ using System.Threading;
 
 namespace GoogleCloudSamples
 {
-    public class PubsubTest
+    public class PubsubTest : IDisposable
     {
         private readonly string _projectId;
         private readonly PublisherClient _publisher;
         private readonly SubscriberClient _subscriber;
+        private readonly List<string> _tempTopicIds = new List<string>();
+        private readonly List<string> _tempSubscriptionIds = new List<string>();
 
         readonly CommandLineRunner _pubsub = new CommandLineRunner()
         {
@@ -40,9 +42,32 @@ namespace GoogleCloudSamples
             Command = "Pubsub"
         };
 
+        void IDisposable.Dispose()
+        {
+            foreach (string topicId in _tempTopicIds)
+            {
+                Run("deleteTopic", _projectId, topicId);
+            }
+            foreach (string subscriptionId in _tempSubscriptionIds)
+            {
+                Run("deleteSubscription", _projectId, subscriptionId);
+            }
+        }
+
         protected ConsoleOutput Run(params string[] args)
         {
-            return _pubsub.Run(args);
+            string cmd = args[0].ToLower();
+            var output = _pubsub.Run(args);
+            switch (cmd)
+            {
+                case "createtopic":
+                    _tempTopicIds.Add(args[2]);
+                    break;
+                case "createsubscription":
+                    _tempSubscriptionIds.Add(args[3]);
+                    break;
+            }
+            return output;
         }
 
         private readonly RetryRobot _retryRobot = new RetryRobot()
@@ -198,7 +223,6 @@ namespace GoogleCloudSamples
             var output = Run("createTopic", _projectId, topicId);
             var topicDetails = Run("getTopic", _projectId, topicId);
             Assert.Contains($"{topicId}", topicDetails.Stdout);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -211,8 +235,6 @@ namespace GoogleCloudSamples
                 topicId, subscriptionId);
             var subscriptionDetails = Run("getSubscription", _projectId, subscriptionId);
             Assert.Contains($"{subscriptionId}", subscriptionDetails.Stdout);
-            Run("deleteSubscription", _projectId, subscriptionId);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -235,8 +257,6 @@ namespace GoogleCloudSamples
                 Assert.Equal(0, output.ExitCode);
                 Assert.False(string.IsNullOrEmpty(output.Stdout));
             });
-            Run("deleteSubscription", _projectId, subscriptionId);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -268,8 +288,6 @@ namespace GoogleCloudSamples
                 Assert.Equal(0, output.ExitCode);
                 Assert.True(string.IsNullOrEmpty(output.Stdout));
             });
-            Run("deleteSubscription", _projectId, subscriptionId);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -283,7 +301,6 @@ namespace GoogleCloudSamples
                 Assert.Equal(0, listProjectTopicsOutput.ExitCode);
                 Assert.Contains(topicId, listProjectTopicsOutput.Stdout);
             });
-            Run("deleteTopic", _projectId, topicId);
         }
 
         public void TestListSubscriptions()
@@ -302,8 +319,6 @@ namespace GoogleCloudSamples
                 Assert.Contains(subscriptionId,
                     listProjectSubscriptionsOutput.Stdout);
             });
-            Run("deleteSubscription", _projectId, subscriptionId);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -313,7 +328,6 @@ namespace GoogleCloudSamples
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var policyOutput = Run("getTopicIamPolicy", _projectId, topicId);
             Assert.NotEmpty(policyOutput.Stdout);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -327,8 +341,6 @@ namespace GoogleCloudSamples
             var policyOutput = Run("getSubscriptionIamPolicy", _projectId,
                 subscriptionId);
             Assert.NotEmpty(policyOutput.ToString());
-            Run("deleteSubscription", _projectId, subscriptionId);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -343,7 +355,6 @@ namespace GoogleCloudSamples
             var policyOutput = Run("getTopicIamPolicy", _projectId, topicId);
             Assert.Contains(testRoleValueToConfirm, policyOutput.Stdout);
             Assert.Contains(testMemberValueToConfirm, policyOutput.Stdout);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -362,8 +373,6 @@ namespace GoogleCloudSamples
                 subscriptionId);
             Assert.Contains(testRoleValueToConfirm, policyOutput.Stdout);
             Assert.Contains(testMemberValueToConfirm, policyOutput.Stdout);
-            Run("deleteSubscription", _projectId, subscriptionId);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -378,7 +387,6 @@ namespace GoogleCloudSamples
             TestIamPermissionsResponse response =
                 TestTopicIamPermissionsResponse(topicId, _publisher);
             Assert.NotEmpty(response.ToString());
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -396,8 +404,6 @@ namespace GoogleCloudSamples
             TestIamPermissionsResponse response =
                 TestSubscriptionIamPermissionsResponse(subscriptionId, _publisher);
             Assert.NotEmpty(response.ToString());
-            Run("deleteSubscription", _projectId, subscriptionId);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -405,11 +411,11 @@ namespace GoogleCloudSamples
         {
             string topicId = "testTopicForRpcRetry";
             string subscriptionId = "testSubscriptionForRpcRetry";
+            _tempTopicIds.Add(topicId);
+            _tempSubscriptionIds.Add(subscriptionId);
             RpcRetry(topicId, subscriptionId, _publisher, _subscriber);
             var topicDetails = Run("getTopic", _projectId, topicId);
             Assert.Contains($"{topicId}", topicDetails.Stdout);
-            Run("deleteSubscription", _projectId, subscriptionId);
-            Run("deleteTopic", _projectId, topicId);
         }
 
         [Fact]
@@ -418,6 +424,7 @@ namespace GoogleCloudSamples
             string topicId = "testTopicForDeleteTopic";
             Run("createTopic", _projectId, topicId);
             Run("deleteTopic", _projectId, topicId);
+            _tempTopicIds.Clear();  // We already deleted it.
             TopicName topicName = new TopicName(_projectId, topicId);
             Exception ex = Assert.Throws<Grpc.Core.RpcException>(() =>
                 _publisher.GetTopic(topicName));
@@ -431,11 +438,11 @@ namespace GoogleCloudSamples
             Run("createTopic", _projectId, topicId);
             Run("createSubscription", _projectId, topicId, subscriptionId);
             Run("deleteSubscription", _projectId, subscriptionId);
+            _tempSubscriptionIds.Clear();  // We already deleted it.
             SubscriptionName subscriptionName = new SubscriptionName(
                 _projectId, subscriptionId);
             Exception e = Assert.Throws<Grpc.Core.RpcException>(() =>
                 _subscriber.GetSubscription(subscriptionName));
-            Run("deleteTopic", _projectId, topicId);
         }
     }
 }
