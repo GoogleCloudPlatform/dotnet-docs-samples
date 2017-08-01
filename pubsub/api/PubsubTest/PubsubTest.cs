@@ -216,11 +216,6 @@ namespace GoogleCloudSamples
         }
         // [END retry]
 
-        void CreateTopic(string topicId)
-        {
-
-        }
-
         [Fact]
         public void TestCreateTopic()
         {
@@ -449,6 +444,5 @@ namespace GoogleCloudSamples
             Exception e = Assert.Throws<Grpc.Core.RpcException>(() =>
                 _subscriber.GetSubscription(subscriptionName));
         }
-
     }
 }
