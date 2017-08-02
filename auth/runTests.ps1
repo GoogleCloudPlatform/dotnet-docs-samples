@@ -14,4 +14,7 @@
 Import-Module ..\BuildTools.psm1 -DisableNameChecking
 
 Build-Solution
-MSTest /testcontainer:test\bin\debug\test.dll
+packages\xunit.runner.console.2.2.0\tools\xunit.console.exe `
+    .\AuthTest\bin\Debug\AuthTest.dll `
+    -parallel none
+if ($LASTEXITCODE -ne 0) { throw "FAILED" }
