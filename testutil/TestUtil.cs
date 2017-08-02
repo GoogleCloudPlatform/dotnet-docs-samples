@@ -48,7 +48,7 @@ namespace GoogleCloudSamples
     {
         public int FirstRetryDelayMs { get; set; } = 1000;
         public float DelayMultiplier { get; set; } = 2;
-        public int MaxTryCount { get; set; } = 6;
+        public int MaxTryCount { get; set; } = 7;
         public IEnumerable<Type> RetryWhenExceptions { get; set; } = new Type[0];
         public Func<Exception, bool> ShouldRetry { get; set; }
 
