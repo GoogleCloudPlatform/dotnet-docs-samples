@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
         };
 
         [Fact]
-        void Test ()
+        void Test()
         {
             var bucket = System.Environment.GetEnvironmentVariable(
                             "GOOGLE_CLOUD_STORAGE_BUCKET"
