@@ -15,120 +15,41 @@
  */
 // [START all]
 
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Storage.v1;
 using Google.Apis.Storage.v1.Data;
-using Google.Apis.Services;
+using Google.Cloud.Storage.V1;
 using System;
-using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
     public class AuthSample
     {
         const string usage = @"Usage:AuthSample <bucket_name>";
-        // [START build_service]
-        /// <summary>
-        /// Creates an authorized Cloud Storage client service using Application 
-        /// Default Credentials.
-        /// </summary>
-        /// <returns>an authorized Cloud Storage client.</returns>
-        public StorageService CreateAuthorizedClient()
-        {
-            GoogleCredential credential =
-                GoogleCredential.GetApplicationDefaultAsync().Result;
-            // Inject the Cloud Storage scope if required.
-            if (credential.IsCreateScopedRequired)
-            {
-                credential = credential.CreateScoped(new[]
-                {
-                    StorageService.Scope.DevstorageReadOnly
-                });
-            }
-            return new StorageService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "DotNet Google Cloud Platform Auth Sample",
-            });
-        }
-        // [END build_service]
 
-        // [START list_storage_bucket_contents]
-        /// <summary>
-        /// List the contents of a Cloud Storage bucket.
-        /// </summary>
-        /// <param name="bucket">the name of the Cloud Storage bucket.</param>
-        ///<returns>a list of the contents of the specified bucket.</returns>
-        public Objects ListBucketContents(
-            StorageService storage, string bucket)
+        public static void Main(string[] args)
         {
-            var request = new
-                Google.Apis.Storage.v1.ObjectsResource.ListRequest(storage,
-                bucket);
-            var requestResult = request.Execute();
-            return requestResult;
-        }
-        // [END list_storage_bucket_contents]
-
-        private static void Main(string[] args) =>
-            new AuthSample().MainFunction(args);
-
-        void MainFunction(string[] args)
-        {
-            AuthSample sample = new AuthSample();
-            string bucket = null;
             if (args.Length == 0)
             {
                 Console.WriteLine(usage);
                 return;
             }
-            bucket = args[0];
+            AuthSample sample = new AuthSample();
+            string bucketName = args[0];
+            // [START build_service]
             // Create a new Cloud Storage client authorized via Application 
             // Default Credentials
-            StorageService storage = CreateAuthorizedClient();
-
-            try
+            var storage = StorageClient.Create();
+            // [END build_service]
+            Console.WriteLine(
+                "======= Listing Cloud Storage Bucket's contents =======");
+            Console.WriteLine();
+            // [START list_storage_bucket_contents]
+            // Use the Cloud Storage client to get a list of objects for the
+            // given bucket name
+            foreach (var objectName in storage.ListObjects(bucketName, ""))
             {
-                // Use the Cloud Storage client to get a list of objects for the
-                // given bucket name
-                Objects result = ListBucketContents(storage, bucket);
-
-                // Get enumerator to loop through list of objects
-                var resultsList = result.Items.GetEnumerator();
-
-                Console.WriteLine(
-                    "======= Listing Cloud Storage Bucket's contents =======");
-                Console.WriteLine();
-
-                // Loop through objects list, output object name and timestamp
-                while (resultsList.MoveNext())
-                {
-                    if (!resultsList.Current.Equals(null))
-                    {
-                        // Output object name and creation timestamp
-                        Console.WriteLine(resultsList.Current.Name.ToString());
-                        Console.WriteLine(
-                            resultsList.Current.TimeCreated.ToString());
-                        Console.WriteLine();
-                    }
-                }
+                Console.WriteLine(objectName.Name);
             }
-            catch (Exception ex)
-            {
-                if (ex is NullReferenceException ||
-                    ex is Google.GoogleApiException)
-                {
-                    // No contents found for given bucket
-                    Console.WriteLine("No contents found for given bucket. "
-                        + "Sign in to the Google Developers Console");
-                    Console.WriteLine(
-                        "at: https://console.developers.google.com/storage ");
-                    Console.WriteLine("to confirm your bucket name is valid "
-                        + "and to upload some files to your bucket.");
-                }
-            }
-            Console.WriteLine("Press any key...");
-            Console.ReadKey();
+            // [END list_storage_bucket_contents]
         }
     }
 }
