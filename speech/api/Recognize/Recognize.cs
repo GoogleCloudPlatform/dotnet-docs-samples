@@ -484,10 +484,10 @@ namespace GoogleCloudSamples
                 OptionsWithContext
                 >(args).MapResult(
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
-                    SyncRecognizeGcs(opts.FilePath) : opts.EnableWordTimeOffsets ? 
+                    SyncRecognizeGcs(opts.FilePath) : opts.EnableWordTimeOffsets ?
                     SyncRecognizeWords(opts.FilePath) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
-                    (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath) 
+                    (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
                     : AsyncRecognizeGcs(opts.FilePath))
                     : LongRunningRecognize(opts.FilePath),
                 (StreamingOptions opts) => StreamingRecognizeAsync(opts.FilePath).Result,
