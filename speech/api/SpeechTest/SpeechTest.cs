@@ -139,6 +139,7 @@ namespace GoogleCloudSamples
             Assert.Contains("how", output.Stdout);
             Assert.Contains("EndTime: \"0.300s\"", output.Stdout);
             Assert.Contains("StartTime: \"0s\"", output.Stdout);
+            Assert.Contains("WordStartTime:", output.Stdout);
         }
     }
 }
