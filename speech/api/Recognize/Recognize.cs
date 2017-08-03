@@ -99,6 +99,7 @@ namespace GoogleCloudSamples
                 Encoding = encoding,
                 SampleRateHertz = bitRate,
                 LanguageCode = "en",
+                EnableWordTimeOffsets = false,
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
             {
@@ -119,6 +120,7 @@ namespace GoogleCloudSamples
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 SampleRateHertz = 16000,
                 LanguageCode = "en",
+                EnableWordTimeOffsets = false,
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
             {
@@ -157,7 +159,8 @@ namespace GoogleCloudSamples
                 SpeechContexts = { new SpeechContext() { Phrases = { phrases } } },
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 SampleRateHertz = 16000,
-                LanguageCode = "en"
+                LanguageCode = "en",
+                EnableWordTimeOffsets = false
             };
             var audio = IsStorageUri(filePath) ?
                 RecognitionAudio.FromStorageUri(filePath) :
@@ -186,6 +189,7 @@ namespace GoogleCloudSamples
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 SampleRateHertz = 16000,
                 LanguageCode = "en",
+                EnableWordTimeOffsets = false,
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
             {
@@ -206,6 +210,7 @@ namespace GoogleCloudSamples
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 SampleRateHertz = 16000,
                 LanguageCode = "en",
+                EnableWordTimeOffsets = false,
             }, RecognitionAudio.FromStorageUri(storageUri));
             foreach (var result in response.Results)
             {
@@ -227,6 +232,7 @@ namespace GoogleCloudSamples
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 SampleRateHertz = 16000,
                 LanguageCode = "en",
+                EnableWordTimeOffsets = true,
             }, RecognitionAudio.FromFile(filePath));
             longOperation = longOperation.PollUntilCompleted();
             var response = longOperation.Result;
@@ -234,7 +240,15 @@ namespace GoogleCloudSamples
             {
                 foreach (var alternative in result.Alternatives)
                 {
-                    Console.WriteLine(alternative.Transcript);
+                    Console.WriteLine($"Transcript: { alternative.Transcript}");
+                    Console.WriteLine("Word details:");
+                    Console.WriteLine($" Word count:{alternative.Words.Count}");
+                    foreach (var item in alternative.Words)
+                    {
+                        Console.WriteLine($"  {item.Word}");
+                        Console.WriteLine($"    StartTime: {item.StartTime}");
+                        Console.WriteLine($"    EndTime: {item.EndTime}");
+                    }
                 }
             }
             return 0;
