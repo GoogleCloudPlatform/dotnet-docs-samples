@@ -21,6 +21,7 @@ using CommandLine;
 using System.Transactions;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 using System.Collections.Generic;
+using log4net;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -190,6 +191,8 @@ namespace GoogleCloudSamples.Spanner
 
     public class Program
     {
+        static readonly ILog s_logger = LogManager.GetLogger(typeof(Program));
+
         enum ExitCode : int
         {
             Success = 0,
@@ -748,9 +751,9 @@ namespace GoogleCloudSamples.Spanner
         {
             var response =
                 CreateSampleDatabaseAsync(projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
+            s_logger.Info($"Operation status: {response.Status}");
             Console.WriteLine($"Created sample database {databaseId} on "
                 + $"instance {instanceId}");
             return ExitCode.Success;
@@ -761,9 +764,9 @@ namespace GoogleCloudSamples.Spanner
         {
             var response = InsertSampleDataAsync(
                 projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
+            s_logger.Info($"Operation status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -772,9 +775,9 @@ namespace GoogleCloudSamples.Spanner
         {
             var response = QuerySampleDataAsync(
                 projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
+            s_logger.Info($"Operation status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -813,9 +816,9 @@ namespace GoogleCloudSamples.Spanner
                         projectId, instanceId, databaseId,
                         startTitle, endTitle);
             }
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
+            s_logger.Info($"Operation status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -824,9 +827,9 @@ namespace GoogleCloudSamples.Spanner
         {
             var response = CreateDatabaseAsync(
                 projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Response status: {response.Status}");
+            s_logger.Info($"Response status: {response.Status}");
             Console.WriteLine($"Created database {databaseId} on instance "
                 + $"{instanceId}");
             return ExitCode.Success;
@@ -837,9 +840,9 @@ namespace GoogleCloudSamples.Spanner
         {
             var response = AddIndexAsync(
                 projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Response status: {response.Status}");
+            s_logger.Info($"Response status: {response.Status}");
             return ExitCode.Success;
         }
         public static object AddStoringIndex(string projectId,
@@ -847,9 +850,9 @@ namespace GoogleCloudSamples.Spanner
         {
             var response = AddStoringIndexAsync(
                 projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Response status: {response.Status}");
+            s_logger.Info($"Response status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -887,9 +890,9 @@ namespace GoogleCloudSamples.Spanner
                         projectId, instanceId, databaseId,
                         startTitle, endTitle);
             }
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
+            s_logger.Info($"Operation status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -898,9 +901,9 @@ namespace GoogleCloudSamples.Spanner
         {
             var response = AddColumnAsync(
                 projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Response status: {response.Status}");
+            s_logger.Info($"Response status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -909,9 +912,9 @@ namespace GoogleCloudSamples.Spanner
         {
             var response = WriteDataToNewColumnAsync(
                 projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Response status: {response.Status}");
+            s_logger.Info($"Response status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -919,9 +922,9 @@ namespace GoogleCloudSamples.Spanner
             string instanceId, string databaseId)
         {
             var response = QueryNewColumnAsync(projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Response status: {response.Status}");
+            s_logger.Info($"Response status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -934,9 +937,9 @@ namespace GoogleCloudSamples.Spanner
             var response = retryPolicy.ExecuteAsync(async () =>
                await QueryDataWithTransactionAsync(
                     projectId, instanceId, databaseId));
-            Console.WriteLine("Waiting for operation to complete...");
+            s_logger.Info("Waiting for operation to complete...");
             response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
+            s_logger.Info($"Operation status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -951,9 +954,9 @@ namespace GoogleCloudSamples.Spanner
                 var response = retryPolicy.ExecuteAsync(async () =>
                 await ReadWriteWithTransactionAsync(
                     projectId, instanceId, databaseId));
-                Console.WriteLine("Waiting for operation to complete...");
+                s_logger.Info("Waiting for operation to complete...");
                 Task.WaitAll(response);
-                Console.WriteLine($"Response status: {response.Status}");
+                s_logger.Info($"Response status: {response.Status}");
             }
             catch (Exception e)
             {
