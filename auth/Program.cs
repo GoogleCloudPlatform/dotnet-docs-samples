@@ -199,7 +199,7 @@ namespace GoogleCloudSamples
                 });
             UriBuilder uri = new UriBuilder(
                 "https://www.googleapis.com/storage/v1/b");
-            uri.Query = "project=" + 
+            uri.Query = "project=" +
                 System.Web.HttpUtility.UrlEncode(projectId);
             var resultText = http.GetAsync(uri.Uri).Result.Content
                 .ReadAsStringAsync().Result;
@@ -258,11 +258,11 @@ namespace GoogleCloudSamples
         {
             Parser.Default.ParseArguments<CloudOptions, ApiOptions, HttpOptions>(args)
               .MapResult(
-                (CloudOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ? 
+                (CloudOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ?
                 AuthCloudImplicit(opts.ProjectId) : AuthCloudExplicit(opts.ProjectId, opts.JsonPath),
                 (ApiOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ?
                 AuthApiImplicit(opts.ProjectId) : AuthApiExplicit(opts.ProjectId, opts.JsonPath),
-                (HttpOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ? 
+                (HttpOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ?
                 AuthHttpImplicit(opts.ProjectId) : AuthHttpExplicit(opts.ProjectId, opts.JsonPath),
                 errs => 1);
         }
