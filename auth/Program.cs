@@ -15,7 +15,10 @@
  */
 // [START all]
 
+using CommandLine;
 using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.Storage.v1;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
@@ -23,27 +26,69 @@ using System.IO;
 
 namespace GoogleCloudSamples
 {
+    class BaseOptions
+    {
+        string _projectId;
+        [Option('p', Default = null, HelpText = "Your Google project id.")]
+        public string ProjectId
+        {
+            get
+            {
+                if (null == _projectId)
+                {
+                    _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+                    if (null == _projectId)
+                    {
+                        throw new ArgumentNullException("ProjectId");
+                    }
+                }
+                return _projectId;
+            }
+            set
+            {
+                _projectId = value;
+            }
+        }
+    }
+
+    [Verb("cloud", HelpText = "Authenticate using the Google.Cloud.Storage library.  "
+        + "The preferred way of authenticating.")]
+    class CloudOptions : BaseOptions
+    {
+        [Option('j', Default = null, HelpText = "Path to a credentials json file.")]
+        public string JsonPath { get; set; }
+    }
+
+    [Verb("api", HelpText = "Authenticate using the Google.Apis.Storage library.")]
+    class ApiOptions : BaseOptions
+    {
+        [Option('j', Default = null, HelpText = "Path to a credentials json file.")]
+        public string JsonPath { get; set; }
+    }
+
     public class AuthSample
     {
-        const string usage = @"Usage:AuthSample <bucket_name>";
-        string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
+        ///////////////////////////////////////////////
+        // This is the preferred way of authenticating.
+        ///////////////////////////////////////////////
         // [START auth_cloud_implicit]
-        void ImplicitAuth()
+        static object AuthCloudImplicit(string projectId)
         {
             // If you don't specify credentials when constructing the client, the
             // client library will look for credentials in the environment.
             var storage = StorageClient.Create();
             // Make an authenticated API request.
-            var buckets = storage.ListBuckets(_projectId);
+            var buckets = storage.ListBuckets(projectId);
             foreach (var bucket in buckets)
             {
                 Console.WriteLine(bucket.Name);
             }
+            return null;
         }
         // [END auth_cloud_implicit]
 
-        void ExplicitAuth(string jsonPath)
+        // [START auth_cloud_explicit]
+        static object AuthCloudExplicit(string projectId, string jsonPath)
         {
             // Explicitly use service account credentials by specifying the private key
             // file.
@@ -55,54 +100,84 @@ namespace GoogleCloudSamples
             }
             var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
-            var buckets = storage.ListBuckets(_projectId);
+            var buckets = storage.ListBuckets(projectId);
             foreach (var bucket in buckets)
             {
                 Console.WriteLine(bucket.Name);
             }
+            return null;
         }
+        // [END auth_cloud_explicit]
 
-        void ExplicitAuthComputeEngine()
+        // [START auth_api_implicit]
+        static object AuthApiImplicit(string projectId)
         {
-            // Explicitly use Compute Engine credentials. These credentials are
-            // available on Compute Engine, App Engine Flexible, and Container Engine.
-            var computeCredential = new ComputeCredential();
-            // How to instantiate?  This gives me a compile time error.
-            var storage = StorageClient.Create(new GoogleCredential(computeCredential));
-            // Make an authenticated API request.
-            var buckets = storage.ListBuckets(_projectId);
-            foreach (var bucket in buckets)
+            GoogleCredential credential =
+                GoogleCredential.GetApplicationDefaultAsync().Result;
+            // Inject the Cloud Storage scope if required.
+            if (credential.IsCreateScopedRequired)
+            {
+                credential = credential.CreateScoped(new[]
+                {
+                    StorageService.Scope.DevstorageReadOnly
+                });
+            }
+            var storage = new StorageService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "DotNet Google Cloud Platform Auth Sample",
+            });
+            var request = new BucketsResource.ListRequest(storage, projectId);
+            var requestResult = request.Execute();
+            foreach (var bucket in requestResult.Items)
             {
                 Console.WriteLine(bucket.Name);
             }
+            return null;
         }
+        // [END auth_api_implicit]
+
+        // [START auth_api_explicit]
+        static object AuthApiExplicit(string projectId, string jsonPath)
+        {
+            GoogleCredential credential = null;
+            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
+                FileAccess.Read, FileShare.Read))
+            {
+                credential = GoogleCredential.FromStream(jsonStream);
+            }
+            // Inject the Cloud Storage scope if required.
+            if (credential.IsCreateScopedRequired)
+            {
+                credential = credential.CreateScoped(new[]
+                {
+                    StorageService.Scope.DevstorageReadOnly
+                });
+            }
+            var storage = new StorageService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "DotNet Google Cloud Platform Auth Sample",
+            });
+            var request = new BucketsResource.ListRequest(storage, projectId);
+            var requestResult = request.Execute();
+            foreach (var bucket in requestResult.Items)
+            {
+                Console.WriteLine(bucket.Name);
+            }
+            return null;
+        }
+        // [END auth_api_explicit]
 
         public static void Main(string[] args)
         {
-            
-
-            if (args.Length == 0)
-            {
-                Console.WriteLine(usage);
-                return;
-            }
-            AuthSample sample = new AuthSample();
-            string bucketName = args[0];
-            // [START build_service]
-            // Create a new Cloud Storage client authorized via Application 
-            // Default Credentials
-            // [END build_service]
-            Console.WriteLine(
-                "======= Listing Cloud Storage Bucket's contents =======");
-            Console.WriteLine();
-            // [START list_storage_bucket_contents]
-            // Use the Cloud Storage client to get a list of objects for the
-            // given bucket name
-            foreach (var objectName in storage.ListObjects(bucketName, ""))
-            {
-                Console.WriteLine(objectName.Name);
-            }
-            // [END list_storage_bucket_contents]
+            Parser.Default.ParseArguments<CloudOptions, ApiOptions>(args)
+              .MapResult(
+                (CloudOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ? 
+                AuthCloudImplicit(opts.ProjectId) : AuthCloudExplicit(opts.ProjectId, opts.JsonPath),
+                (ApiOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ?
+                AuthApiImplicit(opts.ProjectId) : AuthApiExplicit(opts.ProjectId, opts.JsonPath),
+                errs => 1);
         }
     }
 }
