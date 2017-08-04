@@ -213,6 +213,47 @@ namespace GoogleCloudSamples
         }
         // [END auth_http_implicit]
 
+        // [START auth_http_explicit]
+        static object AuthHttpExplicit(string projectId, string jsonPath)
+        {
+            GoogleCredential credential = null;
+            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
+                FileAccess.Read, FileShare.Read))
+            {
+                credential = GoogleCredential.FromStream(jsonStream);
+            }
+            // Inject the Cloud Storage scope if required.
+            if (credential.IsCreateScopedRequired)
+            {
+                credential = credential.CreateScoped(new[]
+                {
+                    "https://www.googleapis.com/auth/devstorage.read_only"
+                });
+            }
+            HttpClient http = new Google.Apis.Http.HttpClientFactory()
+                .CreateHttpClient(
+                new Google.Apis.Http.CreateHttpClientArgs()
+                {
+                    ApplicationName = "Google Cloud Platform Auth Sample",
+                    GZipEnabled = true,
+                    Initializers = { credential },
+                });
+            UriBuilder uri = new UriBuilder(
+                "https://www.googleapis.com/storage/v1/b");
+            uri.Query = "project=" +
+                System.Web.HttpUtility.UrlEncode(projectId);
+            var resultText = http.GetAsync(uri.Uri).Result.Content
+                .ReadAsStringAsync().Result;
+            dynamic result = Newtonsoft.Json.JsonConvert
+                .DeserializeObject(resultText);
+            foreach (var bucket in result.items)
+            {
+                Console.WriteLine(bucket.name);
+            }
+            return null;
+        }
+        // [END auth_http_explicit]
+
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<CloudOptions, ApiOptions, HttpOptions>(args)
@@ -221,7 +262,8 @@ namespace GoogleCloudSamples
                 AuthCloudImplicit(opts.ProjectId) : AuthCloudExplicit(opts.ProjectId, opts.JsonPath),
                 (ApiOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ?
                 AuthApiImplicit(opts.ProjectId) : AuthApiExplicit(opts.ProjectId, opts.JsonPath),
-                (HttpOptions opts) => AuthHttpImplicit(opts.ProjectId),
+                (HttpOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ? 
+                AuthHttpImplicit(opts.ProjectId) : AuthHttpExplicit(opts.ProjectId, opts.JsonPath),
                 errs => 1);
         }
     }
