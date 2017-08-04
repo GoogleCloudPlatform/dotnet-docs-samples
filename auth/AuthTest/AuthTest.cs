@@ -20,20 +20,40 @@ namespace GoogleCloudSamples
 {
     public class AuthTest
     {
-        private static readonly CommandLineRunner s_runner = new CommandLineRunner
+        static readonly CommandLineRunner s_runner = new CommandLineRunner
         {
-            Command = "Storage.exe",
+            Command = "AuthSample.exe",
             VoidMain = AuthSample.Main,
         };
 
-        [Fact]
-        void Test()
+        string JsonPath
         {
-            var bucket = System.Environment.GetEnvironmentVariable(
-                            "GOOGLE_CLOUD_STORAGE_BUCKET"
-                            );
-            var output = s_runner.Run(bucket);
+            get
+            {
+                return System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
+            }
+        }
+
+        [Theory]
+        [InlineData("cloud")]
+        [InlineData("api")]
+        [InlineData("http")]
+        void TestImplicit(string cmd)
+        {
+            var output = s_runner.Run(cmd);
             Assert.Equal(0, output.ExitCode);
+            Assert.False(string.IsNullOrWhiteSpace(output.Stdout));
+        }
+
+        [Theory]
+        [InlineData("cloud")]
+        [InlineData("api")]
+        [InlineData("http")]
+        void TestExplicit(string cmd)
+        {
+            var output = s_runner.Run(cmd, "-j", JsonPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.False(string.IsNullOrWhiteSpace(output.Stdout));
         }
     }
 }
