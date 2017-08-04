@@ -123,7 +123,7 @@ namespace GoogleCloudSamples
     public class CloudStorageRecognizeTests : CommonRecognizeTests, IClassFixture<RandomBucketFixture>, System.IDisposable
     {
         readonly string _bucketName;
-        BucketCollector _bucketCollector;
+        readonly BucketCollector _bucketCollector;
 
         public CloudStorageRecognizeTests(RandomBucketFixture bucketFixture)
         {
