@@ -108,7 +108,12 @@ namespace GoogleCloudSamples
             Assert.Contains("Score: ", output);
             Assert.Contains("Magnitude: ", output);
             Assert.Contains("Sentence level sentiment:", output);
-            Assert.Contains("a terrible movie.: (-0.7)", output);
+            var regex = new System.Text.RegularExpressions.Regex(
+                @"a terrible movie.:\s*\((.+)\)");
+            var match = regex.Match(output);
+            Assert.True(match.Success);
+            double score = double.Parse(match.Groups[1].Value);
+            Assert.True(score < 0);
         }
 
         [Fact]
