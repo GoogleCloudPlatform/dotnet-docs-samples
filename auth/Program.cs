@@ -19,10 +19,10 @@ using CommandLine;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Storage.v1;
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
+using System.Net.Http;
 
 namespace GoogleCloudSamples
 {
@@ -61,6 +61,13 @@ namespace GoogleCloudSamples
 
     [Verb("api", HelpText = "Authenticate using the Google.Apis.Storage library.")]
     class ApiOptions : BaseOptions
+    {
+        [Option('j', Default = null, HelpText = "Path to a credentials json file.")]
+        public string JsonPath { get; set; }
+    }
+
+    [Verb("http", HelpText = "Authenticate using and make a rest HTTP call.")]
+    class HttpOptions : BaseOptions
     {
         [Option('j', Default = null, HelpText = "Path to a credentials json file.")]
         public string JsonPath { get; set; }
@@ -169,14 +176,52 @@ namespace GoogleCloudSamples
         }
         // [END auth_api_explicit]
 
+        // [START auth_http_implicit]
+        static object AuthHttpImplicit(string projectId)
+        {
+            GoogleCredential credential =
+                GoogleCredential.GetApplicationDefaultAsync().Result;
+            // Inject the Cloud Storage scope if required.
+            if (credential.IsCreateScopedRequired)
+            {
+                credential = credential.CreateScoped(new[]
+                {
+                    "https://www.googleapis.com/auth/devstorage.read_only"
+                });
+            }
+            HttpClient http = new Google.Apis.Http.HttpClientFactory()
+                .CreateHttpClient(
+                new Google.Apis.Http.CreateHttpClientArgs()
+                {
+                    ApplicationName = "Google Cloud Platform Auth Sample",
+                    GZipEnabled = true,
+                    Initializers = { credential },
+                });
+            UriBuilder uri = new UriBuilder(
+                "https://www.googleapis.com/storage/v1/b");
+            uri.Query = "project=" + 
+                System.Web.HttpUtility.UrlEncode(projectId);
+            var resultText = http.GetAsync(uri.Uri).Result.Content
+                .ReadAsStringAsync().Result;
+            dynamic result = Newtonsoft.Json.JsonConvert
+                .DeserializeObject(resultText);
+            foreach (var bucket in result.items)
+            {
+                Console.WriteLine(bucket.name);
+            }
+            return null;
+        }
+        // [END auth_http_implicit]
+
         public static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<CloudOptions, ApiOptions>(args)
+            Parser.Default.ParseArguments<CloudOptions, ApiOptions, HttpOptions>(args)
               .MapResult(
                 (CloudOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ? 
                 AuthCloudImplicit(opts.ProjectId) : AuthCloudExplicit(opts.ProjectId, opts.JsonPath),
                 (ApiOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ?
                 AuthApiImplicit(opts.ProjectId) : AuthApiExplicit(opts.ProjectId, opts.JsonPath),
+                (HttpOptions opts) => AuthHttpImplicit(opts.ProjectId),
                 errs => 1);
         }
     }
