@@ -295,14 +295,15 @@ namespace GoogleCloudSamples
         {
             string topicId = "testTopicForListingTopics";
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
-            var listProjectTopicsOutput = Run("listProjectTopics", _projectId);
             Eventually(() =>
             {
+                var listProjectTopicsOutput = Run("listProjectTopics", _projectId);
                 Assert.Equal(0, listProjectTopicsOutput.ExitCode);
                 Assert.Contains(topicId, listProjectTopicsOutput.Stdout);
             });
         }
 
+        [Fact]
         public void TestListSubscriptions()
         {
             string topicId = "testTopicForListingSubscriptions";
@@ -311,10 +312,10 @@ namespace GoogleCloudSamples
             var subcriptionCreateOutput = Run("createSubscription",
                 _projectId,
                 topicId, subscriptionId);
-            var listProjectSubscriptionsOutput = Run("listSubscriptions",
-                _projectId);
             Eventually(() =>
             {
+                var listProjectSubscriptionsOutput = Run("listSubscriptions",
+                    _projectId);
                 Assert.Equal(0, listProjectSubscriptionsOutput.ExitCode);
                 Assert.Contains(subscriptionId,
                     listProjectSubscriptionsOutput.Stdout);
