@@ -54,20 +54,43 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
         }
 
-        //[Fact]
-        //void TestQueryTransaction()
-        //{
-        //    ConsoleOutput output = _spanner.Run("queryDataWithTransaction",
-        //        s_projectId, _instanceId, _databseId);
-        //    Assert.Equal(0, output.ExitCode);
-        //    Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
-        //    Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
-        //}
-        // TODO: Uncomment the above test when the client library is updated
-        // for transactions which will enable this test to run consistently
-        // without transient issues. 
-        // Link to issue: https://github.com/grpc/grpc/issues/11824
+        [Fact]
+        void TestQueryTransaction()
+        {
+            ConsoleOutput output = _spanner.Run("queryDataWithTransaction",
+                s_projectId, _instanceId, _databseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
+            Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
 
+        [Fact]
+        void TestQueryTransactionCore()
+        {
+            ConsoleOutput output = _spanner.Run("queryDataWithTransaction",
+                s_projectId, _instanceId, _databseId, "netcore");
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
+            Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
+
+        [Fact]
+        void TestReadWriteTransaction()
+        {
+            ConsoleOutput output = _spanner.Run("readWriteWithTransaction",
+                s_projectId, _instanceId, _databseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Transaction complete.", output.Stdout);
+        }
+
+        [Fact]
+        void TestReadWriteTransactionCore()
+        {
+            ConsoleOutput output = _spanner.Run("readWriteWithTransaction",
+                s_projectId, _instanceId, _databseId, "netcore");
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Transaction complete.", output.Stdout);
+        }
 
         [Fact]
         void TestSpannerNoArgsSucceeds()
