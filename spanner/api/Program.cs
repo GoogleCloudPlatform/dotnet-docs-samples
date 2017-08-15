@@ -176,8 +176,9 @@ namespace GoogleCloudSamples.Spanner
         public string instanceId { get; set; }
         [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
         public string databaseId { get; set; }
-        [Value(3, HelpText = "The platform code to execute (netcore or net45).", Required = false)]
-        public string platform { get; set; }
+
+        [Value(3, HelpText = "The platform code to execute. This should be 'netcore' or 'net45' (the default).", Required = false)]
+        public string platform { get; set; } = "net45";
     }
 
     [Verb("readWriteWithTransaction", HelpText = "Update data in the sample Cloud Spanner database table using a read-write transaction.")]
@@ -189,8 +190,9 @@ namespace GoogleCloudSamples.Spanner
         public string instanceId { get; set; }
         [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
         public string databaseId { get; set; }
-        [Value(3, HelpText = "The platform code to execute (netcore or net45).", Required = false)]
-        public string platform { get; set; }
+
+        [Value(3, HelpText = "The platform code to execute. This should be 'netcore' or 'net45' (the default).", Required = false)]
+        public string platform { get; set; } = "net45";
     }
 
     public class Program
@@ -445,7 +447,8 @@ namespace GoogleCloudSamples.Spanner
                 await connection.OpenAsync();
 
                 // Open a new read only transaction.
-                using (var transaction = await connection.BeginReadOnlyTransactionAsync())
+                using (var transaction =
+                    await connection.BeginReadOnlyTransactionAsync())
                 {
                     var cmd = connection.CreateSelectCommand(
                         "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
@@ -457,11 +460,11 @@ namespace GoogleCloudSamples.Spanner
                         while (await reader.ReadAsync())
                         {
                             Console.WriteLine("SingerId : "
-                                              + reader.GetFieldValue<string>("SingerId")
-                                              + " AlbumId : "
-                                              + reader.GetFieldValue<string>("AlbumId")
-                                              + " AlbumTitle : "
-                                              + reader.GetFieldValue<string>("AlbumTitle"));
+                                + reader.GetFieldValue<string>("SingerId")
+                                + " AlbumId : "
+                                + reader.GetFieldValue<string>("AlbumId")
+                                + " AlbumTitle : "
+                                + reader.GetFieldValue<string>("AlbumTitle"));
                         }
                     }
                     // Read #2. Even if changes occur in-between the reads, 
@@ -472,11 +475,11 @@ namespace GoogleCloudSamples.Spanner
                         while (await reader.ReadAsync())
                         {
                             Console.WriteLine("SingerId : "
-                                              + reader.GetFieldValue<string>("SingerId")
-                                              + " AlbumId : "
-                                              + reader.GetFieldValue<string>("AlbumId")
-                                              + " AlbumTitle : "
-                                              + reader.GetFieldValue<string>("AlbumTitle"));
+                                + reader.GetFieldValue<string>("SingerId")
+                                + " AlbumId : "
+                                + reader.GetFieldValue<string>("AlbumId")
+                                + " AlbumTitle : "
+                                + reader.GetFieldValue<string>("AlbumTitle"));
                         }
                     }
                 }
@@ -509,7 +512,8 @@ namespace GoogleCloudSamples.Spanner
                     // Open the connection, making the implicitly created
                     // transaction read only when it connects to the outer
                     // transaction scope.
-                    await connection.OpenAsReadOnlyAsync().ConfigureAwait(false);
+                    await connection.OpenAsReadOnlyAsync()
+                        .ConfigureAwait(false);
                     var cmd = connection.CreateSelectCommand(
                         "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
                     // Read #1.
@@ -637,7 +641,9 @@ namespace GoogleCloudSamples.Spanner
         }
 
         // [START read_write_transaction_core]
-        public static async Task ReadWriteWithTransactionCoreAsync(string projectId, string instanceId,
+        public static async Task ReadWriteWithTransactionCoreAsync(
+            string projectId,
+            string instanceId,
             string databaseId)
         {
             // This sample transfers 200,000 from the MarketingBudget 
@@ -661,12 +667,14 @@ namespace GoogleCloudSamples.Spanner
             {
                 await connection.OpenAsync();
 
-                // Create a readwrite transaction that we'll assign to each SpannerCommand.
-                using (var transaction = await connection.BeginTransactionAsync())
+                // Create a readwrite transaction that we'll assign
+                // to each SpannerCommand.
+                using (var transaction =
+                        await connection.BeginTransactionAsync())
                 {
                     // Create statement to select the second album's data.
                     var cmdLookup = connection.CreateSelectCommand(
-                        "SELECT * FROM Albums WHERE SingerId = 2 AND AlbumId = 2");
+                     "SELECT * FROM Albums WHERE SingerId = 2 AND AlbumId = 2");
                     cmdLookup.Transaction = transaction;
                     // Excecute the select query.
                     using (var reader = await cmdLookup.ExecuteReaderAsync())
@@ -675,29 +683,29 @@ namespace GoogleCloudSamples.Spanner
                         {
                             // Read the second album's budget.
                             secondBudget =
-                                reader.GetFieldValue<decimal>("MarketingBudget");
+                               reader.GetFieldValue<decimal>("MarketingBudget");
                             // Confirm second Album's budget is sufficient and
                             // if not raise an exception. Raising an exception
                             // will automatically roll back the transaction.
                             if (secondBudget < minimumAmountToTransfer)
                             {
                                 throw new Exception("The second album's "
-                                                    + $"budget {secondBudget} "
-                                                    + "is less than the minimum required "
-                                                    + "amount to transfer.");
+                                        + $"budget {secondBudget} "
+                                        + "is less than the minimum required "
+                                        + "amount to transfer.");
                             }
                         }
                     }
                     // Read the first album's budget.
                     cmdLookup = connection.CreateSelectCommand(
-                        "SELECT * FROM Albums WHERE SingerId = 1 and AlbumId = 1");
+                     "SELECT * FROM Albums WHERE SingerId = 1 and AlbumId = 1");
                     cmdLookup.Transaction = transaction;
                     using (var reader = await cmdLookup.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
                         {
                             firstBudget =
-                                reader.GetFieldValue<decimal>("MarketingBudget");
+                              reader.GetFieldValue<decimal>("MarketingBudget");
                         }
                     }
 
@@ -733,7 +741,10 @@ namespace GoogleCloudSamples.Spanner
         // [END read_write_transaction_core]
 
         // [START read_write_transaction]
-        public static async Task ReadWriteWithTransactionAsync(string projectId, string instanceId, string databaseId)
+        public static async Task ReadWriteWithTransactionAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
         {
             // This sample transfers 200,000 from the MarketingBudget 
             // field of the second Album to the first Album. Make sure to run
@@ -766,7 +777,7 @@ namespace GoogleCloudSamples.Spanner
                         {
                             // Read the second album's budget.
                             secondBudget =
-                                reader.GetFieldValue<decimal>("MarketingBudget");
+                              reader.GetFieldValue<decimal>("MarketingBudget");
                             // Confirm second Album's budget is sufficient and
                             // if not raise an exception. Raising an exception
                             // will automatically roll back the transaction.
@@ -787,7 +798,7 @@ namespace GoogleCloudSamples.Spanner
                         while (await reader.ReadAsync())
                         {
                             firstBudget =
-                                reader.GetFieldValue<decimal>("MarketingBudget");
+                              reader.GetFieldValue<decimal>("MarketingBudget");
                         }
                     }
 
@@ -1019,8 +1030,9 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object QueryDataWithStoringIndex(string projectId,
-            string instanceId, string databaseId, string startTitle, string endTitle)
+        public static object QueryDataWithStoringIndex(
+            string projectId, string instanceId,
+            string databaseId, string startTitle, string endTitle)
         {
             var response = new Task(() => { });
             // Call method QueryDataWithStoringIndexAsync() based on whether 
@@ -1084,14 +1096,17 @@ namespace GoogleCloudSamples.Spanner
         public static object QueryNewColumn(string projectId,
             string instanceId, string databaseId)
         {
-            var response = QueryNewColumnAsync(projectId, instanceId, databaseId);
+            var response = QueryNewColumnAsync(projectId,
+                                instanceId, databaseId);
             s_logger.Info("Waiting for operation to complete...");
             response.Wait();
             s_logger.Info($"Response status: {response.Status}");
             return ExitCode.Success;
         }
 
-        public static object QueryDataWithTransaction(string projectId, string instanceId, string databaseId, string platform)
+        public static object QueryDataWithTransaction(
+            string projectId, string instanceId,
+            string databaseId, string platform)
         {
 
             var retryPolicy =
@@ -1100,9 +1115,11 @@ namespace GoogleCloudSamples.Spanner
 
             var response = platform == NetCorePlatform
                 ? retryPolicy.ExecuteAsync(() =>
-                    QueryDataWithTransactionCoreAsync(projectId, instanceId, databaseId))
+                    QueryDataWithTransactionCoreAsync(projectId,
+                        instanceId, databaseId))
                 : retryPolicy.ExecuteAsync(() =>
-                    QueryDataWithTransactionAsync(projectId, instanceId, databaseId));
+                    QueryDataWithTransactionAsync(projectId,
+                        instanceId, databaseId));
 
             s_logger.Info("Waiting for operation to complete...");
             response.Wait();
@@ -1110,7 +1127,9 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object ReadWriteWithTransaction(string projectId, string instanceId, string databaseId, string platform)
+        public static object ReadWriteWithTransaction(
+            string projectId, string instanceId,
+            string databaseId, string platform)
         {
             try
             {
@@ -1119,10 +1138,12 @@ namespace GoogleCloudSamples.Spanner
                     ? Task.Run(async () =>
                     {
                         var retryPolicy = new
-                            RetryPolicy<CustomTransientErrorDetectionStrategy>(RetryStrategy.DefaultExponential);
+                          RetryPolicy<CustomTransientErrorDetectionStrategy>
+                            (RetryStrategy.DefaultExponential);
 
-                        await retryPolicy.ExecuteAsync(() => ReadWriteWithTransactionCoreAsync(
-                            projectId, instanceId, databaseId));
+                        await retryPolicy.ExecuteAsync(
+                            () => ReadWriteWithTransactionCoreAsync(
+                                projectId, instanceId, databaseId));
 
                         await Task.Yield(); // fix for gRPC threading issue.
                     })
@@ -1130,10 +1151,12 @@ namespace GoogleCloudSamples.Spanner
                     {
                         // [START read_write_retry]
                         var retryPolicy = new
-                            RetryPolicy<CustomTransientErrorDetectionStrategy>(RetryStrategy.DefaultExponential);
+                            RetryPolicy<CustomTransientErrorDetectionStrategy>
+                                (RetryStrategy.DefaultExponential);
 
                         await retryPolicy.ExecuteAsync(() => 
-                            ReadWriteWithTransactionAsync(projectId, instanceId, databaseId));
+                            ReadWriteWithTransactionAsync(
+                                    projectId, instanceId, databaseId));
                         // [END read_write_retry]
 
                         await Task.Yield(); // fix for gRPC threading issue.
@@ -1185,10 +1208,12 @@ namespace GoogleCloudSamples.Spanner
                     opts.projectId, opts.instanceId, opts.databaseId),
                 (QueryDataWithTransactionOptions opts) => 
                     QueryDataWithTransaction(
-                        opts.projectId, opts.instanceId, opts.databaseId, opts.platform),
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.platform),
                 (ReadWriteWithTransactionOptions opts) =>
                     ReadWriteWithTransaction(
-                        opts.projectId, opts.instanceId, opts.databaseId, opts.platform),
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.platform),
                 (AddIndexOptions opts) => AddIndex(
                     opts.projectId, opts.instanceId, opts.databaseId),
                 (AddStoringIndexOptions opts) => AddStoringIndex(
