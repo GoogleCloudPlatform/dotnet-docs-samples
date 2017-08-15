@@ -44,6 +44,10 @@ namespace GoogleCloudSamples
             }
         }
     }
+
+    // TODO: Remove this class and use 
+    //       Transient Fault Handling Application Block:
+    //       https://msdn.microsoft.com/en-us/library/dn440719(v=pandp.60).aspx
     public class RetryRobot
     {
         public int FirstRetryDelayMs { get; set; } = 1000;
