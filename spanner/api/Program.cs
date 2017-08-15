@@ -198,7 +198,7 @@ namespace GoogleCloudSamples.Spanner
     public class Program
     {
         static readonly ILog s_logger = LogManager.GetLogger(typeof(Program));
-        private static readonly string NetCorePlatform = "netcore";
+        private static readonly string s_netCorePlatform = "netcore";
 
         enum ExitCode : int
         {
@@ -1108,12 +1108,11 @@ namespace GoogleCloudSamples.Spanner
             string projectId, string instanceId,
             string databaseId, string platform)
         {
-
             var retryPolicy =
                 new RetryPolicy<CustomTransientErrorDetectionStrategy>
                     (RetryStrategy.DefaultExponential);
 
-            var response = platform == NetCorePlatform
+            var response = platform == s_netCorePlatform
                 ? retryPolicy.ExecuteAsync(() =>
                     QueryDataWithTransactionCoreAsync(projectId,
                         instanceId, databaseId))
@@ -1134,7 +1133,7 @@ namespace GoogleCloudSamples.Spanner
             try
             {
                 s_logger.Info("Waiting for operation to complete...");
-                var response = platform == NetCorePlatform
+                var response = platform == s_netCorePlatform
                     ? Task.Run(async () =>
                     {
                         var retryPolicy = new
@@ -1154,7 +1153,7 @@ namespace GoogleCloudSamples.Spanner
                             RetryPolicy<CustomTransientErrorDetectionStrategy>
                                 (RetryStrategy.DefaultExponential);
 
-                        await retryPolicy.ExecuteAsync(() => 
+                        await retryPolicy.ExecuteAsync(() =>
                             ReadWriteWithTransactionAsync(
                                     projectId, instanceId, databaseId));
                         // [END read_write_retry]
@@ -1206,7 +1205,7 @@ namespace GoogleCloudSamples.Spanner
                     opts.projectId, opts.instanceId, opts.databaseId),
                 (QueryNewColumnOptions opts) => QueryNewColumn(
                     opts.projectId, opts.instanceId, opts.databaseId),
-                (QueryDataWithTransactionOptions opts) => 
+                (QueryDataWithTransactionOptions opts) =>
                     QueryDataWithTransaction(
                         opts.projectId, opts.instanceId, opts.databaseId,
                         opts.platform),
