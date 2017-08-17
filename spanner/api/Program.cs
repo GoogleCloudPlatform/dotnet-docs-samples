@@ -22,6 +22,7 @@ using System.Transactions;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 using System.Collections.Generic;
 using log4net;
+using System.Linq;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -633,12 +634,14 @@ namespace GoogleCloudSamples.Spanner
             // [END query_data_with_new_column]
         }
 
+        // [START topaz_strategy]
         internal class CustomTransientErrorDetectionStrategy
             : ITransientErrorDetectionStrategy
         {
             public bool IsTransient(Exception ex) =>
                 ex.IsTransientSpannerFault();
         }
+        // [END topaz_strategy]
 
         // [START read_write_transaction_core]
         public static async Task ReadWriteWithTransactionCoreAsync(
@@ -870,6 +873,8 @@ namespace GoogleCloudSamples.Spanner
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
             {
+                await connection.OpenAsync();
+
                 // Insert rows into the Singers table.
                 var cmd = connection.CreateInsertCommand("Singers",
                     new SpannerParameterCollection {
@@ -877,13 +882,14 @@ namespace GoogleCloudSamples.Spanner
                         {"FirstName", SpannerDbType.String},
                         {"LastName", SpannerDbType.String}
                 });
-                foreach (var singer in singers)
+                await Task.WhenAll(singers.Select(singer =>
                 {
                     cmd.Parameters["SingerId"].Value = singer.singerId;
                     cmd.Parameters["FirstName"].Value = singer.firstName;
                     cmd.Parameters["LastName"].Value = singer.lastName;
-                    await cmd.ExecuteNonQueryAsync();
-                }
+                    return cmd.ExecuteNonQueryAsync();
+                }));
+
                 // Insert rows into the Albums table.
                 cmd = connection.CreateInsertCommand("Albums",
                     new SpannerParameterCollection {
@@ -891,13 +897,13 @@ namespace GoogleCloudSamples.Spanner
                         {"AlbumId", SpannerDbType.Int64},
                         {"AlbumTitle", SpannerDbType.String}
                 });
-                foreach (var album in albums)
+                await Task.WhenAll(albums.Select(album =>
                 {
                     cmd.Parameters["SingerId"].Value = album.singerId;
                     cmd.Parameters["AlbumId"].Value = album.albumId;
                     cmd.Parameters["AlbumTitle"].Value = album.albumTitle;
-                    await cmd.ExecuteNonQueryAsync();
-                }
+                    return cmd.ExecuteNonQueryAsync();
+                }));
                 Console.WriteLine("Inserted data.");
             }
         }
