@@ -1130,45 +1130,36 @@ namespace GoogleCloudSamples.Spanner
             string projectId, string instanceId,
             string databaseId, string platform)
         {
-            try
-            {
-                s_logger.Info("Waiting for operation to complete...");
-                var response = platform == s_netCorePlatform
-                    ? Task.Run(async () =>
-                    {
-                        var retryPolicy = new
-                          RetryPolicy<CustomTransientErrorDetectionStrategy>
+            s_logger.Info("Waiting for operation to complete...");
+            var response = platform == s_netCorePlatform
+                ? Task.Run(async () =>
+                {
+                    var retryPolicy = new
+                        RetryPolicy<CustomTransientErrorDetectionStrategy>
+                        (RetryStrategy.DefaultExponential);
+
+                    await retryPolicy.ExecuteAsync(
+                        () => ReadWriteWithTransactionCoreAsync(
+                            projectId, instanceId, databaseId));
+
+                    await Task.Yield(); // fix for gRPC threading issue.
+                })
+                : Task.Run(async () =>
+                {
+                    // [START read_write_retry]
+                    var retryPolicy = new
+                        RetryPolicy<CustomTransientErrorDetectionStrategy>
                             (RetryStrategy.DefaultExponential);
 
-                        await retryPolicy.ExecuteAsync(
-                            () => ReadWriteWithTransactionCoreAsync(
+                    await retryPolicy.ExecuteAsync(() =>
+                        ReadWriteWithTransactionAsync(
                                 projectId, instanceId, databaseId));
+                    // [END read_write_retry]
 
-                        await Task.Yield(); // fix for gRPC threading issue.
-                    })
-                    : Task.Run(async () =>
-                    {
-                        // [START read_write_retry]
-                        var retryPolicy = new
-                            RetryPolicy<CustomTransientErrorDetectionStrategy>
-                                (RetryStrategy.DefaultExponential);
-
-                        await retryPolicy.ExecuteAsync(() =>
-                            ReadWriteWithTransactionAsync(
-                                    projectId, instanceId, databaseId));
-                        // [END read_write_retry]
-
-                        await Task.Yield(); // fix for gRPC threading issue.
-                    });
-
-                response.Wait();
-                s_logger.Info($"Response status: {response.Status}");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
+                    await Task.Yield(); // fix for gRPC threading issue.
+                });
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
             return ExitCode.Success;
         }
 
