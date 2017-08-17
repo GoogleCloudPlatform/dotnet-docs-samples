@@ -965,20 +965,9 @@ namespace GoogleCloudSamples.Spanner
             string instanceId, string databaseId,
             string startTitle, string endTitle)
         {
-            var response = new Task(() => { });
-            // Call method QueryDataWithIndexAsync() based on whether 
-            // user provided startTitle and endTitle values are empty or null.
-            if (string.IsNullOrEmpty(startTitle))
+            if (string.IsNullOrEmpty(startTitle) ^ string.IsNullOrWhiteSpace(endTitle))
             {
-                // startTitle not provided, exclude startTitle and endTitle from 
-                // method call to use default values for both.
-                response = QueryDataWithIndexAsync(
-                        projectId, instanceId, databaseId);
-            }
-            else if (!string.IsNullOrEmpty(startTitle)
-                && string.IsNullOrEmpty(endTitle))
-            {
-                // Only startTitle provided, show message that user must 
+                // Only one Title provided: show message that user must 
                 // provide both startTitle and endTitle or exclude them 
                 // from their command.
                 Console.WriteLine("Please provide values for both the start "
@@ -987,15 +976,16 @@ namespace GoogleCloudSamples.Spanner
                     + "query with default values.");
                 return ExitCode.InvalidParameter;
             }
-            else if (!string.IsNullOrEmpty(startTitle)
-                && !string.IsNullOrEmpty(endTitle))
-            {
+            // Call method QueryDataWithIndexAsync() based on whether 
+            // user provided startTitle and endTitle values are empty or null.
+            Task response = string.IsNullOrEmpty(startTitle) ?
+                // startTitle not provided, exclude startTitle and endTitle from 
+                // method call to use default values for both.
+                QueryDataWithIndexAsync(projectId, instanceId, databaseId) :
                 // Both startTitle and endTitle provided, include them both in
                 // the method call to QueryDataWithIndexAsync.
-                response = QueryDataWithIndexAsync(
-                        projectId, instanceId, databaseId,
+                QueryDataWithIndexAsync(projectId, instanceId, databaseId,
                         startTitle, endTitle);
-            }
             s_logger.Info("Waiting for operation to complete...");
             response.Wait();
             s_logger.Info($"Operation status: {response.Status}");
@@ -1170,9 +1160,9 @@ namespace GoogleCloudSamples.Spanner
         }
 
 
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            Parser.Default.ParseArguments<
+            return (int)Parser.Default.ParseArguments<
                 CreateDatabaseOptions, CreateSampleDatabaseOptions,
                 InsertSampleDataOptions,
                 QuerySampleDataOptions,

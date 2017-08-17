@@ -48,7 +48,7 @@ namespace GoogleCloudSamples.Spanner
 
         readonly CommandLineRunner _spannerCmd = new CommandLineRunner()
         {
-            VoidMain = Program.Main,
+            Main = Program.Main,
             Command = "Spanner"
         };
 
@@ -176,7 +176,7 @@ namespace GoogleCloudSamples.Spanner
         void TestSpannerNoArgsSucceeds()
         {
             ConsoleOutput output = _spannerCmd.Run();
-            Assert.Equal(0, output.ExitCode);
+            Assert.NotEqual(0, output.ExitCode);
         }
 
         /// <summary>
