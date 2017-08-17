@@ -14,6 +14,7 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Sdk;
 
@@ -43,6 +44,7 @@ namespace GoogleCloudSamples.Spanner
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
         private static readonly string s_databaseId =
             Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? "my-database";
+        private static bool s_initializedDatabase = false;
 
         readonly CommandLineRunner _spannerCmd = new CommandLineRunner()
         {
@@ -50,14 +52,24 @@ namespace GoogleCloudSamples.Spanner
             Command = "Spanner"
         };
 
-        [Fact]
-        void TestQuery()
+        public SpannerTests()
+        {
+            lock (this)
+            {
+                if (!s_initializedDatabase)
+                {
+                    s_initializedDatabase = true;
+                    InitializeDatabase();
+                }
+            }
+        }
+
+        void InitializeDatabase()
         {
             // If the database has not been initialized, retry.
             try
             {
                 QuerySampleData();
-                return;
             }
             catch (AggregateException e) when (ContainsError(e, ErrorCode.NotFound))
             {
@@ -76,6 +88,48 @@ namespace GoogleCloudSamples.Spanner
                     s_projectId, s_instanceId, s_databaseId);
                 QuerySampleData();
             }
+            try
+            {
+                _spannerCmd.Run("addColumn",
+                    s_projectId, s_instanceId, s_databaseId);
+            }
+            catch (AggregateException e) when (ContainsError(e, ErrorCode.AlreadyExists))
+            {
+            }
+        }
+
+        async Task RefillMarketingBudgetsAsync()
+        {
+            string connectionString =
+                $"Data Source=projects/{s_projectId}/instances/{s_instanceId}"
+                + $"/databases/{s_databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                var cmd = connection.CreateUpdateCommand("Albums",
+                new SpannerParameterCollection
+                {
+                    {"SingerId", SpannerDbType.Int64},
+                    {"AlbumId", SpannerDbType.Int64},
+                    {"MarketingBudget", SpannerDbType.Int64},
+                });
+                for (int i = 1; i <= 2; ++i)
+                {
+                    cmd.Parameters["SingerId"].Value = i;
+                    cmd.Parameters["AlbumId"].Value = i;
+                    cmd.Parameters["MarketingBudget"].Value = 300000;
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        [Fact]
+        void TestQuery()
+        {
+            QuerySampleData();
         }
 
         [Fact]
@@ -101,6 +155,7 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestReadWriteTransaction()
         {
+            RefillMarketingBudgetsAsync().Wait();
             ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
                 s_projectId, s_instanceId, s_databaseId);
             Assert.Equal(0, output.ExitCode);
@@ -110,6 +165,7 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestReadWriteTransactionCore()
         {
+            RefillMarketingBudgetsAsync().Wait();
             ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
                 s_projectId, s_instanceId, s_databaseId, "netcore");
             Assert.Equal(0, output.ExitCode);
