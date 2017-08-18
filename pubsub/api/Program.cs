@@ -49,19 +49,15 @@ namespace GoogleCloudSamples
         public string subscriptionId { get; set; }
     }
 
-    [Verb("createTopicMessage", HelpText = "Create a pubsub topic message in this project.")]
-    class CreateTopicMessageOptions
+    [Verb("publishMessage", HelpText = "Publish a message to a topic.")]
+    class PublishMessageOptions
     {
         [Value(0, HelpText = "The project ID of the project to use for pubsub operations.", Required = true)]
         public string projectId { get; set; }
         [Value(1, HelpText = "The topic to publish a message to.", Required = true)]
         public string topicId { get; set; }
-        [Value(2, HelpText = "The message to publish to the topic.", Required = true)]
-        public string message { get; set; }
-        [Value(3, HelpText = "The optional attributes key to associate with the published message", Required = false)]
-        public string attributesKey { get; set; }
-        [Value(4, HelpText = "The optional attributes value to associate with the published message", Required = false)]
-        public string attributesValue { get; set; }
+        [Value(2, HelpText = "The messages to publish to the topic.", Required = true)]
+        public string[] message { get; set; }
     }
 
     [Verb("pullTopicMessages", HelpText = "Pull pubsub messages in this project.")]
@@ -235,29 +231,26 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        public static object CreateTopicMessage(string projectId,
-            string topicId, string messageText,
-            string attributesKey = "description", string attributesValue = "")
+        // [START publish_message]
+        public static object PublishMessages(string projectId,
+            string topicId, params string[] messageTexts)
         {
-            PublisherClient publisher = PublisherClient.Create();
-            // [START publish_message]
-            TopicName topicName = new TopicName(projectId, topicId);
-            PubsubMessage message = new PubsubMessage
+            PublisherClient publisherClient = PublisherClient.Create();
+            SimplePublisher publisher = SimplePublisher.Create(
+                new TopicName(projectId, topicId), new[] { publisherClient });
+            var publishTasks = new List<Task<string>>();
+            // SimplePublisher takes care of batching for us.
+            foreach (string text in messageTexts)
             {
-                // The data is any arbitrary ByteString. Here, we're using text.
-                Data = ByteString.CopyFromUtf8(messageText),
-                // The attributes provide metadata in a string-to-string 
-                // dictionary.
-                Attributes =
-                {
-                    { attributesKey, attributesValue }
-                }
-            };
-            publisher.Publish(topicName, new[] { message });
-            Console.WriteLine("Topic message created.");
-            // [END publish_message]
+                publisher.PublishAsync(text);
+            }
+            foreach (var task in publishTasks)
+            {
+                Console.WriteLine("Published message {0}", task.Result);               
+            }
             return 0;
         }
+        // [END publish_message]
 
         public static object PullTopicMessages(string projectId,
             string subscriptionId, bool acknowledge)
@@ -459,7 +452,7 @@ namespace GoogleCloudSamples
         {
             Parser.Default.ParseArguments<
                 CreateTopicOptions, CreateSubscriptionOptions,
-                CreateTopicMessageOptions, PullTopicMessagesOptions,
+                PublishMessageOptions, PullTopicMessagesOptions,
                 GetTopicOptions, GetSubscriptionOptions,
                 GetTopicIamPolicyOptions, GetSubscriptionIamPolicyOptions,
                 SetTopicIamPolicyOptions, SetSubscriptionIamPolicyOptions,
@@ -471,7 +464,7 @@ namespace GoogleCloudSamples
                   opts.projectId, opts.topicId),
                 (CreateSubscriptionOptions opts) => CreateSubscription(opts.projectId,
                 opts.topicId, opts.subscriptionId),
-                (CreateTopicMessageOptions opts) => CreateTopicMessage(opts.projectId,
+                (PublishMessageOptions opts) => PublishMessages(opts.projectId,
                 opts.topicId, opts.message),
                 (PullTopicMessagesOptions opts) => PullTopicMessages(opts.projectId,
                 opts.subscriptionId, opts.acknowledge),
