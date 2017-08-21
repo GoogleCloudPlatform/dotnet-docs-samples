@@ -237,31 +237,38 @@ namespace GoogleCloudSamples
             Assert.Contains($"{subscriptionId}", subscriptionDetails.Stdout);
         }
 
-        [Fact]
-        public void TestPublishMessage()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestPublishMessage(bool customBatch)
         {
             string topicId = "testTopicForMessageCreation";
             string subscriptionId = "testSubscriptionForMessageCreation";
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription", _projectId,
                 topicId, subscriptionId);
-            var messageCreateOutput = Run("publishMessages", _projectId,
-                topicId, "Hello World!", "Good day.", "Bye bye.");
+            List<string> cmdArgs = new[] { "publishMessages", _projectId,
+                topicId, "Hello World!", "Good day.", "Bye bye." }.ToList();
+            if (customBatch)
+            {
+                cmdArgs.Insert(2, "-b");
+            }
+            var messageCreateOutput = Run(cmdArgs.ToArray());
             Assert.Equal(0, messageCreateOutput.ExitCode);
             Assert.Contains("Published message", messageCreateOutput.Stdout);
             // Pull the Message to confirm it is valid
             Eventually(() =>
             {
-                var output = Run("pullMessages", "-a", _projectId, subscriptionId);
+                var output = Run("pullMessages", _projectId, subscriptionId);
                 Assert.Equal(0, output.ExitCode);
                 Assert.False(string.IsNullOrEmpty(output.Stdout));
             });
         }
 
         [Theory]
-        [InlineData("")]
-        [InlineData("-f")]
-        public void TestAcknowledgeMessage(string flowFlag)
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TestAcknowledgeMessage(bool customFlow)
         {
             string topicId = "testTopicForMessageAck";
             string subscriptionId = "testSubscriptionForMessageAck";
@@ -272,11 +279,11 @@ namespace GoogleCloudSamples
             var messageCreateOutput = Run("publishMessages", _projectId,
                 topicId, message);
             // Pull and acknowldge the messages
-            List<string> cmdArgs = new [] {"pullMessages", "-a", _projectId,
+            List<string> cmdArgs = new[] {"pullMessages", "-a", _projectId,
                     subscriptionId }.ToList();
-            if (!string.IsNullOrEmpty(flowFlag))
+            if (customFlow)
             {
-                cmdArgs.Insert(2, flowFlag);
+                cmdArgs.Insert(2, "-f");
             }
             string[] cmd = cmdArgs.ToArray();
             Eventually(() =>

@@ -54,6 +54,8 @@ namespace GoogleCloudSamples
         public string topicId { get; set; }
         [Value(2, HelpText = "The messages to publish to the topic.", Required = true)]
         public IEnumerable<string> message { get; set; }
+        [Option('b', HelpText = "Use custom batch thresholds.", Default = false)]
+        public bool customBatchThresholds { get; set; }
     }
 
     [Verb("pullMessages", HelpText = "Pull pubsub messages in this project.")]
@@ -63,7 +65,7 @@ namespace GoogleCloudSamples
         public string projectId { get; set; }
         [Value(1, HelpText = "The subscription to pull messages from.", Required = true)]
         public string subscriptionId { get; set; }
-        [Option('a', HelpText = @"Acknowledge the pulled messages?", Default = false)]        
+        [Option('a', HelpText = @"Acknowledge the pulled messages?", Default = false)]
         public bool acknowledge { get; set; }
         [Option('f', HelpText = @"Use custom flow control settings.", Default = false)]
         public bool customFlow { get; set; }
@@ -229,13 +231,43 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        // [START publish_message]
-        public static object PublishMessages(string projectId,
-            string topicId, IEnumerable<string> messageTexts)
+        public static SimplePublisher GetSimplePublisher(string projectId,
+            string topicId)
         {
+            // [START publish_message]
             PublisherClient publisherClient = PublisherClient.Create();
             SimplePublisher publisher = SimplePublisher.Create(
                 new TopicName(projectId, topicId), new[] { publisherClient });
+            // [END publish_message]
+            return publisher;
+        }
+
+        /// <summary>
+        /// Create a SimplePublisher with custom batch thresholds.
+        /// </summary>
+        public static SimplePublisher GetCustomPublisher(string projectId,
+            string topicId)
+        {
+            // [START pubsub_publisher_batch_settings]
+            PublisherClient publisherClient = PublisherClient.Create();
+            SimplePublisher publisher = SimplePublisher.Create(
+                new TopicName(projectId, topicId), new[] { publisherClient },
+                new SimplePublisher.Settings()
+                {
+                    BatchingSettings = new Google.Api.Gax.BatchingSettings(
+                        elementCountThreshold: 100,
+                        byteCountThreshold: 10240,
+                        delayThreshold: TimeSpan.FromSeconds(3))
+                });
+            // [END pubsub_publisher_batch_settings]
+            return publisher;
+        }
+
+        public static object PublishMessages(SimplePublisher publisher,
+            IEnumerable<string> messageTexts)
+        {
+            // [START publish_message]
+            // [START pubsub_publisher_batch_settings]
             var publishTasks = new List<Task<string>>();
             // SimplePublisher collects messages into appropriately sized
             // batches.
@@ -247,9 +279,10 @@ namespace GoogleCloudSamples
             {
                 Console.WriteLine("Published message {0}", task.Result);
             }
+            // [END pubsub_publisher_batch_settings]
+            // [END publish_message]
             return 0;
         }
-        // [END publish_message]
 
         static SimpleSubscriber GetSimpleSubscriber(string projectId,
             string subscriptionId)
@@ -274,8 +307,6 @@ namespace GoogleCloudSamples
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
             SubscriberClient subscriberClient = SubscriberClient.Create();
-            const int maxOutstandingElementCount = 100;
-            const int maxOutstandingByteCount = 1024 * 10;
             SimpleSubscriber subscriber = SimpleSubscriber.Create(
                 subscriptionName, new[] { subscriberClient },
                 new SimpleSubscriber.Settings()
@@ -284,8 +315,9 @@ namespace GoogleCloudSamples
                     Scheduler = Google.Api.Gax.SystemScheduler.Instance,
                     StreamAckDeadline = TimeSpan.FromSeconds(10),
                     FlowControlSettings = new Google.Api.Gax
-                        .FlowControlSettings(maxOutstandingElementCount, 
-                        maxOutstandingByteCount)
+                        .FlowControlSettings(
+                        maxOutstandingElementCount: 100,
+                        maxOutstandardByteCount: 10240)
                 });
             // [END pubsub_subscriber_flow_settings]
             return subscriber;
@@ -493,9 +525,10 @@ namespace GoogleCloudSamples
                   opts.projectId, opts.topicId),
                 (CreateSubscriptionOptions opts) => CreateSubscription(opts.projectId,
                 opts.topicId, opts.subscriptionId),
-                (PublishMessageOptions opts) => PublishMessages(opts.projectId,
-                opts.topicId, opts.message),
-                (PullMessagesOptions opts) => PullMessages(opts.customFlow 
+                (PublishMessageOptions opts) => PublishMessages(opts.customBatchThresholds
+                    ? GetCustomPublisher(opts.projectId, opts.topicId)
+                    : GetSimplePublisher(opts.projectId, opts.topicId), opts.message),
+                (PullMessagesOptions opts) => PullMessages(opts.customFlow
                     ? GetCustomSubscriber(opts.projectId, opts.subscriptionId)
                     : GetSimpleSubscriber(opts.projectId, opts.subscriptionId), opts.acknowledge),
                 (GetTopicOptions opts) => GetTopic(opts.projectId, opts.topicId),
