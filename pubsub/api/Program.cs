@@ -13,19 +13,15 @@
 // limitations under the License.
 
 using CommandLine;
-using Google.Api.Gax.Grpc;
 using Google.Cloud.Iam.V1;
 using Google.Cloud.PubSub.V1;
-using Google.Protobuf;
 using Grpc.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace GoogleCloudSamples
 {
@@ -61,7 +57,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("pullMessages", HelpText = "Pull pubsub messages in this project.")]
-    class PullTopicMessagesOptions
+    class PullMessagesOptions
     {
         [Value(0, HelpText = "The project ID of the project to use for pubsub operations.", Required = true)]
         public string projectId { get; set; }
@@ -239,7 +235,8 @@ namespace GoogleCloudSamples
             SimplePublisher publisher = SimplePublisher.Create(
                 new TopicName(projectId, topicId), new[] { publisherClient });
             var publishTasks = new List<Task<string>>();
-            // SimplePublisher takes care of batching for us.
+            // SimplePublisher collects messages into appropriately sized
+            // batches.
             foreach (string text in messageTexts)
             {
                 publishTasks.Add(publisher.PublishAsync(text));
@@ -252,36 +249,32 @@ namespace GoogleCloudSamples
         }
         // [END publish_message]
 
-        public static object PullTopicMessages(string projectId,
+        public static object PullMessages(string projectId,
             string subscriptionId, bool acknowledge)
         {
-            SubscriberClient subscriber = SubscriberClient.Create();
             // [START pull_messages]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
-            PullResponse response = subscriber.Pull(subscriptionName,
-                returnImmediately: true, maxMessages: 10);
+            SubscriberClient subscriberClient = SubscriberClient.Create();
+            SimpleSubscriber subscriber = SimpleSubscriber.Create(
+                subscriptionName, new[] { subscriberClient });
+            // SimpleSubscriber runs your message handle function on multiple
+            // threads to maximize throughput.
+            subscriber.StartAsync(
+                async (PubsubMessage message, CancellationToken cancel) => 
+                {
+                    string text = 
+                        Encoding.UTF8.GetString(message.Data.ToArray());
+                    await Console.Out.WriteLineAsync(
+                        $"Message {message.MessageId}: {text}");
+                    return acknowledge ? SimpleSubscriber.Reply.Ack 
+                        : SimpleSubscriber.Reply.Nack;
+                });
+            // Run for 3 seconds.
+            Thread.Sleep(3000);
+            subscriber.StopAsync(CancellationToken.None).Wait();
             // [END pull_messages]
-            if (response.ReceivedMessages.Count > 0)
-            {
-                foreach (ReceivedMessage message in response.ReceivedMessages)
-                {
-                    Console.WriteLine($"Message {message.AckId}: " +
-                        $"{message.Message}");
-                }
-                if (acknowledge)
-                {
-                    AcknowledgeTopicMessage(projectId, subscriptionId, response);
-                    Console.WriteLine($"# of Messages received and acknowledged:" +
-                        $" {response.ReceivedMessages.Count}");
-                }
-                else
-                {
-                    Console.WriteLine($"# of Messages received:" +
-                        $" {response.ReceivedMessages.Count}");
-                }
-            }
-            return response.ReceivedMessages.Count;
+            return 0;
         }
 
         public static object AcknowledgeTopicMessage(string projectId,
@@ -290,10 +283,8 @@ namespace GoogleCloudSamples
             SubscriberClient subscriber = SubscriberClient.Create();
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
-            // [START pull_messages]
             subscriber.Acknowledge(subscriptionName,
                 response.ReceivedMessages.Select(m => m.AckId));
-            // [END pull_messages]
             return 0;
         }
 
@@ -452,7 +443,7 @@ namespace GoogleCloudSamples
         {
             Parser.Default.ParseArguments<
                 CreateTopicOptions, CreateSubscriptionOptions,
-                PublishMessageOptions, PullTopicMessagesOptions,
+                PublishMessageOptions, PullMessagesOptions,
                 GetTopicOptions, GetSubscriptionOptions,
                 GetTopicIamPolicyOptions, GetSubscriptionIamPolicyOptions,
                 SetTopicIamPolicyOptions, SetSubscriptionIamPolicyOptions,
@@ -466,7 +457,7 @@ namespace GoogleCloudSamples
                 opts.topicId, opts.subscriptionId),
                 (PublishMessageOptions opts) => PublishMessages(opts.projectId,
                 opts.topicId, opts.message),
-                (PullTopicMessagesOptions opts) => PullTopicMessages(opts.projectId,
+                (PullMessagesOptions opts) => PullMessages(opts.projectId,
                 opts.subscriptionId, opts.acknowledge),
                 (GetTopicOptions opts) => GetTopic(opts.projectId, opts.topicId),
                 (GetSubscriptionOptions opts) => GetSubscription(opts.projectId,
