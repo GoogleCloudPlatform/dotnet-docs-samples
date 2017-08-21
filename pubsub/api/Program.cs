@@ -243,7 +243,7 @@ namespace GoogleCloudSamples
             }
             foreach (var task in publishTasks)
             {
-                Console.WriteLine("Published message {0}", task.Result);               
+                Console.WriteLine("Published message {0}", task.Result);
             }
             return 0;
         }
@@ -261,13 +261,13 @@ namespace GoogleCloudSamples
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
             subscriber.StartAsync(
-                async (PubsubMessage message, CancellationToken cancel) => 
+                async (PubsubMessage message, CancellationToken cancel) =>
                 {
-                    string text = 
+                    string text =
                         Encoding.UTF8.GetString(message.Data.ToArray());
                     await Console.Out.WriteLineAsync(
                         $"Message {message.MessageId}: {text}");
-                    return acknowledge ? SimpleSubscriber.Reply.Ack 
+                    return acknowledge ? SimpleSubscriber.Reply.Ack
                         : SimpleSubscriber.Reply.Nack;
                 });
             // Run for 3 seconds.
