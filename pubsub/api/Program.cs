@@ -13,19 +13,15 @@
 // limitations under the License.
 
 using CommandLine;
-using Google.Api.Gax.Grpc;
 using Google.Cloud.Iam.V1;
 using Google.Cloud.PubSub.V1;
-using Google.Protobuf;
 using Grpc.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace GoogleCloudSamples
 {
@@ -49,30 +45,30 @@ namespace GoogleCloudSamples
         public string subscriptionId { get; set; }
     }
 
-    [Verb("createTopicMessage", HelpText = "Create a pubsub topic message in this project.")]
-    class CreateTopicMessageOptions
+    [Verb("publishMessages", HelpText = "Publish messages to a topic.")]
+    class PublishMessageOptions
     {
         [Value(0, HelpText = "The project ID of the project to use for pubsub operations.", Required = true)]
         public string projectId { get; set; }
         [Value(1, HelpText = "The topic to publish a message to.", Required = true)]
         public string topicId { get; set; }
-        [Value(2, HelpText = "The message to publish to the topic.", Required = true)]
-        public string message { get; set; }
-        [Value(3, HelpText = "The optional attributes key to associate with the published message", Required = false)]
-        public string attributesKey { get; set; }
-        [Value(4, HelpText = "The optional attributes value to associate with the published message", Required = false)]
-        public string attributesValue { get; set; }
+        [Value(2, HelpText = "The messages to publish to the topic.", Required = true)]
+        public IEnumerable<string> message { get; set; }
+        [Option('b', HelpText = "Use custom batch thresholds.", Default = false)]
+        public bool customBatchThresholds { get; set; }
     }
 
-    [Verb("pullTopicMessages", HelpText = "Pull pubsub messages in this project.")]
-    class PullTopicMessagesOptions
+    [Verb("pullMessages", HelpText = "Pull pubsub messages in this project.")]
+    class PullMessagesOptions
     {
         [Value(0, HelpText = "The project ID of the project to use for pubsub operations.", Required = true)]
         public string projectId { get; set; }
         [Value(1, HelpText = "The subscription to pull messages from.", Required = true)]
         public string subscriptionId { get; set; }
-        [Value(2, HelpText = @"Acknowledge the pulled messages? Use ""true"" or ""false"".", Default = false)]
+        [Option('a', HelpText = @"Acknowledge the pulled messages?", Default = false)]
         public bool acknowledge { get; set; }
+        [Option('f', HelpText = @"Use custom flow control settings.", Default = false)]
+        public bool customFlow { get; set; }
     }
 
     [Verb("getTopic", HelpText = "Get the details of a pubsub topic in this project.")]
@@ -235,71 +231,118 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        public static object CreateTopicMessage(string projectId,
-            string topicId, string messageText,
-            string attributesKey = "description", string attributesValue = "")
+        public static SimplePublisher GetSimplePublisher(string projectId,
+            string topicId)
         {
-            PublisherClient publisher = PublisherClient.Create();
             // [START publish_message]
-            TopicName topicName = new TopicName(projectId, topicId);
-            PubsubMessage message = new PubsubMessage
-            {
-                // The data is any arbitrary ByteString. Here, we're using text.
-                Data = ByteString.CopyFromUtf8(messageText),
-                // The attributes provide metadata in a string-to-string 
-                // dictionary.
-                Attributes =
+            PublisherClient publisherClient = PublisherClient.Create();
+            SimplePublisher publisher = SimplePublisher.Create(
+                new TopicName(projectId, topicId), new[] { publisherClient });
+            // [END publish_message]
+            return publisher;
+        }
+
+        /// <summary>
+        /// Create a SimplePublisher with custom batch thresholds.
+        /// </summary>
+        public static SimplePublisher GetCustomPublisher(string projectId,
+            string topicId)
+        {
+            // [START pubsub_publisher_batch_settings]
+            PublisherClient publisherClient = PublisherClient.Create();
+            SimplePublisher publisher = SimplePublisher.Create(
+                new TopicName(projectId, topicId), new[] { publisherClient },
+                new SimplePublisher.Settings()
                 {
-                    { attributesKey, attributesValue }
-                }
-            };
-            publisher.Publish(topicName, new[] { message });
-            Console.WriteLine("Topic message created.");
+                    BatchingSettings = new Google.Api.Gax.BatchingSettings(
+                        elementCountThreshold: 100,
+                        byteCountThreshold: 10240,
+                        delayThreshold: TimeSpan.FromSeconds(3))
+                });
+            // [END pubsub_publisher_batch_settings]
+            return publisher;
+        }
+
+        public static object PublishMessages(SimplePublisher publisher,
+            IEnumerable<string> messageTexts)
+        {
+            // [START publish_message]
+            // [START pubsub_publisher_batch_settings]
+            var publishTasks = new List<Task<string>>();
+            // SimplePublisher collects messages into appropriately sized
+            // batches.
+            foreach (string text in messageTexts)
+            {
+                publishTasks.Add(publisher.PublishAsync(text));
+            }
+            foreach (var task in publishTasks)
+            {
+                Console.WriteLine("Published message {0}", task.Result);
+            }
+            // [END pubsub_publisher_batch_settings]
             // [END publish_message]
             return 0;
         }
 
-        public static object PullTopicMessages(string projectId,
-            string subscriptionId, bool acknowledge)
+        static SimpleSubscriber GetSimpleSubscriber(string projectId,
+            string subscriptionId)
         {
-            SubscriberClient subscriber = SubscriberClient.Create();
             // [START pull_messages]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
-            PullResponse response = subscriber.Pull(subscriptionName,
-                returnImmediately: true, maxMessages: 10);
+            SubscriberClient subscriberClient = SubscriberClient.Create();
+            SimpleSubscriber subscriber = SimpleSubscriber.Create(
+                subscriptionName, new[] { subscriberClient });
             // [END pull_messages]
-            if (response.ReceivedMessages.Count > 0)
-            {
-                foreach (ReceivedMessage message in response.ReceivedMessages)
-                {
-                    Console.WriteLine($"Message {message.AckId}: " +
-                        $"{message.Message}");
-                }
-                if (acknowledge)
-                {
-                    AcknowledgeTopicMessage(projectId, subscriptionId, response);
-                    Console.WriteLine($"# of Messages received and acknowledged:" +
-                        $" {response.ReceivedMessages.Count}");
-                }
-                else
-                {
-                    Console.WriteLine($"# of Messages received:" +
-                        $" {response.ReceivedMessages.Count}");
-                }
-            }
-            return 0;
+            return subscriber;
         }
 
-        public static object AcknowledgeTopicMessage(string projectId,
-            string subscriptionId, PullResponse response)
+        /// <summary>
+        /// Create a subscriber with custom control flow settings.
+        /// </summary>
+        static SimpleSubscriber GetCustomSubscriber(string projectId,
+            string subscriptionId)
         {
-            SubscriberClient subscriber = SubscriberClient.Create();
+            // [START pubsub_subscriber_flow_settings]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
+            SubscriberClient subscriberClient = SubscriberClient.Create();
+            SimpleSubscriber subscriber = SimpleSubscriber.Create(
+                subscriptionName, new[] { subscriberClient },
+                new SimpleSubscriber.Settings()
+                {
+                    AckExtensionWindow = TimeSpan.FromSeconds(4),
+                    Scheduler = Google.Api.Gax.SystemScheduler.Instance,
+                    StreamAckDeadline = TimeSpan.FromSeconds(10),
+                    FlowControlSettings = new Google.Api.Gax
+                        .FlowControlSettings(
+                        maxOutstandingElementCount: 100,
+                        maxOutstandardByteCount: 10240)
+                });
+            // [END pubsub_subscriber_flow_settings]
+            return subscriber;
+        }
+
+        public static object PullMessages(SimpleSubscriber subscriber, bool acknowledge)
+        {
             // [START pull_messages]
-            subscriber.Acknowledge(subscriptionName,
-                response.ReceivedMessages.Select(m => m.AckId));
+            // [START pubsub_subscriber_flow_settings]
+            // SimpleSubscriber runs your message handle function on multiple
+            // threads to maximize throughput.
+            subscriber.StartAsync(
+                async (PubsubMessage message, CancellationToken cancel) =>
+                {
+                    string text =
+                        Encoding.UTF8.GetString(message.Data.ToArray());
+                    await Console.Out.WriteLineAsync(
+                        $"Message {message.MessageId}: {text}");
+                    return acknowledge ? SimpleSubscriber.Reply.Ack
+                        : SimpleSubscriber.Reply.Nack;
+                });
+            // Run for 3 seconds.
+            Thread.Sleep(3000);
+            subscriber.StopAsync(CancellationToken.None).Wait();
+            // [END pubsub_subscriber_flow_settings]
             // [END pull_messages]
             return 0;
         }
@@ -459,7 +502,7 @@ namespace GoogleCloudSamples
         {
             Parser.Default.ParseArguments<
                 CreateTopicOptions, CreateSubscriptionOptions,
-                CreateTopicMessageOptions, PullTopicMessagesOptions,
+                PublishMessageOptions, PullMessagesOptions,
                 GetTopicOptions, GetSubscriptionOptions,
                 GetTopicIamPolicyOptions, GetSubscriptionIamPolicyOptions,
                 SetTopicIamPolicyOptions, SetSubscriptionIamPolicyOptions,
@@ -471,10 +514,12 @@ namespace GoogleCloudSamples
                   opts.projectId, opts.topicId),
                 (CreateSubscriptionOptions opts) => CreateSubscription(opts.projectId,
                 opts.topicId, opts.subscriptionId),
-                (CreateTopicMessageOptions opts) => CreateTopicMessage(opts.projectId,
-                opts.topicId, opts.message),
-                (PullTopicMessagesOptions opts) => PullTopicMessages(opts.projectId,
-                opts.subscriptionId, opts.acknowledge),
+                (PublishMessageOptions opts) => PublishMessages(opts.customBatchThresholds
+                    ? GetCustomPublisher(opts.projectId, opts.topicId)
+                    : GetSimplePublisher(opts.projectId, opts.topicId), opts.message),
+                (PullMessagesOptions opts) => PullMessages(opts.customFlow
+                    ? GetCustomSubscriber(opts.projectId, opts.subscriptionId)
+                    : GetSimpleSubscriber(opts.projectId, opts.subscriptionId), opts.acknowledge),
                 (GetTopicOptions opts) => GetTopic(opts.projectId, opts.topicId),
                 (GetSubscriptionOptions opts) => GetSubscription(opts.projectId,
                 opts.subscriptionId),
