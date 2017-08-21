@@ -347,17 +347,6 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        public static object AcknowledgeTopicMessage(string projectId,
-            string subscriptionId, PullResponse response)
-        {
-            SubscriberClient subscriber = SubscriberClient.Create();
-            SubscriptionName subscriptionName = new SubscriptionName(projectId,
-                subscriptionId);
-            subscriber.Acknowledge(subscriptionName,
-                response.ReceivedMessages.Select(m => m.AckId));
-            return 0;
-        }
-
         public static object GetTopic(string projectId, string topicId)
         {
             PublisherClient publisher = PublisherClient.Create();
