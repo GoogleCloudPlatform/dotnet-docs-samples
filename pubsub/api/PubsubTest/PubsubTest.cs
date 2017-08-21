@@ -238,22 +238,21 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestCreateTopicMessage()
+        public void testPublishMessage()
         {
             string topicId = "testTopicForMessageCreation";
             string subscriptionId = "testSubscriptionForMessageCreation";
-            string message = "Hello Cloud Pubsub!";
-            string attributuesKey = "description";
-            string attributuesValue = "Simple text message";
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription", _projectId,
                 topicId, subscriptionId);
-            var messageCreateOutput = Run("createTopicMessage", _projectId,
-                topicId, message, attributuesKey, attributuesValue);
+            var messageCreateOutput = Run("publishMessages", _projectId,
+                topicId, "Hello World!", "Good day.", "Bye bye.");
+            Assert.Equal(0, messageCreateOutput.ExitCode);
+            Assert.Contains("Published message", messageCreateOutput.Stdout);
             //Pull the Message to confirm it is valid
             Eventually(() =>
             {
-                var output = Run("pullTopicMessages", _projectId, subscriptionId);
+                var output = Run("pullMessages", "-a", _projectId, subscriptionId);
                 Assert.Equal(0, output.ExitCode);
                 Assert.False(string.IsNullOrEmpty(output.Stdout));
             });
@@ -270,20 +269,20 @@ namespace GoogleCloudSamples
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription", _projectId,
                 topicId, subscriptionId);
-            var messageCreateOutput = Run("createTopicMessage", _projectId,
+            var messageCreateOutput = Run("publishMessages", _projectId,
                 topicId, message, attributuesKey, attributuesValue);
             //Pull and acknowldge the messages
             Eventually(() =>
             {
-                var output = Run("pullTopicMessages", _projectId,
-                    subscriptionId, "true");
+                var output = Run("pullMessages", "-a", _projectId,
+                    subscriptionId);
                 Assert.Equal(0, output.ExitCode);
                 Assert.False(string.IsNullOrEmpty(output.Stdout));
             });
             Eventually(() =>
             {
                 //Pull the Message to confirm it's gone after it's acknowledged
-                var output = Run("pullTopicMessages", _projectId,
+                var output = Run("pullMessages", _projectId,
                     subscriptionId);
                 Assert.Equal(0, output.ExitCode);
                 Assert.True(string.IsNullOrEmpty(output.Stdout));

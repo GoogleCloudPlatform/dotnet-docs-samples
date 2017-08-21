@@ -49,7 +49,7 @@ namespace GoogleCloudSamples
         public string subscriptionId { get; set; }
     }
 
-    [Verb("publishMessage", HelpText = "Publish a message to a topic.")]
+    [Verb("publishMessages", HelpText = "Publish messages to a topic.")]
     class PublishMessageOptions
     {
         [Value(0, HelpText = "The project ID of the project to use for pubsub operations.", Required = true)]
@@ -57,17 +57,17 @@ namespace GoogleCloudSamples
         [Value(1, HelpText = "The topic to publish a message to.", Required = true)]
         public string topicId { get; set; }
         [Value(2, HelpText = "The messages to publish to the topic.", Required = true)]
-        public string[] message { get; set; }
+        public IEnumerable<string> message { get; set; }
     }
 
-    [Verb("pullTopicMessages", HelpText = "Pull pubsub messages in this project.")]
+    [Verb("pullMessages", HelpText = "Pull pubsub messages in this project.")]
     class PullTopicMessagesOptions
     {
         [Value(0, HelpText = "The project ID of the project to use for pubsub operations.", Required = true)]
         public string projectId { get; set; }
         [Value(1, HelpText = "The subscription to pull messages from.", Required = true)]
         public string subscriptionId { get; set; }
-        [Value(2, HelpText = @"Acknowledge the pulled messages? Use ""true"" or ""false"".", Default = false)]
+        [Option('a', HelpText = @"Acknowledge the pulled messages? Use ""true"" or ""false"".", Default = false)]
         public bool acknowledge { get; set; }
     }
 
@@ -233,7 +233,7 @@ namespace GoogleCloudSamples
 
         // [START publish_message]
         public static object PublishMessages(string projectId,
-            string topicId, params string[] messageTexts)
+            string topicId, IEnumerable<string> messageTexts)
         {
             PublisherClient publisherClient = PublisherClient.Create();
             SimplePublisher publisher = SimplePublisher.Create(
@@ -242,7 +242,7 @@ namespace GoogleCloudSamples
             // SimplePublisher takes care of batching for us.
             foreach (string text in messageTexts)
             {
-                publisher.PublishAsync(text);
+                publishTasks.Add(publisher.PublishAsync(text));
             }
             foreach (var task in publishTasks)
             {
@@ -281,7 +281,7 @@ namespace GoogleCloudSamples
                         $" {response.ReceivedMessages.Count}");
                 }
             }
-            return 0;
+            return response.ReceivedMessages.Count;
         }
 
         public static object AcknowledgeTopicMessage(string projectId,
