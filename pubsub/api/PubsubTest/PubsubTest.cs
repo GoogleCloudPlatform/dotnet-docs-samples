@@ -258,8 +258,10 @@ namespace GoogleCloudSamples
             });
         }
 
-        [Fact]
-        public void TestAcknowledgeMessage()
+        [Theory]
+        [InlineData("")]
+        [InlineData("-f")]
+        public void TestAcknowledgeMessage(string flowFlag)
         {
             string topicId = "testTopicForMessageAck";
             string subscriptionId = "testSubscriptionForMessageAck";
@@ -270,18 +272,23 @@ namespace GoogleCloudSamples
             var messageCreateOutput = Run("publishMessages", _projectId,
                 topicId, message);
             // Pull and acknowldge the messages
+            List<string> cmdArgs = new [] {"pullMessages", "-a", _projectId,
+                    subscriptionId }.ToList();
+            if (!string.IsNullOrEmpty(flowFlag))
+            {
+                cmdArgs.Insert(2, flowFlag);
+            }
+            string[] cmd = cmdArgs.ToArray();
             Eventually(() =>
             {
-                var output = Run("pullMessages", "-a", _projectId,
-                    subscriptionId);
+                var output = Run(cmd);
                 Assert.Equal(0, output.ExitCode);
                 Assert.Contains(message, output.Stdout);
             });
             Eventually(() =>
             {
                 //Pull the Message to confirm it's gone after it's acknowledged
-                var output = Run("pullMessages", "-a", _projectId,
-                    subscriptionId);
+                var output = Run(cmd);
                 Assert.Equal(0, output.ExitCode);
                 Assert.True(string.IsNullOrEmpty(output.Stdout));
             });

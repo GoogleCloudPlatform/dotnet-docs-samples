@@ -63,8 +63,10 @@ namespace GoogleCloudSamples
         public string projectId { get; set; }
         [Value(1, HelpText = "The subscription to pull messages from.", Required = true)]
         public string subscriptionId { get; set; }
-        [Option('a', HelpText = @"Acknowledge the pulled messages? Use ""true"" or ""false"".", Default = false)]
+        [Option('a', HelpText = @"Acknowledge the pulled messages?", Default = false)]        
         public bool acknowledge { get; set; }
+        [Option('f', HelpText = @"Use custom flow control settings.", Default = false)]
+        public bool customFlow { get; set; }
     }
 
     [Verb("getTopic", HelpText = "Get the details of a pubsub topic in this project.")]
@@ -249,8 +251,8 @@ namespace GoogleCloudSamples
         }
         // [END publish_message]
 
-        public static object PullMessages(string projectId,
-            string subscriptionId, bool acknowledge)
+        static SimpleSubscriber GetSimpleSubscriber(string projectId,
+            string subscriptionId)
         {
             // [START pull_messages]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
@@ -258,6 +260,38 @@ namespace GoogleCloudSamples
             SubscriberClient subscriberClient = SubscriberClient.Create();
             SimpleSubscriber subscriber = SimpleSubscriber.Create(
                 subscriptionName, new[] { subscriberClient });
+            // [END pull_messages]
+            return subscriber;
+        }
+
+        static SimpleSubscriber GetCustomSubscriber(string projectId,
+            string subscriptionId)
+        {
+            // [START pubsub_subscriber_flow_settings]
+            SubscriptionName subscriptionName = new SubscriptionName(projectId,
+                subscriptionId);
+            SubscriberClient subscriberClient = SubscriberClient.Create();
+            const int maxOutstandingElementCount = 100;
+            const int maxOutstandingByteCount = 1024 * 10;
+            SimpleSubscriber subscriber = SimpleSubscriber.Create(
+                subscriptionName, new[] { subscriberClient },
+                new SimpleSubscriber.Settings()
+                {
+                    AckExtensionWindow = TimeSpan.FromSeconds(4),
+                    Scheduler = Google.Api.Gax.SystemScheduler.Instance,
+                    StreamAckDeadline = TimeSpan.FromSeconds(10),
+                    FlowControlSettings = new Google.Api.Gax
+                        .FlowControlSettings(maxOutstandingElementCount, 
+                        maxOutstandingByteCount)
+                });
+            // [END pubsub_subscriber_flow_settings]
+            return subscriber;
+        }
+
+        public static object PullMessages(SimpleSubscriber subscriber, bool acknowledge)
+        {
+            // [START pull_messages]
+            // [START pubsub_subscriber_flow_settings]
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
             subscriber.StartAsync(
@@ -273,6 +307,7 @@ namespace GoogleCloudSamples
             // Run for 3 seconds.
             Thread.Sleep(3000);
             subscriber.StopAsync(CancellationToken.None).Wait();
+            // [END pubsub_subscriber_flow_settings]
             // [END pull_messages]
             return 0;
         }
@@ -457,8 +492,9 @@ namespace GoogleCloudSamples
                 opts.topicId, opts.subscriptionId),
                 (PublishMessageOptions opts) => PublishMessages(opts.projectId,
                 opts.topicId, opts.message),
-                (PullMessagesOptions opts) => PullMessages(opts.projectId,
-                opts.subscriptionId, opts.acknowledge),
+                (PullMessagesOptions opts) => PullMessages(opts.customFlow 
+                    ? GetCustomSubscriber(opts.projectId, opts.subscriptionId)
+                    : GetSimpleSubscriber(opts.projectId, opts.subscriptionId), opts.acknowledge),
                 (GetTopicOptions opts) => GetTopic(opts.projectId, opts.topicId),
                 (GetSubscriptionOptions opts) => GetSubscription(opts.projectId,
                 opts.subscriptionId),
