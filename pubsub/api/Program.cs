@@ -264,6 +264,9 @@ namespace GoogleCloudSamples
             return subscriber;
         }
 
+        /// <summary>
+        /// Create a subscriber with custom control flow settings.
+        /// </summary>
         static SimpleSubscriber GetCustomSubscriber(string projectId,
             string subscriptionId)
         {
