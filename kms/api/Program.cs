@@ -626,40 +626,38 @@ namespace GoogleCloudSamples
 
         // [START kms_encrypt]
         public static object Encrypt(string projectId, string locationId, string keyRingId, string cryptoKeyId,
-string fileToEncrypt, string fileToOutput)
+string plaintextFile, string ciphertextFile)
         {
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the crypto key to use for encryption.
             var cryptoKey = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}";
-            EncryptRequest dataToEncrypt = new EncryptRequest();
-            byte[] bytes = File.ReadAllBytes(fileToEncrypt);
-            string contents = Convert.ToBase64String(bytes);
-            dataToEncrypt.Plaintext = contents;
-            Console.WriteLine($"dataToEncrypt.Plaintext: {dataToEncrypt.Plaintext}");
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Encrypt(body: dataToEncrypt, name: cryptoKey).Execute();
-            // Output encypted data to a file.
-            File.WriteAllBytes(fileToOutput, Convert.FromBase64String(result.Ciphertext));
-            Console.Write($"Encypted file created: {fileToOutput}");
+            EncryptRequest encryptRequest = new EncryptRequest();
+            byte[] plaintext = File.ReadAllBytes(plaintextFile);
+            encryptRequest.Plaintext = Convert.ToBase64String(plaintext);
+            Console.WriteLine($"dataToEncrypt.Plaintext: {encryptRequest.Plaintext}");
+            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Encrypt(name: cryptoKey, body: encryptRequest).Execute();
+            // Output encrypted data to a file.
+            File.WriteAllBytes(ciphertextFile, Convert.FromBase64String(result.Ciphertext));
+            Console.Write($"Encrypted file created: {ciphertextFile}");
             return 0;
         }
         // [END kms_encrypt]
 
         // [START kms_decrypt]
         public static object Decrypt(string projectId, string locationId, string keyRingId, string cryptoKeyId,
-    string fileToDecrypt, string fileToOutput)
+    string ciphertextFile, string plaintextFile)
         {
             var cloudKms = CreateAuthorizedClient();
             // Generate the full path of the crypto key to use for encryption.
             var cryptoKey = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}";
-            DecryptRequest dataToDecrypt = new DecryptRequest();
-            byte[] bytes = File.ReadAllBytes(fileToDecrypt);
-            string contents = Convert.ToBase64String(bytes);
-            dataToDecrypt.Ciphertext = contents;
-            Console.WriteLine($"dataToDecrypt.Ciphertext: {dataToDecrypt.Ciphertext}");
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Decrypt(dataToDecrypt, cryptoKey).Execute();
-            // Output decypted data to a file
-            File.WriteAllBytes(fileToOutput, Convert.FromBase64String(result.Plaintext));
-            Console.Write($"Encypted file created: {fileToOutput}");
+            DecryptRequest decryptRequest = new DecryptRequest();
+            byte[] ciphertext = File.ReadAllBytes(ciphertextFile);
+            decryptRequest.Ciphertext = Convert.ToBase64String(ciphertext);
+            Console.WriteLine($"dataToDecrypt.Ciphertext: {decryptRequest.Ciphertext}");
+            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Decrypt(name: cryptoKey, body: decryptRequest).Execute();
+            // Output decrypted data to a file.
+            File.WriteAllBytes(plaintextFile, Convert.FromBase64String(result.Plaintext));
+            Console.Write($"Decrypted file created: {plaintextFile}");
             return 0;
         }
         // [END kms_decrypt]
