@@ -557,7 +557,7 @@ namespace GoogleCloudSamples
                 (SetSubscriptionIamPolicyOptions opts) => SetSubscriptionIamPolicy(opts.projectId,
                 opts.subscriptionId, opts.role, opts.member),
                 (ListProjectTopicsOptions opts) => ListProjectTopics(
-                    string.IsNullOrWhiteSpace(opts.serviceCredentialsJson) 
+                    string.IsNullOrWhiteSpace(opts.serviceCredentialsJson)
                     ? PublisherClient.Create()
                     : CreatePublisherWithServiceCredentials(opts.serviceCredentialsJson),
                     opts.projectId),
