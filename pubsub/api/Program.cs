@@ -13,11 +13,14 @@
 // limitations under the License.
 
 using CommandLine;
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Iam.V1;
 using Google.Cloud.PubSub.V1;
+using Grpc.Auth;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -158,6 +161,8 @@ namespace GoogleCloudSamples
     {
         [Value(0, HelpText = "The project ID of the project to list topics for.", Required = true)]
         public string projectId { get; set; }
+        [Option('j', HelpText = "Path to a service credententials json file.", Required = false, Default = null)]
+        public string serviceCredentialsJson { get; set; }
     }
 
     [Verb("listSubscriptions", HelpText = "List the pubsub subscriptions in this project.")]
@@ -444,9 +449,8 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        public static object ListProjectTopics(string projectId)
+        public static object ListProjectTopics(PublisherClient publisher, string projectId)
         {
-            PublisherClient publisher = PublisherClient.Create();
             // [START list_topics]
             ProjectName projectName = new ProjectName(projectId);
             IEnumerable<Topic> topics = publisher.ListTopics(projectName);
@@ -456,6 +460,28 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"{topic.Name}");
             }
             return 0;
+        }
+
+        /// <summary>
+        /// Creates a PublisherClient given a path to a downloaded json service
+        /// credentials file.
+        /// </summary>
+        /// <param name="jsonPath">The path to the downloaded json file.</param>
+        /// <returns>A new publisher client.</returns>
+        public static PublisherClient CreatePublisherWithServiceCredentials(
+            string jsonPath)
+        {
+            GoogleCredential googleCredential = null;
+            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
+                FileAccess.Read, FileShare.Read))
+            {
+                googleCredential = GoogleCredential.FromStream(jsonStream)
+                    .CreateScoped(PublisherClient.DefaultScopes);
+            }
+            Channel channel = new Channel(PublisherClient.DefaultEndpoint.Host,
+                PublisherClient.DefaultEndpoint.Port,
+                googleCredential.ToChannelCredentials());
+            return PublisherClient.Create(channel);
         }
 
         public static object ListSubscriptions(string projectId)
@@ -530,7 +556,11 @@ namespace GoogleCloudSamples
                 opts.topicId, opts.role, opts.member),
                 (SetSubscriptionIamPolicyOptions opts) => SetSubscriptionIamPolicy(opts.projectId,
                 opts.subscriptionId, opts.role, opts.member),
-                (ListProjectTopicsOptions opts) => ListProjectTopics(opts.projectId),
+                (ListProjectTopicsOptions opts) => ListProjectTopics(
+                    string.IsNullOrWhiteSpace(opts.serviceCredentialsJson) 
+                    ? PublisherClient.Create()
+                    : CreatePublisherWithServiceCredentials(opts.serviceCredentialsJson),
+                    opts.projectId),
                 (ListSubscriptionsOptions opts) => ListSubscriptions(opts.projectId),
                 (DeleteSubscriptionOptions opts) => DeleteSubscription(opts.projectId, opts.subscriptionId),
                 (DeleteTopicOptions opts) => DeleteTopic(
