@@ -315,6 +315,21 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void TestListTopicsWithServiceCredentials()
+        {
+            string topicId = "testTopicForListingTopics";
+            var topicCreateOutput = Run("createTopic", _projectId, topicId);
+            Eventually(() =>
+            {
+                var listProjectTopicsOutput = Run("listProjectTopics", "-j",
+                    Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"),
+                    _projectId);
+                Assert.Equal(0, listProjectTopicsOutput.ExitCode);
+                Assert.Contains(topicId, listProjectTopicsOutput.Stdout);
+            });
+        }
+
+        [Fact]
         public void TestListSubscriptions()
         {
             string topicId = "testTopicForListingSubscriptions";
