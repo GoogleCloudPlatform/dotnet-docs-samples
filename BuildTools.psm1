@@ -118,7 +118,10 @@ function When-Empty($Target, $ArgList, [ScriptBlock]$ScriptBlock) {
 #
 ##############################################################################
 filter Get-Config ($Target, $ArgList, $Mask="Web.config") {
-    When-Empty $Target $ArgList {Find-Files -Masks $Mask} | Resolve-Path -Relative
+    $paths = When-Empty $Target $ArgList {Find-Files -Masks $Mask}
+    if ($paths) {
+        $paths | Resolve-Path -Relative
+    }
 }
 
 ##############################################################################
