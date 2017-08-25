@@ -154,6 +154,9 @@ filter Update-Config ([switch]$Yes) {
             if ("a" -eq $reply) { $Yes = $true }
         }
         $config = Select-Xml -Path $configPath -XPath configuration
+        if (-not $config) {
+            continue;
+        }
         Add-Setting $config 'GoogleCloudSamples:BookStore' $env:GoogleCloudSamples:BookStore
         Add-Setting $config 'GoogleCloudSamples:ProjectId' $env:GoogleCloudSamples:ProjectId
         Add-Setting $config 'GoogleCloudSamples:BucketName' $env:GoogleCloudSamples:BucketName
