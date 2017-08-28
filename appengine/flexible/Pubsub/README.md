@@ -13,7 +13,7 @@ messages via Google Pusub when running in Google App Engine Flexible Environment
 2.  Install the [.NET Core SDK, version LTS](https://www.microsoft.com/net/download/core#/lts).
 
 2.  Visual Studio is not required, but to build and run .NET *core* applications,
-    Visual Studio users need to download and install 
+    Visual Studio 2015 users need to download and install 
 	[.NET Core tools](https://www.microsoft.com/net/core#windowsvs2015).
 
 3.  [Google Cloud Tools for Visual Studio](
