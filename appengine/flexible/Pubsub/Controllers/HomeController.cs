@@ -84,9 +84,12 @@ namespace Pubsub.Controllers
         /// </summary>
         [HttpPost]
         [Route("/Push")]
-        public IActionResult Push([FromBody]PushBody body)
+        public IActionResult Push([FromBody]PushBody body, 
+            [FromQuery]string token)
         {
-            if (body.message.attributes["token"] != _options.VerificationToken)
+            string verificationToken = 
+                token ?? body.message.attributes["token"];
+            if (verificationToken != _options.VerificationToken)
             {
                 return new BadRequestResult();
             }
