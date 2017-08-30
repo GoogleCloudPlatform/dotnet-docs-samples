@@ -28,10 +28,10 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
         readonly HttpClient _http;
         readonly ILoggerFactory _loggerFactory;
         public Configurator(ConfiguratorOptions options, 
-            Google.Api.Gax.GaePlatformDetails gaeDetails,
             ILoggerFactory loggerFactory)
         {
             _loggerFactory = loggerFactory;
+            var gaeDetails = Google.Api.Gax.Platform.Instance()?.GaeDetails;
             string projectId = options?.ProjectId ?? gaeDetails?.ProjectId;
             string configName = options?.ConfigName ?? gaeDetails?.VersionId;
             var logger = loggerFactory.CreateLogger<Configurator>();
