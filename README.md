@@ -36,7 +36,7 @@ But no sample will work until you:
     as running instances and storing data.
 
 3.  **Download credentials**.
-    1.  [Visit the API Manager Dashboard](https://console.cloud.google.com/apis/dashboard)
+    1.  [Visit the APIs & services dashboard](https://console.cloud.google.com/apis/dashboard)
         and click **Credentials**.  
     2.  Click **Create credentials** and choose **Service Account key**.
     3.  Under Service account, choose **Compute Engine default service
@@ -54,7 +54,7 @@ But no sample will work until you:
         ```
 
 4.  **Enable APIs.**
-    [Visit the API Manager Dashboard](https://console.cloud.google.com/apis/dashboard)
+    [Visit the APIs & services dashboard](https://console.cloud.google.com/apis/dashboard)
     and click **ENABLE API**.  Enable the APIs you plan to call.
     Are you going to use Cloud Datastore?
     Enable the Cloud Datastore API.  Each API must be enabled
