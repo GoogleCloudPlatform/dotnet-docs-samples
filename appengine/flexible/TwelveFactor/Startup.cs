@@ -39,7 +39,7 @@ namespace TwelveFactor
                 .AddEnvironmentVariables()
                 .Add(_configurator = new Configurator(new ConfiguratorOptions() {
                     ProjectId = "surferjeff-test2",
-                    ConfigName = "jeff"
+                    ConfigName = "jeff-rennie"
                 }));
             Configuration = builder.Build();
         }

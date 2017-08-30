@@ -58,9 +58,11 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                     + "added because ConfigName is null.");
                 return new NoopConfigurationProvider();
             }
-
-            _logger.LogInformation("Adding configuration variables from "
-                    + "projects/{0}/configs/{1}/", projectId, configName);
+            string baseAddress = string.Format(
+                "https://runtimeconfig.googleapis.com/projects/{0}/configs/{1}/",
+                projectId, configName);
+            _logger.LogInformation("Adding configuration variables from {0}",
+                    baseAddress);
 
             GoogleCredential credential =
                 GoogleCredential.GetApplicationDefaultAsync().Result;
@@ -82,9 +84,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                     GZipEnabled = true,
                     Initializers = { credential },
                 });
-            http.BaseAddress = new Uri(string.Format(
-                "https://runtimeconfig.googleapis.com/projects/{0}/configs/{1}/",
-                projectId, configName));
+            http.BaseAddress = new Uri(baseAddress);
             return new ConfiguratorProvider(http, _logger);
         }
     }
