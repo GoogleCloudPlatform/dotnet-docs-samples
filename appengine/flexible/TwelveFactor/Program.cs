@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿/*
  * Copyright (c) 2017 Google Inc.
  *
@@ -14,6 +15,9 @@
  * the License.
  */
 using System;
+=======
+﻿using System;
+>>>>>>> 2499fac9e067e3ab4531ecb8033dd17d77cb0cc9
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,6 +33,10 @@ namespace TwelveFactor
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
+<<<<<<< HEAD
+=======
+                .UseIISIntegration()
+>>>>>>> 2499fac9e067e3ab4531ecb8033dd17d77cb0cc9
                 .UseStartup<Startup>()
                 .Build();
 
