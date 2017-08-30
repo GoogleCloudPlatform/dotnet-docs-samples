@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿/*
  * Copyright (c) 2017 Google Inc.
  *
@@ -15,9 +14,6 @@
  * the License.
  */
 using Google.Cloud.Diagnostics.AspNetCore;
-=======
-﻿using Google.Cloud.Diagnostics.AspNetCore;
->>>>>>> 2499fac9e067e3ab4531ecb8033dd17d77cb0cc9
 using System;
 using System.Collections.Generic;
 using System.Linq;
