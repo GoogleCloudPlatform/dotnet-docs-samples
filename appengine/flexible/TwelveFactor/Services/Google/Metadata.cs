@@ -43,10 +43,10 @@ namespace TwelveFactor.Services.Google {
                 string projectId = await response.Content.ReadAsStringAsync();
                 return new Metadata(http, projectId);
             }
-            catch (AggregateException) {
+            catch (HttpRequestException e) {
                 if (logger != null) {
-                    logger.LogWarning("No Google metadata because not running"
-                    + "on Google Cloud Platform.");
+                    logger.LogWarning(0, e, "No Google metadata because not "
+                    + "running on Google Cloud Platform.");
                 }
                 return null;
             }
