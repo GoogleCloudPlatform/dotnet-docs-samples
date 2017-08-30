@@ -44,5 +44,20 @@ namespace TwelveFactor.Controllers
             _logger.LogError("Error page hit!");
             return View();
         }
+
+        public async Task<IActionResult> Metadata()
+        {
+            var metadata = await Services.Google.Metadata.Create(_logger);
+            if (metadata == null) {
+                return new ContentResult() {
+                    Content = "Not running on Google Cloud Platform",
+                    ContentType = "text/plain"
+                };
+            }
+            var content = (await metadata.Http
+                .GetAsync("instance/?recursive=true")).Content;
+            return new FileStreamResult(await content.ReadAsStreamAsync(),
+                content.Headers.ContentType.MediaType);            
+        }
     }
 }
