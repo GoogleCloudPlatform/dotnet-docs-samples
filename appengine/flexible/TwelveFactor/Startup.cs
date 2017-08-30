@@ -23,18 +23,24 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TwelveFactor.Services.GoogleCloudPlatform;
 
 namespace TwelveFactor
 {
     public class Startup
     {
+        Configurator _configurator;
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
+                .AddEnvironmentVariables()
+                .Add(_configurator = new Configurator(new ConfiguratorOptions() {
+                    ProjectId = "surferjeff-test2",
+                    ConfigName = "jeff"
+                }));
             Configuration = builder.Build();
         }
 
@@ -62,6 +68,8 @@ namespace TwelveFactor
             loggerFactory.AddDebug();
             // Send logs to Stackdriver Logging.
             loggerFactory.AddGoogle(projectId);
+            
+            _configurator.Logger = loggerFactory.CreateLogger<Configurator>();
 
             if (env.IsDevelopment())
             {

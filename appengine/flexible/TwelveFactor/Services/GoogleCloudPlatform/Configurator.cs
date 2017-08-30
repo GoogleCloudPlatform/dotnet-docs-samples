@@ -21,37 +21,51 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Google.Apis.Auth.OAuth2;
+using Google.Api.Gax;
 
 namespace TwelveFactor.Services.GoogleCloudPlatform {
     class Configurator : IConfigurationSource
     {
-        readonly HttpClient _http;
-        readonly ILoggerFactory _loggerFactory;
-        public Configurator(ConfiguratorOptions options, 
-            ILoggerFactory loggerFactory)
+        private DelayedLogger _logger = new DelayedLogger();
+        public ILogger Logger
         {
-            _loggerFactory = loggerFactory;
+            get { return _logger; }
+            set 
+            { 
+                _logger.InnerLogger = value;
+            }
+        }        
+
+        public ConfiguratorOptions Options { get; set; } 
+
+        public Configurator(ConfiguratorOptions options = null) {
+            Options = options ?? new ConfiguratorOptions();
+        }        
+
+        public IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
             var gaeDetails = Google.Api.Gax.Platform.Instance()?.GaeDetails;
+            var options = Options ?? new ConfiguratorOptions();
             string projectId = options?.ProjectId ?? gaeDetails?.ProjectId;
             string configName = options?.ConfigName ?? gaeDetails?.VersionId;
-            var logger = loggerFactory.CreateLogger<Configurator>();
+            
             if (projectId == null) {
-                logger.LogWarning("No configuration variables will be added "
-                    + "because ProjectId is null.");
-                return;
+                _logger.LogWarning("No configuration variables will be "
+                    + "added because ProjectId is null.");
+                return new NoopConfigurationProvider();
             } else if (configName == null) {
-                logger.LogWarning("No configuration variables will be added "
-                    + "because ConfigName is null.");
-                return;
+                _logger.LogWarning("No configuration variables will be "
+                    + "added because ConfigName is null.");
+                return new NoopConfigurationProvider();
             }
 
-            logger.LogInformation("Adding configuration variables from "
-                + "projects/{0}/configs/{1}/", projectId, configName);
+            _logger.LogInformation("Adding configuration variables from "
+                    + "projects/{0}/configs/{1}/", projectId, configName);
 
             GoogleCredential credential =
                 GoogleCredential.GetApplicationDefaultAsync().Result;
             // Inject the Cloud Storage scope if required.
-            if (credential.IsCreateScopedRequired)
+            if (false && credential.IsCreateScopedRequired)
             {
                 credential = credential.CreateScoped(new[]
                 {
@@ -60,7 +74,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                     "https://www.googleapis.com/auth/runtimeconfig.variables.watch"
                 });
             }
-            _http = new Google.Apis.Http.HttpClientFactory()
+            var http = new Google.Apis.Http.HttpClientFactory()
                 .CreateHttpClient(
                 new Google.Apis.Http.CreateHttpClientArgs()
                 {
@@ -68,18 +82,10 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                     GZipEnabled = true,
                     Initializers = { credential },
                 });
-            _http.BaseAddress = new Uri(string.Format(
+            http.BaseAddress = new Uri(string.Format(
                 "https://runtimeconfig.googleapis.com/projects/{0}/configs/{1}/",
                 projectId, configName));
-        }
-
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            if (_http == null) {
-                return new NoopConfigurationProvider();
-            } else {
-                return new ConfiguratorProvider(_http, _loggerFactory);
-            }
+            return new ConfiguratorProvider(http, _logger);
         }
     }
 
@@ -105,16 +111,20 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
         readonly HttpClient _http;
         readonly ILogger _logger;        
         public ConfiguratorProvider(HttpClient http, 
-            ILoggerFactory loggerFactory)
+            ILogger logger)
         {
-            _http = http;
-            _logger = loggerFactory.CreateLogger<ConfiguratorProvider>();
+            _http = http;            
+            _logger = logger;
         }
 
         public override void Load() {
-            _logger.LogTrace(
-                _http.GetStringAsync("variables?returnValues=True").Result);
+            try {
+                string variables = _http.GetStringAsync(
+                    "variables?returnValues=True").Result;
+                _logger.LogTrace("{0}", variables);
+            } catch (Exception e) {
+                _logger.LogError(0, e, "Failed to load config variables.");
+            }
         }
-
     }
 }
