@@ -18,15 +18,17 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace TwelveFactor.Services.Google {
+namespace TwelveFactor.Services.GoogleCloudPlatform {
     class Metadata {
         public HttpClient Http;
         public string ProjectId { get; set; }
-        public string Version { get; set; }
-        private Metadata(HttpClient httpClient, string projectId)
+        public string VersionId { get; set; }
+        private Metadata(HttpClient httpClient, string projectId, 
+            string versionId)
         {
             Http = httpClient;
             ProjectId = projectId;
+            VersionId = versionId;
         }
 
         public static async Task<Metadata> Create(ILogger logger) 
@@ -41,7 +43,13 @@ namespace TwelveFactor.Services.Google {
                 http.DefaultRequestHeaders.Add("Metadata-Flavor", "Google");
                 var response = await http.GetAsync("project/project-id");
                 string projectId = await response.Content.ReadAsStringAsync();
-                return new Metadata(http, projectId);
+                response = await http.GetAsync("instance/gae-backend-version");
+                string versionId = await response.Content.ReadAsStringAsync();
+                if (logger != null) {
+                    logger.LogInformation("Google Cloud Platform "
+                        + "ProjectId: {0} VersionId {1}", projectId, versionId);
+                }
+                return new Metadata(http, projectId, versionId);
             }
             catch (HttpRequestException e) {
                 if (logger != null) {
