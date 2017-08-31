@@ -59,7 +59,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                 return new NoopConfigurationProvider();
             }
             string baseAddress = string.Format(
-                "https://runtimeconfig.googleapis.com/projects/{0}/configs/{1}/",
+                "https://runtimeconfig.googleapis.com/v1beta1/projects/{0}/configs/{1}/",
                 projectId, configName);
             _logger.LogInformation("Adding configuration variables from {0}",
                     baseAddress);
@@ -67,7 +67,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             GoogleCredential credential =
                 GoogleCredential.GetApplicationDefaultAsync().Result;
             // Inject the Cloud Storage scope if required.
-            if (false && credential.IsCreateScopedRequired)
+            if (credential.IsCreateScopedRequired)
             {
                 credential = credential.CreateScoped(new[]
                 {
