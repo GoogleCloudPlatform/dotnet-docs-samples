@@ -125,10 +125,12 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                 };
             try {
                 var result = request.Execute();
+                string variablePrefix = _configParent + "/variables/";
                 foreach (var variable in result.Variables) {
-                    var name = _replaceHyphensWithColons 
-                        ? variable.Name.Replace('-', ':')
-                        : variable.Name;                        
+                    var name = variable.Name.Substring(variablePrefix.Length);
+                    if (_replaceHyphensWithColons) {
+                        name = name.Replace('-', ':');
+                    } 
                     string value = variable.Value ?? variable.Text;
                        _logger.LogDebug("{0}: {1}", name, value);
                     Data[name] = value;
