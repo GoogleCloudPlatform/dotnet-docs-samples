@@ -22,6 +22,8 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Google.Apis.Auth.OAuth2;
 using Google.Api.Gax;
+using Google.Apis.CloudRuntimeConfig.v1beta1;
+using Google.Apis.Services;
 
 namespace TwelveFactor.Services.GoogleCloudPlatform {
     class Configurator : IConfigurationSource
@@ -58,11 +60,6 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                     + "added because ConfigName is null.");
                 return new NoopConfigurationProvider();
             }
-            string baseAddress = string.Format(
-                "https://runtimeconfig.googleapis.com/v1beta1/projects/{0}/configs/{1}/",
-                projectId, configName);
-            _logger.LogInformation("Adding configuration variables from {0}",
-                    baseAddress);
 
             GoogleCredential credential =
                 GoogleCredential.GetApplicationDefaultAsync().Result;
@@ -71,21 +68,17 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             {
                 credential = credential.CreateScoped(new[]
                 {
-                    "https://www.googleapis.com/auth/runtimeconfig.variables.get",
-                    "https://www.googleapis.com/auth/runtimeconfig.variables.list",
-                    "https://www.googleapis.com/auth/runtimeconfig.variables.watch"
+                    CloudRuntimeConfigService.Scope.Cloudruntimeconfig
                 });
             }
-            var http = new Google.Apis.Http.HttpClientFactory()
-                .CreateHttpClient(
-                new Google.Apis.Http.CreateHttpClientArgs()
-                {
-                    ApplicationName = "TwelveFactor",
-                    GZipEnabled = true,
-                    Initializers = { credential },
-                });
-            http.BaseAddress = new Uri(baseAddress);
-            return new ConfiguratorProvider(http, _logger);
+            var runtimeConfig = new CloudRuntimeConfigService (new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "TwelveFactor",
+            });
+            _logger.LogInformation("Adding configuration variables from {0}",
+                    runtimeConfig.BaseUri);
+            return new ConfiguratorProvider(runtimeConfig, configName, _logger);
         }
     }
 
@@ -108,20 +101,26 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
     public class NoopConfigurationProvider : ConfigurationProvider {}
 
     public class ConfiguratorProvider : ConfigurationProvider {
-        readonly HttpClient _http;
-        readonly ILogger _logger;        
-        public ConfiguratorProvider(HttpClient http, 
-            ILogger logger)
+        readonly CloudRuntimeConfigService _runtimeConfig;
+        readonly string _configName;
+        readonly ILogger _logger;
+        public ConfiguratorProvider(CloudRuntimeConfigService runtimeConfig, 
+            string configName, ILogger logger)
         {
-            _http = http;            
+            _runtimeConfig = runtimeConfig;
+            _configName = configName;
             _logger = logger;
         }
 
         public override void Load() {
+            var request = new ProjectsResource.ConfigsResource
+                .VariablesResource.ListRequest(_runtimeConfig, _configName);
             try {
-                string variables = _http.GetStringAsync(
-                    "variables?returnValues=True").Result;
-                _logger.LogTrace("{0}", variables);
+                var result = request.Execute();
+                foreach (var variable in result.Variables) {                    
+                    _logger.LogDebug("{0}: {1}", variable.Name,
+                        variable.Value);
+                }
             } catch (Exception e) {
                 _logger.LogError(0, e, "Failed to load config variables.");
             }
