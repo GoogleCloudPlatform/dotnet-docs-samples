@@ -38,8 +38,11 @@ namespace TwelveFactor
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables()
                 .Add(_configurator = new Configurator(new ConfiguratorOptions() {
+                    // Provide these options when you want to pull variables
+                    // from Google Cloud Configurator while *not* running on 
+                    // GCP.
                     ProjectId = "surferjeff-test2",
-                    ConfigName = "jeff-rennie"
+                    ConfigName = "jeff-rennie"  // env.EnvironmentName?
                 }));
             Configuration = builder.Build();
         }

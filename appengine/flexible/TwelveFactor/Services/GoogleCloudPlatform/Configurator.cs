@@ -26,14 +26,14 @@ using Google.Api.Gax;
 namespace TwelveFactor.Services.GoogleCloudPlatform {
     class Configurator : IConfigurationSource
     {
+        // Configuration Sources are loaded before logging is configured,
+        // because logging is controlled by configuration.  Therefore,
+        // we have to queue all our log messages and then log them later.
         private DelayedLogger _logger = new DelayedLogger();
         public ILogger Logger
         {
             get { return _logger; }
-            set 
-            { 
-                _logger.InnerLogger = value;
-            }
+            set { _logger.InnerLogger = value; }
         }        
 
         public ConfiguratorOptions Options { get; set; } 
