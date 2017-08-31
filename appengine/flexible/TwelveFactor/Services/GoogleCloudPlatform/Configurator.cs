@@ -116,12 +116,15 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
 
         public override void Load() {
             var request = new ProjectsResource.ConfigsResource
-                .VariablesResource.ListRequest(_runtimeConfig, _configParent);
+                .VariablesResource.ListRequest(_runtimeConfig, _configParent)
+                {
+                    ReturnValues = true
+                };
             try {
                 var result = request.Execute();
                 foreach (var variable in result.Variables) {                    
                     _logger.LogDebug("{0}: {1}", variable.Name,
-                        variable.Value);
+                        variable.Text);
                 }
             } catch (Exception e) {
                 _logger.LogError(0, e, "Failed to load config variables.");
