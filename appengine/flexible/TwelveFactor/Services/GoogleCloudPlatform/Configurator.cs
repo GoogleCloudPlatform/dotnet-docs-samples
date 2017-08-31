@@ -80,7 +80,8 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                 projectId, configName); 
             _logger.LogInformation("Adding configuration variables from {0}{1}",
                     runtimeConfig.BaseUri, configParent);
-            return new ConfiguratorProvider(runtimeConfig, configParent, _logger);
+            return new ConfiguratorProvider(runtimeConfig, configParent, _logger,
+                options.ReplaceHyphensWithColons);
         }
     }
 
@@ -106,12 +107,14 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
         readonly CloudRuntimeConfigService _runtimeConfig;
         readonly string _configParent;
         readonly ILogger _logger;
+        readonly bool _replaceHyphensWithColons;
         public ConfiguratorProvider(CloudRuntimeConfigService runtimeConfig, 
-            string configParent, ILogger logger)
+            string configParent, ILogger logger,  bool replaceHyphensWithColons)
         {
             _runtimeConfig = runtimeConfig;
             _configParent = configParent;
             _logger = logger;
+            _replaceHyphensWithColons = replaceHyphensWithColons;
         }
 
         public override void Load() {
@@ -122,9 +125,13 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                 };
             try {
                 var result = request.Execute();
-                foreach (var variable in result.Variables) {                    
-                    _logger.LogDebug("{0}: {1}", variable.Name,
-                        variable.Text);
+                foreach (var variable in result.Variables) {
+                    var name = _replaceHyphensWithColons 
+                        ? variable.Name.Replace('-', ':')
+                        : variable.Name;                        
+                    string value = variable.Value ?? variable.Text;
+                       _logger.LogDebug("{0}: {1}", name, value);
+                    Data[name] = value;
                 }
             } catch (Exception e) {
                 _logger.LogError(0, e, "Failed to load config variables.");
