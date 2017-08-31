@@ -76,9 +76,11 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                 HttpClientInitializer = credential,
                 ApplicationName = "TwelveFactor",
             });
-            _logger.LogInformation("Adding configuration variables from {0}",
-                    runtimeConfig.BaseUri);
-            return new ConfiguratorProvider(runtimeConfig, configName, _logger);
+            string configParent = string.Format("projects/{0}/configs/{1}",
+                projectId, configName); 
+            _logger.LogInformation("Adding configuration variables from {0}{1}",
+                    runtimeConfig.BaseUri, configParent);
+            return new ConfiguratorProvider(runtimeConfig, configParent, _logger);
         }
     }
 
@@ -102,19 +104,19 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
 
     public class ConfiguratorProvider : ConfigurationProvider {
         readonly CloudRuntimeConfigService _runtimeConfig;
-        readonly string _configName;
+        readonly string _configParent;
         readonly ILogger _logger;
         public ConfiguratorProvider(CloudRuntimeConfigService runtimeConfig, 
-            string configName, ILogger logger)
+            string configParent, ILogger logger)
         {
             _runtimeConfig = runtimeConfig;
-            _configName = configName;
+            _configParent = configParent;
             _logger = logger;
         }
 
         public override void Load() {
             var request = new ProjectsResource.ConfigsResource
-                .VariablesResource.ListRequest(_runtimeConfig, _configName);
+                .VariablesResource.ListRequest(_runtimeConfig, _configParent);
             try {
                 var result = request.Execute();
                 foreach (var variable in result.Variables) {                    
