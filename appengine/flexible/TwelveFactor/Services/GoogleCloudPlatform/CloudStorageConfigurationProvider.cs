@@ -30,6 +30,7 @@ using Microsoft.Extensions.Primitives;
 using System.Collections;
 using System.IO;
 using System.Linq;
+using System.Net;
 
 namespace TwelveFactor.Services.GoogleCloudPlatform {
 
@@ -61,7 +62,14 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                 if (obj != null) {
                     return new CloudStorageFileInfo(obj, _storage, _logger);                    
                 }
-            } catch (Exception e) {
+            }
+            catch (Google.GoogleApiException e)
+            when (e.HttpStatusCode == HttpStatusCode.NotFound) 
+            {
+                _logger.LogWarning("{0} not found.", subpath);
+            }
+            catch (Exception e)
+            {
                 _logger.LogError(0, e, "GetFileInfo({0}) failed.", subpath);
             }
             return new NotFoundFileInfo(subpath);

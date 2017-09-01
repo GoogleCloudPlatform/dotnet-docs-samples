@@ -36,7 +36,7 @@ namespace TwelveFactor
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile(_cloudStorage, "tecku/aspnet-configs/appsettings.json", 
+                .AddJsonFile(_cloudStorage, "surferjeff-bucket2/aspnet-configs/appsettings.json", 
                     optional: true, reloadOnChange:false)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
