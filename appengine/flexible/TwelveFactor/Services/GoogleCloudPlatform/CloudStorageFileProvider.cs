@@ -134,11 +134,8 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             _logger.LogDebug("Watching {0}", filter);
             var path = SplitObjectPath(filter);
             var token = new CloudStorageChangeToken();
-            long? generation = null;
             var obj = GetObject(path);
-            if (obj != null) {
-                generation = obj.Generation;            
-            }
+            long? generation = obj?.Generation;
             Task.Run(async () => {
                 while (true) {
                     await Task.Delay(_pollingInterval.Value);
@@ -189,7 +186,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             return disposable;
         }
 
-                class ChangeCallback : IDisposable {
+        class ChangeCallback : IDisposable {
             public Action<object> Callback { get; set; }
             public object State {get; set;}
 

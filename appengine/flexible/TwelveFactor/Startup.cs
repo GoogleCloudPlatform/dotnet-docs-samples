@@ -29,7 +29,7 @@ namespace TwelveFactor
 {
     public class Startup
     {
-        // Polling the appsettings.json file on Cloud Storage at the rate of
+        // Polling a file on Cloud Storage at the rate of
         // once every 2 minutes will cost approximately $0.01 per month.
         // See https://cloud.google.com/storage/pricing#network-pricing
         CloudStorageFileProvider _cloudStorage = new CloudStorageFileProvider(
@@ -39,8 +39,12 @@ namespace TwelveFactor
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(_cloudStorage, 
+                    "surferjeff-bucket2/aspnet-configs/appsettings.json", 
+                    optional: true, reloadOnChange:true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile(_cloudStorage, "surferjeff-bucket2/aspnet-configs/appsettings.json", 
+                .AddJsonFile(_cloudStorage, 
+                    $"surferjeff-bucket2/aspnet-configs/appsettings.{env.EnvironmentName}.json", 
                     optional: true, reloadOnChange:true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
