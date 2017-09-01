@@ -29,6 +29,9 @@ namespace TwelveFactor
 {
     public class Startup
     {
+        // Polling the appsettings.json file on Cloud Storage at the rate of
+        // once every 2 minutes will cost approximately $0.01 per month.
+        // See https://cloud.google.com/storage/pricing#network-pricing
         CloudStorageFileProvider _cloudStorage = new CloudStorageFileProvider(
             TimeSpan.FromMinutes(2));
         public Startup(IHostingEnvironment env)
