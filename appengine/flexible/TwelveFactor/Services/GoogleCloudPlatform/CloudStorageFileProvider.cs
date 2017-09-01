@@ -31,11 +31,17 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace TwelveFactor.Services.GoogleCloudPlatform {
 
+    /// <summary>
+    /// An implementation of IFileProvider that gets files from
+    /// Google Cloud Storage.
+    /// </summary>
     class CloudStorageFileProvider : IFileProvider
-    {
+    {        
+
         // Configuration Sources are loaded before logging is configured,
         // because logging is controlled by configuration.  Therefore,
         // we have to queue all our log messages and then log them later.
@@ -47,37 +53,30 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
         }        
 
         readonly StorageClient _storage = StorageClient.Create();
+        readonly TimeSpan? _pollingInterval;
+     
+        /// <param name="pollingInterval">How often Watched() files should
+        /// be polled to detect changes.  A null value means Watch()
+        /// always returns null.</param>
+        public CloudStorageFileProvider(TimeSpan? pollingInterval = null)
+        {
+            _pollingInterval = pollingInterval;
+        }
+
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
             throw new NotImplementedException();            
         }
-
+        
         public IFileInfo GetFileInfo(string subpath)
         {
-            // Accept paths in a variety of forms:
-            //   bucket/a/b/c
-            //   /bucket/a/b/c
-            //   gs://bucket/a/b/c
-            string gsPrefix = "gs:/";
-            if (subpath.ToLower().Substring(0, gsPrefix.Length) == gsPrefix) {
-                subpath = subpath.Substring(gsPrefix.Length);
-            }
-            if ('/' == subpath.FirstOrDefault()) {
-                subpath = subpath.Substring(1);
-            }
-            string[] fragments = subpath.Split(new [] {'/'}, 2);
-            string bucketName = fragments.FirstOrDefault();
-            string objectName = fragments.LastOrDefault();
-            try {
-                var obj = _storage.GetObject(bucketName, objectName);
+            var path = SplitObjectPath(subpath);
+            try 
+            {
+                var obj = GetObject(path);
                 if (obj != null) {
                     return new CloudStorageFileInfo(obj, _storage, _logger);                    
                 }
-            }
-            catch (Google.GoogleApiException e)
-            when (e.HttpStatusCode == HttpStatusCode.NotFound) 
-            {
-                _logger.LogWarning("{0} not found.", subpath);
             }
             catch (Exception e)
             {
@@ -86,10 +85,133 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             return new NotFoundFileInfo(subpath);
         }
 
+        struct ObjectPath {
+            public string BucketName;
+            public string ObjectName;
+        }
+
+        ObjectPath SplitObjectPath(string path)
+        {
+            // Accept paths in a variety of forms:
+            //   bucket/a/b/c
+            //   /bucket/a/b/c
+            //   gs://bucket/a/b/c
+            string gsPrefix = "gs:/";
+            if (path.ToLower().Substring(0, gsPrefix.Length) == gsPrefix) {
+                path = path.Substring(gsPrefix.Length);
+            }
+            if ('/' == path.FirstOrDefault()) {
+                path = path.Substring(1);
+            }
+            string[] fragments = path.Split(new [] {'/'}, 2);
+            return new ObjectPath()
+            {
+                BucketName = fragments.FirstOrDefault(),
+                ObjectName = fragments.LastOrDefault()
+            };
+        }
+
+        Google.Apis.Storage.v1.Data.Object GetObject(ObjectPath path) {
+            try 
+            {
+                return _storage.GetObject(path.BucketName, 
+                    path.ObjectName);
+            }
+            catch (Google.GoogleApiException e)
+            when (e.HttpStatusCode == HttpStatusCode.NotFound) 
+            {
+                _logger.LogWarning("{0}/{1} not found.", path.BucketName,
+                    path.ObjectName);
+                return null;
+            }
+        }
+
         public IChangeToken Watch(string filter)
         {
-            return null;
+            if (_pollingInterval == null) {
+                return null;
+            }
+            var path = SplitObjectPath(filter);
+            var token = new CloudStorageChangeToken();
+            long? generation = null;
+            var obj = GetObject(path);
+            if (obj != null) {
+                generation = obj.Generation;            
+            }
+            Task.Run(async () => {
+                while (true) {
+                    await Task.Delay(_pollingInterval.Value);
+                    try
+                    {
+                        obj = GetObject(path);
+                        if (generation != obj?.Generation) {
+                            token.HasChanged = true;
+                            return;
+                        }
+                    } 
+                    catch (Exception e) 
+                    {
+                        _logger.LogError(0, e, "Exception while watching {0}",
+                            filter);
+                    }
+                }
+            });
+            return token;            
+        }            
+    }
+
+    class CloudStorageChangeToken : IChangeToken
+    {
+        List<ChangeCallback> _callbacks = new List<ChangeCallback>();
+        bool _hasChanged = false;
+
+        public bool HasChanged { 
+            get { return _hasChanged; }
+            set {
+                _hasChanged = true;
+                foreach (var callback in _callbacks) {
+                    callback.Invoke();
+                }
+            }
         }
+
+        public bool ActiveChangeCallbacks => true;
+
+        public IDisposable RegisterChangeCallback(Action<object> callback,
+            object state)
+        {
+            var disposable = new ChangeCallback() {
+                Callback = callback,
+                State = state
+            };
+            _callbacks.Add(disposable);
+            return disposable;
+        }
+
+                class ChangeCallback : IDisposable {
+            public Action<object> Callback { get; set; }
+            public object State {get; set;}
+
+            private object _lock = new object();
+            private bool _done = false;
+            public void Dispose()
+            {
+                lock(_lock) {
+                    if (!_done) {
+                        _done = true;
+                    }
+                }
+            }
+
+            public void Invoke() {
+                lock(_lock) {
+                    if (!_done) {
+                        _done = true;
+                        Callback(State);
+                    }
+                }                
+            }
+        };
     }
 
     class CloudStorageFileInfo : IFileInfo
@@ -116,7 +238,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
         public string Name => _cloudStorageObject.Name;
 
         public DateTimeOffset LastModified => 
-            _cloudStorageObject.TimeCreated.Value;
+            _cloudStorageObject.Updated.Value;
 
         public bool IsDirectory => false;
 
@@ -128,6 +250,8 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                 _cloudStorageObject.Name, stream);
             _logger.LogInformation("Loaded {0}/{1}", _cloudStorageObject.Bucket,
                 _cloudStorageObject.Name);
+            _logger.LogDebug("Body:\n{0}",
+                System.Text.Encoding.UTF8.GetString(stream.ToArray()));
             return stream;
         }
     }

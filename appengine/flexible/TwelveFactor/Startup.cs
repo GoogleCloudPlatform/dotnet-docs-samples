@@ -29,7 +29,9 @@ namespace TwelveFactor
 {
     public class Startup
     {
-        CloudStorageFileProvider _cloudStorage = new CloudStorageFileProvider();
+        CloudStorageFileProvider _cloudStorage = new CloudStorageFileProvider(
+            TimeSpan.FromSeconds(10)
+        );
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -37,7 +39,7 @@ namespace TwelveFactor
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddJsonFile(_cloudStorage, "surferjeff-bucket2/aspnet-configs/appsettings.json", 
-                    optional: true, reloadOnChange:false)
+                    optional: true, reloadOnChange:true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
