@@ -29,45 +29,42 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using System.Collections;
 using System.IO;
+using System.Linq;
 
 namespace TwelveFactor.Services.GoogleCloudPlatform {
-    class CloudStorageConfigurationSource : IConfigurationSource
+
+    class CloudStorageFileProvider : IFileProvider
     {
         // Configuration Sources are loaded before logging is configured,
         // because logging is controlled by configuration.  Therefore,
         // we have to queue all our log messages and then log them later.
-        private DelayedLogger _logger = new DelayedLogger();
+        readonly DelayedLogger _logger = new DelayedLogger();
         public ILogger Logger
         {
             get { return _logger; }
             set { _logger.InnerLogger = value; }
         }        
 
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-
-        }
-    }
-
-    class CloudStorageFileProvider : IFileProvider
-    {
-        readonly StorageClient _storage;
-        readonly ILogger _logger;
-
-        public CloudStorageFileProvider(StorageClient storage, ILogger logger)
-        {
-            _storage = storage;
-            _logger = logger;
-        }
-
+        readonly StorageClient _storage = StorageClient.Create();
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException();            
         }
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            throw new NotImplementedException();
+            subpath = '/' == subpath.FirstOrDefault() ? subpath.Substring(1) : subpath;
+            string[] fragments = subpath.Split(new [] {'/'}, 2);
+            try {
+                var obj = _storage.GetObject(fragments.FirstOrDefault(), 
+                    fragments.LastOrDefault());
+                if (obj != null) {
+                    return new CloudStorageFileInfo(obj, _storage, _logger);                    
+                }
+            } catch (Exception e) {
+                _logger.LogError(0, e, "GetFileInfo({0}) failed.", subpath);
+            }
+            return new NotFoundFileInfo(subpath);
         }
 
         public IChangeToken Watch(string filter)
@@ -76,38 +73,39 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
         }
     }
 
-    class CloudStorageDirectoryContents : IDirectoryContents
-    {
-        public bool Exists => throw new NotImplementedException();
-
-        public IEnumerator<IFileInfo> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     class CloudStorageFileInfo : IFileInfo
     {
-        public bool Exists => throw new NotImplementedException();
+        readonly Google.Apis.Storage.v1.Data.Object _cloudStorageObject;
+        readonly StorageClient _storage;
+        readonly ILogger _logger;
 
-        public long Length => throw new NotImplementedException();
+        public CloudStorageFileInfo(Google.Apis.Storage.v1.Data.Object cloudStorageObject,
+            StorageClient storageClient, ILogger logger)
+        {
+            _cloudStorageObject = cloudStorageObject;
+            _storage = storageClient;
+            _logger = logger;
+        }
 
-        public string PhysicalPath => throw new NotImplementedException();
+        public bool Exists => true;
 
-        public string Name => throw new NotImplementedException();
+        public long Length => (long) _cloudStorageObject.Size.Value;
 
-        public DateTimeOffset LastModified => throw new NotImplementedException();
+        public string PhysicalPath => null;
 
-        public bool IsDirectory => throw new NotImplementedException();
+        public string Name => _cloudStorageObject.Name;
+
+        public DateTimeOffset LastModified => _cloudStorageObject.TimeCreated.Value;
+
+        public bool IsDirectory => false;
 
         public Stream CreateReadStream()
         {
-            throw new NotImplementedException();
+            // Json config files are small, and will easily fit in memory.
+            var stream = new MemoryStream();
+            _storage.DownloadObject(_cloudStorageObject.Bucket, 
+                _cloudStorageObject.Name, stream);
+            return stream;
         }
     }
 }

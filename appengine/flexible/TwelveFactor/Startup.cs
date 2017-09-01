@@ -29,21 +29,16 @@ namespace TwelveFactor
 {
     public class Startup
     {
-        Configurator _configurator;
+        CloudStorageFileProvider _cloudStorage = new CloudStorageFileProvider();
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables()
-                .Add(_configurator = new Configurator(new ConfiguratorOptions() {
-                    // Provide these options when you want to pull variables
-                    // from Google Cloud Configurator while *not* running on 
-                    // GCP.
-                    ProjectId = "surferjeff-test2",
-                    ConfigName = "jeff-rennie"  // env.EnvironmentName?
-                }));
+                .AddJsonFile(_cloudStorage, "tecku/aspnet-configs/appsettings.json", 
+                    optional: true, reloadOnChange:false)
+                .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
 
@@ -72,7 +67,7 @@ namespace TwelveFactor
             // Send logs to Stackdriver Logging.
             loggerFactory.AddGoogle(projectId);
             
-            _configurator.Logger = loggerFactory.CreateLogger<Configurator>();
+            _cloudStorage.Logger = loggerFactory.CreateLogger<CloudStorageFileProvider>();
 
             if (env.IsDevelopment())
             {
