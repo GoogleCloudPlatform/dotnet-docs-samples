@@ -54,11 +54,22 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            subpath = '/' == subpath.FirstOrDefault() ? subpath.Substring(1) : subpath;
+            // Accept paths in a variety of forms:
+            //   bucket/a/b/c
+            //   /bucket/a/b/c
+            //   gs://bucket/a/b/c
+            string gsPrefix = "gs:/";
+            if (subpath.ToLower().Substring(0, gsPrefix.Length) == gsPrefix) {
+                subpath = subpath.Substring(gsPrefix.Length);
+            }
+            if ('/' == subpath.FirstOrDefault()) {
+                subpath = subpath.Substring(1);
+            }
             string[] fragments = subpath.Split(new [] {'/'}, 2);
+            string bucketName = fragments.FirstOrDefault();
+            string objectName = fragments.LastOrDefault();
             try {
-                var obj = _storage.GetObject(fragments.FirstOrDefault(), 
-                    fragments.LastOrDefault());
+                var obj = _storage.GetObject(bucketName, objectName);
                 if (obj != null) {
                     return new CloudStorageFileInfo(obj, _storage, _logger);                    
                 }
@@ -87,7 +98,8 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
         readonly StorageClient _storage;
         readonly ILogger _logger;
 
-        public CloudStorageFileInfo(Google.Apis.Storage.v1.Data.Object cloudStorageObject,
+        public CloudStorageFileInfo(
+            Google.Apis.Storage.v1.Data.Object cloudStorageObject,
             StorageClient storageClient, ILogger logger)
         {
             _cloudStorageObject = cloudStorageObject;
@@ -103,7 +115,8 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
 
         public string Name => _cloudStorageObject.Name;
 
-        public DateTimeOffset LastModified => _cloudStorageObject.TimeCreated.Value;
+        public DateTimeOffset LastModified => 
+            _cloudStorageObject.TimeCreated.Value;
 
         public bool IsDirectory => false;
 
@@ -113,6 +126,8 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             var stream = new MemoryStream();
             _storage.DownloadObject(_cloudStorageObject.Bucket, 
                 _cloudStorageObject.Name, stream);
+            _logger.LogInformation("Loaded {0}/{1}", _cloudStorageObject.Bucket,
+                _cloudStorageObject.Name);
             return stream;
         }
     }
