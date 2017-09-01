@@ -250,8 +250,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
                 _cloudStorageObject.Name, stream);
             _logger.LogInformation("Loaded {0}/{1}", _cloudStorageObject.Bucket,
                 _cloudStorageObject.Name);
-            _logger.LogDebug("Body:\n{0}",
-                System.Text.Encoding.UTF8.GetString(stream.ToArray()));
+            stream.Seek(0, SeekOrigin.Begin);;
             return stream;
         }
     }
