@@ -131,6 +131,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             if (_pollingInterval == null) {
                 return null;
             }
+            _logger.LogDebug("Watching {0}", filter);
             var path = SplitObjectPath(filter);
             var token = new CloudStorageChangeToken();
             long? generation = null;

@@ -30,8 +30,7 @@ namespace TwelveFactor
     public class Startup
     {
         CloudStorageFileProvider _cloudStorage = new CloudStorageFileProvider(
-            TimeSpan.FromSeconds(10)
-        );
+            TimeSpan.FromMinutes(2));
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
