@@ -76,6 +76,5 @@ namespace GoogleCloudSamples
                     + "not running on compute engine.");
             }
         }
-
     }
 }
