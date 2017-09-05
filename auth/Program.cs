@@ -43,7 +43,7 @@ namespace GoogleCloudSamples
                         if (null == _projectId)
                         {
                             throw new ArgumentNullException("ProjectId");
-                        }                        
+                        }
                     }
                 }
                 return _projectId;
