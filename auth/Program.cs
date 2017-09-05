@@ -67,13 +67,26 @@ namespace GoogleCloudSamples
     [Verb("http", HelpText = "Authenticate using and make a rest HTTP call.")]
     class HttpOptions : BaseOptions { }
 
-    public class AuthSample
+    /// <summary>
+    /// Each library supports 3 methods of authenticating.
+    /// </summary>
+    interface AuthLibrary
+    {
+        object AuthImplicit(string projectId);
+        object AuthExplicit(string projectId, string jsonPath);
+        object AuthExplicitComputeEngine(string projectId);
+    }
+
+    /// <summary>
+    /// Authenticates with Google.Cloud.* libraries.
+    /// </summary>
+    public class CloudLibrary : AuthLibrary
     {
         ///////////////////////////////////////////////
         // This is the preferred way of authenticating.
         ///////////////////////////////////////////////
         // [START auth_cloud_implicit]
-        static object AuthCloudImplicit(string projectId)
+        public object AuthImplicit(string projectId)
         {
             // If you don't specify credentials when constructing the client, the
             // client library will look for credentials in the environment.
@@ -89,7 +102,7 @@ namespace GoogleCloudSamples
         // [END auth_cloud_implicit]
 
         // [START auth_cloud_explicit]
-        static object AuthCloudExplicit(string projectId, string jsonPath)
+        public object AuthExplicit(string projectId, string jsonPath)
         {
             // Explicitly use service account credentials by specifying the private key
             // file.
@@ -111,12 +124,12 @@ namespace GoogleCloudSamples
         // [END auth_cloud_explicit]
 
         // [START auth_cloud_explicit_compute_engine]
-        static object AuthCloudExplicitComputeEngine(string projectId)
+        public object AuthExplicitComputeEngine(string projectId)
         {
-            // Explicitly use service account credentials by specifying the private key
-            // file.
-            GoogleCredential credential = null;
-            credential = GoogleCredential.FromComputeCredential();
+            // Explicitly use service account credentials by specifying the 
+            // private key file.
+            GoogleCredential credential =
+                GoogleCredential.FromComputeCredential();
             var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
             var buckets = storage.ListBuckets(projectId);
@@ -127,9 +140,15 @@ namespace GoogleCloudSamples
             return null;
         }
         // [END auth_cloud_explicit_compute_engine]
+    }
 
-            // [START auth_api_implicit]
-        static object AuthApiImplicit(string projectId)
+    /// <summary>
+    /// Authenticates with Google.Apis.* libraries.
+    /// </summary>
+    class ApiLibrary : AuthLibrary
+    {
+        // [START auth_api_implicit]
+        public object AuthImplicit(string projectId)
         {
             GoogleCredential credential =
                 GoogleCredential.GetApplicationDefaultAsync().Result;
@@ -157,7 +176,7 @@ namespace GoogleCloudSamples
         // [END auth_api_implicit]
 
         // [START auth_api_explicit]
-        static object AuthApiExplicit(string projectId, string jsonPath)
+        public object AuthExplicit(string projectId, string jsonPath)
         {
             GoogleCredential credential = null;
             using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
@@ -186,10 +205,18 @@ namespace GoogleCloudSamples
             }
             return null;
         }
-        // [END auth_api_explicit]
 
+        public object AuthExplicitComputeEngine(string projectId)
+        {
+            throw new NotImplementedException();
+        }
+        // [END auth_api_explicit]
+    }
+
+    class HttpLibrary : AuthLibrary
+    {
         // [START auth_http_implicit]
-        static object AuthHttpImplicit(string projectId)
+        public object AuthImplicit(string projectId)
         {
             GoogleCredential credential =
                 GoogleCredential.GetApplicationDefaultAsync().Result;
@@ -226,7 +253,7 @@ namespace GoogleCloudSamples
         // [END auth_http_implicit]
 
         // [START auth_http_explicit]
-        static object AuthHttpExplicit(string projectId, string jsonPath)
+        public object AuthExplicit(string projectId, string jsonPath)
         {
             GoogleCredential credential = null;
             using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
@@ -264,18 +291,35 @@ namespace GoogleCloudSamples
             }
             return null;
         }
-        // [END auth_http_explicit]
 
+        public object AuthExplicitComputeEngine(string projectId)
+        {
+            throw new NotImplementedException();
+        }
+        // [END auth_http_explicit]
+    }
+
+    public class AuthSample
+    {
+        static object ChooseAuthMethodAndInvoke(BaseOptions options, AuthLibrary library)
+        {
+            if (!string.IsNullOrEmpty(options.JsonPath))
+            {
+                return library.AuthExplicit(options.ProjectId, options.JsonPath);
+            }
+            if (options.Compute)
+            {
+                return library.AuthExplicitComputeEngine(options.ProjectId);
+            }
+            return library.AuthImplicit(options.ProjectId);
+        }
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<CloudOptions, ApiOptions, HttpOptions>(args)
               .MapResult(
-                (CloudOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ?
-                AuthCloudImplicit(opts.ProjectId) : AuthCloudExplicit(opts.ProjectId, opts.JsonPath),
-                (ApiOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ?
-                AuthApiImplicit(opts.ProjectId) : AuthApiExplicit(opts.ProjectId, opts.JsonPath),
-                (HttpOptions opts) => string.IsNullOrEmpty(opts.JsonPath) ?
-                AuthHttpImplicit(opts.ProjectId) : AuthHttpExplicit(opts.ProjectId, opts.JsonPath),
+                (CloudOptions opts) => ChooseAuthMethodAndInvoke(opts, new CloudLibrary()),
+                (ApiOptions opts) => ChooseAuthMethodAndInvoke(opts, new ApiLibrary()),
+                (HttpOptions opts) => ChooseAuthMethodAndInvoke(opts, new HttpLibrary()),
                 errs => 1);
         }
     }
