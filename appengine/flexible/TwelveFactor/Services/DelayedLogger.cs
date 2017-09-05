@@ -19,9 +19,12 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 namespace TwelveFactor.Services {
-    /// Queues log messages until Logger property is set.
+    /// <summary>Queues log messages until Logger property is set. </summary>
+    /// <remarks>Not built to be thread-safe and general purpose.  Only built
+    /// for the minimal needs of CloudStorageFileProvider.</remarks>
     public class DelayedLogger : ILogger
     {
+        // The inner logger.  Null by default.
         private ILogger _logger;
         public ILogger InnerLogger
         {
@@ -34,8 +37,9 @@ namespace TwelveFactor.Services {
                 _logActions.Clear();
             }
         }
-        
+        /// The queue of logged messages, waiting to be logged.        
         List<Action<ILogger>> _logActions = new List<Action<ILogger>>();
+        
         IDisposable ILogger.BeginScope<TState>(TState state)
         {
             throw new NotImplementedException();

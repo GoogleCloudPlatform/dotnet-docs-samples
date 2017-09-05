@@ -40,8 +40,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
     /// Google Cloud Storage.
     /// </summary>
     class CloudStorageFileProvider : IFileProvider
-    {        
-
+    {
         // Configuration Sources are loaded before logging is configured,
         // because logging is controlled by configuration.  Therefore,
         // we have to queue all our log messages and then log them later.
@@ -63,6 +62,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             _pollingInterval = pollingInterval;
         }
 
+        // Never called by the Configuration code.
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
             throw new NotImplementedException();            
@@ -90,6 +90,8 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             public string ObjectName;
         }
 
+        /// <summary> Split a Google Cloud Storage object path into its 
+        /// bucket name and object name.  </summary>
         ObjectPath SplitObjectPath(string path)
         {
             // Accept paths in a variety of forms:
@@ -111,6 +113,8 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             };
         }
 
+        /// <summary> Gets the Object at the path.  If it's not found,
+        /// doesn't throw an exception; instead returns null. </summary>
         Google.Apis.Storage.v1.Data.Object GetObject(ObjectPath path) {
             try 
             {
@@ -126,6 +130,7 @@ namespace TwelveFactor.Services.GoogleCloudPlatform {
             }
         }
 
+        /// <summary> Watch a file for changes.
         public IChangeToken Watch(string filter)
         {
             if (_pollingInterval == null) {
