@@ -14,6 +14,8 @@
  * the License.
  */
 
+using System;
+using System.Diagnostics;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -55,5 +57,25 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.False(string.IsNullOrWhiteSpace(output.Stdout));
         }
+
+        [Theory]
+        [InlineData("cloud")]
+        [InlineData("api")]
+        void TestExplicitComputeEngine(string cmd)
+        {
+            try
+            {
+                var output = s_runner.Run(cmd, "-c");
+                Assert.Equal(0, output.ExitCode);
+                Assert.False(string.IsNullOrWhiteSpace(output.Stdout));
+            }
+            catch (System.Net.Http.HttpRequestException)
+            when (null == Google.Api.Gax.Platform.Instance()?.GceDetails?.InstanceId)
+            {
+                Console.WriteLine("Cannot test Compute Engine methods because I'm "
+                    + "not running on compute engine.");
+            }
+        }
+
     }
 }

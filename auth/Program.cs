@@ -39,7 +39,11 @@ namespace GoogleCloudSamples
                     _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
                     if (null == _projectId)
                     {
-                        throw new ArgumentNullException("ProjectId");
+                        _projectId = Google.Api.Gax.Platform.Instance()?.GceDetails?.ProjectId;
+                        if (null == _projectId)
+                        {
+                            throw new ArgumentNullException("ProjectId");
+                        }                        
                     }
                 }
                 return _projectId;
