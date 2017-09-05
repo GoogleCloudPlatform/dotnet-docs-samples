@@ -33,7 +33,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace TwelveFactor.Services.GoogleCloudPlatform {
+namespace TwelveFactor.Services {
 
     /// <summary>
     /// An implementation of IFileProvider that gets files from

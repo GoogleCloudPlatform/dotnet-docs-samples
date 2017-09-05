@@ -23,7 +23,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using TwelveFactor.Services.GoogleCloudPlatform;
+using TwelveFactor.Services;
 
 namespace TwelveFactor
 {
