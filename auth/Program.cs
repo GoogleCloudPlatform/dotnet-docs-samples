@@ -209,12 +209,37 @@ namespace GoogleCloudSamples
             }
             return null;
         }
+        // [END auth_api_explicit]
 
+        // [START auth_api_explicit_compute_engine]
         public object AuthExplicitComputeEngine(string projectId)
         {
-            throw new NotImplementedException();
+            // Explicitly use service account credentials by specifying the 
+            // private key file.
+            GoogleCredential credential =
+                GoogleCredential.FromComputeCredential();
+            // Inject the Cloud Storage scope if required.
+            if (credential.IsCreateScopedRequired)
+            {
+                credential = credential.CreateScoped(new[]
+                {
+                    StorageService.Scope.DevstorageReadOnly
+                });
+            }
+            var storage = new StorageService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "DotNet Google Cloud Platform Auth Sample",
+            });
+            var request = new BucketsResource.ListRequest(storage, projectId);
+            var requestResult = request.Execute();
+            foreach (var bucket in requestResult.Items)
+            {
+                Console.WriteLine(bucket.Name);
+            }
+            return null;
         }
-        // [END auth_api_explicit]
+        // [END auth_api_explicit_compute_engine]
     }
 
     class HttpLibrary : AuthLibrary
