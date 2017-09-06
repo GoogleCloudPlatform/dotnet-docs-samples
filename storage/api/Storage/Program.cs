@@ -26,35 +26,37 @@ namespace GoogleCloudSamples
 {
     public class Storage
     {
-        private static readonly string s_projectId = "YOUR-PROJECT-ID";
+        private static readonly string s_projectId = "silver-python2";
 
         private static readonly string s_usage =
-                "Usage: \n" +
-                "  Storage create [new-bucket-name]\n" +
-                "  Storage list\n" +
-                "  Storage list bucket-name [prefix] [delimiter]\n" +
-                "  Storage get-metadata bucket-name object-name\n" +
-                "  Storage make-public bucket-name object-name\n" +
-                "  Storage upload [-key encryption-key] bucket-name local-file-path [object-name]\n" +
-                "  Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
-                "  Storage move bucket-name source-object-name dest-object-name\n" +
-                "  Storage download [-key encryption-key] bucket-name object-name [local-file-path]\n" +
-                "  Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
-                "  Storage generate-signed-url bucket-name object-name\n" +
-                "  Storage view-bucket-iam-members bucket-name\n" +
-                "  Storage add-bucket-iam-member bucket-name member\n" +
-                "  Storage remove-bucket-iam-member bucket-name role member\n" +
-                "  Storage print-acl bucket-name\n" +
-                "  Storage print-acl bucket-name object-name\n" +
-                "  Storage add-owner bucket-name user-email\n" +
-                "  Storage add-owner bucket-name object-name user-email\n" +
-                "  Storage add-default-owner bucket-name user-email\n" +
-                "  Storage remove-owner bucket-name user-email\n" +
-                "  Storage remove-owner bucket-name object-name user-email\n" +
-                "  Storage remove-default-owner bucket-name user-email\n" +
-                "  Storage delete bucket-name\n" +
-                "  Storage delete bucket-name object-name [object-name]\n" +
-                "  Storage generate-encryption-key";
+            "Usage: \n" +
+            "  Storage create [new-bucket-name]\n" +
+            "  Storage list\n" +
+            "  Storage list bucket-name [prefix] [delimiter]\n" +
+            "  Storage get-metadata bucket-name object-name\n" +
+            "  Storage make-public bucket-name object-name\n" +
+            "  Storage upload [-key encryption-key] bucket-name local-file-path [object-name]\n" +
+            "  Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
+            "  Storage move bucket-name source-object-name dest-object-name\n" +
+            "  Storage download [-key encryption-key] bucket-name object-name [local-file-path]\n" +
+            "  Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
+            "  Storage generate-signed-url bucket-name object-name\n" +
+            "  Storage view-bucket-iam-members bucket-name\n" +
+            "  Storage add-bucket-iam-member bucket-name member\n" +
+            "  Storage remove-bucket-iam-member bucket-name role member\n" +
+            "  Storage print-acl bucket-name\n" +
+            "  Storage print-acl bucket-name object-name\n" +
+            "  Storage add-owner bucket-name user-email\n" +
+            "  Storage add-owner bucket-name object-name user-email\n" +
+            "  Storage add-default-owner bucket-name user-email\n" +
+            "  Storage remove-owner bucket-name user-email\n" +
+            "  Storage remove-owner bucket-name object-name user-email\n" +
+            "  Storage remove-default-owner bucket-name user-email\n" +
+            "  Storage delete bucket-name\n" +
+            "  Storage delete bucket-name object-name [object-name]\n" +
+            "  Storage enable-requester-pays bucket-name\n" +
+            "  Storage disable-requester-pays bucket-name\n" +
+            "  Storage generate-encryption-key";
 
         // [START storage_create_bucket]
         private void CreateBucket(string bucketName)
@@ -592,6 +594,36 @@ namespace GoogleCloudSamples
         }
         // [END storage_generate_encryption_key]
 
+        // [START storage_enable_requester_pays]
+        void EnableRequesterPays(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.Billing = bucket.Billing ?? new Bucket.BillingData();
+            bucket.Billing.RequesterPays = true;
+            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration
+            });
+        }
+        // [END storage_enable_requester_pays]
+
+        // [START storage_disable_requester_pays]
+        void DisableRequesterPays(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.Billing = bucket.Billing ?? new Bucket.BillingData();
+            bucket.Billing.RequesterPays = false;
+            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration
+            });
+        }
+        // [END storage_disable_requester_pays]
+
         public bool PrintUsage()
         {
             Console.WriteLine(s_usage);
@@ -783,6 +815,16 @@ namespace GoogleCloudSamples
 
                     case "generate-encryption-key":
                         GenerateEncryptionKey();
+                        break;
+
+                    case "enable-requester-pays":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        EnableRequesterPays(args[1]);
+                        break;
+
+                    case "disable-requester-pays":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        DisableRequesterPays(args[1]);
                         break;
 
                     default:

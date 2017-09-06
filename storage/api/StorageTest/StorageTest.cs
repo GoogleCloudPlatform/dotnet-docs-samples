@@ -596,5 +596,19 @@ namespace GoogleCloudSamples
             Assert.Equal(File.ReadAllText("Hello.txt"),
                 File.ReadAllText("Hello-downloaded.txt"));
         }
+
+        [Fact]
+        public void TestEnableRequesterPays()
+        {
+            var enabled = Run("enable-requester-pays", _bucketName);
+            AssertSucceeded(enabled);
+        }
+
+        [Fact]
+        public void TestDisableRequesterPays()
+        {
+            var disabled = Run("disable-requester-pays", _bucketName);
+            AssertSucceeded(disabled);
+        }
     }
 }
