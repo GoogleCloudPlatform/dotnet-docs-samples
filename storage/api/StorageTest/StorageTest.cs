@@ -598,17 +598,19 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestEnableRequesterPays()
+        public void TestEnableAndDisableRequesterPays()
         {
             var enabled = Run("enable-requester-pays", _bucketName);
             AssertSucceeded(enabled);
-        }
+            Assert.Equal(1, Run("get-requester-pays", _bucketName).ExitCode);
 
-        [Fact]
-        public void TestDisableRequesterPays()
-        {
             var disabled = Run("disable-requester-pays", _bucketName);
             AssertSucceeded(disabled);
+            Assert.Equal(0, Run("get-requester-pays", _bucketName).ExitCode);
+
+            enabled = Run("enable-requester-pays", _bucketName);
+            AssertSucceeded(enabled);
+            Assert.Equal(1, Run("get-requester-pays", _bucketName).ExitCode);
         }
     }
 }

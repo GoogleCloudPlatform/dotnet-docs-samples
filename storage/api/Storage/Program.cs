@@ -56,6 +56,7 @@ namespace GoogleCloudSamples
             "  Storage delete bucket-name object-name [object-name]\n" +
             "  Storage enable-requester-pays bucket-name\n" +
             "  Storage disable-requester-pays bucket-name\n" +
+            "  Storage get-requester-pays bucket-name\n" +
             "  Storage generate-encryption-key";
 
         // [START storage_create_bucket]
@@ -624,6 +625,19 @@ namespace GoogleCloudSamples
         }
         // [END storage_disable_requester_pays]
 
+        // [START storage_get_requester_pays_status]
+        bool GetRequesterPays(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bool? requesterPaysOrNull = bucket.Billing?.RequesterPays;
+            bool requesterPays = 
+                requesterPaysOrNull.HasValue ? requesterPaysOrNull.Value : false;
+            Console.WriteLine("RequesterPays: {0}", requesterPays);
+            return requesterPays;
+        }
+        // [END storage_get_requester_pays_status]
+
         public bool PrintUsage()
         {
             Console.WriteLine(s_usage);
@@ -826,6 +840,10 @@ namespace GoogleCloudSamples
                         if (args.Length < 2 && PrintUsage()) return -1;
                         DisableRequesterPays(args[1]);
                         break;
+
+                    case "get-requester-pays":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        return GetRequesterPays(args[1]) ? 1 : 0;
 
                     default:
                         PrintUsage();
