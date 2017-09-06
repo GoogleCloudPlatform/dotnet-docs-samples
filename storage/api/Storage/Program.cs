@@ -26,7 +26,7 @@ namespace GoogleCloudSamples
 {
     public class Storage
     {
-        private static readonly string s_projectId = "silver-python2";
+        private static readonly string s_projectId = "YOUR-PROJECT-ID";
 
         private static readonly string s_usage =
             "Usage: \n" +
