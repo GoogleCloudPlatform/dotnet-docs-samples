@@ -638,6 +638,24 @@ namespace GoogleCloudSamples
         }
         // [END storage_get_requester_pays_status]
 
+        // [START storage_download_file_requester_pays]
+        private void DownloadObjectRequesterPays(string bucketName, string objectName,
+            string localPath = null)
+        {
+            var storage = StorageClient.Create();
+            localPath = localPath ?? Path.GetFileName(objectName);
+            using (var outputFile = File.OpenWrite(localPath))
+            {
+                storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions()
+                {
+                    UserProject = s_projectId
+                });
+            }
+            Console.WriteLine(
+                $"downloaded {objectName} to {localPath} paid by {s_projectId}.");
+        }
+        // [END storage_download_file_requester_pays]
+
         public bool PrintUsage()
         {
             Console.WriteLine(s_usage);
@@ -650,26 +668,35 @@ namespace GoogleCloudSamples
             return Storage.Run(args);
         }
 
-        string PullEncryptionKey(ref string[] args)
+        string PullFlag(string flag, ref string[] args, bool requiresValue)
         {
-            string key = null;
+            string value = null;
             var newArgs = new List<string>();
             for (int i = 0; i < args.Count(); ++i)
             {
-                if (new string[] { "-key", "--key" }.Contains(args[i].ToLower()))
+                if (flag == args[i].ToLower())
                 {
-                    key = args[i + 1];
-                    i += 2;
+                    if (requiresValue)
+                    {
+                        if (++i == args.Count())
+                        {
+                            throw new ArgumentException(
+                                $"Flag {flag} requires a value.");
+                        }
+                    }
+                    value = args[i];
+                    continue;
                 }
                 newArgs.Add(args[i]);
             }
             args = newArgs.ToArray();
-            return key;
+            return value;
         }
 
         public int Run(string[] args)
         {
             string encryptionKey;
+            string requesterPays;
             if (s_projectId == "YOUR-PROJECT" + "-ID")
             {
                 Console.WriteLine("Update program.cs and replace YOUR-PROJECT" +
@@ -708,7 +735,7 @@ namespace GoogleCloudSamples
                         break;
 
                     case "upload":
-                        encryptionKey = PullEncryptionKey(ref args);
+                        encryptionKey = PullFlag("-key", ref args, requiresValue:true);
                         if (args.Length < 3 && PrintUsage()) return -1;
                         if (encryptionKey == null)
                         {
@@ -721,15 +748,20 @@ namespace GoogleCloudSamples
                         break;
 
                     case "download":
-                        encryptionKey = PullEncryptionKey(ref args);
+                        encryptionKey = PullFlag("-key", ref args, requiresValue: true);
+                        requesterPays = PullFlag("-pay", ref args, requiresValue: false);
                         if (args.Length < 3 && PrintUsage()) return -1;
-                        if (encryptionKey == null)
+                        if (encryptionKey != null)
                         {
-                            DownloadObject(args[1], args[2], args.Length < 4 ? null : args[3]);
+                            DownloadEncryptedObject(encryptionKey, args[1], args[2], args.Length < 4 ? null : args[3]);
+                        }
+                        else if (requesterPays != null)
+                        {
+                            DownloadObjectRequesterPays(args[1], args[2], args.Length < 4 ? null : args[3]);
                         }
                         else
                         {
-                            DownloadEncryptedObject(encryptionKey, args[1], args[2], args.Length < 4 ? null : args[3]);
+                            DownloadObject(args[1], args[2], args.Length < 4 ? null : args[3]);
                         }
                         break;
 

@@ -612,5 +612,29 @@ namespace GoogleCloudSamples
             AssertSucceeded(enabled);
             Assert.Equal(1, Run("get-requester-pays", _bucketName).ExitCode);
         }
+
+        [Fact]
+        public void TestDownloadObjectRequesterPays()
+        {
+            var enabled = Run("enable-requester-pays", _bucketName);
+            AssertSucceeded(enabled);
+
+            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
+            AssertSucceeded(uploaded);
+
+            var downloaded = Run("download", _bucketName, "-pay",
+                "Hello.txt", "Hello2.txt");
+            AssertSucceeded(downloaded);
+            try
+            {
+                Assert.Equal(File.ReadAllText("Hello.txt"),
+                    File.ReadAllText("Hello2.txt"));
+            }
+            finally
+            {
+                File.Delete("Hello2.txt");
+            }
+        }
+
     }
 }
