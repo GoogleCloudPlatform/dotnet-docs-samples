@@ -635,6 +635,5 @@ namespace GoogleCloudSamples
                 File.Delete("Hello2.txt");
             }
         }
-
     }
 }

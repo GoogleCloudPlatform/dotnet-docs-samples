@@ -631,7 +631,7 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
             bool? requesterPaysOrNull = bucket.Billing?.RequesterPays;
-            bool requesterPays = 
+            bool requesterPays =
                 requesterPaysOrNull.HasValue ? requesterPaysOrNull.Value : false;
             Console.WriteLine("RequesterPays: {0}", requesterPays);
             return requesterPays;
@@ -735,7 +735,7 @@ namespace GoogleCloudSamples
                         break;
 
                     case "upload":
-                        encryptionKey = PullFlag("-key", ref args, requiresValue:true);
+                        encryptionKey = PullFlag("-key", ref args, requiresValue: true);
                         if (args.Length < 3 && PrintUsage()) return -1;
                         if (encryptionKey == null)
                         {
