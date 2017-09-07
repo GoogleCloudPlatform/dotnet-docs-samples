@@ -29,32 +29,35 @@ namespace GoogleCloudSamples
         private static readonly string s_projectId = "YOUR-PROJECT-ID";
 
         private static readonly string s_usage =
-                "Usage: \n" +
-                "  Storage create [new-bucket-name]\n" +
-                "  Storage list\n" +
-                "  Storage list bucket-name [prefix] [delimiter]\n" +
-                "  Storage get-metadata bucket-name object-name\n" +
-                "  Storage make-public bucket-name object-name\n" +
-                "  Storage upload [-key encryption-key] bucket-name local-file-path [object-name]\n" +
-                "  Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
-                "  Storage move bucket-name source-object-name dest-object-name\n" +
-                "  Storage download [-key encryption-key] bucket-name object-name [local-file-path]\n" +
-                "  Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
-                "  Storage generate-signed-url bucket-name object-name\n" +
-                "  Storage view-bucket-iam-members bucket-name\n" +
-                "  Storage add-bucket-iam-member bucket-name member\n" +
-                "  Storage remove-bucket-iam-member bucket-name role member\n" +
-                "  Storage print-acl bucket-name\n" +
-                "  Storage print-acl bucket-name object-name\n" +
-                "  Storage add-owner bucket-name user-email\n" +
-                "  Storage add-owner bucket-name object-name user-email\n" +
-                "  Storage add-default-owner bucket-name user-email\n" +
-                "  Storage remove-owner bucket-name user-email\n" +
-                "  Storage remove-owner bucket-name object-name user-email\n" +
-                "  Storage remove-default-owner bucket-name user-email\n" +
-                "  Storage delete bucket-name\n" +
-                "  Storage delete bucket-name object-name [object-name]\n" +
-                "  Storage generate-encryption-key";
+            "Usage: \n" +
+            "  Storage create [new-bucket-name]\n" +
+            "  Storage list\n" +
+            "  Storage list bucket-name [prefix] [delimiter]\n" +
+            "  Storage get-metadata bucket-name object-name\n" +
+            "  Storage make-public bucket-name object-name\n" +
+            "  Storage upload [-key encryption-key] bucket-name local-file-path [object-name]\n" +
+            "  Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
+            "  Storage move bucket-name source-object-name dest-object-name\n" +
+            "  Storage download [-key encryption-key] bucket-name object-name [local-file-path]\n" +
+            "  Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
+            "  Storage generate-signed-url bucket-name object-name\n" +
+            "  Storage view-bucket-iam-members bucket-name\n" +
+            "  Storage add-bucket-iam-member bucket-name member\n" +
+            "  Storage remove-bucket-iam-member bucket-name role member\n" +
+            "  Storage print-acl bucket-name\n" +
+            "  Storage print-acl bucket-name object-name\n" +
+            "  Storage add-owner bucket-name user-email\n" +
+            "  Storage add-owner bucket-name object-name user-email\n" +
+            "  Storage add-default-owner bucket-name user-email\n" +
+            "  Storage remove-owner bucket-name user-email\n" +
+            "  Storage remove-owner bucket-name object-name user-email\n" +
+            "  Storage remove-default-owner bucket-name user-email\n" +
+            "  Storage delete bucket-name\n" +
+            "  Storage delete bucket-name object-name [object-name]\n" +
+            "  Storage enable-requester-pays bucket-name\n" +
+            "  Storage disable-requester-pays bucket-name\n" +
+            "  Storage get-requester-pays bucket-name\n" +
+            "  Storage generate-encryption-key";
 
         // [START storage_create_bucket]
         private void CreateBucket(string bucketName)
@@ -592,6 +595,67 @@ namespace GoogleCloudSamples
         }
         // [END storage_generate_encryption_key]
 
+        // [START storage_enable_requester_pays]
+        void EnableRequesterPays(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.Billing = bucket.Billing ?? new Bucket.BillingData();
+            bucket.Billing.RequesterPays = true;
+            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration
+            });
+        }
+        // [END storage_enable_requester_pays]
+
+        // [START storage_disable_requester_pays]
+        void DisableRequesterPays(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.Billing = bucket.Billing ?? new Bucket.BillingData();
+            bucket.Billing.RequesterPays = false;
+            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration
+            });
+        }
+        // [END storage_disable_requester_pays]
+
+        // [START storage_get_requester_pays_status]
+        bool GetRequesterPays(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bool? requesterPaysOrNull = bucket.Billing?.RequesterPays;
+            bool requesterPays =
+                requesterPaysOrNull.HasValue ? requesterPaysOrNull.Value : false;
+            Console.WriteLine("RequesterPays: {0}", requesterPays);
+            return requesterPays;
+        }
+        // [END storage_get_requester_pays_status]
+
+        // [START storage_download_file_requester_pays]
+        private void DownloadObjectRequesterPays(string bucketName, string objectName,
+            string localPath = null)
+        {
+            var storage = StorageClient.Create();
+            localPath = localPath ?? Path.GetFileName(objectName);
+            using (var outputFile = File.OpenWrite(localPath))
+            {
+                storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions()
+                {
+                    UserProject = s_projectId
+                });
+            }
+            Console.WriteLine(
+                $"downloaded {objectName} to {localPath} paid by {s_projectId}.");
+        }
+        // [END storage_download_file_requester_pays]
+
         public bool PrintUsage()
         {
             Console.WriteLine(s_usage);
@@ -604,26 +668,35 @@ namespace GoogleCloudSamples
             return Storage.Run(args);
         }
 
-        string PullEncryptionKey(ref string[] args)
+        string PullFlag(string flag, ref string[] args, bool requiresValue)
         {
-            string key = null;
+            string value = null;
             var newArgs = new List<string>();
             for (int i = 0; i < args.Count(); ++i)
             {
-                if (new string[] { "-key", "--key" }.Contains(args[i].ToLower()))
+                if (flag == args[i].ToLower())
                 {
-                    key = args[i + 1];
-                    i += 2;
+                    if (requiresValue)
+                    {
+                        if (++i == args.Count())
+                        {
+                            throw new ArgumentException(
+                                $"Flag {flag} requires a value.");
+                        }
+                    }
+                    value = args[i];
+                    continue;
                 }
                 newArgs.Add(args[i]);
             }
             args = newArgs.ToArray();
-            return key;
+            return value;
         }
 
         public int Run(string[] args)
         {
             string encryptionKey;
+            string requesterPays;
             if (s_projectId == "YOUR-PROJECT" + "-ID")
             {
                 Console.WriteLine("Update program.cs and replace YOUR-PROJECT" +
@@ -662,7 +735,7 @@ namespace GoogleCloudSamples
                         break;
 
                     case "upload":
-                        encryptionKey = PullEncryptionKey(ref args);
+                        encryptionKey = PullFlag("-key", ref args, requiresValue: true);
                         if (args.Length < 3 && PrintUsage()) return -1;
                         if (encryptionKey == null)
                         {
@@ -675,15 +748,20 @@ namespace GoogleCloudSamples
                         break;
 
                     case "download":
-                        encryptionKey = PullEncryptionKey(ref args);
+                        encryptionKey = PullFlag("-key", ref args, requiresValue: true);
+                        requesterPays = PullFlag("-pay", ref args, requiresValue: false);
                         if (args.Length < 3 && PrintUsage()) return -1;
-                        if (encryptionKey == null)
+                        if (encryptionKey != null)
                         {
-                            DownloadObject(args[1], args[2], args.Length < 4 ? null : args[3]);
+                            DownloadEncryptedObject(encryptionKey, args[1], args[2], args.Length < 4 ? null : args[3]);
+                        }
+                        else if (requesterPays != null)
+                        {
+                            DownloadObjectRequesterPays(args[1], args[2], args.Length < 4 ? null : args[3]);
                         }
                         else
                         {
-                            DownloadEncryptedObject(encryptionKey, args[1], args[2], args.Length < 4 ? null : args[3]);
+                            DownloadObject(args[1], args[2], args.Length < 4 ? null : args[3]);
                         }
                         break;
 
@@ -784,6 +862,20 @@ namespace GoogleCloudSamples
                     case "generate-encryption-key":
                         GenerateEncryptionKey();
                         break;
+
+                    case "enable-requester-pays":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        EnableRequesterPays(args[1]);
+                        break;
+
+                    case "disable-requester-pays":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        DisableRequesterPays(args[1]);
+                        break;
+
+                    case "get-requester-pays":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        return GetRequesterPays(args[1]) ? 1 : 0;
 
                     default:
                         PrintUsage();
