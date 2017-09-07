@@ -36,18 +36,35 @@ namespace TwelveFactor
             TimeSpan.FromMinutes(2));
         public Startup(IHostingEnvironment env)
         {
+            // Have to build the configuration twice.
+            // 1. To discover the project id.
+            Configuration = BuildConfiguration(env, null);
+            // 2. With the project
+        }
+
+        /// <summary> Builds a configuration. </summary>
+        /// <param name="cloudStorageBucket">
+        /// If null, no appsettings.json are loaded from Google Cloud Storage.
+        /// </param>
+        IConfigurationRoot BuildConfiguration(IHostingEnvironment env, 
+            string cloudStorageBucket)
+        {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile(_cloudStorage, 
-                    "surferjeff-bucket2/aspnet-configs/appsettings.json", 
-                    optional: true, reloadOnChange:true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile(_cloudStorage, 
-                    $"surferjeff-bucket2/aspnet-configs/appsettings.{env.EnvironmentName}.json", 
-                    optional: true, reloadOnChange:true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            if (null != cloudStorageBucket) {
+                builder.AddJsonFile(_cloudStorage, 
+                    $"{cloudStorageBucket}.appspot.com/aspnet-configs/appsettings.json",
+                    optional: true, reloadOnChange:true);
+            }
+            builder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+            if (null != cloudStorageBucket) {
+                builder.AddJsonFile(_cloudStorage, 
+                    $"{cloudStorageBucket}.appspot.com/aspnet-configs/appsettings.{env.EnvironmentName}.json", 
+                    optional: true, reloadOnChange:true);
+            }
+            builder.AddEnvironmentVariables();
+            return builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
