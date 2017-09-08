@@ -39,7 +39,9 @@ namespace TwelveFactor
             // Have to build the configuration twice.
             // 1. To discover the project id.
             Configuration = BuildConfiguration(env, null);
-            // 2. With the project
+            // 2. To load from the project's Google Cloud Storage bucket.
+            string cloudStorageBucket = GetProjectId() + ".appspot.com";
+            Configuration = BuildConfiguration(env, cloudStorageBucket);
         }
 
         /// <summary> Builds a configuration. </summary>
@@ -51,16 +53,19 @@ namespace TwelveFactor
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: true,
+                     reloadOnChange: true);
             if (null != cloudStorageBucket) {
-                builder.AddJsonFile(_cloudStorage, 
-                    $"{cloudStorageBucket}.appspot.com/aspnet-configs/appsettings.json",
+                builder.AddJsonFile(_cloudStorage, string.Format(
+                    "{0}/aspnet-configs/appsettings.json", cloudStorageBucket),
                     optional: true, reloadOnChange:true);
             }
-            builder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+            builder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", 
+                optional: true);
             if (null != cloudStorageBucket) {
-                builder.AddJsonFile(_cloudStorage, 
-                    $"{cloudStorageBucket}.appspot.com/aspnet-configs/appsettings.{env.EnvironmentName}.json", 
+                builder.AddJsonFile(_cloudStorage, string.Format(
+                    "{0}/aspnet-configs/appsettings.{1}.json",
+                    cloudStorageBucket, env.EnvironmentName),
                     optional: true, reloadOnChange:true);
             }
             builder.AddEnvironmentVariables();
