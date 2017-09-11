@@ -14,6 +14,7 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Sdk;
@@ -160,6 +161,17 @@ namespace GoogleCloudSamples.Spanner
                 s_projectId, s_instanceId, s_databaseId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Transaction complete.", output.Stdout);
+        }
+
+        [Fact]
+        void TestReadStaleData()
+        {
+            RefillMarketingBudgetsAsync().Wait();
+            Thread.Sleep(TimeSpan.FromSeconds(11));
+            ConsoleOutput output = _spannerCmd.Run("readStaleData",
+                s_projectId, s_instanceId, s_databaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Go, Go, Go", output.Stdout);
         }
 
         [Fact]
