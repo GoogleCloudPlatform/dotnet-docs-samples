@@ -196,6 +196,17 @@ namespace GoogleCloudSamples.Spanner
         public string platform { get; set; } = "net45";
     }
 
+    [Verb("readStaleData", HelpText = "Read data that is ten seconds old.")]
+    class ReadStaleDataOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
     public class Program
     {
         static readonly ILog s_logger = LogManager.GetLogger(typeof(Program));
@@ -494,6 +505,56 @@ namespace GoogleCloudSamples.Spanner
             // for transactions.
             // Link to issue: https://github.com/grpc/grpc/issues/11824
         }
+
+        public static async Task<object> ReadStaleDataAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            Console.WriteLine(".NetCore API sample.");
+
+            // [START read_stale_data]
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                // Open a new read only transaction.
+                var staleness = TimestampBound.OfExactStaleness(
+                    TimeSpan.FromSeconds(10));
+                using (var transaction =
+                    await connection.BeginReadOnlyTransactionAsync(staleness))
+                {
+                    var cmd = connection.CreateSelectCommand(
+                        "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
+                    cmd.Transaction = transaction;
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Console.WriteLine("SingerId : "
+                                + reader.GetFieldValue<string>("SingerId")
+                                + " AlbumId : "
+                                + reader.GetFieldValue<string>("AlbumId")
+                                + " AlbumTitle : "
+                                + reader.GetFieldValue<string>("AlbumTitle"));
+                        }
+                    }
+                }
+            }
+            // Yield Task thread back to the current context.
+            await Task.Yield();
+            // [END read_stale_data]
+            // TODO - Remove the above Task.Yield() statement. 
+            // A pending client library update will not require this
+            // for transactions.
+            // Link to issue: https://github.com/grpc/grpc/issues/11824
+            return 0;
+        }
+
 
         public static async Task QueryDataWithTransactionAsync(
             string projectId, string instanceId, string databaseId)
@@ -1174,7 +1235,8 @@ namespace GoogleCloudSamples.Spanner
                 AddIndexOptions,
                 QueryDataWithIndexOptions,
                 AddStoringIndexOptions,
-                QueryDataWithStoringIndexOptions
+                QueryDataWithStoringIndexOptions,
+                ReadStaleDataOptions
                 >(args)
               .MapResult(
                 (CreateSampleDatabaseOptions opts) =>
@@ -1211,6 +1273,9 @@ namespace GoogleCloudSamples.Spanner
                     QueryDataWithStoringIndex(
                         opts.projectId, opts.instanceId, opts.databaseId,
                         opts.startTitle, opts.endTitle),
+                (ReadStaleDataOptions opts) =>
+                    ReadStaleDataAsync(opts.projectId, opts.instanceId,
+                        opts.databaseId).Result,
                 errs => 1);
         }
     }
