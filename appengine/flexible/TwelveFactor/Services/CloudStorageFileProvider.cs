@@ -22,7 +22,6 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Google.Apis.Auth.OAuth2;
 using Google.Api.Gax;
-using Google.Apis.CloudRuntimeConfig.v1beta1;
 using Google.Apis.Services;
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.FileProviders;
