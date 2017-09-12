@@ -1,4 +1,19 @@
-﻿using Google.Cloud.Diagnostics.AspNetCore;
+﻿﻿/*
+ * Copyright (c) 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+using Google.Cloud.Diagnostics.AspNetCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,19 +23,53 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TwelveFactor.Services;
 
 namespace TwelveFactor
 {
     public class Startup
     {
+        // Polling a file on Cloud Storage at the rate of
+        // once every 2 minutes will cost approximately $0.01 per month.
+        // See https://cloud.google.com/storage/pricing#network-pricing
+        CloudStorageFileProvider _cloudStorage = new CloudStorageFileProvider(
+            TimeSpan.FromMinutes(2));
         public Startup(IHostingEnvironment env)
+        {
+            // Have to build the configuration twice.
+            // 1. To discover the project id.
+            Configuration = BuildConfiguration(env, null);
+            // 2. To load from the project's Google Cloud Storage bucket.
+            string cloudStorageBucket = GetProjectId() + ".appspot.com";
+            Configuration = BuildConfiguration(env, cloudStorageBucket);
+        }
+
+        /// <summary> Builds a configuration. </summary>
+        /// <param name="cloudStorageBucket">
+        /// If null, no appsettings.json are loaded from Google Cloud Storage.
+        /// </param>
+        IConfigurationRoot BuildConfiguration(IHostingEnvironment env, 
+            string cloudStorageBucket)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+                .AddJsonFile("appsettings.json", optional: true,
+                     reloadOnChange: true);
+            if (null != cloudStorageBucket) {
+                builder.AddJsonFile(_cloudStorage, string.Format(
+                    "{0}/aspnet-configs/appsettings.json", cloudStorageBucket),
+                    optional: true, reloadOnChange:true);
+            }
+            builder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", 
+                optional: true);
+            if (null != cloudStorageBucket) {
+                builder.AddJsonFile(_cloudStorage, string.Format(
+                    "{0}/aspnet-configs/appsettings.{1}.json",
+                    cloudStorageBucket, env.EnvironmentName),
+                    optional: true, reloadOnChange:true);
+            }
+            builder.AddEnvironmentVariables();
+            return builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -47,6 +96,8 @@ namespace TwelveFactor
             loggerFactory.AddDebug();
             // Send logs to Stackdriver Logging.
             loggerFactory.AddGoogle(projectId);
+            
+            _cloudStorage.Logger = loggerFactory.CreateLogger<CloudStorageFileProvider>();
 
             if (env.IsDevelopment())
             {
