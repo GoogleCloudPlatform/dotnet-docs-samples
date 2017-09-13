@@ -26,13 +26,15 @@ type HomeController () =
         this.View()
 
     member this.Naughty () =
-        this.View(new List<Tuple<IFormFile, AnnotateImageResponse>>())
+        this.View()
 
     [<HttpPost>]
     member this.Naughty (files:List<IFormFile>) =
-        let vision = ImageAnnotatorClient.Create()        
-        let requests = seq { for file in files do yield AnnotateImageRequest(Image = Image.FromStream(file.OpenReadStream())) }
-        let response = vision.BatchAnnotateImages(requests)
-        let rr = Seq.zip files response.Responses
-        this.View(rr)
+        if null = files || 0 = files.Count then
+            this.View()
+        else
+            let file = files.[0]
+            let vision = ImageAnnotatorClient.Create()
+            let response = vision.DetectSafeSearch(Image.FromStream(file.OpenReadStream()))
+            this.View((file, response))
 

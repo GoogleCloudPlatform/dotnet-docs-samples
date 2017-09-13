@@ -1,16 +1,16 @@
-﻿@model IEnumerable<Tuple<IFormFile, AnnotateImageResponse>>
+﻿@model Tuple<IFormFile, SafeSearchAnnotation>
 @{
     ViewData["Title"] = "Naughty Image Checker";
 }
 <h2>@ViewData["Title"].</h2>
 <h3>@ViewData["Message"]</h3>
 
-@if (0 == Model.Count()) {
+@if (null == Model) {
     <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Naughty">
         <div class="form-group">
             <div class="col-md-10">
-                <p>Upload one or more files using this form.  I'll report if they're naughty.</p>
-                <input type="file" name="files" multiple />
+                <p>Upload a file using this form.  I'll report if they're naughty.</p>
+                <input type="file" name="files"/>
             </div>
         </div>
         <div class="form-group">
@@ -22,9 +22,7 @@
     </form>
 } else {
     <ul>
-    @foreach (var fileResponse in Model) {
-        <li>@fileResponse.Item1.FileName</li>
-    }
+        <li>@Model.Item1.FileName</li>
     </ul>
 }
 
