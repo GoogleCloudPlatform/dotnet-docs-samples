@@ -8,8 +8,8 @@
     <Compile Include="Controllers/*.fs" />
     <Compile Include="Startup.fs" />
     <Compile Include="Program.fs" />
-
     <None Remove="**/*.fs" />
+    <Content Include="app.yaml" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
