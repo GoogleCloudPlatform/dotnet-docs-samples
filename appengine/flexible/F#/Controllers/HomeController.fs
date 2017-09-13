@@ -26,7 +26,7 @@ type HomeController () =
         this.View()
 
     member this.Naughty () =
-        this.View(new List<IFormFile>())
+        this.View(new List<Tuple<IFormFile, AnnotateImageResponse>>())
 
     [<HttpPost>]
     member this.Naughty (files:List<IFormFile>) =
@@ -34,6 +34,6 @@ type HomeController () =
         let requests = seq { for file in files 
             do new AnnotateImageRequest(Image = Image.FromStream(file.OpenReadStream())) }
         let response = vision.BatchAnnotateImages(requests)
-        // List.zip(requests, response.responses)
-        this.View(files)
+        let rr = Seq.zip files response.Responses
+        this.View(rr)
 

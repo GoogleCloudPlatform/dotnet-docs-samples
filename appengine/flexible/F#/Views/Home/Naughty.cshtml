@@ -1,4 +1,4 @@
-﻿@model List<IFormFile>
+﻿@model IEnumerable<Tuple<IFormFile, AnnotateImageResponse>>
 @{
     ViewData["Title"] = "Naughty Image Checker";
 }
@@ -22,8 +22,8 @@
     </form>
 } else {
     <ul>
-    @foreach (IFormFile file in Model) {
-        <li>@file.FileName</li>
+    @foreach (var fileResponse in Model) {
+        <li>@fileResponse.Item1.FileName</li>
     }
     </ul>
 }
