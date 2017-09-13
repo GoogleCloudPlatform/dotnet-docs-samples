@@ -5,6 +5,7 @@ open System.Collections.Generic
 open System.Linq
 open System.Threading.Tasks
 open Microsoft.AspNetCore.Mvc
+open Microsoft.AspNetCore.Http
 
 type HomeController () =
     inherit Controller()
@@ -23,5 +24,9 @@ type HomeController () =
     member this.Error () =
         this.View();
 
-    member this.Naughty () = 
-        this.View();
+    member this.Naughty () =
+        this.View(new List<IFormFile>());
+
+    [<HttpPost>]
+    member this.Naughty (files:List<IFormFile>) =
+        this.View(files);
