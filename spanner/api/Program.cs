@@ -611,12 +611,12 @@ namespace GoogleCloudSamples.Spanner
                 // Yield Task thread back to the current context.
                 await Task.Yield();
                 Console.WriteLine("Transaction complete.");
-                // [END read_only_transaction]
-                // TODO - Remove the above Task.Yield() statement. 
-                // A pending client library update will not require this
-                // for transactions.
-                // Link to issue: https://github.com/grpc/grpc/issues/11824
             }
+            // [END read_only_transaction]
+            // TODO - Remove the above Task.Yield() statement. 
+            // A pending client library update will not require this
+            // for transactions.
+            // Link to issue: https://github.com/grpc/grpc/issues/11824
         }
 
         public static async Task WriteDataToNewColumnAsync(
