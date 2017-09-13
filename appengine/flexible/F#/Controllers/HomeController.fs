@@ -22,3 +22,6 @@ type HomeController () =
 
     member this.Error () =
         this.View();
+
+    member this.Naughty () = 
+        this.View();

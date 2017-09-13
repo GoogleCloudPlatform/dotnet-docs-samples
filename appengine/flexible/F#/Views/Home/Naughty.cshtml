@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Naughty Image Checker";
+}
+<h2>@ViewData["Title"].</h2>
+<h3>@ViewData["Message"]</h3>
+
+<form method="post" enctype="multipart/form-data" asp-controller="UploadFiles" asp-action="Naughty">
+    <div class="form-group">
+        <div class="col-md-10">
+            <p>Upload one or more files using this form.  I'll report if they're naughty.</p>
+            <input type="file" name="files" multiple />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+            <p>
+                <input type="submit" value="Upload" />
+            </p>
+        </div>
+    </div>
+</form>
