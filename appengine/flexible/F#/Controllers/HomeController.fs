@@ -31,8 +31,7 @@ type HomeController () =
     [<HttpPost>]
     member this.Naughty (files:List<IFormFile>) =
         let vision = ImageAnnotatorClient.Create()        
-        let requests = seq { for file in files 
-            do new AnnotateImageRequest(Image = Image.FromStream(file.OpenReadStream())) }
+        let requests = seq { for file in files do yield AnnotateImageRequest(Image = Image.FromStream(file.OpenReadStream())) }
         let response = vision.BatchAnnotateImages(requests)
         let rr = Seq.zip files response.Responses
         this.View(rr)
