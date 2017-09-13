@@ -6,6 +6,7 @@ open System.Linq
 open System.Threading.Tasks
 open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Http
+open Google.Cloud.Vision.V1
 
 type HomeController () =
     inherit Controller()
@@ -22,11 +23,17 @@ type HomeController () =
         this.View()
 
     member this.Error () =
-        this.View();
+        this.View()
 
     member this.Naughty () =
-        this.View(new List<IFormFile>());
+        this.View(new List<IFormFile>())
 
     [<HttpPost>]
     member this.Naughty (files:List<IFormFile>) =
-        this.View(files);
+        let vision = ImageAnnotatorClient.Create()        
+        let requests = seq { for file in files 
+            do new AnnotateImageRequest(Image = Image.FromStream(file.OpenReadStream())) }
+        let response = vision.BatchAnnotateImages(requests)
+        // List.zip(requests, response.responses)
+        this.View(files)
+
