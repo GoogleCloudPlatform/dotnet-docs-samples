@@ -139,41 +139,54 @@ namespace TwelveFactor.Services {
             var path = SplitObjectPath(filter);
             var token = new CloudStorageChangeToken();
             var obj = GetObject(path);
-            long? generation = obj?.Generation;
-            Task.Run(async () => {
-                while (true) {
-                    await Task.Delay(_pollingInterval.Value);
-                    try
-                    {
-                        obj = GetObject(path);
-                        if (generation != obj?.Generation) {
-                            token.HasChanged = true;
-                            return;
-                        }
-                    } 
-                    catch (Exception e) 
-                    {
-                        _logger.LogError(0, e, "Exception while watching {0}",
-                            filter);
-                    }
-                }
-            });
+            Task.Run(() => PollAsync(path, token, obj?.Generation));
             return token;            
-        }            
+        }
+
+        async Task PollAsync(ObjectPath path, CloudStorageChangeToken token,
+            long? generation) 
+        {
+            while (true) {
+                await Task.Delay(_pollingInterval.Value);
+                try
+                {
+                    var obj = GetObject(path);
+                    if (generation != obj?.Generation) {
+                        token.NotifyChanged();
+                        return;
+                    }
+                } 
+                catch (Exception e) 
+                {
+                    _logger.LogError(0, e, "Exception while watching {0}/{1}",
+                        path.BucketName, path.ObjectName);
+                }
+            }
+        }
     }
 
     class CloudStorageChangeToken : IChangeToken
-    {
+    {        
         List<ChangeCallback> _callbacks = new List<ChangeCallback>();
         bool _hasChanged = false;
+        object _lock = new object();  // Protects _callbacks and _hasChanged.
 
         public bool HasChanged { 
-            get { return _hasChanged; }
-            set {
-                _hasChanged = true;
-                foreach (var callback in _callbacks) {
-                    callback.Invoke();
+            get { lock (_lock) return _hasChanged; }
+        }
+
+        public void NotifyChanged() {
+            List<ChangeCallback> callbacksToInvoke;
+            lock (_lock) {
+                if (_hasChanged) {
+                    return;
                 }
+                _hasChanged = true;
+                callbacksToInvoke = _callbacks;
+                _callbacks = null;
+            }
+            foreach (var callback in callbacksToInvoke) {
+                callback.Invoke();
             }
         }
 
@@ -186,7 +199,13 @@ namespace TwelveFactor.Services {
                 Callback = callback,
                 State = state
             };
-            _callbacks.Add(disposable);
+            lock(_lock) {
+                if (_hasChanged) {
+                    Task.Run(() => disposable.Invoke());
+                } else {
+                    _callbacks.Add(disposable);
+                }
+            }
             return disposable;
         }
 
@@ -195,20 +214,16 @@ namespace TwelveFactor.Services {
             public object State {get; set;}
 
             private object _lock = new object();
-            private bool _done = false;
             public void Dispose()
             {
-                lock(_lock) {
-                    if (!_done) {
-                        _done = true;
-                    }
+                lock (_lock) {
+                    Callback = null;
                 }
             }
 
             public void Invoke() {
-                lock(_lock) {
-                    if (!_done) {
-                        _done = true;
+                lock (_lock) {
+                    if (Callback != null) {
                         Callback(State);
                     }
                 }                
