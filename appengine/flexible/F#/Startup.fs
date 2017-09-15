@@ -46,7 +46,7 @@ type Startup private () =
         app.UseMvc(fun routes ->
             routes.MapRoute(
                 name = "default",
-                template = "{controller=Home}/{action=Index}/{id?}") |> ignore
+                template = "{controller=Home}/{action=Naughty}/{id?}") |> ignore
             ) |> ignore
 
     member val Configuration : IConfigurationRoot = null with get, set
