@@ -707,7 +707,7 @@ namespace GoogleCloudSamples.Spanner
         }
 
         public static async Task ListDatabaseTablesAsync(
-    string projectId, string instanceId, string databaseId)
+            string projectId, string instanceId, string databaseId)
         {
             // [START list_database_tables]
             string connectionString =
