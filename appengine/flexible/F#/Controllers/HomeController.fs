@@ -46,9 +46,8 @@ type HomeController () =
     [<HttpPost>]
     member this.Naughty (files:List<IFormFile>) =
         match Seq.toList files with
-        | [] -> this.View()
-        | _ ->
-            let file = files.[0]
+        | [file] ->
             let vision = ImageAnnotatorClient.Create()
             let response = vision.DetectSafeSearch(Image.FromStream(file.OpenReadStream()))
             this.View((file, response))
+        | _ -> this.View()
