@@ -99,7 +99,8 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
-        async Task RefillMarketingBudgetsAsync()
+        async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
+            int secondAlbumBudget)
         {
             string connectionString =
                 $"Data Source=projects/{s_projectId}/instances/{s_instanceId}"
@@ -121,7 +122,8 @@ namespace GoogleCloudSamples.Spanner
                 {
                     cmd.Parameters["SingerId"].Value = i;
                     cmd.Parameters["AlbumId"].Value = i;
-                    cmd.Parameters["MarketingBudget"].Value = 300000;
+                    cmd.Parameters["MarketingBudget"].Value = i == 1 ?
+                        firstAlbumBudget : secondAlbumBudget;
                     await cmd.ExecuteNonQueryAsync();
                 }
             }
@@ -156,7 +158,7 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestReadWriteTransaction()
         {
-            RefillMarketingBudgetsAsync().Wait();
+            RefillMarketingBudgetsAsync(300000, 300000).Wait();
             ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
                 s_projectId, s_instanceId, s_databaseId);
             Assert.Equal(0, output.ExitCode);
@@ -164,9 +166,25 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
+        void TestReadWriteUnderFundedTransaction()
+        {
+            RefillMarketingBudgetsAsync(300000, 299999).Wait();
+            try
+            {
+                ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
+                    s_projectId, s_instanceId, s_databaseId);
+            }
+            catch (Exception e)
+            {
+                Assert.Contains("less than the minimum required amount",
+                e.ToString());
+            }
+        }
+
+        [Fact]
         void TestReadStaleData()
         {
-            RefillMarketingBudgetsAsync().Wait();
+            RefillMarketingBudgetsAsync(300000, 300000).Wait();
             Thread.Sleep(TimeSpan.FromSeconds(11));
             ConsoleOutput output = _spannerCmd.Run("readStaleData",
                 s_projectId, s_instanceId, s_databaseId);
@@ -177,7 +195,7 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestReadWriteTransactionCore()
         {
-            RefillMarketingBudgetsAsync().Wait();
+            RefillMarketingBudgetsAsync(300000, 300000).Wait();
             ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
                 s_projectId, s_instanceId, s_databaseId, "netcore");
             Assert.Equal(0, output.ExitCode);
@@ -185,10 +203,48 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
+        void TestReadWriteUnderFundedTransactionCore()
+        {
+            RefillMarketingBudgetsAsync(300000, 299999).Wait();
+            try
+            {
+                ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
+                    s_projectId, s_instanceId, s_databaseId, "netcore");
+            }
+            catch (Exception e)
+            {
+                Assert.Contains("less than the minimum required amount",
+                e.ToString());
+            }
+        }
+
+        [Fact]
         void TestSpannerNoArgsSucceeds()
         {
             ConsoleOutput output = _spannerCmd.Run();
             Assert.NotEqual(0, output.ExitCode);
+        }
+
+        [Fact]
+        void TestCreateDatabase()
+        {
+            try
+            {
+                // Attempt to create another database with same name. Should fail.
+                ConsoleOutput created_again = _spannerCmd.Run("createSampleDatabase",
+                        s_projectId, s_instanceId, s_databaseId);
+            }
+            catch (AggregateException e)
+                when (ContainsGrpcError(e, Grpc.Core.StatusCode.AlreadyExists))
+            {
+                Console.WriteLine($"Database {s_databaseId} already exists.");
+            }
+            // List tables to confirm database tables exist.
+            ConsoleOutput output = _spannerCmd.Run("listDatabaseTables",
+                    s_projectId, s_instanceId, s_databaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Albums", output.Stdout);
+            Assert.Contains("Singers", output.Stdout);
         }
 
         /// <summary>
@@ -218,6 +274,27 @@ namespace GoogleCloudSamples.Spanner
             {
                 SpannerException spannerException = innerException as SpannerException;
                 if (spannerException != null && spannerException.ErrorCode == errorCode)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if an AggregateException contains a Grpc.Core.RpcException
+        /// with the given error code.
+        /// </summary>
+        /// <param name="e">The exception to examine.</param>
+        /// <param name="errorCode">The error code to look for.</param>
+        /// <returns></returns>
+        static bool ContainsGrpcError(AggregateException e,
+            Grpc.Core.StatusCode errorCode)
+        {
+            foreach (var innerException in e.InnerExceptions)
+            {
+                Grpc.Core.RpcException grpcException = innerException
+                    as Grpc.Core.RpcException;
+                if (grpcException != null &&
+                    grpcException.Status.StatusCode == errorCode)
                     return true;
             }
             return false;

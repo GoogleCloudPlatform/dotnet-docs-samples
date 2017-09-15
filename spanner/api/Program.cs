@@ -207,6 +207,17 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    [Verb("listDatabaseTables", HelpText = "List all the user-defined tables in the database.")]
+    class ListDatabaseTablesOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
     public class Program
     {
         static readonly ILog s_logger = LogManager.GetLogger(typeof(Program));
@@ -695,6 +706,32 @@ namespace GoogleCloudSamples.Spanner
             // [END query_data_with_new_column]
         }
 
+        public static async Task ListDatabaseTablesAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START list_database_tables]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd =
+                    connection.CreateSelectCommand(
+                    "SELECT t.table_name FROM information_schema.tables AS t "
+                    + "WHERE t.table_catalog = '' and t.table_schema = ''");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("table_name"));
+                    }
+                }
+            }
+            // [END list_database_tables]
+        }
+
         // [START topaz_strategy]
         internal class CustomTransientErrorDetectionStrategy
             : ITransientErrorDetectionStrategy
@@ -1161,6 +1198,17 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
+        public static object ListDatabaseTables(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = ListDatabaseTablesAsync(projectId,
+                    instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
         public static object QueryDataWithTransaction(
             string projectId, string instanceId,
             string databaseId, string platform)
@@ -1220,7 +1268,6 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-
         public static int Main(string[] args)
         {
             return (int)Parser.Default.ParseArguments<
@@ -1236,7 +1283,7 @@ namespace GoogleCloudSamples.Spanner
                 QueryDataWithIndexOptions,
                 AddStoringIndexOptions,
                 QueryDataWithStoringIndexOptions,
-                ReadStaleDataOptions
+                ReadStaleDataOptions, ListDatabaseTablesOptions
                 >(args)
               .MapResult(
                 (CreateSampleDatabaseOptions opts) =>
@@ -1276,6 +1323,9 @@ namespace GoogleCloudSamples.Spanner
                 (ReadStaleDataOptions opts) =>
                     ReadStaleDataAsync(opts.projectId, opts.instanceId,
                         opts.databaseId).Result,
+                (ListDatabaseTablesOptions opts) =>
+                    ListDatabaseTables(opts.projectId, opts.instanceId,
+                        opts.databaseId),
                 errs => 1);
         }
     }
