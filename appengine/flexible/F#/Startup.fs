@@ -1,4 +1,4 @@
-﻿namespace F_
+﻿namespace FSharp
 
 open System
 open System.Collections.Generic
