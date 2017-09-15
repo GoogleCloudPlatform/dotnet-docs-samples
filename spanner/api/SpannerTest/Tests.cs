@@ -99,7 +99,7 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
-        async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, 
+        async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
             int secondAlbumBudget)
         {
             string connectionString =
@@ -122,14 +122,8 @@ namespace GoogleCloudSamples.Spanner
                 {
                     cmd.Parameters["SingerId"].Value = i;
                     cmd.Parameters["AlbumId"].Value = i;
-                    if (i == 1)
-                    {
-                        cmd.Parameters["MarketingBudget"].Value = firstAlbumBudget;
-                    }
-                    else if (i == 2)
-                    {
-                        cmd.Parameters["MarketingBudget"].Value = secondAlbumBudget;
-                    }
+                    cmd.Parameters["MarketingBudget"].Value = i == 1 ?
+                        firstAlbumBudget : secondAlbumBudget;
                     await cmd.ExecuteNonQueryAsync();
                 }
             }
@@ -235,12 +229,12 @@ namespace GoogleCloudSamples.Spanner
         void TestCreateDatabase()
         {
             try
-            { 
+            {
                 // Attempt to create another database with same name. Should fail.
                 ConsoleOutput created_again = _spannerCmd.Run("createSampleDatabase",
                         s_projectId, s_instanceId, s_databaseId);
             }
-            catch (AggregateException e) 
+            catch (AggregateException e)
                 when (ContainsGrpcError(e, Grpc.Core.StatusCode.AlreadyExists))
             {
                 Console.WriteLine($"Database {s_databaseId} already exists.");
@@ -292,12 +286,15 @@ namespace GoogleCloudSamples.Spanner
         /// <param name="e">The exception to examine.</param>
         /// <param name="errorCode">The error code to look for.</param>
         /// <returns></returns>
-        static bool ContainsGrpcError(AggregateException e, Grpc.Core.StatusCode errorCode)
+        static bool ContainsGrpcError(AggregateException e,
+            Grpc.Core.StatusCode errorCode)
         {
             foreach (var innerException in e.InnerExceptions)
             {
-                Grpc.Core.RpcException grpcException = innerException as Grpc.Core.RpcException;
-                if (grpcException != null && Grpc.Core.StatusCode.AlreadyExists == errorCode)
+                Grpc.Core.RpcException grpcException = innerException
+                    as Grpc.Core.RpcException;
+                if (grpcException != null &&
+                    grpcException.Status.StatusCode == errorCode)
                     return true;
             }
             return false;

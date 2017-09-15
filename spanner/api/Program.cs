@@ -206,7 +206,7 @@ namespace GoogleCloudSamples.Spanner
         [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
         public string databaseId { get; set; }
     }
-    
+
     [Verb("listDatabaseTables", HelpText = "List all the user-defined tables in the database.")]
     class ListDatabaseTablesOptions
     {
