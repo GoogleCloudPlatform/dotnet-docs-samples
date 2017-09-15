@@ -243,7 +243,6 @@ namespace GoogleCloudSamples.Spanner
             catch (AggregateException e) 
                 when (ContainsGrpcError(e, Grpc.Core.StatusCode.AlreadyExists))
             {
-                //Assert.Contains("StatusCode=AlreadyExists", e.ToString());
                 Console.WriteLine($"Database {s_databaseId} already exists.");
             }
             // List tables to confirm database tables exist.
