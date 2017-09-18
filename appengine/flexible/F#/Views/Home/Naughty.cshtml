@@ -33,17 +33,17 @@
         <div class="form-group">
             <div class="col-md-10">
                 <p></p>
-                <input type="submit" value="Upload" />
+                <input type="submit" value="Upload" id="submit"/>
             </div>
         </div>
     </form>
 } else {
     <ul>
         <li>@Model.Item1.FileName</li>
-        <li>Adult: @Model.Item2.Adult</li>
-        <li>Medical: @Model.Item2.Medical</li>
-        <li>Spoof: @Model.Item2.Spoof</li>
-        <li>Violence: @Model.Item2.Violence</li>
+        <li id=adult>Adult: @Model.Item2.Adult</li>
+        <li id=medical>Medical: @Model.Item2.Medical</li>
+        <li id=spoof>Spoof: @Model.Item2.Spoof</li>
+        <li id=violence>Violence: @Model.Item2.Violence</li>
     </ul>
 }
 
