@@ -21,6 +21,7 @@ to check whether an image contains naughty content.
 ### ![PowerShell](../.resources/powershell.png)Using PowerShell
 
 ```psm1
+PS > bower install
 PS > dotnet restore
 PS > dotnet run
 ```
@@ -31,6 +32,7 @@ PS > dotnet run
 
 
 ```psm1
+PS > bower install
 PS > dotnet restore
 PS > dotnet publish
 PS > gcloud beta app deploy .\bin\Debug\netcoreapp1.1\publish\app.yaml
