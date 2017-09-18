@@ -1,4 +1,4 @@
-# Metadata sample for Google App Engine Flexible Environment
+# F# sample for Google App Engine Flexible Environment
 
 This sample application demonstrates a simple F# MVC application
 running in Google App Engine Flexible Environment.
