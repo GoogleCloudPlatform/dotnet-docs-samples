@@ -34,7 +34,7 @@ from C#. The sample authenticates and then makes an API request to the Cloud Sto
 
     ```sh
     C:\...\bin\Debug> set GOOGLE_PROJECT_ID=your project id displayed on the Google Developers Console.
-    C:\...\bin\Debug> AuthSample <the name of the Google Cloud Storage bucket you created>
+    C:\...\bin\Debug> AuthSample
     ```
 
 ## Contributing changes
