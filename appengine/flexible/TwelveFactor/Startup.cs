@@ -77,13 +77,18 @@ namespace TwelveFactor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var projectId = GetProjectId();
+            string projectId = GetProjectId();
             // Add framework services.Microsoft.VisualStudio.ExtensionManager.ExtensionManagerService
             services.AddMvc();
             // Enables Stackdriver Trace.
-            services.AddGoogleTrace(projectId);
+            services.AddGoogleTrace((TraceServiceOptions options) => 
+                options.ProjectId = projectId);
             // Sends Exceptions to Stackdriver Error Reporting.
-            services.AddGoogleExceptionLogging(projectId, GetServiceName(), GetVersion());
+            services.AddGoogleExceptionLogging((ErrorReportingServiceOptions options) => {
+                options.ProjectId = projectId;
+                options.ServiceName = GetServiceName();
+                options.Version = GetVersion();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
