@@ -24,6 +24,8 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Data.Common;
+using System.Data;
 
 namespace CloudSql
 {
@@ -56,16 +58,23 @@ namespace CloudSql
             {
                 app.UseDeveloperExceptionPage();
             }
-            MySqlConnection connection;
+            DbConnection connection;
             try
             {
-                string connectionString = Configuration["CloudSqlConnectionString"];
+                string connectionString =
+                    Configuration["CloudSqlConnectionString"];
                 // [START connection]
                 connection = new MySqlConnection(connectionString);
                 connection.Open();
-                var createTableCommand = new MySqlCommand(@"CREATE TABLE IF NOT EXISTS visits
-                (time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, user_ip CHAR(64))", connection);
-                createTableCommand.ExecuteNonQuery();
+                using (var createTableCommand = connection.CreateCommand()) {
+                    createTableCommand.CommandText = @"
+                        CREATE TABLE IF NOT EXISTS 
+                        visits (
+                            time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+                            user_ip CHAR(64)
+                        )";
+                    createTableCommand.ExecuteNonQuery();
+                }               
                 // [END connection]
             }
             catch (Exception e)
@@ -87,20 +96,24 @@ namespace CloudSql
             {
                 // [START example]
                 // Insert a visit into the database:
-                using (var insertVisitCommand = new MySqlCommand(
-                        @"INSERT INTO visits (user_ip) values (@user_ip)",
-                        connection))
+                using (var insertVisitCommand = connection.CreateCommand())
                 {
-                    insertVisitCommand.Parameters.AddWithValue("@user_ip",
-                        FormatAddress(context.Connection.RemoteIpAddress));
+                    insertVisitCommand.CommandText =
+                        @"INSERT INTO visits (user_ip) values (@user_ip)";
+                    var ip = insertVisitCommand.CreateParameter();
+                    ip.DbType = DbType.String;
+                    ip.Value =
+                        FormatAddress(context.Connection.RemoteIpAddress);
+                    insertVisitCommand.Parameters["@user_ip"] = ip;
                     await insertVisitCommand.ExecuteNonQueryAsync();
                 }
 
                 // Look up the last 10 visits.
-                using (var lookupCommand = new MySqlCommand(
-                    @"SELECT * FROM visits ORDER BY time_stamp DESC LIMIT 10",
-                    connection))
+                using (var lookupCommand = connection.CreateCommand())
                 {
+                    lookupCommand.CommandText = @"
+                        SELECT * FROM visits
+                        ORDER BY time_stamp DESC LIMIT 10";
                     List<string> lines = new List<string>();
                     var reader = await lookupCommand.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
