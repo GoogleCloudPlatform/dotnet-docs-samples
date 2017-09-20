@@ -42,43 +42,69 @@ namespace CloudSql
         }
 
         public IConfigurationRoot Configuration { get; }
+        IServiceCollection _services;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(typeof(DbConnection), (IServiceProvider) => {
+                // [START connection]
+                DbConnection connection = new MySqlConnection(
+                    Configuration["CloudSqlConnectionString"]);
+                connection.Open();
+                // [END connection]
+                CreateTable(connection);
+                return connection;
+            });
+            _services = services;
         }
+
+        static void CreateTable(DbConnection connection) {
+            using (var createTableCommand = connection.CreateCommand()) {
+                createTableCommand.CommandText = @"
+                    CREATE TABLE IF NOT EXISTS 
+                    visits (
+                        time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+                        user_ip CHAR(64)
+                    )";
+                createTableCommand.ExecuteNonQuery();
+            }                           
+        }
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole();
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            DbConnection connection;
-            try
+            else
             {
-                string connectionString =
-                    Configuration["CloudSqlConnectionString"];
-                // [START connection]
-                connection = new MySqlConnection(connectionString);
-                connection.Open();
-                using (var createTableCommand = connection.CreateCommand()) {
-                    createTableCommand.CommandText = @"
-                        CREATE TABLE IF NOT EXISTS 
-                        visits (
-                            time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-                            user_ip CHAR(64)
-                        )";
-                    createTableCommand.ExecuteNonQuery();
-                }               
-                // [END connection]
+                app.UseExceptionHandler("/Home/Error");
             }
-            catch (Exception e)
+
+            app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
+
+        public void OldConfigure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        {
+            loggerFactory.AddConsole();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            DbConnection connection;
+
                 app.Run(async (context) =>
                 {
                     await context.Response.WriteAsync(string.Format(@"<html>
@@ -90,7 +116,7 @@ namespace CloudSql
                         </html>", WebUtility.HtmlEncode(e.Message)));
                 });
                 return;
-            }
+        
 
             app.Run(async (HttpContext context) =>
             {
