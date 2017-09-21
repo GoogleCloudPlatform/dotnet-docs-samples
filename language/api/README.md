@@ -22,62 +22,70 @@ for sentiment, entity, and syntax analysis.
 8.  Run.
 
     The script will write to STDOUT the json returned from the API for the requested feature.
-    
+
     For example, if you run:
-    
+
     ```
     c:\> Analyze everything Santa Claus Conquers the Martians is a terrible movie. It's so bad, it's good.
     ```
-    
+
     You will see something like the following returned:
-    
+
     ```
+    Language: en
     Overall document sentiment:
-            Score: -0.4
-            Magnitude: 0.9
+            Score: -0.5
+            Magnitude: 1
     Sentence level sentiment:
-            Santa Claus Conquers the Martians is a terrible movie.: (-0.7)
+            Santa Claus Conquers the Martians is a terrible movie.: (-0.8)
             Its so bad, its good.: (-0.1)
     Sentences:
             0: Santa Claus Conquers the Martians is a terrible movie.
             55: Its so bad, its good.
     Tokens:
-    Noun Santa
-    Noun Claus
-    Verb Conquers
-    Det the
-    Noun Martians
-    Verb is
-    Det a
-    Adj terrible
-    Noun movie
-    Punct .
-    Pron Its
-    Adv so
-    Adj bad
-    Punct ,
-    Pron its
-    Noun good
-    Punct .
+            Noun Santa
+            Noun Claus
+            Verb Conquers
+            Det the
+            Noun Martians
+            Verb is
+            Det a
+            Adj terrible
+            Noun movie
+            Punct .
+            Pron Its
+            Adv so
+            Adj bad
+            Punct ,
+            Pron its
+            Noun good
+            Punct .
     Entities:
             Name: Santa Claus Conquers the Martians
             Type: WorkOfArt
-            Salience: 0.9728492
+            Salience: 0.9731968
             Mentions:
                     0: Santa Claus Conquers the Martians
                     48: movie
             Metadata:
                     mid: /m/0122r8
-                    wikipedia_url: http://en.wikipedia.org/wiki/Santa_Claus_Conquers_the_Martians
+                    wikipedia_url: https://en.wikipedia.org/wiki/Santa_Claus_Conquers_the_Martians
             Name: good
             Type: Other
-            Salience: 0.02715084
+            Salience: 0.02680321
             Mentions:
                     71: good
             Metadata:
+    Entity Sentiment:
+            Santa Claus Conquers the Martians (97%)
+                    Score: -0.6
+                    Magnitude 3.1
+            good (2%)
+                    Score: 0
+                    Magnitude 0
     ```
 
-	
+
 ## Contributing changes
 
 * See [CONTRIBUTING.md](../../CONTRIBUTING.md)
