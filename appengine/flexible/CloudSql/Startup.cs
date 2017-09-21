@@ -91,8 +91,17 @@ namespace CloudSql
 
         DbConnection NewMysqlConnection() {
             // [START connection]
-            DbConnection connection = new MySqlConnection(
-                Configuration["CloudSql:MySQL:ConnectionString"]);
+            var connectionString = new MySqlConnectionStringBuilder(
+                Configuration["CloudSql:MySQL:ConnectionString"])
+            {
+                SslMode = MySqlSslMode.Required,
+                CertificateFile = 
+                    Configuration["CloudSql:MySQL:CertificateFile"]
+            };
+            if (string.IsNullOrEmpty(connectionString.Database))
+                connectionString.Database = "visitors";
+            DbConnection connection = 
+                new MySqlConnection(connectionString.ConnectionString);
             // [END connection]
             return connection;
 
@@ -105,8 +114,10 @@ namespace CloudSql
             {
                 SslMode = SslMode.Require,
                 TrustServerCertificate = true,
-                UseSslStream = true
+                UseSslStream = true,
             };
+            if (string.IsNullOrEmpty(connectionString.Database))
+                connectionString.Database = "visitors";
             NpgsqlConnection connection = 
                 new NpgsqlConnection(connectionString.ConnectionString);
             connection.ProvideClientCertificatesCallback +=

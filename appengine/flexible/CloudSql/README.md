@@ -72,13 +72,14 @@ when running in Google App Engine Flexible Environment.
     17. At a command prompt, type:
 
         ```bash
-        openssl pkcs12 -export -in client-cert.pem -inkey client-key.pem -certfile server-ca.pem -out client.pfx
+        openssl pkcs12 -export -in client-cert.pem -inkey client-key.pem \
+            -certfile server-ca.pem -out client.pfx
         ```
 
         If you don't have a machine with openssl installed, use
         [Google Cloud Shell](https://cloud.google.com/shell/docs/quickstart).
 
-    18. Replace the `client.pfx` file in this directory with the `client.pfx` you created.
+    18. Move `client.pfx` into this directory.
 
 6.  Edit [appsettings.json](appsettings.json).  Update the connection string
     with your user, password, server ip address, etc.
