@@ -22,11 +22,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Data.Common;
 using System.Data;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CloudSql
 {
@@ -51,22 +53,30 @@ namespace CloudSql
         // http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(DbConnection), (IServiceProvider) => {
-                // [START connection]
-                DbConnection connection = new MySqlConnection(
-                    Configuration["CloudSqlConnectionString"]);
-                connection.Open();
-                // [END connection]
-                CreateTable(connection);
-                return connection;
-            });
+            services.AddSingleton(typeof(DbConnection), (IServiceProvider) => 
+                InitializeDatabase());
             services.AddMvc(options => {
                 options.Filters.Add(typeof(DbExceptionFilterAttribute));
             });
             _services = services;
         }
 
-        static void CreateTable(DbConnection connection) {
+        DbConnection InitializeDatabase() {
+            DbConnection connection;
+            string database = Configuration["CloudSQL:Database"];
+            switch (database.ToLower()) {
+                case "mysql":
+                    connection = NewMysqlConnection();
+                    break;
+                case "postgresql":
+                    connection = NewPostgreSqlConnection();
+                    break;
+                default:
+                    throw new ArgumentException(string.Format(
+                        "Invalid database {0}.  Fix appsettings.json.", 
+                            database), "CloudSQL:Database");
+            }
+            connection.Open();
             using (var createTableCommand = connection.CreateCommand()) {
                 createTableCommand.CommandText = @"
                     CREATE TABLE IF NOT EXISTS 
@@ -76,9 +86,35 @@ namespace CloudSql
                     )";
                 createTableCommand.ExecuteNonQuery();
             }                           
+            return connection;
         }
 
+        DbConnection NewMysqlConnection() {
+            // [START connection]
+            DbConnection connection = new MySqlConnection(
+                Configuration["CloudSql:MySQL:ConnectionString"]);
+            // [END connection]
+            return connection;
 
+        }
+
+        DbConnection NewPostgreSqlConnection() {
+            // [START connection]
+            var connectionString = new NpgsqlConnectionStringBuilder(
+                Configuration["CloudSql:PostgreSQL:ConnectionString"])
+            {
+                SslMode = SslMode.Require,
+                TrustServerCertificate = true,
+                UseSslStream = true
+            };
+            NpgsqlConnection connection = 
+                new NpgsqlConnection(connectionString.ConnectionString);
+            connection.ProvideClientCertificatesCallback +=
+                certs => certs.Add(new X509Certificate2(
+                    Configuration["CloudSql:PostgreSQL:CertificateFile"]));
+            // [END connection]
+            return connection;
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
