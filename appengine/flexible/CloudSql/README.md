@@ -25,20 +25,24 @@ when running in Google App Engine Flexible Environment.
 
 5.  Create a new database in your Google Cloud SQL instance.
     
-    1.  Open your [Cloud SQL's Databases](
-        https://pantheon.corp.google.com/sql/instances/napoo/databases) and
-        click **New database**.
+    1.  List your database instances in [Cloud Cloud Console](
+        https://pantheon.corp.google.com/sql/instances/).
+    
+    2.  Click your Instance Id to see Instance details.
+
+    3.  Click DATABASES.
+
+    4.  Click **Create database**.
 
     2.  For **Database name**, enter `visitors`.
 
-    3.  Click **ADD**.
+    3.  Click **CREATE**.
 
 5.  Configure SSL access to the Google Cloud SQL instance.
 
-    1.  Open your [Cloud SQL's SSL settings.](
-        https://console.cloud.google.com/sql/instances/napoo/access-control/ssl)
+    1.  On the Instance details page, click **SSL**.
 
-    2.  Click **Allow only SSL connections.**
+    2.  If you're using a MySQL database, click **Allow only SSL connections.**
 
     3.  Click **Create a client certificate.**
 
@@ -57,7 +61,7 @@ when running in Google App Engine Flexible Environment.
 
     10. Click **Create**.
 
-    11. Click **Authorization**.
+    11. Click **AUTHORIZATION**.
 
     12. Click **+ Add Network**.
 
