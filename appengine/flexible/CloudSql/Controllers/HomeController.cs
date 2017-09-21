@@ -45,11 +45,12 @@ namespace CloudSql.Controllers
             {
                 insertVisitCommand.CommandText =
                     @"INSERT INTO visits (user_ip) values (@user_ip)";
-                var ip = insertVisitCommand.CreateParameter();
-                ip.DbType = DbType.String;
-                ip.Value =
+                var userIp = insertVisitCommand.CreateParameter();
+                userIp.ParameterName = "@user_ip";
+                userIp.DbType = DbType.String;
+                userIp.Value =
                     FormatAddress(HttpContext.Connection.RemoteIpAddress);
-                insertVisitCommand.Parameters["@user_ip"] = ip;
+                insertVisitCommand.Parameters.Add(userIp);
                 await insertVisitCommand.ExecuteNonQueryAsync();
             }
 
@@ -61,11 +62,11 @@ namespace CloudSql.Controllers
                     ORDER BY time_stamp DESC LIMIT 10";
                 List<string> lines = new List<string>();
                 var reader = await lookupCommand.ExecuteReaderAsync();
-                Home model = new Home() { 
-                    AddressLog = new List<AddressLogEntry>()
+                HomeModel model = new HomeModel() { 
+                    VisitorLog = new List<VisitorLogEntry>()
                 };
                 while (await reader.ReadAsync()) {
-                    model.AddressLog.Add(new AddressLogEntry() {
+                    model.VisitorLog.Add(new VisitorLogEntry() {
                         IpAddress = reader.GetString(1),
                         TimeStamp = reader.GetDateTime(0)
                     });

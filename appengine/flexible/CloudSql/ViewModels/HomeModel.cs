@@ -19,13 +19,12 @@ using System.Collections.Generic;
 using System.Data.Common;
 
 namespace CloudSql.ViewModels {
-    class AddressLogEntry {
+    public class VisitorLogEntry {
         public string IpAddress { get; set; }
         public DateTime TimeStamp { get; set; }
     }
 
-    class Home {
-        public DbException Error { get; set; }
-        public List<AddressLogEntry> AddressLog { get; set; }
+    public class HomeModel {
+        public List<VisitorLogEntry> VisitorLog { get; set; }
     }    
 }

@@ -14,20 +14,14 @@
 // limitations under the License.
 //
 }
-@model CloudSql.ViewModels.Home 
-    
-@if (Model.Error == null) {
-    ViewData["Title"] = "Error";
-    <H1>Cloud SQL Sample</H1>
-    <p>Set CloudSqlConnectionString to a valid connection string.</p>
-    <p>See the README.md in the project directory for more information.</p>
-    <p>@Model.Error. 
-} else  {
-    <H1>Cloud SQL Sample</H1>
-    <H2>Visitor Log</H2>
-    @foreach (CloudSql.ViewModels.AddressLogEntry entry in Model.VisitorLog) {
-        
-    }
-        
+@model CloudSql.ViewModels.HomeModel     
 
-}
+<H2>Visitor Log</H2>
+<table>
+    <thead><tr><td>Time Stamp<td>Ip Address</tr></thead>
+    <tbody>
+    @foreach (CloudSql.ViewModels.VisitorLogEntry entry in Model.VisitorLog) {
+        <tr><td>@entry.TimeStamp<td>@entry.IpAddress</tr>
+    }
+    </tbody>
+</table>
