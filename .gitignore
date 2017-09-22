@@ -13,3 +13,4 @@ PublishProfiles/
 *~
 *.xproj.user
 project.lock.json
+.vscode/
