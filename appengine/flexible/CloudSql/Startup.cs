@@ -92,11 +92,11 @@ namespace CloudSql
         DbConnection NewMysqlConnection() {
             // [START mysql_connection]
             var connectionString = new MySqlConnectionStringBuilder(
-                Configuration["CloudSql:MySQL:ConnectionString"])
+                Configuration["CloudSql:ConnectionString"])
             {
                 SslMode = MySqlSslMode.Required,
                 CertificateFile = 
-                    Configuration["CloudSql:MySQL:CertificateFile"]
+                    Configuration["CloudSql:CertificateFile"]
             };
             if (string.IsNullOrEmpty(connectionString.Database))
                 connectionString.Database = "visitors";
@@ -110,7 +110,7 @@ namespace CloudSql
         DbConnection NewPostgreSqlConnection() {
             // [START postgresql_connection]
             var connectionString = new NpgsqlConnectionStringBuilder(
-                Configuration["CloudSql:PostgreSQL:ConnectionString"])
+                Configuration["CloudSql:ConnectionString"])
             {
                 SslMode = SslMode.Require,
                 TrustServerCertificate = true,
@@ -122,7 +122,7 @@ namespace CloudSql
                 new NpgsqlConnection(connectionString.ConnectionString);
             connection.ProvideClientCertificatesCallback +=
                 certs => certs.Add(new X509Certificate2(
-                    Configuration["CloudSql:PostgreSQL:CertificateFile"]));
+                    Configuration["CloudSql:CertificateFile"]));
             // [END postgresql_connection]
             return connection;
         }
