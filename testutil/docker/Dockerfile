@@ -19,6 +19,8 @@ RUN ln -s /usr/local/share/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local
 
 # install python (required by casperjs)
 RUN apt-get install python3 -y
+
+# install casperjs
 RUN curl https://github.com/n1k0/casperjs/tarball/1.0.3 -o casperjs-1.0.3.tar.gz -L
 RUN tar xvf casperjs-1.0.3.tar.gz
-RUN export PATH=$PATH:`readlink -e casperjs-casperjs-76fc831/bin`
+ENV PATH "$PATH:/casperjs-casperjs-76fc831/bin"
