@@ -17,13 +17,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Data.Common;
+using System.Data;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CloudSql
 {
@@ -40,97 +45,110 @@ namespace CloudSql
         }
 
         public IConfigurationRoot Configuration { get; }
+        IServiceCollection _services;
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
+        // This method gets called by the runtime. Use this method to add
+        // services to the container.
+        // For more information on how to configure your application, visit
+        // http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(typeof(DbConnection), (IServiceProvider) => 
+                InitializeDatabase());
+            services.AddMvc(options => {
+                options.Filters.Add(typeof(DbExceptionFilterAttribute));
+            });
+            _services = services;
+        }
+
+        DbConnection InitializeDatabase() {
+            DbConnection connection;
+            string database = Configuration["CloudSQL:Database"];
+            switch (database.ToLower()) {
+                case "mysql":
+                    connection = NewMysqlConnection();
+                    break;
+                case "postgresql":
+                    connection = NewPostgreSqlConnection();
+                    break;
+                default:
+                    throw new ArgumentException(string.Format(
+                        "Invalid database {0}.  Fix appsettings.json.", 
+                            database), "CloudSQL:Database");
+            }
+            connection.Open();
+            using (var createTableCommand = connection.CreateCommand()) {
+                createTableCommand.CommandText = @"
+                    CREATE TABLE IF NOT EXISTS 
+                    visits (
+                        time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+                        user_ip CHAR(64)
+                    )";
+                createTableCommand.ExecuteNonQuery();
+            }                           
+            return connection;
+        }
+
+        DbConnection NewMysqlConnection() {
+            // [START mysql_connection]
+            var connectionString = new MySqlConnectionStringBuilder(
+                Configuration["CloudSql:ConnectionString"])
+            {
+                SslMode = MySqlSslMode.Required,
+                CertificateFile = 
+                    Configuration["CloudSql:CertificateFile"]
+            };
+            if (string.IsNullOrEmpty(connectionString.Database))
+                connectionString.Database = "visitors";
+            DbConnection connection = 
+                new MySqlConnection(connectionString.ConnectionString);
+            // [END mysql_connection]
+            return connection;
+
+        }
+
+        DbConnection NewPostgreSqlConnection() {
+            // [START postgresql_connection]
+            var connectionString = new NpgsqlConnectionStringBuilder(
+                Configuration["CloudSql:ConnectionString"])
+            {
+                SslMode = SslMode.Require,
+                TrustServerCertificate = true,
+                UseSslStream = true,
+            };
+            if (string.IsNullOrEmpty(connectionString.Database))
+                connectionString.Database = "visitors";
+            NpgsqlConnection connection = 
+                new NpgsqlConnection(connectionString.ConnectionString);
+            connection.ProvideClientCertificatesCallback +=
+                certs => certs.Add(new X509Certificate2(
+                    Configuration["CloudSql:CertificateFile"]));
+            // [END postgresql_connection]
+            return connection;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+            ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole();
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            MySqlConnection connection;
-            try
+            else
             {
-                string connectionString = Configuration["CloudSqlConnectionString"];
-                // [START connection]
-                connection = new MySqlConnection(connectionString);
-                connection.Open();
-                var createTableCommand = new MySqlCommand(@"CREATE TABLE IF NOT EXISTS visits
-                (time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, user_ip CHAR(64))", connection);
-                createTableCommand.ExecuteNonQuery();
-                // [END connection]
-            }
-            catch (Exception e)
-            {
-                app.Run(async (context) =>
-                {
-                    await context.Response.WriteAsync(string.Format(@"<html>
-                        <head><title>Error</title></head>
-                        <body><p>Set CloudSqlConnectionString to a valid connection string.
-                              <p>{0}
-                              p>See the README.md in the project directory for more information.</p>
-                        </body>
-                        </html>", WebUtility.HtmlEncode(e.Message)));
-                });
-                return;
+                app.UseExceptionHandler("/Home/Error");
             }
 
-            app.Run(async (HttpContext context) =>
+            app.UseMvc(routes =>
             {
-                // [START example]
-                // Insert a visit into the database:
-                using (var insertVisitCommand = new MySqlCommand(
-                        @"INSERT INTO visits (user_ip) values (@user_ip)",
-                        connection))
-                {
-                    insertVisitCommand.Parameters.AddWithValue("@user_ip",
-                        FormatAddress(context.Connection.RemoteIpAddress));
-                    await insertVisitCommand.ExecuteNonQueryAsync();
-                }
-
-                // Look up the last 10 visits.
-                using (var lookupCommand = new MySqlCommand(
-                    @"SELECT * FROM visits ORDER BY time_stamp DESC LIMIT 10",
-                    connection))
-                {
-                    List<string> lines = new List<string>();
-                    var reader = await lookupCommand.ExecuteReaderAsync();
-                    while (await reader.ReadAsync())
-                        lines.Add($"{reader.GetString(0)} {reader.GetString(1)}");
-                    await context.Response.WriteAsync(string.Format(@"<html>
-                        <head><title>Visitor Log</title></head>
-                        <body>Last 10 visits:<br>{0}</body>
-                        </html>", string.Join("<br>", lines)));
-                }
-                // [END example]
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
 
-        private string FormatAddress(IPAddress address)
-        {
-            if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-            {
-                var bytes = address.GetAddressBytes();
-                return string.Format("{0:X2}{1:X2}:{2:X2}{3:X2}", bytes[0], bytes[1],
-                    bytes[2], bytes[3]);
-            }
-            else if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-            {
-                var bytes = address.GetAddressBytes();
-                return string.Format("{0}.{1}", bytes[0], bytes[1]);
-            }
-            else
-            {
-                return "bad.address";
-            }
-        }
     }
 }

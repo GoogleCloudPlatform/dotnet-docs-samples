@@ -18,7 +18,7 @@ var host = casper.cli.args[0];
 
 casper.start(host + '/', function (response) {
     this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('title', 'Visitor Log');
+    this.test.assertSelectorHasText('H2', 'Visitor Log');
 });
 
 casper.run(function () {
