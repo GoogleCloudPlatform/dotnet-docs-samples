@@ -6,7 +6,7 @@ from C#. The sample authenticates and then makes an API request to the Cloud Sto
 
 ## Build and Run
 
-1.  **Follow the instructions in the [root README](../../README.md)**.
+1.  **Follow the instructions in the [root README](../README.md)**.
 
 3.  **Install the Google Cloud SDK**.
     If you haven't already installed the Google Cloud SDK, [install and
