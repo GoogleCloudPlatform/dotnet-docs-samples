@@ -130,8 +130,8 @@ namespace GoogleCloudSamples
         // [START auth_cloud_explicit_compute_engine]
         public object AuthExplicitComputeEngine(string projectId)
         {
-            // Explicitly use service account credentials by specifying the 
-            // private key file.
+            // Explicitly use the credentials provided by the compute
+            // engine instance on which this code is running.
             GoogleCredential credential =
                 GoogleCredential.FromComputeCredential();
             var storage = StorageClient.Create(credential);
