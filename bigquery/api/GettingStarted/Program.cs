@@ -49,7 +49,7 @@ BigquerySample <project_id>";
 
                 string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM `{table.FullyQualifiedId}` 
                     GROUP BY title ORDER BY unique_words DESC LIMIT 42";
-                var result = client.ExecuteQuery(query);
+                var result = client.ExecuteQuery(query, parameters: null);
                 // [END query]
                 // [START print_results]
                 Console.Write("\nQuery Results:\n------------\n");
