@@ -130,7 +130,8 @@ namespace GoogleCloudSamples
         {
             var table = client.GetTable(projectId, datasetId, tableId);
             BigQueryJob job = client.CreateQueryJob(query,
-                new QueryOptions { UseQueryCache = false });
+                parameters: null,
+                options: new QueryOptions { UseQueryCache = false });
             // Get the query result, waiting for the timespan specified in milliseconds.
             BigQueryResults result = client.GetQueryResults(job.Reference.JobId,
                 new GetQueryResultsOptions { Timeout = TimeSpan.FromMilliseconds(timeoutMs) });
@@ -144,7 +145,8 @@ namespace GoogleCloudSamples
         {
             var table = client.GetTable(projectId, datasetId, tableId);
             BigQueryJob job = client.CreateQueryJob(query,
-                new QueryOptions { UseLegacySql = true });
+                parameters: null,
+                options: new QueryOptions { UseLegacySql = true });
             // Get the query result, waiting for the timespan specified in milliseconds.
             BigQueryResults result = client.GetQueryResults(job.Reference.JobId,
                 new GetQueryResultsOptions { Timeout = TimeSpan.FromMilliseconds(timeoutMs) });
@@ -158,7 +160,8 @@ namespace GoogleCloudSamples
         {
             var table = client.GetTable(projectId, datasetId, tableId);
             BigQueryJob job = client.CreateQueryJob(query,
-                new QueryOptions { UseQueryCache = false });
+                parameters: null,
+                options: new QueryOptions { UseQueryCache = false });
 
             // Wait for the job to complete.
             job.PollUntilCompleted();
@@ -263,7 +266,8 @@ namespace GoogleCloudSamples
         {
             var destination = client.GetTableReference(datasetId, newTableId);
             BigQueryJob job = client.CreateQueryJob(query,
-                new QueryOptions { DestinationTable = destination });
+                parameters: null,
+                options: new QueryOptions { DestinationTable = destination });
             // Wait for the job to complete.
             job.GetQueryResults();
         }
@@ -276,7 +280,8 @@ namespace GoogleCloudSamples
             string query = $"SELECT * FROM {table}";
             var destination = client.GetTableReference(datasetId, newTableId);
             BigQueryJob job = client.CreateQueryJob(query,
-                new QueryOptions { DestinationTable = destination });
+                parameters: null,
+                options: new QueryOptions { DestinationTable = destination });
             // Wait for the job to complete.
             job.GetQueryResults();
         }
