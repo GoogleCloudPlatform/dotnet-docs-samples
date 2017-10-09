@@ -11,8 +11,4 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-
-Get-ChildItem $env:KOKORO_GFILE_DIR
-& "$env:KOKORO_GFILE_DIR/secrets.ps1"
-Set-Location ../appengine
-../buildAndRunTests.ps1m
+gsutil cp secrets.ps1 gs://cloud-devrel-kokoro-resources/dotnet-docs-sample/secrets.ps1
