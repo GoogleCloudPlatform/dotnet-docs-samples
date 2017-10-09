@@ -14,3 +14,4 @@ PublishProfiles/
 *.xproj.user
 project.lock.json
 .vscode/
+secrets.ps1
