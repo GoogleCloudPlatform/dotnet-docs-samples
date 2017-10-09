@@ -14,5 +14,6 @@
 
 Get-ChildItem $env:KOKORO_GFILE_DIR
 & "$env:KOKORO_GFILE_DIR/secrets.ps1"
+$env:GOOGLE_APPLICATION_CREDENTIALS="$env:KOKORO_GFILE_DIR/silver-python2-0d4ceaedcf8d.json"
 Set-Location ../appengine
 ../buildAndRunTests.ps1
