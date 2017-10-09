@@ -15,4 +15,4 @@
 Get-ChildItem $env:KOKORO_GFILE_DIR
 & "$env:KOKORO_GFILE_DIR/secrets.ps1"
 Set-Location ../appengine
-../buildAndRunTests.ps1m
+../buildAndRunTests.ps1
