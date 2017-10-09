@@ -11,4 +11,4 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-gsutil cp secrets.ps1 gs://cloud-devrel-kokoro-resources/dotnet-docs-sample/secrets.ps1
+gsutil cp secrets.ps1 gs://cloud-devrel-kokoro-resources/dotnet-docs-samples/secrets.ps1
