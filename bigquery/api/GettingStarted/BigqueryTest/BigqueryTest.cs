@@ -28,6 +28,7 @@ using System.IO;
 using System.Diagnostics;
 using Google.Apis.Bigquery.v2.Data;
 using Google.Api.Gax;
+using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 
 namespace GoogleCloudSamples
 {
@@ -47,6 +48,15 @@ namespace GoogleCloudSamples
                     apiException.HttpStatusCode == System.Net.HttpStatusCode.BadRequest;
             }
         };
+
+        internal class CustomTransientErrorDetectionStrategy
+            : ITransientErrorDetectionStrategy
+        {
+            public bool IsTransient(Exception ex)
+            {
+                return ex.GetType() == typeof(InvalidOperationException);
+            }
+        }
 
         public BigQueryTest()
         {
@@ -193,28 +203,22 @@ namespace GoogleCloudSamples
         // [END import_from_file]
 
         // [START stream_row]
-        public void UploadJson(string datasetId, string tableId, BigQueryClient client)
+        public void UploadJsonStreaming(string datasetId, string tableId,
+            BigQueryClient client)
         {
-            // Note that there's a single line per JSON object. This is not a JSON array.
-            IEnumerable<string> jsonRows = new string[]
+            // The insert ID is optional, but can avoid duplicate data
+            // when retrying inserts.
+            BigQueryInsertRow row1 = new BigQueryInsertRow("row1")
             {
-                "{ 'title': 'exampleJsonFromStream', 'unique_words': 1}",
-                "{ 'title': 'moreExampleJsonFromStream', 'unique_words': 1}",
-                //add more rows here...
-            }.Select(row => row.Replace('\'', '"')); // Simple way of representing C# in JSON to avoid escaping " everywhere.
-
-            // Normally we'd be uploading from a file or similar. Any readable stream can be used.
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(string.Join("\n", jsonRows)));
-
-            // This example uploads data to an existing table. If the upload will create a new table
-            // or if the schema in the JSON isn't identical to the schema in the table,
-            // create a schema to pass into the call instead of passing in a null value.
-            BigQueryJob job = client.UploadJson(datasetId, tableId, null, stream);
-            // Use the job to find out when the data has finished being inserted into the table,
-            // report errors etc.
-
-            // Wait for the job to complete.
-            job.PollUntilCompleted();
+                { "title", "exampleJsonFromStream" },
+                { "unique_words", 1 }
+            };
+            BigQueryInsertRow row2 = new BigQueryInsertRow("row2")
+            {
+                { "title", "moreExampleJsonFromStream" },
+                { "unique_words", 1 }
+            };
+            client.InsertRows(datasetId, tableId, row1, row2);
         }
         // [END stream_row]
 
@@ -533,18 +537,37 @@ namespace GoogleCloudSamples
         public void TestImportDataFromStream()
         {
             string datasetId = "datasetForTestImportDataFromStream";
-            string newTableId = "tableForTestImportDataFromStream";
+            Random rnd = new Random();
+            string tableNameSuffix = rnd.Next(4200000).ToString();
+            string newTableId = "tableForTestImportDataFromStream" + tableNameSuffix;
+            //string newTableId = "tableForTestImportDataFromStream";
             string gcsUploadTestWord = "exampleJsonFromStream";
+            string valueToTest = "";
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
             // Import data.
-            UploadJson(datasetId, newTableId, _client);
+            UploadJsonStreaming(datasetId, newTableId, _client);
             // Query table to get first row and confirm it contains the expected value.
             var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable} ORDER BY title";
-            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
-            var row = results.First();
-            Assert.Equal(gcsUploadTestWord, row["title"]);
+            var retryPolicy = new
+                RetryPolicy<CustomTransientErrorDetectionStrategy>
+                (RetryStrategy.DefaultExponential);
+            try
+            {
+                retryPolicy.ExecuteAction(() =>
+                {
+                    BigQueryResults results = AsyncQuery(_projectId, datasetId,
+                        newTableId, query, _client);
+                    var row = results.First();
+                    valueToTest = row["title"].ToString();
+                });
+            }
+            catch (Exception)
+            {
+                // All of the retries failed.
+            }
+            Assert.Equal(gcsUploadTestWord, valueToTest);
             DeleteTable(datasetId, newTableId, _client);
             DeleteDataset(datasetId, _client);
         }
