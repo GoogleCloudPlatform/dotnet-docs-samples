@@ -1,3 +1,7 @@
+# Build like this:
+# docker build . -t debug-pubsub \
+#   --build-arg GOOGLE_APPLICATION_CREDENTIALS=google_application_credentials.json \
+#   --build-arg GOOGLE_PROJECT_ID=silver-python2
 # start with a powershell image.
 FROM microsoft/powershell
 
@@ -41,3 +45,6 @@ ENV GOOGLE_PROJECT_ID ${GOOGLE_PROJECT_ID}
 # Copy in this repo.
 RUN git clone https://github.com/GoogleCloudPlatform/dotnet-docs-samples.git
 RUN cd dotnet-docs-samples; git checkout -t origin/kokoro
+
+WORKDIR /dotnet-docs-samples/appengine/flexible/Pubsub
+ENTRYPOINT /opt/microsoft/powershell/6.0.0-beta.7/powershell -Interactive -File /dotnet-docs-samples/appengine/flexible/Pubsub/runTests.ps1
