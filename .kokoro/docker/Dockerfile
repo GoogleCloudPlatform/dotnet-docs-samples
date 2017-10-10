@@ -29,3 +29,15 @@ COPY bootstrap.js /casperjs-casperjs-76fc831/bin
 
 # install debugging tools
 RUN apt-get install git vim -y
+
+ARG GOOGLE_APPLICATION_CREDENTIALS
+ARG GOOGLE_PROJECT_ID
+
+# Copy in credentials.
+COPY ${GOOGLE_APPLICATION_CREDENTIALS} /google_application_credentials.json
+ENV GOOGLE_APPLICATION_CREDENTIALS /google_application_credentials.json
+ENV GOOGLE_PROJECT_ID ${GOOGLE_PROJECT_ID}
+
+# Copy in this repo.
+RUN git clone https://github.com/GoogleCloudPlatform/dotnet-docs-samples.git
+RUN cd dotnet-docs-samples; git checkout -t origin/kokoro
