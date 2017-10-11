@@ -15,11 +15,15 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
-dotnet build
-$log = Run-KestrelTest 20201
-$log
-$trimmed = $log | ForEach-Object {$_.Trim()}
-$expectedLine = "Watching $env:GOOGLE_PROJECT_ID.appspot.com/aspnet-configs/appsettings.json"
-if (-not $trimmed.contains($expectedLine)) {
-    throw "Expect line in log not found:`n$expectedLine"
+BackupAndEdit-TextFile "appsettings.json" `
+    @{"your-project-id" = $env:GOOGLE_PROJECT_ID} `
+{
+    dotnet build
+    $log = Run-KestrelTest 20201
+    $log
+    $trimmed = $log | ForEach-Object {$_.Trim()}
+    $expectedLine = "Watching $env:GOOGLE_PROJECT_ID.appspot.com/aspnet-configs/appsettings.json"
+    if (-not $trimmed.contains($expectedLine)) {
+        throw "Expect line in log not found:`n$expectedLine"
+    }
 }
