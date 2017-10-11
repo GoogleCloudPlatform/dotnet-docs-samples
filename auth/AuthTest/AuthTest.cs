@@ -74,6 +74,12 @@ namespace GoogleCloudSamples
             {
                 Console.WriteLine("Cannot test Compute Engine methods because I'm "
                     + "not running on compute engine.");
+            }            
+            catch (Google.Apis.Auth.OAuth2.Responses.TokenResponseException)
+            when (null == Google.Api.Gax.Platform.Instance()?.GceDetails?.InstanceId)
+            {
+                Console.WriteLine("Cannot test Compute Engine methods because I'm "
+                    + "not running on compute engine.");
             }
         }
     }
