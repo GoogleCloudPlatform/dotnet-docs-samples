@@ -1,7 +1,3 @@
-# Build like this:
-# docker build . -t debug-pubsub \
-#   --build-arg GOOGLE_APPLICATION_CREDENTIALS=google_application_credentials.json \
-#   --build-arg GOOGLE_PROJECT_ID=silver-python2
 # start with a powershell image.
 FROM microsoft/powershell
 
@@ -30,21 +26,3 @@ RUN tar xvf casperjs-1.0.3.tar.gz
 ENV PATH "$PATH:/casperjs-casperjs-76fc831/bin"
 # patch bootstrap.js
 COPY bootstrap.js /casperjs-casperjs-76fc831/bin
-
-# install debugging tools
-RUN apt-get install git vim -y
-
-ARG GOOGLE_APPLICATION_CREDENTIALS
-ARG GOOGLE_PROJECT_ID
-
-# Copy in credentials.
-COPY ${GOOGLE_APPLICATION_CREDENTIALS} /google_application_credentials.json
-ENV GOOGLE_APPLICATION_CREDENTIALS /google_application_credentials.json
-ENV GOOGLE_PROJECT_ID ${GOOGLE_PROJECT_ID}
-
-# Copy in this repo.
-RUN git clone https://github.com/GoogleCloudPlatform/dotnet-docs-samples.git
-RUN cd dotnet-docs-samples; git checkout -t origin/kokoro
-
-WORKDIR /dotnet-docs-samples/appengine/flexible/Pubsub
-ENTRYPOINT /opt/microsoft/powershell/6.0.0-beta.7/powershell -Interactive -File /dotnet-docs-samples/appengine/flexible/Pubsub/runTests.ps1
