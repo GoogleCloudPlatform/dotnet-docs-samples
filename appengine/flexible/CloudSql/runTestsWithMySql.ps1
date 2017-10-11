@@ -18,7 +18,7 @@ dotnet restore
 BackupAndEdit-TextFile "appsettings.json" `
     @{'Uid=aspnetuser;Pwd=;Host=1.2.3.4' = $env:TEST_CLOUD_SQL_CONNECTION_STRING} `
 {
-	Copy-Item $env:KOKORO_GFILE_DIR/mysql-client.pfx
+	Copy-Item -Force $env:KOKORO_GFILE_DIR/mysql-client.pfx client.pfx
 	dotnet build
 	Run-KestrelTest 5567
 }

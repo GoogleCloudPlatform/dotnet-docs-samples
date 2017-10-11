@@ -19,7 +19,7 @@ BackupAndEdit-TextFile "appsettings.json" `
     @{'Uid=aspnetuser;Pwd=;Host=1.2.3.4' = $env:TEST_NPGSQL_CONNECTION_STRING; `
       'MySQL' = 'PostgreSQL'} `
 {
-	Copy-Item $env:KOKORO_GFILE_DIR/postgres-client.pfx
+	Copy-Item -Force $env:KOKORO_GFILE_DIR/postgres-client.pfx client.pfx
 	dotnet build
 	Run-KestrelTest 5567
 }
