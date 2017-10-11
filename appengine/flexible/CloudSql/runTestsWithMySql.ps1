@@ -16,7 +16,7 @@ Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
 BackupAndEdit-TextFile "appsettings.json" `
-    @{'Uid=aspnetuser;Pwd=;Host=1.2.3.4' = $env:TEST_CLOUD_SQL_CONNECTION_STRING} `
+    @{'Uid=aspnetuser;Pwd=;Host=1.2.3.4' = $env:TEST_CLOUDSQL_MYSQL_CONNECTIONSTRING} `
 {
 	Copy-Item -Force $env:KOKORO_GFILE_DIR/mysql-client.pfx client.pfx
 	dotnet build
