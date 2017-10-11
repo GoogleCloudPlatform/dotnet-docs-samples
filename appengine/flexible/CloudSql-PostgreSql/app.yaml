@@ -1,3 +1,0 @@
-﻿# Optional file for deploying to Google App Engine Flexible Environment.
-runtime: aspnetcore
-env: flex
