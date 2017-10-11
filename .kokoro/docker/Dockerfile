@@ -26,3 +26,6 @@ RUN tar xvf casperjs-1.0.3.tar.gz
 ENV PATH "$PATH:/casperjs-casperjs-76fc831/bin"
 # patch bootstrap.js
 COPY bootstrap.js /casperjs-casperjs-76fc831/bin
+
+# Add debugging tools.
+RUN apt-get install git vim -y

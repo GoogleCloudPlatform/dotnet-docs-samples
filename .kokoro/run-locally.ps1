@@ -13,7 +13,7 @@ try {
     gsutil cp -r gs://cloud-devrel-kokoro-resources/dotnet-docs-samples/ .
 
     # Build the local docker image.
-    docker build --build-arg KOKORO_GFILE_DIR=dotnet-docs-samples -t dotnet-docs-samples/kokoro .
+    docker build --no-cache --build-arg KOKORO_GFILE_DIR=dotnet-docs-samples -t dotnet-docs-samples/kokoro .
 } finally {
     Pop-Location
 }
