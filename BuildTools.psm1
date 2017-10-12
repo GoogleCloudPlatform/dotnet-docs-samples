@@ -620,12 +620,14 @@ function Run-CasperJs($TestJs='test.js', $Url) {
     $sleepSeconds = 2
     for ($tryCount = 0; $tryCount -lt 5; $tryCount++) {
         Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
-        casperjs $TestJs $Url
+        $casperOut = casperjs $TestJs $Url
         if ($LASTEXITCODE -eq 0) {
-            return  # Success
+            Write-Host $casperOut
+            return
         }
         $sleepSeconds *= 2
     }
+    Write-Host $casperOut
     throw "Casperjs failed with error code $LASTEXITCODE"
 }
 
