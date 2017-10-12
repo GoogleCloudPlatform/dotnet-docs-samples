@@ -1,8 +1,5 @@
 FROM gcr.io/cloud-devrel-kokoro-resources/dotnet:latest
 
-# Add debugging tools.
-RUN apt-get install git vim -y
-
 ARG KOKORO_GFILE_DIR
 
 # Copy secrets from kokoro gfile.
