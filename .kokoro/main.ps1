@@ -30,7 +30,7 @@ try {
 
     # Find all the runTest scripts.
     $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
-    $scripts | Run-TestScripts -TimeoutSeconds 600
+    $scripts | Sort-Object | Run-TestScripts -TimeoutSeconds 600
 } finally {
     Pop-Location
 }
