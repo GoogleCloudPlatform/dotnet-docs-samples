@@ -28,13 +28,64 @@ using System.IO;
 using System.Diagnostics;
 using Google.Apis.Bigquery.v2.Data;
 using Google.Api.Gax;
+using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 
 namespace GoogleCloudSamples
 {
-    public class BigQueryTest
+    public class BigQueryTest : IDisposable
     {
         private readonly string _projectId;
         private readonly BigQueryClient _client;
+        // Create list of tuples to collect tableName and datasetName for test tables to be deleted.
+        private readonly List<Tuple<string, string>> _tablesToDelete = new List<Tuple<string, string>>();
+        private readonly List<string> _datasetsToDelete = new List<string>();
+        private readonly List<string> _filesToDelete = new List<string>();
+        private static readonly Random s_random = new Random();
+        // Generate random suffix for creating unique resource names.
+        private static string RandomSuffix()
+        {
+            return s_random.Next(1000000).ToString();
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                // Delete all tables created from running the tests.
+                foreach (Tuple<string, string> resource in _tablesToDelete)
+                {
+                    DeleteTable(resource.Item1, resource.Item2, _client);
+                }
+            }
+            catch (Google.GoogleApiException ex) when
+                (ex != null
+                    && ex.HttpStatusCode == System.Net.HttpStatusCode.BadRequest)
+            { }
+            try
+            {
+                // Delete all datasets created from running the tests.
+                foreach (string dataset in _datasetsToDelete)
+                {
+                    DeleteDataset(dataset, _client);
+                }
+            }
+            catch (Google.GoogleApiException ex) when
+                (ex != null
+                    && ex.HttpStatusCode == System.Net.HttpStatusCode.BadRequest)
+            { }
+            try
+            {
+                // Delete all cloud storage files created from running the tests.
+                foreach (string fileName in _filesToDelete)
+                {
+                    DeleteFileFromGcs(_projectId, fileName);
+                }
+            }
+            catch (Google.GoogleApiException ex) when
+                (ex != null
+                    && ex.HttpStatusCode == System.Net.HttpStatusCode.BadRequest)
+            { }
+        }
 
         private readonly RetryRobot _retryDeleteBusy = new RetryRobot
         {
@@ -47,6 +98,13 @@ namespace GoogleCloudSamples
                     apiException.HttpStatusCode == System.Net.HttpStatusCode.BadRequest;
             }
         };
+
+        internal class CustomTransientErrorDetectionStrategy
+            : ITransientErrorDetectionStrategy
+        {
+            public bool IsTransient(Exception ex) =>
+                ex is InvalidOperationException;
+        }
 
         public BigQueryTest()
         {
@@ -193,28 +251,22 @@ namespace GoogleCloudSamples
         // [END import_from_file]
 
         // [START stream_row]
-        public void UploadJson(string datasetId, string tableId, BigQueryClient client)
+        public void UploadJsonStreaming(string datasetId, string tableId,
+            BigQueryClient client)
         {
-            // Note that there's a single line per JSON object. This is not a JSON array.
-            IEnumerable<string> jsonRows = new string[]
+            // The insert ID is optional, but can avoid duplicate data
+            // when retrying inserts.
+            BigQueryInsertRow row1 = new BigQueryInsertRow("row1")
             {
-                "{ 'title': 'exampleJsonFromStream', 'unique_words': 1}",
-                "{ 'title': 'moreExampleJsonFromStream', 'unique_words': 1}",
-                //add more rows here...
-            }.Select(row => row.Replace('\'', '"')); // Simple way of representing C# in JSON to avoid escaping " everywhere.
-
-            // Normally we'd be uploading from a file or similar. Any readable stream can be used.
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(string.Join("\n", jsonRows)));
-
-            // This example uploads data to an existing table. If the upload will create a new table
-            // or if the schema in the JSON isn't identical to the schema in the table,
-            // create a schema to pass into the call instead of passing in a null value.
-            BigQueryJob job = client.UploadJson(datasetId, tableId, null, stream);
-            // Use the job to find out when the data has finished being inserted into the table,
-            // report errors etc.
-
-            // Wait for the job to complete.
-            job.PollUntilCompleted();
+                { "title", "exampleJsonFromStream" },
+                { "unique_words", 1 }
+            };
+            BigQueryInsertRow row2 = new BigQueryInsertRow("row2")
+            {
+                { "title", "moreExampleJsonFromStream" },
+                { "unique_words", 1 }
+            };
+            client.InsertRows(datasetId, tableId, row1, row2);
         }
         // [END stream_row]
 
@@ -375,13 +427,11 @@ namespace GoogleCloudSamples
             string expectedOutputFirstWord = "Dataset";
             string expectedOutputLastWord = "created.";
             string sampleDatasetUsedInQuickStart = "my_new_dataset";
+            _datasetsToDelete.Add(sampleDatasetUsedInQuickStart);
             output = GetConsoleAppOutput(filePath).Trim();
             var outputParts = output.Split(new[] { ' ' });
             Assert.Equal(outputParts.First(), expectedOutputFirstWord);
             Assert.Equal(outputParts.Last(), expectedOutputLastWord);
-            //Delete QuickStart testing Dataset if it exists
-            var dataset = _client.GetDataset(sampleDatasetUsedInQuickStart);
-            if (dataset != null) { DeleteDataset(sampleDatasetUsedInQuickStart, _client); };
         }
 
         [Fact]
@@ -427,10 +477,10 @@ namespace GoogleCloudSamples
         public void TestListDataset()
         {
             string datasetId = "sampleDatasetTestListDataset";
+            _datasetsToDelete.Add(datasetId);
             CreateDataset(datasetId, _client);
             var datasets = ListDatasets(_client);
             Assert.True(datasets.Count() > 0);
-            DeleteDataset(datasetId, _client);
         }
 
         [Fact]
@@ -456,14 +506,14 @@ namespace GoogleCloudSamples
         {
             string datasetId = "datasetForTestCreateTable";
             string newTableId = "tableForTestCreateTable";
+            _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableId));
+            _datasetsToDelete.Add(datasetId);
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
             // Get created table.
             var newTable = _client.GetTable(datasetId, newTableId);
             // Confirm created table name equals expected name.
             Assert.Equal(newTableId, newTable.Reference.TableId);
-            DeleteTable(datasetId, newTableId, _client);
-            DeleteDataset(datasetId, _client);
         }
 
         [Fact]
@@ -474,6 +524,8 @@ namespace GoogleCloudSamples
             string jsonGcsSampleFile = "sample.json";
             string gcsFolder = "test";
             string gcsUploadTestWord = "exampleJsonFromGCS";
+            _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableId));
+            _datasetsToDelete.Add(datasetId);
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
             // Import data.
@@ -488,8 +540,6 @@ namespace GoogleCloudSamples
             // Get first row and confirm it contains the expected value.
             var row = results.First();
             Assert.Equal(gcsUploadTestWord, row["title"]);
-            DeleteTable(datasetId, newTableId, _client);
-            DeleteDataset(datasetId, _client);
         }
 
         [Fact]
@@ -497,14 +547,14 @@ namespace GoogleCloudSamples
         {
             string datasetId = "datasetForTestListTables";
             string newTableId = "tableForTestListTables";
+            _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableId));
+            _datasetsToDelete.Add(datasetId);
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
             // [START list_tables]
             var tables = _client.ListTables(datasetId).ToList();
             // [END list_tables]
             Assert.False(tables.Count() == 0);
-            DeleteTable(datasetId, newTableId, _client);
-            DeleteDataset(datasetId, _client);
         }
 
         [Fact]
@@ -512,6 +562,8 @@ namespace GoogleCloudSamples
         {
             string datasetId = "datasetForTestImportDataFromFile";
             string newTableId = "tableForTestImportDataFromFile";
+            _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableId));
+            _datasetsToDelete.Add(datasetId);
             string uploadTestWord = "additionalExampleJsonFromFile";
             long uploadTestWordValue = 9814072356;
             string filePath = "..\\..\\..\\test\\data\\sample.json";
@@ -525,28 +577,42 @@ namespace GoogleCloudSamples
             BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
             var row = results.Last();
             Assert.Equal(uploadTestWordValue, row["unique_words"]);
-            DeleteTable(datasetId, newTableId, _client);
-            DeleteDataset(datasetId, _client);
         }
 
         [Fact]
         public void TestImportDataFromStream()
         {
             string datasetId = "datasetForTestImportDataFromStream";
-            string newTableId = "tableForTestImportDataFromStream";
+            string newTableId = "tableForTestImportDataFromStream" + RandomSuffix();
             string gcsUploadTestWord = "exampleJsonFromStream";
+            string valueToTest = "";
+            _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableId));
+            _datasetsToDelete.Add(datasetId);
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
             // Import data.
-            UploadJson(datasetId, newTableId, _client);
+            UploadJsonStreaming(datasetId, newTableId, _client);
             // Query table to get first row and confirm it contains the expected value.
             var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable} ORDER BY title";
-            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
-            var row = results.First();
-            Assert.Equal(gcsUploadTestWord, row["title"]);
-            DeleteTable(datasetId, newTableId, _client);
-            DeleteDataset(datasetId, _client);
+            var retryPolicy = new
+                RetryPolicy<CustomTransientErrorDetectionStrategy>
+                (RetryStrategy.DefaultExponential);
+            try
+            {
+                retryPolicy.ExecuteAction(() =>
+                {
+                    BigQueryResults results = AsyncQuery(_projectId, datasetId,
+                        newTableId, query, _client);
+                    var row = results.First();
+                    valueToTest = row["title"].ToString();
+                });
+            }
+            catch (Exception)
+            {
+                // All of the retries failed.
+            }
+            Assert.Equal(gcsUploadTestWord, valueToTest);
         }
 
         [Fact]
@@ -558,6 +624,9 @@ namespace GoogleCloudSamples
             string newDatasetId = "datasetForTestExportJsonToCloudStorage";
             string newTableId = "tableForTestExportJsonToCloudStorage";
             string fileName = "uploaded.json";
+            _tablesToDelete.Add(new Tuple<string, string>(newDatasetId, newTableId));
+            _datasetsToDelete.Add(newDatasetId);
+            _filesToDelete.Add(fileName);
             CreateDataset(newDatasetId, _client);
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query.
@@ -573,10 +642,6 @@ namespace GoogleCloudSamples
             string fileNameFromCloudStorage = GetFileNameFromCloudStorage(_projectId, fileName);
             // Assert that the filename from Cloud Storage equals expected filename.
             Assert.Equal(fileName, fileNameFromCloudStorage);
-            // Delete file from Cloud Storage.
-            DeleteFileFromGcs(_projectId, fileName);
-            DeleteTable(newDatasetId, newTableId, _client);
-            DeleteDataset(newDatasetId, _client);
         }
 
         [Fact]
@@ -588,6 +653,9 @@ namespace GoogleCloudSamples
             string newDatasetId = "datasetForTestExportCsvToCloudStorage";
             string newTableId = "tableForTestExportCsvToCloudStorage";
             string fileName = "uploaded.csv";
+            _tablesToDelete.Add(new Tuple<string, string>(newDatasetId, newTableId));
+            _datasetsToDelete.Add(newDatasetId);
+            _filesToDelete.Add(fileName);
             CreateDataset(newDatasetId, _client);
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query
@@ -603,10 +671,6 @@ namespace GoogleCloudSamples
             string fileNameFromCloudStorage = GetFileNameFromCloudStorage(_projectId, fileName);
             // Assert that the filename from Cloud Storage equals expected filename.
             Assert.Equal(fileName, fileNameFromCloudStorage);
-            // Delete file from Cloud Storage.
-            DeleteFileFromGcs(_projectId, fileName);
-            DeleteTable(newDatasetId, newTableId, _client);
-            DeleteDataset(newDatasetId, _client);
         }
 
         [Fact]
@@ -619,6 +683,8 @@ namespace GoogleCloudSamples
             string newTableId = "tableForTestBrowseTable";
             int pageSize = 5;
             int expectedNumberOfRecords = 42;
+            _tablesToDelete.Add(new Tuple<string, string>(newDatasetId, newTableId));
+            _datasetsToDelete.Add(newDatasetId);
             CreateDataset(newDatasetId, _client);
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query.
@@ -630,8 +696,6 @@ namespace GoogleCloudSamples
             // Get result from table to confirm expected number of records.
             int recordCount = TableDataList(newDatasetId, newTableId, pageSize, _client);
             Assert.True(recordCount == expectedNumberOfRecords);
-            DeleteTable(newDatasetId, newTableId, _client);
-            DeleteDataset(newDatasetId, _client);
         }
 
         [Fact]
@@ -643,6 +707,9 @@ namespace GoogleCloudSamples
             string newDatasetId = "datasetForTestCopyTable";
             string sourceTableId = "tableForTestCopyTable";
             string copiedTableId = "copiedTableForTestCopyTable";
+            _tablesToDelete.Add(new Tuple<string, string>(newDatasetId, copiedTableId));
+            _tablesToDelete.Add(new Tuple<string, string>(newDatasetId, sourceTableId));
+            _datasetsToDelete.Add(newDatasetId);
             CreateDataset(newDatasetId, _client);
             CreateTable(newDatasetId, sourceTableId, _client);
             // Create Query.
@@ -657,11 +724,6 @@ namespace GoogleCloudSamples
             var copyTable = _client.GetTable(newDatasetId, copiedTableId);
             var result = copyTable.ListRows();
             Assert.False(result.Count() == 0);
-            // Delete copied table.
-            DeleteTable(newDatasetId, copiedTableId, _client);
-            // Delete source table.
-            DeleteTable(newDatasetId, sourceTableId, _client);
-            DeleteDataset(newDatasetId, _client);
         }
     }
 }

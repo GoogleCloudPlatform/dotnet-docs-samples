@@ -16,6 +16,7 @@
 
 using Google.Cloud.Diagnostics.AspNetCore;
 using Google.Cloud.Diagnostics.Common;
+using Google.Cloud.Trace.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -48,16 +49,20 @@ namespace Stackdriver
             services.Configure<StackdriverOptions>(
                 Configuration.GetSection("Stackdriver"));
             // [END configure_services_logging]
-            services.AddGoogleExceptionLogging(
-                Configuration["Stackdriver:ProjectId"],
-                Configuration["Stackdriver:ServiceName"], 
-                Configuration["Stackdriver:Version"]);
+            services.AddGoogleExceptionLogging(options => {
+                options.ProjectId = Configuration["Stackdriver:ProjectId"];
+                options.ServiceName = Configuration["Stackdriver:ServiceName"];
+                options.Version = Configuration["Stackdriver:Version"];
+            });
             // [END configure_services_error_reporting]
 
             // [START configure_services_trace]
             // Add trace service.
-            TraceConfiguration traceConfig = TraceConfiguration.Create(bufferOptions: BufferOptions.NoBuffer());
-            services.AddGoogleTrace(Configuration["Stackdriver:ProjectId"], traceConfig);
+            services.AddGoogleTrace(options => {
+                options.ProjectId = Configuration["Stackdriver:ProjectId"];
+                options.Options = TraceOptions.Create(
+                    bufferOptions: BufferOptions.NoBuffer());
+            });
             // [END configure_services_trace]
 
             // Add framework services.

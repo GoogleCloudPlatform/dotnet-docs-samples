@@ -15,11 +15,10 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
-dotnet build
-$log = Run-KestrelTest 20201
-$log
-$trimmed = $log | ForEach-Object {$_.Trim()}
-$expectedLine = "Watching $env:GOOGLE_PROJECT_ID.appspot.com/aspnet-configs/appsettings.json"
-if (-not $trimmed.contains($expectedLine)) {
-    throw "Expect line in log not found:`n$expectedLine"
+BackupAndEdit-TextFile "appsettings.json" `
+    @{'Uid=aspnetuser;Pwd=;Host=1.2.3.4' = $env:TEST_CLOUDSQL_MYSQL_CONNECTIONSTRING} `
+{
+	Copy-Item -Force $env:KOKORO_GFILE_DIR/mysql-client.pfx client.pfx
+	dotnet build
+	Run-KestrelTest 5567
 }
