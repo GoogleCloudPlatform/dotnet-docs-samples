@@ -20,7 +20,6 @@ casper.start(host + '/', function (response) {
     console.log('Starting ' + host + '/');
     this.test.assertEquals(200, response.status);
     this.test.assertSelectorHasText('H1', 'Cloud Storage Sample');
-    this.test.assertEquals("", this.fetchText('#content'));
     this.fill('#TextForm', {
         'content': 'sunshine',
     }, false);
