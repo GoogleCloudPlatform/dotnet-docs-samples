@@ -16,17 +16,10 @@ Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
 BackupAndEdit-TextFile "appsettings.json" `
-    @{"your-google-bucket-name" = $env:TEST_GOOGLE_BUCKET_NAME} `
+    @{'Uid=aspnetuser;Pwd=;Host=1.2.3.4' = $env:TEST_CLOUDSQL_POSTGRESQL_CONNECTIONSTRING; `
+      'MySQL' = 'PostgreSQL'} `
 {
+	Copy-Item -Force $env:KOKORO_GFILE_DIR/postgres-client.pfx client.pfx
 	dotnet build
-	try {
-		$googleCloudToolsForPowershellInstalled = Get-Command Test-GcsObject
-	} catch {
-		Write-Information 'Google Cloud Powershell extension is not installed'.
-	}
-	if ($googleCloudToolsForPowershellInstalled -and (
-		Test-GcsObject -Bucket $env:TEST_GOOGLE_BUCKET_NAME -ObjectName sample.txt)) {
-		Remove-GcsObject -Bucket $env:TEST_GOOGLE_BUCKET_NAME -ObjectName sample.txt
-	}
-	Run-KestrelTest 5570
+	Run-KestrelTest 5567
 }

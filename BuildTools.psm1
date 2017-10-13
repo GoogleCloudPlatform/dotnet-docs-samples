@@ -617,16 +617,18 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
 }
 
 function Run-CasperJs($TestJs='test.js', $Url) {
-    Start-Sleep -Seconds 5  # Wait for web process to start up.
-    casperjs $TestJs $Url
-    if ($LASTEXITCODE) {
-        # Try again
-        Start-Sleep -Seconds 5  # Wait for web process to start up.
-        casperjs $TestJs $Url
-        if ($LASTEXITCODE) {
-            throw "Casperjs failed with error code $LASTEXITCODE"
+    $sleepSeconds = 2
+    for ($tryCount = 0; $tryCount -lt 5; $tryCount++) {
+        Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
+        $casperOut = casperjs $TestJs $Url
+        if ($LASTEXITCODE -eq 0) {
+            $casperOut | Write-Host
+            return
         }
+        $sleepSeconds *= 2
     }
+    $casperOut | Write-Host
+    throw "Casperjs failed with error code $LASTEXITCODE"
 }
 
 ##############################################################################
