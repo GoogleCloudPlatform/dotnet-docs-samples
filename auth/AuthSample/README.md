@@ -4,6 +4,13 @@ A sample demonstrating how to authenticate with Google's APIs using Application 
 [Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials)
 from C#. The sample authenticates and then makes an API request to the Cloud Storage API.
 
+This sample requires [.NET Core 2.0](
+    https://www.microsoft.com/net/core) or later.  That means using
+[Visual Studio 2017](
+    https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
+can use [this older sample](
+    https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/datastore/api).
+
 ## Build and Run
 
 1.  **Follow the instructions in the [root README](../../README.md)**.
@@ -21,26 +28,43 @@ from C#. The sample authenticates and then makes an API request to the Cloud Sto
 5.  **Create a Cloud Storage bucket for your project**.
     Cloud Storage allows you to store and serve binary data.
     A bucket is a high-level container for binary objects.
-    At a command prompt, type:
+    At a Powershell  prompt, type:
 
-    ```sh
-    C:\> gsutil mb gs://<your-project-id>
-    C:\> gsutil defacl set public-read gs://<your-project-id>
+    ```ps1
+    PS > gsutil mb gs://<your-project-id>
+    PS > gsutil defacl set public-read gs://<your-project-id>
     ```
 
-6.  Open [AuthSample.sln](AuthSample.sln) with Microsoft Visual Studio version 2012 or later.
-7.  Build the Solution.
-8.  From the command line, set environment variables and run:
+6.  ```ps1
+    PS > $env:GOOGLE_PROJECT_ID="your project id displayed on the Google Developers Console."
+    PS > dotnet restore
+    PS > dotnet run
+    AuthSample 1.0.0
+    Copyright (C) 2017 AuthSample
 
-    ```sh
-    C:\...\bin\Debug> set GOOGLE_PROJECT_ID=your project id displayed on the Google Developers Console.
-    C:\...\bin\Debug> AuthSample
+    ERROR(S):
+    No verb selected.
+
+    cloud      Authenticate using the Google.Cloud.Storage library.  The preferred way of authenticating.
+
+    api        Authenticate using the Google.Apis.Storage library.
+
+    http       Authenticate using and make a rest HTTP call.
+
+    help       Display more information on a specific command.
+
+    version    Display version information.
+
+    PS > dotnet run -- cloud
+    your-bucket1
+    your-bucket2
+    ...
     ```
 
 ## Contributing changes
 
-* See [CONTRIBUTING.md](../CONTRIBUTING.md)
+* See [CONTRIBUTING.md](../../CONTRIBUTING.md)
 
 ## Licensing
 
-* See [LICENSE](../LICENSE)
+* See [LICENSE](../../LICENSE)
