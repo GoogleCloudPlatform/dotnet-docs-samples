@@ -865,6 +865,26 @@ filter ConvertTo-Utf8 {
 # the same directory. 
 ##############################################################################
 function Get-GitTimeStampForScript($script) {
-    $dateText = git log -n 1 --format=%cd --date=iso (Split-Path $script)
-    return ($dateText | Get-Date).ToUniversalTime()
+    Push-Location
+    try {
+        Set-Location (Split-Path $script)
+        $dateText = git log -n 1 --format=%cd --date=iso .
+        $newestDate = @(($dateText | Get-Date).ToUniversalTime().ToString("o"))
+        # Search for dependencies too
+        $output = dotnet list reference
+        if ($output.Count -lt 3) {
+            # There are no dependencies.
+            return $newestDate[0]
+        }
+        # Look up the timestamp for each dependency.
+        $references = $output[2..($output.Count)]
+        foreach ($ref in $references) {
+            $dateText = git log -n 1 --format=%cd --date=iso (Split-Path $ref)
+            $newestDate += @(($dateText | Get-Date).ToUniversalTime().ToString("o"))
+        }
+        # Return a string combining all the timestamps in descending order.
+        return ($newestDate | Sort-Object -Descending) -join "+"
+    } finally {
+        Pop-Location
+    }
 }
