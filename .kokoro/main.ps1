@@ -31,7 +31,7 @@ try {
     $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
     $scripts.VersionInfo.FileName `
         | Sort-Object -Descending -Property {Get-GitTimeStampForScript $_} `
-        | Write-Host # | Run-TestScripts -TimeoutSeconds 600
+        | Run-TestScripts -TimeoutSeconds 600
 } finally {
     Pop-Location
 }
