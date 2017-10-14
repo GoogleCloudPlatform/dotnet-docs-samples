@@ -858,3 +858,13 @@ filter ConvertTo-Utf8 {
     $lines = [System.IO.File]::ReadAllLines($_)
     [System.IO.File]::WriteAllLines($_, $lines)
 }
+
+##############################################################################
+#.SYNOPSIS
+# Given a path to a runTests.ps1 script, find the git timestamp of changes in
+# the same directory. 
+##############################################################################
+function Get-GitTimeStampForScript($script) {
+    $dateText = git log -n 1 --format=%cd --date=iso (Split-Path $script)
+    return ($dateText | Get-Date).ToUniversalTime()
+}
