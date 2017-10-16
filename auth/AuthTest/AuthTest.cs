@@ -16,6 +16,8 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -63,25 +65,25 @@ namespace GoogleCloudSamples
         [InlineData("api")]
         void TestExplicitComputeEngine(string cmd)
         {
-            try
-            {
-                Console.WriteLine(Google.Api.Gax.Platform.Instance()?.GceDetails?.MetadataJson);
-                var output = s_runner.Run(cmd, "-c");
-                Assert.Equal(0, output.ExitCode);
-                Assert.False(string.IsNullOrWhiteSpace(output.Stdout));
+            string metadataJson = 
+                Google.Api.Gax.Platform.Instance()?.GceDetails?.MetadataJson;
+            if (null == metadataJson) {
+                Console.WriteLine("Cannot test Compute Engine methods because "
+                    + "I'm not running on compute engine.");
+                return;
             }
-            catch (System.Net.Http.HttpRequestException)
-            when (null == Google.Api.Gax.Platform.Instance()?.GceDetails?.InstanceId)
-            {
-                Console.WriteLine("Cannot test Compute Engine methods because I'm "
-                    + "not running on compute engine.");
-            }            
-            catch (Google.Apis.Auth.OAuth2.Responses.TokenResponseException)
-            when (null == Google.Api.Gax.Platform.Instance()?.GceDetails?.InstanceId)
-            {
-                Console.WriteLine("Cannot test Compute Engine methods because I'm "
-                    + "not running on compute engine.");
+            dynamic metadata = JObject.Parse(metadataJson);
+            JObject serviceAccounts = metadata?.instance?.serviceAccounts;
+            bool hasServiceAccounts = null == serviceAccounts ? 
+                false : serviceAccounts.HasValues;
+            if (!hasServiceAccounts) {
+                Console.WriteLine("Cannot test Compute Engine methods because "
+                    + "this GCE instance has no service accounts.");
+                return;
             }
+            var output = s_runner.Run(cmd, "-c");
+            Assert.Equal(0, output.ExitCode);
+            Assert.False(string.IsNullOrWhiteSpace(output.Stdout));
         }
     }
 }
