@@ -65,6 +65,7 @@ namespace GoogleCloudSamples
         {
             try
             {
+                Console.WriteLine(Google.Api.Gax.Platform.Instance()?.GceDetails?.MetadataJson);
                 var output = s_runner.Run(cmd, "-c");
                 Assert.Equal(0, output.ExitCode);
                 Assert.False(string.IsNullOrWhiteSpace(output.Stdout));
