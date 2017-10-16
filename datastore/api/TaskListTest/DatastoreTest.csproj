@@ -10,7 +10,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
   </ItemGroup>
     <ItemGroup>
-    <ProjectReference Include="..\TaskList\Tasklist.csproj" />
+    <ProjectReference Include="..\TaskList\TaskList.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
 </Project>
