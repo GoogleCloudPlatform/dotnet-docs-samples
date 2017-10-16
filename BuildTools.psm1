@@ -870,14 +870,9 @@ function Get-GitTimeStampForScript($script) {
         Set-Location (Split-Path $script)
         $dateText = git log -n 1 --format=%cd --date=iso .
         $newestDate = @(($dateText | Get-Date).ToUniversalTime().ToString("o"))
-        # Search for dependencies too
-        $output = dotnet list reference
-        if ($output.Count -lt 3) {
-            # There are no dependencies.
-            return $newestDate[0]
-        }
+        # Search for dependencies too.
+        $references = dotnet list reference | Where-Object {Test-Path $_ }
         # Look up the timestamp for each dependency.
-        $references = $output[2..($output.Count)]
         foreach ($ref in $references) {
             $dateText = git log -n 1 --format=%cd --date=iso (Split-Path $ref)
             $newestDate += @(($dateText | Get-Date).ToUniversalTime().ToString("o"))
