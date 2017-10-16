@@ -17,6 +17,10 @@ Get-ChildItem $env:KOKORO_GFILE_DIR
 & "$env:KOKORO_GFILE_DIR/secrets.ps1"
 $env:GOOGLE_APPLICATION_CREDENTIALS="$env:KOKORO_GFILE_DIR/silver-python2-69452e94c2bf.json"
 
+# Run dotnet once to consume the "Learn more about .NET Core" message that
+# appears after a fresh install
+dotnet --info
+
 Push-Location
 try {
     # Import BuildTools.psm1
