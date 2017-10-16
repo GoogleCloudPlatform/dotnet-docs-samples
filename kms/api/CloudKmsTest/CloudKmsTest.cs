@@ -105,9 +105,9 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestEncryptData()
         {
-            string inFile = @"..\..\..\test\data\test_file.txt";
-            string outFile = @"..\..\..\test\data\test_file_encrypted.txt";
-            string testFile = @"..\..\..\test\data\test_file_decrypted.txt";
+            string inFile = @"..\..\..\..\test\data\test_file.txt";
+            string outFile = @"..\..\..\..\test\data\test_file_encrypted.txt";
+            string testFile = @"..\..\..\..\test\data\test_file_decrypted.txt";
             string timeStamp = $"-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
             string keyRing = $"testKeyRing{timeStamp}";
             string cryptoKey = $"testCryptoKey{timeStamp}";
