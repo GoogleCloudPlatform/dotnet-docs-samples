@@ -858,3 +858,28 @@ filter ConvertTo-Utf8 {
     $lines = [System.IO.File]::ReadAllLines($_)
     [System.IO.File]::WriteAllLines($_, $lines)
 }
+
+##############################################################################
+#.SYNOPSIS
+# Given a path to a runTests.ps1 script, find the git timestamp of changes in
+# the same directory. 
+##############################################################################
+function Get-GitTimeStampForScript($script) {
+    Push-Location
+    try {
+        Set-Location (Split-Path $script)
+        $dateText = git log -n 1 --format=%cd --date=iso .
+        $newestDate = @(($dateText | Get-Date).ToUniversalTime().ToString("o"))
+        # Search for dependencies too.
+        $references = dotnet list reference | Where-Object {Test-Path $_ }
+        # Look up the timestamp for each dependency.
+        foreach ($ref in $references) {
+            $dateText = git log -n 1 --format=%cd --date=iso (Split-Path $ref)
+            $newestDate += @(($dateText | Get-Date).ToUniversalTime().ToString("o"))
+        }
+        # Return a string combining all the timestamps in descending order.
+        return ($newestDate | Sort-Object -Descending) -join "+"
+    } finally {
+        Pop-Location
+    }
+}
