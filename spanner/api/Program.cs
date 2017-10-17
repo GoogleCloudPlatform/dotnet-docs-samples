@@ -507,14 +507,8 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // Yield Task thread back to the current context.
-            await Task.Yield();
             Console.WriteLine("Transaction complete.");
             // [END read_only_transaction_core]
-            // TODO - Remove the above Task.Yield() statement. 
-            // A pending client library update will not require this
-            // for transactions.
-            // Link to issue: https://github.com/grpc/grpc/issues/11824
         }
 
         public static async Task<object> ReadStaleDataAsync(
@@ -556,13 +550,7 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // Yield Task thread back to the current context.
-            await Task.Yield();
             // [END read_stale_data]
-            // TODO - Remove the above Task.Yield() statement. 
-            // A pending client library update will not require this
-            // for transactions.
-            // Link to issue: https://github.com/grpc/grpc/issues/11824
             return 0;
         }
 
@@ -619,15 +607,9 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
                 scope.Complete();
-                // Yield Task thread back to the current context.
-                await Task.Yield();
                 Console.WriteLine("Transaction complete.");
             }
             // [END read_only_transaction]
-            // TODO - Remove the above Task.Yield() statement. 
-            // A pending client library update will not require this
-            // for transactions.
-            // Link to issue: https://github.com/grpc/grpc/issues/11824
         }
 
         public static async Task WriteDataToNewColumnAsync(
@@ -834,8 +816,6 @@ namespace GoogleCloudSamples.Spanner
 
                     await transaction.CommitAsync();
                 }
-                // Yield Task thread back to the current context.
-                await Task.Yield();
                 Console.WriteLine("Transaction complete.");
             }
         }
@@ -923,17 +903,11 @@ namespace GoogleCloudSamples.Spanner
                     cmd.Parameters["MarketingBudget"].Value = firstBudget;
                     await cmd.ExecuteNonQueryAsync();
                     scope.Complete();
-                    // Yield Task thread back to the current context.
-                    await Task.Yield();
                     Console.WriteLine("Transaction complete.");
                 }
             }
         }
         // [END read_write_transaction]
-        // TODO - Remove the above Task.Yield() statement. 
-        // A pending client library update will not require this
-        // for transactions.
-        // Link to issue: https://github.com/grpc/grpc/issues/11824
 
         // [START insert_data]
         public static async Task InsertSampleDataAsync(
@@ -1247,7 +1221,6 @@ namespace GoogleCloudSamples.Spanner
                         () => ReadWriteWithTransactionCoreAsync(
                             projectId, instanceId, databaseId));
 
-                    await Task.Yield(); // fix for gRPC threading issue.
                 })
                 : Task.Run(async () =>
                 {
@@ -1260,8 +1233,6 @@ namespace GoogleCloudSamples.Spanner
                         ReadWriteWithTransactionAsync(
                                 projectId, instanceId, databaseId));
                     // [END read_write_retry]
-
-                    await Task.Yield(); // fix for gRPC threading issue.
                 });
             response.Wait();
             s_logger.Info($"Response status: {response.Status}");

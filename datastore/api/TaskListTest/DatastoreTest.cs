@@ -658,6 +658,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestPropertyByKindRunQuery()
         {
+            ClearTasks();
             UpsertTaskList();
             Eventually(() =>
             {
