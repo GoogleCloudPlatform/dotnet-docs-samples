@@ -32,10 +32,8 @@ Copy-Item -Force github\dotnet-docs-samples\.kokoro\docker\bootstrap.js `
 Get-ChildItem \
 Get-ChildItem \phantomjs-2.1.1-windows
 Get-ChildItem $casperJsInstallPath
-return
 
-
-    # Install dotnet core sdk.
+# Install dotnet core sdk.
 choco install -y dotnetcore-sdk
 
 # Run the tests.
