@@ -11,4 +11,7 @@ REM distributed under the License is distributed on an "AS IS" BASIS,
 REM WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 REM See the License for the specific language governing permissions and
 REM limitations under the License.
+DIR
+ECHO %KOKORO_GFILE_DIR%
+DIR %KOKORO_GFILE_DIR%
 c:\python36\python.exe "%KOKORO_GFILE_DIR%\trampoline_v1.py"
