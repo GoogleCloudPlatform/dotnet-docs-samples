@@ -5,6 +5,13 @@ for sentiment, entity, and syntax analysis.
 
 [NL-Docs]: https://cloud.google.com/natural-language/docs/
 
+This sample requires [.NET Core 2.0](
+    https://www.microsoft.com/net/core) or later.  That means using
+[Visual Studio 2017](
+    https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
+can use [this older sample](
+    https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/language/api).
+
 ## Build and Run
 
 1.  **Follow the instructions in the [root README](../../README.md)**.
@@ -13,20 +20,37 @@ for sentiment, entity, and syntax analysis.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=language.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Natural Language API.
 
-6.  Open the solution file "Analyze.sln" with Microsoft Visual Studio version 2015 or later:
-    * Google.Cloud.Language.V1 - [Analyze.sln](v1/Analyze/Analyze.sln)
-    * Google.Cloud.Language.V1.Experimental - [Analyze.sln](v1Beta2/Analyze/Analyze.sln)
+7.  From a Powershell command line, run the QuickStart sample:
+    ```
+    PS C:\...\dotnet-docs-samples\language\api\QuickStart> dotnet restore
+    PS C:\...\dotnet-docs-samples\language\api\QuickStart> dotnet run
+    Score: 0.2
+    Magnitude: 0.2
+    ```
 
-7.  Build the Solution.
+8.  And run the Analyze sample to see a list of possible commands:
+    ```
+    PS C:\...\dotnet-docs-samples\language\api\Analyze> dotnet restore
+    PS C:\...\dotnet-docs-samples\language\api\Analyze> dotnet run
 
-8.  Run.
+    Usage:
+    C:\> dotnet run command text
+    C:\> dotnet run command gs://bucketName/objectName
 
-    The script will write to STDOUT the json returned from the API for the requested feature.
+    Where command is one of
+        entities
+        sentiment
+        syntax
+        entity-sentiment
+        everything
+    ```
+
+    Each command will write to STDOUT the json returned from the API for the requested feature.
 
     For example, if you run:
 
     ```
-    c:\> Analyze everything Santa Claus Conquers the Martians is a terrible movie. It's so bad, it's good.
+    c:\> dotnet run everything Santa Claus Conquers the Martians is a terrible movie. It's so bad, it's good.
     ```
 
     You will see something like the following returned:
@@ -61,26 +85,34 @@ for sentiment, entity, and syntax analysis.
             Noun good
             Punct .
     Entities:
+            Name: movie
+            Type: WorkOfArt
+            Salience: 0.4999807
+            Mentions:
+                    48: movie
+            Metadata:
             Name: Santa Claus Conquers the Martians
             Type: WorkOfArt
-            Salience: 0.9731968
+            Salience: 0.405366
             Mentions:
                     0: Santa Claus Conquers the Martians
-                    48: movie
             Metadata:
                     mid: /m/0122r8
                     wikipedia_url: https://en.wikipedia.org/wiki/Santa_Claus_Conquers_the_Martians
             Name: good
             Type: Other
-            Salience: 0.02680321
+            Salience: 0.09465333
             Mentions:
                     71: good
             Metadata:
     Entity Sentiment:
-            Santa Claus Conquers the Martians (97%)
-                    Score: -0.6
-                    Magnitude 3.1
-            good (2%)
+            movie (49%)
+                    Score: -0.9
+                    Magnitude 0.9
+            Santa Claus Conquers the Martians (40%)
+                    Score: -0.9
+                    Magnitude 0.9
+            good (9%)
                     Score: 0
                     Magnitude 0
     ```
