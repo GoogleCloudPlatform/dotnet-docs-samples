@@ -23,12 +23,13 @@ $env:PATH = "$env:PATH;$(Resolve-Path \phantomjs-2.1.1-windows)\bin"
 
 # Install casperjs
 Unzip $env:KOKORO_GFILE_DIR\n1k0-casperjs-1.0.3-0-g76fc831.zip \
-$casperJsInstallPath = Resolve-Path \n1k0-casperjs-1.0.3-0-g76fc831
+$casperJsInstallPath = Resolve-Path \n1k0-casperjs-76fc831
 $env:PATH = "$env:PATH;$casperJsInstallPath\batchbin"
 # Patch casperjs
 Copy-Item -Force github\dotnet-docs-samples\.kokoro\docker\bootstrap.js `
     $casperJsInstallPath\bin\bootstrap.js
 
+Get-ChildItem \
 Get-ChildItem \phantomjs-2.1.1-windows
 Get-ChildItem $casperJsInstallPath
 return
