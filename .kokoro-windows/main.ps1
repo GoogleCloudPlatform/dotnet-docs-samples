@@ -17,4 +17,22 @@ Get-ChildItem $env:KOKORO_GFILE_DIR
 & "$env:KOKORO_GFILE_DIR/secrets.ps1"
 $env:GOOGLE_APPLICATION_CREDENTIALS="$env:KOKORO_GFILE_DIR/silver-python2-69452e94c2bf.json"
 
-Get-ChildItem -Recurse
+Push-Location
+try {
+    # Import BuildTools.psm1
+    $private:invocation = (Get-Variable MyInvocation -Scope 0).Value
+    Set-Location (Join-Path (Split-Path $invocation.MyCommand.Path) ..)
+    Import-Module  .\BuildTools.psm1 -DisableNameChecking
+
+    # The list of directories with runTests that have been ported to dotnet core.
+    $dirs = @('auth', 'datastore', 'kms')
+
+    # Find all the runTest scripts.
+    $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
+    $scripts.VersionInfo.FileName `
+        | Sort-Object -Descending -Property {Get-GitTimeStampForScript $_} `
+        | Run-TestScripts -TimeoutSeconds 600
+} finally {
+    Pop-Location
+}
+
