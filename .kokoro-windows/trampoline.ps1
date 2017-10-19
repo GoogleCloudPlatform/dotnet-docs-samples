@@ -35,6 +35,7 @@ Get-ChildItem $casperJsInstallPath
 
 # Install dotnet core sdk.
 choco install -y dotnetcore-sdk
+choco install -y dotnetcore --version 1.1.2
 
 # Run the tests.
 github\dotnet-docs-samples\.kokoro\main.ps1
