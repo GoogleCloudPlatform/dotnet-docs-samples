@@ -29,7 +29,12 @@ $env:PATH = "$env:PATH;$casperJsInstallPath\batchbin"
 Copy-Item -Force github\dotnet-docs-samples\.kokoro\docker\bootstrap.js `
     $casperJsInstallPath\bin\bootstrap.js
 
-# Install dotnet core sdk.
+Get-ChildItem \phantomjs-2.1.1-windows
+Get-ChildItem $casperJsInstallPath
+return
+
+
+    # Install dotnet core sdk.
 choco install -y dotnetcore-sdk
 
 # Run the tests.
