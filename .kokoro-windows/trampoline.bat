@@ -11,5 +11,4 @@ REM distributed under the License is distributed on an "AS IS" BASIS,
 REM WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 REM See the License for the specific language governing permissions and
 REM limitations under the License.
-choco install -y dotnetcore-sdk
-powershell github\dotnet-docs-samples\.kokoro-windows\main.ps1
+powershell github\dotnet-docs-samples\.kokoro-windows\trampoline.ps1
