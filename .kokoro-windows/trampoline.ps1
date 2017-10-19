@@ -18,11 +18,11 @@ function Unzip([string]$zipfile, [string]$outpath)
 }
 
 # Install phantomjs
-Unzip $env:KOKORO_GFILE_DIR\phantomjs-2.1.1-windows.zip \phantomjs-2.1.1-windows
+Unzip $env:KOKORO_GFILE_DIR\phantomjs-2.1.1-windows.zip \
 $env:PATH = "$env:PATH;$(Resolve-Path \phantomjs-2.1.1-windows)\bin"
 
 # Install casperjs
-Unzip $env:KOKORO_GFILE_DIR\n1k0-casperjs-1.0.3-0-g76fc831.zip \n1k0-casperjs-1.0.3-0-g76fc831
+Unzip $env:KOKORO_GFILE_DIR\n1k0-casperjs-1.0.3-0-g76fc831.zip \
 $casperJsInstallPath = Resolve-Path \n1k0-casperjs-1.0.3-0-g76fc831
 $env:PATH = "$env:PATH;$casperJsInstallPath\batchbin"
 # Patch casperjs
