@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.0.2" />
-    <PackageReference Include="Google.Cloud.Metadata.V1" Version="1.0.0-alpha02" />
+    <PackageReference Include="Google.Cloud.Metadata.V1" Version="1.0.0-alpha07" />
   </ItemGroup>
 
 </Project>

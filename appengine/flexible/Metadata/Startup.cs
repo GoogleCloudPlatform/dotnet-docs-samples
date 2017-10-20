@@ -19,11 +19,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Metadata
 {
     public class Startup
     {
+        ILogger _logger;
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -34,6 +36,7 @@ namespace Metadata
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
+            _logger = loggerFactory.CreateLogger(typeof(Startup));
 
             if (env.IsDevelopment())
             {
@@ -44,7 +47,7 @@ namespace Metadata
                 string myGoogleIpAddress = await GetMyGoogleCloudIpAddressAsync();
                 string text;
                 if (null == myGoogleIpAddress) {
-                    // Must not be running on App Engine.
+                    // Not running on App Engine.
                     text = @"<html><head><title>Metadata Error</title></head>
                     <body>I am not running in the Google Cloud.
                     </body></html>";
@@ -57,26 +60,40 @@ namespace Metadata
             });
         }
 
-        // [START get_my_ip]
         /// <summary>
         /// Query the metadata server to find my ip address.
         /// </summary>
         /// <returns>My ip address, or null if not running on Google Cloud.</returns>
         async Task<string> GetMyGoogleCloudIpAddressAsync()
         {
-            var metadataClient = Google.Cloud.Metadata.V1.MetadataClient.Create();
             try
             {
+                // [START get_my_ip]
+                var metadataClient = Google.Cloud.Metadata.V1.MetadataClient.Create();
                 var result = await metadataClient.GetMetadataAsync(
                     "instance/network-interfaces/0/access-configs/0/external-ip");
                 return result.Content.ToString();
+                // [END get_my_ip]
             }
-            catch (System.Net.Http.HttpRequestException)
+            catch (System.Net.Http.HttpRequestException e)
             {
-                // Must not be running on App Engine.
+                _logger.LogError(0, e, "I must not be running on App Engine.");
+            }
+            // Try one more time with the full url and an old-fashioned HTTP connection.
+            // TODO: Remove this code when the following issue is fixed:
+            // https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/1568
+            try 
+            {
+                var http = new HttpClient();
+                http.DefaultRequestHeaders.Add("Metadata-Flavor", new [] {"Google"});
+                return await http.GetStringAsync(
+                    "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip");
+            }
+            catch (System.Net.Http.HttpRequestException e)
+            {
+                _logger.LogError(1, e, "I must really not be running on App Engine.");
             }
             return null;
         }
-        // [END get_my_ip]
     }
 }
