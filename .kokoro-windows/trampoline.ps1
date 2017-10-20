@@ -11,16 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-$metadataResponse = Invoke-WebRequest `
-    "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/" `
-    -Headers @{"Metadata-Flavor"="Google"} -OutFile metadata
-Write-Host "Metadata:"
-Get-Content metadata
-$metadataResponse | Format-List
-return
-
-
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 function Unzip([string]$zipfile, [string]$outpath)
 {
