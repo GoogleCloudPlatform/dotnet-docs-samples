@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Metadata
 {
@@ -76,6 +77,17 @@ namespace Metadata
             catch (System.Net.Http.HttpRequestException e)
             {
                 _logger.LogError(0, e, "I must not be running on App Engine.");
+            }
+            // Try one more time with the full url and an old-fashioned HTTP connection.
+            try 
+            {
+                var http = new HttpClient();
+                return await http.GetStringAsync(
+                    "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip");
+            }
+            catch (System.Net.Http.HttpRequestException e)
+            {
+                _logger.LogError(1, e, "I must really not be running on App Engine.");
             }
             return null;
         }
