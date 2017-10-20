@@ -11,16 +11,13 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
+Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
-$filesToProcess = "QuickStart\QuickStart.cs"
+$filesToProcess = "..\QuickStart\QuickStart.cs"
 
 BackupAndEdit-TextFile $filesToProcess `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 { 
-    Build-Solution
-    packages\xunit.runner.console.2.2.0\tools\xunit.console.exe `
-        .\MonitoringTest\bin\Debug\MonitoringTest.dll `
-        -parallel none
-    if ($LASTEXITCODE -ne 0) { throw "FAILED" }
+    dotnet restore
+    dotnet test
 }
