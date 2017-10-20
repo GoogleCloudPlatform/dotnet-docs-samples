@@ -449,7 +449,7 @@ function Convert-2003ProjectToCore($csproj) {
         foreach ($sourceFile in $sourceFiles) {
             Write-Host $sourceFile
             $compile = $compileTemplate.Clone()
-            $compile.Include = (Resolve-Path $sourceFile).Path
+            $compile.Include = $sourceFile.FullName
             $group.AppendChild($compile) | Out-Null
         }
         $group.RemoveChild($compileTemplate) | Out-Null
