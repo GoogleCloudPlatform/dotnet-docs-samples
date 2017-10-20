@@ -2,7 +2,6 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Monitoring.V3" Version="1.0.0" />
@@ -11,7 +10,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Monitoring.csproj" />
+    <ProjectReference Include="..\MonitoringSample\Monitoring.csproj" />
+    <ProjectReference Include="..\QuickStart\QuickStart.csproj" />    
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
 </Project>

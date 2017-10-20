@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitoring", "Monitoring.csproj", "{7444FC60-A250-4A53-BDCD-C6CDBBDD769C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitoring", "MonitoringSample\Monitoring.csproj", "{7444FC60-A250-4A53-BDCD-C6CDBBDD769C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickStart", "QuickStart\QuickStart.csproj", "{D76F0E9B-5EA0-4A8D-A853-0A561FB90146}"
 EndProject

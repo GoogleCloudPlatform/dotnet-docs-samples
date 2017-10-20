@@ -8,7 +8,4 @@
     <PackageReference Include="CommandLineParser" Version="2.1.1-beta" />
     <PackageReference Include="Google.Cloud.Monitoring.V3" Version="1.0.0" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\testutil\testutil.csproj" />
-  </ItemGroup>
 </Project>

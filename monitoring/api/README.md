@@ -29,8 +29,8 @@ can use [this older sample](
 
 10. And run the Monitoring sample to see a list of subcommands:
     ```
-    PS C:\...dotnet-docs-samples\monitoring\api> dotnet restore
-    PS C:\...dotnet-docs-samples\monitoring\api> dotnet run
+    PS C:\...dotnet-docs-samples\monitoring\api\MonitoringSample> dotnet restore
+    PS C:\...dotnet-docs-samples\monitoring\api\MonitoringSample> dotnet run
     Monitoring 1.0.0.0
     Copyright c Google Inc 2017
 
