@@ -53,18 +53,21 @@ namespace CloudSql
         // http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(DbConnection), (IServiceProvider) => 
+            services.AddSingleton(typeof(DbConnection), (IServiceProvider) =>
                 InitializeDatabase());
-            services.AddMvc(options => {
+            services.AddMvc(options =>
+            {
                 options.Filters.Add(typeof(DbExceptionFilterAttribute));
             });
             _services = services;
         }
 
-        DbConnection InitializeDatabase() {
+        DbConnection InitializeDatabase()
+        {
             DbConnection connection;
             string database = Configuration["CloudSQL:Database"];
-            switch (database.ToLower()) {
+            switch (database.ToLower())
+            {
                 case "mysql":
                     connection = NewMysqlConnection();
                     break;
@@ -73,11 +76,12 @@ namespace CloudSql
                     break;
                 default:
                     throw new ArgumentException(string.Format(
-                        "Invalid database {0}.  Fix appsettings.json.", 
+                        "Invalid database {0}.  Fix appsettings.json.",
                             database), "CloudSQL:Database");
             }
             connection.Open();
-            using (var createTableCommand = connection.CreateCommand()) {
+            using (var createTableCommand = connection.CreateCommand())
+            {
                 createTableCommand.CommandText = @"
                     CREATE TABLE IF NOT EXISTS 
                     visits (
@@ -85,29 +89,30 @@ namespace CloudSql
                         user_ip CHAR(64)
                     )";
                 createTableCommand.ExecuteNonQuery();
-            }                           
+            }
             return connection;
         }
 
-        DbConnection NewMysqlConnection() {
+        DbConnection NewMysqlConnection()
+        {
             // [START mysql_connection]
             var connectionString = new MySqlConnectionStringBuilder(
                 Configuration["CloudSql:ConnectionString"])
             {
                 SslMode = MySqlSslMode.Required,
-                CertificateFile = 
+                CertificateFile =
                     Configuration["CloudSql:CertificateFile"]
             };
             if (string.IsNullOrEmpty(connectionString.Database))
                 connectionString.Database = "visitors";
-            DbConnection connection = 
+            DbConnection connection =
                 new MySqlConnection(connectionString.ConnectionString);
             // [END mysql_connection]
             return connection;
-
         }
 
-        DbConnection NewPostgreSqlConnection() {
+        DbConnection NewPostgreSqlConnection()
+        {
             // [START postgresql_connection]
             var connectionString = new NpgsqlConnectionStringBuilder(
                 Configuration["CloudSql:ConnectionString"])
@@ -118,7 +123,7 @@ namespace CloudSql
             };
             if (string.IsNullOrEmpty(connectionString.Database))
                 connectionString.Database = "visitors";
-            NpgsqlConnection connection = 
+            NpgsqlConnection connection =
                 new NpgsqlConnection(connectionString.ConnectionString);
             connection.ProvideClientCertificatesCallback +=
                 certs => certs.Add(new X509Certificate2(
@@ -149,6 +154,5 @@ namespace CloudSql
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
-
     }
 }
