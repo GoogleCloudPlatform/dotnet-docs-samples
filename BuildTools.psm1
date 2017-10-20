@@ -437,6 +437,20 @@ $coreProjectText = @"
 </Project>
 "@
 
+##############################################################################
+#.SYNOPSIS
+# Converts .NET Core csproj to MSBuild 2003.
+#
+#.DESCRIPTION
+# Creates the bare minimal project for code-formatter to work.
+# If you open the project with Visual Studio everything will be broken.
+#
+#.PARAMETER csproj
+# A project to convert.
+#
+#.EXAMPLE
+# Convert-2003ProjectToCore AuthSample.csproj
+##############################################################################
 function Convert-2003ProjectToCore($csproj) {
     $cspath = (Resolve-Path $csproj).Path
     $xml = [xml](Get-Content $csproj)
