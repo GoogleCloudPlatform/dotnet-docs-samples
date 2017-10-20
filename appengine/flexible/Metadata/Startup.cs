@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -46,12 +47,15 @@ namespace Metadata
             {
                 string myGoogleIpAddress = await GetMyGoogleCloudIpAddressAsync();
                 string text;
-                if (null == myGoogleIpAddress) {
+                if (null == myGoogleIpAddress)
+                {
                     // Not running on App Engine.
                     text = @"<html><head><title>Metadata Error</title></head>
                     <body>I am not running in the Google Cloud.
                     </body></html>";
-                } else {
+                }
+                else
+                {
                     text = string.Format(@"<html><head><title>Metadata Succeeded</title></head>
                         <body>My public IP address is {0}</body></html>", myGoogleIpAddress);
                 }
@@ -82,10 +86,10 @@ namespace Metadata
             // Try one more time with the full url and an old-fashioned HTTP connection.
             // TODO: Remove this code when the following issue is fixed:
             // https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/1568
-            try 
+            try
             {
                 var http = new HttpClient();
-                http.DefaultRequestHeaders.Add("Metadata-Flavor", new [] {"Google"});
+                http.DefaultRequestHeaders.Add("Metadata-Flavor", new[] { "Google" });
                 return await http.GetStringAsync(
                     "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip");
             }

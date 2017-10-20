@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -39,9 +40,9 @@ namespace SocialAuth
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, 
+                .AddJsonFile("appsettings.json", optional: true,
                     reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", 
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json",
                     optional: true);
 
             if (env.IsDevelopment())
@@ -136,7 +137,7 @@ namespace SocialAuth
             int authenticationProviderCount = 0;
             // Add external authentication middleware below. To configure them 
             // please see http://go.microsoft.com/fwlink/?LinkID=532715
-            string googleClientId = 
+            string googleClientId =
                 Configuration["Authentication:Google:ClientId"];
             if (!string.IsNullOrWhiteSpace(googleClientId))
             {
@@ -149,7 +150,7 @@ namespace SocialAuth
                 authenticationProviderCount += 1;
             }
 
-            string facebookAppId = 
+            string facebookAppId =
                 Configuration["Authentication:Facebook:AppId"];
             if (!string.IsNullOrWhiteSpace(facebookAppId))
             {

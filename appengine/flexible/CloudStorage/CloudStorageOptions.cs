@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 namespace CloudStorage
 {
     public class CloudStorageOptions

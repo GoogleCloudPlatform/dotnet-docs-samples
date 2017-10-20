@@ -51,7 +51,7 @@ namespace RedisCache
                 "" : WorkAroundIssue463(redisEndpoint);
             // [BEGIN redis_startup]
             services.AddDistributedRedisCache(options =>
-            {                
+            {
                 options.Configuration = redisEndpoint;
                 options.InstanceName = "master";
             });
