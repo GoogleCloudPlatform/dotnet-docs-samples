@@ -428,6 +428,38 @@ filter Format-Code {
     }
 }
 
+$coreProjectText = @"
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup>
+        <Compile Include="Program.cs" />
+    </ItemGroup>
+</Project>
+"@
+
+function Convert-2003ProjectToCore($csproj) {
+    $cspath = (Resolve-Path $csproj).Path
+    $xml = [xml](Get-Content $csproj)
+    if (-not $xml.Project.xmlns -eq "http://schemas.microsoft.com/developer/msbuild/2003") {
+        Write-Host "Converting .NET core $cspath to msbuild/2003..."
+        $doc = [xml]$coreProjectText
+        $group = $doc.Project.ItemGroup
+        $compileTemplate = $group.Compile
+        $sourceFiles = (Get-ChildItem -Path (Split-Path $cspath) -Filter "*.cs")
+        foreach ($sourceFile in $sourceFiles) {
+            Write-Host $sourceFile
+            $compile = $compileTemplate.Clone()
+            $compile.Include = (Resolve-Path $sourceFile).Path
+            $group.AppendChild($compile) | Out-Null
+        }
+        $group.RemoveChild($compileTemplate) | Out-Null
+        $doc.save($cspath)
+        return $doc
+    } else {
+        Write-Host "$cspath looks like a 2003 .csproj to me!"
+    }
+}
+
 ##############################################################################
 #.SYNOPSIS
 # Runs code formatter on a project or solution.
