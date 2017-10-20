@@ -23,8 +23,8 @@ namespace GoogleCloudSamples
     public class Analyze
     {
         public static string Usage = @"Usage:
-C:\> Analyze command text
-C:\> Analyze command gs://bucketName/objectName
+C:\> dotnet run command text
+C:\> dotnet run command gs://bucketName/objectName
 
 Where command is one of
     entities
