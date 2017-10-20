@@ -29,7 +29,7 @@ namespace GoogleCloudSamples
 
         readonly CommandLineRunner _cloudMonitoring = new CommandLineRunner()
         {
-            VoidMain = Program.Main,
+            VoidMain = Monitoring.Main,
             Command = "Monitoring"
         };
 
@@ -175,7 +175,7 @@ namespace GoogleCloudSamples
         readonly CommandLineRunner _quickStart = new CommandLineRunner()
         {
             VoidMain = QuickStart.Main,
-            Command = "QuickStart"
+            Command = "dotnet run"
         };
 
         [Fact]

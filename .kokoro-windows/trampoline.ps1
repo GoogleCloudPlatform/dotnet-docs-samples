@@ -37,5 +37,8 @@ Get-ChildItem $casperJsInstallPath
 choco install -y dotnetcore-sdk
 choco install -y --sxs dotnetcore-sdk --version 1.1.2
 
+# Install msbuild 14 for code-formatter
+choco install -y microsoft-build-tools --version 14.0.25420.1
+
 # Run the tests.
 github\dotnet-docs-samples\.kokoro\main.ps1
