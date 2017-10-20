@@ -60,25 +60,28 @@ namespace Metadata
             });
         }
 
-        // [START get_my_ip]
         /// <summary>
         /// Query the metadata server to find my ip address.
         /// </summary>
         /// <returns>My ip address, or null if not running on Google Cloud.</returns>
         async Task<string> GetMyGoogleCloudIpAddressAsync()
         {
-            var metadataClient = Google.Cloud.Metadata.V1.MetadataClient.Create();
             try
             {
+                // [START get_my_ip]
+                var metadataClient = Google.Cloud.Metadata.V1.MetadataClient.Create();
                 var result = await metadataClient.GetMetadataAsync(
                     "instance/network-interfaces/0/access-configs/0/external-ip");
                 return result.Content.ToString();
+                // [END get_my_ip]
             }
             catch (System.Net.Http.HttpRequestException e)
             {
                 _logger.LogError(0, e, "I must not be running on App Engine.");
             }
             // Try one more time with the full url and an old-fashioned HTTP connection.
+            // TODO: Remove this code when the following issue is fixed:
+            // https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/1568
             try 
             {
                 var http = new HttpClient();
@@ -92,6 +95,5 @@ namespace Metadata
             }
             return null;
         }
-        // [END get_my_ip]
     }
 }
