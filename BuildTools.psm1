@@ -419,11 +419,17 @@ function BuildAndRun-CoreTest($TestJs = "test.js") {
 filter Format-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
-        echo "codeformatter.exe $project"
-        codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis /rule-:ExplicitVisibility /rule:FieldNames /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation /nocopyright $project
-        if ($LASTEXITCODE) {
-            $project.FullName
-            throw "codeformatter failed with exit code $LASTEXITCODE."
+        Backup-File -Files $project -ScriptBlock {
+            Convert-2003ProjectToCore $project
+            "codeformatter.exe $project" | Write-Host
+            codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis `
+                /rule-:ExplicitVisibility /rule:FieldNames `
+                /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation `
+                /nocopyright $project
+            if ($LASTEXITCODE) {
+                $project.FullName
+                throw "codeformatter failed with exit code $LASTEXITCODE."
+            }
         }
     }
 }
@@ -461,14 +467,12 @@ function Convert-2003ProjectToCore($csproj) {
         $compileTemplate = $group.Compile
         $sourceFiles = (Get-ChildItem -Path (Split-Path $cspath) -Filter "*.cs")
         foreach ($sourceFile in $sourceFiles) {
-            Write-Host $sourceFile
             $compile = $compileTemplate.Clone()
             $compile.Include = $sourceFile.FullName
             $group.AppendChild($compile) | Out-Null
         }
         $group.RemoveChild($compileTemplate) | Out-Null
         $doc.save($cspath)
-        return $doc
     } else {
         Write-Host "$cspath looks like a 2003 .csproj to me!"
     }
@@ -490,10 +494,7 @@ function Convert-2003ProjectToCore($csproj) {
 filter Lint-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
-        Backup-File -Files $project -ScriptBlock {
-            Convert-2003ProjectToCore $project
-            @($project) | Format-Code            
-        }
+        @($project) | Format-Code            
         # If git reports a diff, codeformatter changed something, and that's bad.
         $diff = git diff
         if ($diff) {
