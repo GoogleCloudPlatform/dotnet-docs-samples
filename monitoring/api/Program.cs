@@ -128,7 +128,7 @@ namespace GoogleCloudSamples
         public string metricType { get; set; }
     }
 
-    public class Program
+    public class Monitoring
     {
         private static readonly DateTime s_unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
