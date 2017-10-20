@@ -1220,7 +1220,6 @@ namespace GoogleCloudSamples.Spanner
                     await retryPolicy.ExecuteAsync(
                         () => ReadWriteWithTransactionCoreAsync(
                             projectId, instanceId, databaseId));
-
                 })
                 : Task.Run(async () =>
                 {
