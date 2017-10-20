@@ -24,6 +24,7 @@ namespace Metadata
 {
     public class Startup
     {
+        ILogger _logger;
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -34,6 +35,7 @@ namespace Metadata
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
+            _logger = loggerFactory.CreateLogger(typeof(Startup));
 
             if (env.IsDevelopment())
             {
@@ -44,7 +46,7 @@ namespace Metadata
                 string myGoogleIpAddress = await GetMyGoogleCloudIpAddressAsync();
                 string text;
                 if (null == myGoogleIpAddress) {
-                    // Must not be running on App Engine.
+                    // Not running on App Engine.
                     text = @"<html><head><title>Metadata Error</title></head>
                     <body>I am not running in the Google Cloud.
                     </body></html>";
@@ -71,9 +73,9 @@ namespace Metadata
                     "instance/network-interfaces/0/access-configs/0/external-ip");
                 return result.Content.ToString();
             }
-            catch (System.Net.Http.HttpRequestException)
+            catch (System.Net.Http.HttpRequestException e)
             {
-                // Must not be running on App Engine.
+                _logger.LogError(0, e, "I must not be running on App Engine.");
             }
             return null;
         }
