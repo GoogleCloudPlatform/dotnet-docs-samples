@@ -20,7 +20,7 @@ function Unzip([string]$zipfile, [string]$outpath)
 # Install codeformatter
 Unzip $env:KOKORO_GFILE_DIR\codeformatter.zip \codeformatter
 $codeformatterInstallPath = Resolve-Path \codeformatter
-$env:PATH = "$env:PATH;$codeformatterInstallPath"
+$env:PATH = "$env:PATH;$codeformatterInstallPath\bin"
 
 # Install msbuild 14 for code-formatter
 choco install -y microsoft-build-tools --version 14.0.25420.1
