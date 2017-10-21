@@ -475,6 +475,14 @@ function Convert-2003ProjectToCore($csproj) {
         $doc.save($cspath)
     } else {
         Write-Host "$cspath looks like a 2003 .csproj to me!"
+        $doc = [xml] (Get-Content $cspath)
+        # This one import causes codeformatter to choke.  Turn it off.
+        foreach ($import in $doc.Project.Import | Where-Object `
+            {$_.Project -like '*\Microsoft.WebApplication.targets'}) 
+        {
+            $import.Condition = 'false'
+        }
+        $doc.save($cspath)
     }
 }
 
