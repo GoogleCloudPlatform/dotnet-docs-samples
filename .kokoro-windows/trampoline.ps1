@@ -52,4 +52,4 @@ choco install -y dotnetcore-sdk
 choco install -y --sxs dotnetcore-sdk --version 1.1.2
 
 # Run the tests.
-github\dotnet-docs-samples\.kokoro\main.ps1
+github\dotnet-docs-samples\.kokoro-windows\main.ps1
