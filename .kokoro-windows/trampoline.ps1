@@ -24,6 +24,9 @@ $env:PATH = "$env:PATH;$codeformatterInstallPath\bin"
 
 # Install msbuild 14 for code-formatter
 choco install -y microsoft-build-tools --version 14.0.25420.1
+# The install fails to update PATH.  Do it ourselves.
+$env:PATH="$env:PATH;C:\Program Files (x86)\MSBuild\14.0\Bin"
+Get-Command MSBuild.exe
 
 # Lint the code
 Push-Location
@@ -50,9 +53,6 @@ Copy-Item -Force github\dotnet-docs-samples\.kokoro\docker\bootstrap.js `
 # Install dotnet core sdk.
 choco install -y dotnetcore-sdk
 choco install -y --sxs dotnetcore-sdk --version 1.1.2
-
-# Install Visual Studio 2017 build tools.
-choco install -y -sxs microsoft-build-tools --version 15.0.26320.2
 
 # Get the latest Google Cloud SDK components.
 gcloud components update -q
