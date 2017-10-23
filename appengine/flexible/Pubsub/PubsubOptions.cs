@@ -12,10 +12,10 @@ namespace Pubsub
         public string SubscriptionId { get; set; }
         public string ProjectId { get; set; }
 
-        private static string[] s_badProjectIds =
+        private static readonly string[] s_badProjectIds =
             new string[] { "your-project-id", "", null };
 
         public bool HasGoodProjectId() =>
-            !s_badProjectIds.Contains(ProjectId);          
+            !s_badProjectIds.Contains(ProjectId);
     }
 }

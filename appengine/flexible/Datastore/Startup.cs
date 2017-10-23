@@ -57,7 +57,7 @@ namespace Datastore
                 app.UseDeveloperExceptionPage();
             }
             string projectId = Configuration["GoogleProjectId"];
-            if (new string[] { "your-project-id", "", null}.Contains(projectId))
+            if (new string[] { "your-project-id", "", null }.Contains(projectId))
             {
                 app.Run(async (context) =>
                 {

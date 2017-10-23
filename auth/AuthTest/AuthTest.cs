@@ -65,18 +65,20 @@ namespace GoogleCloudSamples
         [InlineData("api")]
         void TestExplicitComputeEngine(string cmd)
         {
-            string metadataJson = 
+            string metadataJson =
                 Google.Api.Gax.Platform.Instance()?.GceDetails?.MetadataJson;
-            if (null == metadataJson) {
+            if (null == metadataJson)
+            {
                 Console.WriteLine("Cannot test Compute Engine methods because "
                     + "I'm not running on compute engine.");
                 return;
             }
             dynamic metadata = JObject.Parse(metadataJson);
             JObject serviceAccounts = metadata?.instance?.serviceAccounts;
-            bool hasServiceAccounts = null == serviceAccounts ? 
+            bool hasServiceAccounts = null == serviceAccounts ?
                 false : serviceAccounts.HasValues;
-            if (!hasServiceAccounts) {
+            if (!hasServiceAccounts)
+            {
                 Console.WriteLine("Cannot test Compute Engine methods because "
                     + "this GCE instance has no service accounts.");
                 return;

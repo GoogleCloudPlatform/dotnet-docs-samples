@@ -419,12 +419,70 @@ function BuildAndRun-CoreTest($TestJs = "test.js") {
 filter Format-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
-        echo "codeformatter.exe $project"
-        codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis /rule-:ExplicitVisibility /rule:FieldNames /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation /nocopyright $project
-        if ($LASTEXITCODE) {
-            $project.FullName
-            throw "codeformatter failed with exit code $LASTEXITCODE."
+        Backup-File -Files $project -ScriptBlock {
+            Convert-2003ProjectToCore $project
+            "codeformatter.exe $project" | Write-Host
+            codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis `
+                /rule-:ExplicitVisibility /rule:FieldNames `
+                /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation `
+                /nocopyright $project
+            if ($LASTEXITCODE) {
+                $project.FullName
+                throw "codeformatter failed with exit code $LASTEXITCODE."
+            }
         }
+    }
+}
+
+$coreProjectText = @"
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup>
+        <Compile Include="Program.cs" />
+    </ItemGroup>
+</Project>
+"@
+
+##############################################################################
+#.SYNOPSIS
+# Converts .NET Core csproj to MSBuild 2003.
+#
+#.DESCRIPTION
+# Creates the bare minimal project for code-formatter to work.
+# If you open the project with Visual Studio everything will be broken.
+#
+#.PARAMETER csproj
+# A project to convert.
+#
+#.EXAMPLE
+# Convert-2003ProjectToCore AuthSample.csproj
+##############################################################################
+function Convert-2003ProjectToCore($csproj) {
+    $cspath = (Resolve-Path $csproj).Path
+    $xml = [xml](Get-Content $csproj)
+    if (-not $xml.Project.xmlns -eq "http://schemas.microsoft.com/developer/msbuild/2003") {
+        Write-Host "Converting .NET core $cspath to msbuild/2003..."
+        $doc = [xml]$coreProjectText
+        $group = $doc.Project.ItemGroup
+        $compileTemplate = $group.Compile
+        $sourceFiles = (Get-ChildItem -Path (Split-Path $cspath) -Filter "*.cs")
+        foreach ($sourceFile in $sourceFiles) {
+            $compile = $compileTemplate.Clone()
+            $compile.Include = $sourceFile.FullName
+            $group.AppendChild($compile) | Out-Null
+        }
+        $group.RemoveChild($compileTemplate) | Out-Null
+        $doc.save($cspath)
+    } else {
+        Write-Host "$cspath looks like a 2003 .csproj to me!"
+        $doc = [xml] (Get-Content $cspath)
+        # This one import causes codeformatter to choke.  Turn it off.
+        foreach ($import in $doc.Project.Import | Where-Object `
+            {$_.Project -like '*\Microsoft.WebApplication.targets'}) 
+        {
+            $import.Condition = 'false'
+        }
+        $doc.save($cspath)
     }
 }
 
@@ -444,7 +502,7 @@ filter Format-Code {
 filter Lint-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
-        @($project) | Format-Code
+        @($project) | Format-Code            
         # If git reports a diff, codeformatter changed something, and that's bad.
         $diff = git diff
         if ($diff) {

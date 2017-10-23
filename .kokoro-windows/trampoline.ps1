@@ -17,6 +17,24 @@ function Unzip([string]$zipfile, [string]$outpath)
     [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfile, $outpath)
 }
 
+# Install codeformatter
+Unzip $env:KOKORO_GFILE_DIR\codeformatter.zip \codeformatter
+$codeformatterInstallPath = Resolve-Path \codeformatter
+$env:PATH = "$env:PATH;$codeformatterInstallPath\bin"
+
+# Install msbuild 14 for code-formatter
+choco install -y microsoft-build-tools --version 14.0.25420.1
+
+# Lint the code
+Push-Location
+try {
+    Set-Location github\dotnet-docs-samples\
+    Import-Module .\BuildTools.psm1
+    Lint-Code
+} finally {
+    Pop-Location
+}
+
 # Install phantomjs
 Unzip $env:KOKORO_GFILE_DIR\phantomjs-2.1.1-windows.zip \
 $env:PATH = "$env:PATH;$(Resolve-Path \phantomjs-2.1.1-windows)\bin"
@@ -29,16 +47,9 @@ $env:PATH = "$env:PATH;$casperJsInstallPath\batchbin"
 Copy-Item -Force github\dotnet-docs-samples\.kokoro\docker\bootstrap.js `
     $casperJsInstallPath\bin\bootstrap.js
 
-Get-ChildItem \
-Get-ChildItem \phantomjs-2.1.1-windows
-Get-ChildItem $casperJsInstallPath
-
 # Install dotnet core sdk.
 choco install -y dotnetcore-sdk
 choco install -y --sxs dotnetcore-sdk --version 1.1.2
-
-# Install msbuild 14 for code-formatter
-choco install -y microsoft-build-tools --version 14.0.25420.1
 
 # Run the tests.
 github\dotnet-docs-samples\.kokoro\main.ps1

@@ -472,7 +472,7 @@ namespace GoogleCloudSamples
                 _subscriber.GetSubscription(subscriptionName));
         }
     }
-        
+
     public class QuickStartTests
     {
         readonly CommandLineRunner _quickStart = new CommandLineRunner()

@@ -49,7 +49,8 @@ namespace Stackdriver
             services.Configure<StackdriverOptions>(
                 Configuration.GetSection("Stackdriver"));
             // [END configure_services_logging]
-            services.AddGoogleExceptionLogging(options => {
+            services.AddGoogleExceptionLogging(options =>
+            {
                 options.ProjectId = Configuration["Stackdriver:ProjectId"];
                 options.ServiceName = Configuration["Stackdriver:ServiceName"];
                 options.Version = Configuration["Stackdriver:Version"];
@@ -58,7 +59,8 @@ namespace Stackdriver
 
             // [START configure_services_trace]
             // Add trace service.
-            services.AddGoogleTrace(options => {
+            services.AddGoogleTrace(options =>
+            {
                 options.ProjectId = Configuration["Stackdriver:ProjectId"];
                 options.Options = TraceOptions.Create(
                     bufferOptions: BufferOptions.NoBuffer());
