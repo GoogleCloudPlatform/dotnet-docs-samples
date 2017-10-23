@@ -38,7 +38,7 @@ namespace GoogleCloudSamples
 
         readonly CommandLineRunner _pubsub = new CommandLineRunner()
         {
-            VoidMain = Program.Main,
+            VoidMain = Pubsub.Main,
             Command = "Pubsub"
         };
 
@@ -177,7 +177,7 @@ namespace GoogleCloudSamples
         }
 
         // [START retry]
-        public void RpcRetry(string topicId, string subscriptionId,
+        internal void RpcRetry(string topicId, string subscriptionId,
             PublisherClient publisher, SubscriberClient subscriber)
         {
             TopicName topicName = new TopicName(_projectId, topicId);
@@ -470,6 +470,22 @@ namespace GoogleCloudSamples
                 _projectId, subscriptionId);
             Exception e = Assert.Throws<Grpc.Core.RpcException>(() =>
                 _subscriber.GetSubscription(subscriptionName));
+        }
+    }
+
+    public class QuickStartTests
+    {
+        readonly CommandLineRunner _quickStart = new CommandLineRunner()
+        {
+            VoidMain = QuickStart.Main,
+            Command = "dotnet run"
+        };
+
+        [Fact]
+        public void TestRun()
+        {
+            var output = _quickStart.Run();
+            Assert.Equal(0, output.ExitCode);
         }
     }
 }
