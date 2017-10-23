@@ -22,7 +22,7 @@ try {
     # buildAndRunTests
     $private:invocation = (Get-Variable MyInvocation -Scope 0).Value
     Set-Location (Join-Path (Split-Path $invocation.MyCommand.Path) ..)
-    .\buildAndRunTests.ps1
+    .\buildAndRunTests.ps1 -Skip
 } finally {
     Pop-Location
 }
