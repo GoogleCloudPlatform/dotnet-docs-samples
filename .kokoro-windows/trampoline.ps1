@@ -51,5 +51,14 @@ Copy-Item -Force github\dotnet-docs-samples\.kokoro\docker\bootstrap.js `
 choco install -y dotnetcore-sdk
 choco install -y --sxs dotnetcore-sdk --version 1.1.2
 
+# Install Visual Studio 2017 build tools.
+choco install -y -sxs microsoft-build-tools --version 15.0.26320.2
+
+# Get the latest Google Cloud SDK components.
+gcloud components update -q
+
+# Install nuget command line.
+choco install nuget.commandline
+
 # Run the tests.
 github\dotnet-docs-samples\.kokoro-windows\main.ps1
