@@ -15,23 +15,14 @@
 # Load secrets from the files downloaded from google cloud storage.
 Get-ChildItem $env:KOKORO_GFILE_DIR
 & "$env:KOKORO_GFILE_DIR/secrets.ps1"
-$env:GOOGLE_APPLICATION_CREDENTIALS="$env:KOKORO_GFILE_DIR/silver-python2-01aab03dac88.json"
+$env:GOOGLE_APPLICATION_CREDENTIALS="$env:KOKORO_GFILE_DIR/silver-python2-69452e94c2bf.json"
 
 Push-Location
 try {
-    # Import BuildTools.psm1
+    # buildAndRunTests
     $private:invocation = (Get-Variable MyInvocation -Scope 0).Value
     Set-Location (Join-Path (Split-Path $invocation.MyCommand.Path) ..)
-    Import-Module  .\BuildTools.psm1 -DisableNameChecking
-
-    # The list of directories with runTests that have been ported to dotnet core.
-    $dirs = @('appengine', 'auth', 'datastore', 'kms', 'language', 'monitoring', 'pubsub')
-
-    # Find all the runTest scripts.
-    $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
-    $scripts.VersionInfo.FileName `
-        | Sort-Object -Descending -Property {Get-GitTimeStampForScript $_} `
-        | Run-TestScripts -TimeoutSeconds 600
+    .\buildAndRunTests.ps1 -Skip
 } finally {
     Pop-Location
 }

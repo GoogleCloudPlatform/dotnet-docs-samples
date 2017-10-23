@@ -20,9 +20,9 @@ using System.Diagnostics;
 
 namespace GoogleCloudSamples
 {
-    class QuickStart
+    public class QuickStart
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // Instantiates a client
             PublisherClient publisher = PublisherClient.Create();

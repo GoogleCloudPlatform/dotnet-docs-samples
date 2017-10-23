@@ -190,7 +190,7 @@ namespace GoogleCloudSamples
         public string topicId { get; set; }
     }
 
-    public class Program
+    public class Pubsub
     {
         public static object CreateTopic(string projectId, string topicId)
         {

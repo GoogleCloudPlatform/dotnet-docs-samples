@@ -186,10 +186,14 @@ namespace GoogleCloudSamples.Spanner
         {
             RefillMarketingBudgetsAsync(300000, 300000).Wait();
             Thread.Sleep(TimeSpan.FromSeconds(11));
-            ConsoleOutput output = _spannerCmd.Run("readStaleData",
-                s_projectId, s_instanceId, s_databaseId);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Go, Go, Go", output.Stdout);
+            Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+                .RetryPolicy.DefaultExponential.ExecuteAction(() =>
+            {
+                ConsoleOutput output = _spannerCmd.Run("readStaleData",
+                    s_projectId, s_instanceId, s_databaseId);
+                Assert.Equal(0, output.ExitCode);
+                Assert.Contains("Go, Go, Go", output.Stdout);
+            });
         }
 
         [Fact]
