@@ -60,5 +60,8 @@ gcloud components update -q
 # Install nuget command line.
 choco install nuget.commandline
 
+# Install IISExpress.  Some tests us it.
+choco install -y iisexpress
+
 # Run the tests.
 github\dotnet-docs-samples\.kokoro-windows\main.ps1
