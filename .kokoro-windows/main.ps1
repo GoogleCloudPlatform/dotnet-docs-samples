@@ -19,10 +19,19 @@ $env:GOOGLE_APPLICATION_CREDENTIALS="$env:KOKORO_GFILE_DIR/silver-python2-01aab0
 
 Push-Location
 try {
-    # buildAndRunTests
+    # Import BuildTools.psm1
     $private:invocation = (Get-Variable MyInvocation -Scope 0).Value
     Set-Location (Join-Path (Split-Path $invocation.MyCommand.Path) ..)
-    .\buildAndRunTests.ps1 -Skip
+    Import-Module  .\BuildTools.psm1 -DisableNameChecking
+
+    # The list of all subdirectories.
+    $dirs = Get-ChildItem | Where-Object {$_.PSIsContainer}  
+
+    # Find all the runTest scripts.
+    $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
+    $scripts.VersionInfo.FileName `
+        | Sort-Object -Descending -Property {Get-GitTimeStampForScript $_} `
+        | Run-TestScripts -TimeoutSeconds 600
 } finally {
     Pop-Location
 }
