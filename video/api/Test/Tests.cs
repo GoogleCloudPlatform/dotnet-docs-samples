@@ -98,7 +98,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             ConsoleOutput output = _analyze.Run("labels",
                 DownloadGcsObject(@"gs://demomaker/cat.mp4"));
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Cat", output.Stdout);
+            Assert.Contains("Cat", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             ConsoleOutput output = _analyze.Run("labels",
                 @"gs://demomaker/cat.mp4");
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Cat", output.Stdout);
+            Assert.Contains("Cat", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
         }
 
         void TestFaces()
