@@ -25,7 +25,7 @@ try {
     Import-Module  .\BuildTools.psm1 -DisableNameChecking
 
     # The list of all subdirectories.
-    $dirs = Get-ChildItem | Where-Object {$_.PSIsContainer}  
+    $dirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
 
     # Find all the runTest scripts.
     $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
