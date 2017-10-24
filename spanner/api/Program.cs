@@ -61,6 +61,17 @@ namespace GoogleCloudSamples.Spanner
         public string tableName { get; set; }
     }
 
+    [Verb("dropSampleTables", HelpText = "Drops the tables created by createSampleDatabase.")]
+    class DropSampleTablesOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when creating Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the tables will be dropped.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the tables will be dropped.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
     [Verb("insertSampleData", HelpText = "Insert sample data into sample Cloud Spanner database table.")]
     class InsertSampleDataOptions
     {
@@ -257,7 +268,14 @@ namespace GoogleCloudSamples.Spanner
             {
                 string createStatement = $"CREATE DATABASE `{databaseId}`";
                 var cmd = connection.CreateDdlCommand(createStatement);
-                await cmd.ExecuteNonQueryAsync();
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (Grpc.Core.RpcException e) when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists)
+                {
+                    // OK.
+                }
             }
             // Update connection string with Database ID for table creation.
             connectionString = connectionString + $"/databases/{databaseId}";
@@ -998,6 +1016,24 @@ namespace GoogleCloudSamples.Spanner
             // [END create_custom_database]
         }
 
+        public static async Task<object> DropSampleTables(
+            string projectId, string instanceId, string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+            // Make the request.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var dropAlbums = connection.CreateDdlCommand("DROP TABLE Albums")
+                    .ExecuteNonQueryAsync();
+                var dropSingers = connection.CreateDdlCommand("DROP TABLE Singers")
+                    .ExecuteNonQueryAsync();
+                Task.WaitAll(new [] { dropAlbums, dropSingers });
+            }
+            return 0;
+        }
+
         public static object CreateSampleDatabase(string projectId,
             string instanceId, string databaseId)
         {
@@ -1253,7 +1289,8 @@ namespace GoogleCloudSamples.Spanner
                 QueryDataWithIndexOptions,
                 AddStoringIndexOptions,
                 QueryDataWithStoringIndexOptions,
-                ReadStaleDataOptions, ListDatabaseTablesOptions
+                ReadStaleDataOptions, ListDatabaseTablesOptions,
+                DropSampleTablesOptions
                 >(args)
               .MapResult(
                 (CreateSampleDatabaseOptions opts) =>
@@ -1296,7 +1333,49 @@ namespace GoogleCloudSamples.Spanner
                 (ListDatabaseTablesOptions opts) =>
                     ListDatabaseTables(opts.projectId, opts.instanceId,
                         opts.databaseId),
+                (DropSampleTablesOptions opts) =>
+                    DropSampleTables(opts.projectId, opts.instanceId, 
+                    opts.databaseId).Result,
                 errs => 1);
+        }
+
+        /// <summary>
+        /// Returns true if an AggregateException contains a SpannerException
+        /// with the given error code.
+        /// </summary>
+        /// <param name="e">The exception to examine.</param>
+        /// <param name="errorCode">The error code to look for.</param>
+        /// <returns></returns>
+        public static bool ContainsError(AggregateException e, params ErrorCode[] errorCode)
+        {
+            foreach (var innerException in e.InnerExceptions)
+            {
+                SpannerException spannerException = innerException as SpannerException;
+                if (spannerException != null && errorCode.Contains(spannerException.ErrorCode))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if an AggregateException contains a Grpc.Core.RpcException
+        /// with the given error code.
+        /// </summary>
+        /// <param name="e">The exception to examine.</param>
+        /// <param name="errorCode">The error code to look for.</param>
+        /// <returns></returns>
+        public static bool ContainsGrpcError(AggregateException e,
+            Grpc.Core.StatusCode errorCode)
+        {
+            foreach (var innerException in e.InnerExceptions)
+            {
+                Grpc.Core.RpcException grpcException = innerException
+                    as Grpc.Core.RpcException;
+                if (grpcException != null &&
+                    grpcException.Status.StatusCode == errorCode)
+                    return true;
+            }
+            return false;
         }
     }
 }
