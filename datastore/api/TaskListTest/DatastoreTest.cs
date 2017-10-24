@@ -627,7 +627,6 @@ namespace GoogleCloudSamples
                 };
                 // [END kind_run_query]
                 Assert.Contains("Task", kinds);
-                Assert.Contains("TaskList", kinds);
             });
         }
 
