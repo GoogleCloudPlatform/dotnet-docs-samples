@@ -24,8 +24,8 @@ try {
     Set-Location (Join-Path (Split-Path $invocation.MyCommand.Path) ..)
     Import-Module  .\BuildTools.psm1 -DisableNameChecking
 
-    # The list of directories with runTests that have been ported to dotnet core.
-    $dirs = @('appengine', 'auth', 'datastore', 'kms', 'language', 'monitoring', 'pubsub')
+    # The list of all subdirectories.
+    $dirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
 
     # Find all the runTest scripts.
     $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse

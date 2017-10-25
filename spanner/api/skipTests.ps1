@@ -11,7 +11,10 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+
+# TODO: Resurrect this test when bug 68199801 is fixed.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
+
 
 BackupAndEdit-TextFile "QuickStart\Program.cs" `
     @{"YOUR-GOOGLE-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
