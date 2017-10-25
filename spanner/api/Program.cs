@@ -1029,7 +1029,8 @@ namespace GoogleCloudSamples.Spanner
                     .ExecuteNonQueryAsync();
                 var dropSingers = connection.CreateDdlCommand("DROP TABLE Singers")
                     .ExecuteNonQueryAsync();
-                Task.WaitAll(new [] { dropAlbums, dropSingers });
+                await dropAlbums;
+                await dropSingers;
             }
             return 0;
         }
