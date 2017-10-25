@@ -52,10 +52,13 @@ namespace GoogleCloudSamples
         /// <param name="args">Command line arguments to Main().</param>
         protected abstract ConsoleOutput Run(params string[] args);
 
+        protected string _audioRawPath = Path.Combine("resources", "audio.raw");
+        protected string _audioFlacPath = Path.Combine("resources", "audio.flac");
+
         [Fact]
         public void TestSync()
         {
-            var output = Run("sync", @"resources\audio.raw");
+            var output = Run("sync", _audioRawPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
@@ -69,7 +72,7 @@ namespace GoogleCloudSamples
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/723")]
         public void TestStreaming()
         {
-            var output = _recognize.Run("stream", @"resources\audio.raw");
+            var output = _recognize.Run("stream", _audioRawPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
@@ -87,7 +90,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestFlac()
         {
-            var output = _recognize.Run("rec", "-e", "Flac", @"resources\audio.flac");
+            var output = _recognize.Run("rec", "-e", "Flac", _audioFlacPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
@@ -95,7 +98,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSyncWithCredentials()
         {
-            var output = Run("sync-creds", @"resources\audio.raw",
+            var output = Run("sync-creds", _audioRawPath,
                 System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
@@ -105,7 +108,7 @@ namespace GoogleCloudSamples
         public void TestWithContext()
         {
             string stdin = "Good day!\nBye bye.\n\n";
-            var output = _recognize.RunWithStdIn(stdin, "with-context", @"resources\audio.raw");
+            var output = _recognize.RunWithStdIn(stdin, "with-context", _audioRawPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
@@ -113,7 +116,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSyncWords()
         {
-            var output = Run("sync", "-w", @"resources\audio.raw");
+            var output = Run("sync", "-w", _audioRawPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
             Assert.Contains("WordStartTime:", output.Stdout);
@@ -142,7 +145,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestAsync()
         {
-            var output = Run("async", Upload(@"resources\audio.raw"));
+            var output = Run("async", Upload(_audioRawPath));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
             Assert.Contains("how", output.Stdout);
@@ -151,7 +154,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestAsyncWords()
         {
-            var output = Run("async", "-w", Upload(@"resources\audio.raw"));
+            var output = Run("async", "-w", Upload(_audioRawPath));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
             Assert.Contains("WordStartTime:", output.Stdout);
