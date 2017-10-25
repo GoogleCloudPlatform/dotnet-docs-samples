@@ -1346,22 +1346,14 @@ namespace GoogleCloudSamples.Spanner
                 return this;
             }
 
-            public Type[] Verbs
-            {
-                get { return _verbs.Keys.ToArray(); }
-            }
+            public Type[] Verbs => _verbs.Keys.ToArray();
 
             public object Exec(ParserResult<object> result)
             {
                 var parsed = result as Parsed<object>;
                 if (parsed != null)
                 {
-                    var verbType = parsed.Value.GetType();
-                    if (_verbs.ContainsKey(verbType))
-                    {
-                        return _verbs[verbType](parsed.Value);
-                    }
-                    throw new InvalidOperationException();
+                    return _verbs[parsed.Value.GetType()](parsed.Value);
                 }
                 return 1;
             }
