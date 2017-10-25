@@ -23,6 +23,7 @@ using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 using System.Collections.Generic;
 using log4net;
 using System.Linq;
+using System.Collections.Specialized;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -1334,72 +1335,90 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
+        class OptionMap
+        {
+            protected Dictionary<Type, Func<object, object>> _verbs =
+                new Dictionary<Type, Func<object, object>>();
+
+            public OptionMap Add<ArgType, ReturnType>(Func<ArgType, ReturnType> f)
+            {
+                _verbs.Add(typeof(ArgType), (object a) => f((ArgType)a));
+                return this;
+            }
+
+            public Type[] Verbs
+            {
+                get { return _verbs.Keys.ToArray(); }
+            }
+
+            public object Exec(ParserResult<object> result)
+            {
+                var parsed = result as Parsed<object>;
+                if (parsed != null)
+                {
+                    var verbType = parsed.Value.GetType();
+                    if (_verbs.ContainsKey(verbType))
+                    {
+                        return _verbs[verbType](parsed.Value);
+                    }
+                    throw new InvalidOperationException();
+                }
+                return 1;
+            }
+
+        };
+
+
         public static int Main(string[] args)
         {
-            return (int)Parser.Default.ParseArguments<
-                CreateDatabaseOptions, CreateSampleDatabaseOptions,
-                InsertSampleDataOptions,
-                DeleteSampleDataOptions,
-                QuerySampleDataOptions,
-                AddColumnOptions,
-                WriteDataToNewColumnOptions,
-                QueryNewColumnOptions,
-                QueryDataWithTransactionOptions,
-                ReadWriteWithTransactionOptions,
-                AddIndexOptions,
-                QueryDataWithIndexOptions,
-                AddStoringIndexOptions,
-                QueryDataWithStoringIndexOptions,
-                ReadStaleDataOptions, ListDatabaseTablesOptions,
-                DropSampleTablesOptions
-                >(args)
-              .MapResult(
-                (CreateSampleDatabaseOptions opts) =>
-                CreateSampleDatabase(opts.projectId, opts.instanceId,
-                opts.databaseId),
-                (CreateDatabaseOptions opts) => CreateDatabase(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (DeleteSampleDataOptions opts) => DeleteSampleData(
-                        opts.projectId, opts.instanceId, opts.databaseId),
-                (InsertSampleDataOptions opts) => InsertSampleData(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (QuerySampleDataOptions opts) => QuerySampleData(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (AddColumnOptions opts) => AddColumn(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (WriteDataToNewColumnOptions opts) => WriteDataToNewColumn(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (QueryNewColumnOptions opts) => QueryNewColumn(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (QueryDataWithTransactionOptions opts) =>
+            OptionMap optionMap = new OptionMap();
+            optionMap
+                .Add((CreateSampleDatabaseOptions opts) =>
+                    CreateSampleDatabase(opts.projectId, opts.instanceId,
+                        opts.databaseId))
+                .Add((CreateDatabaseOptions opts) => CreateDatabase(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((DeleteSampleDataOptions opts) => DeleteSampleData(
+                        opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((InsertSampleDataOptions opts) => InsertSampleData(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((QuerySampleDataOptions opts) => QuerySampleData(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((AddColumnOptions opts) => AddColumn(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((WriteDataToNewColumnOptions opts) => WriteDataToNewColumn(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((QueryNewColumnOptions opts) => QueryNewColumn(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithTransactionOptions opts) =>
                     QueryDataWithTransaction(
                         opts.projectId, opts.instanceId, opts.databaseId,
-                        opts.platform),
-                (ReadWriteWithTransactionOptions opts) =>
+                        opts.platform))
+                .Add((ReadWriteWithTransactionOptions opts) =>
                     ReadWriteWithTransaction(
                         opts.projectId, opts.instanceId, opts.databaseId,
-                        opts.platform),
-                (AddIndexOptions opts) => AddIndex(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (AddStoringIndexOptions opts) => AddStoringIndex(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (QueryDataWithIndexOptions opts) => QueryDataWithIndex(
+                        opts.platform))
+                .Add((AddIndexOptions opts) => AddIndex(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((AddStoringIndexOptions opts) => AddStoringIndex(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithIndexOptions opts) => QueryDataWithIndex(
                     opts.projectId, opts.instanceId, opts.databaseId,
-                    opts.startTitle, opts.endTitle),
-                (QueryDataWithStoringIndexOptions opts) =>
+                    opts.startTitle, opts.endTitle))
+                .Add((QueryDataWithStoringIndexOptions opts) =>
                     QueryDataWithStoringIndex(
                         opts.projectId, opts.instanceId, opts.databaseId,
-                        opts.startTitle, opts.endTitle),
-                (ReadStaleDataOptions opts) =>
+                        opts.startTitle, opts.endTitle))
+                .Add((ReadStaleDataOptions opts) =>
                     ReadStaleDataAsync(opts.projectId, opts.instanceId,
-                        opts.databaseId).Result,
-                (ListDatabaseTablesOptions opts) =>
+                        opts.databaseId).Result)
+                .Add((ListDatabaseTablesOptions opts) =>
                     ListDatabaseTables(opts.projectId, opts.instanceId,
-                        opts.databaseId),
-                (DropSampleTablesOptions opts) =>
+                        opts.databaseId))
+                .Add((DropSampleTablesOptions opts) =>
                     DropSampleTables(opts.projectId, opts.instanceId,
-                    opts.databaseId).Result,
-                errs => 1);
+                    opts.databaseId).Result);
+            return (int)optionMap.Exec(Parser.Default.ParseArguments(args, optionMap.Verbs));
         }
 
         /// <summary>
