@@ -72,6 +72,17 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    [Verb("deleteSampleData", HelpText = "Delete sample data from sample Cloud Spanner database table.")]
+    class DeleteSampleDataOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample data will be removed.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample data will be removed.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
     [Verb("querySampleData", HelpText = "Query sample data from sample Cloud Spanner database table.")]
     class QuerySampleDataOptions
     {
@@ -909,6 +920,45 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END read_write_transaction]
 
+        public static async Task DeleteSampleDataAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            const int firstSingerId = 1;
+            const int secondSingerId = 2;
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+            List<Singer> singers = new List<Singer> {
+                new Singer {singerId = firstSingerId, firstName = "Marc",
+                    lastName = "Richards"},
+                new Singer {singerId = secondSingerId, firstName = "Catalina",
+                    lastName = "Smith"},
+                new Singer {singerId = 3, firstName = "Alice",
+                    lastName = "Trentor"},
+                new Singer {singerId = 4, firstName = "Lea",
+                    lastName = "Martin"},
+                new Singer {singerId = 5, firstName = "David",
+                    lastName = "Lomond"},
+            };
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                // Insert rows into the Singers table.
+                var cmd = connection.CreateDeleteCommand("Singers",
+                    new SpannerParameterCollection {
+                        {"SingerId", SpannerDbType.Int64}
+                    });
+                await Task.WhenAll(singers.Select(singer =>
+                {
+                    cmd.Parameters["SingerId"].Value = singer.singerId;
+                    return cmd.ExecuteNonQueryAsync();
+                }));
+
+                Console.WriteLine("Deleted data.");
+            }
+        }
         // [START insert_data]
         public static async Task InsertSampleDataAsync(
             string projectId, string instanceId, string databaseId)
@@ -1015,6 +1065,17 @@ namespace GoogleCloudSamples.Spanner
             string instanceId, string databaseId)
         {
             var response = InsertSampleDataAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object DeleteSampleData(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = DeleteSampleDataAsync(
                 projectId, instanceId, databaseId);
             s_logger.Info("Waiting for operation to complete...");
             response.Wait();
@@ -1243,6 +1304,7 @@ namespace GoogleCloudSamples.Spanner
             return (int)Parser.Default.ParseArguments<
                 CreateDatabaseOptions, CreateSampleDatabaseOptions,
                 InsertSampleDataOptions,
+                DeleteSampleDataOptions,
                 QuerySampleDataOptions,
                 AddColumnOptions,
                 WriteDataToNewColumnOptions,
@@ -1261,6 +1323,8 @@ namespace GoogleCloudSamples.Spanner
                 opts.databaseId),
                 (CreateDatabaseOptions opts) => CreateDatabase(
                     opts.projectId, opts.instanceId, opts.databaseId),
+                (DeleteSampleDataOptions opts) => DeleteSampleData(
+                        opts.projectId, opts.instanceId, opts.databaseId),
                 (InsertSampleDataOptions opts) => InsertSampleData(
                     opts.projectId, opts.instanceId, opts.databaseId),
                 (QuerySampleDataOptions opts) => QuerySampleData(
