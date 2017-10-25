@@ -1397,7 +1397,7 @@ namespace GoogleCloudSamples.Spanner
                     ListDatabaseTables(opts.projectId, opts.instanceId,
                         opts.databaseId),
                 (DropSampleTablesOptions opts) =>
-                    DropSampleTables(opts.projectId, opts.instanceId, 
+                    DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result,
                 errs => 1);
         }
