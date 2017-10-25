@@ -104,7 +104,8 @@ namespace GoogleCloudSamples
         /// <param name="objectName"></param>
         public void CopyToBucket(string localPath, string objectName)
         {
-            using (Stream m = new FileStream(localPath, FileMode.Open))
+            using (Stream m = new FileStream(localPath, FileMode.Open,
+                FileAccess.Read, FileShare.Read))
             {
                 _storage.UploadObject(_bucketName, objectName, null, m);
                 Collect(objectName);
