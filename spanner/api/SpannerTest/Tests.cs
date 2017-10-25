@@ -74,6 +74,8 @@ namespace GoogleCloudSamples.Spanner
                 s_projectId, s_instanceId, s_databaseId);
             _spannerCmd.Run("insertSampleData",
                 s_projectId, s_instanceId, s_databaseId);
+            _spannerCmd.Run("addColumn",
+                s_projectId, s_instanceId, s_databaseId);
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,

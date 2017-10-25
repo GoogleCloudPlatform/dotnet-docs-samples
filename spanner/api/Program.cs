@@ -1025,12 +1025,10 @@ namespace GoogleCloudSamples.Spanner
             // Make the request.
             using (var connection = new SpannerConnection(connectionString))
             {
-                var dropAlbums = connection.CreateDdlCommand("DROP TABLE Albums")
+                await connection.CreateDdlCommand("DROP TABLE Albums")
                     .ExecuteNonQueryAsync();
-                var dropSingers = connection.CreateDdlCommand("DROP TABLE Singers")
+                await connection.CreateDdlCommand("DROP TABLE Singers")
                     .ExecuteNonQueryAsync();
-                await dropAlbums;
-                await dropSingers;
             }
             return 0;
         }
