@@ -46,7 +46,7 @@ namespace GoogleCloudSamples
         public DatastoreTest()
         {
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            _db = DatastoreDb.Create(_projectId, "ghijklmnop");
+            _db = DatastoreDb.Create(_projectId, TestUtil.RandomName());
             _keyFactory = _db.CreateKeyFactory("Task");
             _sampleTask = new Entity()
             {
@@ -627,7 +627,6 @@ namespace GoogleCloudSamples
                 };
                 // [END kind_run_query]
                 Assert.Contains("Task", kinds);
-                Assert.Contains("TaskList", kinds);
             });
         }
 
