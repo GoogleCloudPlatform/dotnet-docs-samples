@@ -1337,7 +1337,7 @@ namespace GoogleCloudSamples.Spanner
 
         class OptionMap
         {
-            protected Dictionary<Type, Func<object, object>> _verbs =
+            protected readonly Dictionary<Type, Func<object, object>> _verbs =
                 new Dictionary<Type, Func<object, object>>();
 
             public OptionMap Add<ArgType, ReturnType>(Func<ArgType, ReturnType> f)
@@ -1365,7 +1365,6 @@ namespace GoogleCloudSamples.Spanner
                 }
                 return 1;
             }
-
         };
 
 
