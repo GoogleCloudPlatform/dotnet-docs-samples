@@ -1,7 +1,5 @@
 # Google Cloud Platform .NET Docs Samples
 
-![Test status on Windows](https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-windows.png?alt=media) ![Test status on Linux](https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-linux.png?alt=media)
-
 A collection of samples that demonstrate how to call some
 Google Cloud services from C#.
 
@@ -10,7 +8,8 @@ lists all the _Cloud_ APIs you can call from .NET.
 
 The samples in this repo cover only _some_ of the total APIs that you can call from .NET.
 
-[![Build Status](https://jenkins.on2flixcloud.tv/buildStatus/icon?job=dotnet-docs-samples)](https://jenkins.on2flixcloud.tv/job/dotnet-docs-samples/)
+### Build Status
+![Windows][windows-badge] ![Linux][linux-badge]
 
 ## Build and Run
 
@@ -82,3 +81,6 @@ But no sample will work until you:
 ## Testing
 
 * See [TESTING.md](TESTING.md)
+
+[windows-badge]: https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-windows.png?alt=media
+[linux-badge]: https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-linux.png?alt=media
