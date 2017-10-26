@@ -1,5 +1,7 @@
 # Google Cloud Platform .NET Docs Samples
 
+![Test status on Windows](https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-windows.png?alt=media) ![Test status on Linux](https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-linux.png?alt=media)
+
 A collection of samples that demonstrate how to call some
 Google Cloud services from C#.
 
