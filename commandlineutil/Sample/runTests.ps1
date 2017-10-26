@@ -21,12 +21,12 @@ function Throw($message) {
 }
 
 dotnet restore
-dotnet run -- v1
+dotnet build 
+dotnet run --no-build -- v1
 $LASTEXITCODE -eq 0 -or (Throw "Expected exit code 0 for v1")
-dotnet run -- v5
+dotnet run --no-build -- v5
 $LASTEXITCODE -eq 5 -or (Throw "Expected exit code 5 for v5")
-dotnet run -- v17
-$LASTEXITCODE -eq 0 -or (Throw "Expected exit code 0 for v17")
-dotnet run -- no-such-verb
+dotnet run --no-build -- no-such-verb
 $LASTEXITCODE -eq 255 -or (Throw "Expected exit code 255 for no-such-verb")
-
+dotnet run --no-build -- v17
+$LASTEXITCODE -eq 0 -or (Throw "Expected exit code 0 for v17")
