@@ -13,30 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
- using CommandLine;
+
+using CommandLine;
 using System;
 
 namespace GoogleCloudSamples
 {
     class CommandLineUtilSample
     {
-        [Verb("v1")] class Verb1 {};
-        [Verb("v2")] class Verb2 {};
-        [Verb("v3")] class Verb3 {};
-        [Verb("v4")] class Verb4 {};
-        [Verb("v5")] class Verb5 {};
-        [Verb("v6")] class Verb6 {};
-        [Verb("v7")] class Verb7 {};
-        [Verb("v8")] class Verb8 {};
-        [Verb("v9")] class Verb9 {};
-        [Verb("v10")] class Verb10 {};
-        [Verb("v11")] class Verb11 {};
-        [Verb("v12")] class Verb12 {};
-        [Verb("v13")] class Verb13 {};
-        [Verb("v14")] class Verb14 {};
-        [Verb("v15")] class Verb15 {};
-        [Verb("v16")] class Verb16 {};
-        [Verb("v17")] class Verb17 {};
+        [Verb("v1")] class Verb1 { };
+        [Verb("v2")] class Verb2 { };
+        [Verb("v3")] class Verb3 { };
+        [Verb("v4")] class Verb4 { };
+        [Verb("v5")] class Verb5 { };
+        [Verb("v6")] class Verb6 { };
+        [Verb("v7")] class Verb7 { };
+        [Verb("v8")] class Verb8 { };
+        [Verb("v9")] class Verb9 { };
+        [Verb("v10")] class Verb10 { };
+        [Verb("v11")] class Verb11 { };
+        [Verb("v12")] class Verb12 { };
+        [Verb("v13")] class Verb13 { };
+        [Verb("v14")] class Verb14 { };
+        [Verb("v15")] class Verb15 { };
+        [Verb("v16")] class Verb16 { };
+        [Verb("v17")] class Verb17 { };
 
         static int Main(string[] args)
         {
@@ -46,7 +47,8 @@ namespace GoogleCloudSamples
                 .Add((Verb2 v2) => Console.WriteLine("You invoked Verb2!"))
                 .Add((Verb3 v3) => Console.WriteLine("You invoked Verb3!"))
                 .Add((Verb4 v4) => Console.WriteLine("You invoked Verb4!"))
-                .Add((Verb5 v5) => {
+                .Add((Verb5 v5) =>
+                {
                     Console.WriteLine("You invoked Verb5!  It returns 5.");
                     return 5;
                 })

@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 using CommandLine;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Invoked when the command line arguments failed to parse.
         /// </summary>        
-        public Func<NotParsed<object>, ResultType> NotParsedFunc { get; set;}
+        public Func<NotParsed<object>, ResultType> NotParsedFunc { get; set; }
 
         /// <summary>
         /// Map an OptionsType to its handler function.
@@ -58,7 +59,8 @@ namespace GoogleCloudSamples
         /// </summary>
         public VerbMap<ResultType> Add<ArgType>(Action<ArgType> f)
         {
-            _verbs.Add(typeof(ArgType), (object a) => {
+            _verbs.Add(typeof(ArgType), (object a) =>
+            {
                 f((ArgType)a);
                 return DefaultResult;
             });
@@ -71,7 +73,7 @@ namespace GoogleCloudSamples
         public ResultType Run(string[] args, Parser parser = null)
         {
             parser = parser ?? Parser.Default;
-            ParserResult<object> result = 
+            ParserResult<object> result =
                 parser.ParseArguments(args, _verbs.Keys.ToArray());
             var parsed = result as Parsed<object>;
             if (parsed != null)
