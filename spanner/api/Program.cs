@@ -1335,35 +1335,10 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        class OptionMap
-        {
-            protected readonly Dictionary<Type, Func<object, object>> _verbs =
-                new Dictionary<Type, Func<object, object>>();
-
-            public OptionMap Add<ArgType, ReturnType>(Func<ArgType, ReturnType> f)
-            {
-                _verbs.Add(typeof(ArgType), (object a) => f((ArgType)a));
-                return this;
-            }
-
-            public Type[] Verbs => _verbs.Keys.ToArray();
-
-            public object Exec(ParserResult<object> result)
-            {
-                var parsed = result as Parsed<object>;
-                if (parsed != null)
-                {
-                    return _verbs[parsed.Value.GetType()](parsed.Value);
-                }
-                return 1;
-            }
-        };
-
-
         public static int Main(string[] args)
         {
-            OptionMap optionMap = new OptionMap();
-            optionMap
+            var verbMap = new VerbMap<object>();
+            verbMap
                 .Add((CreateSampleDatabaseOptions opts) =>
                     CreateSampleDatabase(opts.projectId, opts.instanceId,
                         opts.databaseId))
@@ -1408,8 +1383,9 @@ namespace GoogleCloudSamples.Spanner
                         opts.databaseId))
                 .Add((DropSampleTablesOptions opts) =>
                     DropSampleTables(opts.projectId, opts.instanceId,
-                    opts.databaseId).Result);
-            return (int)optionMap.Exec(Parser.Default.ParseArguments(args, optionMap.Verbs));
+                    opts.databaseId).Result)
+                .NotParsedFunc = (err) => 1;
+            return (int)verbMap.Run(args);
         }
 
         /// <summary>
