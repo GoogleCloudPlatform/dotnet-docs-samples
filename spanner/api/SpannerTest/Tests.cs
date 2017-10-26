@@ -68,35 +68,14 @@ namespace GoogleCloudSamples.Spanner
         void InitializeDatabase()
         {
             // If the database has not been initialized, retry.
-            try
-            {
-                QuerySampleData();
-            }
-            catch (AggregateException e) when (ContainsError(e, ErrorCode.NotFound))
-            {
-                // The database does not exist.  Create database and retry.
-                _spannerCmd.Run("createSampleDatabase",
-                    s_projectId, s_instanceId, s_databaseId);
-                _spannerCmd.Run("insertSampleData",
-                    s_projectId, s_instanceId, s_databaseId);
-                QuerySampleData();
-            }
-            catch (XunitException)
-            {
-                // The database does not contain the expected datae.
-                // Insert sample data and retry.
-                _spannerCmd.Run("insertSampleData",
-                    s_projectId, s_instanceId, s_databaseId);
-                QuerySampleData();
-            }
-            try
-            {
-                _spannerCmd.Run("addColumn",
-                    s_projectId, s_instanceId, s_databaseId);
-            }
-            catch (AggregateException e) when (ContainsError(e, ErrorCode.AlreadyExists))
-            {
-            }
+            _spannerCmd.Run("dropSampleTables",
+                s_projectId, s_instanceId, s_databaseId);
+            _spannerCmd.Run("createSampleDatabase",
+                s_projectId, s_instanceId, s_databaseId);
+            _spannerCmd.Run("insertSampleData",
+                s_projectId, s_instanceId, s_databaseId);
+            _spannerCmd.Run("addColumn",
+                s_projectId, s_instanceId, s_databaseId);
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
@@ -184,16 +163,11 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestReadStaleData()
         {
-            RefillMarketingBudgetsAsync(300000, 300000).Wait();
             Thread.Sleep(TimeSpan.FromSeconds(11));
-            Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
-                .RetryPolicy.DefaultExponential.ExecuteAction(() =>
-            {
-                ConsoleOutput output = _spannerCmd.Run("readStaleData",
-                    s_projectId, s_instanceId, s_databaseId);
-                Assert.Equal(0, output.ExitCode);
-                Assert.Contains("Go, Go, Go", output.Stdout);
-            });
+            ConsoleOutput output = _spannerCmd.Run("readStaleData",
+                s_projectId, s_instanceId, s_databaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Go, Go, Go", output.Stdout);
         }
 
         [Fact]
@@ -239,7 +213,7 @@ namespace GoogleCloudSamples.Spanner
                         s_projectId, s_instanceId, s_databaseId);
             }
             catch (AggregateException e)
-                when (ContainsGrpcError(e, Grpc.Core.StatusCode.AlreadyExists))
+                when (Program.ContainsGrpcError(e, Grpc.Core.StatusCode.AlreadyExists))
             {
                 Console.WriteLine($"Database {s_databaseId} already exists.");
             }
@@ -263,45 +237,6 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
-        }
-
-        /// <summary>
-        /// Returns true if an AggregateException contains a SpannerException
-        /// with the given error code.
-        /// </summary>
-        /// <param name="e">The exception to examine.</param>
-        /// <param name="errorCode">The error code to look for.</param>
-        /// <returns></returns>
-        static bool ContainsError(AggregateException e, ErrorCode errorCode)
-        {
-            foreach (var innerException in e.InnerExceptions)
-            {
-                SpannerException spannerException = innerException as SpannerException;
-                if (spannerException != null && spannerException.ErrorCode == errorCode)
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Returns true if an AggregateException contains a Grpc.Core.RpcException
-        /// with the given error code.
-        /// </summary>
-        /// <param name="e">The exception to examine.</param>
-        /// <param name="errorCode">The error code to look for.</param>
-        /// <returns></returns>
-        static bool ContainsGrpcError(AggregateException e,
-            Grpc.Core.StatusCode errorCode)
-        {
-            foreach (var innerException in e.InnerExceptions)
-            {
-                Grpc.Core.RpcException grpcException = innerException
-                    as Grpc.Core.RpcException;
-                if (grpcException != null &&
-                    grpcException.Status.StatusCode == errorCode)
-                    return true;
-            }
-            return false;
         }
     }
 }

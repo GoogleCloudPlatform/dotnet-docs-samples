@@ -23,6 +23,7 @@ using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 using System.Collections.Generic;
 using log4net;
 using System.Linq;
+using System.Collections.Specialized;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -59,6 +60,17 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
         [Value(3, HelpText = "The name of the table to create.", Required = true)]
         public string tableName { get; set; }
+    }
+
+    [Verb("dropSampleTables", HelpText = "Drops the tables created by createSampleDatabase.")]
+    class DropSampleTablesOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when creating Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the tables will be dropped.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the tables will be dropped.", Required = true)]
+        public string databaseId { get; set; }
     }
 
     [Verb("insertSampleData", HelpText = "Insert sample data into sample Cloud Spanner database table.")]
@@ -268,7 +280,14 @@ namespace GoogleCloudSamples.Spanner
             {
                 string createStatement = $"CREATE DATABASE `{databaseId}`";
                 var cmd = connection.CreateDdlCommand(createStatement);
-                await cmd.ExecuteNonQueryAsync();
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (Grpc.Core.RpcException e) when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists)
+                {
+                    // OK.
+                }
             }
             // Update connection string with Database ID for table creation.
             connectionString = connectionString + $"/databases/{databaseId}";
@@ -1048,6 +1067,23 @@ namespace GoogleCloudSamples.Spanner
             // [END create_custom_database]
         }
 
+        public static async Task<object> DropSampleTables(
+            string projectId, string instanceId, string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+            // Make the request.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.CreateDdlCommand("DROP TABLE Albums")
+                    .ExecuteNonQueryAsync();
+                await connection.CreateDdlCommand("DROP TABLE Singers")
+                    .ExecuteNonQueryAsync();
+            }
+            return 0;
+        }
+
         public static object CreateSampleDatabase(string projectId,
             string instanceId, string databaseId)
         {
@@ -1299,68 +1335,120 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
+        class OptionMap
+        {
+            protected readonly Dictionary<Type, Func<object, object>> _verbs =
+                new Dictionary<Type, Func<object, object>>();
+
+            public OptionMap Add<ArgType, ReturnType>(Func<ArgType, ReturnType> f)
+            {
+                _verbs.Add(typeof(ArgType), (object a) => f((ArgType)a));
+                return this;
+            }
+
+            public Type[] Verbs => _verbs.Keys.ToArray();
+
+            public object Exec(ParserResult<object> result)
+            {
+                var parsed = result as Parsed<object>;
+                if (parsed != null)
+                {
+                    return _verbs[parsed.Value.GetType()](parsed.Value);
+                }
+                return 1;
+            }
+        };
+
+
         public static int Main(string[] args)
         {
-            return (int)Parser.Default.ParseArguments<
-                CreateDatabaseOptions, CreateSampleDatabaseOptions,
-                InsertSampleDataOptions,
-                DeleteSampleDataOptions,
-                QuerySampleDataOptions,
-                AddColumnOptions,
-                WriteDataToNewColumnOptions,
-                QueryNewColumnOptions,
-                QueryDataWithTransactionOptions,
-                ReadWriteWithTransactionOptions,
-                AddIndexOptions,
-                QueryDataWithIndexOptions,
-                AddStoringIndexOptions,
-                QueryDataWithStoringIndexOptions,
-                ReadStaleDataOptions, ListDatabaseTablesOptions
-                >(args)
-              .MapResult(
-                (CreateSampleDatabaseOptions opts) =>
-                CreateSampleDatabase(opts.projectId, opts.instanceId,
-                opts.databaseId),
-                (CreateDatabaseOptions opts) => CreateDatabase(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (DeleteSampleDataOptions opts) => DeleteSampleData(
-                        opts.projectId, opts.instanceId, opts.databaseId),
-                (InsertSampleDataOptions opts) => InsertSampleData(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (QuerySampleDataOptions opts) => QuerySampleData(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (AddColumnOptions opts) => AddColumn(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (WriteDataToNewColumnOptions opts) => WriteDataToNewColumn(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (QueryNewColumnOptions opts) => QueryNewColumn(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (QueryDataWithTransactionOptions opts) =>
+            OptionMap optionMap = new OptionMap();
+            optionMap
+                .Add((CreateSampleDatabaseOptions opts) =>
+                    CreateSampleDatabase(opts.projectId, opts.instanceId,
+                        opts.databaseId))
+                .Add((CreateDatabaseOptions opts) => CreateDatabase(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((DeleteSampleDataOptions opts) => DeleteSampleData(
+                        opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((InsertSampleDataOptions opts) => InsertSampleData(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((QuerySampleDataOptions opts) => QuerySampleData(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((AddColumnOptions opts) => AddColumn(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((WriteDataToNewColumnOptions opts) => WriteDataToNewColumn(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((QueryNewColumnOptions opts) => QueryNewColumn(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithTransactionOptions opts) =>
                     QueryDataWithTransaction(
                         opts.projectId, opts.instanceId, opts.databaseId,
-                        opts.platform),
-                (ReadWriteWithTransactionOptions opts) =>
+                        opts.platform))
+                .Add((ReadWriteWithTransactionOptions opts) =>
                     ReadWriteWithTransaction(
                         opts.projectId, opts.instanceId, opts.databaseId,
-                        opts.platform),
-                (AddIndexOptions opts) => AddIndex(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (AddStoringIndexOptions opts) => AddStoringIndex(
-                    opts.projectId, opts.instanceId, opts.databaseId),
-                (QueryDataWithIndexOptions opts) => QueryDataWithIndex(
+                        opts.platform))
+                .Add((AddIndexOptions opts) => AddIndex(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((AddStoringIndexOptions opts) => AddStoringIndex(
+                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithIndexOptions opts) => QueryDataWithIndex(
                     opts.projectId, opts.instanceId, opts.databaseId,
-                    opts.startTitle, opts.endTitle),
-                (QueryDataWithStoringIndexOptions opts) =>
+                    opts.startTitle, opts.endTitle))
+                .Add((QueryDataWithStoringIndexOptions opts) =>
                     QueryDataWithStoringIndex(
                         opts.projectId, opts.instanceId, opts.databaseId,
-                        opts.startTitle, opts.endTitle),
-                (ReadStaleDataOptions opts) =>
+                        opts.startTitle, opts.endTitle))
+                .Add((ReadStaleDataOptions opts) =>
                     ReadStaleDataAsync(opts.projectId, opts.instanceId,
-                        opts.databaseId).Result,
-                (ListDatabaseTablesOptions opts) =>
+                        opts.databaseId).Result)
+                .Add((ListDatabaseTablesOptions opts) =>
                     ListDatabaseTables(opts.projectId, opts.instanceId,
-                        opts.databaseId),
-                errs => 1);
+                        opts.databaseId))
+                .Add((DropSampleTablesOptions opts) =>
+                    DropSampleTables(opts.projectId, opts.instanceId,
+                    opts.databaseId).Result);
+            return (int)optionMap.Exec(Parser.Default.ParseArguments(args, optionMap.Verbs));
+        }
+
+        /// <summary>
+        /// Returns true if an AggregateException contains a SpannerException
+        /// with the given error code.
+        /// </summary>
+        /// <param name="e">The exception to examine.</param>
+        /// <param name="errorCode">The error code to look for.</param>
+        /// <returns></returns>
+        public static bool ContainsError(AggregateException e, params ErrorCode[] errorCode)
+        {
+            foreach (var innerException in e.InnerExceptions)
+            {
+                SpannerException spannerException = innerException as SpannerException;
+                if (spannerException != null && errorCode.Contains(spannerException.ErrorCode))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if an AggregateException contains a Grpc.Core.RpcException
+        /// with the given error code.
+        /// </summary>
+        /// <param name="e">The exception to examine.</param>
+        /// <param name="errorCode">The error code to look for.</param>
+        /// <returns></returns>
+        public static bool ContainsGrpcError(AggregateException e,
+            Grpc.Core.StatusCode errorCode)
+        {
+            foreach (var innerException in e.InnerExceptions)
+            {
+                Grpc.Core.RpcException grpcException = innerException
+                    as Grpc.Core.RpcException;
+                if (grpcException != null &&
+                    grpcException.Status.StatusCode == errorCode)
+                    return true;
+            }
+            return false;
         }
     }
 }
