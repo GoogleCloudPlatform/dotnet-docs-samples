@@ -9,7 +9,10 @@ lists all the _Cloud_ APIs you can call from .NET.
 The samples in this repo cover only _some_ of the total APIs that you can call from .NET.
 
 ### Build Status
-![Windows][windows-badge] ![Linux][linux-badge]
+
+| Windows | Linux |
+|---------|-------|
+|![Windows][windows-badge] | ![Linux][linux-badge] |
 
 ## Build and Run
 
