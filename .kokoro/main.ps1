@@ -25,7 +25,8 @@ try {
     Import-Module  .\BuildTools.psm1 -DisableNameChecking
 
     # The list of directories with runTests that have been ported to dotnet core.
-    $dirs = @('appengine', 'auth', 'datastore', 'kms', 'language', 'monitoring', 'pubsub', 'speech', 'translate')
+    $dirs = @('appengine', 'auth', 'datastore', 'kms', 'language', 'monitoring', 
+      'pubsub', 'speech', 'translate', 'video')
 
     # Find all the runTest scripts.
     $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
