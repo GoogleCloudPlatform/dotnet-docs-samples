@@ -3,6 +3,13 @@
 A collection of samples that demonstrate how to call the 
 [Google Cloud Translation API](https://cloud.google.com/translate/) from C#.
 
+This sample requires [.NET Core 2.0](
+    https://www.microsoft.com/net/core) or later.  That means using
+[Visual Studio 2017](
+    https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
+can use [this older sample](
+    https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/translate/api).
+
 ## Build and Run
 
 1.  **Follow the instructions in the [root README](../../README.md)**.
@@ -11,21 +18,19 @@ A collection of samples that demonstrate how to call the
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=translate.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Translation API.
 
-6.  Open [Translate.sln](Translate.sln) with Microsoft Visual Studio version 2012 or later.
-
-8.  Build the Solution.
-
-9.  From the command line, run QuickStart.exe:
+9.  From a Powershell command line, run the QuickStart sample:
     ```
-	PS C:\..\dotnet-docs-samples\translate\api\QuickStart\bin\Debug> .\QuickStart.exe
+    PS C:\...\dotnet-docs-samples\monitoring\api\Quickstart> dotnet restore
+    PS C:\...\dotnet-docs-samples\monitoring\api\Quickstart> dotnet run
 	Привет мир.
 	```
 
 10. And run Translate to translate text.
     ```
-	PS C:\..\dotnet-docs-samples\translate\api\Translate\bin\Debug> .\Translate.exe translate "Old shoes."
-	Старые ботинки.
-	PS C:\..\dotnet-docs-samples\translate\api\Translate\bin\Debug> .\Translate.exe
+	PS C:\..\dotnet-docs-samples\translate\api\Translate> dotnet restore
+	PS C:\..\dotnet-docs-samples\translate\api\Translate> dotnet run translate "Old shoes."
+	Старые туфли.
+	PS C:\..\dotnet-docs-samples\translate\api\Translate> dotnet run
 	Translate 1.0.0.0
 	Copyright ©  2017
 

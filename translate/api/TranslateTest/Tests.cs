@@ -13,6 +13,7 @@
 // the License.
 //
 
+using System;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -55,7 +56,7 @@ namespace GoogleCloudSamples
             ConsoleOutput output = _runner.Run("list");
             Assert.Equal(0, output.ExitCode);
             // Confirm that Russian is a listed language code.
-            Assert.Contains("\nru\r", output.Stdout);
+            Assert.Contains($"{Environment.NewLine}ru{Environment.NewLine}", output.Stdout);
         }
 
         [Fact]
