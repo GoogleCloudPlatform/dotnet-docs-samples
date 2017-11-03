@@ -115,23 +115,25 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
 
         // [START analyze_labels]
-        static void PrintLabels(string labelName, 
+        static void PrintLabels(string labelName,
             IEnumerable<LabelAnnotation> labelAnnotations)
         {
             foreach (var annotation in labelAnnotations)
             {
                 Console.WriteLine($"{labelName} label: {annotation.Entity.Description}");
-                foreach (var entity in annotation.CategoryEntities) {
+                foreach (var entity in annotation.CategoryEntities)
+                {
                     Console.WriteLine($"{labelName} label category: {entity.Description}");
                 }
-                foreach (var segment in annotation.Segments) {
+                foreach (var segment in annotation.Segments)
+                {
                     Console.Write("Segment location: ");
                     Console.Write(segment.Segment.StartTimeOffset);
                     Console.Write(":");
                     Console.WriteLine(segment.Segment.EndTimeOffset);
                     System.Console.WriteLine($"Confidence: {segment.Confidence}");
                 }
-            }            
+            }
         }
         // [END analyze_labels]
         // [END analyze_labels_gcs]
