@@ -32,10 +32,20 @@ namespace GoogleCloudSamples.VideoIntelligence
             var op = client.AnnotateVideo(request).PollUntilCompleted();
             foreach (var result in op.Result.AnnotationResults)
             {
-                foreach (var annotation in result.LabelAnnotations)
+                foreach (var annotation in result.SegmentLabelAnnotations)
                 {
-                    Console.Out.WriteLine(annotation.Description);
-                }
+                    Console.WriteLine($"Video label: {annotation.Entity.Description}");
+                    foreach (var entity in annotation.CategoryEntities) {
+                        Console.WriteLine($"Video label category: {entity.Description}");
+                    }
+                    foreach (var segment in annotation.Segments) {
+                        Console.Write("Segment location: ");
+                        Console.Write(segment.Segment.StartTimeOffset);
+                        Console.Write(":");
+                        Console.WriteLine(segment.Segment.EndTimeOffset);
+                        System.Console.WriteLine($"Confidence: {segment.Confidence}");
+                    }
+                }            
             }
         }
     }

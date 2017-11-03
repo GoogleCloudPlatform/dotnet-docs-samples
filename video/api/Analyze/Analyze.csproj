@@ -8,4 +8,7 @@
     <PackageReference Include="CommandLineParser" Version="2.1.1-beta" />
     <PackageReference Include="Google.Cloud.VideoIntelligence.V1Beta2" Version="1.0.0-beta02" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
+  </ItemGroup>
 </Project>

@@ -68,6 +68,15 @@ namespace GoogleCloudSamples
         }
 
         /// <summary>
+        /// A fluent way to set NotParseFunc.
+        /// </summary>
+        public VerbMap<ResultType> SetNotParsedFunc(Func<NotParsed<object>, ResultType> func)
+        {
+            NotParsedFunc = func;
+            return this;
+        }
+
+        /// <summary>
         /// Invoke a verb based on the arguments.
         /// </summary>
         public ResultType Run(string[] args, Parser parser = null)
