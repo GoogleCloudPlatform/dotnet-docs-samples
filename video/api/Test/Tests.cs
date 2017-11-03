@@ -118,12 +118,12 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
 
         [Fact]
-        void TestSafeSearchGcs()
+        void TestExplicitContentGcs()
         {
             ConsoleOutput output =
-                _analyze.Run("safesearch", "gs://demomaker/gbike.mp4");
+                _analyze.Run("explicit-content", "gs://demomaker/gbike.mp4");
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Adult:", output.Stdout);
+            Assert.Contains("Pornography", output.Stdout);
         }
 
         void IDisposable.Dispose()
