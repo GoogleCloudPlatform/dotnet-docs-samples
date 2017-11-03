@@ -13,7 +13,7 @@
 // the License.
 
 using CommandLine;
-using Google.Cloud.VideoIntelligence.V1Beta1;
+using Google.Cloud.VideoIntelligence.V1Beta2;
 using System;
 using System.IO;
 using System.Linq;
