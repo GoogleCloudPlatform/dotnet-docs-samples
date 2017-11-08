@@ -35,10 +35,10 @@ namespace GoogleCloudSamples
 
         private static readonly string s_text =
             "Santa Claus Conquers the Martians is a terrible movie. "
-            + "It's so bad, it's good.";
+            + "It's so bad, it's good. This is a classic example.";
 
         private static readonly string s_gcsUri =
-            "gs://silver-python2-testing/SantaClaus.txt";
+            "gs://silver-python2-testing/SantaClausText.txt";
 
         [Fact]
         public void CommandLinePrintsUsageTest()
@@ -116,7 +116,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("entity-sentiment", s_text);
             Assert.Contains("Entity Sentiment:", output.Stdout);
-            Assert.Contains("Santa Claus Conquers the Martians (44%)", output.Stdout);
+            Assert.Contains("Santa Claus Conquers the Martians (31%)", output.Stdout);
         }
 
         [Fact]
@@ -124,7 +124,23 @@ namespace GoogleCloudSamples
         {
             var output = Run("entity-sentiment", s_gcsUri);
             Assert.Contains("Entity Sentiment:", output.Stdout);
-            Assert.Contains("Santa Claus Conquers the Martians (44%)", output.Stdout);
+            Assert.Contains("Santa Claus Conquers the Martians (31%)", output.Stdout);
+        }
+
+        [Fact]
+        public void ClassifyTextTest()
+        {
+            var output = Run("classify-text", s_text);
+            Assert.Contains("Categories:", output.Stdout);
+            Assert.Contains("Category: /Arts & Entertainment", output.Stdout);
+        }
+        
+        [Fact]
+        public void ClassifyTextFromFileTest()
+        {
+            var output = Run("classify-text", s_gcsUri);
+            Assert.Contains("Categories:", output.Stdout);
+            Assert.Contains("Category: /Arts & Entertainment", output.Stdout);
         }
 
         [Fact]
@@ -139,6 +155,7 @@ namespace GoogleCloudSamples
             Assert.Contains("55: It's so bad, it's good.", output.Stdout);
             Assert.Contains("Entities:", output.Stdout);
             Assert.Contains("Name: Santa Claus Conquers the Martians", output.Stdout);
+            Assert.Contains("Category: /Arts & Entertainment", output.Stdout);
         }
     }
 

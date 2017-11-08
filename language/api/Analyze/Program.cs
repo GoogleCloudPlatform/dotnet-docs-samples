@@ -31,6 +31,7 @@ Where command is one of
     sentiment
     syntax
     entity-sentiment
+    classify-text
     everything
 ";
 
@@ -209,6 +210,44 @@ Where command is one of
         // [END analyze_entity_sentiment_from_file]
         // [END analyze_entity_sentiment_from_string]
 
+        // [START langauge_classify_file]
+        private static void ClassifyTextFromFile(string gcsUri)
+        {
+            var client = LanguageServiceClient.Create();
+            var response = client.ClassifyText(new Document()
+            {
+                GcsContentUri = gcsUri,
+                Type = Document.Types.Type.PlainText
+            });
+            WriteCategories(response.Categories);
+        }
+        // [END langauge_classify_file]
+
+        // [START langauge_classify_string]
+        private static void ClassifyTextFromText(string text)
+        {
+            var client = LanguageServiceClient.Create();
+            var response = client.ClassifyText(new Document()
+            {
+                Content = text,
+                Type = Document.Types.Type.PlainText
+            });
+            WriteCategories(response.Categories);
+        }
+  
+        // [START langauge_classify_file]
+        private static void WriteCategories(IEnumerable<ClassificationCategory> categories)
+        {
+            Console.WriteLine("Categories:");
+            foreach (var category in categories)
+            {
+                Console.WriteLine($"\tCategory: {category.Name}");
+                Console.WriteLine($"\t\tConfidence: {category.Confidence}");
+            }
+        }
+        // [END langauge_classify_string]
+        // [END langauge_classify_file]
+
         private static void AnalyzeEverything(string text)
         {
             var client = LanguageServiceClient.Create();
@@ -223,12 +262,14 @@ Where command is one of
                 ExtractDocumentSentiment = true,
                 ExtractEntities = true,
                 ExtractEntitySentiment = true,
+                ClassifyText = true,
             });
             Console.WriteLine($"Language: {response.Language}");
             WriteSentiment(response.DocumentSentiment, response.Sentences);
             WriteSentences(response.Sentences, response.Tokens);
             WriteEntities(response.Entities);
             WriteEntitySentiment(response.Entities);
+            WriteCategories(response.Categories);
         }
 
         public static void Main(string[] args)
@@ -269,7 +310,14 @@ Where command is one of
                     if (null == gcsUri)
                         AnalyzeEntitySentimentFromText(text);
                     else
-                        AnalyzeEntitySentimentFromFile(text);
+                        AnalyzeEntitySentimentFromFile(gcsUri);
+                    break;
+
+                case "classify-text":
+                    if (null == gcsUri)
+                        ClassifyTextFromText(text);
+                    else
+                        ClassifyTextFromFile(gcsUri);
                     break;
 
                 case "everything":

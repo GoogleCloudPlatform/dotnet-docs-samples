@@ -15,4 +15,7 @@
     <ProjectReference Include="..\QuickStart\QuickStart.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
+  <PropertyGroup>
+    <RestoreSources>$(RestoreSources);..\..\..\..\..\nuget\pkgs;https://api.nuget.org/v3/index.json</RestoreSources>
+  </PropertyGroup>
 </Project>
