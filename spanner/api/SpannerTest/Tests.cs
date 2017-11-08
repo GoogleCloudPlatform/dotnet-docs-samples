@@ -163,7 +163,7 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestReadStaleData()
         {
-            Thread.Sleep(TimeSpan.FromSeconds(11));
+            Thread.Sleep(TimeSpan.FromSeconds(16));
             ConsoleOutput output = _spannerCmd.Run("readStaleData",
                 s_projectId, s_instanceId, s_databaseId);
             Assert.Equal(0, output.ExitCode);

@@ -558,7 +558,7 @@ namespace GoogleCloudSamples.Spanner
 
                 // Open a new read only transaction.
                 var staleness = TimestampBound.OfExactStaleness(
-                    TimeSpan.FromSeconds(10));
+                    TimeSpan.FromSeconds(15));
                 using (var transaction =
                     await connection.BeginReadOnlyTransactionAsync(staleness))
                 {
