@@ -213,9 +213,22 @@ namespace GoogleCloudSamples.Spanner
                         s_projectId, s_instanceId, s_databaseId);
             }
             catch (AggregateException e)
-                when (Program.ContainsGrpcError(e, Grpc.Core.StatusCode.AlreadyExists))
             {
-                Console.WriteLine($"Database {s_databaseId} already exists.");
+                bool rethrow = true;
+                foreach (var innerException in e.InnerExceptions)
+                {
+                    SpannerException spannerException = innerException as SpannerException;
+                    if (spannerException != null && spannerException.Message.ToLower().Contains("duplicate"))
+                    {
+                        Console.WriteLine($"Database {s_databaseId} already exists.");
+                        rethrow = false;
+                        break;
+                    }
+                }
+                if (rethrow)
+                {
+                    throw;
+                }
             }
             // List tables to confirm database tables exist.
             ConsoleOutput output = _spannerCmd.Run("listDatabaseTables",
