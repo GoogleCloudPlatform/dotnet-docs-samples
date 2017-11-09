@@ -284,7 +284,7 @@ namespace GoogleCloudSamples.Spanner
                 {
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (Grpc.Core.RpcException e) when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists)
+                catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
                 {
                     // OK.
                 }
@@ -1076,12 +1076,20 @@ namespace GoogleCloudSamples.Spanner
             // Make the request.
             using (var connection = new SpannerConnection(connectionString))
             {
-                await connection.CreateDdlCommand("DROP TABLE Albums")
-                    .ExecuteNonQueryAsync();
-                await connection.CreateDdlCommand("DROP TABLE Singers")
-                    .ExecuteNonQueryAsync();
+                foreach (string table in new[] { "Albums", "Singers" })
+                {
+                    try
+                    {
+                        await connection.CreateDdlCommand($"DROP TABLE {table}")
+                            .ExecuteNonQueryAsync();
+                    }
+                    catch (SpannerException e) when (e.ErrorCode == ErrorCode.NotFound)
+                    {
+                        // Table does not exist.  Not a problem.
+                    }
+                }
+                return 0;
             }
-            return 0;
         }
 
         public static object CreateSampleDatabase(string projectId,
