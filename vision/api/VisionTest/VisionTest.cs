@@ -42,10 +42,10 @@ namespace GoogleCloudSamples
         {
             // Tower.jpg contains no faces, so the output file should be 
             // identical to the original.
-            File.Delete(@"data\tower.faces.jpg");
-            var output = _detectFaces.Run(@"data\tower.jpg");
+            File.Delete(Path.Combine("data", "tower.faces.jpg"));
+            var output = _detectFaces.Run(Path.Combine("data", "tower.jpg"));
             Assert.Equal(0, output.ExitCode);
-            Assert.Equal(ToPngBytes(@"data\tower.jpg"),
+            Assert.Equal(ToPngBytes(Path.Combine("data", "tower.jpg")),
                 ToPngBytes(@"data\tower.faces.jpg"));
         }
 
@@ -54,11 +54,11 @@ namespace GoogleCloudSamples
         {
             // Face.png contains a face, so the output should be different
             // from the original.
-            File.Delete(@"data\face.faces.png");
-            var output = _detectFaces.Run(@"data\face.png");
+            File.Delete(Path.Combine("data", "face.faces.png"));
+            var output = _detectFaces.Run(Path.Combine("data", "face.png"));
             Assert.Equal(0, output.ExitCode);
-            Assert.NotEqual(ToPngBytes(@"data\face.png"),
-                ToPngBytes(@"data\face.faces.png"));
+            Assert.NotEqual(ToPngBytes(Path.Combine("data", "face.png")),
+                ToPngBytes(Path.Combine("data", "face.faces.png")));
         }
 
         public static byte[] ToPngBytes(string imagePath)
@@ -86,11 +86,11 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="args">Command line arguments to Main().</param>
         protected abstract ConsoleOutput Run(params string[] args);
-
+        
         [Fact]
         public void DetectFace()
         {
-            var output = Run("faces", @"data\face.png");
+            var output = Run("faces", Path.Combine("data", "face.png"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Joy", output.Stdout);
         }
@@ -98,7 +98,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectNoFace()
         {
-            var output = Run("faces", @"data\tower.jpg");
+            var output = Run("faces", Path.Combine("data", "tower.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.DoesNotContain("Joy", output.Stdout);
         }
@@ -106,7 +106,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectLabel()
         {
-            var output = Run("labels", @"data\cat.jpg");
+            var output = Run("labels", Path.Combine("data", "cat.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("mammal", output.Stdout);
         }
@@ -114,7 +114,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectLandmark()
         {
-            var output = Run("landmarks", @"data\tower.jpg");
+            var output = Run("landmarks", Path.Combine("data", "tower.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Eiffel", output.Stdout);
         }
@@ -122,7 +122,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectText()
         {
-            var output = Run("text", @"data\bonito.gif");
+            var output = Run("text", Path.Combine("data", "bonito.gif"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("fermented", output.Stdout);
         }
@@ -130,7 +130,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectNoText()
         {
-            var output = Run("text", @"data\no-text.jpg");
+            var output = Run("text", Path.Combine("data", "no-text.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Equal("", output.Stdout);
         }
@@ -138,7 +138,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectLogos()
         {
-            var output = Run("text", @"data\logo.jpg");
+            var output = Run("text", Path.Combine("data", "logo.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Google", output.Stdout);
         }
@@ -146,7 +146,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectNoLogos()
         {
-            var output = Run("text", @"data\cat.jpg");
+            var output = Run("text", Path.Combine("data", "cat.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Equal("", output.Stdout);
         }
@@ -154,7 +154,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectProperties()
         {
-            var output = Run("properties", @"data\logo.jpg");
+            var output = Run("properties", Path.Combine("data", "logo.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Alpha", output.Stdout);
         }
@@ -162,7 +162,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectSafeSearch()
         {
-            var output = Run("safe-search", @"data\logo.jpg");
+            var output = Run("safe-search", Path.Combine("data", "logo.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Spoof", output.Stdout);
             Assert.Contains("Unlikely", output.Stdout);
@@ -171,7 +171,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectWeb()
         {
-            var output = Run("web", @"data\tower.jpg");
+            var output = Run("web", Path.Combine("data", "tower.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("MatchingImage", output.Stdout);
         }
@@ -179,7 +179,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectDocText()
         {
-            var output = Run("doc-text", @"data\text.jpg");
+            var output = Run("doc-text", Path.Combine("data", "text.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("detectedLanguages", output.Stdout);
             Assert.Contains("vertices", output.Stdout);
@@ -189,7 +189,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectCropHint()
         {
-            var output = Run("crop-hint", @"data\face.png");
+            var output = Run("crop-hint", Path.Combine("data", "face.png"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Confidence:", output.Stdout);
             Assert.Contains("Bounding Polygon:", output.Stdout);
