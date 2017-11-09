@@ -1,0 +1,36 @@
+# Copyright(c) 2017 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+<# .SYNOPSIS
+    Imports the same secrets kokoro uses into your environment.
+.DESCRIPTION
+    Will load them immediately from $env:KOKORO_GFILE_DIR if it is set.
+    Otherwise, downloads them from google cloud storage.
+#>
+
+# Names of the two files containing secrets.
+$secrets = 'secrets.ps1'
+$credentials = 'silver-python2-01aab03dac88.json'
+$kokorodir = $env:KOKORO_GFILE_DIR
+if (-not $kokorodir) {
+    $tempfile = [System.IO.Path]::GetTempFileName()
+    remove-item $tempfile
+    new-item -type directory -path $tempfile
+    $kokorodir = $tempfile
+    @($secrets, $credentials) | ForEach-Object { 
+        gsutil cp gs://cloud-devrel-kokoro-resources/getting-started-dotnet/$_  (Join-Path $kokorodir $_)
+    }
+}
+& (Join-Path $kokorodir $secrets)
+$env:GOOGLE_APPLICATION_CREDENTIALS=(Join-Path $kokorodir $credentials)
