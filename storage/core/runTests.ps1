@@ -20,7 +20,7 @@ BackupAndEdit-TextFile @("Storage\Program.cs", "QuickStart\Program.cs") `
     dotnet build
     dotnet test --no-build .\StorageTest\StorageTest.csproj
     if ($LASTEXITCODE -ne 0) { throw "FAILED" }
-    dotnet run --no-build .\QuickStart\QuickStart.csproj
+    dotnet run --no-build --project .\QuickStart\QuickStart.csproj
     if ($LASTEXITCODE -ne 0) { throw "FAILED" }
 }
 
