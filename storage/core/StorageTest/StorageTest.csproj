@@ -18,4 +18,10 @@
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Hello.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
