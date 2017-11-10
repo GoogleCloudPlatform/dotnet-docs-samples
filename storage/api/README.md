@@ -1,10 +1,11 @@
 # Cloud Storage Sample
 
-A sample demonstrating how to invoke Google Cloud Storage from C#.
+A sample demonstrating how to invoke [Google Cloud Storage](
+https://cloud.google.com/storage/docs/) from C#.
 
 ## Links
 
-- [Cloud Storage Reference Docs](https://developers.google.com/api-client-library/dotnet/apis/storage/v1)
+- [Cloud Storage Client Libraries](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-csharp)
 
 ## Build and Run
 
