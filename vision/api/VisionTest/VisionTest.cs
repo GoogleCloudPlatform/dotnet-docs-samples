@@ -86,7 +86,7 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="args">Command line arguments to Main().</param>
         protected abstract ConsoleOutput Run(params string[] args);
-        
+
         [Fact]
         public void DetectFace()
         {
