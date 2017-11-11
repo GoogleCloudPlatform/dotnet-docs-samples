@@ -3,6 +3,13 @@
 A sample demonstrating how to invoke [Google Cloud Storage](
 https://cloud.google.com/storage/docs/) from C#.
 
+This sample requires [.NET Core 2.0](
+    https://www.microsoft.com/net/core) or later.  That means using
+[Visual Studio 2017](
+    https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
+can use [this older sample](
+    https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/storage/api).
+
 ## Links
 
 - [Cloud Storage Client Libraries](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-csharp)
@@ -15,39 +22,59 @@ https://cloud.google.com/storage/docs/) from C#.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=storage_api&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Speech API.
 
-6.  Open [Storage.sln](Storage.sln) with Microsoft Visual Studio version 2012 or later.
-
 7.  Edit `QuickStart\Program.cs`, and replace YOUR-PROJECT-ID with id
     of the project you created in step 1.
 
-8.  Build the Solution.
+7.  Edit `Storage\Program.cs`, and replace YOUR-PROJECT-ID with id
+    of the project you created in step 1.
 
-9.  From the command line, run QuickStart.exe to see a list of 
-    subcommands:
+8.  Build:
 
-    ```sh
-    C:\...\bin\Debug> QuickStart.exe
+    ```ps1
+    PS > dotnet restore
+    PS > dotnet build
+    ```
+
+9.  From the command line, run QuickStart to create a bucket:
+
+    ```ps1
+    PS > dotnet run --project .\QuickStart\QuickStart.csproj
+    You already own this bucket. Please select another name.
+    ```
+
+10. From the command line, run Storage to see a list of commands:
+    
+    ```ps1
+    PS > dotnet run --project .\Storage\Storage.csproj
     Usage:
-      QuickStart create [new-bucket-name]
-      QuickStart list
-      QuickStart list bucket-name [prefix] [delimiter]
-      QuickStart get-metadata bucket-name object-name
-      QuickStart make-public bucket-name object-name
-      QuickStart upload bucket-name local-file-path [object-name]
-      QuickStart copy source-bucket-name source-object-name dest-bucket-name dest-object-name
-      QuickStart move bucket-name source-object-name dest-object-name
-      QuickStart download bucket-name object-name [local-file-path]
-      QuickStart download-byte-range bucket-name object-name range-begin range-end [local-file-path]
-      QuickStart print-acl bucket-name
-      QuickStart print-acl bucket-name object-name
-      QuickStart add-owner bucket-name user-email
-      QuickStart add-owner bucket-name object-name user-email
-      QuickStart add-default-owner bucket-name user-email
-      QuickStart remove-owner bucket-name user-email
-      QuickStart remove-owner bucket-name object-name user-email
-      QuickStart remove-default-owner bucket-name user-email
-      QuickStart delete bucket-name
-      QuickStart delete bucket-name object-name [object-name] 
+    Storage create [new-bucket-name]
+    Storage list
+    Storage list bucket-name [prefix] [delimiter]
+    Storage get-metadata bucket-name object-name
+    Storage make-public bucket-name object-name
+    Storage upload [-key encryption-key] bucket-name local-file-path [object-name]
+    Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name
+    Storage move bucket-name source-object-name dest-object-name
+    Storage download [-key encryption-key] bucket-name object-name [local-file-path]
+    Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]
+    Storage generate-signed-url bucket-name object-name
+    Storage view-bucket-iam-members bucket-name
+    Storage add-bucket-iam-member bucket-name member
+    Storage remove-bucket-iam-member bucket-name role member
+    Storage print-acl bucket-name
+    Storage print-acl bucket-name object-name
+    Storage add-owner bucket-name user-email
+    Storage add-owner bucket-name object-name user-email
+    Storage add-default-owner bucket-name user-email
+    Storage remove-owner bucket-name user-email
+    Storage remove-owner bucket-name object-name user-email
+    Storage remove-default-owner bucket-name user-email
+    Storage delete bucket-name
+    Storage delete bucket-name object-name [object-name]
+    Storage enable-requester-pays bucket-name
+    Storage disable-requester-pays bucket-name
+    Storage get-requester-pays bucket-name
+    Storage generate-encryption-key
     ```
 
 ## Contributing changes
