@@ -306,16 +306,8 @@ function UpFind-File([string[]]$Masks = '*')
     }    
 }
 
-Add-Type -TypeDefinition @"
-public class TestTimeout {
-    public int Seconds { get; set; }
-}
-"@
-
 function Set-TestTimeout($seconds) {
-    $timeout = New-Object TestTimeout
-    $timeout.Seconds = $seconds
-    return $timeout
+    New-Object PSObject -Property @{TimeoutSeconds = $seconds}
 }
 
 ##############################################################################
@@ -360,9 +352,9 @@ function Run-TestScripts($TimeoutSeconds=300) {
                 foreach ($line in (Receive-Job $job)) {
                     # Look at the output of the job to see if it requested
                     # a longer timeout.
-                    if ($line -is [TestTimeout]) {
-                        $TimeoutSeconds = $line.Seconds
-                        "Set timeout to $TimoutSeconds seconds."
+                    if ($line.TimeoutSeconds) {
+                        $TimeoutSeconds = $line.TimeoutSeconds
+                        "Set timeout to $TimeoutSeconds seconds."
                     } else {
                         $line
                     }
