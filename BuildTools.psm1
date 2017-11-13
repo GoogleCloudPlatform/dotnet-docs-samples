@@ -306,6 +306,17 @@ function UpFind-File([string[]]$Masks = '*')
     }    
 }
 
+##############################################################################
+#.SYNOPSIS
+# Sets the timeout for a runTests.ps1.
+#
+#.DESCRIPTION
+# When Run-TestScripts calls a runTests.ps1, then the runTests.ps1 can call
+# Set-TestTimeout to override the default timeout.
+#
+#.EXAMPLE
+# Set-TestTimeout 900
+##############################################################################
 function Set-TestTimeout($seconds) {
     New-Object PSObject -Property @{TimeoutSeconds = $seconds}
 }
