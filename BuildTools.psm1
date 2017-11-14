@@ -308,6 +308,21 @@ function UpFind-File([string[]]$Masks = '*')
 
 ##############################################################################
 #.SYNOPSIS
+# Sets the timeout for a runTests.ps1.
+#
+#.DESCRIPTION
+# When Run-TestScripts calls a runTests.ps1, then the runTests.ps1 can call
+# Set-TestTimeout to override the default timeout.
+#
+#.EXAMPLE
+# Set-TestTimeout 900
+##############################################################################
+function Set-TestTimeout($seconds) {
+    New-Object PSObject -Property @{TimeoutSeconds = $seconds}
+}
+
+##############################################################################
+#.SYNOPSIS
 # Runs powershell scripts and prints a summary of successes and errors.
 #
 #.INPUTS
@@ -324,17 +339,17 @@ function Run-TestScripts($TimeoutSeconds=300) {
     # Array of strings: the relative path of the inner script.
     $results = @{}
     foreach ($script in $scripts) {
-        $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+        $startDate = Get-Date
         $relativePath = Resolve-Path -Relative $script.FullName
         $verb = "Starting"
         $jobState = 'Failed'  # Retry once on failure.
         for ($try = 0; $try -lt 2 -and $jobState -eq 'Failed'; ++$try) {
-            echo "$verb $relativePath..."
+            Write-Output "$verb $relativePath..."
             $verb = "Retrying"
             $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
                 ('.\"{0}"' -f $script.Name) {
-                echo ("-" * 79)
-                echo $args[0]
+                Write-Output ("-" * 79)
+                Write-Output $args[0]
                 Set-Location $args[1]
                 Invoke-Expression $args[2]
                 if ($LASTEXITCODE) {
@@ -345,11 +360,21 @@ function Run-TestScripts($TimeoutSeconds=300) {
             # streams to my stdout. 
             while ($true) {
                 Wait-Job $job -Timeout 1
-                Receive-Job $job
+                foreach ($line in (Receive-Job $job)) {
+                    # Look at the output of the job to see if it requested
+                    # a longer timeout.
+                    if ($line.TimeoutSeconds) {
+                        $TimeoutSeconds = $line.TimeoutSeconds
+                        "Set timeout to $TimeoutSeconds seconds."
+                    } else {
+                        $line
+                    }
+                }
                 $jobState = $job.State
                 if ($jobState -eq 'Running') {
+                    $deadline = $startDate.AddSeconds($TimeoutSeconds)                    
                     if ((Get-Date) -gt $deadline) {
-                        echo "TIME OUT"
+                        Write-Output "TIME OUT"
                         $jobState = 'Timed Out'
                         break
                     }
