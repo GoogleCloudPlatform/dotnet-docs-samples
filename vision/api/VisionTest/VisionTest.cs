@@ -46,7 +46,7 @@ namespace GoogleCloudSamples
             var output = _detectFaces.Run(Path.Combine("data", "tower.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Equal(ToPngBytes(Path.Combine("data", "tower.jpg")),
-                ToPngBytes(@"data\tower.faces.jpg"));
+                ToPngBytes(Path.Combine("data", "tower.faces.jpg")));
         }
 
         [Fact]
