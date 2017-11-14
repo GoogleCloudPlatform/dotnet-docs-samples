@@ -8,10 +8,6 @@
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Language.V1" Version="1.0.0" />
+    <PackageReference Include="Google.Cloud.Language.V1" Version="1.1.0" />
   </ItemGroup>
-  <PropertyGroup>
-    <RestoreSources>$(RestoreSources);..\..\..\..\..\nuget\pkgs;https://api.nuget.org/v3/index.json</RestoreSources>
-  </PropertyGroup>
-
 </Project>

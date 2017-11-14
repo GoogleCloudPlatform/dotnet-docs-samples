@@ -234,7 +234,7 @@ Where command is one of
             });
             WriteCategories(response.Categories);
         }
-  
+
         // [START language_classify_file]
         private static void WriteCategories(IEnumerable<ClassificationCategory> categories)
         {

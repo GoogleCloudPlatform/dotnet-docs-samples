@@ -134,7 +134,7 @@ namespace GoogleCloudSamples
             Assert.Contains("Categories:", output.Stdout);
             Assert.Contains("Category: /Arts & Entertainment", output.Stdout);
         }
-        
+
         [Fact]
         public void ClassifyTextFromFileTest()
         {
