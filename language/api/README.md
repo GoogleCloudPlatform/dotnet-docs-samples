@@ -42,6 +42,7 @@ can use [this older sample](
         sentiment
         syntax
         entity-sentiment
+        classify-text
         everything
     ```
 
@@ -50,71 +51,97 @@ can use [this older sample](
     For example, if you run:
 
     ```
-    c:\> dotnet run everything Santa Claus Conquers the Martians is a terrible movie. It's so bad, it's good.
+    c:\> dotnet run everything Santa Claus Conquers the Martians is a terrible movie. It's so bad, it's good. This is a classic example.
     ```
 
     You will see something like the following returned:
 
     ```
     Language: en
-    Overall document sentiment:
-            Score: -0.5
-            Magnitude: 1
-    Sentence level sentiment:
-            Santa Claus Conquers the Martians is a terrible movie.: (-0.8)
-            Its so bad, its good.: (-0.1)
-    Sentences:
-            0: Santa Claus Conquers the Martians is a terrible movie.
-            55: Its so bad, its good.
-    Tokens:
-            Noun Santa
-            Noun Claus
-            Verb Conquers
-            Det the
-            Noun Martians
-            Verb is
-            Det a
-            Adj terrible
-            Noun movie
-            Punct .
-            Pron Its
-            Adv so
-            Adj bad
-            Punct ,
-            Pron its
-            Noun good
-            Punct .
-    Entities:
-            Name: movie
-            Type: WorkOfArt
-            Salience: 0.4999807
-            Mentions:
-                    48: movie
-            Metadata:
-            Name: Santa Claus Conquers the Martians
-            Type: WorkOfArt
-            Salience: 0.405366
-            Mentions:
-                    0: Santa Claus Conquers the Martians
-            Metadata:
-                    mid: /m/0122r8
-                    wikipedia_url: https://en.wikipedia.org/wiki/Santa_Claus_Conquers_the_Martians
-            Name: good
-            Type: Other
-            Salience: 0.09465333
-            Mentions:
-                    71: good
-            Metadata:
-    Entity Sentiment:
-            movie (49%)
-                    Score: -0.9
-                    Magnitude 0.9
-            Santa Claus Conquers the Martians (40%)
-                    Score: -0.9
-                    Magnitude 0.9
-            good (9%)
-                    Score: 0
-                    Magnitude 0
+Overall document sentiment:
+        Score: -0.2
+        Magnitude: 1.2
+Sentence level sentiment:
+        Santa Claus Conquers the Martians is a terrible movie.: (-0.8)
+        Its so bad, its good.: (-0.1)
+        This is a classic example.: (0.2)
+Sentences:
+        0: Santa Claus Conquers the Martians is a terrible movie.
+        55: Its so bad, its good.
+        77: This is a classic example.
+Tokens:
+        Noun Santa
+        Noun Claus
+        Verb Conquers
+        Det the
+        Noun Martians
+        Verb is
+        Det a
+        Adj terrible
+        Noun movie
+        Punct .
+        Pron Its
+        Adv so
+        Adj bad
+        Punct ,
+        Pron its
+        Noun good
+        Punct .
+        Det This
+        Verb is
+        Det a
+        Adj classic
+        Noun example
+        Punct .
+Entities:
+        Name: example
+        Type: Other
+        Salience: 0.4282109
+        Mentions:
+                95: example
+        Metadata:
+        Name: movie
+        Type: WorkOfArt
+        Salience: 0.2955778
+        Mentions:
+                48: movie
+        Metadata:
+        Name: Santa Claus Conquers the Martians
+        Type: WorkOfArt
+        Salience: 0.2410378
+        Mentions:
+                0: Santa Claus Conquers the Martians
+        Metadata:
+                mid: /m/0122r8
+                wikipedia_url: https://en.wikipedia.org/wiki/Santa_Claus_Conquers_the_Martians
+        Name: good
+        Type: Other
+        Salience: 0.03517342
+        Mentions:
+                71: good
+        Metadata:
+Entity Sentiment:
+        example (42%)
+                Score: 0.9
+                Magnitude 1.8
+        movie (29%)
+                Score: -0.9
+                Magnitude 0.9
+        Santa Claus Conquers the Martians (24%)
+                Score: -0.9
+                Magnitude 0.9
+        good (3%)
+                Score: 0
+                Magnitude 0
+Categories:
+        Category: /Hobbies & Leisure/Special Occasions/Holidays & Seasonal Events
+                Confidence: 0.81
+        Category: /People & Society/Religion & Belief
+                Confidence: 0.8
+        Category: /Arts & Entertainment/Movies
+                Confidence: 0.72
+        Category: /People & Society/Kids & Teens/Children's Interests
+                Confidence: 0.63
     ```
 
 
