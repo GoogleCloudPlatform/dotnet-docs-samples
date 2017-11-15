@@ -44,7 +44,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             Command = "Analyze"
         };
 
-        [Fact]
+        [Fact(Skip="Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]
         void TestAnalyzeNoArgsSucceeds()
         {
             ConsoleOutput output = _analyze.Run();
