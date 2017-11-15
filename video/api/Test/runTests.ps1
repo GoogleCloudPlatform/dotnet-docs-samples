@@ -16,4 +16,5 @@ import-module -DisableNameChecking ..\..\..\BuildTools.psm1
 Set-TestTimeout 900
 
 dotnet restore
-dotnet test
+dotnet build
+dotnet test --no-build
