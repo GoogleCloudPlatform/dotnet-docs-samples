@@ -40,19 +40,18 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestFacesWithTower()
         {
-            // Tower.jpg contains no faces, so the output file should be 
-            // identical to the original.
+            // Tower.jpg contains no faces, so the output response should 
+            // confirm this.
             File.Delete(Path.Combine("data", "tower.faces.jpg"));
             var output = _detectFaces.Run(Path.Combine("data", "tower.jpg"));
             Assert.Equal(0, output.ExitCode);
-            Assert.Equal(ToPngBytes(Path.Combine("data", "tower.jpg")),
-                ToPngBytes(Path.Combine("data", "tower.faces.jpg")));
+            Assert.Contains("Found 0 faces.", output.Stdout);
         }
 
         [Fact]
         public void TestFacesWithFace()
         {
-            // Face.png contains a face, so the output should be different
+            // Face.png contains a face, so the output file should be different
             // from the original.
             File.Delete(Path.Combine("data", "face.faces.png"));
             var output = _detectFaces.Run(Path.Combine("data", "face.png"));

@@ -45,6 +45,7 @@ namespace GoogleCloudSamples
             var response = client.DetectFaces(Image.FromFile(args[0]));
             // [END detect_face]
 
+            int numberOfFacesFound = 0;
             // [START highlight_faces]
             using (var image = System.Drawing.Image.FromFile(args[0]))
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(image))
@@ -54,6 +55,9 @@ namespace GoogleCloudSamples
                 {
                     g.DrawPolygon(cyanPen, annotation.BoundingPoly.Vertices.Select(
                         (vertex) => new System.Drawing.Point(vertex.X, vertex.Y)).ToArray());
+                    // [START_EXCLUDE]
+                    numberOfFacesFound++;
+                    // [END_EXCLUDE]
                 }
                 // [END highlight_faces]
                 int lastDot = args[0].LastIndexOf('.');
@@ -62,6 +66,8 @@ namespace GoogleCloudSamples
                     args[0].Substring(0, lastDot) + ".faces" + args[0].Substring(lastDot);
                 image.Save(outFilePath);
             }
+            Console.WriteLine($"Found {numberOfFacesFound} "
+                + $"face{(numberOfFacesFound == 1 ? string.Empty : "s")}.");
         }
     }
 }
