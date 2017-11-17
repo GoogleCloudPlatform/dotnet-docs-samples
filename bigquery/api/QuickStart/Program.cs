@@ -20,12 +20,12 @@ using Google.Cloud.BigQuery.V2;
 
 namespace GoogleCloudSamples
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // Your Google Cloud Platform project ID
-            string projectId = "YOUR_PROJECT_ID";
+            string projectId = "YOUR-PROJECT-ID";
 
             // Instantiates a client
             BigQueryClient client = BigQueryClient.Create(projectId);

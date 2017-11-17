@@ -2,6 +2,13 @@
 
 A sample demonstrating how to invoke BigQuery from C#.
 
+This sample requires [.NET Core 2.0](
+    https://www.microsoft.com/net/core) or later.  That means using
+[Visual Studio 2017](
+    https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
+can use [this older sample](
+    https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/bigquery/api).
+
 ## Links
 
 - [What is BigQuery?](https://cloud.google.com/bigquery/what-is-bigquery)
@@ -15,15 +22,19 @@ A sample demonstrating how to invoke BigQuery from C#.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=bigquery&showconfirmation=true)
     to visit Cloud Platform Console and enable the BigQuery API.
 
-6.  Open [GettingStarted/BigquerySample.sln](GettingStarted/BigquerySample.sln) with
-    Microsoft Visual Studio version 2012 or later.
+5. Edit [QuickStart.cs](QuickStart/Program.cs), and replace YOUR-PROJECT-ID with the id of the project you created in step 1.
 
-7.  Build the Solution.
-
-8.  Run it from the command line with your project id:
+6.  From a Powershell command line, run the QuickStart sample:
 
     ```ps1
-    PS C:\...\GettingStarted\bin\Debug> .\BigquerySample.exe YOUR-PROJECT-ID
+    PS C:\...\dotnet-docs-samples\bigquery\api\QuickStart> dotnet run
+    Dataset my_new_dataset created.
+    ```
+
+8.  And run the Bigquery sample with your project id to perform a sample query:
+
+    ```ps1
+    PS C:\...\dotnet-docs-samples\bigquery\api\BigquerySample> dotnet run YOUR-PROJECT-ID
     
     Query Results:
     ------------
@@ -55,8 +66,8 @@ A sample demonstrating how to invoke BigQuery from C#.
     measureforemeasure: 3786
     periclesprinceoftyre: 3754
     tamingoftheshrew: 3699
-    merchantofvenice: 3677
     sonnets: 3677
+    merchantofvenice: 3677
     asyoulikeit: 3676
     merrywivesofwindsor: 3653
     tempest: 3636
@@ -69,7 +80,7 @@ A sample demonstrating how to invoke BigQuery from C#.
     comedyoferrors: 2870
     various: 1349
     loverscomplaint: 1195
-    
+
     Press any key...    
     ```
 
