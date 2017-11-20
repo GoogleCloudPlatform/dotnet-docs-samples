@@ -26,7 +26,7 @@ namespace GoogleCloudSamples.Spanner
     {
         static async Task MainAsync()
         {
-            string projectId = "YOUR-GOOGLE-PROJECT-ID";
+            string projectId = "YOUR-PROJECT-ID";
             string instanceId = "my-instance";
             string databaseId = "my-database";
             string connectionString =
