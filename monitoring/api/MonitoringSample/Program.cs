@@ -141,7 +141,7 @@ namespace GoogleCloudSamples
 
             // Prepare custom metric descriptor.      
             MetricDescriptor metricDescriptor = new MetricDescriptor();
-            metricDescriptor.Name = "Daily Sales";
+            metricDescriptor.Name = "daily_sales";
             metricDescriptor.DisplayName = "Daily Sales";
             metricDescriptor.Description = "Daily sales records from all branch stores.";
             metricDescriptor.MetricKind = MetricKind.Gauge;
