@@ -18,6 +18,9 @@ can use [this older sample](
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Spanner API.
 
+7.  Edit `QuickStart\Program.cs`, and replace YOUR-PROJECT-ID with id
+    of the project you created in step 1.
+
 9.  From a Powershell command line, run the QuickStart sample:
     ```
     PS C:\...\dotnet-docs-samples\spanner\api\QuickStart> dotnet run
