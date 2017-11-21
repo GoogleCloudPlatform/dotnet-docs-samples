@@ -16,6 +16,7 @@
 
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -116,7 +117,8 @@ namespace GoogleCloudSamples
         {
             var output = Run("entity-sentiment", s_text);
             Assert.Contains("Entity Sentiment:", output.Stdout);
-            Assert.Contains("Santa Claus Conquers the Martians (31%)", output.Stdout);
+            Assert.Matches(new Regex(@"Santa Claus Conquers the Martians \([0-9]+%\)",
+                RegexOptions.IgnoreCase), output.Stdout);
         }
 
         [Fact]
@@ -124,7 +126,8 @@ namespace GoogleCloudSamples
         {
             var output = Run("entity-sentiment", s_gcsUri);
             Assert.Contains("Entity Sentiment:", output.Stdout);
-            Assert.Contains("Santa Claus Conquers the Martians (31%)", output.Stdout);
+            Assert.Matches(new Regex(@"Santa Claus Conquers the Martians \([0-9]+%\)",
+                RegexOptions.IgnoreCase), output.Stdout);
         }
 
         [Fact]
