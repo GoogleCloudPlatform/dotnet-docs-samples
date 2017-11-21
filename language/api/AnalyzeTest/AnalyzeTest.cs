@@ -116,7 +116,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("entity-sentiment", s_text);
             Assert.Contains("Entity Sentiment:", output.Stdout);
-            Assert.Contains("Santa Claus Conquers the Martians (31%)", output.Stdout);
+            Assert.Contains("Santa Claus Conquers the Martians (32%)", output.Stdout);
         }
 
         [Fact]
@@ -124,7 +124,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("entity-sentiment", s_gcsUri);
             Assert.Contains("Entity Sentiment:", output.Stdout);
-            Assert.Contains("Santa Claus Conquers the Martians (31%)", output.Stdout);
+            Assert.Contains("Santa Claus Conquers the Martians (32%)", output.Stdout);
         }
 
         [Fact]
