@@ -3,6 +3,13 @@
 A collection of samples that demonstrate how to call the
 [Google Cloud Spanner API](https://cloud.google.com/spanner/docs/) from C#.
 
+This sample requires [.NET Core 2.0](
+    https://www.microsoft.com/net/core) or later.  That means using
+[Visual Studio 2017](
+    https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
+can use [this older sample](
+    https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/spanner/api).
+
 ## Build and Run
 
 1.  **Follow the instructions in the [root README](../../README.md)**.
@@ -11,19 +18,18 @@ A collection of samples that demonstrate how to call the
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Spanner API.
 
-6.  Open [Spanner.sln](Spanner.sln) with Microsoft Visual Studio version 2012 or later.
+7.  Edit `QuickStart\Program.cs`, and replace YOUR-PROJECT-ID with id
+    of the project you created in step 1.
 
-8.  Build the Solution.
-
-9.  From the command line, run QuickStart.exe:
+9.  From a Powershell command line, run the QuickStart sample:
     ```
-    PS C:\...\dotnet-docs-samples\spanner\api\QuickStart\bin\Debug> .\QuickStart.exe
+    PS C:\...\dotnet-docs-samples\spanner\api\QuickStart> dotnet run
     Hello World
     ```
 
-10. And run Spanner.exe to see a list of subcommands::
+10. And run the Spanner sample to see a list of subcommands:
     ```
-    PS C:\...\dotnet-docs-samples\spanner\api\bin\Debug> .\Spanner.exe
+    PS C:\...\dotnet-docs-samples\spanner\api\Spanner> dotnet run
     Spanner 1.0.0.0
     Copyright c  2017
 
@@ -62,7 +68,7 @@ A collection of samples that demonstrate how to call the
     ```
 
     ```
-    PS > .\Spanner.exe createSampleDatabase your-project-id my-instance my-database
+    PS > dotnet run createSampleDatabase your-project-id my-instance my-database
     Waiting for operation to complete...
     Database create operation state: Ready
     Operation status: RanToCompletion
