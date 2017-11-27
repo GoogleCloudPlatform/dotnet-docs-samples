@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2016 Google Inc.
+ * Copyright (c) 2017 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -28,7 +28,7 @@ using System.IO;
 using System.Diagnostics;
 using Google.Apis.Bigquery.v2.Data;
 using Google.Api.Gax;
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
+using Microsoft.Practices.TransientFaultHandling;
 
 namespace GoogleCloudSamples
 {
@@ -404,36 +404,6 @@ namespace GoogleCloudSamples
         }
         // [END browse_table]
 
-        private string GetConsoleAppOutput(string filePath)
-        {
-            string output;
-            Process consoleApp = new Process();
-            consoleApp.StartInfo.FileName = filePath;
-            consoleApp.StartInfo.UseShellExecute = false;
-            consoleApp.StartInfo.RedirectStandardOutput = true;
-            consoleApp.Start();
-
-            output = consoleApp.StandardOutput.ReadToEnd();
-
-            consoleApp.WaitForExit();
-            return output;
-        }
-
-        [Fact]
-        public void TestQuickStartConsoleApp()
-        {
-            string output;
-            string filePath = "..\\..\\..\\Quickstart\\bin\\Debug\\QuickStart.exe";
-            string expectedOutputFirstWord = "Dataset";
-            string expectedOutputLastWord = "created.";
-            string sampleDatasetUsedInQuickStart = "my_new_dataset";
-            _datasetsToDelete.Add(sampleDatasetUsedInQuickStart);
-            output = GetConsoleAppOutput(filePath).Trim();
-            var outputParts = output.Split(new[] { ' ' });
-            Assert.Equal(outputParts.First(), expectedOutputFirstWord);
-            Assert.Equal(outputParts.Last(), expectedOutputLastWord);
-        }
-
         [Fact]
         public void TestSyncQuery()
         {
@@ -566,7 +536,7 @@ namespace GoogleCloudSamples
             _datasetsToDelete.Add(datasetId);
             string uploadTestWord = "additionalExampleJsonFromFile";
             long uploadTestWordValue = 9814072356;
-            string filePath = "..\\..\\..\\test\\data\\sample.json";
+            string filePath = Path.Combine("data", "sample.json");
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
             // Import data.
@@ -724,6 +694,26 @@ namespace GoogleCloudSamples
             var copyTable = _client.GetTable(newDatasetId, copiedTableId);
             var result = copyTable.ListRows();
             Assert.False(result.Count() == 0);
+        }
+
+        readonly CommandLineRunner _quickStart = new CommandLineRunner()
+        {
+            VoidMain = Program.Main,
+            Command = "dotnet run"
+        };
+
+        [Fact]
+        public void TestRunQuickStart()
+        {
+            string expectedOutputFirstWord = "Dataset";
+            string expectedOutputLastWord = "created.";
+            string sampleDatasetUsedInQuickStart = "my_new_dataset";
+            _datasetsToDelete.Add(sampleDatasetUsedInQuickStart);
+            var output = _quickStart.Run();
+            Assert.Equal(0, output.ExitCode);
+            var outputParts = output.Stdout.Split(new[] { ' ' });
+            Assert.Equal(expectedOutputFirstWord, outputParts.First().Trim());
+            Assert.Equal(expectedOutputLastWord, outputParts.Last().Trim());
         }
     }
 }
