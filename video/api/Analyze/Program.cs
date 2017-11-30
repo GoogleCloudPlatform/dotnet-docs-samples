@@ -93,6 +93,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             }
             return 0;
         }
+
         // [END analyze_labels]
 
         // [START analyze_labels_gcs]
