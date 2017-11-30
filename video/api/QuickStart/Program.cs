@@ -14,7 +14,7 @@
 
 // [START videointelligence_quickstart]
 
-using Google.Cloud.VideoIntelligence.V1Beta2;
+using Google.Cloud.VideoIntelligence.V1;
 using System;
 
 namespace GoogleCloudSamples.VideoIntelligence
