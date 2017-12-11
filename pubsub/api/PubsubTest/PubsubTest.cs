@@ -46,8 +46,10 @@ namespace GoogleCloudSamples
         {
             // Sometimes very recently created topics and subscriptions are
             // not found when you try to delete them.
-            var retryDelete = new RetryRobot() {
-                ShouldRetry = (Exception e) => {
+            var retryDelete = new RetryRobot()
+            {
+                ShouldRetry = (Exception e) =>
+                {
                     var rpcException = e as Grpc.Core.RpcException;
                     return rpcException?.Status.StatusCode == StatusCode.NotFound;
                 }
