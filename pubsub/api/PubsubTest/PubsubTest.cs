@@ -44,23 +44,13 @@ namespace GoogleCloudSamples
 
         void IDisposable.Dispose()
         {
-            // Sometimes very recently created topics and subscriptions are
-            // not found when you try to delete them.
-            var retryDelete = new RetryRobot()
-            {
-                ShouldRetry = (Exception e) =>
-                {
-                    var rpcException = e as Grpc.Core.RpcException;
-                    return rpcException?.Status.StatusCode == StatusCode.NotFound;
-                }
-            };
             foreach (string topicId in _tempTopicIds)
             {
-                retryDelete.Eventually(() => Run("deleteTopic", _projectId, topicId));
+                Eventually(() => Run("deleteTopic", _projectId, topicId));
             }
             foreach (string subscriptionId in _tempSubscriptionIds)
             {
-                retryDelete.Eventually(() => Run("deleteSubscription", _projectId, subscriptionId));
+                Eventually(() => Run("deleteSubscription", _projectId, subscriptionId));
             }
         }
 
@@ -82,7 +72,15 @@ namespace GoogleCloudSamples
 
         private readonly RetryRobot _retryRobot = new RetryRobot()
         {
-            RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) }
+            ShouldRetry = (Exception e) =>
+            {
+                if (e is Xunit.Sdk.XunitException)
+                {
+                    return true;
+                }
+                var rpcException = e as Grpc.Core.RpcException;
+                return rpcException?.Status.StatusCode == StatusCode.NotFound;
+            }
         };
 
         void Eventually(Action action) => _retryRobot.Eventually(action);
@@ -436,11 +434,17 @@ namespace GoogleCloudSamples
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription", _projectId,
                 topicId, subscriptionId);
-            Run("setSubscriptionIamPolicy", _projectId,
-                subscriptionId, testRoleValueToConfirm, testMemberValueToConfirm);
-            TestIamPermissionsResponse response =
-                TestSubscriptionIamPermissionsResponse(subscriptionId, _publisher);
-            Assert.NotEmpty(response.ToString());
+            Eventually(() =>
+            {
+                Run("setSubscriptionIamPolicy", _projectId,
+                    subscriptionId, testRoleValueToConfirm, testMemberValueToConfirm);
+            });
+            Eventually(() =>
+            {
+                TestIamPermissionsResponse response =
+                    TestSubscriptionIamPermissionsResponse(subscriptionId, _publisher);
+                Assert.NotEmpty(response.ToString());
+            });
         }
 
         [Fact]
