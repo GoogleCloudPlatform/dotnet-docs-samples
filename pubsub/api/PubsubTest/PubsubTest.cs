@@ -44,13 +44,21 @@ namespace GoogleCloudSamples
 
         void IDisposable.Dispose()
         {
+            // Sometimes very recently created topics and subscriptions are
+            // not found when you try to delete them.
+            var retryDelete = new RetryRobot() {
+                ShouldRetry = (Exception e) => {
+                    var rpcException = e as Grpc.Core.RpcException;
+                    return rpcException?.Status.StatusCode == StatusCode.NotFound;
+                }
+            };
             foreach (string topicId in _tempTopicIds)
             {
-                Run("deleteTopic", _projectId, topicId);
+                retryDelete.Eventually(() => Run("deleteTopic", _projectId, topicId));
             }
             foreach (string subscriptionId in _tempSubscriptionIds)
             {
-                Run("deleteSubscription", _projectId, subscriptionId);
+                retryDelete.Eventually(() => Run("deleteSubscription", _projectId, subscriptionId));
             }
         }
 
