@@ -14,17 +14,17 @@
 // limitations under the License.
 //
 }
+@model Trace.ViewModels.HomeIndex
 
-<h1>Google Cloud Stackdriver Sample for ASP.NET Framework</h1>
+<h1>Google Cloud Stackdriver Trace Sample for ASP.NET Core</h1>
 
-<h3>Stackdriver Trace:</h3>
+    <h3>Stackdriver Trace:</h3>
 <p>
     Trace has been configured for use with this application.<br />
-    See the <a href="https://console.cloud.google.com/traces/overview?project=@ViewData["projectId"]" target="_blank">Stackdriver Trace</a> dashboard in the Google Cloud Console to view traces for your application.
+    See the <a href="https://console.cloud.google.com/traces/overview?project=@Model.ProjectId" target="_blank">Stackdriver Trace</a> dashboard in the Google Cloud Console to view traces for your application.
     <br />
 
     <ul>
         <li><a href="/Trace" target="_blank">Initiate a trace</a></li>
     </ul>
 </p>
-<br />
