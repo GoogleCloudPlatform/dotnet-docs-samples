@@ -176,7 +176,7 @@ namespace GoogleCloudSamples
             permissions.Add("pubsub.subscriptions.update");
             TestIamPermissionsRequest request = new TestIamPermissionsRequest
             {
-                Resource = new TopicName(_projectId, subscriptionId).ToString(),
+                Resource = new SubscriptionName(_projectId, subscriptionId).ToString(),
                 Permissions = { permissions }
             };
             TestIamPermissionsResponse response = publisher.TestIamPermissions(request);
