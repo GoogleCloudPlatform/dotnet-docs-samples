@@ -32,6 +32,8 @@ But no sample will work until you:
     4.  Give your project a name.
     5.  Make a note of the project ID, which might be different from the project
         name. The project ID is used in commands and in configurations.
+	6.  Follow README.md instructions of corresponding sample you try to run - in
+	    addition to this file. It can contain additional configurations per sample. 
 
 2.  **Enable billing for your project**.
     If you haven't already enabled billing for your project,
