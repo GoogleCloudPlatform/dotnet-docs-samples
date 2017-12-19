@@ -26,7 +26,7 @@ try {
 
     # The list of directories with runTests that have been ported to dotnet core.
     $dirs = @('appengine', 'auth', 'bigquery', 'datastore', 'kms', 'language', 'monitoring', 
-      'pubsub', 'spanner', 'speech', 'storage', 'translate', 'video', 'vision')
+      'pubsub', 'spanner', 'speech', 'storage', 'trace', 'translate', 'video', 'vision')
 
     # Find all the runTest scripts.
     $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
