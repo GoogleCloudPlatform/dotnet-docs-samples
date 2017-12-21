@@ -323,6 +323,34 @@ function Set-TestTimeout($seconds) {
 
 ##############################################################################
 #.SYNOPSIS
+# Skips the currently running test.  Exits the currently running script.
+#
+#.EXAMPLE
+# Skip-Test
+##############################################################################
+function Skip-Test() {
+    New-Object PSObject -Property @{Skipped = $true} | Write-Output
+    exit
+}
+
+##############################################################################
+#.SYNOPSIS
+# Checks the currrently running platform.  Exits if it's the wrong one.
+#
+#.EXAMPLE
+# Require-Platform Win*
+##############################################################################
+function Require-Platform([string[]] $platforms) {
+    foreach ($platform in $platforms) {
+        if ([environment]::OSVersion.Platform -match $platform) {
+            return
+        }
+    }
+    Skip-Test
+}
+
+##############################################################################
+#.SYNOPSIS
 # Runs powershell scripts and prints a summary of successes and errors.
 #
 #.INPUTS
@@ -359,18 +387,22 @@ function Run-TestScripts($TimeoutSeconds=300) {
             # Call Receive-Job every second so the stdout for the job
             # streams to my stdout. 
             while ($true) {
-                Wait-Job $job -Timeout 1
+                Wait-Job $job -Timeout 1 | Out-Null
+                $jobState = $job.State
                 foreach ($line in (Receive-Job $job)) {
                     # Look at the output of the job to see if it requested
                     # a longer timeout.
                     if ($line.TimeoutSeconds) {
                         $TimeoutSeconds = $line.TimeoutSeconds
                         "Set timeout to $TimeoutSeconds seconds."
+                    } elseif ($line.Skipped) {
+                        Write-Output "SKIPPED"
+                        $jobState = 'Skipped'
+                        break
                     } else {
                         $line
                     }
                 }
-                $jobState = $job.State
                 if ($jobState -eq 'Running') {
                     $deadline = $startDate.AddSeconds($TimeoutSeconds)                    
                     if ((Get-Date) -gt $deadline) {
@@ -387,12 +419,12 @@ function Run-TestScripts($TimeoutSeconds=300) {
         $results[$jobState] += @($relativePath)
     }
     # Print a final summary.
-    echo ("=" * 79)
+    Write-Output ("=" * 79)
     foreach ($key in $results.Keys) {
         $count = $results[$key].Length
         $result = $key.Replace('Completed', 'Succeeded').ToUpper()
-        echo "$count $result"
-        echo $results[$key]
+        Write-Output "$count $result"
+        Write-Output $results[$key]
     }
     # Throw an exception to set ERRORLEVEL to 1 in the calling process.
     $failureCount = $results['Failed'].Length
@@ -400,8 +432,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
         throw "$failureCount FAILED"
     }
     $timeOutCount = $results['Timed Out'].Length
-    # TODO: Restore after logging API has been fixed.
-    if ($false -and $timeOutCount) {
+    if ($timeOutCount) {
         throw "$timeOutCount TIMED OUT"
     }
 }
