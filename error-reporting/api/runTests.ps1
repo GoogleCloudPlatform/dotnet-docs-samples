@@ -13,6 +13,8 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
+Require-Platform Win*
+
 Build-Solution
 
 .\packages\xunit.runner.console.2.3.0\tools\net452\xunit.console.exe .\test\bin\Debug\test.dll

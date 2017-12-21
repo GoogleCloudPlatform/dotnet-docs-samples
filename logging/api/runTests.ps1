@@ -13,6 +13,8 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
+Require-Platform Win*
+
 $filesToProcess = "Program.cs", "QuickStart\QuickStart.cs"
 
 BackupAndEdit-TextFile $filesToProcess `
