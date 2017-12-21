@@ -22,9 +22,7 @@ Unzip $env:KOKORO_GFILE_DIR\codeformatter.zip \codeformatter
 $codeformatterInstallPath = Resolve-Path \codeformatter
 $env:PATH = "$env:PATH;$codeformatterInstallPath\bin"
 
-# Install msbuild 14 for code-formatter
-choco install -y microsoft-build-tools --version 14.0.25420.1
-# The install fails to update PATH.  Do it ourselves.
+# Add msbuild 14 to the path for for code-formatter.
 $env:PATH="$env:PATH;C:\Program Files (x86)\MSBuild\14.0\Bin"
 Get-Command MSBuild.exe
 
