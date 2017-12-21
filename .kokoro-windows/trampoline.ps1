@@ -52,9 +52,6 @@ Copy-Item -Force github\dotnet-docs-samples\.kokoro\docker\bootstrap.js `
 choco install -y dotnetcore-sdk --version 2.0.0
 choco install -y --sxs dotnetcore-sdk --version 1.1.2
 
-# Get the latest Google Cloud SDK components.
-gcloud components update -q
-
 # Install nuget command line.
 choco install nuget.commandline
 
