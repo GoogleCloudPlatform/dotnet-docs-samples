@@ -59,4 +59,4 @@ choco install nuget.commandline
 choco install -y iisexpress
 
 # Run the tests.
-github\dotnet-docs-samples\.kokoro-windows\main.ps1
+github\dotnet-docs-samples\.kokoro\main.ps1
