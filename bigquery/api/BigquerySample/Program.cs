@@ -14,8 +14,8 @@
  * the License.
  */
 // [START bigquery_simple_app_all]
-
 // [START bigquery_simple_app_deps]
+
 using System;
 using Google.Cloud.BigQuery.V2;
 // [START bigquery_simple_app_deps]
