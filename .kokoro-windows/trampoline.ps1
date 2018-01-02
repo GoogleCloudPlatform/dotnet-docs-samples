@@ -55,8 +55,5 @@ choco install -y --sxs dotnetcore-sdk --version 1.1.2
 # Install nuget command line.
 choco install nuget.commandline
 
-# Install IISExpress.  Some tests us it.
-choco install -y iisexpress
-
 # Run the tests.
 github\dotnet-docs-samples\.kokoro\main.ps1
