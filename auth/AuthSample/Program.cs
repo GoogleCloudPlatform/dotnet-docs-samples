@@ -94,7 +94,8 @@ namespace GoogleCloudSamples
         {
             // If you don't specify credentials when constructing the client, the
             // client library will look for credentials in the environment.
-            var storage = StorageClient.Create();
+            var credential = GoogleCredential.GetApplicationDefault();
+            var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
             var buckets = storage.ListBuckets(projectId);
             foreach (var bucket in buckets)
@@ -110,12 +111,7 @@ namespace GoogleCloudSamples
         {
             // Explicitly use service account credentials by specifying the private key
             // file.
-            GoogleCredential credential = null;
-            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
-                FileAccess.Read, FileShare.Read))
-            {
-                credential = GoogleCredential.FromStream(jsonStream);
-            }
+            var credential = GoogleCredential.FromFile(jsonPath);
             var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
             var buckets = storage.ListBuckets(projectId);
@@ -155,7 +151,7 @@ namespace GoogleCloudSamples
         public object AuthImplicit(string projectId)
         {
             GoogleCredential credential =
-                GoogleCredential.GetApplicationDefaultAsync().Result;
+                GoogleCredential.GetApplicationDefault();
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
@@ -182,12 +178,7 @@ namespace GoogleCloudSamples
         // [START auth_api_explicit]
         public object AuthExplicit(string projectId, string jsonPath)
         {
-            GoogleCredential credential = null;
-            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
-                FileAccess.Read, FileShare.Read))
-            {
-                credential = GoogleCredential.FromStream(jsonStream);
-            }
+            var credential = GoogleCredential.FromFile(jsonPath);
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
@@ -248,7 +239,7 @@ namespace GoogleCloudSamples
         public object AuthImplicit(string projectId)
         {
             GoogleCredential credential =
-                GoogleCredential.GetApplicationDefaultAsync().Result;
+                GoogleCredential.GetApplicationDefault();
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
@@ -284,12 +275,7 @@ namespace GoogleCloudSamples
         // [START auth_http_explicit]
         public object AuthExplicit(string projectId, string jsonPath)
         {
-            GoogleCredential credential = null;
-            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
-                FileAccess.Read, FileShare.Read))
-            {
-                credential = GoogleCredential.FromStream(jsonStream);
-            }
+            var credential = GoogleCredential.FromFile(jsonPath);
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
