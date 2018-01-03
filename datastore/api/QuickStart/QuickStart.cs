@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using Google.Apis.Auth.OAuth2;
 // [START datastore_quickstart]
 using Google.Cloud.Datastore.V1;
 
@@ -22,11 +23,11 @@ namespace GoogleCloudSamples
     {
         public static void Main(string[] args)
         {
-            // Your Google Cloud Platform project ID
-            string projectId = "YOUR-PROJECT-ID";
-
+            var credential = GoogleCredential.FromEnvironment();
             // Instantiates a client
-            DatastoreDb db = DatastoreDb.Create(projectId);
+            DatastoreDb db = DatastoreDb.Create(credential);
+            // and/or:
+            DatastoreDb db = DatastoreDb.Create(credential, credential.ProjectId);
 
             // The kind for the new entity
             string kind = "Task";
