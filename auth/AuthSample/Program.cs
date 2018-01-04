@@ -96,14 +96,14 @@ namespace GoogleCloudSamples
         // This is the preferred way of authenticating.
         ///////////////////////////////////////////////
         // [START auth_cloud_implicit]
-        public object AuthImplicit(string projectId)
+        public object AuthImplicit()
         {
             // If you don't specify credentials when constructing the client, the
             // client library will look for credentials in the environment.
-            var credential = GoogleCredential.GetApplicationDefault();
+            var credential = GoogleCredential.FromEnvironment();
             var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
-            var buckets = storage.ListBuckets(projectId);
+            var buckets = storage.ListBuckets(credential.ProjectId);
             foreach (var bucket in buckets)
             {
                 Console.WriteLine(bucket.Name);
@@ -113,14 +113,14 @@ namespace GoogleCloudSamples
         // [END auth_cloud_implicit]
 
         // [START auth_cloud_explicit]
-        public object AuthExplicit(string projectId, string jsonPath)
+        public object AuthExplicit(string jsonPath)
         {
             // Explicitly use service account credentials by specifying the private key
             // file.
             var credential = GoogleCredential.FromFile(jsonPath);
             var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
-            var buckets = storage.ListBuckets(projectId);
+            var buckets = storage.ListBuckets(credential.ProjectId);
             foreach (var bucket in buckets)
             {
                 Console.WriteLine(bucket.Name);
@@ -130,7 +130,7 @@ namespace GoogleCloudSamples
         // [END auth_cloud_explicit]
 
         // [START auth_cloud_explicit_compute_engine]
-        public object AuthExplicitComputeEngine(string projectId)
+        public object AuthExplicitComputeEngine()
         {
             // Explicitly use service account credentials by specifying the 
             // private key file.
@@ -138,7 +138,7 @@ namespace GoogleCloudSamples
                 GoogleCredential.FromComputeCredential();
             var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
-            var buckets = storage.ListBuckets(projectId);
+            var buckets = storage.ListBuckets(credential.ProjectId);
             foreach (var bucket in buckets)
             {
                 Console.WriteLine(bucket.Name);
@@ -154,24 +154,18 @@ namespace GoogleCloudSamples
     class ApiLibrary : AuthLibrary
     {
         // [START auth_api_implicit]
-        public object AuthImplicit(string projectId)
+        public object AuthImplicit()
         {
             GoogleCredential credential =
-                GoogleCredential.GetApplicationDefault();
-            // Inject the Cloud Storage scope if required.
-            if (credential.IsCreateScopedRequired)
-            {
-                credential = credential.CreateScoped(new[]
-                {
-                    StorageService.Scope.DevstorageReadOnly
-                });
-            }
+                GoogleCredential.FromEnvironment()
+                    .WithScope(StorageService.Scope.DevstorageReadOnly)
+                    .WithScope(StorageService.Scope.CloudPlatformReadOnly);
             var storage = new StorageService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
                 ApplicationName = "DotNet Google Cloud Platform Auth Sample",
             });
-            var request = new BucketsResource.ListRequest(storage, projectId);
+            var request = new BucketsResource.ListRequest(storage, credential.ProjectId);
             var requestResult = request.Execute();
             foreach (var bucket in requestResult.Items)
             {
@@ -182,7 +176,7 @@ namespace GoogleCloudSamples
         // [END auth_api_implicit]
 
         // [START auth_api_explicit]
-        public object AuthExplicit(string projectId, string jsonPath)
+        public object AuthExplicit(string jsonPath)
         {
             var credential = GoogleCredential.FromFile(jsonPath);
             // Inject the Cloud Storage scope if required.
@@ -198,7 +192,7 @@ namespace GoogleCloudSamples
                 HttpClientInitializer = credential,
                 ApplicationName = "DotNet Google Cloud Platform Auth Sample",
             });
-            var request = new BucketsResource.ListRequest(storage, projectId);
+            var request = new BucketsResource.ListRequest(storage, credential.ProjectId);
             var requestResult = request.Execute();
             foreach (var bucket in requestResult.Items)
             {
@@ -209,7 +203,7 @@ namespace GoogleCloudSamples
         // [END auth_api_explicit]
 
         // [START auth_api_explicit_compute_engine]
-        public object AuthExplicitComputeEngine(string projectId)
+        public object AuthExplicitComputeEngine()
         {
             // Explicitly use service account credentials by specifying the 
             // private key file.
@@ -228,7 +222,7 @@ namespace GoogleCloudSamples
                 HttpClientInitializer = credential,
                 ApplicationName = "DotNet Google Cloud Platform Auth Sample",
             });
-            var request = new BucketsResource.ListRequest(storage, projectId);
+            var request = new BucketsResource.ListRequest(storage, credential.ProjectId);
             var requestResult = request.Execute();
             foreach (var bucket in requestResult.Items)
             {
@@ -242,10 +236,10 @@ namespace GoogleCloudSamples
     class HttpLibrary : AuthLibrary
     {
         // [START auth_http_implicit]
-        public object AuthImplicit(string projectId)
+        public object AuthImplicit()
         {
             GoogleCredential credential =
-                GoogleCredential.GetApplicationDefault();
+                GoogleCredential.FromEnvironment();
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
@@ -265,7 +259,7 @@ namespace GoogleCloudSamples
             UriBuilder uri = new UriBuilder(
                 "https://www.googleapis.com/storage/v1/b");
             uri.Query = "project=" +
-                System.Web.HttpUtility.UrlEncode(projectId);
+                System.Web.HttpUtility.UrlEncode(credential.ProjectId);
             var resultText = http.GetAsync(uri.Uri).Result.Content
                 .ReadAsStringAsync().Result;
             dynamic result = Newtonsoft.Json.JsonConvert
@@ -279,7 +273,7 @@ namespace GoogleCloudSamples
         // [END auth_http_implicit]
 
         // [START auth_http_explicit]
-        public object AuthExplicit(string projectId, string jsonPath)
+        public object AuthExplicit(string jsonPath)
         {
             var credential = GoogleCredential.FromFile(jsonPath);
             // Inject the Cloud Storage scope if required.
@@ -301,7 +295,7 @@ namespace GoogleCloudSamples
             UriBuilder uri = new UriBuilder(
                 "https://www.googleapis.com/storage/v1/b");
             uri.Query = "project=" +
-                System.Web.HttpUtility.UrlEncode(projectId);
+                System.Web.HttpUtility.UrlEncode(credential.ProjectId);
             var resultText = http.GetAsync(uri.Uri).Result.Content
                 .ReadAsStringAsync().Result;
             dynamic result = Newtonsoft.Json.JsonConvert
@@ -331,10 +325,7 @@ namespace GoogleCloudSamples
         {
             var credential = GoogleCredential.FromFile(jsonPath)
                 .CreateScoped(LanguageServiceClient.DefaultScopes);
-            var channel = new Grpc.Core.Channel(
-                LanguageServiceClient.DefaultEndpoint.ToString(),
-                credential.ToChannelCredentials());
-            var client = LanguageServiceClient.Create(channel);
+            var client = LanguageServiceClient.Create(credential);
             AnalyzeSentiment(client);
             return 0;
         }
@@ -342,17 +333,15 @@ namespace GoogleCloudSamples
         public object AuthExplicitComputeEngine(string projectId)
         {
             var credential = GoogleCredential.FromComputeCredential();
-            var channel = new Grpc.Core.Channel(
-                LanguageServiceClient.DefaultEndpoint.ToString(),
-                credential.ToChannelCredentials());
-            var client = LanguageServiceClient.Create(channel);
+            var client = LanguageServiceClient.Create(credential);
             AnalyzeSentiment(client);
             return 0;
         }
 
         public object AuthImplicit(string projectId)
         {
-            var client = LanguageServiceClient.Create();
+            var credential = GoogleCredential.FromEnvironment();
+            var client = LanguageServiceClient.Create(credential);
             AnalyzeSentiment(client);
             return 0;
         }

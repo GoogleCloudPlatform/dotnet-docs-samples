@@ -17,6 +17,7 @@
 using Google.Cloud.PubSub.V1;
 using System;
 using System.Diagnostics;
+using Google.Apis.Auth.OAuth2;
 
 namespace GoogleCloudSamples
 {
@@ -24,18 +25,12 @@ namespace GoogleCloudSamples
     {
         public static void Main(string[] args)
         {
+            var credential = GoogleCredential.FromEnvironment();
             // Instantiates a client
-            PublisherClient publisher = PublisherClient.Create();
-
-            // Your Google Cloud Platform project ID
-            string projectId = "YOUR-PROJECT-ID";
-            // [END pubsub_quickstart]
-            Debug.Assert(projectId != "YOUR-PROJECT" + "-ID",
-                "Edit Program.cs and replace YOUR-PROJECT-ID with your project id.");
-            // [START pubsub_quickstart]
+            PublisherClient publisher = PublisherClient.Create(credential);
 
             // The name for the new topic
-            var topicName = new TopicName(projectId, "my-new-topic");
+            var topicName = new TopicName(credential.ProjectId, "my-new-topic");
 
             // Creates the new topic
             try

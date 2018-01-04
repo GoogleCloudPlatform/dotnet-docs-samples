@@ -18,6 +18,7 @@
 
 using Google.Cloud.Speech.V1;
 using System;
+using Google.Apis.Auth.OAuth2;
 
 namespace GoogleCloudSamples
 {
@@ -25,7 +26,8 @@ namespace GoogleCloudSamples
     {
         public static void Main(string[] args)
         {
-            var speech = SpeechClient.Create();
+            var credential = GoogleCredential.FromEnvironment();
+            var speech = SpeechClient.Create(credential);
             var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
