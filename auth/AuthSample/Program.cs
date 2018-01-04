@@ -329,7 +329,8 @@ namespace GoogleCloudSamples
     {
         public object AuthExplicit(string projectId, string jsonPath)
         {
-            var credential = GoogleCredential.FromFile(jsonPath);
+            var credential = GoogleCredential.FromFile(jsonPath)
+                .CreateScoped(LanguageServiceClient.DefaultScopes);
             var channel = new Grpc.Core.Channel(
                 LanguageServiceClient.DefaultEndpoint.ToString(),
                 credential.ToChannelCredentials());
