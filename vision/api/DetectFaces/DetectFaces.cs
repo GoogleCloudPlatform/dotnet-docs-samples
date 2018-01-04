@@ -24,7 +24,7 @@ namespace GoogleCloudSamples
     public class DetectFaces
     {
         // [START main]
-        static readonly string s_usage = @"DetectFaces image-file
+        static readonly string s_usage = @"dotnet run image-file
         
         Use the Google Cloud Vision API to detect faces in the image.
         Writes an output file called image-file.faces.
@@ -45,16 +45,19 @@ namespace GoogleCloudSamples
             var response = client.DetectFaces(Image.FromFile(args[0]));
             // [END detect_face]
 
+            int numberOfFacesFound = 0;
             // [START highlight_faces]
             using (var image = System.Drawing.Image.FromFile(args[0]))
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(image))
             {
-                var cyanPen = new System.Drawing.Pen(System.Drawing.Color.
-                    FromKnownColor(System.Drawing.KnownColor.Cyan), 3);
+                var cyanPen = new System.Drawing.Pen(System.Drawing.Color.Cyan, 3);
                 foreach (var annotation in response)
                 {
                     g.DrawPolygon(cyanPen, annotation.BoundingPoly.Vertices.Select(
                         (vertex) => new System.Drawing.Point(vertex.X, vertex.Y)).ToArray());
+                    // [START_EXCLUDE]
+                    numberOfFacesFound++;
+                    // [END_EXCLUDE]
                 }
                 // [END highlight_faces]
                 int lastDot = args[0].LastIndexOf('.');
@@ -63,6 +66,8 @@ namespace GoogleCloudSamples
                     args[0].Substring(0, lastDot) + ".faces" + args[0].Substring(lastDot);
                 image.Save(outFilePath);
             }
+            Console.WriteLine($"Found {numberOfFacesFound} "
+                + $"face{(numberOfFacesFound == 1 ? string.Empty : "s")}.");
         }
     }
 }

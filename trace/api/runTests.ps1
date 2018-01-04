@@ -11,11 +11,13 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
-BackupAndEdit-TextFile "Web.config" `
+Import-Module -DisableNameChecking ..\..\BuildTools.psm1
+
+dotnet restore
+BackupAndEdit-TextFile "appsettings.json" `
     @{"YOUR-GOOGLE-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{ 
-	Build-Solution
-	Run-IISExpressTest "Trace"
+{
+	dotnet build
+	Run-KestrelTest 5582
 }

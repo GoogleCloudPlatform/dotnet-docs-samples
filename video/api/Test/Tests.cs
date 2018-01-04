@@ -44,7 +44,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             Command = "Analyze"
         };
 
-        [Fact]
+        [Fact(Skip = "Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]
         void TestAnalyzeNoArgsSucceeds()
         {
             ConsoleOutput output = _analyze.Run();
@@ -118,12 +118,12 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
 
         [Fact]
-        void TestSafeSearchGcs()
+        void TestExplicitContentGcs()
         {
             ConsoleOutput output =
-                _analyze.Run("safesearch", "gs://demomaker/gbike.mp4");
+                _analyze.Run("explicit-content", "gs://demomaker/gbike.mp4");
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Adult:", output.Stdout);
+            Assert.Contains("Pornography", output.Stdout);
         }
 
         void IDisposable.Dispose()

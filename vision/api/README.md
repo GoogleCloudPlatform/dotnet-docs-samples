@@ -3,21 +3,24 @@
 A collection of samples that demonstrate how to call the
 [Google Cloud Vision API](https://cloud.google.com/vision/docs/) from C#.
 
+This sample requires [.NET Core 2.0](
+    https://www.microsoft.com/net/core) or later.  That means using
+[Visual Studio 2017](
+    https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
+can use [this older sample](
+    https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/vision/api).
+
 ## Build and Run
 
 1.  **Follow the instructions in the [root README](../../README.md)**.
 
 4.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=vision.googleapis.com&showconfirmation=true)
-    to visit Cloud Platform Console and enable the Google Cloud Speech API.
+    to visit Cloud Platform Console and enable the Google Cloud Vision API.
 
-6.  Open [Vision.sln](Vision.sln) with Microsoft Visual Studio version 2012 or later.
-
-8.  Build the Solution.
-
-9.  From the command line, run QuickStart.exe:
+9.  From a Powershell command line, run the QuickStart sample:
     ```
-    PS C:\...\dotnet-docs-samples\vision\api\QuickStart\bin\Debug> .\QuickStart.exe
+    PS C:\...\dotnet-docs-samples\vision\api\QuickStart> dotnet run
     cat
     mammal
     whiskers
@@ -25,9 +28,9 @@ A collection of samples that demonstrate how to call the
     cat like mammal
     ```
 
-10. And run Detect.exe to detect various features in images:
+10. And run the Detect sample to detect various features in images:
     ```
-    PS C:\...\dotnet-docs-samples\vision\api\Detect\bin\Debug> .\Detect.exe
+    PS C:\...\dotnet-docs-samples\vision\api\Detect> dotnet run
     Detect 1.0.0.0
     Copyright c Google Inc 2017
 
@@ -58,11 +61,10 @@ A collection of samples that demonstrate how to call the
 
       version        Display version information.
 
-    PS C:\...\dotnet-docs-samples\vision\api\Detect\bin\Debug> .\Detect text ..\..\..\VisionTest\d
-    ata\bonito.gif
+    PS C:\...\dotnet-docs-samples\vision\api\Detect> dotnet run text ..\VisionTest\data\bonito.gif
     Bonito: dried and
     fermented for months, but
-    Still lively on your plate.
+    still ively on your plate.
 
     Bonito:
     dried
@@ -71,8 +73,8 @@ A collection of samples that demonstrate how to call the
     for
     months,
     but
-    Still
-    lively
+    still
+    ively
     on
     your
     plate.

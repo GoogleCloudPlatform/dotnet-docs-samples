@@ -13,10 +13,6 @@
 # the License.
 
 # Load secrets from the files downloaded from google cloud storage.
-Get-ChildItem $env:KOKORO_GFILE_DIR
-& "$env:KOKORO_GFILE_DIR/secrets.ps1"
-$env:GOOGLE_APPLICATION_CREDENTIALS="$env:KOKORO_GFILE_DIR/silver-python2-01aab03dac88.json"
-
 Push-Location
 try {
     # Import BuildTools.psm1
@@ -24,9 +20,11 @@ try {
     Set-Location (Join-Path (Split-Path $invocation.MyCommand.Path) ..)
     Import-Module  .\BuildTools.psm1 -DisableNameChecking
 
-    # The list of directories with runTests that have been ported to dotnet core.
-    $dirs = @('appengine', 'auth', 'datastore', 'kms', 'language', 'monitoring', 
-      'pubsub', 'speech', 'translate', 'video')
+    # Import secrets:
+    .\.kokoro-windows\Import-Secrets.ps1
+        
+    # The list of all subdirectories.
+    $dirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
 
     # Find all the runTest scripts.
     $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse

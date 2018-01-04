@@ -29,3 +29,6 @@ COPY bootstrap.js /casperjs-casperjs-76fc831/bin
 
 # Add debugging tools.
 RUN apt-get install git vim -y
+
+# install GDI+ API compatible implementation for cross-plaform System.Drawing
+RUN apt-get install libgdiplus -y

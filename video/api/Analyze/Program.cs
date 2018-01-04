@@ -13,10 +13,11 @@
 // the License.
 
 using CommandLine;
-using Google.Cloud.VideoIntelligence.V1Beta1;
+using Google.Cloud.VideoIntelligence.V1;
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace GoogleCloudSamples.VideoIntelligence
 {
@@ -40,8 +41,8 @@ namespace GoogleCloudSamples.VideoIntelligence
         public string Uri { get; set; }
     }
 
-    [Verb("safesearch", HelpText = "Analyze the content of the video.")]
-    class AnalyzeSafeSearchOptions
+    [Verb("explicit-content", HelpText = "Analyze the content of the video.")]
+    class AnalyzeExplicitContentOptions
     {
         [Value(0, HelpText = "The uri of the video to examine. "
             + "Must be a Cloud storage uri like "
@@ -80,19 +81,19 @@ namespace GoogleCloudSamples.VideoIntelligence
             var client = VideoIntelligenceServiceClient.Create();
             var request = new AnnotateVideoRequest()
             {
-                InputContent = Convert.ToBase64String(File.ReadAllBytes(path)),
+                InputContent = Google.Protobuf.ByteString.CopyFrom(File.ReadAllBytes(path)),
                 Features = { Feature.LabelDetection }
             };
             var op = client.AnnotateVideo(request).PollUntilCompleted();
             foreach (var result in op.Result.AnnotationResults)
             {
-                foreach (var annotation in result.LabelAnnotations)
-                {
-                    Console.WriteLine(annotation.Description);
-                }
+                PrintLabels("Video", result.SegmentLabelAnnotations);
+                PrintLabels("Shot", result.ShotLabelAnnotations);
+                PrintLabels("Frame", result.FrameLabelAnnotations);
             }
             return 0;
         }
+
         // [END analyze_labels]
 
         // [START analyze_labels_gcs]
@@ -107,53 +108,68 @@ namespace GoogleCloudSamples.VideoIntelligence
             var op = client.AnnotateVideo(request).PollUntilCompleted();
             foreach (var result in op.Result.AnnotationResults)
             {
-                foreach (var annotation in result.LabelAnnotations)
-                {
-                    Console.WriteLine(annotation.Description);
-                }
+                PrintLabels("Video", result.SegmentLabelAnnotations);
+                PrintLabels("Shot", result.ShotLabelAnnotations);
+                PrintLabels("Frame", result.FrameLabelAnnotations);
             }
             return 0;
         }
+
+        // [START analyze_labels]
+        static void PrintLabels(string labelName,
+            IEnumerable<LabelAnnotation> labelAnnotations)
+        {
+            foreach (var annotation in labelAnnotations)
+            {
+                Console.WriteLine($"{labelName} label: {annotation.Entity.Description}");
+                foreach (var entity in annotation.CategoryEntities)
+                {
+                    Console.WriteLine($"{labelName} label category: {entity.Description}");
+                }
+                foreach (var segment in annotation.Segments)
+                {
+                    Console.Write("Segment location: ");
+                    Console.Write(segment.Segment.StartTimeOffset);
+                    Console.Write(":");
+                    Console.WriteLine(segment.Segment.EndTimeOffset);
+                    System.Console.WriteLine($"Confidence: {segment.Confidence}");
+                }
+            }
+        }
+        // [END analyze_labels]
         // [END analyze_labels_gcs]
 
-        // [START analyze_safesearch_gcs]
-        public static object AnalyzeSafeSearchGcs(string uri)
+        // [START analyze_explicitcontent_gcs]
+        public static object AnalyzeExplicitContentGcs(string uri)
         {
             var client = VideoIntelligenceServiceClient.Create();
             var request = new AnnotateVideoRequest()
             {
                 InputUri = uri,
-                Features = { Feature.SafeSearchDetection }
+                Features = { Feature.ExplicitContentDetection }
             };
             var op = client.AnnotateVideo(request).PollUntilCompleted();
             foreach (var result in op.Result.AnnotationResults)
             {
-                foreach (SafeSearchAnnotation annotation in result.SafeSearchAnnotations)
+                foreach (var frame in result.ExplicitAnnotation.Frames)
                 {
-                    Console.WriteLine("Time Offset: {0}", annotation.TimeOffset);
-                    Console.WriteLine("Adult: {0}", annotation.Adult);
-                    Console.WriteLine("Medical: {0}", annotation.Medical);
-                    Console.WriteLine("Racy: {0}", annotation.Racy);
-                    Console.WriteLine("Spoof: {0}", annotation.Spoof);
-                    Console.WriteLine("Violent: {0}", annotation.Violent);
+                    Console.WriteLine("Time Offset: {0}", frame.TimeOffset);
+                    Console.WriteLine("Pornography Likelihood: {0}", frame.PornographyLikelihood);
                     Console.WriteLine();
                 }
             }
             return 0;
         }
-        // [END analyze_safesearch_gcs]
+        // [END analyze_explicitcontent_gcs]
 
         public static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<
-                AnalyzeShotsOptions,
-                AnalyzeSafeSearchOptions,
-                AnalyzeLabelsOptions
-                >(args).MapResult(
-                (AnalyzeShotsOptions opts) => AnalyzeShotsGcs(opts.Uri),
-                (AnalyzeSafeSearchOptions opts) => AnalyzeSafeSearchGcs(opts.Uri),
-                (AnalyzeLabelsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeLabelsGcs(opts.Uri) : AnalyzeLabels(opts.Uri),
-                errs => 1);
+            var verbMap = new VerbMap<object>()
+                .Add((AnalyzeShotsOptions opts) => AnalyzeShotsGcs(opts.Uri))
+                .Add((AnalyzeExplicitContentOptions opts) => AnalyzeExplicitContentGcs(opts.Uri))
+                .Add((AnalyzeLabelsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeLabelsGcs(opts.Uri) : AnalyzeLabels(opts.Uri))
+                .SetNotParsedFunc((errs) => 1);
+            verbMap.Run(args);
         }
         static bool IsStorageUri(string s) => s.Substring(0, 4).ToLower() == "gs:/";
     }

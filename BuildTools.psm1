@@ -308,6 +308,49 @@ function UpFind-File([string[]]$Masks = '*')
 
 ##############################################################################
 #.SYNOPSIS
+# Sets the timeout for a runTests.ps1.
+#
+#.DESCRIPTION
+# When Run-TestScripts calls a runTests.ps1, then the runTests.ps1 can call
+# Set-TestTimeout to override the default timeout.
+#
+#.EXAMPLE
+# Set-TestTimeout 900
+##############################################################################
+function Set-TestTimeout($seconds) {
+    New-Object PSObject -Property @{TimeoutSeconds = $seconds}
+}
+
+##############################################################################
+#.SYNOPSIS
+# Skips the currently running test.  Exits the currently running script.
+#
+#.EXAMPLE
+# Skip-Test
+##############################################################################
+function Skip-Test() {
+    New-Object PSObject -Property @{Skipped = $true} | Write-Output
+    exit
+}
+
+##############################################################################
+#.SYNOPSIS
+# Checks the currrently running platform.  Exits if it's the wrong one.
+#
+#.EXAMPLE
+# Require-Platform Win*
+##############################################################################
+function Require-Platform([string[]] $platforms) {
+    foreach ($platform in $platforms) {
+        if ([environment]::OSVersion.Platform -match $platform) {
+            return
+        }
+    }
+    Skip-Test
+}
+
+##############################################################################
+#.SYNOPSIS
 # Runs powershell scripts and prints a summary of successes and errors.
 #
 #.INPUTS
@@ -324,17 +367,17 @@ function Run-TestScripts($TimeoutSeconds=300) {
     # Array of strings: the relative path of the inner script.
     $results = @{}
     foreach ($script in $scripts) {
-        $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+        $startDate = Get-Date
         $relativePath = Resolve-Path -Relative $script.FullName
         $verb = "Starting"
         $jobState = 'Failed'  # Retry once on failure.
         for ($try = 0; $try -lt 2 -and $jobState -eq 'Failed'; ++$try) {
-            echo "$verb $relativePath..."
+            Write-Output "$verb $relativePath..."
             $verb = "Retrying"
             $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
                 ('.\"{0}"' -f $script.Name) {
-                echo ("-" * 79)
-                echo $args[0]
+                Write-Output ("-" * 79)
+                Write-Output $args[0]
                 Set-Location $args[1]
                 Invoke-Expression $args[2]
                 if ($LASTEXITCODE) {
@@ -344,12 +387,26 @@ function Run-TestScripts($TimeoutSeconds=300) {
             # Call Receive-Job every second so the stdout for the job
             # streams to my stdout. 
             while ($true) {
-                Wait-Job $job -Timeout 1
-                Receive-Job $job
+                Wait-Job $job -Timeout 1 | Out-Null
                 $jobState = $job.State
+                foreach ($line in (Receive-Job $job)) {
+                    # Look at the output of the job to see if it requested
+                    # a longer timeout.
+                    if ($line.TimeoutSeconds) {
+                        $TimeoutSeconds = $line.TimeoutSeconds
+                        "Set timeout to $TimeoutSeconds seconds."
+                    } elseif ($line.Skipped) {
+                        Write-Output "SKIPPED"
+                        $jobState = 'Skipped'
+                        break
+                    } else {
+                        $line
+                    }
+                }
                 if ($jobState -eq 'Running') {
+                    $deadline = $startDate.AddSeconds($TimeoutSeconds)                    
                     if ((Get-Date) -gt $deadline) {
-                        echo "TIME OUT"
+                        Write-Output "TIME OUT"
                         $jobState = 'Timed Out'
                         break
                     }
@@ -362,12 +419,12 @@ function Run-TestScripts($TimeoutSeconds=300) {
         $results[$jobState] += @($relativePath)
     }
     # Print a final summary.
-    echo ("=" * 79)
+    Write-Output ("=" * 79)
     foreach ($key in $results.Keys) {
         $count = $results[$key].Length
         $result = $key.Replace('Completed', 'Succeeded').ToUpper()
-        echo "$count $result"
-        echo $results[$key]
+        Write-Output "$count $result"
+        Write-Output $results[$key]
     }
     # Throw an exception to set ERRORLEVEL to 1 in the calling process.
     $failureCount = $results['Failed'].Length
@@ -375,8 +432,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
         throw "$failureCount FAILED"
     }
     $timeOutCount = $results['Timed Out'].Length
-    # TODO: Restore after logging API has been fixed.
-    if ($false -and $timeOutCount) {
+    if ($timeOutCount) {
         throw "$timeOutCount TIMED OUT"
     }
 }
@@ -702,7 +758,7 @@ function Run-CasperJs($TestJs='test.js', $Url) {
 ##############################################################################
 function Deploy-CasperJsTest($testJs ='test.js') {
     while ($true) {
-		$yamls = Get-Item .\bin\debug\netcoreapp1.0\publish\*.yaml | Resolve-Path -Relative
+		$yamls = Get-Item .\bin\debug\netcoreapp*\publish\*.yaml | Resolve-Path -Relative
 		echo "gcloud beta app deploy --quiet --no-promote -v deploytest $yamls"
         gcloud beta app deploy --quiet --no-promote -v deploytest $yamls
         if ($LASTEXITCODE -eq 0) {

@@ -46,11 +46,11 @@ namespace GoogleCloudSamples
         {
             foreach (string topicId in _tempTopicIds)
             {
-                Run("deleteTopic", _projectId, topicId);
+                Eventually(() => Run("deleteTopic", _projectId, topicId));
             }
             foreach (string subscriptionId in _tempSubscriptionIds)
             {
-                Run("deleteSubscription", _projectId, subscriptionId);
+                Eventually(() => Run("deleteSubscription", _projectId, subscriptionId));
             }
         }
 
@@ -72,7 +72,15 @@ namespace GoogleCloudSamples
 
         private readonly RetryRobot _retryRobot = new RetryRobot()
         {
-            RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) }
+            ShouldRetry = (Exception e) =>
+            {
+                if (e is Xunit.Sdk.XunitException)
+                {
+                    return true;
+                }
+                var rpcException = e as Grpc.Core.RpcException;
+                return rpcException?.Status.StatusCode == StatusCode.NotFound;
+            }
         };
 
         void Eventually(Action action) => _retryRobot.Eventually(action);
@@ -168,7 +176,7 @@ namespace GoogleCloudSamples
             permissions.Add("pubsub.subscriptions.update");
             TestIamPermissionsRequest request = new TestIamPermissionsRequest
             {
-                Resource = new TopicName(_projectId, subscriptionId).ToString(),
+                Resource = new SubscriptionName(_projectId, subscriptionId).ToString(),
                 Permissions = { permissions }
             };
             TestIamPermissionsResponse response = publisher.TestIamPermissions(request);
@@ -219,7 +227,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestCreateTopic()
         {
-            string topicId = "testTopicForTopicCreation";
+            string topicId = "testTopicForTopicCreation" + TestUtil.RandomName();
             var output = Run("createTopic", _projectId, topicId);
             var topicDetails = Run("getTopic", _projectId, topicId);
             Assert.Contains($"{topicId}", topicDetails.Stdout);
@@ -228,8 +236,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestCreateSubscription()
         {
-            string topicId = "testTopicForSubscriptionCreation";
-            string subscriptionId = "testSubscriptionForSubscriptionCreation";
+            string topicId = "testTopicForSubscriptionCreation" + TestUtil.RandomName();
+            string subscriptionId = "testSubscriptionForSubscriptionCreation" + TestUtil.RandomName();
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription", _projectId,
                 topicId, subscriptionId);
@@ -242,8 +250,8 @@ namespace GoogleCloudSamples
         [InlineData(true)]
         public void TestPublishMessage(bool customBatch)
         {
-            string topicId = "testTopicForMessageCreation";
-            string subscriptionId = "testSubscriptionForMessageCreation";
+            string topicId = "testTopicForMessageCreation" + TestUtil.RandomName();
+            string subscriptionId = "testSubscriptionForMessageCreation" + TestUtil.RandomName();
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription", _projectId,
                 topicId, subscriptionId);
@@ -270,8 +278,8 @@ namespace GoogleCloudSamples
         [InlineData(true)]
         public void TestAcknowledgeMessage(bool customFlow)
         {
-            string topicId = "testTopicForMessageAck";
-            string subscriptionId = "testSubscriptionForMessageAck";
+            string topicId = "testTopicForMessageAck" + TestUtil.RandomName();
+            string subscriptionId = "testSubscriptionForMessageAck" + TestUtil.RandomName();
             string message = TestUtil.RandomName();
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription", _projectId,
@@ -304,7 +312,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestListTopics()
         {
-            string topicId = "testTopicForListingTopics";
+            string topicId = "testTopicForListingTopics" + TestUtil.RandomName();
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             Eventually(() =>
             {
@@ -317,7 +325,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestListTopicsWithServiceCredentials()
         {
-            string topicId = "testTopicForListingTopics";
+            string topicId = "testTopicForListingTopics" + TestUtil.RandomName();
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             Eventually(() =>
             {
@@ -332,8 +340,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestListSubscriptions()
         {
-            string topicId = "testTopicForListingSubscriptions";
-            string subscriptionId = "testSubscriptionForListingSubscriptions";
+            string topicId = "testTopicForListingSubscriptions" + TestUtil.RandomName();
+            string subscriptionId = "testSubscriptionForListingSubscriptions" + TestUtil.RandomName();
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription",
                 _projectId,
@@ -351,7 +359,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetTopicIamPolicy()
         {
-            string topicId = "testTopicForGetTopicIamPolicy";
+            string topicId = "testTopicForGetTopicIamPolicy" + TestUtil.RandomName();
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var policyOutput = Run("getTopicIamPolicy", _projectId, topicId);
             Assert.NotEmpty(policyOutput.Stdout);
@@ -360,7 +368,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetSubscriptionPolicy()
         {
-            string topicId = "testTopicGetSubscriptionIamPolicy";
+            string topicId = "testTopicGetSubscriptionIamPolicy" + TestUtil.RandomName();
             string subscriptionId = "testSubscriptionGetSubscriptionIamPolicy";
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription", _projectId,
@@ -373,7 +381,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSetTopicIamPolicy()
         {
-            string topicId = "testTopicForSetTopicIamPolicy";
+            string topicId = "testTopicForSetTopicIamPolicy" + TestUtil.RandomName();
             string testRoleValueToConfirm = "pubsub.editor";
             string testMemberValueToConfirm = "group:cloud-logs@google.com";
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
@@ -387,8 +395,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSetSubscriptionIamPolicy()
         {
-            string topicId = "testTopicSetSubscriptionIamPolicy";
-            string subscriptionId = "testSubscriptionSetSubscriptionIamPolicy";
+            string topicId = "testTopicSetSubscriptionIamPolicy" + TestUtil.RandomName();
+            string subscriptionId = "testSubscriptionSetSubscriptionIamPolicy" + TestUtil.RandomName();
             string testRoleValueToConfirm = "pubsub.editor";
             string testMemberValueToConfirm = "group:cloud-logs@google.com";
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
@@ -405,7 +413,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestTopicIamPolicyPermissions()
         {
-            string topicId = "testTopicForTestTopicIamPolicy";
+            string topicId = "testTopicForTestTopicIamPolicy" + TestUtil.RandomName();
             string testRoleValueToConfirm = "pubsub.editor";
             string testMemberValueToConfirm = "group:cloud-logs@google.com";
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
@@ -419,25 +427,31 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSubscriptionPolicyPermisssions()
         {
-            string topicId = "testTopicForTestSubscriptionIamPolicy";
-            string subscriptionId = "testSubscriptionForTestSubscriptionIamPolicy";
+            string topicId = "testTopicForTestSubscriptionIamPolicy" + TestUtil.RandomName();
+            string subscriptionId = "testSubscriptionForTestSubscriptionIamPolicy" + TestUtil.RandomName();
             string testRoleValueToConfirm = "pubsub.editor";
             string testMemberValueToConfirm = "group:cloud-logs@google.com";
             var topicCreateOutput = Run("createTopic", _projectId, topicId);
             var subcriptionCreateOutput = Run("createSubscription", _projectId,
                 topicId, subscriptionId);
-            Run("setSubscriptionIamPolicy", _projectId,
-                subscriptionId, testRoleValueToConfirm, testMemberValueToConfirm);
-            TestIamPermissionsResponse response =
-                TestSubscriptionIamPermissionsResponse(subscriptionId, _publisher);
-            Assert.NotEmpty(response.ToString());
+            Eventually(() =>
+            {
+                Run("setSubscriptionIamPolicy", _projectId,
+                    subscriptionId, testRoleValueToConfirm, testMemberValueToConfirm);
+            });
+            Eventually(() =>
+            {
+                TestIamPermissionsResponse response =
+                    TestSubscriptionIamPermissionsResponse(subscriptionId, _publisher);
+                Assert.NotEmpty(response.ToString());
+            });
         }
 
         [Fact]
         public void TestRpcRetry()
         {
-            string topicId = "testTopicForRpcRetry";
-            string subscriptionId = "testSubscriptionForRpcRetry";
+            string topicId = "testTopicForRpcRetry" + TestUtil.RandomName();
+            string subscriptionId = "testSubscriptionForRpcRetry" + TestUtil.RandomName();
             _tempTopicIds.Add(topicId);
             _tempSubscriptionIds.Add(subscriptionId);
             RpcRetry(topicId, subscriptionId, _publisher, _subscriber);
@@ -448,7 +462,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestDeleteTopic()
         {
-            string topicId = "testTopicForDeleteTopic";
+            string topicId = "testTopicForDeleteTopic" + TestUtil.RandomName();
             Run("createTopic", _projectId, topicId);
             Run("deleteTopic", _projectId, topicId);
             _tempTopicIds.Clear();  // We already deleted it.
@@ -460,8 +474,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestDeleteSubscription()
         {
-            string topicId = "testTopicForDeleteSubscription";
-            string subscriptionId = "testSubscriptionForDeleteSubscription";
+            string topicId = "testTopicForDeleteSubscription" + TestUtil.RandomName();
+            string subscriptionId = "testSubscriptionForDeleteSubscription" + TestUtil.RandomName();
             Run("createTopic", _projectId, topicId);
             Run("createSubscription", _projectId, topicId, subscriptionId);
             Run("deleteSubscription", _projectId, subscriptionId);

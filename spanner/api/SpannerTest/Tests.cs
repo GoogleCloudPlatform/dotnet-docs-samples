@@ -163,7 +163,7 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestReadStaleData()
         {
-            Thread.Sleep(TimeSpan.FromSeconds(11));
+            Thread.Sleep(TimeSpan.FromSeconds(16));
             ConsoleOutput output = _spannerCmd.Run("readStaleData",
                 s_projectId, s_instanceId, s_databaseId);
             Assert.Equal(0, output.ExitCode);
@@ -196,7 +196,7 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]
         void TestSpannerNoArgsSucceeds()
         {
             ConsoleOutput output = _spannerCmd.Run();
@@ -213,9 +213,22 @@ namespace GoogleCloudSamples.Spanner
                         s_projectId, s_instanceId, s_databaseId);
             }
             catch (AggregateException e)
-                when (Program.ContainsGrpcError(e, Grpc.Core.StatusCode.AlreadyExists))
             {
-                Console.WriteLine($"Database {s_databaseId} already exists.");
+                bool rethrow = true;
+                foreach (var innerException in e.InnerExceptions)
+                {
+                    SpannerException spannerException = innerException as SpannerException;
+                    if (spannerException != null && spannerException.Message.ToLower().Contains("duplicate"))
+                    {
+                        Console.WriteLine($"Database {s_databaseId} already exists.");
+                        rethrow = false;
+                        break;
+                    }
+                }
+                if (rethrow)
+                {
+                    throw;
+                }
             }
             // List tables to confirm database tables exist.
             ConsoleOutput output = _spannerCmd.Run("listDatabaseTables",

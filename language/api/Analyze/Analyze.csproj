@@ -5,9 +5,9 @@
     <StartupObject>GoogleCloudSamples.Analyze</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Language.V1" Version="1.0.0" />
+    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+    <PackageReference Include="Google.Cloud.Language.V1" Version="1.1.0" />
   </ItemGroup>
 </Project>
