@@ -23,6 +23,8 @@ using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
 using System.Net.Http;
+using Google.Cloud.Language.V1;
+using Grpc.Auth;
 
 namespace GoogleCloudSamples
 {
@@ -61,8 +63,12 @@ namespace GoogleCloudSamples
         public bool Compute { get; set; }
     }
 
-    [Verb("cloud", HelpText = "Authenticate using the Google.Cloud.Storage library.  "
-        + "The preferred way of authenticating.")]
+    [Verb("hand", HelpText = "Authenticate using the Google.Cloud.Storage library.  "
+        + "The preferred way of authenticating hand-coded wrapper libraries.")]
+    class HandOptions : BaseOptions { }
+
+    [Verb("cloud", HelpText = "Authenticate using the Google.Cloud.Language library.  "
+        + "The preferred way of authenticating gRPC-based libraries.")]
     class CloudOptions : BaseOptions { }
 
     [Verb("api", HelpText = "Authenticate using the Google.Apis.Storage library.")]
@@ -82,9 +88,9 @@ namespace GoogleCloudSamples
     }
 
     /// <summary>
-    /// Authenticates with Google.Cloud.* libraries.
+    /// Some APIs like storage have hand-coded libraries.  They auth like this.
     /// </summary>
-    public class CloudLibrary : AuthLibrary
+    public class HandCodedLibrary : AuthLibrary
     {
         ///////////////////////////////////////////////
         // This is the preferred way of authenticating.
@@ -314,6 +320,57 @@ namespace GoogleCloudSamples
         // [END auth_http_explicit]
     }
 
+    /// <summary>
+    /// Authenticates with Google.Cloud.* libraries.
+    /// Specifically calls the language API, but all the machine learning APIs,
+    /// And some other APIs like Pub/Sub also follow this pattern.
+    /// </summary>
+    public class CloudLibrary : AuthLibrary
+    {
+        public object AuthExplicit(string projectId, string jsonPath)
+        {
+            var credential = GoogleCredential.FromFile(jsonPath)
+                .CreateScoped(LanguageServiceClient.DefaultScopes);
+            var channel = new Grpc.Core.Channel(
+                LanguageServiceClient.DefaultEndpoint.ToString(),
+                credential.ToChannelCredentials());
+            var client = LanguageServiceClient.Create(channel);
+            AnalyzeSentiment(client);
+            return 0;
+        }
+
+        public object AuthExplicitComputeEngine(string projectId)
+        {
+            var credential = GoogleCredential.FromComputeCredential();
+            var channel = new Grpc.Core.Channel(
+                LanguageServiceClient.DefaultEndpoint.ToString(),
+                credential.ToChannelCredentials());
+            var client = LanguageServiceClient.Create(channel);
+            AnalyzeSentiment(client);
+            return 0;
+        }
+
+        public object AuthImplicit(string projectId)
+        {
+            var client = LanguageServiceClient.Create();
+            AnalyzeSentiment(client);
+            return 0;
+        }
+
+        void AnalyzeSentiment(LanguageServiceClient client)
+        {
+            string text = "Hello World!";
+            var response = client.AnalyzeSentiment(new Document()
+            {
+                Content = text,
+                Type = Document.Types.Type.PlainText
+            });
+            var sentiment = response.DocumentSentiment;
+            Console.WriteLine($"Score: {sentiment.Score}");
+            Console.WriteLine($"Magnitude: {sentiment.Magnitude}");
+        }
+    }
+
     public class AuthSample
     {
         static object ChooseAuthMethodAndInvoke(BaseOptions options, AuthLibrary library)
@@ -330,11 +387,12 @@ namespace GoogleCloudSamples
         }
         public static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<CloudOptions, ApiOptions, HttpOptions>(args)
+            Parser.Default.ParseArguments<CloudOptions, ApiOptions, HttpOptions, HandOptions>(args)
               .MapResult(
-                (CloudOptions opts) => ChooseAuthMethodAndInvoke(opts, new CloudLibrary()),
+                (HandOptions opts) => ChooseAuthMethodAndInvoke(opts, new HandCodedLibrary()),
                 (ApiOptions opts) => ChooseAuthMethodAndInvoke(opts, new ApiLibrary()),
                 (HttpOptions opts) => ChooseAuthMethodAndInvoke(opts, new HttpLibrary()),
+                (CloudOptions opts) => ChooseAuthMethodAndInvoke(opts, new CloudLibrary()),
                 errs => 1);
         }
     }
