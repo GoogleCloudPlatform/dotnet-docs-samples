@@ -366,7 +366,7 @@ namespace GoogleCloudSamples
             });
             var sentiment = response.DocumentSentiment;
             Console.WriteLine($"Score: {sentiment.Score}");
-            Console.WriteLine($"Magnitude: {sentiment.Magnitude}");            
+            Console.WriteLine($"Magnitude: {sentiment.Magnitude}");
         }
     }
 
