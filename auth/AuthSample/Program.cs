@@ -325,10 +325,7 @@ namespace GoogleCloudSamples
         {
             var credential = GoogleCredential.FromFile(jsonPath)
                 .CreateScoped(LanguageServiceClient.DefaultScopes);
-            var channel = new Grpc.Core.Channel(
-                LanguageServiceClient.DefaultEndpoint.ToString(),
-                credential.ToChannelCredentials());
-            var client = LanguageServiceClient.Create(channel);
+            var client = LanguageServiceClient.Create(credential);
             AnalyzeSentiment(client);
             return 0;
         }
@@ -336,17 +333,15 @@ namespace GoogleCloudSamples
         public object AuthExplicitComputeEngine(string projectId)
         {
             var credential = GoogleCredential.FromComputeCredential();
-            var channel = new Grpc.Core.Channel(
-                LanguageServiceClient.DefaultEndpoint.ToString(),
-                credential.ToChannelCredentials());
-            var client = LanguageServiceClient.Create(channel);
+            var client = LanguageServiceClient.Create(credential);
             AnalyzeSentiment(client);
             return 0;
         }
 
         public object AuthImplicit(string projectId)
         {
-            var client = LanguageServiceClient.Create();
+            var credential = GoogleCredential.FromEnvironment();
+            var client = LanguageServiceClient.Create(credential);
             AnalyzeSentiment(client);
             return 0;
         }
