@@ -18,7 +18,7 @@
 
 using System;
 using Google.Cloud.BigQuery.V2;
-// [START bigquery_simple_app_deps]
+// [END bigquery_simple_app_deps]
 
 namespace GoogleCloudSamples
 {
