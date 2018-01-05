@@ -380,7 +380,7 @@ namespace GoogleCloudSamples
                 var points = item.Points;
                 var labels = item.Metric.Labels;
                 Console.WriteLine($"{labels.Values.FirstOrDefault()}");
-                if (points.Count > 0) 
+                if (points.Count > 0)
                 {
                     Console.WriteLine($"  Now: {points[0].Value.DoubleValue}");
                 }
