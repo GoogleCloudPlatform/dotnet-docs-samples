@@ -380,8 +380,14 @@ namespace GoogleCloudSamples
                 var points = item.Points;
                 var labels = item.Metric.Labels;
                 Console.WriteLine($"{labels.Values.FirstOrDefault()}");
-                Console.WriteLine($"  Now: {points[0].Value.DoubleValue}");
-                Console.WriteLine($"  10 min ago: {points[1].Value.DoubleValue}");
+                if (points.Count > 0) 
+                {
+                    Console.WriteLine($"  Now: {points[0].Value.DoubleValue}");
+                }
+                if (points.Count > 1)
+                {
+                    Console.WriteLine($"  10 min ago: {points[1].Value.DoubleValue}");
+                }
             }
             return 0;
         }
