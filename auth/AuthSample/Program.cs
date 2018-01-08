@@ -113,10 +113,12 @@ namespace GoogleCloudSamples
         // [END auth_cloud_implicit]
 
         // [START auth_cloud_explicit]
+        // Some APIs, like Storage, accept a credential in their Create()
+        // method.
         public object AuthExplicit(string projectId, string jsonPath)
         {
-            // Explicitly use service account credentials by specifying the private key
-            // file.
+            // Explicitly use service account credentials by specifying 
+            // the private key file.
             var credential = GoogleCredential.FromFile(jsonPath);
             var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
@@ -130,10 +132,12 @@ namespace GoogleCloudSamples
         // [END auth_cloud_explicit]
 
         // [START auth_cloud_explicit_compute_engine]
+        // Some APIs, like Storage, accept a credential in their Create()
+        // method.
         public object AuthExplicitComputeEngine(string projectId)
         {
-            // Explicitly use service account credentials by specifying the 
-            // private key file.
+            // Explicitly request service account credentials from the compute
+            // engine instance.
             GoogleCredential credential =
                 GoogleCredential.FromComputeCredential();
             var storage = StorageClient.Create(credential);
@@ -327,6 +331,9 @@ namespace GoogleCloudSamples
     /// </summary>
     public class CloudLibrary : AuthLibrary
     {
+        // [START auth_cloud_explicit]
+        // Other APIs, like Language, accept a channel in their Create()
+        // method.
         public object AuthExplicit(string projectId, string jsonPath)
         {
             var credential = GoogleCredential.FromFile(jsonPath)
@@ -338,7 +345,11 @@ namespace GoogleCloudSamples
             AnalyzeSentiment(client);
             return 0;
         }
+        // [END auth_cloud_explicit]
 
+        // [START auth_cloud_explicit_compute_engine]
+        // Other APIs, like Language, accept a channel in their Create()
+        // method.
         public object AuthExplicitComputeEngine(string projectId)
         {
             var credential = GoogleCredential.FromComputeCredential();
@@ -349,6 +360,7 @@ namespace GoogleCloudSamples
             AnalyzeSentiment(client);
             return 0;
         }
+        // [END auth_cloud_explicit_compute_engine]
 
         public object AuthImplicit(string projectId)
         {
