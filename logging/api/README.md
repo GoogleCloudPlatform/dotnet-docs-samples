@@ -26,13 +26,13 @@ can use [this older sample](
     ```ps1
     PS C:\...\dotnet-docs-samples\logging\api\LoggingSample> dotnet run
     Usage:
-    LoggingSample create-log-entry log-id new-log-entry-text
-    LoggingSample list-log-entries log-id
-    LoggingSample create-sink sink-id log-id
-    LoggingSample list-sinks
-    LoggingSample update-sink sink-id log-id
-    LoggingSample delete-log log-id
-    LoggingSample delete-sink sink-id
+      dotnet run create-log-entry log-id new-log-entry-text
+      dotnet run list-log-entries log-id
+      dotnet run create-sink sink-id log-id
+      dotnet run list-sinks
+      dotnet run update-sink sink-id log-id
+      dotnet run delete-log log-id
+      dotnet run delete-sink sink-id
     ```
 
 ## Contributing changes
