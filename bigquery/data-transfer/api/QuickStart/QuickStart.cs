@@ -19,11 +19,11 @@ using System;
 using Google.Api.Gax;
 using Google.Cloud.BigQuery.DataTransfer.V1;
 
-namespace QuickStart
+namespace GoogleCloudSamples
 {
-    class Program
+    public class QuickStart
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // Instantiates a client
             DataTransferServiceClient client = DataTransferServiceClient.Create();
@@ -32,14 +32,14 @@ namespace QuickStart
             string projectId = "YOUR-PROJECT-ID";
 
             ProjectName project = new ProjectName(projectId);
-            PagedEnumerable<ListDataSourcesResponse, DataSource> sources = client.ListDataSources(ParentNameOneof.From(project));
+            var sources = client.ListDataSources(ParentNameOneof.From(project));
             Console.WriteLine("Supported Data Sources:");
             foreach (DataSource source in sources)
             {
-                Console.WriteLine($"{source.DataSourceId}: {source.DisplayName} ({source.Description})");
+                Console.WriteLine(
+                    $"{source.DataSourceId}: " +
+                    $"{source.DisplayName} ({source.Description})");
             }
-            Console.WriteLine("\nPress any key...");
-            Console.ReadKey();
         }
     }
 }
