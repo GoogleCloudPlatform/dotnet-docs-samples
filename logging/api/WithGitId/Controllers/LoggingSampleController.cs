@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -18,7 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
+//using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GoogleCloudSamples.Controllers
 {
