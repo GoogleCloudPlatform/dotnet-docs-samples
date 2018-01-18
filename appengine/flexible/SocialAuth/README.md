@@ -84,7 +84,7 @@ Hang in there.
 	  project.
 
 
-## ![PowerShell](../.resources/powershell.png)Using PowerShell
+## ![PowerShell](../.resources/powershell.png) Using PowerShell
 
 ### Run Locally
 
@@ -108,7 +108,7 @@ project metadata with this powershell script:
 	```
 
 
-## ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
+## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio
 
 ### Run Locally
 
@@ -119,11 +119,11 @@ project metadata with this powershell script:
 	PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> .\Upload-UserSecrets
 	```
 
-Open **SocialAUth.csproj**, and Press **F5**.
+Open **SocialAuth.csproj**, and Press **F5**.
 
 ### Deploy to App Engine
 
-1.  In Solution Explorer, right-click the **SocialAUth** project and choose **Publish SocialAUth to Google Cloud**.
+1.  In Solution Explorer, right-click the **SocialAuth** project and choose **Publish SocialAuth to Google Cloud**.
 
 2.  Click **App Engine Flex**.
 

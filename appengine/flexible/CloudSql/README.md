@@ -80,7 +80,7 @@ when running in Google App Engine Flexible Environment.
 6.  Edit [appsettings.json](appsettings.json).  Update the connection string
     with your user, password, server ip address, etc.
 
-## ![PowerShell](../.resources/powershell.png)Using PowerShell
+## ![PowerShell](../.resources/powershell.png) Using PowerShell
 
 ### Run Locally
 
@@ -98,7 +98,7 @@ PS > gcloud beta app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 ```
 
 
-## ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio 2017
+## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
 
 Visual Studio is *optional*.  An old, unmaintained branch of samples that work
 with Visual Studio 2015 is 

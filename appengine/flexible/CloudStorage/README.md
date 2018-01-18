@@ -22,7 +22,7 @@ when running in Google App Engine Flexible Environment.
 	
 5.  Edit [appsettings.json](appsettings.json).  Replace `your-google-bucket-name` with your bucket name.
 
-## ![PowerShell](../.resources/powershell.png)Using PowerShell
+## ![PowerShell](../.resources/powershell.png) Using PowerShell
 
 ### Run Locally
 
@@ -40,7 +40,7 @@ PS > gcloud beta app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 ```
 
 
-## ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio 2017
+## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
 
 Visual Studio is *optional*.  An old, unmaintained branch of samples that work
 with Visual Studio 2015 is 
