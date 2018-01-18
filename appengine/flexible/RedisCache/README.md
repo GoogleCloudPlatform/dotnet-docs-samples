@@ -12,15 +12,6 @@ when running in Google App Engine Flexible Environment.
 
 2.  Install the [.NET Core SDK, version 1.1](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.1.4-download.md).
 
-2.  Visual Studio is *optional*.  Solution files can be opened with Visual
-    Studio 2017 or later.  An old, unmaintained branch of samples that work
-    with Visual Studio 2015 is 
-    [here](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015).
-
-3.  [Google Cloud Tools for Visual Studio](
-	https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
-    make it easy to deploy to App Engine.  Install them if you are running Visual Studio.
-
 4.  [Sign up for a Redis Labs account.](https://redislabs.com/#signup-box)
 
 5.  Create a [Redis Database using Redis Cloud](
@@ -32,22 +23,16 @@ when running in Google App Engine Flexible Environment.
 4.  Edit [appsettings.json](appsettings.json).  Replace 
     `your-redis-endpoint` with your Redis Endpoint.
 
-## Run Locally
+## ![PowerShell](../.resources/powershell.png) Using PowerShell
 
-### ![PowerShell](../.resources/powershell.png)Using PowerShell
+### Run Locally
+
 ```psm1
 PS > dotnet restore
 PS > dotnet run
 ```
 
-### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
-1.  In Solution Explorer, right-click the **RedisCache** project and choose **Set as StartUp Project**
-2.  Press F5.
-
-## Deploy to App Engine
-
-### ![PowerShell](../.resources/powershell.png)Using PowerShell
-
+### Deploy to App Engine
 
 ```psm1
 PS > dotnet restore
@@ -55,11 +40,24 @@ PS > dotnet publish
 PS > gcloud beta app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 ```
 
-### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
 
+## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
 
-1.  In Solution Explorer, right-click the **RedisCache** project and choose 
-    **Publish RedisCache to Google Cloud**.
+Visual Studio is *optional*.  An old, unmaintained branch of samples that work
+with Visual Studio 2015 is 
+[here](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015).
+
+[Google Cloud Tools for Visual Studio](
+https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
+make it easy to deploy to App Engine.  Install them if you are running Visual Studio.
+
+### Run Locally
+
+Open **RedisCache.csproj**, and Press **F5**.
+
+### Deploy to App Engine
+
+1.  In Solution Explorer, right-click the **RedisCache** project and choose **Publish RedisCache to Google Cloud**.
 
 2.  Click **App Engine Flex**.
 

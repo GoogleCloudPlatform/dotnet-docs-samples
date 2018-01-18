@@ -9,10 +9,10 @@ This sample application is ready to deploy to Google App Engine Flexible Environ
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.
 
-2.  Install the [.NET Core SDK, version 1.1](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.1.4-download.md).
+3.  Install the [.NET Core SDK, version 1.1](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.1.4-download.md).
 
 
-## ![PowerShell](../.resources/powershell.png)Using PowerShell
+## ![PowerShell](../.resources/powershell.png) Using PowerShell
 
 ### Run Locally
 
@@ -30,7 +30,7 @@ PS > gcloud beta app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
 ```
 
 
-## ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio 2017
+## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
 
 Visual Studio is *optional*.  An old, unmaintained branch of samples that work
 with Visual Studio 2015 is 

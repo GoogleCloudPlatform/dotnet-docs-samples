@@ -19,16 +19,6 @@ Hang in there.
 
 2.  Install the [.NET Core SDK, version 1.1](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.1.4-download.md).
 
-2.  Visual Studio is *optional*.  Solution files can be opened with Visual
-    Studio 2017 or later.  An old, unmaintained branch of samples that work
-    with Visual Studio 2015 is 
-    [here](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015).
-
-5.  [Google Cloud Tools for Visual Studio](
-	https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
-    make it easy to deploy to App Engine.  Install them if you are running 
-	Visual Studio.
-
 6.  [Click here](https://console.cloud.google.com/flows/enableapi?apiid=cloudkms.googleapis.com&showconfirmation=true) 
 	to enable [Google Cloud Key Management Service](https://cloud.google.com/kms/)
 	for your project.
@@ -93,37 +83,19 @@ Hang in there.
 	  **Enable Google Middleware** have already been applied to the SocialAuth
 	  project.
 
-## Run Locally
 
-### ![PowerShell](../.resources/powershell.png)Using PowerShell
+## ![PowerShell](../.resources/powershell.png)Using PowerShell
+
+### Run Locally
+
 ```ps1
 PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> dotnet restore
 PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> dotnet run
 ```
-
-### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
-1.  In Solution Explorer, right-click the **SocialAuth** project and choose **Set as StartUp Project**
-2.  Press F5.
-
-## Deploy to App Engine
-
-### ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
-
-1.  In Solution Explorer, right-click the **SocialAuth** project and choose 
-    **Publish...**.
-
-2.  Under `Select a publish target`, click **Custom**.
-
-3.  For `Profile name:` type `local` and click **OK**.
-
-4.  Leave `Publish Method:` set to `File System` and leave the `Target location:` set to its default.
-
-5.  Click **Publish**.
-
-### ![PowerShell](../.resources/powershell.png)Using PowerShell
+### Deploy to App Engine
 
 6.  Before deploying to app engine, you must copy your user secrets to your Google
-project metadata with commands like this:
+project metadata with this powershell script:
 
 	```psm1
 	PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> .\Upload-UserSecrets
@@ -134,3 +106,25 @@ project metadata with commands like this:
 	```psm1
 	PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> gcloud beta app deploy .\bin\Release\PublishOutput\app.yaml
 	```
+
+
+## ![Visual Studio](../.resources/visual-studio.png)Using Visual Studio
+
+### Run Locally
+
+6.  Before deploying to app engine, you must copy your user secrets to your Google
+project metadata with this powershell script:
+
+	```psm1
+	PS C:\dotnet-docs-samples\appengine\flexible\SocialAuth> .\Upload-UserSecrets
+	```
+
+Open **SocialAUth.csproj**, and Press **F5**.
+
+### Deploy to App Engine
+
+1.  In Solution Explorer, right-click the **SocialAUth** project and choose **Publish SocialAUth to Google Cloud**.
+
+2.  Click **App Engine Flex**.
+
+3.  Click **Publish**.
