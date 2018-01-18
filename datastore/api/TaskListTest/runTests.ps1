@@ -13,4 +13,4 @@
 # the License.
 
 dotnet restore
-dotnet test
+dotnet test -v n
