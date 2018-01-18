@@ -43,11 +43,11 @@ make it easy to deploy to App Engine.  Install them if you are running Visual St
 
 ### Run Locally
 
-Open **HelloWorld.csproj**, and Press **F5**.
+Open **StaticContent.csproj**, and Press **F5**.
 
 ### Deploy to App Engine
 
-1.  In Solution Explorer, right-click the **HelloWorld** project and choose **Publish HelloWorld to Google Cloud**.
+1.  In Solution Explorer, right-click the **StaticContent** project and choose **Publish StaticContent to Google Cloud**.
 
 2.  Click **App Engine Flex**.
 
