@@ -13,4 +13,5 @@
 # the License.
 
 dotnet restore
-dotnet test -v n
+dotnet build
+dotnet test --no-build -v n
