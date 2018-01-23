@@ -1,7 +1,14 @@
 # Stackdriver Error Reporting Sample
 
-A sample demonstrating how to use the Google Cloud Stackdriver Diagnostics ASP.NET NuGet package
+A sample demonstrating how to use the Google Cloud Stackdriver Diagnostics ASP.NET Core NuGet package
 to log all of an ASP.NET web application's errors to the Error Reporting page in the Cloud Platform Console.
+
+This sample requires [.NET Core 2.0](
+    https://www.microsoft.com/net/core) or later.  That means using
+[Visual Studio 2017](
+    https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
+can use [this older sample](
+    https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/error-reporting/api/diagnostics).
 
 ## Links
 
@@ -15,26 +22,26 @@ to log all of an ASP.NET web application's errors to the Error Reporting page in
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=clouderrorreporting.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Stackdriver Error Reporting API.
 
-3.  Open [ErrorReporting.sln](ErrorReporting.sln) with Microsoft Visual Studio version 2015 or later.
+4. In [appsettings.json](appsettings.json) change the placeholder value of "YOUR-GOOGLE-PROJECT-ID" to be your project id.
 
-4. In [WebApiConfig.cs](App_Start/WebApiConfig.cs) change the placeholder value of "YOUR-PROJECT-ID" to be your project id.
+5. From a Powershell command line, run the Error Reporting sample:
 
-5. Build the Solution.
+    ```ps1
+    PS C:\...\dotnet-docs-samples\error-reporting\api\diagnostics> dotnet run
+    Hosting environment: Production
+    Content root path: C:\Users\jbsimon\updateErrorReporting\dotnet-docs-samples\error-reporting\core\diagnostics
+    Now listening on: http://localhost:5000
+    Application started. Press Ctrl+C to shut down.
+    ```
 
-6. Run the solution.
+6. Open the running sample web app http://localhost:5000 in a web browser 
+which will invoke a generic System.Exception application error.
 
-7. Visual Studio will open a web browser and attempt to load the sample web app. Visual Studio will then take focus and highlight the generic exception error that is thrown by the sample.
+7. Go back to Powershell and Press Ctrl+C to close the web app which will still be running.
 
-8. Continue running the sample by clicking the green *Continue* button or pressing F11.
-
-9. The browser will display an XML error with the message "An error has occurred.".
-
-10. Go back to Visual Studio and stop the program which will still be running.
-
-11. The generic error that was thrown will be logged and viewable in
+8. The generic error that was thrown will be logged and viewable in
     the [Error Reporting](https://console.cloud.google.com/errors) page
     in the Cloud Platform Console.
-
 
 ## Contributing changes
 
