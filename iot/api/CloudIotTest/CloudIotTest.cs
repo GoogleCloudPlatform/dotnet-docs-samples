@@ -25,10 +25,11 @@ namespace GoogleCloudSamples
     // </summary>
     public class CommonTests
     {
+        // For testing, hardcode region and pull the project ID from environment.
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         private static readonly string s_regionId = "us-central1";
         private static readonly string s_serviceAccount = "serviceAccount:cloud-iot@system.gserviceaccount.com";
-
+        private static readonly string s_testID = Guid.NewGuid().ToString().Split("-")[0];
 
         readonly CommandLineRunner _cloudIot = new CommandLineRunner()
         {
@@ -51,7 +52,7 @@ namespace GoogleCloudSamples
         private void CreatePubSubTopic(String name)
         {
             var publisher = PublisherClient.Create();
-            TopicName topicName = new TopicName(s_projectId, name);
+            var topicName = new TopicName(s_projectId, name);
             try
             {
                 publisher.CreateTopic(topicName);
@@ -81,21 +82,21 @@ namespace GoogleCloudSamples
 
         private void DeletePubSubTopic(String name)
         {
-            PublisherClient publisher = PublisherClient.Create();
-            TopicName topicName = new TopicName(s_projectId, name);
+            var publisher = PublisherClient.Create();
+            var topicName = new TopicName(s_projectId, name);
             publisher.DeleteTopic(topicName);
         }
 
         [Fact]
         public void TestCreateDeleteRegistry()
         {
-            var registryId = "testcreatereg";
+            var registryId = $"{s_testID}testcreatereg";
             var topicId = "dotnettest-create";
 
             // Build up IoT PubSub Topic
             CreatePubSubTopic(topicId);
 
-            var createRegistryOutput = Run("createRegistry", s_projectId, s_regionId, registryId,  topicId);
+            var createRegistryOutput = Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
             Assert.DoesNotContain("A registry with the name", createRegistryOutput.Stdout);
 
             var deleteRegOutput = Run("deleteRegistry", s_projectId, s_regionId, registryId);
@@ -108,7 +109,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestListRegistries()
         {
-            var registryId = "testlistreg";
+            var registryId = $"{s_testID}testlistreg";
             var topicId = "dotnettest-list";
 
             // Build up IoT PubSub Topic
@@ -126,7 +127,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetRegistry()
         {
-            var registryId = "testgetreg";
+            var registryId = $"{s_testID}testgetreg";
             var topicId = "dotnettest-list";
 
             // Build up IoT PubSub Topic
@@ -145,7 +146,7 @@ namespace GoogleCloudSamples
         public void TestCreateUnauthDevice()
         {
             var topicId = "dotnettest-createunauth";
-            var registryId = "testcreatedevice-unauth";
+            var registryId = $"{s_testID}testcreatedevice-unauth";
             var deviceId = "dotnettest-unauth";
 
             // Build up IoT PubSub Topic
@@ -167,7 +168,7 @@ namespace GoogleCloudSamples
         public void TestGetDeviceConfigs()
         {
             var topicId = "dotnettest-createunauth";
-            var registryId = "testcreatedevice-unauth";
+            var registryId = $"{s_testID}testcreatedevice-unauth";
             var deviceId = "dotnettest-unauth";
 
             // Build up IoT PubSub Topic, registry, and device
@@ -188,7 +189,7 @@ namespace GoogleCloudSamples
         public void TestCreateEsDevice()
         {
             var topicId = "dotnettest-createES";
-            var registryId = "testcreatedevice-createES";
+            var registryId = $"{s_testID}testcreatedevice-createES";
             var deviceId = "dotnettest-createES";
 
             // Build up IoT PubSub Topic
@@ -210,7 +211,7 @@ namespace GoogleCloudSamples
         public void TestCreateRsaDevice()
         {
             var topicId = "dotnettest-createRSA";
-            var registryId = "testcreatedevice-createRSA";
+            var registryId = $"{s_testID}testcreatedevice-createRSA";
             var deviceId = "dotnettest-createRSA";
 
             // Build up IoT PubSub Topic
@@ -232,7 +233,7 @@ namespace GoogleCloudSamples
         public void TestCreatePatchEsDevice()
         {
             var topicId = "dotnettest-createunauth-es";
-            var registryId = "testcreatedevice-createunauth-es";
+            var registryId = $"{s_testID}testcreatedevice-createunauth-es";
             var deviceId = "dotnettest-unauth-es";
 
             // Build up IoT PubSub Topic
@@ -253,7 +254,7 @@ namespace GoogleCloudSamples
         public void TestCreatePatchRsaDevice()
         {
             var topicId = "dotnettest-createunauth-rsa";
-            var registryId = "testcreatedevice-unauth-rsa";
+            var registryId = $"{s_testID}testcreatedevice-unauth-rsa";
             var deviceId = "dotnettest-unauth-rsa";
 
             // Build up IoT PubSub Topic
@@ -274,7 +275,7 @@ namespace GoogleCloudSamples
         public void TestSetDeviceConfig()
         {
             var topicId = "dotnettest-configtest";
-            var registryId = "testcreatedevice-config";
+            var registryId = $"{s_testID}testcreatedevice-config";
             var deviceId = "dotnettest-config";
 
             // Build up IoT PubSub Topic
@@ -294,7 +295,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetSetIamBinding()
         {
-            var registryId = "testsetiamreg";
+            var registryId = $"{s_testID}testsetiamreg";
             var topicId = "dotnettest-getsetiam";
             var member = "group:dpebot@google.com";
             var role = "roles/viewer";
@@ -318,7 +319,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestListDevicesNoRegistry()
         {
-            var registryId = "notfoundregistry";
+            var registryId = $"{s_testID}-notfounddevicereg";
             var listDevicesOutput = Run("listDevices", s_projectId, s_regionId, registryId);
             Assert.Contains("A registry with the name", listDevicesOutput.Stdout);
         }
@@ -326,7 +327,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetDeviceRegistryNotFound()
         {
-            var registryId = "notfoundregistry";
+            var registryId = $"{s_testID}-notfoundregistry";
             var listDevicesOutput = Run("getRegistry", s_projectId, s_regionId, registryId);
             Assert.Contains("A registry with the name", listDevicesOutput.Stdout);
         }

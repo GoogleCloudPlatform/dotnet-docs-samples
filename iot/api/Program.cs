@@ -43,7 +43,6 @@ namespace GoogleCloudSamples
 
         [Value(3, HelpText = "The pubsub topic to associate to the registry.", Required = true)]
         public string pubsubTopic { get; set; }
-
     }
 
     [Verb("deleteRegistry", HelpText = "Delete a registry.")]
@@ -200,7 +199,7 @@ namespace GoogleCloudSamples
     class ListDevicesOptions : DeviceOptions { }
 
     [Verb("getIamPolicy", HelpText = "Get the IAM policy for a device registry.")]
-    class GetIamPolicyOptions: DeviceOptions { }
+    class GetIamPolicyOptions : DeviceOptions { }
 
     [Verb("patchDeviceEs", HelpText = "Patch device with ES encryption type.")]
     class PatchEsDeviceOptions
@@ -472,7 +471,8 @@ namespace GoogleCloudSamples
                 body.Credentials = new List<DeviceCredential>();
                 body.Credentials.Add(new DeviceCredential()
                 {
-                    PublicKey = new PublicKeyCredential(){
+                    PublicKey = new PublicKeyCredential()
+                    {
                         Key = keyText,
                         Format = "ES256_PEM"
                     },
@@ -627,7 +627,8 @@ namespace GoogleCloudSamples
             {
                 var result = cloudIot.Projects.Locations.Registries.Devices.List(parent).Execute();
                 Console.WriteLine("Devices: ");
-                result.Devices.ToList().ForEach(response => {
+                result.Devices.ToList().ForEach(response =>
+                {
                     Console.WriteLine($"{response.Id}");
                     Console.WriteLine($"\t{response.Config}");
                     Console.WriteLine($"\t{response.Name}");
@@ -653,7 +654,8 @@ namespace GoogleCloudSamples
                 var req = new GetIamPolicyRequest();
                 var result = cloudIot.Projects.Locations.Registries.GetIamPolicy(req, parent).Execute();
                 Console.WriteLine("Bindings: ");
-                if (result.Bindings != null) {
+                if (result.Bindings != null)
+                {
                     result.Bindings.ToList().ForEach(binding =>
                     {
                         Console.WriteLine($"Role: {binding.Role}");
@@ -662,10 +664,11 @@ namespace GoogleCloudSamples
                             Console.WriteLine($"\tMember: {member}");
                         });
                     });
-                } else {
+                }
+                else
+                {
                     Console.WriteLine($"\tNo IAM bindings for {registryId}.");
                 }
-
             }
             catch (Google.GoogleApiException e)
             {
@@ -685,10 +688,7 @@ namespace GoogleCloudSamples
             try
             {
                 String keyText = File.ReadAllText(keyPath);
-                Device body = new Device()
-                {
-
-                };
+                Device body = new Device();
                 body.Credentials = new List<DeviceCredential>();
                 body.Credentials.Add(new DeviceCredential()
                 {
@@ -728,9 +728,7 @@ namespace GoogleCloudSamples
             try
             {
                 String keyText = File.ReadAllText(keyPath);
-                Device body = new Device()
-                {
-                };
+                Device body = new Device();
                 body.Credentials = new List<DeviceCredential>();
                 body.Credentials.Add(new DeviceCredential()
                 {
