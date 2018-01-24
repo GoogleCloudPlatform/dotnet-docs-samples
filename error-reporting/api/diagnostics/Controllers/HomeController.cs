@@ -28,6 +28,7 @@ namespace ErrorReporting.Controllers
 {
     public class HomeController : Controller
     {
+        [HttpGet]
         public HttpResponseMessage Index()
         {
             // Generate an error that Stackdriver should capture

@@ -61,9 +61,9 @@ namespace ErrorReporting
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            //app.Use
             app.UseStaticFiles();
-            
+
+            // Use before handling any requests to ensure all unhandled exceptions are reported.
             app.UseGoogleExceptionLogging();
 
             app.UseMvc(routes =>
