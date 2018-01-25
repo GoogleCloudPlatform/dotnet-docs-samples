@@ -17,7 +17,7 @@ var casper = require('casper').create();
 var host = casper.cli.args[0];
 
 casper.start(host + '/', function (response) {
-    this.test.assertEquals(500, response.status);
+    this.test.assertEquals(response.status, 500);
 });
 
 casper.run(function () {
