@@ -18,6 +18,7 @@ limitations under the License.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net.Http;
@@ -75,7 +76,8 @@ namespace GoogleCloudSamples
             var responseContent = result.Content.ReadAsStringAsync().Result;
             if (!result.IsSuccessStatusCode)
             {
-                throw new HttpRequestException(string.Format("{0} {1}\n{2}",
+                throw new HttpRequestException(string.Format(
+                    CultureInfo.CurrentCulture, "{0} {1}\n{2}",
                     (int)result.StatusCode, result.ReasonPhrase,
                     responseContent));
             }
@@ -117,9 +119,15 @@ namespace GoogleCloudSamples
                 new Claim(JwtRegisteredClaimNames.Exp, expTime.ToString()),
                 new Claim(JwtRegisteredClaimNames.Iss, email),
 
+                // We need to generate a JWT signed with the service account's 
+                // private key containing a special "target_audience" claim. 
+                // That claim should contain the clientId of IAP we eventually
+                // want to access.
                 new Claim("target_audience", iapClientId)
             };
 
+            // Encryption algorithm must be RSA SHA-256, according to
+            // https://developers.google.com/identity/protocols/OAuth2ServiceAccount
             SecurityKey key = new RsaSecurityKey(
                 Pkcs8.DecodeRsaParameters(privateKey));
             var signingCredentials = new SigningCredentials(key,
