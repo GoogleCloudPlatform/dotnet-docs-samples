@@ -21,6 +21,8 @@ namespace GoogleCloudSamples
 {
     class Options
     {
+        // Replace with your IAP client id listed on 
+        // https://console.cloud.google.com/apis/credentials
         const string IAP_CLIENT_ID = "YOUR-IAP-CLIENT-ID";
 
         private string _credentialsPath;
@@ -47,8 +49,7 @@ namespace GoogleCloudSamples
         public string Uri { get; set; }
 
         [Option('c', "iapcid", HelpText =
-            "Your IAP client id listed on https://console.cloud.google.com/apis/credentials",
-            Required = (IAP_CLIENT_ID == ("YOUR" + "-IAP-CLIENT_ID")))]
+            "Your IAP client id listed on https://console.cloud.google.com/apis/credentials")]
         public string IapClientId { get; set; } = IAP_CLIENT_ID;
     }
 

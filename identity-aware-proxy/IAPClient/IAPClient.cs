@@ -32,12 +32,23 @@ namespace GoogleCloudSamples
 {
     class IAPClient
     {
+        /// <summary>
+        /// Authenticates using the client id and credentials, then fetches
+        /// the uri.
+        /// </summary>
+        /// <param name="iapClientId">The client id observed on 
+        /// https://console.cloud.google.com/apis/credentials.</param>
+        /// <param name="credentialsFilePath">Path to the credentials .json file
+        /// download from https://console.cloud.google.com/apis/credentials.
+        /// </param>
+        /// <param name="uri">HTTP uri to fetch.</param>
+        /// <returns>The http response body as a string.</returns>
         public static string InvokeRequest(string iapClientId,
-            string credentialsPath, string uri)
+            string credentialsFilePath, string uri)
         {
             // Read credentials from the credentials .json file.
             Credentials credentials;
-            using (var fs = new FileStream(credentialsPath,
+            using (var fs = new FileStream(credentialsFilePath,
                 FileMode.Open, FileAccess.Read))
             {
                 credentials = NewtonsoftJsonSerializer.Instance
@@ -62,11 +73,11 @@ namespace GoogleCloudSamples
             var result = httpClient.PostAsync(GoogleAuthConsts.OidcTokenUrl,
                 httpContent).Result;
             var responseContent = result.Content.ReadAsStringAsync().Result;
-            int statusCode = (int)result.StatusCode;
-            if (statusCode < 200 || statusCode >= 300)
+            if (!result.IsSuccessStatusCode)
             {
                 throw new HttpRequestException(string.Format("{0} {1}\n{2}",
-                    statusCode, result.ReasonPhrase, responseContent));
+                    (int)result.StatusCode, result.ReasonPhrase,
+                    responseContent));
             }
             string token = JsonConvert.DeserializeObject<IapResponse>(
                 responseContent).IdToken;
@@ -79,11 +90,17 @@ namespace GoogleCloudSamples
             return response;
         }
 
-        static long ToUnixEpochDate(DateTime date)
-              => (long)Math.Round((date.ToUniversalTime() -
-                                   new DateTimeOffset(1970, 1, 1, 0, 0, 0,
-                                        TimeSpan.Zero)).TotalSeconds);
-
+        /// <summary>
+        /// Generate a JWT signed with the service account's private key 
+        /// containing a special "target_audience" claim.
+        /// </summary>
+        /// <param name="privateKey">The private key string pulled from
+        /// a credentials .json file.</param>
+        /// <param name="iapClientId">The client id observed on 
+        /// https://console.cloud.google.com/apis/credentials.</param>
+        /// <param name="email">The e-mail address associated with the
+        /// privateKey.</param>
+        /// <returns>An access token.</returns>
         static string CreateAccessToken(string privateKey,
             string iapClientId, string email)
         {
@@ -112,6 +129,11 @@ namespace GoogleCloudSamples
                 signingCredentials: signingCredentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        static long ToUnixEpochDate(DateTime date)
+              => (long)Math.Round((date.ToUniversalTime() -
+                                   new DateTimeOffset(1970, 1, 1, 0, 0, 0,
+                                        TimeSpan.Zero)).TotalSeconds);
     }
 
     class Credentials : JsonCredentialParameters
