@@ -10,8 +10,6 @@
     <AssemblyName>IO.Swagger</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>IO.Swagger</PackageId>
-    <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
-    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;dnxcore50;netstandard1.6;portable-net452+win81</PackageTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>
