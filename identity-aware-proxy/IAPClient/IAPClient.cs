@@ -24,7 +24,9 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Threading;
 using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.Json;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -48,44 +50,32 @@ namespace GoogleCloudSamples
             string credentialsFilePath, string uri)
         {
             // Read credentials from the credentials .json file.
-            Credentials credentials;
+            ServiceAccountCredential saCredential;
             using (var fs = new FileStream(credentialsFilePath,
                 FileMode.Open, FileAccess.Read))
             {
-                credentials = NewtonsoftJsonSerializer.Instance
-                    .Deserialize<Credentials>(fs);
+                saCredential = ServiceAccountCredential
+                    .FromServiceAccountData(fs);
             }
 
             // Generate a JWT signed with the service account's private key 
             // containing a special "target_audience" claim.
             var jwtBasedAccessToken =
-                CreateAccessToken(credentials.PrivateKey, iapClientId,
-                    credentials.ClientEmail);
-
-            var body = new Dictionary<string, string>
-            {
-                { "assertion", jwtBasedAccessToken },
-                { "grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"}
-            };
+                CreateAccessToken(saCredential, iapClientId);
 
             // Request an OIDC token for the Cloud IAP-secured client ID.
-            var httpClient = new HttpClient();
-            var httpContent = new FormUrlEncodedContent(body);
-            var result = httpClient.PostAsync(GoogleAuthConsts.OidcTokenUrl,
-                httpContent).Result;
-            var responseContent = result.Content.ReadAsStringAsync().Result;
-            if (!result.IsSuccessStatusCode)
+            var req = new GoogleAssertionTokenRequest()
             {
-                throw new HttpRequestException(string.Format(
-                    CultureInfo.CurrentCulture, "{0} {1}\n{2}",
-                    (int)result.StatusCode, result.ReasonPhrase,
-                    responseContent));
-            }
-            string token = JsonConvert.DeserializeObject<IapResponse>(
-                responseContent).IdToken;
+                Assertion = jwtBasedAccessToken
+            };
+            var result = req.ExecuteAsync(saCredential.HttpClient,
+                saCredential.TokenServerUrl, CancellationToken.None,
+                saCredential.Clock).Result;
+            string token = result.IdToken;
 
             // Include the OIDC token in an Authorization: Bearer header to 
             // IAP-secured resource
+            var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
             string response = httpClient.GetStringAsync(uri).Result;
@@ -103,10 +93,10 @@ namespace GoogleCloudSamples
         /// <param name="email">The e-mail address associated with the
         /// privateKey.</param>
         /// <returns>An access token.</returns>
-        static string CreateAccessToken(string privateKey,
-            string iapClientId, string email)
+        static string CreateAccessToken(ServiceAccountCredential saCredential,
+            string iapClientId)
         {
-            var now = DateTime.UtcNow;
+            var now = saCredential.Clock.UtcNow;
             var currentTime = ToUnixEpochDate(now);
             var expTime = ToUnixEpochDate(now.AddHours(1));
 
@@ -114,10 +104,10 @@ namespace GoogleCloudSamples
             {
                 new Claim(JwtRegisteredClaimNames.Aud,
                     GoogleAuthConsts.OidcTokenUrl),
-                new Claim(JwtRegisteredClaimNames.Sub, email),
+                new Claim(JwtRegisteredClaimNames.Sub, saCredential.Id),
                 new Claim(JwtRegisteredClaimNames.Iat, currentTime.ToString()),
                 new Claim(JwtRegisteredClaimNames.Exp, expTime.ToString()),
-                new Claim(JwtRegisteredClaimNames.Iss, email),
+                new Claim(JwtRegisteredClaimNames.Iss, saCredential.Id),
 
                 // We need to generate a JWT signed with the service account's 
                 // private key containing a special "target_audience" claim. 
@@ -128,9 +118,8 @@ namespace GoogleCloudSamples
 
             // Encryption algorithm must be RSA SHA-256, according to
             // https://developers.google.com/identity/protocols/OAuth2ServiceAccount
-            SecurityKey key = new RsaSecurityKey(
-                Pkcs8.DecodeRsaParameters(privateKey));
-            var signingCredentials = new SigningCredentials(key,
+            var signingCredentials = new SigningCredentials(
+                new RsaSecurityKey(saCredential.Key),
                 SecurityAlgorithms.RsaSha256);
             var token = new JwtSecurityToken(
                 claims: claims,
@@ -142,18 +131,6 @@ namespace GoogleCloudSamples
               => (long)Math.Round((date.ToUniversalTime() -
                                    new DateTimeOffset(1970, 1, 1, 0, 0, 0,
                                         TimeSpan.Zero)).TotalSeconds);
-    }
-
-    class Credentials : JsonCredentialParameters
-    {
-        [JsonProperty("project_id")]
-        public string ProjectId { get; set; }
-    }
-
-    class IapResponse
-    {
-        [JsonProperty("id_token")]
-        public string IdToken { get; set; }
     }
 }
 // [END generate_iap_request]
