@@ -10,7 +10,7 @@ when running in Google App Engine Flexible Environment.
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.
 
-3.  Install the [.NET Core SDK, version 1.1](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.1.4-download.md).
+3.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md).
 
 4.  [Create a second generation Google Cloud SQL instance.](
     https://cloud.google.com/sql/docs/mysql/create-instance).
