@@ -23,6 +23,8 @@ using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
 using System.Net.Http;
+using Google.Cloud.Language.V1;
+using Grpc.Auth;
 
 namespace GoogleCloudSamples
 {
@@ -61,8 +63,12 @@ namespace GoogleCloudSamples
         public bool Compute { get; set; }
     }
 
-    [Verb("cloud", HelpText = "Authenticate using the Google.Cloud.Storage library.  "
-        + "The preferred way of authenticating.")]
+    [Verb("hand", HelpText = "Authenticate using the Google.Cloud.Storage library.  "
+        + "The preferred way of authenticating hand-coded wrapper libraries.")]
+    class HandOptions : BaseOptions { }
+
+    [Verb("cloud", HelpText = "Authenticate using the Google.Cloud.Language library.  "
+        + "The preferred way of authenticating gRPC-based libraries.")]
     class CloudOptions : BaseOptions { }
 
     [Verb("api", HelpText = "Authenticate using the Google.Apis.Storage library.")]
@@ -82,9 +88,9 @@ namespace GoogleCloudSamples
     }
 
     /// <summary>
-    /// Authenticates with Google.Cloud.* libraries.
+    /// Some APIs like storage have hand-coded libraries.  They auth like this.
     /// </summary>
-    public class CloudLibrary : AuthLibrary
+    public class HandCodedLibrary : AuthLibrary
     {
         ///////////////////////////////////////////////
         // This is the preferred way of authenticating.
@@ -94,7 +100,8 @@ namespace GoogleCloudSamples
         {
             // If you don't specify credentials when constructing the client, the
             // client library will look for credentials in the environment.
-            var storage = StorageClient.Create();
+            var credential = GoogleCredential.GetApplicationDefault();
+            var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
             var buckets = storage.ListBuckets(projectId);
             foreach (var bucket in buckets)
@@ -106,16 +113,13 @@ namespace GoogleCloudSamples
         // [END auth_cloud_implicit]
 
         // [START auth_cloud_explicit]
+        // Some APIs, like Storage, accept a credential in their Create()
+        // method.
         public object AuthExplicit(string projectId, string jsonPath)
         {
-            // Explicitly use service account credentials by specifying the private key
-            // file.
-            GoogleCredential credential = null;
-            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
-                FileAccess.Read, FileShare.Read))
-            {
-                credential = GoogleCredential.FromStream(jsonStream);
-            }
+            // Explicitly use service account credentials by specifying 
+            // the private key file.
+            var credential = GoogleCredential.FromFile(jsonPath);
             var storage = StorageClient.Create(credential);
             // Make an authenticated API request.
             var buckets = storage.ListBuckets(projectId);
@@ -128,10 +132,12 @@ namespace GoogleCloudSamples
         // [END auth_cloud_explicit]
 
         // [START auth_cloud_explicit_compute_engine]
+        // Some APIs, like Storage, accept a credential in their Create()
+        // method.
         public object AuthExplicitComputeEngine(string projectId)
         {
-            // Explicitly use service account credentials by specifying the 
-            // private key file.
+            // Explicitly request service account credentials from the compute
+            // engine instance.
             GoogleCredential credential =
                 GoogleCredential.FromComputeCredential();
             var storage = StorageClient.Create(credential);
@@ -155,7 +161,7 @@ namespace GoogleCloudSamples
         public object AuthImplicit(string projectId)
         {
             GoogleCredential credential =
-                GoogleCredential.GetApplicationDefaultAsync().Result;
+                GoogleCredential.GetApplicationDefault();
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
@@ -182,12 +188,7 @@ namespace GoogleCloudSamples
         // [START auth_api_explicit]
         public object AuthExplicit(string projectId, string jsonPath)
         {
-            GoogleCredential credential = null;
-            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
-                FileAccess.Read, FileShare.Read))
-            {
-                credential = GoogleCredential.FromStream(jsonStream);
-            }
+            var credential = GoogleCredential.FromFile(jsonPath);
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
@@ -248,7 +249,7 @@ namespace GoogleCloudSamples
         public object AuthImplicit(string projectId)
         {
             GoogleCredential credential =
-                GoogleCredential.GetApplicationDefaultAsync().Result;
+                GoogleCredential.GetApplicationDefault();
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
@@ -284,12 +285,7 @@ namespace GoogleCloudSamples
         // [START auth_http_explicit]
         public object AuthExplicit(string projectId, string jsonPath)
         {
-            GoogleCredential credential = null;
-            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
-                FileAccess.Read, FileShare.Read))
-            {
-                credential = GoogleCredential.FromStream(jsonStream);
-            }
+            var credential = GoogleCredential.FromFile(jsonPath);
             // Inject the Cloud Storage scope if required.
             if (credential.IsCreateScopedRequired)
             {
@@ -328,6 +324,65 @@ namespace GoogleCloudSamples
         // [END auth_http_explicit]
     }
 
+    /// <summary>
+    /// Authenticates with Google.Cloud.* libraries.
+    /// Specifically calls the language API, but all the machine learning APIs,
+    /// And some other APIs like Pub/Sub also follow this pattern.
+    /// </summary>
+    public class CloudLibrary : AuthLibrary
+    {
+        // [START auth_cloud_explicit]
+        // Other APIs, like Language, accept a channel in their Create()
+        // method.
+        public object AuthExplicit(string projectId, string jsonPath)
+        {
+            var credential = GoogleCredential.FromFile(jsonPath)
+                .CreateScoped(LanguageServiceClient.DefaultScopes);
+            var channel = new Grpc.Core.Channel(
+                LanguageServiceClient.DefaultEndpoint.ToString(),
+                credential.ToChannelCredentials());
+            var client = LanguageServiceClient.Create(channel);
+            AnalyzeSentiment(client);
+            return 0;
+        }
+        // [END auth_cloud_explicit]
+
+        // [START auth_cloud_explicit_compute_engine]
+        // Other APIs, like Language, accept a channel in their Create()
+        // method.
+        public object AuthExplicitComputeEngine(string projectId)
+        {
+            var credential = GoogleCredential.FromComputeCredential();
+            var channel = new Grpc.Core.Channel(
+                LanguageServiceClient.DefaultEndpoint.ToString(),
+                credential.ToChannelCredentials());
+            var client = LanguageServiceClient.Create(channel);
+            AnalyzeSentiment(client);
+            return 0;
+        }
+        // [END auth_cloud_explicit_compute_engine]
+
+        public object AuthImplicit(string projectId)
+        {
+            var client = LanguageServiceClient.Create();
+            AnalyzeSentiment(client);
+            return 0;
+        }
+
+        void AnalyzeSentiment(LanguageServiceClient client)
+        {
+            string text = "Hello World!";
+            var response = client.AnalyzeSentiment(new Document()
+            {
+                Content = text,
+                Type = Document.Types.Type.PlainText
+            });
+            var sentiment = response.DocumentSentiment;
+            Console.WriteLine($"Score: {sentiment.Score}");
+            Console.WriteLine($"Magnitude: {sentiment.Magnitude}");
+        }
+    }
+
     public class AuthSample
     {
         static object ChooseAuthMethodAndInvoke(BaseOptions options, AuthLibrary library)
@@ -344,11 +399,12 @@ namespace GoogleCloudSamples
         }
         public static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<CloudOptions, ApiOptions, HttpOptions>(args)
+            Parser.Default.ParseArguments<CloudOptions, ApiOptions, HttpOptions, HandOptions>(args)
               .MapResult(
-                (CloudOptions opts) => ChooseAuthMethodAndInvoke(opts, new CloudLibrary()),
+                (HandOptions opts) => ChooseAuthMethodAndInvoke(opts, new HandCodedLibrary()),
                 (ApiOptions opts) => ChooseAuthMethodAndInvoke(opts, new ApiLibrary()),
                 (HttpOptions opts) => ChooseAuthMethodAndInvoke(opts, new HttpLibrary()),
+                (CloudOptions opts) => ChooseAuthMethodAndInvoke(opts, new CloudLibrary()),
                 errs => 1);
         }
     }

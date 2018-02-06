@@ -31,8 +31,8 @@ namespace GoogleCloudSamples
     public class PubsubTest : IDisposable
     {
         private readonly string _projectId;
-        private readonly PublisherClient _publisher;
-        private readonly SubscriberClient _subscriber;
+        private readonly PublisherServiceApiClient _publisher;
+        private readonly SubscriberServiceApiClient _subscriber;
         private readonly List<string> _tempTopicIds = new List<string>();
         private readonly List<string> _tempSubscriptionIds = new List<string>();
 
@@ -136,22 +136,22 @@ namespace GoogleCloudSamples
             _subscriber = CreateSubscriberClient();
         }
 
-        public PublisherClient CreatePublisherClient()
+        public PublisherServiceApiClient CreatePublisherClient()
         {
             // [START create_publisher_client]
-            PublisherClient publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
             // [END create_publisher_client]
             return publisher;
         }
 
-        public SubscriberClient CreateSubscriberClient()
+        public SubscriberServiceApiClient CreateSubscriberClient()
         {
-            SubscriberClient subscriber = SubscriberClient.Create();
+            SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
             return subscriber;
         }
 
         public TestIamPermissionsResponse TestTopicIamPermissionsResponse(string topicId,
-            PublisherClient publisher)
+            PublisherServiceApiClient publisher)
         {
             // [START pubsub_test_topic_permissons]
             List<string> permissions = new List<string>();
@@ -168,7 +168,7 @@ namespace GoogleCloudSamples
         }
 
         public TestIamPermissionsResponse TestSubscriptionIamPermissionsResponse(
-            string subscriptionId, PublisherClient publisher)
+            string subscriptionId, PublisherServiceApiClient publisher)
         {
             // [START pubsub_test_subscription_permissons]
             List<string> permissions = new List<string>();
@@ -186,7 +186,7 @@ namespace GoogleCloudSamples
 
         // [START retry]
         internal void RpcRetry(string topicId, string subscriptionId,
-            PublisherClient publisher, SubscriberClient subscriber)
+            PublisherServiceApiClient publisher, SubscriberServiceApiClient subscriber)
         {
             TopicName topicName = new TopicName(_projectId, topicId);
             // Create Subscription.

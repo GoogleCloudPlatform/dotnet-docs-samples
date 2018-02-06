@@ -6,6 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.1.1-beta" />
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0-beta13" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0-beta16" />
   </ItemGroup>
 </Project>

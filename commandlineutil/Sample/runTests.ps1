@@ -26,7 +26,11 @@ dotnet run --no-build -- v1
 $LASTEXITCODE -eq 0 -or (Throw "Expected exit code 0 for v1")
 dotnet run --no-build -- v5
 $LASTEXITCODE -eq 5 -or (Throw "Expected exit code 5 for v5")
-dotnet run --no-build -- no-such-verb
-$LASTEXITCODE -eq 255 -or (Throw "Expected exit code 255 for no-such-verb")
+if ([environment]::OSVersion.Platform -match "Win*") {
+    dotnet run --no-build -- no-such-verb
+    $LASTEXITCODE -eq 255 -or (Throw "Expected exit code 255 for no-such-verb")
+} else {
+    # Skip due to bug in CommandLineParser.
+}
 dotnet run --no-build -- v17
 $LASTEXITCODE -eq 0 -or (Throw "Expected exit code 0 for v17")

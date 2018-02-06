@@ -25,7 +25,7 @@ namespace GoogleCloudSamples
         public static void Main(string[] args)
         {
             // Instantiates a client
-            PublisherClient publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
 
             // Your Google Cloud Platform project ID
             string projectId = "YOUR-PROJECT-ID";

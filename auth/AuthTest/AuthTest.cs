@@ -39,6 +39,7 @@ namespace GoogleCloudSamples
         }
 
         [Theory]
+        [InlineData("hand")]
         [InlineData("cloud")]
         [InlineData("api")]
         [InlineData("http")]
@@ -50,6 +51,7 @@ namespace GoogleCloudSamples
         }
 
         [Theory]
+        [InlineData("hand")]
         [InlineData("cloud")]
         [InlineData("api")]
         [InlineData("http")]
@@ -61,6 +63,7 @@ namespace GoogleCloudSamples
         }
 
         [Theory]
+        [InlineData("hand")]
         [InlineData("cloud")]
         [InlineData("api")]
         void TestExplicitComputeEngine(string cmd)

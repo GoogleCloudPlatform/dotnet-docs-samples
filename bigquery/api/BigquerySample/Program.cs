@@ -13,10 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-// [START complete]
+// [START bigquery_simple_app_all]
+// [START bigquery_simple_app_deps]
 
 using System;
 using Google.Cloud.BigQuery.V2;
+// [END bigquery_simple_app_deps]
 
 namespace GoogleCloudSamples
 {
@@ -35,7 +37,7 @@ BigquerySample <project_id>";
             else
             {
                 projectId = args[0];
-                // [START setup]
+                // [START bigquery_simple_app_client]
                 // By default, the Google.Cloud.BigQuery.V2 library client will authenticate 
                 // using the service account file (created in the Google Developers 
                 // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS 
@@ -43,25 +45,29 @@ BigquerySample <project_id>";
                 // a Google Compute Engine VM, authentication is completely 
                 // automatic.
                 var client = BigQueryClient.Create(projectId);
-                // [END setup]
-                // [START query]
-                var table = client.GetTable("bigquery-public-data", "samples", "shakespeare");
-
-                string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM `{table.FullyQualifiedId}` 
-                    GROUP BY title ORDER BY unique_words DESC LIMIT 42";
+                // [END bigquery_simple_app_client]
+                // [START bigquery_simple_app_query]
+                string query = @"SELECT
+                    CONCAT(
+                        'https://stackoverflow.com/questions/',
+                        CAST(id as STRING)) as url, view_count
+                    FROM `bigquery-public-data.stackoverflow.posts_questions`
+                    WHERE tags like '%google-bigquery%'
+                    ORDER BY view_count DESC
+                    LIMIT 10";
                 var result = client.ExecuteQuery(query, parameters: null);
-                // [END query]
-                // [START print_results]
+                // [END bigquery_simple_app_query]
+                // [START bigquery_simple_app_print]
                 Console.Write("\nQuery Results:\n------------\n");
                 foreach (var row in result)
                 {
-                    Console.WriteLine($"{row["title"]}: {row["unique_words"]}");
+                    Console.WriteLine($"{row["url"]}: {row["view_count"]} views");
                 }
-                // [END print_results]
+                // [END bigquery_simple_app_print]
             }
             Console.WriteLine("\nPress any key...");
             Console.ReadKey();
         }
     }
 }
-// [END complete]
+// [END bigquery_simple_app_all]
