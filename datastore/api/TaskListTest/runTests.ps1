@@ -11,6 +11,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
+Set-TestTimeout 900
 dotnet restore
-dotnet test
+dotnet build
+dotnet test --no-build -v n

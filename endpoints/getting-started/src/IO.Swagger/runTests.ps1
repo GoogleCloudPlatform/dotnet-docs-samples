@@ -14,6 +14,8 @@
 
 Import-Module -DisableNameChecking ..\..\..\..\BuildTools.psm1
 
+Require-Platform Win*
+
 dotnet restore
 $url = "http://localhost:7412"
 $job = Run-Kestrel($url)

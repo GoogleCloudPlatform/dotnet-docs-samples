@@ -1,4 +1,4 @@
-﻿// Copyright(c) 2017 Google Inc.
+// Copyright(c) 2017 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -19,16 +19,16 @@ var host = casper.cli.args[0];
 casper.start(host + '/', function (response) {
     console.log('Starting ' + host + '/');
     this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('H1', 'Stackdriver Sample');
+    this.test.assertSelectorHasText('H1', 'Stackdriver Trace Sample');
 });
 
 casper.start(host + '/Trace', function (response) {
     console.log('Starting ' + host + '/Trace');
     this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('H1', 'Stackdriver Sample');
+    this.test.assertSelectorHasText('H1', 'Stackdriver Trace Sample');
 });
 
 casper.run(function () {
     this.test.done();
     this.test.renderResults(true);
-})
+});

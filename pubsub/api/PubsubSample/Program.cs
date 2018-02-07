@@ -195,7 +195,7 @@ namespace GoogleCloudSamples
         public static object CreateTopic(string projectId, string topicId)
         {
             // [START create_publisher_client]
-            PublisherClient publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
             // [END create_publisher_client]
 
             // [START create_topic]
@@ -216,7 +216,7 @@ namespace GoogleCloudSamples
         public static object CreateSubscription(string projectId, string topicId,
             string subscriptionId)
         {
-            SubscriberClient subscriber = SubscriberClient.Create();
+            SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
             // [START create_subscription]
             TopicName topicName = new TopicName(projectId, topicId);
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
@@ -236,12 +236,12 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        public static SimplePublisher GetSimplePublisher(string projectId,
+        public static PublisherClient GetPublisher(string projectId,
             string topicId)
         {
             // [START publish_message]
-            PublisherClient publisherClient = PublisherClient.Create();
-            SimplePublisher publisher = SimplePublisher.Create(
+            PublisherServiceApiClient publisherClient = PublisherServiceApiClient.Create();
+            PublisherClient publisher = PublisherClient.Create(
                 new TopicName(projectId, topicId), new[] { publisherClient });
             // [END publish_message]
             return publisher;
@@ -250,14 +250,14 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Create a SimplePublisher with custom batch thresholds.
         /// </summary>
-        public static SimplePublisher GetCustomPublisher(string projectId,
+        public static PublisherClient GetCustomPublisher(string projectId,
             string topicId)
         {
             // [START pubsub_publisher_batch_settings]
-            PublisherClient publisherClient = PublisherClient.Create();
-            SimplePublisher publisher = SimplePublisher.Create(
+            PublisherServiceApiClient publisherClient = PublisherServiceApiClient.Create();
+            PublisherClient publisher = PublisherClient.Create(
                 new TopicName(projectId, topicId), new[] { publisherClient },
-                new SimplePublisher.Settings()
+                new PublisherClient.Settings
                 {
                     BatchingSettings = new Google.Api.Gax.BatchingSettings(
                         elementCountThreshold: 100,
@@ -268,7 +268,7 @@ namespace GoogleCloudSamples
             return publisher;
         }
 
-        public static object PublishMessages(SimplePublisher publisher,
+        public static object PublishMessages(PublisherClient publisher,
             IEnumerable<string> messageTexts)
         {
             // [START publish_message]
@@ -289,14 +289,14 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        static SimpleSubscriber GetSimpleSubscriber(string projectId,
+        static SubscriberClient GetSubscriber(string projectId,
             string subscriptionId)
         {
             // [START pull_messages]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
-            SubscriberClient subscriberClient = SubscriberClient.Create();
-            SimpleSubscriber subscriber = SimpleSubscriber.Create(
+            SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
+            SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { subscriberClient });
             // [END pull_messages]
             return subscriber;
@@ -305,16 +305,16 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Create a subscriber with custom control flow settings.
         /// </summary>
-        static SimpleSubscriber GetCustomSubscriber(string projectId,
+        static SubscriberClient GetCustomSubscriber(string projectId,
             string subscriptionId)
         {
             // [START pubsub_subscriber_flow_settings]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
-            SubscriberClient subscriberClient = SubscriberClient.Create();
-            SimpleSubscriber subscriber = SimpleSubscriber.Create(
+            SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
+            SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { subscriberClient },
-                new SimpleSubscriber.Settings()
+                new SubscriberClient.Settings()
                 {
                     AckExtensionWindow = TimeSpan.FromSeconds(4),
                     Scheduler = Google.Api.Gax.SystemScheduler.Instance,
@@ -322,13 +322,13 @@ namespace GoogleCloudSamples
                     FlowControlSettings = new Google.Api.Gax
                         .FlowControlSettings(
                         maxOutstandingElementCount: 100,
-                        maxOutstandardByteCount: 10240)
+                        maxOutstandingByteCount: 10240)
                 });
             // [END pubsub_subscriber_flow_settings]
             return subscriber;
         }
 
-        public static object PullMessages(SimpleSubscriber subscriber, bool acknowledge)
+        public static object PullMessages(SubscriberClient subscriber, bool acknowledge)
         {
             // [START pull_messages]
             // [START pubsub_subscriber_flow_settings]
@@ -341,8 +341,8 @@ namespace GoogleCloudSamples
                         Encoding.UTF8.GetString(message.Data.ToArray());
                     await Console.Out.WriteLineAsync(
                         $"Message {message.MessageId}: {text}");
-                    return acknowledge ? SimpleSubscriber.Reply.Ack
-                        : SimpleSubscriber.Reply.Nack;
+                    return acknowledge ? SubscriberClient.Reply.Ack
+                        : SubscriberClient.Reply.Nack;
                 });
             // Run for 3 seconds.
             Thread.Sleep(3000);
@@ -354,7 +354,7 @@ namespace GoogleCloudSamples
 
         public static object GetTopic(string projectId, string topicId)
         {
-            PublisherClient publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
             TopicName topicName = new TopicName(projectId, topicId);
             Topic topic = publisher.GetTopic(topicName);
             Console.WriteLine($"Topic found: {topic.TopicName.ToString()}");
@@ -364,7 +364,7 @@ namespace GoogleCloudSamples
         public static object GetSubscription(string projectId,
             string subscriptionId)
         {
-            SubscriberClient subscriber = SubscriberClient.Create();
+            SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
             Subscription subscription = subscriber.GetSubscription(
@@ -376,7 +376,7 @@ namespace GoogleCloudSamples
 
         public static object GetTopicIamPolicy(string projectId, string topicId)
         {
-            PublisherClient publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
             // [START pubsub_get_topic_policy]
             TopicName topicName = new TopicName(projectId, topicId);
             Policy policy = publisher.GetIamPolicy(topicName.ToString());
@@ -389,7 +389,7 @@ namespace GoogleCloudSamples
         public static object GetSubscriptionIamPolicy(string projectId,
             string subscriptionId)
         {
-            PublisherClient publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
             // [START pubsub_get_subscription_policy]
             SubscriptionName subscriptionName = new SubscriptionName(projectId, subscriptionId);
             Policy policy = publisher.GetIamPolicy(subscriptionName.ToString());
@@ -402,7 +402,7 @@ namespace GoogleCloudSamples
         public static object SetTopicIamPolicy(string projectId,
             string topicId, string role, string member)
         {
-            PublisherClient publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
             string roleToBeAddedToPolicy = $"roles/{role}";
             // [START pubsub_set_topic_policy]
             Policy policy = new Policy
@@ -427,7 +427,7 @@ namespace GoogleCloudSamples
         public static object SetSubscriptionIamPolicy(string projectId,
             string subscriptionId, string role, string member)
         {
-            PublisherClient publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
             string roleToBeAddedToPolicy = $"roles/{role}";
             // [START pubsub_set_subscription_policy]
             Policy policy = new Policy
@@ -449,7 +449,7 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        public static object ListProjectTopics(PublisherClient publisher, string projectId)
+        public static object ListProjectTopics(PublisherServiceApiClient publisher, string projectId)
         {
             // [START list_topics]
             ProjectName projectName = new ProjectName(projectId);
@@ -468,7 +468,7 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="jsonPath">The path to the downloaded json file.</param>
         /// <returns>A new publisher client.</returns>
-        public static PublisherClient CreatePublisherWithServiceCredentials(
+        public static PublisherServiceApiClient CreatePublisherWithServiceCredentials(
             string jsonPath)
         {
             GoogleCredential googleCredential = null;
@@ -476,17 +476,17 @@ namespace GoogleCloudSamples
                 FileAccess.Read, FileShare.Read))
             {
                 googleCredential = GoogleCredential.FromStream(jsonStream)
-                    .CreateScoped(PublisherClient.DefaultScopes);
+                    .CreateScoped(PublisherServiceApiClient.DefaultScopes);
             }
-            Channel channel = new Channel(PublisherClient.DefaultEndpoint.Host,
-                PublisherClient.DefaultEndpoint.Port,
+            Channel channel = new Channel(PublisherServiceApiClient.DefaultEndpoint.Host,
+                PublisherServiceApiClient.DefaultEndpoint.Port,
                 googleCredential.ToChannelCredentials());
-            return PublisherClient.Create(channel);
+            return PublisherServiceApiClient.Create(channel);
         }
 
         public static object ListSubscriptions(string projectId)
         {
-            SubscriberClient subscriber = SubscriberClient.Create();
+            SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
             // [START list_subscriptions]
             ProjectName projectName = new ProjectName(projectId);
             IEnumerable<Subscription> subscriptions =
@@ -502,7 +502,7 @@ namespace GoogleCloudSamples
         public static object DeleteSubscription(string projectId,
             string subscriptionId)
         {
-            SubscriberClient subscriber = SubscriberClient.Create();
+            SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
             // [START delete_subscription]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
@@ -514,7 +514,7 @@ namespace GoogleCloudSamples
 
         public static object DeleteTopic(string projectId, string topicId)
         {
-            PublisherClient publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
             // [START delete_topic]
             TopicName topicName = new TopicName(projectId, topicId);
             publisher.DeleteTopic(topicName);
@@ -542,10 +542,10 @@ namespace GoogleCloudSamples
                 opts.topicId, opts.subscriptionId),
                 (PublishMessageOptions opts) => PublishMessages(opts.customBatchThresholds
                     ? GetCustomPublisher(opts.projectId, opts.topicId)
-                    : GetSimplePublisher(opts.projectId, opts.topicId), opts.message),
+                    : GetPublisher(opts.projectId, opts.topicId), opts.message),
                 (PullMessagesOptions opts) => PullMessages(opts.customFlow
                     ? GetCustomSubscriber(opts.projectId, opts.subscriptionId)
-                    : GetSimpleSubscriber(opts.projectId, opts.subscriptionId), opts.acknowledge),
+                    : GetSubscriber(opts.projectId, opts.subscriptionId), opts.acknowledge),
                 (GetTopicOptions opts) => GetTopic(opts.projectId, opts.topicId),
                 (GetSubscriptionOptions opts) => GetSubscription(opts.projectId,
                 opts.subscriptionId),
@@ -558,7 +558,7 @@ namespace GoogleCloudSamples
                 opts.subscriptionId, opts.role, opts.member),
                 (ListProjectTopicsOptions opts) => ListProjectTopics(
                     string.IsNullOrWhiteSpace(opts.serviceCredentialsJson)
-                    ? PublisherClient.Create()
+                    ? PublisherServiceApiClient.Create()
                     : CreatePublisherWithServiceCredentials(opts.serviceCredentialsJson),
                     opts.projectId),
                 (ListSubscriptionsOptions opts) => ListSubscriptions(opts.projectId),

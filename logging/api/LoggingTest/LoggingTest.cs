@@ -133,6 +133,7 @@ namespace GoogleCloudSamples
                 StackdriverLogWriter.ProjectId = _projectId;
                 StackdriverLogWriter.LogId = "TestWithLogId";
                 string message1 = "TestWithLogId test example";
+                _logsToDelete.Add(StackdriverLogWriter.LogId);
                 StackdriverLogWriter.WriteLog("TestWithLogId test example");
                 Eventually(() =>
                 {
@@ -244,31 +245,22 @@ namespace GoogleCloudSamples
                     sinkClient.GetSink(SinkNameOneof.From(sinkName)));
             }
 
-            private string GetConsoleAppOutput(string filePath)
+            readonly CommandLineRunner _quickStart = new CommandLineRunner()
             {
-                string output = "";
-                Process consoleApp = new Process();
-                consoleApp.StartInfo.FileName = filePath;
-                consoleApp.StartInfo.UseShellExecute = false;
-                consoleApp.StartInfo.RedirectStandardOutput = true;
-                consoleApp.Start();
-                output = consoleApp.StandardOutput.ReadToEnd();
-                consoleApp.WaitForExit();
-                return output;
-            }
+                VoidMain = QuickStart.Main,
+                Command = "dotnet run"
+            };
 
             [Fact]
-            public void TestQuickStartConsoleApp()
+            public void TestRunQuickStart()
             {
-                string output;
-                string filePath = @"..\..\..\QuickStart\bin\Debug\QuickStart.exe";
                 string expectedOutput = "Log Entry created.";
                 // This logId should match the logId value set in QuickStart\QuickStart.cs
                 string logId = "my-log";
                 string message = "Hello World!";
                 _logsToDelete.Add(logId);
-                output = GetConsoleAppOutput(filePath).Trim();
-                Assert.Equal(expectedOutput, output);
+                var output = _quickStart.Run();
+                Assert.Equal(expectedOutput, output.Stdout.Trim());
                 Eventually(() =>
                 {
                     // Retrieve the log entry just added, using the logId as a filter.

@@ -22,9 +22,7 @@ Unzip $env:KOKORO_GFILE_DIR\codeformatter.zip \codeformatter
 $codeformatterInstallPath = Resolve-Path \codeformatter
 $env:PATH = "$env:PATH;$codeformatterInstallPath\bin"
 
-# Install msbuild 14 for code-formatter
-choco install -y microsoft-build-tools --version 14.0.25420.1
-# The install fails to update PATH.  Do it ourselves.
+# Add msbuild 14 to the path for for code-formatter.
 $env:PATH="$env:PATH;C:\Program Files (x86)\MSBuild\14.0\Bin"
 Get-Command MSBuild.exe
 
@@ -51,17 +49,11 @@ Copy-Item -Force github\dotnet-docs-samples\.kokoro\docker\bootstrap.js `
     $casperJsInstallPath\bin\bootstrap.js
 
 # Install dotnet core sdk.
-choco install -y dotnetcore-sdk
+choco install -y dotnetcore-sdk --version 2.0.0
 choco install -y --sxs dotnetcore-sdk --version 1.1.2
-
-# Get the latest Google Cloud SDK components.
-gcloud components update -q
 
 # Install nuget command line.
 choco install nuget.commandline
 
-# Install IISExpress.  Some tests us it.
-choco install -y iisexpress
-
 # Run the tests.
-github\dotnet-docs-samples\.kokoro-windows\main.ps1
+github\dotnet-docs-samples\.kokoro\main.ps1
