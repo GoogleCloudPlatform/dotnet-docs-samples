@@ -49,8 +49,8 @@ namespace IO.Swagger.Controllers
             string exampleJson = null;
 
             var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<AuthInfoResponse>(exampleJson)
-            : default(AuthInfoResponse);
+                ? JsonConvert.DeserializeObject<AuthInfoResponse>(exampleJson)
+                : default(AuthInfoResponse);
             return new ObjectResult(example);
         }
 
@@ -68,8 +68,8 @@ namespace IO.Swagger.Controllers
             string exampleJson = null;
 
             var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<AuthInfoResponse>(exampleJson)
-            : default(AuthInfoResponse);
+                ? JsonConvert.DeserializeObject<AuthInfoResponse>(exampleJson)
+                : default(AuthInfoResponse);
             return new ObjectResult(example);
         }
 
@@ -88,12 +88,15 @@ namespace IO.Swagger.Controllers
             return new ObjectResult(message);
         }
 
+        /// <summary>
+        /// GET API for the health checks
+        /// </summary>
+        /// <returns>200 if health check has passed</returns>
         [HttpGet]
         [Route("/_ah/health")]
         public virtual IActionResult HealthCheck()
         {
             return new StatusCodeResult(200);
         }
-
     }
 }

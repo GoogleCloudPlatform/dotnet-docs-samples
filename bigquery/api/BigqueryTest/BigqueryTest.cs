@@ -28,7 +28,6 @@ using System.IO;
 using System.Diagnostics;
 using Google.Apis.Bigquery.v2.Data;
 using Google.Api.Gax;
-using Microsoft.Practices.TransientFaultHandling;
 
 namespace GoogleCloudSamples
 {
@@ -98,13 +97,6 @@ namespace GoogleCloudSamples
                     apiException.HttpStatusCode == System.Net.HttpStatusCode.BadRequest;
             }
         };
-
-        internal class CustomTransientErrorDetectionStrategy
-            : ITransientErrorDetectionStrategy
-        {
-            public bool IsTransient(Exception ex) =>
-                ex is InvalidOperationException;
-        }
 
         public BigQueryTest()
         {
@@ -565,23 +557,23 @@ namespace GoogleCloudSamples
             // Query table to get first row and confirm it contains the expected value.
             var newTable = _client.GetTable(datasetId, newTableId);
             string query = $"SELECT title, unique_words FROM {newTable} ORDER BY title";
-            var retryPolicy = new
-                RetryPolicy<CustomTransientErrorDetectionStrategy>
-                (RetryStrategy.DefaultExponential);
             try
             {
-                retryPolicy.ExecuteAction(() =>
-                {
-                    BigQueryResults results = AsyncQuery(_projectId, datasetId,
-                        newTableId, query, _client);
-                    var row = results.First();
-                    valueToTest = row["title"].ToString();
-                });
+                var retryRobot = new RetryRobot();
+                retryRobot.ShouldRetry = (ex) => ex is InvalidOperationException;
+                retryRobot.FirstRetryDelayMs = 100;
+                retryRobot.Eventually(() =>
+                    {
+                        BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
+                        var row = results.First();
+                        valueToTest = row["title"].ToString();
+                    });
             }
             catch (Exception)
             {
                 // All of the retries failed.
             }
+
             Assert.Equal(gcsUploadTestWord, valueToTest);
         }
 

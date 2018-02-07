@@ -71,7 +71,7 @@ namespace IO.Swagger
                 {
                     Version = "v1",
                     Title = "IO.Swagger",
-                    Description = "IO.Swagger (ASP.NET Core 1.0)"
+                    Description = "IO.Swagger (ASP.NET Core 2.0)"
                 });
 
                 options.DescribeAllEnumsAsStrings();
@@ -82,7 +82,12 @@ namespace IO.Swagger
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
+        /// <param name="loggerFactory"></param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
