@@ -195,6 +195,22 @@ namespace GoogleCloudSamples
         public string deviceId { get; set; }
     }
 
+    [Verb("getDeviceStates", HelpText = "Retrieve states for a specific device.")]
+    class GetDeviceStatesOptions
+    {
+        [Value(0, HelpText = "The project containing device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the device is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+
+        [Value(3, HelpText = "The ID of the device used to retrive the states.", Required = true)]
+        public string deviceId { get; set; }
+    }
+
     [Verb("listDevices", HelpText = "List devices in the provided Cloud IoT Core Registry.")]
     class ListDevicesOptions : DeviceOptions { }
 
@@ -617,6 +633,32 @@ namespace GoogleCloudSamples
         }
         // [END iot_get_device_configurations]
 
+        // [START iot_get_device_states]
+        public static object GetDeviceStates(string projectId, string cloudRegion, string registryId, string deviceId)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            // The resource name of the location associated with the key rings.
+            var name = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}/devices/{deviceId}";
+
+            try
+            {
+                Console.WriteLine("States: ");
+                var res = cloudIot.Projects.Locations.Registries.Devices.States.List(name).Execute();
+                res.DeviceStates.ToList().ForEach(state =>
+                {
+                    Console.WriteLine($"\t{state.UpdateTime}: {state.BinaryData}");
+                });
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+                if (e.Error != null) return e.Error.Code;
+                return -1;
+            }
+            return 0;
+        }
+        // [END iot_get_device_states]
+
         // [START iot_list_devices]
         public static object ListDevices(string projectId, string cloudRegion, string registryId)
         {
@@ -833,6 +875,7 @@ namespace GoogleCloudSamples
                 DeleteDeviceOptions,
                 GetDeviceOptions,
                 GetDeviceConfigsOptions,
+                //GetDeviceStatesOptions,
                 GetIamPolicyOptions,
                 ListDevicesOptions,
                 PatchEsDeviceOptions,
@@ -851,6 +894,7 @@ namespace GoogleCloudSamples
                 (DeleteDeviceOptions opts) => DeleteDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
                 (GetDeviceOptions opts) => GetDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
                 (GetDeviceConfigsOptions opts) => GetDeviceConfigurations(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
+                //(GetDeviceStatesOptions opts) => GetDeviceStates(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
                 (GetIamPolicyOptions opts) => GetIamPolicy(opts.projectId, opts.regionId, opts.registryId),
                 (ListDevicesOptions opts) => ListDevices(opts.projectId, opts.regionId, opts.registryId),
                 (PatchEsDeviceOptions opts) => PatchEsDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath),
