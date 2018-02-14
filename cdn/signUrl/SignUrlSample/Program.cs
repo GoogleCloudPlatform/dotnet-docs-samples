@@ -17,13 +17,13 @@ namespace SignUrlSample
         [Value(0, HelpText = "Url to sign", Required = true)]
         public string Url { get; set; }
 
-        [Option("name", HelpText = "The name of the key to use when encrypting url")]
+        [Option('k', "key-name", HelpText = "The name of the key to use when encrypting url")]
         public string KeyName { get; set; }
 
-        [Option("path", HelpText = "The path to the key to use when encrypting url" )]
+        [Option('p', "key-path", HelpText = "The path to the key to use when encrypting url" )]
         public string KeyPath { get; set; }
 
-        [Option('e', HelpText = "Url expiration in UTC formatted as: YYYY-MM-DDThh:mm:ss")]
+        [Option('e', "expiration", HelpText = "Url expiration in UTC formatted as: YYYY-MM-DDThh:mm:ss")]
         public DateTime Expiration { get; set; }
     }
 
@@ -67,7 +67,7 @@ namespace SignUrlSample
             // Key is passed as base64url encoded
             byte[] decodedKey = Base64UrlDecode(encodedKey);
 
-            // Computes SHA-1 hash of the URL using the key
+            // Computes HMAC SHA-1 hash of the URL using the key
             byte[] hash = ComputeHash(decodedKey, builder.Uri.AbsoluteUri);
             string encodedHash = Base64UrlEncode(hash);
             
