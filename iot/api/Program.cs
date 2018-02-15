@@ -637,6 +637,7 @@ namespace GoogleCloudSamples
         public static object GetDeviceStates(string projectId, string cloudRegion, string registryId, string deviceId)
         {
             var cloudIot = CreateAuthorizedClient();
+
             // The resource name of the location associated with the key rings.
             var name = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}/devices/{deviceId}";
 
@@ -875,7 +876,6 @@ namespace GoogleCloudSamples
                 DeleteDeviceOptions,
                 GetDeviceOptions,
                 GetDeviceConfigsOptions,
-                //GetDeviceStatesOptions,
                 GetIamPolicyOptions,
                 ListDevicesOptions,
                 PatchEsDeviceOptions,
@@ -894,7 +894,6 @@ namespace GoogleCloudSamples
                 (DeleteDeviceOptions opts) => DeleteDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
                 (GetDeviceOptions opts) => GetDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
                 (GetDeviceConfigsOptions opts) => GetDeviceConfigurations(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
-                //(GetDeviceStatesOptions opts) => GetDeviceStates(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
                 (GetIamPolicyOptions opts) => GetIamPolicy(opts.projectId, opts.regionId, opts.registryId),
                 (ListDevicesOptions opts) => ListDevices(opts.projectId, opts.regionId, opts.registryId),
                 (PatchEsDeviceOptions opts) => PatchEsDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath),
