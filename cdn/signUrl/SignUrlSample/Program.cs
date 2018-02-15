@@ -17,13 +17,16 @@ namespace SignUrlSample
         [Value(0, HelpText = "Url to sign", Required = true)]
         public string Url { get; set; }
 
-        [Option('k', "key-name", HelpText = "The name of the key to use when encrypting url")]
+        [Option('k', "key-name",
+            HelpText = "The name of the key to use when encrypting url")]
         public string KeyName { get; set; }
 
-        [Option('p', "key-path", HelpText = "The path to the key to use when encrypting url" )]
+        [Option('p', "key-path",
+            HelpText = "The path to the key to use when encrypting url")]
         public string KeyPath { get; set; }
 
-        [Option('e', "expiration", HelpText = "Url expiration in UTC formatted as: YYYY-MM-DDThh:mm:ss")]
+        [Option('e', "expiration",
+            HelpText = "Url expiration in UTC formatted as: YYYY-MM-DDThh:mm:ss")]
         public DateTime Expiration { get; set; }
     }
 
@@ -33,7 +36,12 @@ namespace SignUrlSample
         {
             string signedUrl = null;
             Parser.Default.ParseArguments<SignedUrlArgs>(args).MapResult(
-                uargs => signedUrl = CreateSignedUrl(uargs.Url, uargs.KeyName, File.ReadAllText(uargs.KeyPath, Encoding.UTF8), uargs.Expiration), 
+                uargs =>
+                    signedUrl = CreateSignedUrl(
+                                    uargs.Url,
+                                    uargs.KeyName,
+                                    File.ReadAllText(uargs.KeyPath, Encoding.UTF8),
+                                    uargs.Expiration),
                 err => string.Empty);
 
             if (string.IsNullOrEmpty(signedUrl))
@@ -45,10 +53,11 @@ namespace SignUrlSample
             return 0;
         }
 
-        // [START example]
+        // [START CreateSignedUrl]
         /// <summary>
         /// Creates signed URL for Google Cloud SDN
-        /// More details about order of operations is here: <see cref="https://cloud-dot-devsite.googleplex.com/cdn/docs/signed-urls#creatingkeys"/>
+        /// More details about order of operations is here: 
+        /// <see cref="https://cloud-dot-devsite.googleplex.com/cdn/docs/signed-urls#creatingkeys"/>
         /// </summary>
         /// <param name="url">The Url to sign. This URL can't include Expires and KeyName query parameters in it</param>
         /// <param name="keyName">The name of the key used to sign the URL</param>
@@ -70,7 +79,7 @@ namespace SignUrlSample
             // Computes HMAC SHA-1 hash of the URL using the key
             byte[] hash = ComputeHash(decodedKey, builder.Uri.AbsoluteUri);
             string encodedHash = Base64UrlEncode(hash);
-            
+
             builder.Query += $"&Signature={encodedHash}";
             return builder.Uri.AbsoluteUri;
         }
@@ -114,6 +123,6 @@ namespace SignUrlSample
             }
         }
 
-        // [END example]
+        // [END CreateSignedUrl]
     }
 }

@@ -37,7 +37,6 @@ namespace SignUrlSample.Tests
                 };
             }
         }
-            
     }
 
     /// <summary>
