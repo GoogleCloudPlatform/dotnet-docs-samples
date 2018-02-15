@@ -301,7 +301,8 @@ namespace GoogleCloudSamples
         /// Creates an authorized Cloud IoT Core Service client using Application
         /// Default Credentials.
         /// </summary>
-        /// <returns>an authorized Cloud IoT COre Service client.</returns>
+        /// <returns>an authorized Cloud IoT Core Service client.</returns>
+        // [START iot_create_auth_client]
         public static CloudIotService CreateAuthorizedClient()
         {
             GoogleCredential credential =
@@ -321,6 +322,7 @@ namespace GoogleCloudSamples
                 GZipEnabled = false
             });
         }
+        // [END iot_create_auth_client]
 
         // [START iot_create_registry]
         public static object CreateRegistry(string projectId, string cloudRegion, string registryId, string pubsubTopic)
