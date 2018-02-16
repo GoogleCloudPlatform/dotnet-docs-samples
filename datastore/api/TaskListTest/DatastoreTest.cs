@@ -132,7 +132,7 @@ namespace GoogleCloudSamples
         public void TestEntityWithParent()
         {
             // [START entity_with_parent]
-            Key taskListKey = _db.CreateKeyFactory("TaskList").CreateKey("default");
+            Key taskListKey = _db.CreateKeyFactory("TaskList").CreateKey(TestUtil.RandomName());
             Key taskKey = new KeyFactory(taskListKey, "Task").CreateKey("sampleTask");
             Entity task = new Entity()
             {
@@ -365,9 +365,10 @@ namespace GoogleCloudSamples
             _db.Delete(deadEntities.Entities);
         }
 
-        private void UpsertTaskList()
+        private string UpsertTaskList()
         {
-            Key taskListKey = _db.CreateKeyFactory("TaskList").CreateKey("default");
+            string taskListKeyName = TestUtil.RandomName();
+            Key taskListKey = _db.CreateKeyFactory("TaskList").CreateKey(taskListKeyName);
             Key taskKey = new KeyFactory(taskListKey, "Task").CreateKey("someTask");
             Entity task = new Entity()
             {
@@ -388,6 +389,7 @@ namespace GoogleCloudSamples
             _db.Upsert(task);
             // Datastore is, after all, eventually consistent.
             System.Threading.Thread.Sleep(1000);
+            return taskListKeyName;
         }
 
         private static bool IsEmpty(DatastoreQueryResults results) =>
@@ -523,12 +525,12 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestAncestorQuery()
         {
-            UpsertTaskList();
+            string keyName = UpsertTaskList();
             // [START ancestor_query]
             Query query = new Query("Task")
             {
                 Filter = Filter.HasAncestor(_db.CreateKeyFactory("TaskList")
-                    .CreateKey("default"))
+                    .CreateKey(keyName))
             };
             // [END ancestor_query]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
@@ -1068,9 +1070,9 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestTransactionalSingleEntityGroupReadOnly()
         {
-            UpsertTaskList();
+            string keyName = UpsertTaskList();
             Key taskListKey = _db.CreateKeyFactory("TaskList")
-                .CreateKey("default");
+                .CreateKey(keyName);
             Entity taskListEntity = new Entity() { Key = taskListKey };
             _db.Upsert(taskListEntity);
             // [START transactional_single_entity_group_read_only]
@@ -1094,14 +1096,14 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestEventualConsistentQuery()
         {
-            UpsertTaskList();
+            string keyName = UpsertTaskList();
             Eventually(() =>
             {
                 // [START eventual_consistent_query]
                 Query query = new Query("Task")
                 {
                     Filter = Filter.HasAncestor(_db.CreateKeyFactory("TaskList")
-                    .CreateKey("default"))
+                        .CreateKey(keyName))
                 };
                 var results = _db.RunQuery(query,
                     ReadOptions.Types.ReadConsistency.Eventual);
