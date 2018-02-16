@@ -22,7 +22,7 @@ using System.Threading;
 
 namespace GoogleCloudSamples
 {
-    public class DatastoreTest
+    public class DatastoreTest : IDisposable
     {
         private readonly string _projectId;
         private readonly DatastoreDb _db;
@@ -54,6 +54,10 @@ namespace GoogleCloudSamples
             {
                 Key = _keyFactory.CreateKey("sampleTask"),
             };
+        }
+
+        public void Dispose()
+        {
             ClearTasks();
         }
 
@@ -128,7 +132,7 @@ namespace GoogleCloudSamples
         public void TestEntityWithParent()
         {
             // [START entity_with_parent]
-            Key taskListKey = _db.CreateKeyFactory("TaskList").CreateKey("default");
+            Key taskListKey = _db.CreateKeyFactory("TaskList").CreateKey(TestUtil.RandomName());
             Key taskKey = new KeyFactory(taskListKey, "Task").CreateKey("sampleTask");
             Entity task = new Entity()
             {
@@ -230,7 +234,7 @@ namespace GoogleCloudSamples
             };
             task.Key = _db.Insert(task);
             // This assertion should fail!
-            Assert.Equal(null, task.Key);
+            Assert.Null(task.Key);
             // Instead, this assertion should pass:
             // Assert.Equal(task, _db.Lookup(task.Key));
         }
@@ -361,9 +365,10 @@ namespace GoogleCloudSamples
             _db.Delete(deadEntities.Entities);
         }
 
-        private void UpsertTaskList()
+        private string UpsertTaskList()
         {
-            Key taskListKey = _db.CreateKeyFactory("TaskList").CreateKey("default");
+            string taskListKeyName = TestUtil.RandomName();
+            Key taskListKey = _db.CreateKeyFactory("TaskList").CreateKey(taskListKeyName);
             Key taskKey = new KeyFactory(taskListKey, "Task").CreateKey("someTask");
             Entity task = new Entity()
             {
@@ -384,6 +389,7 @@ namespace GoogleCloudSamples
             _db.Upsert(task);
             // Datastore is, after all, eventually consistent.
             System.Threading.Thread.Sleep(1000);
+            return taskListKeyName;
         }
 
         private static bool IsEmpty(DatastoreQueryResults results) =>
@@ -519,12 +525,12 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestAncestorQuery()
         {
-            UpsertTaskList();
+            string keyName = UpsertTaskList();
             // [START ancestor_query]
             Query query = new Query("Task")
             {
                 Filter = Filter.HasAncestor(_db.CreateKeyFactory("TaskList")
-                    .CreateKey("default"))
+                    .CreateKey(keyName))
             };
             // [END ancestor_query]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
@@ -582,7 +588,7 @@ namespace GoogleCloudSamples
                 foreach (Entity task in _db.RunQuery(query).Entities)
                 {
                     Assert.False(string.IsNullOrEmpty(task.Key.Path[0].Name));
-                    Assert.Equal(0, task.Properties.Count);
+                    Assert.Empty(task.Properties);
                     break;
                 }
             });
@@ -717,7 +723,7 @@ namespace GoogleCloudSamples
                 };
                 // [END property_filtering_run_query]
                 properties.Sort();
-                Assert.NotEqual(0, properties.Count);
+                Assert.NotEmpty(properties);
             });
         }
 
@@ -1064,9 +1070,9 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestTransactionalSingleEntityGroupReadOnly()
         {
-            UpsertTaskList();
+            string keyName = UpsertTaskList();
             Key taskListKey = _db.CreateKeyFactory("TaskList")
-                .CreateKey("default");
+                .CreateKey(keyName);
             Entity taskListEntity = new Entity() { Key = taskListKey };
             _db.Upsert(taskListEntity);
             // [START transactional_single_entity_group_read_only]
@@ -1084,20 +1090,20 @@ namespace GoogleCloudSamples
             }
             // [END transactional_single_entity_group_read_only]
             Assert.Equal(taskListEntity, taskList);
-            Assert.Equal(1, tasks.Count());
+            Assert.Collection(tasks, task => { });
         }
 
         [Fact]
         public void TestEventualConsistentQuery()
         {
-            UpsertTaskList();
+            string keyName = UpsertTaskList();
             Eventually(() =>
             {
                 // [START eventual_consistent_query]
                 Query query = new Query("Task")
                 {
                     Filter = Filter.HasAncestor(_db.CreateKeyFactory("TaskList")
-                    .CreateKey("default"))
+                        .CreateKey(keyName))
                 };
                 var results = _db.RunQuery(query,
                     ReadOptions.Types.ReadConsistency.Eventual);
