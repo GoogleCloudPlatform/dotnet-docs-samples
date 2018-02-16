@@ -234,7 +234,7 @@ namespace GoogleCloudSamples
             };
             task.Key = _db.Insert(task);
             // This assertion should fail!
-            Assert.Equal(null, task.Key);
+            Assert.Null(task.Key);
             // Instead, this assertion should pass:
             // Assert.Equal(task, _db.Lookup(task.Key));
         }
@@ -586,7 +586,7 @@ namespace GoogleCloudSamples
                 foreach (Entity task in _db.RunQuery(query).Entities)
                 {
                     Assert.False(string.IsNullOrEmpty(task.Key.Path[0].Name));
-                    Assert.Equal(0, task.Properties.Count);
+                    Assert.Empty(task.Properties);
                     break;
                 }
             });
@@ -721,7 +721,7 @@ namespace GoogleCloudSamples
                 };
                 // [END property_filtering_run_query]
                 properties.Sort();
-                Assert.NotEqual(0, properties.Count);
+                Assert.NotEmpty(properties);
             });
         }
 
@@ -1088,7 +1088,7 @@ namespace GoogleCloudSamples
             }
             // [END transactional_single_entity_group_read_only]
             Assert.Equal(taskListEntity, taskList);
-            Assert.Equal(1, tasks.Count());
+            Assert.Collection(tasks, task => { });
         }
 
         [Fact]
