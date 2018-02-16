@@ -22,7 +22,7 @@ using System.Threading;
 
 namespace GoogleCloudSamples
 {
-    public class DatastoreTest
+    public class DatastoreTest : IDisposable
     {
         private readonly string _projectId;
         private readonly DatastoreDb _db;
@@ -54,6 +54,10 @@ namespace GoogleCloudSamples
             {
                 Key = _keyFactory.CreateKey("sampleTask"),
             };
+        }
+
+        public void Dispose()
+        {
             ClearTasks();
         }
 
