@@ -1,6 +1,9 @@
 # Google Cloud Signing URL Sample
 
 This sample shows how to create Cloud CDN signed Url.
+Cloud CDN stands for Content Delivery Network - a globally distributed
+edge points of presence that cache HTTPS load balanced content close
+to the users. More details [here](https://cloud.google.com/cdn/docs/)
 
 This sample requires [.NET Core 2.0](
     https://www.microsoft.com/net/core) or later.  That means using
