@@ -87,15 +87,15 @@ namespace GoogleCloudSamples
 
         void IDisposable.Dispose()
         {
-            foreach (string topicId in _tempTopicIds)
-            {
-                Eventually(HandleDeleteRace(() =>
-                    Run("deleteTopic", _projectId, topicId)));
-            }
             foreach (string subscriptionId in _tempSubscriptionIds)
             {
                 Eventually(HandleDeleteRace(() =>
                     Run("deleteSubscription", _projectId, subscriptionId)));
+            }
+            foreach (string topicId in _tempTopicIds)
+            {
+                Eventually(HandleDeleteRace(() =>
+                    Run("deleteTopic", _projectId, topicId)));
             }
         }
 
