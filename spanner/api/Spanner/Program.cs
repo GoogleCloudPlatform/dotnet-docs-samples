@@ -231,7 +231,7 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-   [Verb("batchInsertRecords", HelpText = "Batch insert sample records into the database.")]
+    [Verb("batchInsertRecords", HelpText = "Batch insert sample records into the database.")]
     class BatchInsertOptions
     {
         [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
@@ -1391,10 +1391,10 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        private static async Task BatchInsertRecordsAsync(string projectId, 
+        private static async Task BatchInsertRecordsAsync(string projectId,
             string instanceId, string databaseId)
         {
-            string connectionString = 
+            string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
 
@@ -1450,8 +1450,8 @@ namespace GoogleCloudSamples.Spanner
         }
 
         // [START spanner_batch_client]
-       public static object BatchReadRecords(string projectId,
-            string instanceId, string databaseId)
+        public static object BatchReadRecords(string projectId,
+             string instanceId, string databaseId)
         {
             var response =
                 DistributedReadAsync(projectId, instanceId, databaseId);
@@ -1461,23 +1461,23 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        private static async Task DistributedReadAsync(string projectId, 
+        private static async Task DistributedReadAsync(string projectId,
             string instanceId, string databaseId)
         {
-            string connectionString = 
+            string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
             using (var connection = new SpannerConnection(connectionString))
             {
                 await connection.OpenAsync();
 
-                using (var transaction = 
+                using (var transaction =
                     await connection.BeginReadOnlyTransactionAsync())
-                using (var cmd = 
+                using (var cmd =
                     connection.CreateSelectCommand(
                         "SELECT SingerId, FirstName, LastName FROM Singers"))
                 {
-                    transaction.DisposeBehavior = 
+                    transaction.DisposeBehavior =
                         DisposeBehavior.CloseResources;
                     cmd.Transaction = transaction;
                     var partitions = await cmd.GetReaderPartitionsAsync();
@@ -1504,7 +1504,7 @@ namespace GoogleCloudSamples.Spanner
                 using (var cmd = connection.CreateCommandWithPartition(
                     readPartition, transaction))
                 {
-                    using (var reader = 
+                    using (var reader =
                         await cmd.ExecuteReaderAsync().ConfigureAwait(false))
                     {
                         while (await reader.ReadAsync())
@@ -1535,7 +1535,7 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        private static async Task DeleteDatabaseAsync(string projectId, 
+        private static async Task DeleteDatabaseAsync(string projectId,
             string instanceId, string databaseId)
         {
             string AdminConnectionString = $"Data Source=projects/{projectId}/"
@@ -1603,7 +1603,7 @@ namespace GoogleCloudSamples.Spanner
                         opts.databaseId))
                 .Add((DeleteOptions opts) =>
                     DeleteDatabase(opts.projectId, opts.instanceId,
-                        opts.databaseId))        
+                        opts.databaseId))
                 .Add((DropSampleTablesOptions opts) =>
                     DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result)
