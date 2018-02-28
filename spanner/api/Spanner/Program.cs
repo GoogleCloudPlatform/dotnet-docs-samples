@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.Spanner.Data;
 using CommandLine;
@@ -230,6 +231,28 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+   [Verb("batchInsertRecords", HelpText = "Batch insert sample records into the database.")]
+    class BatchInsertOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("batchReadRecords", HelpText = "Batch read sample records from the database.")]
+    class BatchReadOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
     [Verb("listDatabaseTables", HelpText = "List all the user-defined tables in the database.")]
     class ListDatabaseTablesOptions
     {
@@ -240,6 +263,18 @@ namespace GoogleCloudSamples.Spanner
         [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
         public string databaseId { get; set; }
     }
+
+    [Verb("deleteDatabase", HelpText = "Delete a Spanner database.")]
+    class DeleteOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database to delete.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
 
     public class Program
     {
@@ -1343,6 +1378,177 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
+        public static object BatchInsertRecords(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response =
+                BatchInsertRecordsAsync(projectId, instanceId, databaseId);
+            Console.WriteLine("Waiting for operation to complete...");
+            response.Wait();
+            Console.WriteLine($"Operation status: {response.Status}");
+            Console.WriteLine($"Inserted records into sample database "
+                + $"{databaseId} on instance {instanceId}");
+            return ExitCode.Success;
+        }
+
+        private static async Task BatchInsertRecordsAsync(string projectId, 
+            string instanceId, string databaseId)
+        {
+            string connectionString = 
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Get current max SingerId.
+            Int64 maxSingerId = 0;
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                // Execute a SQL statement to get current MAX() of SingerId.
+                var cmd = connection.CreateSelectCommand(
+                    @"SELECT MAX(SingerId) as SingerId FROM Singers");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        long parsedValue;
+                        bool result = Int64.TryParse(
+                            reader.GetFieldValue<string>("SingerId"), out parsedValue);
+                        if (result) maxSingerId = parsedValue;
+                    }
+                }
+            }
+
+            // Batch insert 249,900 singer records into the Singers table.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                for (int i = 0; i < 100; i++)
+                {
+                    using (var tx = await connection.BeginTransactionAsync())
+                    using (var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
+                    {
+                        {"SingerId", SpannerDbType.String},
+                        {"FirstName", SpannerDbType.String},
+                        {"LastName", SpannerDbType.String}
+                    }))
+                    {
+                        cmd.Transaction = tx;
+                        for (var x = 1; x < 2500; x++)
+                        {
+                            maxSingerId++;
+                            string nameSuffix = Guid.NewGuid().ToString().Substring(0, 8);
+                            cmd.Parameters["SingerId"].Value = maxSingerId;
+                            cmd.Parameters["FirstName"].Value = $"FirstName-{nameSuffix}";
+                            cmd.Parameters["LastName"].Value = $"LastName-{nameSuffix}";
+                            cmd.ExecuteNonQuery();
+                        }
+                        await tx.CommitAsync();
+                    }
+                }
+            }
+            Console.WriteLine("Done inserting sample records...");
+        }
+
+        // [START spanner_batch_client]
+       public static object BatchReadRecords(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response =
+                DistributedReadAsync(projectId, instanceId, databaseId);
+            Console.WriteLine("Waiting for operation to complete...");
+            response.Wait();
+            Console.WriteLine($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task DistributedReadAsync(string projectId, 
+            string instanceId, string databaseId)
+        {
+            string connectionString = 
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var transaction = 
+                    await connection.BeginReadOnlyTransactionAsync())
+                using (var cmd = 
+                    connection.CreateSelectCommand(
+                        "SELECT SingerId, FirstName, LastName FROM Singers"))
+                {
+                    transaction.DisposeBehavior = 
+                        DisposeBehavior.CloseResources;
+                    cmd.Transaction = transaction;
+                    var partitions = await cmd.GetReaderPartitionsAsync();
+                    var transactionId = transaction.TransactionId;
+                    await Task.WhenAll(partitions.Select(
+                            x => DistributedReadWorkerAsync(x, transactionId)))
+                                .ConfigureAwait(false);
+                }
+                Console.WriteLine($"Done reading!  Total rows read: "
+                    + $"{s_rowsRead:N0} with {s_partitionId} partition(s)");
+            }
+        }
+
+        private static int s_partitionId;
+        private static int s_rowsRead;
+
+        private static async Task DistributedReadWorkerAsync(
+            CommandPartition readPartition, TransactionId id)
+        {
+            var localId = Interlocked.Increment(ref s_partitionId);
+            using (var connection = new SpannerConnection(id.ConnectionString))
+            using (var transaction = connection.BeginReadOnlyTransaction(id))
+            {
+                using (var cmd = connection.CreateCommandWithPartition(
+                    readPartition, transaction))
+                {
+                    using (var reader = 
+                        await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Interlocked.Increment(ref s_rowsRead);
+                            Console.WriteLine($"Partition ({localId}) "
+                                + $"{reader.GetFieldValue<string>("SingerId")}"
+                                + $" {reader.GetFieldValue<string>("FirstName")}"
+                                + $" {reader.GetFieldValue<string>("LastName")}");
+                        }
+                    }
+                }
+                Console.WriteLine($"Done with single reader {localId}.");
+            }
+        }
+        // [END spanner_batch_client]
+
+        public static object DeleteDatabase(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response =
+                DeleteDatabaseAsync(projectId, instanceId, databaseId);
+            Console.WriteLine("Waiting for operation to complete...");
+            response.Wait();
+            Console.WriteLine($"Operation status: {response.Status}");
+            Console.WriteLine($"Deleted sample database {databaseId} on "
+                + $"instance {instanceId}");
+            return ExitCode.Success;
+        }
+
+        private static async Task DeleteDatabaseAsync(string projectId, 
+            string instanceId, string databaseId)
+        {
+            string AdminConnectionString = $"Data Source=projects/{projectId}/"
+                + $"instances/{instanceId}";
+            using (var connection = new SpannerConnection(AdminConnectionString))
+            using (var cmd = connection.CreateDdlCommand(
+                $@"DROP DATABASE {databaseId}"))
+            {
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+            Console.WriteLine($"Done deleting database: {databaseId}");
+        }
+
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
@@ -1386,9 +1592,18 @@ namespace GoogleCloudSamples.Spanner
                 .Add((ReadStaleDataOptions opts) =>
                     ReadStaleDataAsync(opts.projectId, opts.instanceId,
                         opts.databaseId).Result)
+                .Add((BatchInsertOptions opts) =>
+                    BatchInsertRecords(opts.projectId, opts.instanceId,
+                        opts.databaseId))
+                .Add((BatchReadOptions opts) =>
+                    BatchReadRecords(opts.projectId, opts.instanceId,
+                        opts.databaseId))
                 .Add((ListDatabaseTablesOptions opts) =>
                     ListDatabaseTables(opts.projectId, opts.instanceId,
                         opts.databaseId))
+                .Add((DeleteOptions opts) =>
+                    DeleteDatabase(opts.projectId, opts.instanceId,
+                        opts.databaseId))        
                 .Add((DropSampleTablesOptions opts) =>
                     DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result)
