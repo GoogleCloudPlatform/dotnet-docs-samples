@@ -442,7 +442,7 @@ namespace GoogleCloudSamples
         }
         // [END iot_list_registries]
 
-        // [START iot_create_device_noauth]
+        // [START iot_create_unauth_device]
         public static object CreateUnauthDevice(string projectId, string cloudRegion, string registryId, string deviceId)
         {
             var cloudIot = CreateAuthorizedClient();
@@ -471,7 +471,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END iot_create_device_noauth]
+        // [END iot_create_unauth_device]
 
         // [START iot_create_es_device]
         public static object CreateEsDevice(string projectId, string cloudRegion, string registryId, string deviceId, string keyPath)
@@ -606,7 +606,7 @@ namespace GoogleCloudSamples
         }
         // [END iot_get_device]
 
-        // [START iot_get_device_configurations]
+        // [START iot_get_device_configs]
         public static object GetDeviceConfigurations(string projectId, string cloudRegion, string registryId, string deviceId)
         {
             var cloudIot = CreateAuthorizedClient();
@@ -633,9 +633,9 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END iot_get_device_configurations]
+        // [END iot_get_device_configs]
 
-        // [START iot_get_device_states]
+        // [START iot_get_device_state]
         public static object GetDeviceStates(string projectId, string cloudRegion, string registryId, string deviceId)
         {
             var cloudIot = CreateAuthorizedClient();
@@ -660,7 +660,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END iot_get_device_states]
+        // [END iot_get_device_state]
 
         // [START iot_list_devices]
         public static object ListDevices(string projectId, string cloudRegion, string registryId)
@@ -724,7 +724,7 @@ namespace GoogleCloudSamples
         }
         // [END iot_get_iam_policy]
 
-        // [START iot_patch_es_device]
+        // [START iot_patch_es]
         public static object PatchEsDevice(string projectId, string cloudRegion, string registryId, string deviceId, string keyPath)
         {
             var cloudIot = CreateAuthorizedClient();
@@ -762,9 +762,9 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END iot_patch_es_device]
+        // [END iot_patch_es]
 
-        // [START iot_patch_rsa_device]
+        // [START iot_patch_rsa]
         public static object PatchRsaDevice(string projectId, string cloudRegion, string registryId, string deviceId, string keyPath)
         {
             var cloudIot = CreateAuthorizedClient();
@@ -802,7 +802,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END iot_patch_rsa_device]
+        // [END iot_patch_rsa]
 
         // [START iot_set_device_config]
         public static object SetDeviceConfig(string projectId, string cloudRegion, string registryId, string deviceId, string data)
