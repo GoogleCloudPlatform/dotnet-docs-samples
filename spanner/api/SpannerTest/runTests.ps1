@@ -18,7 +18,8 @@ Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
 BackupAndEdit-TextFile "..\QuickStart\Program.cs" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{ 
+{
     dotnet restore
-    dotnet test
+    dotnet build
+    dotnet test --no-build --no-restore -v detailed
 }
