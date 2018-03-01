@@ -252,7 +252,7 @@ namespace GoogleCloudSamples.Spanner
             InvalidParameter = 1,
         }
 
-        // [START insert_data]
+        // [START spanner_insert_data]
         public class Singer
         {
             public int singerId { get; set; }
@@ -266,12 +266,12 @@ namespace GoogleCloudSamples.Spanner
             public int albumId { get; set; }
             public string albumTitle { get; set; }
         }
-        // [END insert_data]
+        // [END spanner_insert_data]
 
         public static async Task CreateSampleDatabaseAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START create_database]
+            // [START spanner_create_database]
             // Initialize request connection string for database creation.
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}";
@@ -316,13 +316,13 @@ namespace GoogleCloudSamples.Spanner
                 cmd = connection.CreateDdlCommand(createTableStatement);
                 await cmd.ExecuteNonQueryAsync();
             }
-            // [END create_database]
+            // [END spanner_create_database]
         }
 
         public static async Task AddIndexAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START create_index]
+            // [START spanner_create_index]
             // Initialize request argument(s).
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/"
@@ -336,13 +336,13 @@ namespace GoogleCloudSamples.Spanner
                 await createCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the AlbumsByAlbumTitle index.");
-            // [END create_index]
+            // [END spanner_create_index]
         }
 
         public static async Task AddStoringIndexAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START create_storing_index]
+            // [START spanner_create_storing_index]
             // Initialize request argument(s).
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/"
@@ -357,13 +357,13 @@ namespace GoogleCloudSamples.Spanner
                 await createCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the AlbumsByAlbumTitle2 index.");
-            // [END create_storing_index]
+            // [END spanner_create_storing_index]
         }
 
         public static async Task AddColumnAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START add_column]
+            // [START spanner_add_column]
             // Initialize request argument(s).
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/"
@@ -377,13 +377,13 @@ namespace GoogleCloudSamples.Spanner
                 await updateCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the MarketingBudget column.");
-            // [END add_column]
+            // [END spanner_add_column]
         }
 
         public static async Task QuerySampleDataAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START query_data]
+            // [START spanner_query_data]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/"
             + $"{instanceId}/databases/{databaseId}";
@@ -405,15 +405,15 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END query_data]
+            // [END spanner_query_data]
         }
 
         public static async Task QueryDataWithIndexAsync(
             string projectId, string instanceId, string databaseId,
             string startTitle = "Aardvark", string endTitle = "Goo")
         {
-            // [START query_data_with_index]
-            // [START read_data_with_index]
+            // [START spanner_query_data_with_index]
+            // [START spanner_read_data_with_index]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -443,15 +443,15 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END read_data_with_index]
-            // [END query_data_with_index]
+            // [END spanner_read_data_with_index]
+            // [END spanner_query_data_with_index]
         }
 
         public static async Task QueryDataWithStoringIndexAsync(
             string projectId, string instanceId, string databaseId,
             string startTitle = "Aardvark", string endTitle = "Goo")
         {
-            // [START read_data_with_storing_index]
+            // [START spanner_read_data_with_storing_index]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -481,7 +481,7 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END read_data_with_storing_index]
+            // [END spanner_read_data_with_storing_index]
         }
 
         public static async Task QueryDataWithTransactionCoreAsync(
@@ -489,7 +489,7 @@ namespace GoogleCloudSamples.Spanner
         {
             Console.WriteLine(".NetCore API sample.");
 
-            // [START read_only_transaction_core]
+            // [START spanner_read_only_transaction_core]
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
@@ -520,8 +520,8 @@ namespace GoogleCloudSamples.Spanner
                                 + reader.GetFieldValue<string>("AlbumTitle"));
                         }
                     }
-                    // Read #2. Even if changes occur in-between the reads, 
-                    // the transaction ensures that Read #1 and Read #2 
+                    // Read #2. Even if changes occur in-between the reads,
+                    // the transaction ensures that Read #1 and Read #2
                     // return the same data.
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
@@ -538,7 +538,7 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             Console.WriteLine("Transaction complete.");
-            // [END read_only_transaction_core]
+            // [END spanner_read_only_transaction_core]
         }
 
         public static async Task<object> ReadStaleDataAsync(
@@ -546,7 +546,7 @@ namespace GoogleCloudSamples.Spanner
         {
             Console.WriteLine(".NetCore API sample.");
 
-            // [START read_stale_data]
+            // [START spanner_read_stale_data]
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
@@ -580,7 +580,7 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END read_stale_data]
+            // [END spanner_read_stale_data]
             return 0;
         }
 
@@ -588,7 +588,7 @@ namespace GoogleCloudSamples.Spanner
         public static async Task QueryDataWithTransactionAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START read_only_transaction]
+            // [START spanner_read_only_transaction]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -620,8 +620,8 @@ namespace GoogleCloudSamples.Spanner
                                 + reader.GetFieldValue<string>("AlbumTitle"));
                         }
                     }
-                    // Read #2. Even if changes occur in-between the reads, 
-                    // the transaction ensures that Read #1 and Read #2 
+                    // Read #2. Even if changes occur in-between the reads,
+                    // the transaction ensures that Read #1 and Read #2
                     // return the same data.
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
@@ -639,13 +639,13 @@ namespace GoogleCloudSamples.Spanner
                 scope.Complete();
                 Console.WriteLine("Transaction complete.");
             }
-            // [END read_only_transaction]
+            // [END spanner_read_only_transaction]
         }
 
         public static async Task WriteDataToNewColumnAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START update_data]
+            // [START spanner_update_data]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -687,13 +687,13 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             Console.WriteLine("Updated data.");
-            // [END update_data]
+            // [END spanner_update_data]
         }
 
         public static async Task QueryNewColumnAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START query_data_with_new_column]
+            // [START spanner_query_data_with_new_column]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -715,13 +715,13 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END query_data_with_new_column]
+            // [END spanner_query_data_with_new_column]
         }
 
         public static async Task ListDatabaseTablesAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START list_database_tables]
+            // [START spanner_list_database_tables]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -741,25 +741,25 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END list_database_tables]
+            // [END spanner_list_database_tables]
         }
 
-        // [START topaz_strategy]
+        // [START spanner_topaz_strategy]
         internal class CustomTransientErrorDetectionStrategy
             : ITransientErrorDetectionStrategy
         {
             public bool IsTransient(Exception ex) =>
                 ex.IsTransientSpannerFault();
         }
-        // [END topaz_strategy]
+        // [END spanner_topaz_strategy]
 
-        // [START read_write_transaction_core]
+        // [START spanner_read_write_transaction_core]
         public static async Task ReadWriteWithTransactionCoreAsync(
             string projectId,
             string instanceId,
             string databaseId)
         {
-            // This sample transfers 200,000 from the MarketingBudget 
+            // This sample transfers 200,000 from the MarketingBudget
             // field of the second Album to the first Album. Make sure to run
             // the addColumn and writeDataToNewColumn samples first,
             // in that order.
@@ -849,15 +849,15 @@ namespace GoogleCloudSamples.Spanner
                 Console.WriteLine("Transaction complete.");
             }
         }
-        // [END read_write_transaction_core]
+        // [END spanner_read_write_transaction_core]
 
-        // [START read_write_transaction]
+        // [START spanner_read_write_transaction]
         public static async Task ReadWriteWithTransactionAsync(
             string projectId,
             string instanceId,
             string databaseId)
         {
-            // This sample transfers 200,000 from the MarketingBudget 
+            // This sample transfers 200,000 from the MarketingBudget
             // field of the second Album to the first Album. Make sure to run
             // the addColumn and writeDataToNewColumn samples first,
             // in that order.
@@ -937,7 +937,7 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
         }
-        // [END read_write_transaction]
+        // [END spanner_read_write_transaction]
 
         public static async Task DeleteSampleDataAsync(
             string projectId, string instanceId, string databaseId)
@@ -978,7 +978,7 @@ namespace GoogleCloudSamples.Spanner
                 Console.WriteLine("Deleted data.");
             }
         }
-        // [START insert_data]
+        // [START spanner_insert_data]
         public static async Task InsertSampleDataAsync(
             string projectId, string instanceId, string databaseId)
         {
@@ -1048,12 +1048,12 @@ namespace GoogleCloudSamples.Spanner
                 Console.WriteLine("Inserted data.");
             }
         }
-        // [END insert_data]
+        // [END spanner_insert_data]
 
         public static async Task CreateDatabaseAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START create_custom_database]
+            // [START spanner_create_custom_database]
             // Initialize request connection string for database creation.
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}";
@@ -1064,7 +1064,7 @@ namespace GoogleCloudSamples.Spanner
                 var cmd = connection.CreateDdlCommand(createStatement);
                 await cmd.ExecuteNonQueryAsync();
             }
-            // [END create_custom_database]
+            // [END spanner_create_custom_database]
         }
 
         public static async Task<object> DropSampleTables(
@@ -1144,8 +1144,8 @@ namespace GoogleCloudSamples.Spanner
         {
             if (string.IsNullOrEmpty(startTitle) ^ string.IsNullOrWhiteSpace(endTitle))
             {
-                // Only one Title provided: show message that user must 
-                // provide both startTitle and endTitle or exclude them 
+                // Only one Title provided: show message that user must
+                // provide both startTitle and endTitle or exclude them
                 // from their command.
                 Console.WriteLine("Please provide values for both the start "
                     + "of the title index and the end of the title index.");
@@ -1153,10 +1153,10 @@ namespace GoogleCloudSamples.Spanner
                     + "query with default values.");
                 return ExitCode.InvalidParameter;
             }
-            // Call method QueryDataWithIndexAsync() based on whether 
+            // Call method QueryDataWithIndexAsync() based on whether
             // user provided startTitle and endTitle values are empty or null.
             Task response = string.IsNullOrEmpty(startTitle) ?
-                // startTitle not provided, exclude startTitle and endTitle from 
+                // startTitle not provided, exclude startTitle and endTitle from
                 // method call to use default values for both.
                 QueryDataWithIndexAsync(projectId, instanceId, databaseId) :
                 // Both startTitle and endTitle provided, include them both in
@@ -1208,11 +1208,11 @@ namespace GoogleCloudSamples.Spanner
             string databaseId, string startTitle, string endTitle)
         {
             var response = new Task(() => { });
-            // Call method QueryDataWithStoringIndexAsync() based on whether 
+            // Call method QueryDataWithStoringIndexAsync() based on whether
             // user provided startTitle and endTitle values are empty or null.
             if (string.IsNullOrEmpty(startTitle))
             {
-                // startTitle not provided, exclude startTitle and endTitle from 
+                // startTitle not provided, exclude startTitle and endTitle from
                 // method call to use default values for both.
                 response = QueryDataWithStoringIndexAsync(
                         projectId, instanceId, databaseId);
@@ -1220,8 +1220,8 @@ namespace GoogleCloudSamples.Spanner
             else if (!string.IsNullOrEmpty(startTitle)
                 && string.IsNullOrEmpty(endTitle))
             {
-                // Only startTitle provided, show message that user must 
-                // provide both startTitle and endTitle or exclude them 
+                // Only startTitle provided, show message that user must
+                // provide both startTitle and endTitle or exclude them
                 // from their command.
                 Console.WriteLine("Please provide values for both the start "
                     + "of the title index and the end of the title index.");
@@ -1328,7 +1328,7 @@ namespace GoogleCloudSamples.Spanner
                 })
                 : Task.Run(async () =>
                 {
-                    // [START read_write_retry]
+                    // [START spanner_read_write_retry]
                     var retryPolicy = new
                         RetryPolicy<CustomTransientErrorDetectionStrategy>
                             (RetryStrategy.DefaultExponential);
@@ -1336,7 +1336,7 @@ namespace GoogleCloudSamples.Spanner
                     await retryPolicy.ExecuteAsync(() =>
                         ReadWriteWithTransactionAsync(
                                 projectId, instanceId, databaseId));
-                    // [END read_write_retry]
+                    // [END spanner_read_write_retry]
                 });
             response.Wait();
             s_logger.Info($"Response status: {response.Status}");
