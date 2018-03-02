@@ -14,7 +14,7 @@
 
 # TODO: Resurrect this test when bug 68199801 is fixed.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
-
+Require-Platform Win*
 
 BackupAndEdit-TextFile "..\QuickStart\Program.cs" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
