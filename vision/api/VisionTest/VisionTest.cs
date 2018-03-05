@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using System;
 using System.IO;
 using Xunit;
 using System.Drawing;
@@ -165,6 +166,7 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Spoof", output.Stdout);
             Assert.Contains("Unlikely", output.Stdout);
+            Assert.Contains("Racy", output.Stdout);
         }
 
         [Fact]
@@ -173,6 +175,16 @@ namespace GoogleCloudSamples
             var output = Run("web", Path.Combine("data", "tower.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("MatchingImage", output.Stdout);
+            Assert.Contains("BestGuessLabel:", output.Stdout);
+        }
+
+        [Fact]
+        public void DetectWebGeo()
+        {
+            var output = Run("web-geo", Path.Combine("data", "city.jpg"));
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Score", output.Stdout);
+            Assert.Contains("Description:", output.Stdout);
         }
 
         [Fact]
@@ -183,6 +195,7 @@ namespace GoogleCloudSamples
             Assert.Contains("detectedLanguages", output.Stdout);
             Assert.Contains("vertices", output.Stdout);
             Assert.Contains("symbol", output.Stdout);
+            Assert.Contains("confidence", output.Stdout);
         }
 
         [Fact]

@@ -54,6 +54,10 @@ namespace GoogleCloudSamples
     [Verb("web", HelpText = "Find web pages with matching images.")]
     class DetectWebOptions : ImageOptions { }
 
+    [Verb("web-geo", HelpText = "Find web pages with matching images including" +
+          "geo results.")]
+    class DetectWebGeoOptions : ImageOptions { }
+
     [Verb("doc-text", HelpText = "Detect text in a document image.")]
     class DetectDocTextOptions : ImageOptions { }
 
@@ -171,6 +175,7 @@ namespace GoogleCloudSamples
             Console.WriteLine("Spoof: {0}", response.Spoof.ToString());
             Console.WriteLine("Medical: {0}", response.Medical.ToString());
             Console.WriteLine("Violence: {0}", response.Violence.ToString());
+            Console.WriteLine("Racy: {0}", response.Racy.ToString());
             // [END vision_safe_search_detection_gcs]
             // [END vision_safe_search_detection]
             return 0;
@@ -292,8 +297,40 @@ namespace GoogleCloudSamples
                 Console.WriteLine("WebEntity Score:\t{0}\tId:\t{1}\tDescription:\t{2}",
                     entity.Score, entity.EntityId, entity.Description);
             }
+            foreach (var bestGuessLabel in annotation.BestGuessLabels)
+            {
+                Console.WriteLine("BestGuessLabel:\t{0}",
+                    bestGuessLabel.Label);
+            }
             // [END vision_web_detection]
             // [END vision_web_detection_gcs]
+            return 0;
+        }
+
+        private static object DetectWebGeo(Image image)
+        {
+            Console.WriteLine("HELLO from Detect Web Geo!");
+            // [START vision_web_entities_include_geo_results_uri]
+            // [START vision_web_entities_include_geo_results]
+            var client = ImageAnnotatorClient.Create();
+            var image_context = new ImageContext()
+            {
+                WebDetectionParams = new WebDetectionParams()
+                {
+                    IncludeGeoResults = true
+                }
+            };
+            WebDetection annotation = client.DetectWebInformation(
+                image,
+                image_context
+            );
+            foreach (var entity in annotation.WebEntities)
+            {
+                Console.WriteLine($"Score: {0}", entity.Score);
+                Console.WriteLine($"Description: {0}", entity.Description);
+            }
+            // [END vision_web_entities_include_geo_results]
+            // [END vision_web_entities_include_geo_results_uri]
             return 0;
         }
 
@@ -331,6 +368,7 @@ namespace GoogleCloudSamples
                 DetectLandmarksOptions,
                 DetectCropHintOptions,
                 DetectWebOptions,
+                DetectWebGeoOptions,
                 DetectDocTextOptions
                 >(args)
               .MapResult(
@@ -343,6 +381,7 @@ namespace GoogleCloudSamples
                 (DetectLogosOptions opts) => DetectLogos(ImageFromArg(opts.FilePath)),
                 (DetectCropHintOptions opts) => DetectCropHint(ImageFromArg(opts.FilePath)),
                 (DetectWebOptions opts) => DetectWeb(ImageFromArg(opts.FilePath)),
+                (DetectWebGeoOptions opts) => DetectWebGeo(ImageFromArg(opts.FilePath)),
                 (DetectDocTextOptions opts) => DetectDocText(ImageFromArg(opts.FilePath)),
                 errs => 1);
         }
