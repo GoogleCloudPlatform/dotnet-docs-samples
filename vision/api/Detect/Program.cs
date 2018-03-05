@@ -309,7 +309,6 @@ namespace GoogleCloudSamples
 
         private static object DetectWebGeo(Image image)
         {
-            Console.WriteLine("HELLO from Detect Web Geo!");
             // [START vision_web_entities_include_geo_results_uri]
             // [START vision_web_entities_include_geo_results]
             var client = ImageAnnotatorClient.Create();
