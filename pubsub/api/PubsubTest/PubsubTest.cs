@@ -42,15 +42,60 @@ namespace GoogleCloudSamples
             Command = "Pubsub"
         };
 
+        /// <summary>
+        /// Handle a special race condition that can occur when deleting
+        /// something:
+        /// 1. Delete request times out.
+        /// 2. Delete operation continues on server and succeeds.
+        /// 3. Later requests to delete the same entity see NotFound error.
+        /// </summary>
+        /// <param name="delete">The delete operation to run.</param>
+        /// <returns>An action to run inside Eventually().</returns>
+        Action HandleDeleteRace(Action delete)
+        {
+            bool sawTimeout = false;
+            return () =>
+            {
+                if (!sawTimeout)
+                {
+                    try
+                    {
+                        delete();
+                    }
+                    catch (Grpc.Core.RpcException e)
+                    when (e.Status.StatusCode == StatusCode.DeadlineExceeded)
+                    {
+                        sawTimeout = true;
+                        throw;
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        delete();
+                    }
+                    catch (Grpc.Core.RpcException e)
+                    when (e.Status.StatusCode == StatusCode.NotFound)
+                    {
+                        // Earlier timeout request that deleted the thing
+                        // actually succeeded on the server.
+                    }
+                }
+            };
+        }
+
         void IDisposable.Dispose()
         {
-            foreach (string topicId in _tempTopicIds)
-            {
-                Eventually(() => Run("deleteTopic", _projectId, topicId));
-            }
             foreach (string subscriptionId in _tempSubscriptionIds)
             {
-                Eventually(() => Run("deleteSubscription", _projectId, subscriptionId));
+                Eventually(HandleDeleteRace(() =>
+                    Run("deleteSubscription", _projectId, subscriptionId)));
+            }
+            foreach (string topicId in _tempTopicIds)
+            {
+                Eventually(HandleDeleteRace(() =>
+                    Run("deleteTopic", _projectId, topicId)));
             }
         }
 
@@ -491,7 +536,7 @@ namespace GoogleCloudSamples
     {
         readonly CommandLineRunner _quickStart = new CommandLineRunner()
         {
-            VoidMain = QuickStart.Main,
+            Main = QuickStart.Main,
             Command = "dotnet run"
         };
 
