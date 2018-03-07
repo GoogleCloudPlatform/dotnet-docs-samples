@@ -1000,7 +1000,7 @@ function Get-GitTimeStampForScript($script) {
 
 # Notice the year is incomplete.  We fill it in Add-Copyright below.
 $copyrightTemplate = @"
-Copyright 20 Google Inc.
+Copyright 20 Google
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of
@@ -1071,7 +1071,8 @@ function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
         }
     }
     $year = (Get-Date -UFormat "%Y")
-    $copyrightLines = $copyrightTemplate.Replace("20", "(c) $year") `
+    $copyrightLines = $copyrightTemplate.Replace(
+        "Copyright 20 Google", "Copyright (c) $year Google LLC.") `
         -split '\r\n|\r|\n'
     foreach ($path in $Files) {
         if (Has-Copyright $path) { continue }
