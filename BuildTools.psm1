@@ -1076,7 +1076,8 @@ function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
         -split '\r\n|\r|\n'
     foreach ($path in $Files) {
         if (Has-Copyright $path) { continue }
-        $ext = (Split-Path -Extension $path)
+        $dot = $path.LastIndexOf('.')
+        $ext = $path.Substring($dot)
         $lineCommentPrefix = switch ($ext)
         {
             '.cs' { '//' }
