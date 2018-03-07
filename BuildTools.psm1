@@ -998,6 +998,7 @@ function Get-GitTimeStampForScript($script) {
     }
 }
 
+# Notice the year is incomplete.  We fill it in Add-Copyright below.
 $copyrightTemplate = @"
 Copyright (c) 20 Google Inc.
 
@@ -1015,6 +1016,16 @@ the License.
 "@
 
 
+##############################
+#.SYNOPSIS
+# Detects whether the source file contains a copyright notice.
+#
+#.PARAMETER path
+# The path the the source file to examine.
+#
+#.EXAMPLE
+# Has-Copyright foo.cs
+##############################
 function Has-Copyright ($path)
 {
     # Just search for all the letters in the same order.  Imperfect, but
@@ -1037,6 +1048,20 @@ function Has-Copyright ($path)
     return $false
 }
 
+##############################
+#.SYNOPSIS
+# Adds copyright notice to source files that lack a copyright notice.
+#
+#.DESCRIPTION
+# Does not modify files that already have a copyright notice.
+#
+#.PARAMETER Files
+# The files to examine.  When empty, recursively searches directory for
+# files with extensins .cs, .cshtml, and .ps1.
+#
+#.EXAMPLE
+# Add-Copyright
+##############################
 function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
 {
     if (-not $Files)
