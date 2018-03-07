@@ -998,25 +998,43 @@ function Get-GitTimeStampForScript($script) {
     }
 }
 
+$copyrightTemplate = @"
+Copyright (c) 20 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+"@
+
+
 function Has-Copyright ($path)
 {
-    $copyrightRegex = @"
-(#|//|\*)?\s*Copyright\(c\) 20[0123456789]{2} Google Inc.
-(#|//|\*)?\s*
-(#|//|\*)?\s*Licensed under the Apache License, Version 2.0 \(the "License"\); you may not
-(#|//|\*)?\s*use this file except in compliance with the License. You may obtain a copy of
-(#|//|\*)?\s*the License at
-(#|//|\*)?\s*
-(#|//|\*)?\s*http://www.apache.org/licenses/LICENSE-2.0
-(#|//|\*)?\s*
-(#|//|\*)?\s*Unless required by applicable law or agreed to in writing, software
-(#|//|\*)?\s*distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-(#|//|\*)?\s*WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-(#|//|\*)?\s*License for the specific language governing permissions and limitations under
-(#|//|\*)?\s*the License.
-.*
-"@
-    (Get-Content $path -Raw) -match $copyrightRegex.Trim()
+    # Just search for all the letters in the same order.  Imperfect, but
+    # quick and effective given the variety of whitespace and comment syntaxes
+    # across programming languages.
+    $haystack = Get-Content -Raw $path
+    $needle = ($copyrightTemplate -replace '\s', '').ToCharArray()
+    if ($haystack.Length -lt $needle.Length) {
+        return $false
+    }
+    $ineedle = 0
+    foreach ($hay in $haystack.ToCharArray()) {
+        if ($needle[$ineedle] -eq $hay) {
+            $ineedle += 1;
+            if ($ineedle -eq $needle.Length) {
+                return $true
+            }
+        }
+    }
+    return $false
 }
 
 function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
@@ -1027,21 +1045,8 @@ function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
             Get-ChildItem -Recurse "*$_"
         }
     }
-    $copyrightTemplate = @"
-# Copyright(c) 2016 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License"); you may not
-# use this file except in compliance with the License. You may obtain a copy of
-# the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-# License for the specific language governing permissions and limitations under
-# the License.
-"@
+    $copyrightLines = $copyrightTemplate.Replace("20", (Get-Date -UFormat "%Y")) `
+        -split '\r\n|\r|\n'
     foreach ($path in $Files) {
         if (Has-Copyright $path) { continue }
         $ext = (Split-Path -Extension $path)
@@ -1052,8 +1057,8 @@ function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
             '.ps1' { '#'}
         }
         $tempPath = $path + ".tmp"
-        $copyright = $copyRightTemplate.Replace('#', $lineCommentPrefix
-            ).Replace("2016", (Get-Date -UFormat "%Y")).Trim()
+        $copyright = "$lineCommentPrefix " + (
+            $copyrightLines -join "`n$lineCommentPrefix ")
         $header = if ('.cshtml' -eq $ext) {
             '@{', $copyright, '}'
         } else {
