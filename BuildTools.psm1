@@ -18,7 +18,7 @@
 <#
 
 PS ...> Import-Module .\BuildTools.psm1
-WARNING: The names of some imported commands from the module 'BuildTools' include unapproved verbs that might make them less 
+WARNING: The names of some imported commands from the module 'BuildTools' include unapproved verbs that might make them less
 discoverable. To find the commands with unapproved verbs, run the Import-Module command again with the Verbose parameter. For
  a list of approved verbs, type Get-Verb.
 PS ...> cd .\aspnet\2-structured-data
@@ -97,7 +97,7 @@ function Add-Setting($Config, [string]$Key, [string]$Value) {
 #
 #.DESCRIPTION
 # When anything in pipelined to the function, outputs the inputs.
-# Otherwise, evaluates the script block and returns the result. 
+# Otherwise, evaluates the script block and returns the result.
 #
 #.PARAMETER ScriptBlock
 # The script block to execute if $input is empty.
@@ -144,9 +144,9 @@ filter Get-Config ($Target, $ArgList, $Mask="Web.config") {
 # Paths to Web.configs that this function modified.
 #
 #.EXAMPLE
-# Update-Config 
+# Update-Config
 ##############################################################################
-filter Update-Config ([switch]$Yes) {        
+filter Update-Config ([switch]$Yes) {
     $configs = Get-Config $_ $args
     foreach($configPath in $configs) {
         if (-not $Yes -and (git status -s $configPath)) {
@@ -168,11 +168,11 @@ filter Update-Config ([switch]$Yes) {
         $connectionString = Select-Xml -Xml $config.Node -XPath "connectionStrings/add[@name='LocalMySqlServer']"
         if ($connectionString) {
             if ($env:GoogleCloudSamples:ConnectionString) {
-                $connectionString.Node.connectionString = $env:GoogleCloudSamples:ConnectionString;        
+                $connectionString.Node.connectionString = $env:GoogleCloudSamples:ConnectionString;
             } elseif ($env:Data:MySql:ConnectionString) {
                 # TODO: Stop checking this old environment variable name when we've
                 # updated all the scripts.
-                $connectionString.Node.connectionString = $env:Data:MySql:ConnectionString;        
+                $connectionString.Node.connectionString = $env:Data:MySql:ConnectionString;
             }
         }
         $config.Node.OwnerDocument.Save($config.Path);
@@ -287,7 +287,7 @@ function Find-Files($Path = $null, [string[]]$Masks = '*', $MaxDepth = -1,
 # UpFind-File *.txt
 ##############################################################################
 function UpFind-File([string[]]$Masks = '*')
-{    
+{
     $dir = Get-Item .
     while (1)
     {
@@ -303,7 +303,7 @@ function UpFind-File([string[]]$Masks = '*')
             return
         }
         $dir = Get-Item $dir.parent.FullName
-    }    
+    }
 }
 
 ##############################################################################
@@ -385,7 +385,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
                 }
             }
             # Call Receive-Job every second so the stdout for the job
-            # streams to my stdout. 
+            # streams to my stdout.
             while ($true) {
                 Wait-Job $job -Timeout 1 | Out-Null
                 $jobState = $job.State
@@ -404,7 +404,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
                     }
                 }
                 if ($jobState -eq 'Running') {
-                    $deadline = $startDate.AddSeconds($TimeoutSeconds)                    
+                    $deadline = $startDate.AddSeconds($TimeoutSeconds)
                     if ((Get-Date) -gt $deadline) {
                         Write-Output "TIME OUT"
                         $jobState = 'Timed Out'
@@ -534,7 +534,7 @@ function Convert-2003ProjectToCore($csproj) {
         $doc = [xml] (Get-Content $cspath)
         # This one import causes codeformatter to choke.  Turn it off.
         foreach ($import in $doc.Project.Import | Where-Object `
-            {$_.Project -like '*\Microsoft.WebApplication.targets'}) 
+            {$_.Project -like '*\Microsoft.WebApplication.targets'})
         {
             $import.Condition = 'false'
         }
@@ -558,7 +558,7 @@ function Convert-2003ProjectToCore($csproj) {
 filter Lint-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
-        @($project) | Format-Code            
+        @($project) | Format-Code
         # If git reports a diff, codeformatter changed something, and that's bad.
         $diff = git diff
         if ($diff) {
@@ -607,7 +607,7 @@ function Build-Solution($solution) {
 ##############################################################################
 function Get-PortNumber($SiteName, $ApplicationhostConfig) {
     $node = Select-Xml -Path $ApplicationhostConfig `
-        -XPath "/configuration/system.applicationHost/sites/site[@name='$SiteName']/bindings/binding" | 
+        -XPath "/configuration/system.applicationHost/sites/site[@name='$SiteName']/bindings/binding" |
         Select-Object -ExpandProperty Node
     $chunks = $node.bindingInformation -split ':'
     $chunks[1]
@@ -656,7 +656,7 @@ function Run-IISExpress($SiteName, $ApplicationhostConfig) {
 # specified, searches parent directories for the file.
 #
 ##############################################################################
-function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '', 
+function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
     $TestJs = 'test.js', [switch]$LeaveRunning = $false) {
     if (!$SiteName) {
         $SiteName = (get-item -Path ".\").Name
@@ -695,7 +695,7 @@ function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
 # The job running kestrel.
 ##############################################################################
 function Run-Kestrel([Parameter(mandatory=$true)][string]$url) {
-    Start-Job -ArgumentList (Get-Location), $url -ScriptBlock { 
+    Start-Job -ArgumentList (Get-Location), $url -ScriptBlock {
         Set-Location $args[0]
         $env:ASPNETCORE_URLS = $args[1]
         dotnet run
@@ -860,7 +860,7 @@ filter Update-Packages ([string] $Mask) {
 ##############################################################################
 function Backup-File(
     [string[]][Parameter(Mandatory=$true,ValueFromPipeline=$true)] $Files,
-    [scriptblock][Parameter(Mandatory=$true)] $ScriptBlock) 
+    [scriptblock][Parameter(Mandatory=$true)] $ScriptBlock)
 {
     $fileMap = @{}
     try {
@@ -909,7 +909,7 @@ function Edit-TextFile(
 
 ##############################################################################
 #.SYNOPSIS
-# Make a backup copy of a file, edit the file, run the script, and restore 
+# Make a backup copy of a file, edit the file, run the script, and restore
 # the file.
 #
 #.PARAMETER Files
@@ -976,7 +976,7 @@ filter ConvertTo-Utf8 {
 ##############################################################################
 #.SYNOPSIS
 # Given a path to a runTests.ps1 script, find the git timestamp of changes in
-# the same directory. 
+# the same directory.
 ##############################################################################
 function Get-GitTimeStampForScript($script) {
     Push-Location
@@ -997,3 +997,72 @@ function Get-GitTimeStampForScript($script) {
         Pop-Location
     }
 }
+
+function Has-Copyright ($path)
+{
+    $copyrightRegex = @"
+(#|//|\*)?\s*Copyright\(c\) 20[0123456789]{2} Google Inc.
+(#|//|\*)?\s*
+(#|//|\*)?\s*Licensed under the Apache License, Version 2.0 \(the "License"\); you may not
+(#|//|\*)?\s*use this file except in compliance with the License. You may obtain a copy of
+(#|//|\*)?\s*the License at
+(#|//|\*)?\s*
+(#|//|\*)?\s*http://www.apache.org/licenses/LICENSE-2.0
+(#|//|\*)?\s*
+(#|//|\*)?\s*Unless required by applicable law or agreed to in writing, software
+(#|//|\*)?\s*distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+(#|//|\*)?\s*WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+(#|//|\*)?\s*License for the specific language governing permissions and limitations under
+(#|//|\*)?\s*the License.
+.*
+"@
+    (Get-Content $path -Raw) -match $copyrightRegex.Trim()
+}
+
+function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
+{
+    if (-not $Files)
+    {
+        $Files = '.cs', '.cshtml', '.ps1' | ForEach-Object {
+            Get-ChildItem -Recurse "*$_"
+        }
+    }
+    $copyrightTemplate = @"
+# Copyright(c) 2016 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+"@
+    foreach ($path in $Files) {
+        if (Has-Copyright $path) { continue }
+        $ext = (Split-Path -Extension $path)
+        $lineCommentPrefix = switch ($ext)
+        {
+            '.cs' { '//' }
+            '.cshtml' { '//' }
+            '.ps1' { '#'}
+        }
+        $tempPath = $path + ".tmp"
+        $copyright = $copyRightTemplate.Replace('#', $lineCommentPrefix
+            ).Replace("2016", (Get-Date -UFormat "%Y")).Trim()
+        $header = if ('.cshtml' -eq $ext) {
+            '@{', $copyright, '}'
+        } else {
+            $copyright
+        }
+        $header | Out-File -Encoding UTF8 $tempPath
+        Get-Content $path | Out-File -Append -Encoding UTF8 $tempPath
+        Move-Item -Force $tempPath $path
+        "Add copyright to $path."
+    }
+}
+
