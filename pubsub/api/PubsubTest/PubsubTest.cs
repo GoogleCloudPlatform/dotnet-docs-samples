@@ -498,9 +498,12 @@ namespace GoogleCloudSamples
             string subscriptionId = "testSubscriptionForRpcRetry" + TestUtil.RandomName();
             _tempTopicIds.Add(topicId);
             _tempSubscriptionIds.Add(subscriptionId);
-            RpcRetry(topicId, subscriptionId, _publisher, _subscriber);
-            var topicDetails = Run("getTopic", _projectId, topicId);
-            Assert.Contains($"{topicId}", topicDetails.Stdout);
+            Eventually(() =>
+            {
+                RpcRetry(topicId, subscriptionId, _publisher, _subscriber);
+                var topicDetails = Run("getTopic", _projectId, topicId);
+                Assert.Contains($"{topicId}", topicDetails.Stdout);
+            });
         }
 
         [Fact]
