@@ -151,8 +151,8 @@ namespace GoogleCloudSamples
             // Initialize values for backoff settings to be used
             // by the CallSettings for RPC retries
             var backoff = new BackoffSettings(
-                delay:TimeSpan.FromMilliseconds(500),
-                maxDelay:TimeSpan.FromSeconds(3), delayMultiplier: 2);
+                delay: TimeSpan.FromMilliseconds(500),
+                maxDelay: TimeSpan.FromSeconds(3), delayMultiplier: 2);
 
             return new CallSettings(null, null,
                 CallTiming.FromRetry(new RetrySettings(backoff, backoff,
