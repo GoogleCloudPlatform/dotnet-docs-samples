@@ -1088,9 +1088,9 @@ function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
         $copyright = "$lineCommentPrefix " + (
             $copyrightLines -join "`n$lineCommentPrefix ")
         $header = if ('.cshtml' -eq $ext) {
-            '@{', $copyright, '}'
+            '@{', $copyright, '}', ''
         } else {
-            $copyright
+            $copyright, '' # Append an empty line too.
         }
         $header | Out-File -Encoding UTF8 $tempPath
         Get-Content $path | Out-File -Append -Encoding UTF8 $tempPath
