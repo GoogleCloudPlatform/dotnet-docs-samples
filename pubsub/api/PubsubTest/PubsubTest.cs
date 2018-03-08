@@ -148,10 +148,9 @@ namespace GoogleCloudSamples
         {
             // Initialize values for backoff settings to be used
             // by the CallSettings for RPC retries
-            TimeSpan delay = TimeSpan.FromMilliseconds(500);
-            TimeSpan maxDelay = TimeSpan.FromSeconds(3);
-            double delayMultiplier = 2;
-            var backoff = new BackoffSettings(delay, maxDelay, delayMultiplier);
+            var backoff = new BackoffSettings(
+                delay:TimeSpan.FromMilliseconds(500),
+                maxDelay:TimeSpan.FromSeconds(3), delayMultiplier: 2);
 
             return new CallSettings(null, null,
                 CallTiming.FromRetry(new RetrySettings(backoff, backoff,
@@ -168,12 +167,12 @@ namespace GoogleCloudSamples
         public PubsubTest()
         {
             // [START create_publisher_client]
-            // By default, the Google.Pubsub.V1 library client will authenticate 
-            // using the service account file (created in the Google Developers 
-            // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS 
-            // environment variable and it will use the project specified by 
+            // By default, the Google.Pubsub.V1 library client will authenticate
+            // using the service account file (created in the Google Developers
+            // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS
+            // environment variable and it will use the project specified by
             // the GOOGLE_PROJECT_ID environment variable. If you are running on
-            // a Google Compute Engine VM, authentication is completely 
+            // a Google Compute Engine VM, authentication is completely
             // automatic.
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             // [END create_publisher_client]
@@ -253,7 +252,7 @@ namespace GoogleCloudSamples
             try
             {
                 // Subscribe to Topic
-                // This may fail if the Subscription already exists or 
+                // This may fail if the Subscription already exists or
                 // the Topic has not yet been created.  In those cases, don't
                 // retry, because a retry would fail the same way.
                 subscriber.CreateSubscription(subscriptionName, topicName,
