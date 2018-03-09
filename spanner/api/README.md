@@ -36,31 +36,45 @@ can use [this older sample](
     ERROR(S):
       No verb selected.
 
-      createDatabase               Create a Spanner database in your project.
+      createSampleDatabase         Create a sample Cloud Spanner database along with sample tables in your project.
 
-      createSampleDatabase         Create a sample Spanner database along with sample tables in your project.
+      createDatabase               Create a Cloud Spanner database in your project.
 
-      insertSampleData             Insert sample data into sample Spanner database table.
+      deleteSampleData             Delete sample data from sample Cloud Spanner database table.
 
-      querySampleData              Query sample data from sample Spanner database table.
+      insertSampleData             Insert sample data into sample Cloud Spanner database table.
 
-      addColumn                    Add a column to the sample Spanner database table.
+      querySampleData              Query sample data from sample Cloud Spanner database table.
 
-      writeDataToNewColumn         Write data to a newly added column in the sample Spanner database table.
+      addColumn                    Add a column to the sample Cloud Spanner database table.
 
-      queryNewColumn               Query data from a newly added column in the sample Spanner database table.
+      writeDataToNewColumn         Write data to a newly added column in the sample Cloud Spanner database table.
 
-      queryDataWithTransaction     Query the sample Spanner database table using a transaction.
+      queryNewColumn               Query data from a newly added column in the sample Cloud Spanner database table.
 
-      readWriteWithTransaction     Update data in the sample Spanner database table using a read-write transaction.
+      queryDataWithTransaction     Query the sample Cloud Spanner database table using a transaction.
 
-      addIndex                     Add an index to the sample Spanner database table.
+      readWriteWithTransaction     Update data in the sample Cloud Spanner database table using a read-write transaction.
 
-      queryDataWithIndex           Query the sample Spanner database table using an index.
+      addIndex                     Add an index to the sample Cloud Spanner database table.
 
-      addStoringIndex              Add a storing index to the sample Spanner database table.
+      addStoringIndex              Add a storing index to the sample Cloud Spanner database table.
 
-      queryDataWithStoringIndex    Query the sample Spanner database table using an storing index.
+      queryDataWithIndex           Query the sample Cloud Spanner database table using an index.
+
+      queryDataWithStoringIndex    Query the sample Cloud Spanner database table using an storing index.
+
+      readStaleData                Read data that is ten seconds old.
+
+      batchInsertRecords           Batch insert sample records into the database.
+
+      batchReadRecords             Batch read sample records from the database.
+
+      listDatabaseTables           List all the user-defined tables in the database.
+
+      deleteDatabase               Delete a Spanner database.
+
+      dropSampleTables             Drops the tables created by createSampleDatabase.
 
       help                         Display more information on a specific command.
 

@@ -16,8 +16,10 @@ using Google.Cloud.Spanner.Data;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Sdk;
+using Grpc.Core;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -36,15 +38,17 @@ namespace GoogleCloudSamples.Spanner
         }
     }
 
-    public class SpannerTests
+    public class SpannerTests : IDisposable
     {
         private static readonly string s_projectId =
             Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         // Allow environment variables to override the default instance and database names.
         private static readonly string s_instanceId =
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
+        private static readonly string s_randomDatabaseName = "my-db-"
+            + TestUtil.RandomName();
         private static readonly string s_databaseId =
-            Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? "my-database";
+            Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
         private static bool s_initializedDatabase = false;
 
         readonly CommandLineRunner _spannerCmd = new CommandLineRunner()
@@ -52,6 +56,17 @@ namespace GoogleCloudSamples.Spanner
             Main = Program.Main,
             Command = "Spanner"
         };
+
+        public void Dispose()
+        {
+            try
+            {
+                // Delete database created from running the tests.
+                _spannerCmd.Run("deleteSampleDatabase",
+                    s_projectId, s_instanceId, s_databaseId);
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
+        }
 
         public SpannerTests()
         {
@@ -68,8 +83,8 @@ namespace GoogleCloudSamples.Spanner
         void InitializeDatabase()
         {
             // If the database has not been initialized, retry.
-            _spannerCmd.Run("dropSampleTables",
-                s_projectId, s_instanceId, s_databaseId);
+            _spannerCmd.Run("deleteSampleDatabase",
+                    s_projectId, s_instanceId, s_databaseId);
             _spannerCmd.Run("createSampleDatabase",
                 s_projectId, s_instanceId, s_databaseId);
             _spannerCmd.Run("insertSampleData",
@@ -84,7 +99,6 @@ namespace GoogleCloudSamples.Spanner
             string connectionString =
                 $"Data Source=projects/{s_projectId}/instances/{s_instanceId}"
                 + $"/databases/{s_databaseId}";
-
             // Create connection to Cloud Spanner.
             using (var connection =
                 new SpannerConnection(connectionString))
@@ -194,6 +208,25 @@ namespace GoogleCloudSamples.Spanner
                 Assert.Contains("less than the minimum required amount",
                 e.ToString());
             }
+        }
+
+        [Fact]
+        void TestBatchWriteAndRead()
+        {
+            // Batch insert records.
+            ConsoleOutput insertOutput = _spannerCmd.Run("batchInsertRecords",
+                 s_projectId, s_instanceId, s_databaseId);
+            Assert.Equal(0, insertOutput.ExitCode);
+            // Batch read records.
+            ConsoleOutput readOutput = _spannerCmd.Run("batchReadRecords",
+                s_projectId, s_instanceId, s_databaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm the output has valid numbers for row & partition count.
+            // Match "[text] [comma separated number] [text] [number] [text]"
+            var output_regex = new Regex(
+                @"Total rows read: \d+(?:,\d{3})* with \d+ partition");
+            var match = output_regex.Match(readOutput.Stdout);
+            Assert.True(match.Success);
         }
 
         [Fact(Skip = "Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]
