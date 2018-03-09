@@ -1412,7 +1412,7 @@ namespace GoogleCloudSamples.Spanner
                         long parsedValue;
                         bool result = Int64.TryParse(
                             reader.GetFieldValue<string>("SingerId"), out parsedValue);
-                        if (result) 
+                        if (result)
                         {
                             maxSingerId = parsedValue;
                         }
