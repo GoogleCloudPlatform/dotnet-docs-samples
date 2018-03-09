@@ -1381,11 +1381,11 @@ namespace GoogleCloudSamples.Spanner
         public static object BatchInsertRecords(string projectId,
             string instanceId, string databaseId)
         {
-            var response =
+            var responseTask =
                 BatchInsertRecordsAsync(projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
+            responseTask.Wait();
+            Console.WriteLine($"Operation status: {responseTask.Status}");
             Console.WriteLine($"Inserted records into sample database "
                 + $"{databaseId} on instance {instanceId}");
             return ExitCode.Success;
@@ -1412,7 +1412,10 @@ namespace GoogleCloudSamples.Spanner
                         long parsedValue;
                         bool result = Int64.TryParse(
                             reader.GetFieldValue<string>("SingerId"), out parsedValue);
-                        if (result) maxSingerId = parsedValue;
+                        if (result) 
+                        {
+                            maxSingerId = parsedValue;
+                        }
                     }
                 }
             }
@@ -1424,12 +1427,14 @@ namespace GoogleCloudSamples.Spanner
 
                 for (int i = 0; i < 100; i++)
                 {
+                    // For details on transaction isolation, see the "Isolation" section in:
+                    // https://cloud.google.com/spanner/docs/transactions#read-write_transactions
                     using (var tx = await connection.BeginTransactionAsync())
                     using (var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
                     {
-                        {"SingerId", SpannerDbType.String},
-                        {"FirstName", SpannerDbType.String},
-                        {"LastName", SpannerDbType.String}
+                        { "SingerId", SpannerDbType.String },
+                        { "FirstName", SpannerDbType.String },
+                        { "LastName", SpannerDbType.String }
                     }))
                     {
                         cmd.Transaction = tx;
@@ -1450,14 +1455,16 @@ namespace GoogleCloudSamples.Spanner
         }
 
         // [START spanner_batch_client]
+        private static int s_partitionId;
+        private static int s_rowsRead;
         public static object BatchReadRecords(string projectId,
              string instanceId, string databaseId)
         {
-            var response =
+            var responseTask =
                 DistributedReadAsync(projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
-            response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
+            responseTask.Wait();
+            Console.WriteLine($"Operation status: {responseTask.Status}");
             return ExitCode.Success;
         }
 
@@ -1490,9 +1497,6 @@ namespace GoogleCloudSamples.Spanner
                     + $"{s_rowsRead:N0} with {s_partitionId} partition(s)");
             }
         }
-
-        private static int s_partitionId;
-        private static int s_rowsRead;
 
         private static async Task DistributedReadWorkerAsync(
             CommandPartition readPartition, TransactionId id)
@@ -1538,6 +1542,9 @@ namespace GoogleCloudSamples.Spanner
         private static async Task DeleteDatabaseAsync(string projectId,
             string instanceId, string databaseId)
         {
+            // The IAM Role "Cloud Spanner Database Admin" is required for 
+            // performing Administration operations on the database.
+            // For more info see https://cloud.google.com/spanner/docs/iam#roles
             string AdminConnectionString = $"Data Source=projects/{projectId}/"
                 + $"instances/{instanceId}";
             using (var connection = new SpannerConnection(AdminConnectionString))
