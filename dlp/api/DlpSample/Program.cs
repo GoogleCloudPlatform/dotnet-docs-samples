@@ -52,6 +52,33 @@ namespace GoogleCloudSamples
         public string File { get; set; }
     }
 
+    [Verb("createInspectTemplate", HelpText = "Creates a template for inspecting operations")]
+    class InspectTemplateOptions : InspectLocalOptions
+    {
+        [Value(1, HelpText = "Display name of the template", Required = true)]
+        public string DisplayName { get; set; }
+
+        [Value(2, HelpText = "Description of the template", Required = true)]
+        public string Description { get; set; }
+    }
+
+    [Verb("listTemplates", HelpText = "Lists all created inspection templates")]
+    class ListTemplatesOptions
+    {
+        [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
+        public string ProjectId { get; set; }
+    }
+
+    [Verb("deleteTemplate", HelpText = "Deletes given template by name")]
+    class DeleteTemplatesOptions
+    {
+        [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
+        public string ProjectId { get; set; }
+
+        [Value(1, HelpText = "The name of the template to delete", Required = true)]
+        public string TemplateName { get; set; }
+    }
+
     abstract class DeidOptions
     {
         [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
@@ -105,9 +132,12 @@ namespace GoogleCloudSamples
             Parser.Default.ParseArguments<
                 InspectStringOptions,
                 InspectFileOptions,
+                InspectTemplateOptions, 
+                ListTemplatesOptions, 
+                DeleteTemplatesOptions,
                 DeidMaskOptions,
                 DeidFpeOptions,
-                ReidFpeOptions> (args)
+                ReidFpeOptions>(args)
                 .MapResult(
                 (InspectStringOptions opts) => InspectLocal.InspectString(
                     opts.ProjectId,
@@ -123,6 +153,16 @@ namespace GoogleCloudSamples
                     opts.MaxFindings,
                     !opts.NoIncludeQuote,
                     opts.InfoTypes),
+                (InspectTemplateOptions opts) => InspectTemplates.CreateInspectTemplate(
+                    opts.ProjectId,
+                    opts.DisplayName,
+                    opts.Description,
+                    opts.MinLikelihood,
+                    opts.MaxFindings,
+                    !opts.NoIncludeQuote,
+                    opts.InfoTypes),
+                (ListTemplatesOptions opts) => InspectTemplates.ListInspectTemplate(opts.ProjectId),
+                (DeleteTemplatesOptions opts) => InspectTemplates.DeleteInspectTemplate(opts.ProjectId, opts.TemplateName),
                 (DeidMaskOptions opts) => DeIdentify.DeidMask(
                     opts.ProjectId,
                     opts.Value,

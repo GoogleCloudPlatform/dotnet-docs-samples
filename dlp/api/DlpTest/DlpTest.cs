@@ -403,5 +403,24 @@ namespace GoogleCloudSamples
             var reidResult = reidOutput.Stdout.Replace("Reidentified content: ", "").Trim();
             Assert.Equal(deidFpeStringValue, reidResult);
         }
+
+        [Fact]
+        public void TestTemplates()
+        {
+            // Creation
+            ConsoleOutput output = _dlp.Run("createInspectTemplate", ProjectId, "testDisplayName", "test description");
+            Assert.Contains("name: ", output.Stdout);
+            int startPos = output.Stdout.IndexOf("name: ") + 6;
+            int endPos = output.Stdout.IndexOf(",");
+            string name = output.Stdout.Substring(startPos, endPos-startPos);
+
+            // List
+            output = _dlp.Run("listTemplates", ProjectId);
+            Assert.Contains("Inspect Template Info:", output.Stdout);
+
+            // Deletion
+            output = _dlp.Run("deleteTemplate", ProjectId, name);
+            Assert.Contains(" was deleted", output.Stdout);
+        }
     }
 }
