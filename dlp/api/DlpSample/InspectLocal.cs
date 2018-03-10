@@ -10,22 +10,18 @@ namespace GoogleCloudSamples
 {
     public class InspectLocal
     {
-        static IEnumerable<InfoType> ParseInfoTypes(string infoTypesStr)
-        {
-            return infoTypesStr.Split(',').Select(str =>
+        static readonly Dictionary<string, ByteContentItem.Types.BytesType> fileTypes =
+            new Dictionary<string, ByteContentItem.Types.BytesType>()
             {
-                try
-                {
-                    return InfoType.Parser.ParseJson($"{{\"name\": \"{str}\"}}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Failed to parse infoType {str}: {e}");
-                    return null;
-                }
-            }).Where(it => it != null);
-        }
+                { "bmp", ByteContentItem.Types.BytesType.ImageBmp },
+                { "jpg", ByteContentItem.Types.BytesType.ImageJpeg },
+                { "jpeg", ByteContentItem.Types.BytesType.ImageJpeg },
+                { "png", ByteContentItem.Types.BytesType.ImagePng },
+                { "svg", ByteContentItem.Types.BytesType.ImageSvg },
+                { "txt", ByteContentItem.Types.BytesType.TextUtf8 }
+            };
 
+        // [START inspect_string]
         public static object InspectString(string projectId, string value, int minLikelihood, int maxFindings,
             bool includeQuote, string infoTypes)
         {
@@ -38,18 +34,9 @@ namespace GoogleCloudSamples
                 }
             }, minLikelihood, maxFindings, includeQuote, infoTypes);
         }
+        // [END inspect_string]
 
-        static readonly Dictionary<string, ByteContentItem.Types.BytesType> fileTypes =
-            new Dictionary<string, ByteContentItem.Types.BytesType>()
-        {
-            {"bmp", ByteContentItem.Types.BytesType.ImageBmp},
-            {"jpg", ByteContentItem.Types.BytesType.ImageJpeg},
-            {"jpeg", ByteContentItem.Types.BytesType.ImageJpeg},
-            {"png", ByteContentItem.Types.BytesType.ImagePng},
-            {"svg", ByteContentItem.Types.BytesType.ImageSvg},
-            {"txt", ByteContentItem.Types.BytesType.TextUtf8}
-        };
-
+        // [START inspect_file]
         public static object InspectFile(string projectId, string file, int minLikelihood, int maxFindings, 
             bool includeQuote, string infoTypes)
         {
@@ -74,6 +61,23 @@ namespace GoogleCloudSamples
             {
                 fileStream.Close();
             }
+        }
+        // [END inspect_file]
+
+        static IEnumerable<InfoType> ParseInfoTypes(string infoTypesStr)
+        {
+            return infoTypesStr.Split(',').Select(str =>
+            {
+                try
+                {
+                    return InfoType.Parser.ParseJson($"{{\"name\": \"{str}\"}}");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Failed to parse infoType {str}: {e}");
+                    return null;
+                }
+            }).Where(it => it != null);
         }
 
         private static object Inspect(InspectContentRequest request, int minLikelihood, int maxFindings, 

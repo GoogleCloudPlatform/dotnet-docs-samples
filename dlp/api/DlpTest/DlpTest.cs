@@ -121,5 +121,24 @@ namespace GoogleCloudSamples
             AssertPhoneEmailCC(_dlp.Run(verb, _projectId, value, "-m", "2"), checkPhone: true, checkEmail: true);
             AssertPhoneEmailCC(_dlp.Run(verb, _projectId, value, "-m", "1"), checkPhone: true);
         }
+
+        [Fact]
+        public void TestTemplates()
+        {
+            // Creation
+            ConsoleOutput output = _dlp.Run("createInspectTemplate", _projectId, "testDisplayName", "test description");
+            Assert.Contains("name: ", output.Stdout);
+            int startPos = output.Stdout.IndexOf("name: ") + 6;
+            int endPos = output.Stdout.IndexOf(",");
+            string name = output.Stdout.Substring(startPos, endPos-startPos);
+
+            // List
+            output = _dlp.Run("listTemplates", _projectId);
+            Assert.Contains("Inspect Template Info:", output.Stdout);
+
+            // Deletion
+            output = _dlp.Run("deleteTemplate", _projectId, name);
+            Assert.Contains(" was deleted", output.Stdout);
+        }
     }
 }
