@@ -115,17 +115,29 @@ namespace GoogleCloudSamples
             return output;
         }
 
+        /// <summary>
+        /// Returns true if an action should be retried when an exception is
+        /// thrown.
+        /// </summary>
+        static bool ShouldRetry(Exception e)
+        {
+            AggregateException aggregateException = e as AggregateException;
+            if (aggregateException != null)
+            {
+                return ShouldRetry(aggregateException.InnerExceptions
+                    .LastOrDefault());
+            }
+            if (e is Xunit.Sdk.XunitException)
+            {
+                return true;
+            }
+            var rpcException = e as Grpc.Core.RpcException;
+            return rpcException?.Status.StatusCode == StatusCode.NotFound;
+        }
+
         private readonly RetryRobot _retryRobot = new RetryRobot()
         {
-            ShouldRetry = (Exception e) =>
-            {
-                if (e is Xunit.Sdk.XunitException)
-                {
-                    return true;
-                }
-                var rpcException = e as Grpc.Core.RpcException;
-                return rpcException?.Status.StatusCode == StatusCode.NotFound;
-            }
+            ShouldRetry = (Exception e) => ShouldRetry(e)
         };
 
         void Eventually(Action action) => _retryRobot.Eventually(action);
