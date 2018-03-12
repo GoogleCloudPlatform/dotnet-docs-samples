@@ -97,13 +97,15 @@ namespace GoogleCloudSamples
                     Console.WriteLine("Configuration:");
                     if (template.InspectConfig.InfoTypes.Any())
                     {
-                        Console.WriteLine($"Info types: {string.Join(',', template.InspectConfig.InfoTypes.Select(t => t.Name))}");
+                        Console.WriteLine(
+                            $"\tInfo types: {string.Join(',', template.InspectConfig.InfoTypes.Select(t => t.Name))}");
                     }
                     Console.WriteLine($"Min Likelihood: {template.InspectConfig.MinLikelihood}");
                     if (template.InspectConfig.ContentOptions.Any())
                     {
-                        Console.WriteLine($"Content Options: {string.Join(',', template.InspectConfig.ContentOptions.Select(o => o.ToString()))}");
+                        Console.WriteLine($"\tContent Options: {string.Join(',', template.InspectConfig.ContentOptions.Select(o => o.ToString()))}");
                     }
+                    Console.WriteLine();
                 }
 
                 nextPageToken = currentTemplatesPage.NextPageToken;

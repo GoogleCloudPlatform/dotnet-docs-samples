@@ -52,30 +52,30 @@ namespace GoogleCloudSamples
         public string File { get; set; }
     }
 
-    [Verb("createInspectTemplate", HelpText = "Creates a template for inspecting operations")]
-    class InspectTemplateOptions : InspectLocalOptions
+    [Verb("createInspectTemplate", HelpText = "Creates a template for inspecting operations.")]
+    class CreateTemplateOptions : InspectLocalOptions
     {
-        [Value(1, HelpText = "Display name of the template", Required = true)]
+        [Value(1, HelpText = "Display name of the template.", Required = true)]
         public string DisplayName { get; set; }
 
-        [Value(2, HelpText = "Description of the template", Required = true)]
+        [Value(2, HelpText = "Description of the template.", Required = true)]
         public string Description { get; set; }
     }
 
-    [Verb("listTemplates", HelpText = "Lists all created inspection templates")]
+    [Verb("listTemplates", HelpText = "Lists all created inspection templates.")]
     class ListTemplatesOptions
     {
         [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
     }
 
-    [Verb("deleteTemplate", HelpText = "Deletes given template by name")]
+    [Verb("deleteTemplate", HelpText = "Deletes given template by name.")]
     class DeleteTemplatesOptions
     {
         [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
 
-        [Value(1, HelpText = "The name of the template to delete", Required = true)]
+        [Value(1, HelpText = "The name of the template to delete.", Required = true)]
         public string TemplateName { get; set; }
     }
 
@@ -132,7 +132,7 @@ namespace GoogleCloudSamples
             Parser.Default.ParseArguments<
                 InspectStringOptions,
                 InspectFileOptions,
-                InspectTemplateOptions, 
+                CreateTemplateOptions, 
                 ListTemplatesOptions, 
                 DeleteTemplatesOptions,
                 DeidMaskOptions,
@@ -153,7 +153,7 @@ namespace GoogleCloudSamples
                     opts.MaxFindings,
                     !opts.NoIncludeQuote,
                     opts.InfoTypes),
-                (InspectTemplateOptions opts) => InspectTemplates.CreateInspectTemplate(
+                (CreateTemplateOptions opts) => InspectTemplates.CreateInspectTemplate(
                     opts.ProjectId,
                     opts.DisplayName,
                     opts.Description,
