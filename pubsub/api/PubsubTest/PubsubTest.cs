@@ -161,11 +161,14 @@ namespace GoogleCloudSamples
             // Initialize values for backoff settings to be used
             // by the CallSettings for RPC retries
             var backoff = new BackoffSettings(
-                delay: TimeSpan.FromMilliseconds(500),
-                maxDelay: TimeSpan.FromSeconds(3), delayMultiplier: 2);
+                delay: TimeSpan.FromSeconds(3),
+                maxDelay: TimeSpan.FromSeconds(10), delayMultiplier: 2);
+            var timeout = new BackoffSettings(
+                delay: TimeSpan.FromSeconds(10),
+                maxDelay: TimeSpan.FromSeconds(30), delayMultiplier: 1.5);
 
             return new CallSettings(null, null,
-                CallTiming.FromRetry(new RetrySettings(backoff, backoff,
+                CallTiming.FromRetry(new RetrySettings(backoff, timeout,
                 Google.Api.Gax.Expiration.None,
                   (RpcException e) => (
                         StatusCode.OK != e.Status.StatusCode
@@ -264,13 +267,12 @@ namespace GoogleCloudSamples
             try
             {
                 // Subscribe to Topic
-                // This may fail if the Subscription already exists or
-                // the Topic has not yet been created.  In those cases, don't
+                // This may fail if the Subscription already exists.  Don't
                 // retry, because a retry would fail the same way.
                 subscriber.CreateSubscription(subscriptionName, topicName,
                     pushConfig: null, ackDeadlineSeconds: 60,
-                    callSettings: newRetryCallSettings(3, StatusCode.AlreadyExists,
-                        StatusCode.NotFound));
+                    callSettings: newRetryCallSettings(3,
+                        StatusCode.AlreadyExists));
             }
             catch (RpcException e)
             when (e.Status.StatusCode == StatusCode.AlreadyExists)
