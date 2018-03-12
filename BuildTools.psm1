@@ -349,6 +349,80 @@ function Require-Platform([string[]] $platforms) {
     Skip-Test
 }
 
+##############################
+#.SYNOPSIS
+# Runs the list of test scripts.
+#
+#.DESCRIPTION
+# Runs each test script once.  Records the results in $Results.
+#
+#.PARAMETER Scripts
+# A list of scripts to run.  An array of Items.
+#
+#.PARAMETER TimeoutSeconds
+# Give up if a test script takes longer than TimeoutSeconds to run.
+#
+#.PARAMETER Verb
+# Verb to print in output message.
+#
+#.PARAMETER Results
+# Gets filled with the resulting job status and list.  For example:
+# { 'Failed' = @('.\pubsub\api\PubsubTest\runTest.ps1');
+#   'Succeeded' = @('.\trace\api\runTests.ps1', '.\storage\api\runTests.ps1') }
+##############################
+function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
+    [string]$Verb, [hashtable]$Results)
+{
+    foreach ($script in $Scripts) {
+        $startDate = Get-Date
+        $relativePath = Resolve-Path -Relative $script
+        $jobState = 'Failed'
+        Write-Output "$verb $relativePath..."
+        $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
+            ('.\"{0}"' -f $script.Name) {
+            Write-Output ("-" * 79)
+            Write-Output $args[0]
+            Set-Location $args[1]
+            Invoke-Expression $args[2]
+            if ($LASTEXITCODE) {
+                throw "FAILED with exit code $LASTEXITCODE"
+            }
+        }
+        # Call Receive-Job every second so the stdout for the job
+        # streams to my stdout.
+        while ($true) {
+            Wait-Job $job -Timeout 1 | Out-Null
+            $jobState = $job.State
+            foreach ($line in (Receive-Job $job)) {
+                # Look at the output of the job to see if it requested
+                # a longer timeout.
+                if ($line.TimeoutSeconds) {
+                    $TimeoutSeconds = $line.TimeoutSeconds
+                    "Set timeout to $TimeoutSeconds seconds."
+                } elseif ($line.Skipped) {
+                    Write-Output "SKIPPED"
+                    $jobState = 'Skipped'
+                    break
+                } else {
+                    $line
+                }
+            }
+            if ($jobState -eq 'Running') {
+                $deadline = $startDate.AddSeconds($TimeoutSeconds)
+                if ((Get-Date) -gt $deadline) {
+                    Write-Output "TIME OUT"
+                    $jobState = 'Timed Out'
+                    break
+                }
+            } else {
+                break
+            }
+        }
+        Remove-Job -Force $job
+        $results[$jobState] += @($relativePath)
+    }
+}
+
 ##############################################################################
 #.SYNOPSIS
 # Runs powershell scripts and prints a summary of successes and errors.
@@ -362,62 +436,17 @@ function Require-Platform([string[]] $platforms) {
 ##############################################################################
 function Run-TestScripts($TimeoutSeconds=300) {
     $scripts = When-Empty -ArgList ($input + $args) -ScriptBlock { Find-Files -Masks '*runtests*.ps1' } | Get-Item
-    $rootDir = pwd
     # Keep running lists of successes and failures.
-    # Array of strings: the relative path of the inner script.
     $results = @{}
-    foreach ($script in $scripts) {
-        $startDate = Get-Date
-        $relativePath = Resolve-Path -Relative $script.FullName
-        $verb = "Starting"
-        $jobState = 'Failed'  # Retry once on failure.
-        for ($try = 0; $try -lt 2 -and $jobState -eq 'Failed'; ++$try) {
-            Write-Output "$verb $relativePath..."
-            $verb = "Retrying"
-            $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
-                ('.\"{0}"' -f $script.Name) {
-                Write-Output ("-" * 79)
-                Write-Output $args[0]
-                Set-Location $args[1]
-                Invoke-Expression $args[2]
-                if ($LASTEXITCODE) {
-                    throw "FAILED with exit code $LASTEXITCODE"
-                }
-            }
-            # Call Receive-Job every second so the stdout for the job
-            # streams to my stdout.
-            while ($true) {
-                Wait-Job $job -Timeout 1 | Out-Null
-                $jobState = $job.State
-                foreach ($line in (Receive-Job $job)) {
-                    # Look at the output of the job to see if it requested
-                    # a longer timeout.
-                    if ($line.TimeoutSeconds) {
-                        $TimeoutSeconds = $line.TimeoutSeconds
-                        "Set timeout to $TimeoutSeconds seconds."
-                    } elseif ($line.Skipped) {
-                        Write-Output "SKIPPED"
-                        $jobState = 'Skipped'
-                        break
-                    } else {
-                        $line
-                    }
-                }
-                if ($jobState -eq 'Running') {
-                    $deadline = $startDate.AddSeconds($TimeoutSeconds)
-                    if ((Get-Date) -gt $deadline) {
-                        Write-Output "TIME OUT"
-                        $jobState = 'Timed Out'
-                        break
-                    }
-                } else {
-                    break
-                }
-            }
-            Remove-Job -Force $job
-        }
-        $results[$jobState] += @($relativePath)
+    Run-TestScriptsOnce $scripts $TimeoutSeconds 'Starting' $results
+    # Retry the failures once.
+    $failed = $results['Failed']
+    if ($failed) {
+        $results['Failed'] = @()
+        Run-TestScriptsOnce ($failed | Get-Item) $TimeoutSeconds `
+            'Retrying' $results
     }
+
     # Print a final summary.
     Write-Output ("=" * 79)
     foreach ($key in $results.Keys) {
