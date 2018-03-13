@@ -44,7 +44,7 @@ namespace GoogleCloudSamples
                 if (rpcException != null)
                 {
                     return new[] { StatusCode.Aborted, StatusCode.Internal,
-                        StatusCode.Cancelled }
+                        StatusCode.Cancelled, StatusCode.NotFound }
                         .Contains(rpcException.Status.StatusCode);
                 }
                 return false;
@@ -153,7 +153,11 @@ namespace GoogleCloudSamples
                 var created = Run("create-log-entry", logId, message);
                 created.AssertSucceeded();
                 // Try deleting log and assert on success.
-                Run("delete-log", logId).AssertSucceeded();
+                Eventually(() =>
+                {
+                    Run("delete-log", logId).AssertSucceeded();
+                    _logsToDelete.Remove(logId);
+                });
             }
 
             [Fact]
