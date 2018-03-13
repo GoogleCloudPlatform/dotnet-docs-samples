@@ -98,6 +98,10 @@ namespace GoogleCloudSamples
                                     CryptoKeyName = keyName,
                                     WrappedKey = ByteString.CopyFrom(File.ReadAllBytes(wrappedKeyFile))
                                 }
+                            },
+                            SurrogateInfoType = new InfoType
+                            {
+                                Name = "TOKEN"
                             }
                         }
                     }
@@ -143,11 +147,19 @@ namespace GoogleCloudSamples
                     break;
             }
 
-            var deidConfig = new DeidentifyConfig
+            var reidConfig = new DeidentifyConfig
             {
                 InfoTypeTransformations = new InfoTypeTransformations()
             };
-            deidConfig.InfoTypeTransformations.Transformations.Add(
+            var inspectConfig = new InspectConfig();
+            inspectConfig.CustomInfoTypes.Add(new CustomInfoType {
+                InfoType = new InfoType
+                {
+                    Name = "TOKEN"
+                },
+                SurrogateType = new CustomInfoType.Types.SurrogateType()
+            });
+            reidConfig.InfoTypeTransformations.Transformations.Add(
                 new InfoTypeTransformations.Types.InfoTypeTransformation
                 {
                     PrimitiveTransformation = new PrimitiveTransformation
@@ -162,16 +174,22 @@ namespace GoogleCloudSamples
                                     CryptoKeyName = keyName,
                                     WrappedKey = ByteString.CopyFrom(File.ReadAllBytes(wrappedKeyFile))
                                 }
+                            },
+                            SurrogateInfoType = new InfoType
+                            {
+                                Name = "TOKEN"
                             }
                         }
                     }
                 });
+            reidConfig.InfoTypeTransformations.Transformations[0].InfoTypes.Add(new InfoType { Name = "TOKEN" });
 
             DlpServiceClient dlp = DlpServiceClient.Create();
             var response = dlp.ReidentifyContent(new ReidentifyContentRequest
             {
                 Parent = $"projects/{projectId}",
-                ReidentifyConfig = deidConfig,
+                InspectConfig = inspectConfig,
+                ReidentifyConfig = reidConfig,
                 Item = new ContentItem { Value = value }
             });
             Console.WriteLine($"Reidentified content: {response.Item.Value}");

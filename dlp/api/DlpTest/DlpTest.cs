@@ -112,7 +112,8 @@ namespace GoogleCloudSamples
 
         const string ident = "111223333";
         private string deidFpeStringValue = "Please de-identify the following identifier: 111223333";
-        private Regex deidFpeResultRegex = new Regex("Please de-identify the following identifier: (?<ident>.{9})");
+        private Regex deidFpeResultRegex = 
+            new Regex("Please de-identify the following identifier: TOKEN\\(\\d+\\):(?<ident>.{9})");
         private Regex alphanumRegex = new Regex("[a-zA-Z0-9]*");
         private Regex hexRegex = new Regex("[0-9A-F]*");
         private Regex numRegex = new Regex("\\d*");
@@ -237,18 +238,6 @@ namespace GoogleCloudSamples
             AssertPhoneEmailCC(_dlp.Run(verb, ProjectId, value, "-m", "1"), checkPhone: true);
         }
 
-        private string ProcessDeid(List<string> args, string value)
-        {
-            var output = _dlp.Run(args.ToArray());
-            var result = output.Stdout.Replace("Deidentified content: ", "").Trim();
-            Assert.DoesNotContain(phone, result);
-            Assert.DoesNotContain(email, result);
-            Assert.DoesNotContain(cc, result);
-            Assert.DoesNotContain(ident, result);
-            Assert.Equal(value.Length, result.Length);
-            return result;
-        }
-
         [Theory]
         [InlineData()]
         [InlineData("y")]
@@ -281,7 +270,13 @@ namespace GoogleCloudSamples
             {
                 args.Add("-r");
             }
-            string result = ProcessDeid(args, inspectStringValue);
+            var output = _dlp.Run(args.ToArray());
+            var result = output.Stdout.Replace("Deidentified content: ", "").Trim();
+            Assert.DoesNotContain(phone, result);
+            Assert.DoesNotContain(email, result);
+            Assert.DoesNotContain(cc, result);
+            Assert.DoesNotContain(ident, result);
+            Assert.Equal(inspectStringValue.Length, result.Length);
 
             string expected;
             // Regardless of mask provided, only first character is used to replace deid'd content.
@@ -370,7 +365,10 @@ namespace GoogleCloudSamples
                 args.Add(alphabet);
             }
 
-            string result = ProcessDeid(args, deidFpeStringValue);
+            var output = _dlp.Run(args.ToArray());
+            var result = output.Stdout.Replace("Deidentified content: ", "").Trim();
+            Assert.DoesNotContain(ident, result);
+
             var match = deidFpeResultRegex.Match(result);
             Assert.True(match.Success);
 
@@ -393,30 +391,17 @@ namespace GoogleCloudSamples
                     replacementRegex = alphanumUcRegex;
                     break;
             }
-            AssertMatch(match, replacementRegex, "ident", ident.Length);
+            var replacementMatch = replacementRegex.Match(match.Groups["ident"].Value);
+            Assert.True(replacementMatch.Success);
+            Assert.Equal(ident.Length, replacementMatch.Value.Length);
 
             // Test Reid with output.
-            // Currently only works with NUMERIC alphabet type, because the Deidentification
-            // still looks for infotype, and the only InfoType that works as expected is
-            // US_SOCIAL_SECURITY_NUMBER, which must be entirely numeric to qualify
-            // both for inspection and deidentification under the same alphabet.
-            if (alphabet != "num")
-            {
-                return;
-            }
             args[0] = "reidFpe";
             args[2] = result;
 
-            var output = _dlp.Run(args.ToArray());
-            var reidResult = output.Stdout.Replace("Reidentified content: ", "").Trim();
+            var reidOutput = _dlp.Run(args.ToArray());
+            var reidResult = reidOutput.Stdout.Replace("Reidentified content: ", "").Trim();
             Assert.Equal(deidFpeStringValue, reidResult);
-        }
-
-        private static void AssertMatch(Match match, Regex replacementRegex, string groupName, int length)
-        {
-            var replacementMatch = replacementRegex.Match(match.Groups[groupName].Value);
-            Assert.True(replacementMatch.Success);
-            Assert.Equal(length, replacementMatch.Value.Length);
         }
     }
 }
