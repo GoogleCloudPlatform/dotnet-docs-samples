@@ -9,24 +9,43 @@ namespace GoogleCloudSamples
 {
     public class InspectLocal : DlpSampleBase
     {
+        // [START dlp_inspect_string]
         public static object InspectString(
             string projectId,
             string value,
             int minLikelihood,
             int maxFindings,
             bool includeQuote,
-            string infoTypes)
+            string infoTypesStr)
         {
-            return Inspect(new InspectContentRequest
+            var inspectConfig = new InspectConfig
+            {
+                MinLikelihood = (Likelihood)minLikelihood,
+                Limits = new InspectConfig.Types.FindingLimits
+                {
+                    MaxFindingsPerRequest = maxFindings
+                },
+                IncludeQuote = includeQuote
+            };
+            inspectConfig.InfoTypes.AddRange(ParseInfoTypes(infoTypesStr));
+            var request = new InspectContentRequest
             {
                 Parent = $"projects/{projectId}",
                 Item = new ContentItem
                 {
                     Value = value
-                }
-            }, minLikelihood, maxFindings, includeQuote, infoTypes);
-        }
+                },
+                InspectConfig = inspectConfig
+            };
 
+            DlpServiceClient dlp = DlpServiceClient.Create();
+            InspectContentResponse response = dlp.InspectContent(request);
+            PrintOutput(response);
+            return 0;
+        }
+        // [END dlp_inspect_string]
+
+        // [START dlp_inspect_file]
         static readonly Dictionary<string, ByteContentItem.Types.BytesType> fileTypes =
             new Dictionary<string, ByteContentItem.Types.BytesType>()
         {
@@ -44,12 +63,23 @@ namespace GoogleCloudSamples
             int minLikelihood,
             int maxFindings,
             bool includeQuote,
-            string infoTypes)
+            string infoTypesStr)
         {
             var fileStream = new FileStream(file, FileMode.Open);
             try
             {
-                return Inspect(new InspectContentRequest
+                var inspectConfig = new InspectConfig
+                {
+                    MinLikelihood = (Likelihood)minLikelihood,
+                    Limits = new InspectConfig.Types.FindingLimits
+                    {
+                        MaxFindingsPerRequest = maxFindings
+                    },
+                    IncludeQuote = includeQuote
+                };
+                inspectConfig.InfoTypes.AddRange(ParseInfoTypes(infoTypesStr));
+                DlpServiceClient dlp = DlpServiceClient.Create();
+                InspectContentResponse response = dlp.InspectContent(new InspectContentRequest
                 {
                     Parent = $"projects/{projectId}",
                     Item = new ContentItem
@@ -60,36 +90,21 @@ namespace GoogleCloudSamples
                             Type = fileTypes.GetValueOrDefault(new FileInfo(file).Extension.ToLower(),
                                     ByteContentItem.Types.BytesType.Unspecified)
                         }
-                    }
-                }, minLikelihood, maxFindings, includeQuote, infoTypes);
+                    },
+                    InspectConfig = inspectConfig
+                });
+                PrintOutput(response);
+                return 0;
             }
             finally
             {
                 fileStream.Close();
             }
         }
+        // [END dlp_inspect_file]
 
-        private static object Inspect(
-            InspectContentRequest request,
-            int minLikelihood,
-            int maxFindings,
-            bool includeQuote,
-            string infoTypesStr)
+        private static object PrintOutput(InspectContentResponse response)
         {
-            var infoTypes = ParseInfoTypes(infoTypesStr);
-            var inspectConfig = new InspectConfig
-            {
-                MinLikelihood = (Likelihood)minLikelihood,
-                Limits = new InspectConfig.Types.FindingLimits
-                {
-                    MaxFindingsPerRequest = maxFindings
-                },
-                IncludeQuote = includeQuote
-            };
-            inspectConfig.InfoTypes.AddRange(infoTypes);
-            request.InspectConfig = inspectConfig;
-            DlpServiceClient dlp = DlpServiceClient.Create();
-            InspectContentResponse response = dlp.InspectContent(request);
             var count = 0;
             var findingsStr = new StringBuilder();
             foreach (var finding in response.Result.Findings)

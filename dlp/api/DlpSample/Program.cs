@@ -123,6 +123,25 @@ namespace GoogleCloudSamples
                     opts.MaxFindings,
                     !opts.NoIncludeQuote,
                     opts.InfoTypes),
+                (DeidMaskOptions opts) => DeIdentify.DeidMask(
+                    opts.ProjectId,
+                    opts.Value,
+                    opts.InfoTypes,
+                    opts.Mask,
+                    opts.Num,
+                    opts.Reverse),
+                (DeidFpeOptions opts) => DeIdentify.DeidFpe(
+                    opts.ProjectId,
+                    opts.Value,
+                    opts.KeyName,
+                    opts.WrappedKeyFile,
+                    opts.Alphabet),
+                (ReidFpeOptions opts) => DeIdentify.ReidFpe(
+                    opts.ProjectId,
+                    opts.Value,
+                    opts.KeyName,
+                    opts.WrappedKeyFile,
+                    opts.Alphabet),
                 errs => 1);
         }
     }
