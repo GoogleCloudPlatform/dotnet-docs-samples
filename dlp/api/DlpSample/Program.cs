@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
         public string ProjectId { get; set; }
 
         [Option('i', "info-types", HelpText = "Comma-separated infoTypes of information to match.",
-            Default = "PHONE_NUMBER,EMAIL_ADDRESS,CREDIT_CARD_NUMBER")]
+            Default = "PHONE_NUMBER,EMAIL_ADDRESS,CREDIT_CARD_NUMBER,US_SOCIAL_SECURITY_NUMBER")]
         public string InfoTypes { get; set; }
 
         [Option('l', "minimum-likelihood",
@@ -34,7 +34,7 @@ namespace GoogleCloudSamples
             HelpText = "The maximum number of findings to report per request (0 = server maximum).", Default = 0)]
         public int MaxFindings { get; set; }
 
-        [Option('n', "no-includeQuotes", HelpText = "Do not include matching quotes.")]
+        [Option("no-quotes", HelpText = "Do not include matching quotes.")]
         public bool NoIncludeQuote { get; set; }
     }
 
@@ -52,11 +52,62 @@ namespace GoogleCloudSamples
         public string File { get; set; }
     }
 
+    abstract class DeidOptions
+    {
+        [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
+        public string ProjectId { get; set; }
+
+        [Value(1, HelpText = "The string to deidentify.", Required = true)]
+        public string Value { get; set; }
+    }
+
+    [Verb("deidMask", HelpText = "DeIdentify content via an input mask.")]
+    class DeidMaskOptions : DeidOptions
+    {
+        [Option('i', "info-types", HelpText = "Comma-separated infoTypes of information to match.",
+            Default = "PHONE_NUMBER,EMAIL_ADDRESS,CREDIT_CARD_NUMBER,US_SOCIAL_SECURITY_NUMBER")]
+        public string InfoTypes { get; set; }
+
+        [Option('m', "masking-character", HelpText = "Character to mask over deidentified content.", Default = "x")]
+        public string Mask { get; set; }
+
+        [Option('n', "num-to-mask", HelpText = "Number of sequential characters to mask in deidentified content.")]
+        public int Num { get; set; }
+
+        [Option('r', "reverse", HelpText = "Mask content from the end of string.")]
+        public bool Reverse { get; set; }
+    }
+
+    class FpeOptions : DeidOptions
+    {
+        [Value(2, HelpText = "CryptoKey resource name to use in format projects/PROJECT_ID/locations/LOCATION/keyRings" +
+            "/KEYRING/cryptoKeys/KEY_NAME", Required = true)]
+        public string KeyName { get; set; }
+
+        [Value(3, HelpText = "File path of key encrypted using the Cloud KMS key specified.", Required = true)]
+        public string WrappedKeyFile { get; set; }
+
+        [Option('a', "alphabet", HelpText = "Alphabet type to use for identification. Valid options are: " +
+            "an (ALPHANUMERIC), hex (HEXADECIMAL), num (NUMERIC), and an-uc (ALPHANUMERIC_UPPERCASE).")]
+        public string Alphabet { get; set; }
+    }
+
+    [Verb("deidFpe", HelpText = "DeIdentify content via a Cloud KMS encryption key.")]
+    class DeidFpeOptions : FpeOptions { }
+
+    [Verb("reidFpe", HelpText = "ReIdentify content removed by a previous call to deidFpe.")]
+    class ReidFpeOptions : FpeOptions { }
+
     public class Dlp
     {
         public static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<InspectStringOptions, InspectFileOptions>(args)
+            Parser.Default.ParseArguments<
+                InspectStringOptions,
+                InspectFileOptions,
+                DeidMaskOptions,
+                DeidFpeOptions,
+                ReidFpeOptions> (args)
                 .MapResult(
                 (InspectStringOptions opts) => InspectLocal.InspectString(
                     opts.ProjectId,

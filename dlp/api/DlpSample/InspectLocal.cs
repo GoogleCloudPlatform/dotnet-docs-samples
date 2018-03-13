@@ -3,29 +3,12 @@ using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace GoogleCloudSamples
 {
-    public class InspectLocal
+    public class InspectLocal : DlpSampleBase
     {
-        static IEnumerable<InfoType> ParseInfoTypes(string infoTypesStr)
-        {
-            return infoTypesStr.Split(',').Select(str =>
-            {
-                try
-                {
-                    return InfoType.Parser.ParseJson($"{{\"name\": \"{str}\"}}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Failed to parse infoType {str}: {e}");
-                    return null;
-                }
-            }).Where(it => it != null);
-        }
-
         public static object InspectString(
             string projectId,
             string value,
@@ -91,8 +74,9 @@ namespace GoogleCloudSamples
             int minLikelihood,
             int maxFindings,
             bool includeQuote,
-            string infoTypes)
+            string infoTypesStr)
         {
+            var infoTypes = ParseInfoTypes(infoTypesStr);
             var inspectConfig = new InspectConfig
             {
                 MinLikelihood = (Likelihood)minLikelihood,
@@ -102,7 +86,7 @@ namespace GoogleCloudSamples
                 },
                 IncludeQuote = includeQuote
             };
-            inspectConfig.InfoTypes.AddRange(ParseInfoTypes(infoTypes));
+            inspectConfig.InfoTypes.AddRange(infoTypes);
             request.InspectConfig = inspectConfig;
             DlpServiceClient dlp = DlpServiceClient.Create();
             InspectContentResponse response = dlp.InspectContent(request);
