@@ -46,7 +46,7 @@ namespace GoogleCloudSamples
         // [END dlp_inspect_string]
 
         // [START dlp_inspect_file]
-        static readonly Dictionary<string, ByteContentItem.Types.BytesType> fileTypes =
+        static readonly Dictionary<string, ByteContentItem.Types.BytesType> s_fileTypes =
             new Dictionary<string, ByteContentItem.Types.BytesType>()
         {
             {"bmp", ByteContentItem.Types.BytesType.ImageBmp},
@@ -87,7 +87,7 @@ namespace GoogleCloudSamples
                         ByteItem = new ByteContentItem
                         {
                             Data = ByteString.FromStream(fileStream),
-                            Type = fileTypes.GetValueOrDefault(new FileInfo(file).Extension.ToLower(),
+                            Type = s_fileTypes.GetValueOrDefault(new FileInfo(file).Extension.ToLower(),
                                     ByteContentItem.Types.BytesType.Unspecified)
                         }
                     },

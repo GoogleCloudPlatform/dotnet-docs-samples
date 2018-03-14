@@ -152,7 +152,8 @@ namespace GoogleCloudSamples
                 InfoTypeTransformations = new InfoTypeTransformations()
             };
             var inspectConfig = new InspectConfig();
-            inspectConfig.CustomInfoTypes.Add(new CustomInfoType {
+            inspectConfig.CustomInfoTypes.Add(new CustomInfoType
+            {
                 InfoType = new InfoType
                 {
                     Name = "TOKEN"

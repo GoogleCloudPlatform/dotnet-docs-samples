@@ -11,10 +11,10 @@ namespace GoogleCloudSamples
     {
         // [START dlp_create_inspect_template]
         public static string CreateInspectTemplate(
-            string projectId, 
+            string projectId,
             string displayName,
             string description,
-            int likelihood, 
+            int likelihood,
             int maxFindings,
             bool includeQuote,
             string infoTypes)

@@ -132,8 +132,8 @@ namespace GoogleCloudSamples
             Parser.Default.ParseArguments<
                 InspectStringOptions,
                 InspectFileOptions,
-                CreateTemplateOptions, 
-                ListTemplatesOptions, 
+                CreateTemplateOptions,
+                ListTemplatesOptions,
                 DeleteTemplatesOptions,
                 DeidMaskOptions,
                 DeidFpeOptions,
