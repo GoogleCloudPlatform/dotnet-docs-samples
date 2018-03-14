@@ -442,9 +442,13 @@ function Run-TestScripts($TimeoutSeconds=300) {
     # Retry the failures once.
     $failed = $results['Failed']
     if ($failed) {
+        # Rename all the existing test logs so we don't overwrite them.
+        Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 01-TestResults.xml
         $results['Failed'] = @()
         Run-TestScriptsOnce ($failed | Get-Item) $TimeoutSeconds `
             'Retrying' $results
+        # Rename all the test logs so we can see which order they ran in.
+        Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 02-TestResults.xml
     }
 
     # Print a final summary.
