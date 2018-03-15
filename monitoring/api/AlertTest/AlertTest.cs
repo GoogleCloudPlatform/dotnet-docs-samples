@@ -25,7 +25,7 @@ namespace GoogleCloudSamples
 {
     public class AlertTest
     {
-        string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+readonly         string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         readonly CommandLineRunner _alert = new CommandLineRunner()
         {
@@ -41,7 +41,7 @@ namespace GoogleCloudSamples
 
         [Fact]
         /// Fails due to https://buganizer.corp.google.com/issues/70801404
-        public void TestBackupAndRestore() 
+        public void TestBackupAndRestore()
         {
             var result = _alert.Run("backup", "-p", _projectId);
             Assert.Equal(0, result.ExitCode);
@@ -53,13 +53,13 @@ namespace GoogleCloudSamples
         public void TestEnableDisable()
         {
             var result = _alert.Run("enable", "-p", _projectId);
-            Assert.Equal(0, result.ExitCode);            
+            Assert.Equal(0, result.ExitCode);
             Assert.Contains("enabled", result.Stdout.ToLower());
             result = _alert.Run("disable", "-p", _projectId);
             Assert.Equal(0, result.ExitCode);
             Assert.Contains("disabled", result.Stdout.ToLower());
             result = _alert.Run("enable", "-p", _projectId);
-            Assert.Equal(0, result.ExitCode);            
+            Assert.Equal(0, result.ExitCode);
             Assert.Contains("enabled", result.Stdout.ToLower());
         }
 
@@ -71,13 +71,13 @@ namespace GoogleCloudSamples
             public ScopedChannel(NotificationChannelServiceClient client, string projectId)
             {
                 _client = client;
-                var channel = new NotificationChannel() 
-                {                    
+                var channel = new NotificationChannel()
+                {
                     Type = "email",
                     DisplayName = "Email joe.",
                     Description = "AlertTest.cs",
-                    Labels = { {"email_address", "joe@example.com"} },
-                    UserLabels = 
+                    Labels = { { "email_address", "joe@example.com" } },
+                    UserLabels =
                     {
                         { "role", "operations" },
                         { "level", "5" },
@@ -87,7 +87,6 @@ namespace GoogleCloudSamples
                 };
                 Channel = client.CreateNotificationChannel(
                     new ProjectName(projectId), channel);
-                
             }
             public void Dispose()
             {
@@ -111,9 +110,9 @@ namespace GoogleCloudSamples
                     DisplayName = "AlertTest.cs",
                     Enabled = false,
                     Combiner = ConditionCombinerType.Or,
-                    Conditions = 
+                    Conditions =
                     {
-                        new AlertPolicy.Types.Condition() 
+                        new AlertPolicy.Types.Condition()
                         {
                             ConditionThreshold = new MetricThreshold()
                             {
@@ -124,7 +123,7 @@ namespace GoogleCloudSamples
                                             TimeSpan.FromSeconds(60)),
                                         PerSeriesAligner = Aligner.AlignMean,
                                         CrossSeriesReducer = Reducer.ReduceMean,
-                                        GroupByFields = { 
+                                        GroupByFields = {
                                             "project",
                                             "resource.label.instance_id",
                                             "resource.label.zone"
@@ -161,15 +160,15 @@ namespace GoogleCloudSamples
         {
             NotificationChannelServiceClient notif =
                 NotificationChannelServiceClient.Create();
-            
+
             using (var alert = new ScopedAlert(_projectId))
-            using (var channel = new ScopedChannel(notif, _projectId)) 
+            using (var channel = new ScopedChannel(notif, _projectId))
             {
                 var result = _alert.Run("replace-channels", "-p", _projectId,
                     "-a", AlertPolicyName.Parse(alert.Alert.Name).AlertPolicyId,
                     "-c", NotificationChannelName.Parse(channel.Channel.Name)
                     .NotificationChannelId);
-                Assert.Equal(0, result.ExitCode);                            
+                Assert.Equal(0, result.ExitCode);
             }
         }
     }

@@ -19,6 +19,7 @@
  *
  * For more information, see https://cloud.google.com/monitoring/docs/.
  */
+
 using CommandLine;
 using Google.Cloud.Monitoring.V3;
 using System;
@@ -34,16 +35,18 @@ using Newtonsoft.Json.Converters;
 
 namespace GoogleCloudSamples
 {
-    class OptionsBase {
-        [Option('p', "projectid", Required=true, HelpText="Your Google project id.")]
-        public string ProjectId {get; set; }
+    class OptionsBase
+    {
+        [Option('p', "projectid", Required = true, HelpText = "Your Google project id.")]
+        public string ProjectId { get; set; }
     };
 
     [Verb("list", HelpText = "List alert policies.")]
     class ListPoliciesOptions : OptionsBase { };
 
     [Verb("backup", HelpText = "Save the current list of alert policies to a .json file.")]
-    class BackupPoliciesOptions : OptionsBase {
+    class BackupPoliciesOptions : OptionsBase
+    {
         [Option('j', "jsonPath", HelpText = "Path to json file where alert polices are saved and restored.")]
         public string OutputFilePath { get; set; } = "policies-backup.json";
     };
@@ -52,22 +55,23 @@ namespace GoogleCloudSamples
     class RestorePoliciesOptions : BackupPoliciesOptions { };
 
     [Verb("replace-channels", HelpText = "Set the list of channel for an alert policy.")]
-    class ReplaceChannelsOptions : OptionsBase {
+    class ReplaceChannelsOptions : OptionsBase
+    {
         [Option('a', "alertid", Required = true,
-            HelpText="The id of the alert policy whose channels will be replaced.")]
-        public string AlertId {get; set; }
+            HelpText = "The id of the alert policy whose channels will be replaced.")]
+        public string AlertId { get; set; }
 
         [Option('c', "channelid", Required = true,
-            HelpText="A channel id.  Repeat this option to set multiple channel ids.")]
+            HelpText = "A channel id.  Repeat this option to set multiple channel ids.")]
         public IEnumerable<string> ChannelId { get; set; }
-
     };
 
     [Verb("enable", HelpText = "Enable alert policies.")]
-    class EnablePoliciesOptions : OptionsBase {
+    class EnablePoliciesOptions : OptionsBase
+    {
         [Option('e', "filter",
-            HelpText="See https://cloud.google.com/monitoring/api/v3/filters")]
-        public string Filter {get; set; } = "";
+            HelpText = "See https://cloud.google.com/monitoring/api/v3/filters")]
+        public string Filter { get; set; } = "";
     };
 
     [Verb("disable", HelpText = "Disable alert policies.")]
@@ -89,7 +93,8 @@ namespace GoogleCloudSamples
             return verbMap.Run(args);
         }
 
-        static void ListAlertPolicies(string projectId) {
+        static void ListAlertPolicies(string projectId)
+        {
             var client = AlertPolicyServiceClient.Create();
             var response = client.ListAlertPolicies(new ProjectName(projectId));
             foreach (AlertPolicy policy in response)
@@ -99,7 +104,8 @@ namespace GoogleCloudSamples
                 {
                     Console.WriteLine(policy.DisplayName);
                 }
-                if (policy.Documentation?.Content != null) {
+                if (policy.Documentation?.Content != null)
+                {
                     Console.WriteLine(policy.Documentation.Content);
                 }
                 Console.WriteLine();
@@ -107,22 +113,24 @@ namespace GoogleCloudSamples
         }
 
         // [START monitoring_alert_backup_policies]
-        static void BackupPolicies(string projectId, string filePath) {
+        static void BackupPolicies(string projectId, string filePath)
+        {
             var policyClient = AlertPolicyServiceClient.Create();
             var channelClient = NotificationChannelServiceClient.Create();
             var projectName = new ProjectName(projectId);
             File.WriteAllText(filePath, JsonConvert.SerializeObject(
                 new BackupRecord()
-            {
-                ProjectId = projectId,
-                Policies = policyClient.ListAlertPolicies(projectName),
-                Channels = channelClient.ListNotificationChannels(projectName)
-            }, new ProtoMessageConverter()));
+                {
+                    ProjectId = projectId,
+                    Policies = policyClient.ListAlertPolicies(projectName),
+                    Channels = channelClient.ListNotificationChannels(projectName)
+                }, new ProtoMessageConverter()));
         }
         // [END monitoring_alert_backup_policies]
 
         // [START monitoring_alert_restore_policies]
-        static void RestorePolicies(string projectId, string filePath) {
+        static void RestorePolicies(string projectId, string filePath)
+        {
             var policyClient = AlertPolicyServiceClient.Create();
             var channelClient = NotificationChannelServiceClient.Create();
             List<Exception> exceptions = new List<Exception>();
@@ -146,14 +154,16 @@ namespace GoogleCloudSamples
                     // Create() or Update() operations.
                     channel.VerificationStatus = NotificationChannel.Types
                         .VerificationStatus.Unspecified;
-                    if (isSameProject) try
-                    {
-                        channelClient.UpdateNotificationChannel(
-                            null, channel);
-                        updated = true;
-                    }
-                    catch (Grpc.Core.RpcException e)
-                    when (e.Status.StatusCode == StatusCode.NotFound) { }
+                    if (isSameProject)
+                        try
+                        {
+                            channelClient.UpdateNotificationChannel(
+                                null, channel);
+                            updated = true;
+                        }
+                        catch (Grpc.Core.RpcException e)
+                        when (e.Status.StatusCode == StatusCode.NotFound)
+                        { }
                     if (!updated)
                     {
                         // The channel no longer exists.  Recreate it.
@@ -170,7 +180,8 @@ namespace GoogleCloudSamples
                     exceptions.Add(e);
                 }
             }
-            foreach (AlertPolicy policy in backup.Policies) {
+            foreach (AlertPolicy policy in backup.Policies)
+            {
                 string policyName = policy.Name;
                 // These two fields cannot be set directly, so clear them.
                 policy.CreationRecord = null;
@@ -190,18 +201,21 @@ namespace GoogleCloudSamples
                     Console.WriteLine("Updating policy.\n{0}",
                         policy.DisplayName);
                     bool updated = false;
-                    if (isSameProject) try
-                    {
-                        policyClient.UpdateAlertPolicy(null, policy);
-                        updated = true;
-                    }
-                    catch (Grpc.Core.RpcException e)
-                    when (e.Status.StatusCode == StatusCode.NotFound) { }
+                    if (isSameProject)
+                        try
+                        {
+                            policyClient.UpdateAlertPolicy(null, policy);
+                            updated = true;
+                        }
+                        catch (Grpc.Core.RpcException e)
+                        when (e.Status.StatusCode == StatusCode.NotFound)
+                        { }
                     if (!updated)
                     {
                         // The policy no longer exists.  Recreate it.
                         policy.Name = null;
-                        foreach (var condition in policy.Conditions) {
+                        foreach (var condition in policy.Conditions)
+                        {
                             condition.Name = null;
                         }
                         policyClient.CreateAlertPolicy(projectName, policy);
@@ -221,7 +235,8 @@ namespace GoogleCloudSamples
         }
 
         // [START monitoring_alert_backup_policies]
-        class BackupRecord {
+        class BackupRecord
+        {
             public string ProjectId { get; set; }
             public IEnumerable<AlertPolicy> Policies { get; set; }
             public IEnumerable<NotificationChannel> Channels { get; set; }
@@ -251,7 +266,7 @@ namespace GoogleCloudSamples
                 // Convert it back to json text.
                 string text = JsonConvert.SerializeObject(o);
                 // And let protobuf's parser parse the text.
-                IMessage message = (IMessage) Activator
+                IMessage message = (IMessage)Activator
                     .CreateInstance(objectType);
                 return Google.Protobuf.JsonParser.Default.Parse(text,
                     message.Descriptor);
@@ -283,7 +298,7 @@ namespace GoogleCloudSamples
                     .ToString());
             }
             var response = alertClient.UpdateAlertPolicy(
-                new FieldMask { Paths = {"notification_channels"} }, policy);
+                new FieldMask { Paths = { "notification_channels" } }, policy);
             Console.WriteLine("Updated {0}.", response.Name);
         }
         // [END monitoring_alert_replace_channels]
@@ -301,13 +316,14 @@ namespace GoogleCloudSamples
             var response = client.ListAlertPolicies(request);
             foreach (AlertPolicy policy in response)
             {
-                if (policy.Enabled == enable) {
+                if (policy.Enabled == enable)
+                {
                     Console.WriteLine("Policy {0} is already {1}.",
                         policy.Name, enable ? "enabled" : "disabled");
                     continue;
                 }
                 policy.Enabled = enable;
-                var fieldMask = new FieldMask { Paths = {"enabled"}};
+                var fieldMask = new FieldMask { Paths = { "enabled" } };
                 client.UpdateAlertPolicy(fieldMask, policy);
                 Console.WriteLine("{0} {1}.", enable ? "Enabled" : "Disabled",
                     policy.Name);
