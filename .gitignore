@@ -18,3 +18,4 @@ secrets.ps1
 google_application_credentials.json
 **/Properties/launchSettings.json
 **/wwwroot/lib/
+**/kmsCipher.key
