@@ -29,8 +29,8 @@ can use [this older sample](
 
 10. And run the Monitoring sample to see a list of subcommands:
     ```
-    PS C:\...dotnet-docs-samples\monitoring\api\MonitoringSample> dotnet restore
-    PS C:\...dotnet-docs-samples\monitoring\api\MonitoringSample> dotnet run
+    PS C:\...\dotnet-docs-samples\monitoring\api\MonitoringSample> dotnet restore
+    PS C:\...\dotnet-docs-samples\monitoring\api\MonitoringSample> dotnet run
     Monitoring 1.0.0.0
     Copyright c Google Inc 2017
 
@@ -64,6 +64,32 @@ can use [this older sample](
       help             Display more information on a specific command.
 
       version          Display version information.
+    ```
+
+11. Or run the AlertSample:
+    ```
+    PS C:\...\dotnet-docs-samples\monitoring\api\AlertSample> dotnet run
+    AlertSample 1.0.0
+    Copyright (C) 2018 AlertSample
+
+    ERROR(S):
+    No verb selected.
+
+    list                List alert policies.
+
+    backup              Save the current list of alert policies to a .json file.
+
+    restore             Restore the list of alert policies from a .json file.
+
+    replace-channels    Set the list of channel for an alert policy.
+
+    enable              Enable alert policies.
+
+    disable             Disable alert policies.
+
+    help                Display more information on a specific command.
+
+    version             Display version information.
     ```
 
 ## Contributing changes
