@@ -23,19 +23,24 @@ using static Google.Cloud.Monitoring.V3.AlertPolicy.Types;
 
 namespace GoogleCloudSamples
 {
-    public class AlertTest
+    public class AlertTest : IClassFixture<AlertTestFixture>
     {
-readonly         string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
         readonly CommandLineRunner _alert = new CommandLineRunner()
         {
             Main = AlertProgram.Main,
             Command = "AlertSample"
         };
+        private readonly AlertTestFixture _fixture;
+
+        public AlertTest(AlertTestFixture fixture)
+        {
+            _fixture = fixture;
+        }
+
         [Fact]
         public void TestList()
         {
-            var result = _alert.Run("list", "-p", _projectId);
+            var result = _alert.Run("list", "-p", _fixture.ProjectId);
             Assert.Equal(0, result.ExitCode);
         }
 
@@ -43,133 +48,122 @@ readonly         string _projectId = Environment.GetEnvironmentVariable("GOOGLE_
         /// Fails due to https://buganizer.corp.google.com/issues/70801404
         public void TestBackupAndRestore()
         {
-            var result = _alert.Run("backup", "-p", _projectId);
+            var result = _alert.Run("backup", "-p", _fixture.ProjectId);
             Assert.Equal(0, result.ExitCode);
-            result = _alert.Run("restore", "-p", _projectId);
+            result = _alert.Run("restore", "-p", _fixture.ProjectId);
             Assert.Equal(0, result.ExitCode);
         }
 
         [Fact]
         public void TestEnableDisable()
         {
-            var result = _alert.Run("enable", "-p", _projectId);
+            var result = _alert.Run("enable", "-p", _fixture.ProjectId);
             Assert.Equal(0, result.ExitCode);
             Assert.Contains("enabled", result.Stdout.ToLower());
-            result = _alert.Run("disable", "-p", _projectId);
+            result = _alert.Run("disable", "-p", _fixture.ProjectId);
             Assert.Equal(0, result.ExitCode);
             Assert.Contains("disabled", result.Stdout.ToLower());
-            result = _alert.Run("enable", "-p", _projectId);
+            result = _alert.Run("enable", "-p", _fixture.ProjectId);
             Assert.Equal(0, result.ExitCode);
             Assert.Contains("enabled", result.Stdout.ToLower());
-        }
-
-        /// Create a NotificationChannel for testing, and delete it when
-        /// this object is disposed.
-        class ScopedChannel : IDisposable
-        {
-            public NotificationChannel Channel { get; set; }
-            public ScopedChannel(NotificationChannelServiceClient client, string projectId)
-            {
-                _client = client;
-                var channel = new NotificationChannel()
-                {
-                    Type = "email",
-                    DisplayName = "Email joe.",
-                    Description = "AlertTest.cs",
-                    Labels = { { "email_address", "joe@example.com" } },
-                    UserLabels =
-                    {
-                        { "role", "operations" },
-                        { "level", "5" },
-                        { "office", "california_westcoast_usa" },
-                        { "division", "fulfillment"}
-                    }
-                };
-                Channel = client.CreateNotificationChannel(
-                    new ProjectName(projectId), channel);
-            }
-            public void Dispose()
-            {
-                var channelName = NotificationChannelName.Parse(Channel.Name);
-                _client.DeleteNotificationChannel(channelName, true);
-            }
-
-            readonly NotificationChannelServiceClient _client;
-        }
-
-        /// Create a NotificationPolicy for testing, and delete it when
-        /// this object is disposed.
-        class ScopedAlert : IDisposable
-        {
-            public AlertPolicy Alert { get; set; }
-            public ScopedAlert(string projectId)
-            {
-                _client = AlertPolicyServiceClient.Create();
-                Alert = _client.CreateAlertPolicy(new ProjectName(projectId), new AlertPolicy()
-                {
-                    DisplayName = "AlertTest.cs",
-                    Enabled = false,
-                    Combiner = ConditionCombinerType.Or,
-                    Conditions =
-                    {
-                        new AlertPolicy.Types.Condition()
-                        {
-                            ConditionThreshold = new MetricThreshold()
-                            {
-                                Filter = "metric.label.state=\"blocked\" AND metric.type=\"agent.googleapis.com/processes/count_by_state\"  AND resource.type=\"gce_instance\"",
-                                Aggregations = {
-                                    new Aggregation() {
-                                        AlignmentPeriod = Duration.FromTimeSpan(
-                                            TimeSpan.FromSeconds(60)),
-                                        PerSeriesAligner = Aligner.AlignMean,
-                                        CrossSeriesReducer = Reducer.ReduceMean,
-                                        GroupByFields = {
-                                            "project",
-                                            "resource.label.instance_id",
-                                            "resource.label.zone"
-                                        }
-                                    }
-                                },
-                                DenominatorFilter = "",
-                                DenominatorAggregations = {},
-                                Comparison = ComparisonType.ComparisonGt,
-                                ThresholdValue = 100.0,
-                                Duration = Duration.FromTimeSpan(
-                                    TimeSpan.FromSeconds(900)),
-                                Trigger = new Trigger() {
-                                    Count = 1,
-                                    Percent = 0.0,
-                                }
-                            },
-                            DisplayName = "AlertTest.cs",
-                        }
-                    },
-                });
-            }
-
-            public void Dispose()
-            {
-                _client.DeleteAlertPolicy(AlertPolicyName.Parse(Alert.Name));
-            }
-
-            readonly AlertPolicyServiceClient _client;
         }
 
         [Fact]
         public void TestReplaceChannels()
         {
-            NotificationChannelServiceClient notif =
-                NotificationChannelServiceClient.Create();
+            var result = _alert.Run("replace-channels", "-p", _fixture.ProjectId,
+                "-a", AlertPolicyName.Parse(_fixture.Alert.Name).AlertPolicyId,
+                "-c", NotificationChannelName.Parse(_fixture.Channel.Name)
+                .NotificationChannelId);
+            Assert.Equal(0, result.ExitCode);
+        }
+    }
 
-            using (var alert = new ScopedAlert(_projectId))
-            using (var channel = new ScopedChannel(notif, _projectId))
+    /// <summary>
+    /// Creates an AlertPolicy and NotificationChannel for the duration
+    /// if the tests.
+    /// </summary>
+    public class AlertTestFixture : IDisposable
+    {
+        public AlertTestFixture()
+        {
+            var channel = new NotificationChannel()
             {
-                var result = _alert.Run("replace-channels", "-p", _projectId,
-                    "-a", AlertPolicyName.Parse(alert.Alert.Name).AlertPolicyId,
-                    "-c", NotificationChannelName.Parse(channel.Channel.Name)
-                    .NotificationChannelId);
-                Assert.Equal(0, result.ExitCode);
-            }
+                Type = "email",
+                DisplayName = "Email joe.",
+                Description = "AlertTest.cs",
+                Labels = { { "email_address", "joe@example.com" } },
+                UserLabels =
+                {
+                    { "role", "operations" },
+                    { "level", "5" },
+                    { "office", "california_westcoast_usa" },
+                    { "division", "fulfillment"}
+                }
+            };
+            Channel = NotificationChannelClient.CreateNotificationChannel(
+                new ProjectName(ProjectId), channel);
+
+            Alert = AlertPolicyClient.CreateAlertPolicy(
+                new ProjectName(ProjectId), new AlertPolicy()
+                {
+                    DisplayName = "AlertTest.cs",
+                    Enabled = false,
+                    Combiner = ConditionCombinerType.Or,
+                    Conditions =
+                {
+                    new AlertPolicy.Types.Condition()
+                    {
+                        ConditionThreshold = new MetricThreshold()
+                        {
+                            Filter = "metric.label.state=\"blocked\" AND metric.type=\"agent.googleapis.com/processes/count_by_state\"  AND resource.type=\"gce_instance\"",
+                            Aggregations = {
+                                new Aggregation() {
+                                    AlignmentPeriod = Duration.FromTimeSpan(
+                                        TimeSpan.FromSeconds(60)),
+                                    PerSeriesAligner = Aligner.AlignMean,
+                                    CrossSeriesReducer = Reducer.ReduceMean,
+                                    GroupByFields = {
+                                        "project",
+                                        "resource.label.instance_id",
+                                        "resource.label.zone"
+                                    }
+                                }
+                            },
+                            DenominatorFilter = "",
+                            DenominatorAggregations = {},
+                            Comparison = ComparisonType.ComparisonGt,
+                            ThresholdValue = 100.0,
+                            Duration = Duration.FromTimeSpan(
+                                TimeSpan.FromSeconds(900)),
+                            Trigger = new Trigger() {
+                                Count = 1,
+                                Percent = 0.0,
+                            }
+                        },
+                        DisplayName = "AlertTest.cs",
+                    }
+                },
+                });
+        }
+
+        public NotificationChannel Channel { get; private set; }
+        public AlertPolicy Alert { get; private set; }
+        public string ProjectId { get; private set; } =
+            Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
+        public NotificationChannelServiceClient NotificationChannelClient
+        { get; private set; } = NotificationChannelServiceClient.Create();
+        public AlertPolicyServiceClient AlertPolicyClient
+        { get; private set; } = AlertPolicyServiceClient.Create();
+
+
+        public void Dispose()
+        {
+            NotificationChannelClient.DeleteNotificationChannel(
+                NotificationChannelName.Parse(Channel.Name), true);
+            AlertPolicyClient.DeleteAlertPolicy(
+                AlertPolicyName.Parse(Alert.Name));
         }
     }
 }
