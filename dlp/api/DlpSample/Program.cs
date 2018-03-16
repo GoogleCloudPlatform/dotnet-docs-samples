@@ -28,7 +28,7 @@ namespace GoogleCloudSamples
 
         [Option('l', "minimum-likelihood",
             HelpText = "The minimum likelihood required before returning a match (0-5).", Default = 0)]
-        public int MinLikelihood { get; set; }
+        public string MinLikelihood { get; set; }
 
         [Option('m', "max-findings",
             HelpText = "The maximum number of findings to report per request (0 = server maximum).", Default = 0)]

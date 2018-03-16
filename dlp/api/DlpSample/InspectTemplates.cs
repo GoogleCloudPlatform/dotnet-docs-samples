@@ -1,4 +1,18 @@
-﻿using Google.Api.Gax;
+﻿// Copyright 2018 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Google.Api.Gax;
 using Google.Cloud.Dlp.V2;
 using System;
 using System.Collections.Generic;
@@ -11,31 +25,31 @@ namespace GoogleCloudSamples
     {
         // [START dlp_create_inspect_template]
         public static string CreateInspectTemplate(
-            string projectId,
-            string displayName,
-            string description,
-            int likelihood,
-            int maxFindings,
-            bool includeQuote,
-            string infoTypes)
+            string ProjectId,
+            string DisplayName,
+            string Description,
+            string Likelihood,
+            int MaxFindings,
+            bool IncludeQuote,
+            string InfoTypes)
         {
             DlpServiceClient client = DlpServiceClient.Create();
 
             var request = new CreateInspectTemplateRequest
             {
-                Parent = $"projects/{projectId}",
+                Parent = $"projects/{ProjectId}",
                 InspectTemplate = new InspectTemplate
                 {
-                    DisplayName = displayName,
-                    Description = description,
+                    DisplayName = DisplayName,
+                    Description = Description,
                     InspectConfig = new InspectConfig
                     {
-                        MinLikelihood = (Likelihood)likelihood,
+                        MinLikelihood = (Likelihood) Enum.Parse(typeof(Likelihood), Likelihood),
                         Limits = new InspectConfig.Types.FindingLimits
                         {
-                            MaxFindingsPerRequest = maxFindings
+                            MaxFindingsPerRequest = MaxFindings
                         },
-                        IncludeQuote = includeQuote
+                        IncludeQuote = IncludeQuote
                     },
                 }
             };
@@ -67,7 +81,43 @@ namespace GoogleCloudSamples
         // [END dlp_delete_inspect_template]
 
         // [START dlp_list_inspect_templates]
-        public static object ListInspectTemplate(string projectId)
+        public static object ListInspectTemplate(string ProjectId)
+        {
+            DlpServiceClient client = DlpServiceClient.Create();
+
+            var response = client.ListInspectTemplates(
+                new ListInspectTemplatesRequest
+                {
+                    Parent = $"projects/{ProjectId}",
+                }
+            );
+            foreach (var template in response)
+            {
+                Console.WriteLine("Inspect Template Info:");
+                Console.WriteLine($"\tname: {template.Name}");
+                Console.WriteLine($"\tdisplayName: {template.DisplayName}");
+                Console.WriteLine($"\tdescription: {template.Description}");
+                Console.WriteLine($"\tcreateTime: {template.CreateTime}");
+                Console.WriteLine("Configuration:");
+                if (template.InspectConfig.InfoTypes.Any())
+                {
+                    Console.WriteLine(
+                        $"\tInfo types: {string.Join(',', template.InspectConfig.InfoTypes.Select(t => t.Name))}");
+                }
+                Console.WriteLine($"Min Likelihood: {template.InspectConfig.MinLikelihood}");
+                if (template.InspectConfig.ContentOptions.Any())
+                {
+                    Console.WriteLine($"\tContent Options: {string.Join(',', template.InspectConfig.ContentOptions.Select(o => o.ToString()))}");
+                }
+            }
+
+            return null;
+        }
+        // [END dlp_list_inspect_templates]
+
+        // An example of ListInspectTemplates, but using paging
+        // Not intended for inclusion in the documentation
+        public static object ListInspectTemplatesPaging(string ProjectId)
         {
             DlpServiceClient client = DlpServiceClient.Create();
 
@@ -79,7 +129,7 @@ namespace GoogleCloudSamples
             {
                 var request = new ListInspectTemplatesRequest
                 {
-                    Parent = $"projects/{projectId}",
+                    Parent = $"projects/{ProjectId}",
                     PageToken = nextPageToken,
                 };
 
@@ -114,6 +164,5 @@ namespace GoogleCloudSamples
 
             return null;
         }
-        // [END dlp_list_inspect_templates]
     }
 }

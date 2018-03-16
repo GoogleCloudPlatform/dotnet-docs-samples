@@ -1,9 +1,24 @@
-﻿using Google.Cloud.Dlp.V2;
+﻿// Copyright 2018 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Google.Cloud.Dlp.V2;
 using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using static Google.Cloud.Dlp.V2.InspectConfig.Types;
 
 namespace GoogleCloudSamples
 {
@@ -11,36 +26,55 @@ namespace GoogleCloudSamples
     {
         // [START dlp_inspect_string]
         public static object InspectString(
-            string projectId,
-            string value,
-            int minLikelihood,
-            int maxFindings,
-            bool includeQuote,
-            string infoTypesStr)
+            string ProjectId,
+            string DataValue,
+            string MinLikelihood,
+            int MaxFindings,
+            bool IncludeQuote,
+            string InfoTypesStr)
         {
-            var inspectConfig = new InspectConfig
+            var InspectConfig = new InspectConfig
             {
-                MinLikelihood = (Likelihood)minLikelihood,
+                MinLikelihood = (Likelihood) Enum.Parse(typeof(Likelihood), MinLikelihood),
                 Limits = new InspectConfig.Types.FindingLimits
                 {
-                    MaxFindingsPerRequest = maxFindings
+                    MaxFindingsPerRequest = MaxFindings
                 },
-                IncludeQuote = includeQuote
+                IncludeQuote = IncludeQuote,
+                InfoTypes = { ParseInfoTypes(InfoTypesStr) }
             };
-            inspectConfig.InfoTypes.AddRange(ParseInfoTypes(infoTypesStr));
             var request = new InspectContentRequest
             {
-                Parent = $"projects/{projectId}",
+                ParentAsProjectName = new ProjectName(ProjectId),
                 Item = new ContentItem
                 {
-                    Value = value
+                    Value = DataValue
                 },
-                InspectConfig = inspectConfig
+                InspectConfig = InspectConfig
             };
 
             DlpServiceClient dlp = DlpServiceClient.Create();
             InspectContentResponse response = dlp.InspectContent(request);
-            PrintOutput(response);
+
+            var findings = response.Result.Findings;
+            if (findings.Count > 0)
+            {
+                Console.WriteLine("Findings:");
+                foreach (var finding in findings)
+                {
+                    if (IncludeQuote)
+                    {
+                        Console.WriteLine($"  Quote: {finding.Quote}");
+                    }
+                    Console.WriteLine($"  InfoType: {finding.InfoType}");
+                    Console.WriteLine($"  Likelihood: {finding.Likelihood}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No findings.");
+            }
+
             return 0;
         }
         // [END dlp_inspect_string]
@@ -58,42 +92,59 @@ namespace GoogleCloudSamples
         };
 
         public static object InspectFile(
-            string projectId,
-            string file,
-            int minLikelihood,
-            int maxFindings,
-            bool includeQuote,
-            string infoTypesStr)
+            string ProjectId,
+            string File,
+            string MinLikelihood,
+            int MaxFindings,
+            bool IncludeQuote,
+            string InfoTypesStr)
         {
-            var fileStream = new FileStream(file, FileMode.Open);
+            var fileStream = new FileStream(File, FileMode.Open);
             try
             {
                 var inspectConfig = new InspectConfig
                 {
-                    MinLikelihood = (Likelihood)minLikelihood,
-                    Limits = new InspectConfig.Types.FindingLimits
+                    MinLikelihood = (Likelihood) Enum.Parse(typeof(Likelihood), MinLikelihood),
+                    Limits = new FindingLimits
                     {
-                        MaxFindingsPerRequest = maxFindings
+                        MaxFindingsPerRequest = MaxFindings
                     },
-                    IncludeQuote = includeQuote
+                    IncludeQuote = IncludeQuote,
+                    InfoTypes = { ParseInfoTypes(InfoTypesStr) }
                 };
-                inspectConfig.InfoTypes.AddRange(ParseInfoTypes(infoTypesStr));
                 DlpServiceClient dlp = DlpServiceClient.Create();
                 InspectContentResponse response = dlp.InspectContent(new InspectContentRequest
                 {
-                    Parent = $"projects/{projectId}",
+                    ParentAsProjectName = new ProjectName(ProjectId),
                     Item = new ContentItem
                     {
                         ByteItem = new ByteContentItem
                         {
                             Data = ByteString.FromStream(fileStream),
-                            Type = s_fileTypes.GetValueOrDefault(new FileInfo(file).Extension.ToLower(),
-                                    ByteContentItem.Types.BytesType.Unspecified)
+                            Type = s_fileTypes.GetValueOrDefault(
+                                    new FileInfo(File).Extension.ToLower(),
+                                    ByteContentItem.Types.BytesType.Unspecified
+                            )
                         }
                     },
                     InspectConfig = inspectConfig
                 });
-                PrintOutput(response);
+
+                var findings = response.Result.Findings;
+                if (findings.Count > 0) {
+                    Console.WriteLine("Findings:");
+                    foreach (var finding in findings)
+                    {
+                        if (IncludeQuote) {
+                            Console.WriteLine($"  Quote: {finding.Quote}");
+                        }
+                        Console.WriteLine($"  InfoType: {finding.InfoType}");
+                        Console.WriteLine($"  Likelihood: {finding.Likelihood}");
+                    }
+                } else {
+                    Console.WriteLine("No findings.");
+                }
+
                 return 0;
             }
             finally
@@ -102,18 +153,5 @@ namespace GoogleCloudSamples
             }
         }
         // [END dlp_inspect_file]
-
-        private static object PrintOutput(InspectContentResponse response)
-        {
-            var count = 0;
-            var findingsStr = new StringBuilder();
-            foreach (var finding in response.Result.Findings)
-            {
-                findingsStr.Append($"\nFinding {count++}: \n\t{finding}");
-            }
-            var wereOrNotTruncated = "were" + (response.Result.FindingsTruncated ? "" : " not") + " truncated";
-            Console.WriteLine($"Found {count} results, and results {wereOrNotTruncated}: {findingsStr.ToString()}");
-            return 0;
-        }
     }
 }

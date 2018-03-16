@@ -42,17 +42,22 @@ namespace GoogleCloudSamples
         public string JobName { get; set; }
     }
 
-    public class Jobs
+    /// <summary>
+    /// This class contains examples of how to list and delete DLP jobs
+    /// For more information, see https://cloud-dot-devsite.googleplex.com/dlp/docs/reference/rest/v2/projects.dlpJobs
+    /// </summary>
+    public static class Jobs
     {
-        static object ListJobs(ListJobsOptions opts)
+        // [START dlp_list_jobs]
+        public static object ListJobs(string ProjectId, string Filter, string JobType)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             var response = dlp.ListDlpJobs(new ListDlpJobsRequest
             {
-                Parent = $"projects/{opts.ProjectId}",
-                Filter = opts.Filter,
-                Type = (DlpJobType) Enum.Parse(typeof(DlpJobType), opts.JobType)
+                ParentAsProjectName = new ProjectName(ProjectId),
+                Filter = Filter,
+                Type = (DlpJobType) Enum.Parse(typeof(DlpJobType), JobType)
             });
 
             foreach (var job in response)
@@ -62,18 +67,21 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+        // [END dlp_list_jobs]
 
-        static object DeleteJob(DeleteJobOptions opts)
+        // [START dlp_delete_job]
+        public static object DeleteJob(string JobName)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             dlp.DeleteDlpJob(new DeleteDlpJobRequest
             {
-                Name = opts.JobName
+                Name = JobName
             });
 
-            Console.WriteLine($"Successfully deleted job {opts.JobName}.");
+            Console.WriteLine($"Successfully deleted job {JobName}.");
             return 0;
         }
+        // [END dlp_delete_job]
     }
 }
