@@ -21,11 +21,32 @@ namespace GoogleCloudSamples
             {
                 try
                 {
-                    return InfoType.Parser.ParseJson($"{{\"name\": \"{str}\"}}");
+                    return new InfoType { Name = str };
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"Failed to parse infoType {str}: {e}");
+                    return null;
+                }
+            }).Where(it => it != null);
+        }
+
+        /// <summary>
+        /// Split and parse a string representation of several quasi-identifiers.
+        /// </summary>
+        /// <param name="quasiIdsStr">Comma (default)-separated list of quasi-identifiers to split.</param>
+        /// <returns>IEnumerable of FieldId items.</returns>
+        protected static IEnumerable<FieldId> ParseQuasiIds(string quasiIdsStr, char separator = ',')
+        {
+            return quasiIdsStr.Split(',').Select(str =>
+            {
+                try
+                {
+                    return new FieldId { Name = str };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Failed to parse quasi-id {str}: {e}");
                     return null;
                 }
             }).Where(it => it != null);

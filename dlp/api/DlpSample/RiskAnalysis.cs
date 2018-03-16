@@ -8,6 +8,7 @@ using Google.Cloud.Dlp.V2;
 using Google.Cloud.PubSub.V1;
 using static Google.Cloud.Dlp.V2.Action.Types;
 using static Google.Cloud.Dlp.V2.PrivacyMetric.Types;
+using static Google.Cloud.Dlp.V2.PrivacyMetric.Types.KMapEstimationConfig.Types;
 
 namespace GoogleCloudSamples
 {
@@ -70,7 +71,7 @@ namespace GoogleCloudSamples
         public string RegionCode { get; set; }
     }
 
-    public class RiskAnalysis
+    public class RiskAnalysis : DlpSampleBase
     {
         static object NumericalStats(NumericalStatsOptions opts) {
             DlpServiceClient dlp = DlpServiceClient.Create();
@@ -415,17 +416,23 @@ namespace GoogleCloudSamples
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             // Construct + submit the job
-            KAnonymityConfig KAnonymityConfig = new KAnonymityConfig();
-            foreach (string QuasiId in opts.QuasiIdColumns.Split(','))
-            {
-                KAnonymityConfig.QuasiIds.Add(new FieldId { Name = QuasiId });
-            }
+            KMapEstimationConfig KMapEstimationConfig = new KMapEstimationConfig();
 
-            RiskAnalysisJobConfig config = new RiskAnalysisJobConfig
+            var QuasiIds = ParseQuasiIds(opts.QuasiIdColumns).Zip(
+                ParseInfoTypes(opts.InfoTypes),
+                (Field, InfoType) => new TaggedField
+                {
+                    Field = Field,
+                    InfoType = InfoType
+                });
+
+            KMapEstimationConfig.QuasiIds.AddRange(QuasiIds);
+
+            RiskAnalysisJobConfig config = new RiskAnalysisJobConfig()
             {
                 PrivacyMetric = new PrivacyMetric
                 {
-                    KAnonymityConfig = KAnonymityConfig
+                    KMapEstimationConfig = KMapEstimationConfig
                 },
                 SourceTable = new BigQueryTable
                 {
