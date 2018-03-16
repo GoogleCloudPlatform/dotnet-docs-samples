@@ -7,8 +7,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="xunit" Version="2.3.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
-    <PackageReference Include="Google.Cloud.Dlp.V2" Version="1.0.0-beta00"/>
     <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.29.2.999" />
+    <PackageReference Include="Google.Cloud.Dlp.V2" Version="1.0.0-beta01" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DlpSample\DlpSample.csproj" />
