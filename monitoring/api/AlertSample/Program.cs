@@ -305,7 +305,7 @@ namespace GoogleCloudSamples
 
         // [START monitoring_alert_disable_policies]
         // [START monitoring_alert_enable_policies]
-        static void EnablePolicies(string projectId, string filter, bool enable)
+        static object EnablePolicies(string projectId, string filter, bool enable)
         {
             var client = AlertPolicyServiceClient.Create();
             var request = new ListAlertPoliciesRequest()
@@ -314,20 +314,32 @@ namespace GoogleCloudSamples
                 Filter = filter
             };
             var response = client.ListAlertPolicies(request);
+            int result = 0;
             foreach (AlertPolicy policy in response)
             {
-                if (policy.Enabled == enable)
+                try
                 {
-                    Console.WriteLine("Policy {0} is already {1}.",
-                        policy.Name, enable ? "enabled" : "disabled");
-                    continue;
+                    if (policy.Enabled == enable)
+                    {
+                        Console.WriteLine("Policy {0} is already {1}.",
+                            policy.Name, enable ? "enabled" : "disabled");
+                        continue;
+                    }
+                    policy.Enabled = enable;
+                    var fieldMask = new FieldMask { Paths = { "enabled" } };
+                    client.UpdateAlertPolicy(fieldMask, policy);
+                    Console.WriteLine("{0} {1}.", enable ? "Enabled" : "Disabled",
+                        policy.Name);
                 }
-                policy.Enabled = enable;
-                var fieldMask = new FieldMask { Paths = { "enabled" } };
-                client.UpdateAlertPolicy(fieldMask, policy);
-                Console.WriteLine("{0} {1}.", enable ? "Enabled" : "Disabled",
-                    policy.Name);
+                catch (Grpc.Core.RpcException e)
+                when (e.Status.StatusCode == StatusCode.InvalidArgument)
+                {
+                    Console.WriteLine(e.Message);
+                    result -= 1;
+                }
             }
+            // Return a negative count of how many enable operations failed.
+            return result;
         }
         // [END monitoring_alert_enable_policies]
         // [END monitoring_alert_disable_policies]

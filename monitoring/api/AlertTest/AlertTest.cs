@@ -57,14 +57,12 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestEnableDisable()
         {
-            var result = _alert.Run("enable", "-p", _fixture.ProjectId);
-            Assert.Equal(0, result.ExitCode);
+            ConsoleOutput result;
+            result = _alert.Run("enable", "-p", _fixture.ProjectId);
             Assert.Contains("enabled", result.Stdout.ToLower());
             result = _alert.Run("disable", "-p", _fixture.ProjectId);
-            Assert.Equal(0, result.ExitCode);
             Assert.Contains("disabled", result.Stdout.ToLower());
             result = _alert.Run("enable", "-p", _fixture.ProjectId);
-            Assert.Equal(0, result.ExitCode);
             Assert.Contains("enabled", result.Stdout.ToLower());
         }
 
