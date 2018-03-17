@@ -72,13 +72,15 @@ namespace GoogleCloudSamples
             });
 
             // Listen to pub/sub for the job
-            SubscriptionName subscriptionName = new SubscriptionName(CallingProjectId,
-    SubscriptionId);
+            SubscriptionName subscriptionName = new SubscriptionName(
+                CallingProjectId,
+                SubscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEvent done = new ManualResetEvent(false);
+            ManualResetEventSlim done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -93,7 +95,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -166,13 +168,15 @@ namespace GoogleCloudSamples
             });
 
             // Listen to pub/sub for the job
-            SubscriptionName subscriptionName = new SubscriptionName(CallingProjectId,
-    SubscriptionId);
+            SubscriptionName subscriptionName = new SubscriptionName(
+                CallingProjectId,
+                SubscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEvent done = new ManualResetEvent(false);
+            ManualResetEventSlim done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -187,7 +191,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -265,9 +269,10 @@ namespace GoogleCloudSamples
             SubscriptionName subscriptionName = new SubscriptionName(CallingProjectId, SubscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEvent done = new ManualResetEvent(false);
+            ManualResetEventSlim done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -282,7 +287,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -363,9 +368,10 @@ namespace GoogleCloudSamples
             SubscriptionName subscriptionName = new SubscriptionName(CallingProjectId, SubscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEvent done = new ManualResetEvent(false);
+            ManualResetEventSlim done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -380,7 +386,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -471,13 +477,15 @@ namespace GoogleCloudSamples
             });
 
             // Listen to pub/sub for the job
-            SubscriptionName subscriptionName = new SubscriptionName(CallingProjectId,
-    SubscriptionId);
+            SubscriptionName subscriptionName = new SubscriptionName(
+                CallingProjectId,
+                SubscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEvent done = new ManualResetEvent(false);
+            ManualResetEventSlim done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -492,7 +500,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results

@@ -120,7 +120,7 @@ namespace GoogleCloudSamples
         // [START dlp_reidentify_fpe]
         public static object ReidFpe(
             string ProjectId,
-            string Value,
+            string DataValue,
             string KeyName,
             string WrappedKey,
             string Alphabet)
@@ -177,7 +177,7 @@ namespace GoogleCloudSamples
                 ParentAsProjectName = new ProjectName(ProjectId),
                 InspectConfig = InspectConfig,
                 ReidentifyConfig = ReidentifyConfig,
-                Item = new ContentItem { Value = Value }
+                Item = new ContentItem { Value = DataValue }
             });
             Console.WriteLine($"Reidentified content: {response.Item.Value}");
             return 0;
