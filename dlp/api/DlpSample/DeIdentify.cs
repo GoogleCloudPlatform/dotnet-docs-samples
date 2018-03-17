@@ -72,7 +72,7 @@ namespace GoogleCloudSamples
             string ProjectId,
             string DataValue,
             string KeyName,
-            string WrappedKeyFile,
+            string WrappedKey,
             string Alphabet)
         {
             var DeidentifyConfig = new DeidentifyConfig
@@ -91,7 +91,7 @@ namespace GoogleCloudSamples
                                         KmsWrapped = new KmsWrappedCryptoKey
                                         {
                                             CryptoKeyName = KeyName,
-                                            WrappedKey = ByteString.CopyFrom(File.ReadAllBytes(WrappedKeyFile))
+                                            WrappedKey = ByteString.FromBase64(WrappedKey)
                                         }
                                     },
                                     SurrogateInfoType = new InfoType
@@ -122,7 +122,7 @@ namespace GoogleCloudSamples
             string ProjectId,
             string Value,
             string KeyName,
-            string WrappedKeyFile,
+            string WrappedKey,
             string Alphabet)
         {
             var ReidentifyConfig = new DeidentifyConfig
@@ -141,7 +141,7 @@ namespace GoogleCloudSamples
                                         KmsWrapped = new KmsWrappedCryptoKey
                                         {
                                             CryptoKeyName = KeyName,
-                                            WrappedKey = ByteString.CopyFrom(File.ReadAllBytes(WrappedKeyFile))
+                                            WrappedKey = ByteString.FromBase64(WrappedKey)
                                         }
                                     },
                                     SurrogateInfoType = new InfoType

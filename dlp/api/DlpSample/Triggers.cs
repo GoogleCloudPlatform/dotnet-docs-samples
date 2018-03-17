@@ -25,34 +25,6 @@ using static Google.Cloud.Dlp.V2.CloudStorageOptions.Types;
 
 namespace GoogleCloudSamples
 {
-    [Verb("createJobTrigger", HelpText = "Create a Data Loss Prevention API job trigger.")]
-    class CreateJobTriggerOptions
-    {
-        [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
-        public string ProjectId { get; set; }
-
-        [Value(1, HelpText = "The name of the bucket to scan.", Required = true)]
-        public string BucketName { get; set; }
-
-        [Value(2, HelpText = "The minimum likelihood required before returning a match.", Required = true)]
-        public string MinLikelihood { get; set; }
-
-        [Value(3, HelpText = "The maximum number of findings to report per request. (0 = server maximum)", Default = 0)]
-        public int MaxFindings { get; set; }
-
-        [Value(4, HelpText = "How often to wait between scans, in days. (minimum = 1 day)", Required = true)]
-        public int ScanPeriod { get; set; }
-
-        [Value(5, HelpText = "The name of the trigger to be created.", Default = "")]
-        public string TriggerId { get; set; }
-
-        [Value(6, HelpText = "A display name for the trigger to be created.", Default = "")]
-        public string DisplayName { get; set; }
-
-        [Value(7, HelpText = "A description for the trigger to be created.", Default = "")]
-        public string Description { get; set; }
-    }
-
     [Verb("listJobTriggers", HelpText = "List Data Loss Prevention API triggers.")]
     class ListJobTriggersOptions
     {
@@ -71,14 +43,15 @@ namespace GoogleCloudSamples
     /// This class contains examples of how to create, list, and delete DLP job triggers
     /// For more information, see https://cloud.google.com/dlp/docs/concepts-job-triggers
     /// </summary>
-    public class JobTriggers
+    public class JobTriggers : DlpSampleBase
     {
-        static object CreateJobTrigger(
+        public static object CreateJobTrigger(
             string ProjectId,
             string BucketName,
             string MinLikelihood,
             int MaxFindings,
             int ScanPeriod,
+            string InfoTypes,
             string TriggerId,
             string DisplayName,
             string Description)
@@ -96,10 +69,7 @@ namespace GoogleCloudSamples
                     {
                         MaxFindingsPerRequest = MaxFindings
                     },
-                    InfoTypes = {
-                        new InfoType { Name = "PERSON_NAME" },
-                        new InfoType { Name = "US_STATE" }
-                    }
+                    InfoTypes = { ParseInfoTypes(InfoTypes) }
                 },
                 StorageConfig = new StorageConfig
                 {
@@ -141,7 +111,7 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        static object ListJobTriggers(string ProjectId) {
+        public static object ListJobTriggers(string ProjectId) {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             var response = dlp.ListJobTriggers(new ListJobTriggersRequest
@@ -162,7 +132,7 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        static object DeleteJobTrigger(string TriggerName)
+        public static object DeleteJobTrigger(string TriggerName)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 

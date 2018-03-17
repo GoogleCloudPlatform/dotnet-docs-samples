@@ -26,65 +26,6 @@ using static Google.Cloud.Dlp.V2.PrivacyMetric.Types.KMapEstimationConfig.Types;
 
 namespace GoogleCloudSamples
 {
-    abstract class RiskAnalysisOptions
-    {
-        [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
-        public string CallingProjectId { get; set; }
-
-        [Value(1, HelpText = "The project ID the table is stored under.", Required = true)]
-        public string TableProjectId { get; set; }
-
-        [Value(2, HelpText = "The ID of the dataset to inspect. (e.g. 'my_dataset')", Required = true)]
-        public string DatasetId { get; set; }
-
-        [Value(3, HelpText = "The ID of the table to inspect. (e.g. 'my_table')", Required = true)]
-        public string TableId { get; set; }
-
-        [Value(4, HelpText = "The name of the Pub/Sub topic to notify once the job completes.", Default = 0)]
-        public string TopicId { get; set; }
-
-        [Value(5, HelpText = "The name of the Pub/Sub subscription to use when listening for job completion notifications.", Default = 0)]
-        public string SubscriptionId { get; set; }
-    }
-
-    abstract class StatsOptions : RiskAnalysisOptions
-    {
-        [Value(6, HelpText = "The name of the column to compute risk metrics for. (e.g. 'age')", Default = 0)]
-        public string ColumnName { get; set; }
-    }
-
-    abstract class QuasiIdOptions : RiskAnalysisOptions
-    {
-        [Value(6, HelpText = "A set of columns that form a composite key, delimited by commas. (e.g. 'name,city')", Required = true)]
-        public string QuasiIdColumns { get; set; }
-    }
-
-    [Verb("numericalStats", HelpText = "Computes risk metrics of a column of numbers in a Google BigQuery table.")]
-    abstract class NumericalStatsOptions : StatsOptions { }
-
-    [Verb("categoricalStats", HelpText = "Computes risk metrics of a column of data in a Google BigQuery table.")]
-    abstract class CategoricalStatsOptions : StatsOptions { }
-
-    [Verb("kAnonymity", HelpText = "Computes the k-anonymity of a column set in a Google BigQuery table.")]
-    abstract class KAnonymityOptions : QuasiIdOptions { }
-
-    [Verb("lDiversity", HelpText = "Computes the k-anonymity of a column set in a Google BigQuery table.")]
-    abstract class LDiversityOptions : QuasiIdOptions
-    {
-        [Value(7, HelpText = "The column to measure l-diversity relative to. (e.g. 'age')", Required = true)]
-        public string SensitiveAttribute { get; set; }
-    }
-
-    [Verb("kMap", HelpText = "Computes the k-map risk estimation of a column set in a Google BigQuery table.")]
-    abstract class KMapOptions : QuasiIdOptions
-    {
-        [Value(7, HelpText = "A list of the infoTypes for each quasi-id, delimited by commas.", Required = true)]
-        public string InfoTypes { get; set; }
-
-        [Value(8, HelpText = "The ISO 3166-1 region code that the data is representative of.", Default = "")]
-        public string RegionCode { get; set; }
-    }
-
     /// <summary>
     /// This class contains examples of how to calculate various deidentification risk metrics for BigQuery tables 
     /// For more information, see https://cloud.google.com/dlp/docs/concepts-risk-analysis
@@ -92,7 +33,7 @@ namespace GoogleCloudSamples
     public class RiskAnalysis : DlpSampleBase
     {
         // [START dlp_numerical_stats]
-        static object NumericalStats(string CallingProjectId,
+        public static object NumericalStats(string CallingProjectId,
                                     string TableProjectId,
                                     string DatasetId,
                                     string TableId,
@@ -119,7 +60,7 @@ namespace GoogleCloudSamples
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = TopicId
+                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
                         }
                     }
                 }
@@ -142,6 +83,7 @@ namespace GoogleCloudSamples
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
                 {
+                    Thread.Sleep(500); // Wait for DLP API results to become consistent
                     done.Set();
                     return Task.FromResult(SubscriberClient.Reply.Ack);
                 }
@@ -151,7 +93,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne();
+            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -162,16 +104,17 @@ namespace GoogleCloudSamples
 
             var result = resultJob.RiskDetails.NumericalStatsResult;
 
-            Console.WriteLine($"Value Range: [{result.MinValue}, {result.MaxValue}]");
+            // 'UnpackValue(x)' is a prettier version of 'x.toString()'
+            Console.WriteLine($"Value Range: [{UnpackValue(result.MinValue)}, {UnpackValue(result.MaxValue)}]");
             string lastValue = "";
             for (int quantile = 0; quantile < result.QuantileValues.Count; quantile++)
             {
-                string value = result.QuantileValues[quantile].ToString(); // TODO print this nicer
-                if (lastValue != value)
+                string currentValue = UnpackValue(result.QuantileValues[quantile]);
+                if (lastValue != currentValue)
                 {
-                    Console.WriteLine($"Value at {quantile + 1}% quantile: ${value}");
+                    Console.WriteLine($"Value at {quantile + 1}% quantile: {currentValue}");
                 }
-                lastValue = value;
+                lastValue = currentValue;
             }
 
             return 0;
@@ -179,7 +122,7 @@ namespace GoogleCloudSamples
         // [END dlp_numerical_stats]
 
         // [START dlp_categorical_stats]
-        static object CategoricalStats(string CallingProjectId,
+        public static object CategoricalStats(string CallingProjectId,
                                     string TableProjectId,
                                     string DatasetId,
                                     string TableId,
@@ -210,7 +153,7 @@ namespace GoogleCloudSamples
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = TopicId
+                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
                         }
                     }
                 }
@@ -234,6 +177,7 @@ namespace GoogleCloudSamples
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
                 {
+                    Thread.Sleep(500); // Wait for DLP API results to become consistent
                     done.Set();
                     return Task.FromResult(SubscriberClient.Reply.Ack);
                 }
@@ -243,7 +187,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne();
+            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -260,10 +204,11 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"Bucket {bucketIdx}");
                 Console.WriteLine($"  Most common value occurs {bucket.ValueFrequencyUpperBound} time(s).");
                 Console.WriteLine($"  Least common value occurs {bucket.ValueFrequencyLowerBound} time(s).");
-                Console.WriteLine($"  {bucket.BucketSize} unique values total.");
+                Console.WriteLine($"  {bucket.BucketSize} unique value(s) total.");
 
                 foreach (var bucketValue in bucket.BucketValues) {
-                    Console.WriteLine($"  Value {bucketValue.Value.ToString()} occurs {bucketValue.Count} time(s).");
+                    // 'UnpackValue(x)' is a prettier version of 'x.toString()'
+                    Console.WriteLine($"  Value {UnpackValue(bucketValue.Value)} occurs {bucketValue.Count} time(s).");
                 }
             }
 
@@ -272,7 +217,7 @@ namespace GoogleCloudSamples
         // [END dlp_categorical_stats]
 
         // [START dlp_k_anonymity]
-        static object KAnonymity(string CallingProjectId,
+        public static object KAnonymity(string CallingProjectId,
                                  string TableProjectId,
                                  string DatasetId,
                                  string TableId,
@@ -304,7 +249,7 @@ namespace GoogleCloudSamples
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = TopicId
+                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
                         }
                     }
                 }
@@ -327,6 +272,7 @@ namespace GoogleCloudSamples
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
                 {
+                    Thread.Sleep(500); // Wait for DLP API results to become consistent
                     done.Set();
                     return Task.FromResult(SubscriberClient.Reply.Ack);
                 }
@@ -336,7 +282,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne();
+            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -352,11 +298,12 @@ namespace GoogleCloudSamples
                 var bucket = result.EquivalenceClassHistogramBuckets[bucketIdx];
                 Console.WriteLine($"Bucket {bucketIdx}");
                 Console.WriteLine($"  Bucket size range: [{bucket.EquivalenceClassSizeLowerBound}, {bucket.EquivalenceClassSizeUpperBound}].");
-                Console.WriteLine($"  {bucket.BucketSize} unique values total.");
+                Console.WriteLine($"  {bucket.BucketSize} unique value(s) total.");
 
                 foreach (var bucketValue in bucket.BucketValues)
                 {
-                    Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => x.ToString()))}]");
+                    // 'UnpackValue(x)' is a prettier version of 'x.toString()'
+                    Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => UnpackValue(x)))}]");
                     Console.WriteLine($"    Class size: {bucketValue.EquivalenceClassSize}");
                 }
             }
@@ -366,7 +313,7 @@ namespace GoogleCloudSamples
         // [END dlp_k_anonymity]
 
         // [START dlp_l_diversity]
-        static object LDiversity(string CallingProjectId,
+        public static object LDiversity(string CallingProjectId,
                                     string TableProjectId,
                                     string DatasetId,
                                     string TableId,
@@ -400,7 +347,7 @@ namespace GoogleCloudSamples
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = TopicId
+                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
                         }
                     }
                 }
@@ -423,6 +370,7 @@ namespace GoogleCloudSamples
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
                 {
+                    Thread.Sleep(500); // Wait for DLP API results to become consistent
                     done.Set();
                     return Task.FromResult(SubscriberClient.Reply.Ack);
                 }
@@ -432,7 +380,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne();
+            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -448,15 +396,16 @@ namespace GoogleCloudSamples
                 var bucket = result.SensitiveValueFrequencyHistogramBuckets[bucketIdx];
                 Console.WriteLine($"Bucket {bucketIdx}");
                 Console.WriteLine($"  Bucket size range: [{bucket.SensitiveValueFrequencyLowerBound}, {bucket.SensitiveValueFrequencyUpperBound}].");
-                Console.WriteLine($"  {bucket.BucketSize} unique values total.");
+                Console.WriteLine($"  {bucket.BucketSize} unique value(s) total.");
 
                 foreach (var bucketValue in bucket.BucketValues)
                 {
-                    Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => x.ToString()))}]");
+                    // 'UnpackValue(x)' is a prettier version of 'x.toString()'
+                    Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => UnpackValue(x)))}]");
                     Console.WriteLine($"    Class size: {bucketValue.EquivalenceClassSize}");
 
                     foreach (var topValue in bucketValue.TopSensitiveValues) {
-                        Console.WriteLine($"    Sensitive value {topValue.Value.ToString()} occurs {topValue.Count} time(s).");
+                        Console.WriteLine($"    Sensitive value {UnpackValue(topValue.Value)} occurs {topValue.Count} time(s).");
                     }
                 }
             }
@@ -466,7 +415,7 @@ namespace GoogleCloudSamples
         // [END dlp_l_diversity]
 
         // [START dlp_k_map]
-        static object KMap(string CallingProjectId,
+        public static object KMap(string CallingProjectId,
                            string TableProjectId,
                            string DatasetId,
                            string TableId,
@@ -509,7 +458,7 @@ namespace GoogleCloudSamples
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = TopicId
+                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
                         }
                     }
                 }
@@ -533,6 +482,7 @@ namespace GoogleCloudSamples
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
                 {
+                    Thread.Sleep(500); // Wait for DLP API results to become consistent
                     done.Set();
                     return Task.FromResult(SubscriberClient.Reply.Ack);
                 }
@@ -542,7 +492,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.WaitOne();
+            done.WaitOne(600000); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -562,7 +512,8 @@ namespace GoogleCloudSamples
 
                 foreach (var datapoint in histogramValue.BucketValues)
                 {
-                    Console.WriteLine($"    Values: [{String.Join(',', datapoint.QuasiIdsValues.Select(x => x.ToString()))}]");
+                    // 'UnpackValue(x)' is a prettier version of 'x.toString()'
+                    Console.WriteLine($"    Values: [{String.Join(',', datapoint.QuasiIdsValues.Select(x => UnpackValue(x)))}]");
                     Console.WriteLine($"    Estimated k-map anonymity: {datapoint.EstimatedAnonymity}");
                 }
             }

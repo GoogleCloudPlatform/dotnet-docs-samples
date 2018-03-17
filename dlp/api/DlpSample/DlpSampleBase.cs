@@ -16,6 +16,7 @@ using Google.Cloud.Dlp.V2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace GoogleCloudSamples
 {
@@ -64,6 +65,15 @@ namespace GoogleCloudSamples
                     return null;
                 }
             }).Where(it => it != null);
+        }
+        /// <summary>
+        /// Unpacks a protobuf value into a normal string
+        /// </summary>
+        /// <returns>The unpacked value as a string</returns>
+        /// <param name="protoValue">Proto value.</param>
+        protected static string UnpackValue(Value protoValue) {
+            Dictionary<string, object> jsonValue = JsonConvert.DeserializeObject<Dictionary<string, object>>(protoValue.ToString());
+            return jsonValue.Values.ElementAt(0).ToString();
         }
     }
 }

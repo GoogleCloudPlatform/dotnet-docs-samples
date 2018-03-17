@@ -28,80 +28,29 @@ namespace GoogleCloudSamples
     public class DlpTestFixture
     {
         public readonly string ProjectId;
-        public CryptoKey Key;
-        public string CipherFilePath = "kmsCipher.key";
-        private readonly CloudKMSService kms;
-        private KeyRing keyRing;
+        public readonly string WrappedKey;
+        public readonly string KeyName;
 
         public DlpTestFixture()
         {
+            // TODO remove
+            Environment.SetEnvironmentVariable("GOOGLE_PROJECT_ID", "nodejs-docs-samples");
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "/Users/anassri/nodejs-docs-samples.json");
+
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             // Authorize the client using Application Default Credentials.
             // See: https://developers.google.com/identity/protocols/application-default-credentials
             GoogleCredential credential = GoogleCredential.GetApplicationDefaultAsync().Result;
-            // Specify the Cloud Key Management Service scope.
-            if (credential.IsCreateScopedRequired)
-            {
-                credential = credential.CreateScoped(new[]
-                {
-                    CloudKMSService.Scope.CloudPlatform
-                });
-            }
-            // Instantiate the Cloud Key Management Service API.
-            kms = new CloudKMSService(new BaseClientService.Initializer
-            {
-                HttpClientInitializer = credential,
-                GZipEnabled = false
-            });
 
-            // Create the test key ring and key if they do not exist.
-            var parent = $"projects/{ProjectId}/locations/global";
-            var keyRingName = $"{ProjectId}-test";
 
-            keyRing = kms.Projects.Locations.KeyRings
-                .List(parent)
-                .Execute()
-                .KeyRings
-                .FirstOrDefault(ring => ring.Name.Contains(keyRingName));
-            if (keyRing == null)
-            {
-                keyRing = new KeyRing
-                {
-                    Name = keyRingName
-                };
-                var createKeyRingRequest = kms.Projects.Locations.KeyRings.Create(keyRing, parent);
-                createKeyRingRequest.KeyRingId = keyRingName;
-                keyRing = createKeyRingRequest.Execute();
-            }
-            Key = kms.Projects.Locations.KeyRings.CryptoKeys
-                .List(keyRing.Name)
-                .Execute()
-                .CryptoKeys
-                ?.FirstOrDefault();
-            if (Key == null)
-            {
-                Key = new CryptoKey
-                {
-                    Purpose = "ENCRYPT_DECRYPT"
-                };
-                var createKeyRequest = kms.Projects.Locations.KeyRings.CryptoKeys.Create(Key, keyRing.Name);
-                createKeyRequest.CryptoKeyId = keyRingName;
-                Key = createKeyRequest.Execute();
-            }
-
-            // Write the encrypted key file with the new key.
-            var plainBytes = File.ReadAllBytes("kmsPlain.txt");
-            var encryptResponse = kms.Projects.Locations.KeyRings.CryptoKeys
-                .Encrypt(new EncryptRequest
-                {
-                    Plaintext = Convert.ToBase64String(plainBytes)
-                }, Key.Name)
-                .Execute();
-            File.WriteAllBytes(CipherFilePath, Convert.FromBase64String(encryptResponse.Ciphertext));
+            // Fetch the test key from an environment variable
+            KeyName = Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
+            WrappedKey = Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
         }
     }
 
-    public class DlpTest : IClassFixture<DlpTestFixture>
+    // TODO reconcile these with the "simple" tests below
+    public partial class DlpTest : IClassFixture<DlpTestFixture>
     {
         const string phone = "(223) 456-7890";
         const string email = "gary@somedomain.org";
@@ -120,6 +69,26 @@ namespace GoogleCloudSamples
         private Regex alphanumUcRegex = new Regex("[A-Z0-9]*");
         private DlpTestFixture kmsFixture;
         private string ProjectId { get { return kmsFixture.ProjectId; } }
+
+        #region anassri_tests;
+        private string CallingProjectId { get { return kmsFixture.ProjectId; } }
+        private string TableProjectId { get { return "nodejs-docs-samples"; } } // TODO make retrieval more idiomatic
+        private string KeyName { get { return kmsFixture.KeyName; } }
+        private string WrappedKey { get { return kmsFixture.WrappedKey; } }
+
+        // TODO change these
+        private string BucketName = "nodejs-docs-samples";
+        private string TopicId = "dlp-nyan-2";
+        private string SubscriptionId = "nyan-dlp-2";
+
+        // TODO keep these values, but make their retrieval more idiomatic
+        private string DatasetId = "integration_tests_dlp";
+        private string TableId = "harmful";
+        // FYI these values depend on a BQ table in nodejs-docs-samples; we should verify its publicly accessible
+        private string QuasiIds = "Age,Gender,RegionCode";
+        private string QuasiIdInfoTypes = "AGE,GENDER,REGION_CODE";
+        private string SensitiveAttribute = "Name";
+        #endregion
 
         readonly CommandLineRunner _dlp = new CommandLineRunner()
         {
@@ -356,8 +325,8 @@ namespace GoogleCloudSamples
                 "deidFpe",
                 ProjectId,
                 deidFpeStringValue,
-                kmsFixture.Key.Name,
-                kmsFixture.CipherFilePath
+                kmsFixture.KeyName,
+                kmsFixture.WrappedKey
             };
             if (alphabet != null)
             {
@@ -421,6 +390,212 @@ namespace GoogleCloudSamples
             // Deletion
             output = _dlp.Run("deleteTemplate", ProjectId, name);
             Assert.Contains(" was deleted", output.Stdout);
+        }
+    }
+
+    // TODO reconcile these with the "complex" tests above
+    public partial class DlpTest : IClassFixture<DlpTestFixture> {
+        
+        [Fact]
+        public void TestDeidentifyMask()
+        {
+            ConsoleOutput output = _dlp.Run(
+                "deidMask",
+                CallingProjectId,
+                "My SSN is 372819127.",
+                "-n", "5");
+
+            Assert.Contains("My SSN is xxxxx9127", output.Stdout);
+        }
+
+        [Fact]
+        public void TestDeidentifyDates()
+        {
+            Assert.False(true);
+        }
+
+        [Fact]
+        public void TestDeidReidFpe()
+        {
+            string data = "'My SSN is 372819127'";
+            string alphabet = "Numeric";
+
+            // Deid
+            ConsoleOutput deidOutput = _dlp.Run("deidFpe", CallingProjectId, data, KeyName, WrappedKey, alphabet);
+            Assert.Matches(new Regex("My SSN is TOKEN\\(9\\):\\d+"), deidOutput.Stdout);
+
+            // Reid
+            ConsoleOutput reidOutput = _dlp.Run("reidFpe", CallingProjectId, data, KeyName, WrappedKey, alphabet);
+            Assert.Contains(data, reidOutput.Stdout);
+        }
+
+        [Fact]
+        public void TestTriggers()
+        {
+            string triggerId = $"my-csharp-test-trigger-{Guid.NewGuid()}";
+            string fullTriggerId = $"projects/{CallingProjectId}/jobTriggers/{triggerId}";
+            string displayName = $"My trigger display name {Guid.NewGuid()}";
+            string description = $"My trigger description {Guid.NewGuid()}";
+
+            // Create
+            ConsoleOutput createOutput = _dlp.Run(
+                "createJobTrigger",
+                CallingProjectId,
+                "-i", "PERSON_NAME,US_ZIP",
+                BucketName,
+                "1",
+                "-l", "Unlikely",
+                "-m", "0",
+                "-t", triggerId,
+                "-n", displayName,
+                "-d", description);
+            Assert.Contains($"Successfully created trigger {fullTriggerId}", createOutput.Stdout);
+
+            // List
+            ConsoleOutput listOutput = _dlp.Run("listJobTriggers", CallingProjectId);
+            Assert.Contains($"Name: {fullTriggerId}", listOutput.Stdout);
+            Assert.Contains($"Display Name: {displayName}", listOutput.Stdout);
+            Assert.Contains($"Description: {description}", listOutput.Stdout);
+
+            // Delete
+            ConsoleOutput deleteOutput = _dlp.Run("deleteJobTrigger", fullTriggerId);
+            Assert.Contains($"Successfully deleted trigger {fullTriggerId}", deleteOutput.Stdout);
+        }
+
+        [Fact]
+        public void TestInspectTemplates()
+        {
+            // Creation
+            string templateId = $"my-inspect-template-{Guid.NewGuid()}";
+            string displayName = $"'My display name {Guid.NewGuid()}'";
+            string description = $"'My description {Guid.NewGuid()}'";
+
+            ConsoleOutput output = _dlp.Run("createInspectTemplate", CallingProjectId, templateId, displayName, description);
+            Assert.Contains("name: ", output.Stdout);
+            string name = $"projects/{CallingProjectId}/inspectTemplates/{templateId}";
+
+            // List
+            output = _dlp.Run("listTemplates", CallingProjectId);
+            Assert.Contains("Inspect Template Info:", output.Stdout);
+            Assert.Contains($"Display Name: {displayName}", output.Stdout);
+            Assert.Contains($"Description: {description}", output.Stdout);
+
+            // Deletion
+            output = _dlp.Run("deleteTemplate", CallingProjectId, name);
+            Assert.Contains($"Successfully deleted template {name}", output.Stdout);
+        }
+
+        [Fact]
+        public void TestNumericalStats()
+        {
+            ConsoleOutput output = _dlp.Run(
+                "numericalStats",
+                CallingProjectId,
+                TableProjectId,
+                DatasetId,
+                TableId,
+                TopicId,
+                SubscriptionId,
+                "Age"
+            );
+
+            Assert.Matches(new Regex("Value Range: \\[\\d+, \\d+\\]"), output.Stdout);
+            Assert.Matches(new Regex("Value at \\d+% quantile: \\d+"), output.Stdout);
+        }
+
+        [Fact]
+        public void TestCategoricalStats()
+        {
+            ConsoleOutput output = _dlp.Run(
+                "categoricalStats",
+                CallingProjectId,
+                TableProjectId,
+                DatasetId,
+                TableId,
+                TopicId,
+                SubscriptionId,
+                "Gender"
+            );
+
+            Assert.Matches(new Regex("Least common value occurs \\d+ time\\(s\\)"), output.Stdout);
+            Assert.Matches(new Regex("Most common value occurs \\d+ time\\(s\\)"), output.Stdout);
+            Assert.Matches(new Regex("\\d+ unique value\\(s\\) total"), output.Stdout);
+        }
+
+        [Fact]
+        public void TestKAnonymity()
+        {
+            ConsoleOutput output = _dlp.Run(
+                "kAnonymity",
+                CallingProjectId,
+                TableProjectId,
+                DatasetId,
+                TableId,
+                TopicId,
+                SubscriptionId,
+                QuasiIds
+            );
+
+            Assert.Matches(new Regex("Quasi-ID values: \\[\\d{2},Female\\]"), output.Stdout);
+            Assert.Matches(new Regex("Class size: \\d"), output.Stdout);
+            Assert.Matches(new Regex("\\d+ unique value\\(s\\) total"), output.Stdout);
+        }
+
+        [Fact]
+        public void TestLDiversity()
+        {
+            ConsoleOutput output = _dlp.Run(
+                "lDiversity",
+                CallingProjectId,
+                TableProjectId,
+                DatasetId,
+                TableId,
+                TopicId,
+                SubscriptionId,
+                QuasiIds,
+                SensitiveAttribute
+            );
+
+            Assert.Matches(new Regex("Quasi-ID values: \\[\\d{2},Female\\]"), output.Stdout);
+            Assert.Matches(new Regex("Class size: \\d"), output.Stdout);
+            Assert.Matches(new Regex("Sensitive value James occurs \\d time\\(s\\)"), output.Stdout);
+            Assert.Matches(new Regex("\\d+ unique value\\(s\\) total"), output.Stdout);
+        }
+
+        [Fact]
+        public void TestKMap()
+        {
+            ConsoleOutput output = _dlp.Run(
+                "kMap",
+                CallingProjectId,
+                TableProjectId,
+                DatasetId,
+                TableId,
+                TopicId,
+                SubscriptionId,
+                QuasiIds,
+                QuasiIdInfoTypes,
+                "US"
+            );
+
+            Assert.Matches(new Regex("Anonymity range: \\[\\d, \\d\\]"), output.Stdout);
+            Assert.Matches(new Regex("Size: \\d"), output.Stdout);
+            Assert.Matches(new Regex("Values: \\[\\d{2},Female,US\\]"), output.Stdout);
+        }
+
+        [Fact]
+        public void TestJobs()
+        {
+            Regex dlpJobRegex = new Regex("projects/.*/dlpJobs/r-\\d+");
+
+            // List
+            ConsoleOutput listOutput = _dlp.Run("listJobs", CallingProjectId, "state=DONE", "RiskAnalysisJob");
+            Assert.Matches(dlpJobRegex, listOutput.Stdout);
+
+            // Delete
+            string jobName = dlpJobRegex.Match(listOutput.Stdout).Value;
+            ConsoleOutput deleteOutput = _dlp.Run("deleteJob", jobName);
+            Assert.Contains($"Successfully deleted job {jobName}", deleteOutput.Stdout);
         }
     }
 }

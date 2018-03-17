@@ -22,26 +22,6 @@ using System.Linq;
 
 namespace GoogleCloudSamples
 {
-    [Verb("listJobs", HelpText = "List Data Loss Prevention API jobs corresponding to a given filter.")]
-    abstract class ListJobsOptions
-    {
-        [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
-        public string ProjectId { get; set; }
-
-        [Value(0, HelpText = "The filter expression to use. For more information and filter syntax, see https://cloud.google.com/dlp/docs/reference/rest/v2/projects.dlpJobs/list", Required = true)]
-        public string Filter { get; set; }
-
-        [Value(0, HelpText = "The type of job to list. (either 'InspectJob' or 'RiskAnalysisJob')", Default = "InspectJob")]
-        public string JobType { get; set; }
-    }
-
-    [Verb("deleteJob", HelpText = "Delete results of a Data Loss Prevention API job.")]
-    abstract class DeleteJobOptions
-    {
-        [Value(0, HelpText = "The full name of the job whose results should be deleted.", Required = true)]
-        public string JobName { get; set; }
-    }
-
     /// <summary>
     /// This class contains examples of how to list and delete DLP jobs
     /// For more information, see https://cloud-dot-devsite.googleplex.com/dlp/docs/reference/rest/v2/projects.dlpJobs

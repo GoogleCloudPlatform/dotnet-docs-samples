@@ -26,12 +26,12 @@ namespace GoogleCloudSamples
         // [START dlp_create_inspect_template]
         public static string CreateInspectTemplate(
             string ProjectId,
+            string TemplateId,
             string DisplayName,
             string Description,
             string Likelihood,
             int MaxFindings,
-            bool IncludeQuote,
-            string InfoTypes)
+            bool IncludeQuote)
         {
             DlpServiceClient client = DlpServiceClient.Create();
 
@@ -51,7 +51,8 @@ namespace GoogleCloudSamples
                         },
                         IncludeQuote = IncludeQuote
                     },
-                }
+                },
+                TemplateId = TemplateId
             };
 
             var response = client.CreateInspectTemplate(request);
@@ -74,7 +75,7 @@ namespace GoogleCloudSamples
             };
 
             client.DeleteInspectTemplate(request);
-            Console.WriteLine($"Template {templateName} was deleted");
+            Console.WriteLine($"Successfully deleted template {templateName}.");
 
             return templateName;
         }
@@ -94,21 +95,15 @@ namespace GoogleCloudSamples
             foreach (var template in response)
             {
                 Console.WriteLine("Inspect Template Info:");
-                Console.WriteLine($"\tname: {template.Name}");
-                Console.WriteLine($"\tdisplayName: {template.DisplayName}");
-                Console.WriteLine($"\tdescription: {template.Description}");
-                Console.WriteLine($"\tcreateTime: {template.CreateTime}");
+                Console.WriteLine($"\tName: {template.Name}");
+                Console.WriteLine($"\tDisplay Name: {template.DisplayName}");
+                Console.WriteLine($"\tDescription: {template.Description}");
+                Console.WriteLine($"\tCreated: {template.CreateTime}");
+                Console.WriteLine($"\tUpdated: {template.UpdateTime}");
                 Console.WriteLine("Configuration:");
-                if (template.InspectConfig.InfoTypes.Any())
-                {
-                    Console.WriteLine(
-                        $"\tInfo types: {string.Join(',', template.InspectConfig.InfoTypes.Select(t => t.Name))}");
-                }
-                Console.WriteLine($"Min Likelihood: {template.InspectConfig.MinLikelihood}");
-                if (template.InspectConfig.ContentOptions.Any())
-                {
-                    Console.WriteLine($"\tContent Options: {string.Join(',', template.InspectConfig.ContentOptions.Select(o => o.ToString()))}");
-                }
+                Console.WriteLine($"\tMin Likelihood: {template.InspectConfig.MinLikelihood}");
+                Console.WriteLine($"\tInclude quotes: {template.InspectConfig.IncludeQuote}");
+                Console.WriteLine($"\tMax findings per request: {template.InspectConfig.Limits.MaxFindingsPerRequest}");
             }
 
             return null;
