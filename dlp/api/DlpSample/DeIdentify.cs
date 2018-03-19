@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using static Google.Cloud.Dlp.V2.CryptoReplaceFfxFpeConfig.Types;
+using System.Linq;
 
 namespace GoogleCloudSamples
 {
@@ -183,5 +184,146 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END dlp_reidentify_fpe]
+
+        // [START dlp_deidentify_date_shift]
+        public static object DeidDateShift(
+            string ProjectId,
+            string InputCsvFile,
+            string OutputCsvFile,
+            int LowerBoundDays,
+            int UpperBoundDays,
+            string DateFields,
+            string ContextField = "",
+            string KeyName = "",
+            string WrappedKey = "")
+        {
+            DlpServiceClient dlp = DlpServiceClient.Create();
+
+            // Read file
+            string[] CsvLines = File.ReadAllLines(InputCsvFile);
+            string[] CsvHeaders = CsvLines[0].Split(',');
+            string[] CsvRows = CsvLines.Skip(1).ToArray();
+
+            // Convert dates to protobuf format, and everything else to a string
+            var ProtoHeaders = CsvHeaders.Select(header => new FieldId { Name = header });
+            var ProtoRows = CsvRows.Select(CsvRow =>
+            {
+                var RowValues = CsvRow.Split(',');
+                var ProtoValues = RowValues.Select(RowValue =>
+                {
+                    System.DateTime ParsedDate;
+                    if (System.DateTime.TryParse(RowValue, out ParsedDate))
+                    {
+                        return new Value
+                        {
+                            DateValue = new Google.Type.Date
+                            {
+                                Year = ParsedDate.Year,
+                                Month = ParsedDate.Month,
+                                Day = ParsedDate.Day
+                            }
+                        };
+                    } else {
+                        return new Value
+                        {
+                            StringValue = RowValue
+                        };
+                    }
+                });
+
+                var RowObject = new Table.Types.Row();
+                RowObject.Values.Add(ProtoValues);
+                return RowObject;
+            });
+
+            var DateFieldList = DateFields
+                                 .Split(',')
+                                 .Select(field => new FieldId { Name = field });
+
+            // Construct + execute the request
+            DateShiftConfig DateShiftConfig = new DateShiftConfig
+            {
+                LowerBoundDays = LowerBoundDays,
+                UpperBoundDays = UpperBoundDays
+            };
+            bool hasKeyName = !String.IsNullOrEmpty(KeyName);
+            bool hasWrappedKey = !String.IsNullOrEmpty(WrappedKey);
+            bool hasContext = !String.IsNullOrEmpty(ContextField);
+            if (hasKeyName && hasWrappedKey && hasContext)
+            {
+                DateShiftConfig.Context = new FieldId { Name = ContextField };
+                DateShiftConfig.CryptoKey = new CryptoKey
+                {
+                    KmsWrapped = new KmsWrappedCryptoKey
+                    {
+                        WrappedKey = ByteString.FromBase64(WrappedKey),
+                        CryptoKeyName = KeyName
+                    }
+                };
+            }
+            else if (hasKeyName || hasWrappedKey || hasContext)
+            {
+                throw new ArgumentException("Must specify ALL or NONE of: {contextFieldId, keyName, wrappedKey}!");
+            }
+
+            DeidentifyConfig deidConfig = new DeidentifyConfig
+            {
+                RecordTransformations = new RecordTransformations
+                {
+                    FieldTransformations =
+                    {
+                        new FieldTransformation
+                        {
+                            PrimitiveTransformation = new PrimitiveTransformation
+                            {
+                                DateShiftConfig = DateShiftConfig
+                            },
+                            Fields = { DateFieldList }
+                        }
+                    }
+                }
+            };
+
+            var response = dlp.DeidentifyContent(new DeidentifyContentRequest
+            {
+                Parent = $"projects/{ProjectId}",
+                DeidentifyConfig = deidConfig,
+                Item = new ContentItem
+                {
+                    Table = new Table
+                    {
+                        Headers = { ProtoHeaders },
+                        Rows = { ProtoRows }
+                    }
+                }
+            });
+
+            // Save the results
+            List<String> OutputLines = new List<string>();
+            OutputLines.Add(CsvLines[0]);
+
+            OutputLines.AddRange(response.Item.Table.Rows.Select(ProtoRow => {
+                var Values = ProtoRow.Values.Select(ProtoValue =>
+                {
+                    if (ProtoValue.DateValue != null)
+                    {
+                        var ProtoDate = ProtoValue.DateValue;
+                        System.DateTime Date = new System.DateTime(
+                            ProtoDate.Year, ProtoDate.Month, ProtoDate.Day);
+                        return Date.ToShortDateString();
+                    }
+                    else
+                    {
+                        return ProtoValue.StringValue;
+                    }
+                });
+                return String.Join(',', Values);
+            }));
+
+            File.WriteAllLines(OutputCsvFile, OutputLines);
+
+            return 0;
+        }
+        // [END dlp_deidentify_date_shift]
     }
 }

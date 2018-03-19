@@ -444,7 +444,8 @@ namespace GoogleCloudSamples
                             InfoType = InfoType
                         }
                     )
-                }
+                },
+                RegionCode = RegionCode
             };
 
             RiskAnalysisJobConfig config = new RiskAnalysisJobConfig()

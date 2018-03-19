@@ -57,8 +57,7 @@ namespace GoogleCloudSamples
 
             var response = client.CreateInspectTemplate(request);
 
-            Console.WriteLine("Inspect template details:");
-            Console.Write($"name: {response.Name}, createTime: {response.CreateTime}");
+            Console.WriteLine($"Successfully created template {response.Name}.");
 
             return response.Name;
         }
@@ -94,8 +93,7 @@ namespace GoogleCloudSamples
             );
             foreach (var template in response)
             {
-                Console.WriteLine("Inspect Template Info:");
-                Console.WriteLine($"\tName: {template.Name}");
+                Console.WriteLine($"Template {template.Name}:");
                 Console.WriteLine($"\tDisplay Name: {template.DisplayName}");
                 Console.WriteLine($"\tDescription: {template.Description}");
                 Console.WriteLine($"\tCreated: {template.CreateTime}");

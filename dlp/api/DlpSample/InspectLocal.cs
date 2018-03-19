@@ -83,12 +83,12 @@ namespace GoogleCloudSamples
         static readonly Dictionary<string, ByteContentItem.Types.BytesType> s_fileTypes =
             new Dictionary<string, ByteContentItem.Types.BytesType>()
         {
-            {"bmp", ByteContentItem.Types.BytesType.ImageBmp},
-            {"jpg", ByteContentItem.Types.BytesType.ImageJpeg},
-            {"jpeg", ByteContentItem.Types.BytesType.ImageJpeg},
-            {"png", ByteContentItem.Types.BytesType.ImagePng},
-            {"svg", ByteContentItem.Types.BytesType.ImageSvg},
-            {"txt", ByteContentItem.Types.BytesType.TextUtf8}
+            {".bmp", ByteContentItem.Types.BytesType.ImageBmp},
+            {".jpg", ByteContentItem.Types.BytesType.ImageJpeg},
+            {".jpeg", ByteContentItem.Types.BytesType.ImageJpeg},
+            {".png", ByteContentItem.Types.BytesType.ImagePng},
+            {".svg", ByteContentItem.Types.BytesType.ImageSvg},
+            {".txt", ByteContentItem.Types.BytesType.TextUtf8}
         };
 
         public static object InspectFile(

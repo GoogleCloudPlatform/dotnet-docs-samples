@@ -92,6 +92,37 @@ namespace GoogleCloudSamples
         public string Value { get; set; }
     }
 
+    [Verb("deidDateShift", HelpText = "Deidentify dates in a CSV file by pseudorandomly shifting them.")]
+    class DeidDateShiftOptions
+    {
+        [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
+        public string ProjectId { get; set; }
+
+        [Value(1, HelpText = "The path to the CSV file to deidentify.", Required = true)]
+        public string InputCsvFile { get; set; }
+
+        [Value(2, HelpText = "The path to save the date-shifted CSV file to.", Required = true)]
+        public string OutputCsvFile { get; set; }
+
+        [Value(3, HelpText = "The maximum number of days to shift a date backward.", Required = true)]
+        public int LowerBoundDays { get; set; }
+
+        [Value(4, HelpText = "The maximum number of days to shift a date forward.", Required = true)]
+        public int UpperBoundDays { get; set; }
+
+        [Value(5, HelpText = "The list of (date) fields in the CSV file to date shift.", Required = true)]
+        public string DateFields { get; set; }
+
+        [Value(6, HelpText = "The column to determine date shift amount based on.", Default = "")]
+        public string ContextFieldId { get; set; }
+
+        [Value(7, HelpText = "The name of the Cloud KMS key used to encrypt('wrap') the AES-256 key.", Default = "")]
+        public string WrappedKey { get; set; }
+
+        [Value(8, HelpText = "The encrypted('wrapped') AES-256 key to use when shifting dates.", Default = "")]
+        public string KeyName { get; set; }
+    }
+
     [Verb("deidMask", HelpText = "DeIdentify content via an input mask.")]
     class DeidMaskOptions : DeidOptions
     {
@@ -342,6 +373,7 @@ namespace GoogleCloudSamples
                 Parser.Default.ParseArguments<
                     KAnonymityOptions,
                     LDiversityOptions,
+                    DeidDateShiftOptions,
                     KMapOptions>(args).MapResult(
                     (KAnonymityOptions opts) => RiskAnalysis.KAnonymity(
                         opts.CallingProjectId,
@@ -373,6 +405,16 @@ namespace GoogleCloudSamples
                         opts.InfoTypes,
                         "en-US"
                     ),
+                    (DeidDateShiftOptions opts) => DeIdentify.DeidDateShift(
+                        opts.ProjectId,
+                        opts.InputCsvFile,
+                        opts.OutputCsvFile,
+                        opts.LowerBoundDays,
+                        opts.UpperBoundDays,
+                        opts.DateFields,
+                        opts.ContextFieldId,
+                        opts.KeyName,
+                        opts.WrappedKey),
                     errs => 1);
             }
         }

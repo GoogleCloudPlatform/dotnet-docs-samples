@@ -14,7 +14,4 @@
     <ProjectReference Include="..\DlpSample\DlpSample.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="test.txt;test.png;kmsPlain.txt" CopyToOutputDirectory="Always" />
-  </ItemGroup>
 </Project>
