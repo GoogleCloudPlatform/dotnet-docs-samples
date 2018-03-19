@@ -142,7 +142,7 @@ namespace GoogleCloudSamples
                 'subscription-id' => getenv('DLP_SUBSCRIPTION')
             ]);
             Assert.Contains("PERSON_NAME", output.Stdout);
-        }
+        }*/
 
         [Fact]
         public void TestListInfoTypes()
@@ -160,7 +160,6 @@ namespace GoogleCloudSamples
             Assert.Contains("AGE", outputB.Stdout);
             Assert.DoesNotContain("AMERICAN_BANKERS_CUSIP_ID", outputB.Stdout);
         }
-        */
 
         [Fact]
         public void TestInspectString()

@@ -258,12 +258,20 @@ namespace GoogleCloudSamples
         public string RegionCode { get; set; }
     }
 
+    [Verb("listInfoTypes", HelpText = "List the types of sensitive information the DLP API supports.")]
+    class ListInfoTypesOptions
+    {
+        [Value(0, HelpText = "The BCP-47 language code to use. (e.g. 'en-US')", Default = "en-US")]
+        public string LanguageCode { get; set; }
+
+        [Option('f', "filter", HelpText = "The filter to use.", Default = "")]
+        public string Filter { get; set; }
+    }
+
     public class Dlp
     {
         public static void Main(string[] args)
         {
-
-            // TODO this only accepts up to 16 arguments... :(
             try
             {
                 Parser.Default.ParseArguments<
@@ -374,7 +382,8 @@ namespace GoogleCloudSamples
                     KAnonymityOptions,
                     LDiversityOptions,
                     DeidDateShiftOptions,
-                    KMapOptions>(args).MapResult(
+                    KMapOptions,
+                    ListInfoTypesOptions>(args).MapResult(
                     (KAnonymityOptions opts) => RiskAnalysis.KAnonymity(
                         opts.CallingProjectId,
                         opts.TableProjectId,
@@ -403,7 +412,7 @@ namespace GoogleCloudSamples
                         opts.SubscriptionId,
                         opts.QuasiIdColumns,
                         opts.InfoTypes,
-                        "en-US"
+                        opts.RegionCode
                     ),
                     (DeidDateShiftOptions opts) => DeIdentify.DeidDateShift(
                         opts.ProjectId,
@@ -415,6 +424,10 @@ namespace GoogleCloudSamples
                         opts.ContextFieldId,
                         opts.KeyName,
                         opts.WrappedKey),
+                    (ListInfoTypesOptions opts) => Metadata.ListInfoTypes(
+                        opts.LanguageCode,
+                        opts.Filter
+                    ),
                     errs => 1);
             }
         }
