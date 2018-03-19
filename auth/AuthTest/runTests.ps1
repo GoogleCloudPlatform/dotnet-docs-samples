@@ -13,4 +13,4 @@
 # the License.
 
 dotnet restore
-dotnet test
+dotnet test --test-adapter-path:. --logger:junit

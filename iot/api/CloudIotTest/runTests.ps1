@@ -17,5 +17,5 @@ BackupAndEdit-TextFile $filesToProcess `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {
     dotnet restore
-    dotnet test
+    dotnet test --test-adapter-path:. --logger:junit
 }

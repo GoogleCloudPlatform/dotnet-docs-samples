@@ -12,6 +12,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
-     
+
 dotnet restore
-dotnet test
+dotnet test --test-adapter-path:. --logger:junit

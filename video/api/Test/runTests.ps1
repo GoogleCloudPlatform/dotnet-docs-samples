@@ -17,4 +17,4 @@ Set-TestTimeout 900
 
 dotnet restore
 dotnet build
-dotnet test --no-build
+dotnet test --test-adapter-path:. --logger:junit --no-build

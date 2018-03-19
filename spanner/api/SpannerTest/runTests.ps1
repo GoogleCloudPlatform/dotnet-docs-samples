@@ -22,5 +22,5 @@ BackupAndEdit-TextFile "..\QuickStart\Program.cs" `
 {
     dotnet restore
     dotnet build
-    dotnet test --no-build --no-restore -v detailed
+    dotnet test --test-adapter-path:. --logger:junit --no-build --no-restore -v detailed
 }
