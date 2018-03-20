@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.32.0.1098" />
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0-beta15" />
+    <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="xunit" Version="2.3.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />

@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
     <PackageReference Include="Google.Cloud.Datastore.V1" Version="2.0.0" />
     <PackageReference Include="xunit" Version="2.3.0" />

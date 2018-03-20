@@ -13,5 +13,5 @@
 # the License.
 dotnet restore
 dotnet build
-dotnet test --no-restore --no-build -v n
+dotnet test --test-adapter-path:. --logger:junit --no-restore --no-build -v n
 

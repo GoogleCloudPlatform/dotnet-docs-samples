@@ -13,4 +13,4 @@
 # the License.
 
 dotnet restore
-dotnet test .\SignUrlSample.Tests
+dotnet test --test-adapter-path:. --logger:junit .\SignUrlSample.Tests
