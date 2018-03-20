@@ -25,11 +25,11 @@ namespace GoogleCloudSamples
     /// </summary>
     public class RedactTests : IClassFixture<DlpTestFixture>
     {
-        private readonly DlpTestFixture testSettings;
+        private readonly DlpTestFixture _testSettings;
 
         public RedactTests(DlpTestFixture fixture)
         {
-            testSettings = fixture;
+            _testSettings = fixture;
         }
 
         [Fact]
@@ -38,15 +38,15 @@ namespace GoogleCloudSamples
             string inPath = Path.Combine("resources", "test.png");
             string outPath = "redacted.png";
 
-            ConsoleOutput output = testSettings.CommandLineRunner.Run(
+            ConsoleOutput output = _testSettings.CommandLineRunner.Run(
                 "redactImage",
-                "--projectId", testSettings.ProjectId,
+                "--projectId", _testSettings.ProjectId,
                 "--imageFromPath", inPath,
                 "--imageToPath", outPath);
             output.AssertSucceeded();
 
             var outFile = new FileInfo(outPath);
-            
+
             Assert.True(File.Exists(outPath), "Redacted image exists");
             Assert.True(outFile.Length > 0, "Redacted image written");
         }

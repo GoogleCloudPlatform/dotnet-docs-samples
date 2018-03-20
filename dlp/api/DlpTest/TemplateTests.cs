@@ -25,11 +25,11 @@ namespace DlpTest
     /// </summary>
     public class TemplateTests : IClassFixture<DlpTestFixture>
     {
-        private readonly DlpTestFixture testSettings;
+        private readonly DlpTestFixture _testSettings;
 
         public TemplateTests(DlpTestFixture fixture)
         {
-            testSettings = fixture;
+            _testSettings = fixture;
         }
 
         [Fact]
@@ -39,11 +39,11 @@ namespace DlpTest
             string name = $"my-inspect-template-{TestUtil.RandomName()}";
             string displayName = $"My display name {Guid.NewGuid()}";
             string description = $"My description {Guid.NewGuid()}";
-            string fullName = $"projects/{testSettings.ProjectId}/inspectTemplates/{name}";
+            string fullName = $"projects/{_testSettings.ProjectId}/inspectTemplates/{name}";
 
-            ConsoleOutput output = testSettings.CommandLineRunner.Run(
+            ConsoleOutput output = _testSettings.CommandLineRunner.Run(
                 "createInspectTemplate",
-                testSettings.ProjectId,
+                _testSettings.ProjectId,
                 name,
                 displayName,
                 description);
@@ -51,13 +51,13 @@ namespace DlpTest
             Assert.Contains($"Successfully created template {fullName}", output.Stdout);
 
             // List
-            output = testSettings.CommandLineRunner.Run("listTemplates", testSettings.ProjectId);
+            output = _testSettings.CommandLineRunner.Run("listTemplates", _testSettings.ProjectId);
             Assert.Contains($"Template {fullName}", output.Stdout);
             Assert.Contains($"Display Name: {displayName}", output.Stdout);
             Assert.Contains($"Description: {description}", output.Stdout);
 
             // Deletion
-            output = testSettings.CommandLineRunner.Run("deleteTemplate", testSettings.ProjectId, fullName);
+            output = _testSettings.CommandLineRunner.Run("deleteTemplate", _testSettings.ProjectId, fullName);
             Assert.Contains($"Successfully deleted template {fullName}", output.Stdout);
         }
     }

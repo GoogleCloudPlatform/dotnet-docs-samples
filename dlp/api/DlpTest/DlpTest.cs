@@ -61,35 +61,35 @@ namespace GoogleCloudSamples
             "gary@somedomain.org. You'll find my credit card number is 4000-3000-2000-1000!";
 
         const string ident = "111223333";
-        private Regex deidFpeResultRegex = 
+        private readonly Regex _deidFpeResultRegex =
             new Regex("Please de-identify the following identifier: TOKEN\\(\\d+\\):(?<ident>.{9})");
-        private Regex alphanumRegex = new Regex("[a-zA-Z0-9]*");
-        private Regex hexRegex = new Regex("[0-9A-F]*");
-        private Regex numRegex = new Regex("\\d*");
-        private Regex alphanumUcRegex = new Regex("[A-Z0-9]*");
-        private DlpTestFixture kmsFixture;
-        private string ProjectId { get { return kmsFixture.ProjectId; } }
+        private readonly Regex _alphanumRegex = new Regex("[a-zA-Z0-9]*");
+        private readonly Regex _hexRegex = new Regex("[0-9A-F]*");
+        private readonly Regex _numRegex = new Regex("\\d*");
+        private readonly Regex _alphanumUcRegex = new Regex("[A-Z0-9]*");
+        private readonly DlpTestFixture _kmsFixture;
+        private string ProjectId { get { return _kmsFixture.ProjectId; } }
 
         #region anassri_tests;
-        private string ResourcePath = Path.GetFullPath("../../../resources/");
-        private string CallingProjectId { get { return kmsFixture.ProjectId; } }
+        private readonly string _resourcePath = Path.GetFullPath("../../../resources/");
+        private string CallingProjectId { get { return _kmsFixture.ProjectId; } }
         private string TableProjectId { get { return "nodejs-docs-samples"; } } // TODO make retrieval more idiomatic
-        private string KeyName { get { return kmsFixture.KeyName; } }
-        private string WrappedKey { get { return kmsFixture.WrappedKey; } }
+        private string KeyName { get { return _kmsFixture.KeyName; } }
+        private string WrappedKey { get { return _kmsFixture.WrappedKey; } }
 
         // TODO change these
-        private string BucketName = "nodejs-docs-samples";
-        private string TopicId = "dlp-nyan-2";
-        private string SubscriptionId = "nyan-dlp-2";
+        private readonly string _bucketName = "nodejs-docs-samples";
+        private readonly string _topicId = "dlp-nyan-2";
+        private readonly string _subscriptionId = "nyan-dlp-2";
 
         // TODO keep these values, but make their retrieval more idiomatic
-        private string DatasetId = "integration_tests_dlp";
-        private string TableId = "harmful";
+        private readonly string _datasetId = "integration_tests_dlp";
+        private readonly string _tableId = "harmful";
 
         // FYI these values depend on a BQ table in nodejs-docs-samples; we should verify its publicly accessible
-        private string QuasiIds = "Age,Gender";
-        private string QuasiIdInfoTypes = "AGE,GENDER";
-        private string SensitiveAttribute = "Name";
+        private readonly string _quasiIds = "Age,Gender";
+        private readonly string _quasiIdInfoTypes = "AGE,GENDER";
+        private readonly string _sensitiveAttribute = "Name";
 
         #endregion
 
@@ -101,7 +101,7 @@ namespace GoogleCloudSamples
 
         public DlpTest(DlpTestFixture fixture)
         {
-            kmsFixture = fixture;
+            _kmsFixture = fixture;
         }
 
         [Fact]
@@ -138,9 +138,9 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestDeidentifyDates()
         {
-            string InputPath = ResourcePath + "dates-input.csv";
-            string OutputPath = ResourcePath + "resources/dates-shifted.csv";
-            string CorrectPath = ResourcePath + "resources/dates-correct.csv";
+            string InputPath = _resourcePath + "dates-input.csv";
+            string OutputPath = _resourcePath + "resources/dates-shifted.csv";
+            string CorrectPath = _resourcePath + "resources/dates-correct.csv";
 
             ConsoleOutput output = _dlp.Run(
                 "deidDateShift",
@@ -187,7 +187,7 @@ namespace GoogleCloudSamples
                 "createJobTrigger",
                 CallingProjectId,
                 "-i", "PERSON_NAME,US_ZIP",
-                BucketName,
+                _bucketName,
                 "1",
                 "-l", "Unlikely",
                 "-m", "0",
@@ -214,10 +214,10 @@ namespace GoogleCloudSamples
                 "numericalStats",
                 CallingProjectId,
                 TableProjectId,
-                DatasetId,
-                TableId,
-                TopicId,
-                SubscriptionId,
+                _datasetId,
+                _tableId,
+                _topicId,
+                _subscriptionId,
                 "Age"
             );
 
@@ -232,10 +232,10 @@ namespace GoogleCloudSamples
                 "categoricalStats",
                 CallingProjectId,
                 TableProjectId,
-                DatasetId,
-                TableId,
-                TopicId,
-                SubscriptionId,
+                _datasetId,
+                _tableId,
+                _topicId,
+                _subscriptionId,
                 "Gender"
             );
 
@@ -251,11 +251,11 @@ namespace GoogleCloudSamples
                 "kAnonymity",
                 CallingProjectId,
                 TableProjectId,
-                DatasetId,
-                TableId,
-                TopicId,
-                SubscriptionId,
-                QuasiIds
+                _datasetId,
+                _tableId,
+                _topicId,
+                _subscriptionId,
+                _quasiIds
             );
 
             Assert.Matches(new Regex("Quasi-ID values: \\[\\d{2},Female\\]"), output.Stdout);
@@ -270,12 +270,12 @@ namespace GoogleCloudSamples
                 "lDiversity",
                 CallingProjectId,
                 TableProjectId,
-                DatasetId,
-                TableId,
-                TopicId,
-                SubscriptionId,
-                QuasiIds,
-                SensitiveAttribute
+                _datasetId,
+                _tableId,
+                _topicId,
+                _subscriptionId,
+                _quasiIds,
+                _sensitiveAttribute
             );
 
             Assert.Matches(new Regex("Quasi-ID values: \\[\\d{2},Female\\]"), output.Stdout);
@@ -291,12 +291,12 @@ namespace GoogleCloudSamples
                 "kMap",
                 CallingProjectId,
                 TableProjectId,
-                DatasetId,
-                TableId,
-                TopicId,
-                SubscriptionId,
-                QuasiIds,
-                QuasiIdInfoTypes,
+                _datasetId,
+                _tableId,
+                _topicId,
+                _subscriptionId,
+                _quasiIds,
+                _quasiIdInfoTypes,
                 "US"
             );
 

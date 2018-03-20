@@ -22,29 +22,29 @@ namespace DlpTest
 {
     public class InspectTests : IClassFixture<DlpTestFixture>
     {
-        private readonly DlpTestFixture testSettings;
+        private readonly DlpTestFixture _testSettings;
 
         public InspectTests(DlpTestFixture fixture)
         {
-            testSettings = fixture;
+            _testSettings = fixture;
         }
 
         [Fact]
         public void TestInspectString()
         {
             // inspect a string with results
-            ConsoleOutput outputA = testSettings.CommandLineRunner.Run(
+            ConsoleOutput outputA = _testSettings.CommandLineRunner.Run(
                 "inspectString",
-                testSettings.ProjectId,
+                _testSettings.ProjectId,
                 "The name Robert is very common.",
                 "-i", "PERSON_NAME"
             );
             Assert.Contains("PERSON_NAME", outputA.Stdout);
 
             // inspect a string with no results
-            ConsoleOutput outputB = testSettings.CommandLineRunner.Run(
+            ConsoleOutput outputB = _testSettings.CommandLineRunner.Run(
                 "inspectString",
-                testSettings.ProjectId,
+                _testSettings.ProjectId,
                 "She sells sea shells by the sea shore."
             );
             Assert.Contains("No findings", outputB.Stdout);
@@ -54,28 +54,28 @@ namespace DlpTest
         public void TestInspectFile()
         {
             // inspect a text file with results
-            ConsoleOutput outputA = testSettings.CommandLineRunner.Run(
+            ConsoleOutput outputA = _testSettings.CommandLineRunner.Run(
                 "inspectFile",
-                testSettings.ProjectId,
-                testSettings.ResourcePath + "test.txt",
+                _testSettings.ProjectId,
+                _testSettings.ResourcePath + "test.txt",
                 "-i", "PERSON_NAME"
             );
             Assert.Contains("PERSON_NAME", outputA.Stdout);
 
             // inspect an image file with results
-            ConsoleOutput outputB = testSettings.CommandLineRunner.Run(
+            ConsoleOutput outputB = _testSettings.CommandLineRunner.Run(
                 "inspectFile",
-                testSettings.ProjectId,
-                testSettings.ResourcePath + "test.png",
+                _testSettings.ProjectId,
+                _testSettings.ResourcePath + "test.png",
                 "-i", "PHONE_NUMBER,EMAIL_ADDRESS"
             );
             Assert.Contains("PHONE_NUMBER", outputB.Stdout);
 
             // inspect a file with no results
-            ConsoleOutput outputC = testSettings.CommandLineRunner.Run(
+            ConsoleOutput outputC = _testSettings.CommandLineRunner.Run(
                 "inspectFile",
-                testSettings.ProjectId,
-                testSettings.ResourcePath + "harmless.txt"
+                _testSettings.ProjectId,
+                _testSettings.ResourcePath + "harmless.txt"
             );
             Assert.Contains("No findings", outputC.Stdout);
         }
