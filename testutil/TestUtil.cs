@@ -115,7 +115,7 @@ namespace GoogleCloudSamples
         public Action<string[]> VoidMain { get; set; }
         public string Command { get; set; }
 
-        /// <summary>Runs StorageSample.exe with the provided arguments</summary>
+        /// <summary>Runs executable with the provided arguments</summary>
         /// <returns>The console output of this program</returns>
         public ConsoleOutput Run(params string[] arguments)
         {

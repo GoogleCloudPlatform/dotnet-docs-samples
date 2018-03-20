@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using CommandLine;
 using Google.Cloud.Dlp.V2;
-using Google.Protobuf;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace GoogleCloudSamples
 {
@@ -26,18 +21,18 @@ namespace GoogleCloudSamples
     /// This class contains examples of how to list and delete DLP jobs
     /// For more information, see https://cloud-dot-devsite.googleplex.com/dlp/docs/reference/rest/v2/projects.dlpJobs
     /// </summary>
-    public static class Jobs
+    class Jobs
     {
         // [START dlp_list_jobs]
-        public static object ListJobs(string ProjectId, string Filter, string JobType)
+        public static object ListJobs(string projectId, string filter, string jobType)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             var response = dlp.ListDlpJobs(new ListDlpJobsRequest
             {
-                ParentAsProjectName = new ProjectName(ProjectId),
-                Filter = Filter,
-                Type = (DlpJobType) Enum.Parse(typeof(DlpJobType), JobType)
+                ParentAsProjectName = new ProjectName(projectId),
+                Filter = filter,
+                Type = (DlpJobType) Enum.Parse(typeof(DlpJobType), jobType)
             });
 
             foreach (var job in response)
@@ -50,16 +45,16 @@ namespace GoogleCloudSamples
         // [END dlp_list_jobs]
 
         // [START dlp_delete_job]
-        public static object DeleteJob(string JobName)
+        public static object DeleteJob(string jobName)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             dlp.DeleteDlpJob(new DeleteDlpJobRequest
             {
-                Name = JobName
+                Name = jobName
             });
 
-            Console.WriteLine($"Successfully deleted job {JobName}.");
+            Console.WriteLine($"Successfully deleted job {jobName}.");
             return 0;
         }
         // [END dlp_delete_job]

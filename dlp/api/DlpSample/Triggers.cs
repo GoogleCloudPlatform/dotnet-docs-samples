@@ -14,11 +14,8 @@
 
 using CommandLine;
 using Google.Cloud.Dlp.V2;
-using Google.Protobuf;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using static Google.Cloud.Dlp.V2.InspectConfig.Types;
 using static Google.Cloud.Dlp.V2.JobTrigger.Types;
 using static Google.Cloud.Dlp.V2.CloudStorageOptions.Types;
@@ -40,36 +37,37 @@ namespace GoogleCloudSamples
     }
 
     /// <summary>
-    /// This class contains examples of how to create, list, and delete DLP job triggers
+    /// Examples of how to create, list, and delete DLP job triggers
     /// For more information, see https://cloud.google.com/dlp/docs/concepts-job-triggers
     /// </summary>
-    public class JobTriggers : DlpSampleBase
+    class JobTriggers
     {
         public static object CreateJobTrigger(
-            string ProjectId,
-            string BucketName,
-            string MinLikelihood,
-            int MaxFindings,
-            int ScanPeriod,
-            string InfoTypes,
-            string TriggerId,
-            string DisplayName,
-            string Description)
+            string projectId,
+            string bucketName,
+            string minLikelihood,
+            int maxFindings,
+            int scanPeriod,
+            IEnumerable<InfoType> infoTypes,
+            string triggerId,
+            string displayName,
+            string description)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
-            InspectJobConfig jobConfig = new InspectJobConfig {
+            var jobConfig = new InspectJobConfig
+            {
                 InspectConfig = new InspectConfig
                 {
                     MinLikelihood = (Likelihood)Enum.Parse(
                         typeof(Likelihood),
-                        MinLikelihood
+                        minLikelihood
                     ),
                     Limits = new FindingLimits
                     {
-                        MaxFindingsPerRequest = MaxFindings
+                        MaxFindingsPerRequest = maxFindings
                     },
-                    InfoTypes = { ParseInfoTypes(InfoTypes) }
+                    InfoTypes = { infoTypes }
                 },
                 StorageConfig = new StorageConfig
                 {
@@ -77,49 +75,57 @@ namespace GoogleCloudSamples
                     {
                         FileSet = new FileSet
                         {
-                            Url = $"gs://{BucketName}/*"
+                            Url = $"gs://{bucketName}/*"
                         }
                     }
                 }
             };
 
-            JobTrigger jobTrigger = new JobTrigger {
-                Triggers = {
-                    new Trigger {
+            var jobTrigger = new JobTrigger
+            {
+                Triggers =
+                {
+                    new Trigger
+                    {
                         Schedule = new Schedule
                         {
-                            RecurrencePeriodDuration = new Google.Protobuf.WellKnownTypes.Duration {
-                                Seconds = ScanPeriod * 60 * 60 * 24
+                            RecurrencePeriodDuration = new Google.Protobuf.WellKnownTypes.Duration
+                            {
+                                Seconds = scanPeriod * 60 * 60 * 24
                             }
                         }
                     }
                 },
                 InspectJob = jobConfig,
                 Status = Status.Healthy,
-                DisplayName = DisplayName,
-                Description = Description
+                DisplayName = displayName,
+                Description = description
             };
 
-            JobTrigger response = dlp.CreateJobTrigger(new CreateJobTriggerRequest
-            {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(ProjectId),
-                JobTrigger = jobTrigger,
-                TriggerId = TriggerId
-            });
+            JobTrigger response = dlp.CreateJobTrigger(
+                new CreateJobTriggerRequest
+                {
+                    ParentAsProjectName = new ProjectName(projectId),
+                    JobTrigger = jobTrigger,
+                    TriggerId = triggerId
+                });
 
             Console.WriteLine($"Successfully created trigger {response.Name}");
             return 0;
         }
 
-        public static object ListJobTriggers(string ProjectId) {
+        public static object ListJobTriggers(string projectId)
+        {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
-            var response = dlp.ListJobTriggers(new ListJobTriggersRequest
-            {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(ProjectId)
-            });
+            var response = dlp.ListJobTriggers(
+                new ListJobTriggersRequest
+                {
+                    ParentAsProjectName = new ProjectName(projectId)
+                });
 
-            foreach (var trigger in response) {
+            foreach (var trigger in response)
+            {
                 Console.WriteLine($"Name: {trigger.Name}");
                 Console.WriteLine($"  Created: {trigger.CreateTime.ToString()}");
                 Console.WriteLine($"  Updated: {trigger.UpdateTime.ToString()}");
@@ -132,16 +138,17 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        public static object DeleteJobTrigger(string TriggerName)
+        public static object DeleteJobTrigger(string triggerName)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
-            dlp.DeleteJobTrigger(new DeleteJobTriggerRequest
-            {
-                Name = TriggerName
-            });
+            dlp.DeleteJobTrigger(
+                new DeleteJobTriggerRequest
+                {
+                    Name = triggerName
+                });
 
-            Console.WriteLine($"Successfully deleted trigger {TriggerName}.");
+            Console.WriteLine($"Successfully deleted trigger {triggerName}.");
             return 0;
         }
     }

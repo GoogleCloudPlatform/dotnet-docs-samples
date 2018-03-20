@@ -13,29 +13,24 @@
 // limitations under the License.
 
 using Google.Cloud.Dlp.V2;
-using Google.Protobuf;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using static Google.Cloud.Dlp.V2.CryptoReplaceFfxFpeConfig.Types;
-using System.Linq;
 
 namespace GoogleCloudSamples
 {
-    public class Metadata
+    class Metadata
     {
         // [START dlp_list_info_types]
         public static object ListInfoTypes(
-            string LanguageCode,
-            string Filter
-        )
+            string languageCode,
+            string filter)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
-            var response = dlp.ListInfoTypes(new ListInfoTypesRequest
-            {
-                LanguageCode = LanguageCode,
-                Filter = Filter
-            });
+            var response = dlp.ListInfoTypes(
+                new ListInfoTypesRequest
+                {
+                    LanguageCode = languageCode,
+                    Filter = filter
+                });
 
             Console.WriteLine("Info Types:");
             foreach (var InfoType in response.InfoTypes)

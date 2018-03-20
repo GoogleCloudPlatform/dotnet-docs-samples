@@ -53,6 +53,48 @@ namespace GoogleCloudSamples
         public string File { get; set; }
     }
 
+    [Verb("inspectBigQuery", HelpText = "Inspects a content in BigQuery")]
+    class InspectBigQueryOptions : InspectLocalOptions
+    {
+        [Option("identifyingFields", HelpText = "Identifying fields.")]
+        public string IdentifyingFields { get; set; }
+
+        [Option("databaseId", HelpText = "BigQuery Database Id")]
+        public string DatasetId { get; set; }
+
+        [Option("tableId", HelpText = "BigQuery Table Id")]
+        public string TableId { get; set; }
+    }
+
+    [Verb("inspectDataStore", HelpText = "Inspects a content in Datastore")]
+    class InspectDatastoreOptions : InspectLocalOptions
+    {
+        [Option("kindName", HelpText = "Datastore Kind name")]
+        public string KindName { get; set; }
+
+        [Option("namespaceId", HelpText = "Datastore Namespace Id")]
+        public string NamespaceId { get; set; }
+
+        [Option("datasetId", HelpText = "Datastore Dataset Id")]
+        public string DatasetId { get; set; }
+
+        [Option("tableId", HelpText = "Datastore Table Id")]
+        public string TableId { get; set; }
+    }
+
+    [Verb("inspectGcs", HelpText = "Inspects a content in GCS")]
+    class InspectGcsOptions : InspectLocalOptions
+    {
+        [Option("bucketName", HelpText = "Storage bucket name")]
+        public string BucketName { get; set; }
+
+        [Option("topicId", HelpText = "Pub/Sub topic Id")]
+        public string TopicId { get; set; }
+
+        [Option("subscriptionId", HelpText = "Pub/Sub Subscription Id")]
+        public string SubscriptionId { get; set; }
+    }
+
     [Verb("createInspectTemplate", HelpText = "Creates a template for inspecting operations.")]
     class CreateTemplateOptions : InspectLocalOptions
     {
@@ -66,20 +108,33 @@ namespace GoogleCloudSamples
         public string Description { get; set; }
     }
 
+    [Verb("redactImage", HelpText = "Redacts an image and saves the outcome into provided file path.")]
+    class RedactFromImageOptions
+    {
+        [Option("projectId", HelpText = "The project ID to run the API call under.", Required = true)]
+        public string ProjectId { get; set; }
+
+        [Option("imageFromPath", HelpText = "The path of the image to redact.", Required = true)]
+        public string ImageFromPath { get; set; }
+
+        [Option("imageToPath", HelpText = "The path of the redacted image.", Required = true)]
+        public string ImageToPath { get; set; }
+    }
+
     [Verb("listTemplates", HelpText = "Lists all created inspection templates.")]
     class ListTemplatesOptions
     {
-        [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
+        [Value(1, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
     }
 
     [Verb("deleteTemplate", HelpText = "Deletes given template by name.")]
     class DeleteTemplatesOptions
     {
-        [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
+        [Value(1, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
 
-        [Value(1, HelpText = "The name of the template to delete.", Required = true)]
+        [Value(2, HelpText = "The name of the template to delete.", Required = true)]
         public string TemplateName { get; set; }
     }
 
@@ -272,118 +327,41 @@ namespace GoogleCloudSamples
     {
         public static void Main(string[] args)
         {
-            try
+            // Command line argument parser we use doesn't support more than 15 options, therefore
+            // we split it
+            if (args.Length == 0)
             {
-                Parser.Default.ParseArguments<
-                    InspectStringOptions,
-                    InspectFileOptions,
-                    CreateTemplateOptions,
-                    ListTemplatesOptions,
-                    DeleteTemplatesOptions,
-                    DeidMaskOptions,
-                    DeidFpeOptions,
-                    ReidFpeOptions,
-                    ListJobsOptions,
-                    DeleteJobOptions,
-                    CreateJobTriggerOptions,
-                    ListJobTriggersOptions,
-                    DeleteJobTriggerOptions,
-                    NumericalStatsOptions,
-                    CategoricalStatsOptions>(args)
-                    .MapResult(
-                    (InspectStringOptions opts) => InspectLocal.InspectString(
-                        opts.ProjectId,
-                        opts.Value,
-                        opts.MinLikelihood,
-                        opts.MaxFindings,
-                        !opts.NoIncludeQuote,
-                        opts.InfoTypes),
-                    (InspectFileOptions opts) => InspectLocal.InspectFile(
-                        opts.ProjectId,
-                        opts.File,
-                        opts.MinLikelihood,
-                        opts.MaxFindings,
-                        !opts.NoIncludeQuote,
-                        opts.InfoTypes),
-                    (CreateTemplateOptions opts) => InspectTemplates.CreateInspectTemplate(
-                        opts.ProjectId,
-                        opts.TemplateId,
-                        opts.DisplayName,
-                        opts.Description,
-                        opts.MinLikelihood,
-                        opts.MaxFindings,
-                        !opts.NoIncludeQuote),
-                    (ListTemplatesOptions opts) => InspectTemplates.ListInspectTemplate(opts.ProjectId),
-                    (DeleteTemplatesOptions opts) => InspectTemplates.DeleteInspectTemplate(opts.ProjectId, opts.TemplateName),
-                    (DeidMaskOptions opts) => DeIdentify.DeidMask(
-                        opts.ProjectId,
-                        opts.Value,
-                        opts.InfoTypes,
-                        opts.Mask,
-                        opts.Num,
-                        opts.Reverse),
-                    (DeidFpeOptions opts) => DeIdentify.DeidFpe(
-                        opts.ProjectId,
-                        opts.Value,
-                        opts.KeyName,
-                        opts.WrappedKeyFile,
-                        opts.Alphabet),
-                    (ReidFpeOptions opts) => DeIdentify.ReidFpe(
-                        opts.ProjectId,
-                        opts.Value,
-                        opts.KeyName,
-                        opts.WrappedKeyFile,
-                        opts.Alphabet),
-                    (ListJobsOptions opts) => Jobs.ListJobs(
-                        opts.ProjectId,
-                        opts.Filter,
-                        opts.JobType),
-                    (DeleteJobOptions opts) => Jobs.DeleteJob(opts.JobName),
-                    (CreateJobTriggerOptions opts) => JobTriggers.CreateJobTrigger(
-                        opts.ProjectId,
-                        opts.BucketName,
-                        opts.MinLikelihood,
-                        opts.MaxFindings,
-                        opts.ScanPeriod,
-                        opts.InfoTypes,
-                        opts.TriggerId,
-                        opts.DisplayName,
-                        opts.Description
-                    ),
-                    (ListJobTriggersOptions opts) => JobTriggers.ListJobTriggers(
-                        opts.ProjectId
-                    ),
-                    (DeleteJobTriggerOptions opts) => JobTriggers.DeleteJobTrigger(
-                        opts.TriggerName
-                    ),
-                    (NumericalStatsOptions opts) => RiskAnalysis.NumericalStats(
-                        opts.CallingProjectId,
-                        opts.TableProjectId,
-                        opts.DatasetId,
-                        opts.TableId,
-                        opts.TopicId,
-                        opts.SubscriptionId,
-                        opts.ColumnName
-                    ),
-                    (CategoricalStatsOptions opts) => RiskAnalysis.CategoricalStats(
-                        opts.CallingProjectId,
-                        opts.TableProjectId,
-                        opts.DatasetId,
-                        opts.TableId,
-                        opts.TopicId,
-                        opts.SubscriptionId,
-                        opts.ColumnName
-                    ),
-                    errs => 1);
+                Console.WriteLine("Invalid number of arguments supplied");
+                Environment.Exit(-1);
             }
-            catch (ArgumentOutOfRangeException)
+
+            switch (args[0])
             {
-                Parser.Default.ParseArguments<
+                case "redactImage":
+                    Parser.Default.ParseArguments<RedactFromImageOptions>(args).MapResult(
+                        (RedactFromImageOptions options) => RedactSamples.RedactFromImage(
+                            options.ProjectId,
+                            options.ImageFromPath,
+                            options.ImageToPath),
+                        errs => 1);
+                    break;
+                case "kAnonymity":
+                case "lDiversity":
+                case "deidDateShift":
+                case "kMap":
+                case "listInfoTypes":
+                case "inspectBigQuery":
+                case "inspectDataStore":
+                case "inspectGcs":
+                    Parser.Default.ParseArguments<
                     KAnonymityOptions,
                     LDiversityOptions,
                     DeidDateShiftOptions,
                     KMapOptions,
-                    ListInfoTypesOptions>(args).MapResult(
+                    ListInfoTypesOptions,
+                    InspectBigQueryOptions,
+                    InspectDatastoreOptions,
+                    InspectGcsOptions>(args).MapResult(
                     (KAnonymityOptions opts) => RiskAnalysis.KAnonymity(
                         opts.CallingProjectId,
                         opts.TableProjectId,
@@ -391,8 +369,7 @@ namespace GoogleCloudSamples
                         opts.TableId,
                         opts.TopicId,
                         opts.SubscriptionId,
-                        opts.QuasiIdColumns
-                    ),
+                        DlpSamplesUtils.ParseQuasiIds(opts.QuasiIdColumns)),
                     (LDiversityOptions opts) => RiskAnalysis.LDiversity(
                         opts.CallingProjectId,
                         opts.TableProjectId,
@@ -400,9 +377,8 @@ namespace GoogleCloudSamples
                         opts.TableId,
                         opts.TopicId,
                         opts.SubscriptionId,
-                        opts.QuasiIdColumns,
-                        opts.SensitiveAttribute
-                    ),
+                        DlpSamplesUtils.ParseQuasiIds(opts.QuasiIdColumns),
+                        opts.SensitiveAttribute),
                     (KMapOptions opts) => RiskAnalysis.KMap(
                         opts.CallingProjectId,
                         opts.TableProjectId,
@@ -410,10 +386,9 @@ namespace GoogleCloudSamples
                         opts.TableId,
                         opts.TopicId,
                         opts.SubscriptionId,
-                        opts.QuasiIdColumns,
-                        opts.InfoTypes,
-                        opts.RegionCode
-                    ),
+                        DlpSamplesUtils.ParseQuasiIds(opts.QuasiIdColumns),
+                        DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        opts.RegionCode),
                     (DeidDateShiftOptions opts) => DeIdentify.DeidDateShift(
                         opts.ProjectId,
                         opts.InputCsvFile,
@@ -426,9 +401,140 @@ namespace GoogleCloudSamples
                         opts.WrappedKey),
                     (ListInfoTypesOptions opts) => Metadata.ListInfoTypes(
                         opts.LanguageCode,
-                        opts.Filter
-                    ),
+                        opts.Filter),
+                    (InspectBigQueryOptions opts) => InspectSamples.InspectBigQuery(
+                        opts.ProjectId,
+                        opts.MinLikelihood,
+                        opts.MaxFindings,
+                        !opts.NoIncludeQuote,
+                        DlpSamplesUtils.ParseIdentifyingFields(opts.IdentifyingFields),
+                        DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        opts.DatasetId,
+                        opts.TableId),
+                    (InspectDatastoreOptions opts) => InspectSamples.InspectCloudDataStore(
+                        opts.ProjectId,
+                        opts.MinLikelihood,
+                        opts.MaxFindings,
+                        !opts.NoIncludeQuote,
+                        opts.KindName,
+                        opts.NamespaceId,
+                        DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        opts.DatasetId,
+                        opts.TableId),
+                    (InspectGcsOptions opts) => InspectSamples.InspectGCS(
+                        opts.ProjectId,
+                        opts.MinLikelihood,
+                        opts.MaxFindings,
+                        !opts.NoIncludeQuote,
+                        DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        opts.BucketName,
+                        opts.TopicId,
+                        opts.SubscriptionId),
                     errs => 1);
+                    break;
+                default:
+                    Parser.Default.ParseArguments<
+                        InspectStringOptions,
+                        InspectFileOptions,
+                        CreateTemplateOptions,
+                        ListTemplatesOptions,
+                        DeleteTemplatesOptions,
+                        DeidMaskOptions,
+                        DeidFpeOptions,
+                        ReidFpeOptions,
+                        ListJobsOptions,
+                        DeleteJobOptions,
+                        CreateJobTriggerOptions,
+                        ListJobTriggersOptions,
+                        DeleteJobTriggerOptions,
+                        NumericalStatsOptions,
+                        CategoricalStatsOptions>(args)
+                        .MapResult(
+                        (InspectStringOptions opts) => InspectSamples.InspectString(
+                            opts.ProjectId,
+                            opts.Value,
+                            opts.MinLikelihood,
+                            opts.MaxFindings,
+                            !opts.NoIncludeQuote,
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes)),
+                        (InspectFileOptions opts) => InspectSamples.InspectFile(
+                            opts.ProjectId,
+                            opts.File,
+                            opts.MinLikelihood,
+                            opts.MaxFindings,
+                            !opts.NoIncludeQuote,
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes)),
+                        (CreateTemplateOptions opts) => InspectTemplates.CreateInspectTemplate(
+                            opts.ProjectId,
+                            opts.TemplateId,
+                            opts.DisplayName,
+                            opts.Description,
+                            opts.MinLikelihood,
+                            opts.MaxFindings,
+                            !opts.NoIncludeQuote),
+                        (ListTemplatesOptions opts) => InspectTemplates.ListInspectTemplate(opts.ProjectId),
+                        (DeleteTemplatesOptions opts) => InspectTemplates.DeleteInspectTemplate(opts.ProjectId, opts.TemplateName),
+                        (DeidMaskOptions opts) => DeIdentify.DeidMask(
+                            opts.ProjectId,
+                            opts.Value,
+                            opts.InfoTypes,
+                            opts.Mask,
+                            opts.Num,
+                            opts.Reverse),
+                        (DeidFpeOptions opts) => DeIdentify.DeidFpe(
+                            opts.ProjectId,
+                            opts.Value,
+                            opts.KeyName,
+                            opts.WrappedKeyFile,
+                            opts.Alphabet),
+                        (ReidFpeOptions opts) => DeIdentify.ReidFpe(
+                            opts.ProjectId,
+                            opts.Value,
+                            opts.KeyName,
+                            opts.WrappedKeyFile,
+                            opts.Alphabet),
+                        (ListJobsOptions opts) => Jobs.ListJobs(
+                            opts.ProjectId,
+                            opts.Filter,
+                            opts.JobType),
+                        (DeleteJobOptions opts) => Jobs.DeleteJob(opts.JobName),
+                        (CreateJobTriggerOptions opts) => JobTriggers.CreateJobTrigger(
+                            opts.ProjectId,
+                            opts.BucketName,
+                            opts.MinLikelihood,
+                            opts.MaxFindings,
+                            opts.ScanPeriod,
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                            opts.TriggerId,
+                            opts.DisplayName,
+                            opts.Description
+                        ),
+                        (ListJobTriggersOptions opts) => JobTriggers.ListJobTriggers(
+                            opts.ProjectId
+                        ),
+                        (DeleteJobTriggerOptions opts) => JobTriggers.DeleteJobTrigger(
+                            opts.TriggerName
+                        ),
+                        (NumericalStatsOptions opts) => RiskAnalysis.NumericalStats(
+                            opts.CallingProjectId,
+                            opts.TableProjectId,
+                            opts.DatasetId,
+                            opts.TableId,
+                            opts.TopicId,
+                            opts.SubscriptionId,
+                            opts.ColumnName
+                        ),
+                        (CategoricalStatsOptions opts) => RiskAnalysis.CategoricalStats(
+                            opts.CallingProjectId,
+                            opts.TableProjectId,
+                            opts.DatasetId,
+                            opts.TableId,
+                            opts.TopicId,
+                            opts.SubscriptionId,
+                            opts.ColumnName
+                        ),
+                        errs => 1);
+                            break;
             }
         }
     }

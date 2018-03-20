@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using CommandLine;
 using Google.Cloud.Dlp.V2;
 using Google.Cloud.PubSub.V1;
 using static Google.Cloud.Dlp.V2.Action.Types;
@@ -27,60 +26,66 @@ using static Google.Cloud.Dlp.V2.PrivacyMetric.Types.KMapEstimationConfig.Types;
 namespace GoogleCloudSamples
 {
     /// <summary>
-    /// This class contains examples of how to calculate various deidentification risk metrics for BigQuery tables 
+    /// Examples of how to calculate various deidentification risk metrics for BigQuery tables 
     /// For more information, see https://cloud.google.com/dlp/docs/concepts-risk-analysis
     /// </summary>
-    public class RiskAnalysis : DlpSampleBase
+    class RiskAnalysis
     {
         // [START dlp_numerical_stats]
-        public static object NumericalStats(string CallingProjectId,
-                                    string TableProjectId,
-                                    string DatasetId,
-                                    string TableId,
-                                    string TopicId,
-                                    string SubscriptionId,
-                                    string ColumnName) {
+        public static object NumericalStats(
+            string callingProjectId,
+            string tableProjectId,
+            string datasetId,
+            string tableId,
+            string topicId,
+            string subscriptionId,
+            string columnName)
+        {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             // Construct + submit the job
-            RiskAnalysisJobConfig config = new RiskAnalysisJobConfig
+            var config = new RiskAnalysisJobConfig
             {
-                PrivacyMetric = new PrivacyMetric {
-                    NumericalStatsConfig = new NumericalStatsConfig {
-                        Field = new FieldId { Name = ColumnName }
+                PrivacyMetric = new PrivacyMetric
+                {
+                    NumericalStatsConfig = new NumericalStatsConfig
+                    {
+                        Field = new FieldId { Name = columnName }
                     }
                 },
-                SourceTable = new BigQueryTable {
-                    ProjectId = TableProjectId,
-                    DatasetId = DatasetId,
-                    TableId = TableId
+                SourceTable = new BigQueryTable
+                {
+                    ProjectId = tableProjectId,
+                    DatasetId = datasetId,
+                    TableId = tableId
                 },
-                Actions = {
+                Actions =
+                {
                     new Google.Cloud.Dlp.V2.Action
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
+                            Topic = $"projects/{callingProjectId}/topics/{topicId}"
                         }
                     }
                 }
             };
 
-            var submittedJob = dlp.CreateDlpJob(new CreateDlpJobRequest {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(CallingProjectId),
-                RiskJob = config
-            });
+            var submittedJob = dlp.CreateDlpJob(
+                new CreateDlpJobRequest
+                {
+                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
+                    RiskJob = config
+                });
 
             // Listen to pub/sub for the job
-            SubscriptionName subscriptionName = new SubscriptionName(
-                CallingProjectId,
-                SubscriptionId);
+            var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEventSlim done = new ManualResetEventSlim(false);
+            var done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -95,23 +100,24 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.Wait(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(TimeSpan.FromMinutes(10)); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
-            var resultJob = dlp.GetDlpJob(new GetDlpJobRequest
-            {
-                DlpJobName = DlpJobName.Parse(submittedJob.Name)
-            });
+            var resultJob = dlp.GetDlpJob(
+                new GetDlpJobRequest
+                {
+                    DlpJobName = DlpJobName.Parse(submittedJob.Name)
+                });
 
             var result = resultJob.RiskDetails.NumericalStatsResult;
 
             // 'UnpackValue(x)' is a prettier version of 'x.toString()'
-            Console.WriteLine($"Value Range: [{UnpackValue(result.MinValue)}, {UnpackValue(result.MaxValue)}]");
-            string lastValue = "";
+            Console.WriteLine($"Value Range: [{DlpSamplesUtils.UnpackValue(result.MinValue)}, {DlpSamplesUtils.UnpackValue(result.MaxValue)}]");
+            string lastValue = string.Empty;
             for (int quantile = 0; quantile < result.QuantileValues.Count; quantile++)
             {
-                string currentValue = UnpackValue(result.QuantileValues[quantile]);
+                string currentValue = DlpSamplesUtils.UnpackValue(result.QuantileValues[quantile]);
                 if (lastValue != currentValue)
                 {
                     Console.WriteLine($"Value at {quantile + 1}% quantile: {currentValue}");
@@ -124,13 +130,14 @@ namespace GoogleCloudSamples
         // [END dlp_numerical_stats]
 
         // [START dlp_categorical_stats]
-        public static object CategoricalStats(string CallingProjectId,
-                                    string TableProjectId,
-                                    string DatasetId,
-                                    string TableId,
-                                    string TopicId,
-                                    string SubscriptionId,
-                                    string ColumnName)
+        public static object CategoricalStats(
+            string callingProjectId,
+            string tableProjectId,
+            string datasetId,
+            string tableId,
+            string topicId,
+            string subscriptionId,
+            string columnName)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
@@ -141,21 +148,21 @@ namespace GoogleCloudSamples
                 {
                     CategoricalStatsConfig = new CategoricalStatsConfig()
                     {
-                        Field = new FieldId { Name = ColumnName }
+                        Field = new FieldId { Name = columnName }
                     }
                 },
                 SourceTable = new BigQueryTable
                 {
-                    ProjectId = TableProjectId,
-                    DatasetId = DatasetId,
-                    TableId = TableId
+                    ProjectId = tableProjectId,
+                    DatasetId = datasetId,
+                    TableId = tableId
                 },
                 Actions = {
                     new Google.Cloud.Dlp.V2.Action
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
+                            Topic = $"projects/{callingProjectId}/topics/{topicId}"
                         }
                     }
                 }
@@ -163,20 +170,18 @@ namespace GoogleCloudSamples
 
             var submittedJob = dlp.CreateDlpJob(new CreateDlpJobRequest
             {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(CallingProjectId),
+                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
                 RiskJob = config
             });
 
             // Listen to pub/sub for the job
-            SubscriptionName subscriptionName = new SubscriptionName(
-                CallingProjectId,
-                SubscriptionId);
+            var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEventSlim done = new ManualResetEventSlim(false);
+            var done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -191,7 +196,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.Wait(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(TimeSpan.FromMinutes(10)); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -212,7 +217,7 @@ namespace GoogleCloudSamples
 
                 foreach (var bucketValue in bucket.BucketValues) {
                     // 'UnpackValue(x)' is a prettier version of 'x.toString()'
-                    Console.WriteLine($"  Value {UnpackValue(bucketValue.Value)} occurs {bucketValue.Count} time(s).");
+                    Console.WriteLine($"  Value {DlpSamplesUtils.UnpackValue(bucketValue.Value)} occurs {bucketValue.Count} time(s).");
                 }
             }
 
@@ -221,22 +226,24 @@ namespace GoogleCloudSamples
         // [END dlp_categorical_stats]
 
         // [START dlp_k_anonymity]
-        public static object KAnonymity(string CallingProjectId,
-                                 string TableProjectId,
-                                 string DatasetId,
-                                 string TableId,
-                                 string TopicId,
-                                 string SubscriptionId,
-                                 string QuasiIdColumns)
+        public static object KAnonymity(
+            string callingProjectId,
+            string tableProjectId,
+            string datasetId,
+            string tableId,
+            string topicId,
+            string subscriptionId,
+            IEnumerable<FieldId> quasiIds)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             // Construct + submit the job
-            KAnonymityConfig KAnonymityConfig = new KAnonymityConfig {
-                QuasiIds = { ParseQuasiIds(QuasiIdColumns) } 
+            var KAnonymityConfig = new KAnonymityConfig
+            {
+                QuasiIds = { quasiIds } 
             };
             
-            RiskAnalysisJobConfig config = new RiskAnalysisJobConfig
+            var config = new RiskAnalysisJobConfig
             {
                 PrivacyMetric = new PrivacyMetric
                 {
@@ -244,35 +251,37 @@ namespace GoogleCloudSamples
                 },
                 SourceTable = new BigQueryTable
                 {
-                    ProjectId = TableProjectId,
-                    DatasetId = DatasetId,
-                    TableId = TableId
+                    ProjectId = tableProjectId,
+                    DatasetId = datasetId,
+                    TableId = tableId
                 },
-                Actions = {
+                Actions =
+                {
                     new Google.Cloud.Dlp.V2.Action
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
+                            Topic = $"projects/{callingProjectId}/topics/{topicId}"
                         }
                     }
                 }
             };
 
-            var submittedJob = dlp.CreateDlpJob(new CreateDlpJobRequest
-            {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(CallingProjectId),
-                RiskJob = config
-            });
+            var submittedJob = dlp.CreateDlpJob(
+                new CreateDlpJobRequest
+                {
+                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
+                    RiskJob = config
+                });
 
             // Listen to pub/sub for the job
-            SubscriptionName subscriptionName = new SubscriptionName(CallingProjectId, SubscriptionId);
+            var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEventSlim done = new ManualResetEventSlim(false);
+            var done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -287,7 +296,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.Wait(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(TimeSpan.FromMinutes(10)); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -308,7 +317,7 @@ namespace GoogleCloudSamples
                 foreach (var bucketValue in bucket.BucketValues)
                 {
                     // 'UnpackValue(x)' is a prettier version of 'x.toString()'
-                    Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => UnpackValue(x)))}]");
+                    Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => DlpSamplesUtils.UnpackValue(x)))}]");
                     Console.WriteLine($"    Class size: {bucketValue.EquivalenceClassSize}");
                 }
             }
@@ -318,60 +327,62 @@ namespace GoogleCloudSamples
         // [END dlp_k_anonymity]
 
         // [START dlp_l_diversity]
-        public static object LDiversity(string CallingProjectId,
-                                    string TableProjectId,
-                                    string DatasetId,
-                                    string TableId,
-                                    string TopicId,
-                                    string SubscriptionId,
-                                    string QuasiIdColumns,
-                                    string SensitiveAttribute)
+        public static object LDiversity(
+            string callingProjectId,
+            string tableProjectId,
+            string datasetId,
+            string tableId,
+            string topicId,
+            string subscriptionId,
+            IEnumerable<FieldId> quasiIds,
+            string sensitiveAttribute)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             // Construct + submit the job
-            LDiversityConfig LDiversityConfig = new LDiversityConfig{
-                SensitiveAttribute = new FieldId {  Name = SensitiveAttribute },
-                QuasiIds = { ParseQuasiIds(QuasiIdColumns) }
+            var ldiversityConfig = new LDiversityConfig{
+                SensitiveAttribute = new FieldId {  Name = sensitiveAttribute },
+                QuasiIds = { quasiIds }
             };
 
-            RiskAnalysisJobConfig config = new RiskAnalysisJobConfig
+            var config = new RiskAnalysisJobConfig
             {
                 PrivacyMetric = new PrivacyMetric
                 {
-                    LDiversityConfig = LDiversityConfig
+                    LDiversityConfig = ldiversityConfig
                 },
                 SourceTable = new BigQueryTable
                 {
-                    ProjectId = TableProjectId,
-                    DatasetId = DatasetId,
-                    TableId = TableId
+                    ProjectId = tableProjectId,
+                    DatasetId = datasetId,
+                    TableId = tableId
                 },
                 Actions = {
                     new Google.Cloud.Dlp.V2.Action
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
+                            Topic = $"projects/{callingProjectId}/topics/{topicId}"
                         }
                     }
                 }
             };
 
-            var submittedJob = dlp.CreateDlpJob(new CreateDlpJobRequest
-            {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(CallingProjectId),
-                RiskJob = config
-            });
+            var submittedJob = dlp.CreateDlpJob(
+                new CreateDlpJobRequest
+                {
+                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
+                    RiskJob = config
+                });
 
             // Listen to pub/sub for the job
-            SubscriptionName subscriptionName = new SubscriptionName(CallingProjectId, SubscriptionId);
+            var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEventSlim done = new ManualResetEventSlim(false);
+            var done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -386,14 +397,15 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.Wait(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(TimeSpan.FromMinutes(10)); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
-            var resultJob = dlp.GetDlpJob(new GetDlpJobRequest
-            {
-                DlpJobName = DlpJobName.Parse(submittedJob.Name)
-            });
+            var resultJob = dlp.GetDlpJob(
+                new GetDlpJobRequest
+                {
+                    DlpJobName = DlpJobName.Parse(submittedJob.Name)
+                });
 
             var result = resultJob.RiskDetails.LDiversityResult;
 
@@ -407,11 +419,11 @@ namespace GoogleCloudSamples
                 foreach (var bucketValue in bucket.BucketValues)
                 {
                     // 'UnpackValue(x)' is a prettier version of 'x.toString()'
-                    Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => UnpackValue(x)))}]");
+                    Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => DlpSamplesUtils.UnpackValue(x)))}]");
                     Console.WriteLine($"    Class size: {bucketValue.EquivalenceClassSize}");
 
                     foreach (var topValue in bucketValue.TopSensitiveValues) {
-                        Console.WriteLine($"    Sensitive value {UnpackValue(topValue.Value)} occurs {topValue.Count} time(s).");
+                        Console.WriteLine($"    Sensitive value {DlpSamplesUtils.UnpackValue(topValue.Value)} occurs {topValue.Count} time(s).");
                     }
                 }
             }
@@ -421,23 +433,26 @@ namespace GoogleCloudSamples
         // [END dlp_l_diversity]
 
         // [START dlp_k_map]
-        public static object KMap(string CallingProjectId,
-                           string TableProjectId,
-                           string DatasetId,
-                           string TableId,
-                           string TopicId,
-                           string SubscriptionId,
-                           string QuasiIdColumns,
-                           string InfoTypes,
-                           string RegionCode)
+        public static object KMap(
+            string callingProjectId,
+            string tableProjectId,
+            string datasetId,
+            string tableId,
+            string topicId,
+            string subscriptionId,
+            IEnumerable<FieldId> quasiIds,
+            IEnumerable<InfoType> infoTypes,
+            string regionCode)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             // Construct + submit the job
-            KMapEstimationConfig KMapEstimationConfig = new KMapEstimationConfig {
-                QuasiIds = {
-                    ParseQuasiIds(QuasiIdColumns).Zip(
-                        ParseInfoTypes(InfoTypes),
+            var kmapEstimationConfig = new KMapEstimationConfig
+            {
+                QuasiIds =
+                {
+                    quasiIds.Zip(
+                        infoTypes,
                         (Field, InfoType) => new TaggedField
                         {
                             Field = Field,
@@ -445,48 +460,50 @@ namespace GoogleCloudSamples
                         }
                     )
                 },
-                RegionCode = RegionCode
+                RegionCode = regionCode
             };
 
-            RiskAnalysisJobConfig config = new RiskAnalysisJobConfig()
+            var config = new RiskAnalysisJobConfig()
             {
                 PrivacyMetric = new PrivacyMetric
                 {
-                    KMapEstimationConfig = KMapEstimationConfig
+                    KMapEstimationConfig = kmapEstimationConfig
                 },
                 SourceTable = new BigQueryTable
                 {
-                    ProjectId = TableProjectId,
-                    DatasetId = DatasetId,
-                    TableId = TableId
+                    ProjectId = tableProjectId,
+                    DatasetId = datasetId,
+                    TableId = tableId
                 },
-                Actions = {
+                Actions =
+                {
                     new Google.Cloud.Dlp.V2.Action
                     {
                         PubSub = new PublishToPubSub
                         {
-                            Topic = $"projects/{CallingProjectId}/topics/{TopicId}"
+                            Topic = $"projects/{callingProjectId}/topics/{topicId}"
                         }
                     }
                 }
             };
 
-            var submittedJob = dlp.CreateDlpJob(new CreateDlpJobRequest
-            {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(CallingProjectId),
-                RiskJob = config
-            });
+            var submittedJob = dlp.CreateDlpJob(
+                new CreateDlpJobRequest
+                {
+                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
+                    RiskJob = config
+                });
 
             // Listen to pub/sub for the job
-            SubscriptionName subscriptionName = new SubscriptionName(
-                CallingProjectId,
-                SubscriptionId);
+            var subscriptionName = new SubscriptionName(
+                callingProjectId,
+                subscriptionId);
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { SubscriberServiceApiClient.Create() });
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
-            ManualResetEventSlim done = new ManualResetEventSlim(false);
+            var done = new ManualResetEventSlim(false);
             subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
             {
                 if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -501,7 +518,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            done.Wait(600000); // 10 minute timeout; may not work for large jobs
+            done.Wait(TimeSpan.FromMinutes(10)); // 10 minute timeout; may not work for large jobs
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Process results
@@ -522,7 +539,7 @@ namespace GoogleCloudSamples
                 foreach (var datapoint in histogramValue.BucketValues)
                 {
                     // 'UnpackValue(x)' is a prettier version of 'x.toString()'
-                    Console.WriteLine($"    Values: [{String.Join(',', datapoint.QuasiIdsValues.Select(x => UnpackValue(x)))}]");
+                    Console.WriteLine($"    Values: [{String.Join(',', datapoint.QuasiIdsValues.Select(x => DlpSamplesUtils.UnpackValue(x)))}]");
                     Console.WriteLine($"    Estimated k-map anonymity: {datapoint.EstimatedAnonymity}");
                 }
             }

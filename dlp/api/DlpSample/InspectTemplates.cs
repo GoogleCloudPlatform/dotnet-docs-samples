@@ -15,9 +15,7 @@
 using Google.Api.Gax;
 using Google.Cloud.Dlp.V2;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace GoogleCloudSamples
 {
@@ -25,34 +23,34 @@ namespace GoogleCloudSamples
     {
         // [START dlp_create_inspect_template]
         public static string CreateInspectTemplate(
-            string ProjectId,
-            string TemplateId,
-            string DisplayName,
-            string Description,
-            string Likelihood,
-            int MaxFindings,
-            bool IncludeQuote)
+            string projectId,
+            string templateId,
+            string displayName,
+            string description,
+            string likelihood,
+            int maxFindings,
+            bool includeQuote)
         {
             DlpServiceClient client = DlpServiceClient.Create();
 
             var request = new CreateInspectTemplateRequest
             {
-                Parent = $"projects/{ProjectId}",
+                Parent = $"projects/{projectId}",
                 InspectTemplate = new InspectTemplate
                 {
-                    DisplayName = DisplayName,
-                    Description = Description,
+                    DisplayName = displayName,
+                    Description = description,
                     InspectConfig = new InspectConfig
                     {
-                        MinLikelihood = (Likelihood) Enum.Parse(typeof(Likelihood), Likelihood),
+                        MinLikelihood = (Likelihood) Enum.Parse(typeof(Likelihood), likelihood),
                         Limits = new InspectConfig.Types.FindingLimits
                         {
-                            MaxFindingsPerRequest = MaxFindings
+                            MaxFindingsPerRequest = maxFindings
                         },
-                        IncludeQuote = IncludeQuote
+                        IncludeQuote = includeQuote
                     },
                 },
-                TemplateId = TemplateId
+                TemplateId = templateId
             };
 
             var response = client.CreateInspectTemplate(request);
@@ -81,14 +79,14 @@ namespace GoogleCloudSamples
         // [END dlp_delete_inspect_template]
 
         // [START dlp_list_inspect_templates]
-        public static object ListInspectTemplate(string ProjectId)
+        public static object ListInspectTemplate(string projectId)
         {
             DlpServiceClient client = DlpServiceClient.Create();
 
             var response = client.ListInspectTemplates(
                 new ListInspectTemplatesRequest
                 {
-                    Parent = $"projects/{ProjectId}",
+                    Parent = $"projects/{projectId}",
                 }
             );
             foreach (var template in response)
@@ -110,7 +108,7 @@ namespace GoogleCloudSamples
 
         // An example of ListInspectTemplates, but using paging
         // Not intended for inclusion in the documentation
-        public static object ListInspectTemplatesPaging(string ProjectId)
+        public static object ListInspectTemplatesPaging(string projectId)
         {
             DlpServiceClient client = DlpServiceClient.Create();
 
@@ -122,7 +120,7 @@ namespace GoogleCloudSamples
             {
                 var request = new ListInspectTemplatesRequest
                 {
-                    Parent = $"projects/{ProjectId}",
+                    Parent = $"projects/{projectId}",
                     PageToken = nextPageToken,
                 };
 

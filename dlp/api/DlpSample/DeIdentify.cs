@@ -22,20 +22,20 @@ using System.Linq;
 
 namespace GoogleCloudSamples
 {
-    public class DeIdentify : DlpSampleBase
+    class DeIdentify
     {
         // [START dlp_deidentify_masking]
         public static object DeidMask(
-            string ProjectId,
-            string DataValue,
-            string InfoTypes,
-            string MaskingCharacter,
-            int NumberToMask,
-            bool ReverseOrder)
+            string projectId,
+            string dataValue,
+            string infoTypes,
+            string maskingCharacter,
+            int numberToMask,
+            bool reverseOrder)
         {
-            DeidentifyContentRequest request = new DeidentifyContentRequest
+            var request = new DeidentifyContentRequest
             {
-                ParentAsProjectName = new ProjectName(ProjectId),
+                ParentAsProjectName = new ProjectName(projectId),
                 DeidentifyConfig = new DeidentifyConfig
                 {
                     InfoTypeTransformations = new InfoTypeTransformations {
@@ -46,9 +46,9 @@ namespace GoogleCloudSamples
                                 {
                                     CharacterMaskConfig = new CharacterMaskConfig
                                     {
-                                        MaskingCharacter = MaskingCharacter,
-                                        NumberToMask = NumberToMask,
-                                        ReverseOrder = ReverseOrder
+                                        MaskingCharacter = maskingCharacter,
+                                        NumberToMask = numberToMask,
+                                        ReverseOrder = reverseOrder
                                     }
                                 }
                             }
@@ -57,12 +57,13 @@ namespace GoogleCloudSamples
                 },
                 Item = new ContentItem
                 {
-                    Value = DataValue
+                    Value = dataValue
                 }
             };
 
             DlpServiceClient dlp = DlpServiceClient.Create();
             var response = dlp.DeidentifyContent(request);
+
             Console.WriteLine($"Deidentified content: {response.Item.Value}");
             return 0;
         }
@@ -70,29 +71,31 @@ namespace GoogleCloudSamples
 
         // [START dlp_deidentify_fpe]
         public static object DeidFpe(
-            string ProjectId,
-            string DataValue,
-            string KeyName,
-            string WrappedKey,
-            string Alphabet)
+            string projectId,
+            string dataValue,
+            string keyName,
+            string wrappedKey,
+            string alphabet)
         {
-            var DeidentifyConfig = new DeidentifyConfig
+            var deidentifyConfig = new DeidentifyConfig
             {
-                InfoTypeTransformations = new InfoTypeTransformations {
-                    Transformations = {
+                InfoTypeTransformations = new InfoTypeTransformations
+                {
+                    Transformations =
+                    {
                         new InfoTypeTransformations.Types.InfoTypeTransformation
                         {
                             PrimitiveTransformation = new PrimitiveTransformation
                             {
                                 CryptoReplaceFfxFpeConfig = new CryptoReplaceFfxFpeConfig
                                 {
-                                    CommonAlphabet = (FfxCommonNativeAlphabet) Enum.Parse(typeof(FfxCommonNativeAlphabet), Alphabet),
+                                    CommonAlphabet = (FfxCommonNativeAlphabet) Enum.Parse(typeof(FfxCommonNativeAlphabet), alphabet),
                                     CryptoKey = new CryptoKey
                                     {
                                         KmsWrapped = new KmsWrappedCryptoKey
                                         {
-                                            CryptoKeyName = KeyName,
-                                            WrappedKey = ByteString.FromBase64(WrappedKey)
+                                            CryptoKeyName = keyName,
+                                            WrappedKey = ByteString.FromBase64(wrappedKey)
                                         }
                                     },
                                     SurrogateInfoType = new InfoType
@@ -107,12 +110,14 @@ namespace GoogleCloudSamples
             };
 
             DlpServiceClient dlp = DlpServiceClient.Create();
-            var response = dlp.DeidentifyContent(new DeidentifyContentRequest
-            {
-                ParentAsProjectName = new ProjectName(ProjectId),
-                DeidentifyConfig = DeidentifyConfig,
-                Item = new ContentItem { Value = DataValue }
-            });
+            var response = dlp.DeidentifyContent(
+                new DeidentifyContentRequest
+                {
+                    ParentAsProjectName = new ProjectName(projectId),
+                    DeidentifyConfig = deidentifyConfig,
+                    Item = new ContentItem { Value = dataValue }
+                });
+
             Console.WriteLine($"Deidentified content: {response.Item.Value}");
             return 0;
         }
@@ -120,29 +125,31 @@ namespace GoogleCloudSamples
 
         // [START dlp_reidentify_fpe]
         public static object ReidFpe(
-            string ProjectId,
-            string DataValue,
-            string KeyName,
-            string WrappedKey,
-            string Alphabet)
+            string projectId,
+            string dataValue,
+            string keyName,
+            string wrappedKey,
+            string alphabet)
         {
-            var ReidentifyConfig = new DeidentifyConfig
+            var reidentifyConfig = new DeidentifyConfig
             {
-                InfoTypeTransformations = new InfoTypeTransformations {
-                    Transformations = {
+                InfoTypeTransformations = new InfoTypeTransformations
+                {
+                    Transformations =
+                    {
                         new InfoTypeTransformations.Types.InfoTypeTransformation
                         {
                             PrimitiveTransformation = new PrimitiveTransformation
                             {
                                 CryptoReplaceFfxFpeConfig = new CryptoReplaceFfxFpeConfig
                                 {
-                                    CommonAlphabet = (FfxCommonNativeAlphabet) Enum.Parse(typeof(FfxCommonNativeAlphabet), Alphabet),
+                                    CommonAlphabet = (FfxCommonNativeAlphabet) Enum.Parse(typeof(FfxCommonNativeAlphabet), alphabet),
                                     CryptoKey = new CryptoKey
                                     {
                                         KmsWrapped = new KmsWrappedCryptoKey
                                         {
-                                            CryptoKeyName = KeyName,
-                                            WrappedKey = ByteString.FromBase64(WrappedKey)
+                                            CryptoKeyName = keyName,
+                                            WrappedKey = ByteString.FromBase64(wrappedKey)
                                         }
                                     },
                                     SurrogateInfoType = new InfoType
@@ -151,7 +158,8 @@ namespace GoogleCloudSamples
                                     }
                                 }
                             },
-                            InfoTypes = {
+                            InfoTypes =
+                            {
                                 new InfoType { Name = "TOKEN" }
                             }
                         }
@@ -159,8 +167,10 @@ namespace GoogleCloudSamples
                 }
             };
 
-            var InspectConfig = new InspectConfig {
-                CustomInfoTypes = {
+            var inspectConfig = new InspectConfig
+            {
+                CustomInfoTypes =
+                {
                     new CustomInfoType
                     {
                         InfoType = new InfoType
@@ -172,14 +182,15 @@ namespace GoogleCloudSamples
                 }
             };
 
-            DlpServiceClient dlp = DlpServiceClient.Create();
+            var dlp = DlpServiceClient.Create();
             var response = dlp.ReidentifyContent(new ReidentifyContentRequest
             {
-                ParentAsProjectName = new ProjectName(ProjectId),
-                InspectConfig = InspectConfig,
-                ReidentifyConfig = ReidentifyConfig,
-                Item = new ContentItem { Value = DataValue }
+                ParentAsProjectName = new ProjectName(projectId),
+                InspectConfig = inspectConfig,
+                ReidentifyConfig = reidentifyConfig,
+                Item = new ContentItem { Value = dataValue }
             });
+
             Console.WriteLine($"Reidentified content: {response.Item.Value}");
             return 0;
         }
@@ -187,43 +198,45 @@ namespace GoogleCloudSamples
 
         // [START dlp_deidentify_date_shift]
         public static object DeidDateShift(
-            string ProjectId,
-            string InputCsvFile,
-            string OutputCsvFile,
-            int LowerBoundDays,
-            int UpperBoundDays,
-            string DateFields,
-            string ContextField = "",
-            string KeyName = "",
-            string WrappedKey = "")
+            string projectId,
+            string inputCsvFile,
+            string outputCsvFile,
+            int lowerBoundDays,
+            int upperBoundDays,
+            string dateFields,
+            string contextField = "",
+            string keyName = "",
+            string wrappedKey = "")
         {
-            DlpServiceClient dlp = DlpServiceClient.Create();
+            var dlp = DlpServiceClient.Create();
 
             // Read file
-            string[] CsvLines = File.ReadAllLines(InputCsvFile);
-            string[] CsvHeaders = CsvLines[0].Split(',');
-            string[] CsvRows = CsvLines.Skip(1).ToArray();
+            string[] csvLines = File.ReadAllLines(inputCsvFile);
+            string[] csvHeaders = csvLines[0].Split(',');
+            string[] csvRows = csvLines.Skip(1).ToArray();
 
             // Convert dates to protobuf format, and everything else to a string
-            var ProtoHeaders = CsvHeaders.Select(header => new FieldId { Name = header });
-            var ProtoRows = CsvRows.Select(CsvRow =>
+            var protoHeaders = csvHeaders.Select(header => new FieldId { Name = header });
+            var protoRows = csvRows.Select(CsvRow =>
             {
-                var RowValues = CsvRow.Split(',');
-                var ProtoValues = RowValues.Select(RowValue =>
+                var rowValues = CsvRow.Split(',');
+                var protoValues = rowValues.Select(RowValue =>
                 {
-                    System.DateTime ParsedDate;
-                    if (System.DateTime.TryParse(RowValue, out ParsedDate))
+                    System.DateTime parsedDate;
+                    if (System.DateTime.TryParse(RowValue, out parsedDate))
                     {
                         return new Value
                         {
                             DateValue = new Google.Type.Date
                             {
-                                Year = ParsedDate.Year,
-                                Month = ParsedDate.Month,
-                                Day = ParsedDate.Day
+                                Year = parsedDate.Year,
+                                Month = parsedDate.Month,
+                                Day = parsedDate.Day
                             }
                         };
-                    } else {
+                    }
+                    else
+                    {
                         return new Value
                         {
                             StringValue = RowValue
@@ -231,33 +244,33 @@ namespace GoogleCloudSamples
                     }
                 });
 
-                var RowObject = new Table.Types.Row();
-                RowObject.Values.Add(ProtoValues);
-                return RowObject;
+                var rowObject = new Table.Types.Row();
+                rowObject.Values.Add(protoValues);
+                return rowObject;
             });
 
-            var DateFieldList = DateFields
-                                 .Split(',')
-                                 .Select(field => new FieldId { Name = field });
+            var dateFieldList = dateFields
+                .Split(',')
+                .Select(field => new FieldId { Name = field });
 
             // Construct + execute the request
-            DateShiftConfig DateShiftConfig = new DateShiftConfig
+            var dateShiftConfig = new DateShiftConfig
             {
-                LowerBoundDays = LowerBoundDays,
-                UpperBoundDays = UpperBoundDays
+                LowerBoundDays = lowerBoundDays,
+                UpperBoundDays = upperBoundDays
             };
-            bool hasKeyName = !String.IsNullOrEmpty(KeyName);
-            bool hasWrappedKey = !String.IsNullOrEmpty(WrappedKey);
-            bool hasContext = !String.IsNullOrEmpty(ContextField);
+            bool hasKeyName = !String.IsNullOrEmpty(keyName);
+            bool hasWrappedKey = !String.IsNullOrEmpty(wrappedKey);
+            bool hasContext = !String.IsNullOrEmpty(contextField);
             if (hasKeyName && hasWrappedKey && hasContext)
             {
-                DateShiftConfig.Context = new FieldId { Name = ContextField };
-                DateShiftConfig.CryptoKey = new CryptoKey
+                dateShiftConfig.Context = new FieldId { Name = contextField };
+                dateShiftConfig.CryptoKey = new CryptoKey
                 {
                     KmsWrapped = new KmsWrappedCryptoKey
                     {
-                        WrappedKey = ByteString.FromBase64(WrappedKey),
-                        CryptoKeyName = KeyName
+                        WrappedKey = ByteString.FromBase64(wrappedKey),
+                        CryptoKeyName = keyName
                     }
                 };
             }
@@ -266,7 +279,7 @@ namespace GoogleCloudSamples
                 throw new ArgumentException("Must specify ALL or NONE of: {contextFieldId, keyName, wrappedKey}!");
             }
 
-            DeidentifyConfig deidConfig = new DeidentifyConfig
+            var deidConfig = new DeidentifyConfig
             {
                 RecordTransformations = new RecordTransformations
                 {
@@ -276,33 +289,34 @@ namespace GoogleCloudSamples
                         {
                             PrimitiveTransformation = new PrimitiveTransformation
                             {
-                                DateShiftConfig = DateShiftConfig
+                                DateShiftConfig = dateShiftConfig
                             },
-                            Fields = { DateFieldList }
+                            Fields = { dateFieldList }
                         }
                     }
                 }
             };
 
-            var response = dlp.DeidentifyContent(new DeidentifyContentRequest
-            {
-                Parent = $"projects/{ProjectId}",
-                DeidentifyConfig = deidConfig,
-                Item = new ContentItem
+            DeidentifyContentResponse response = dlp.DeidentifyContent(
+                new DeidentifyContentRequest
                 {
-                    Table = new Table
+                    Parent = $"projects/{projectId}",
+                    DeidentifyConfig = deidConfig,
+                    Item = new ContentItem
                     {
-                        Headers = { ProtoHeaders },
-                        Rows = { ProtoRows }
+                        Table = new Table
+                        {
+                            Headers = { protoHeaders },
+                            Rows = { protoRows }
+                        }
                     }
-                }
-            });
+                });
 
             // Save the results
-            List<String> OutputLines = new List<string>();
-            OutputLines.Add(CsvLines[0]);
+            List<String> outputLines = new List<string>();
+            outputLines.Add(csvLines[0]);
 
-            OutputLines.AddRange(response.Item.Table.Rows.Select(ProtoRow => {
+            outputLines.AddRange(response.Item.Table.Rows.Select(ProtoRow => {
                 var Values = ProtoRow.Values.Select(ProtoValue =>
                 {
                     if (ProtoValue.DateValue != null)
@@ -320,7 +334,7 @@ namespace GoogleCloudSamples
                 return String.Join(',', Values);
             }));
 
-            File.WriteAllLines(OutputCsvFile, OutputLines);
+            File.WriteAllLines(outputCsvFile, outputLines);
 
             return 0;
         }

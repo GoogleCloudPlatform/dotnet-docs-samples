@@ -30,15 +30,15 @@ namespace GoogleCloudSamples
         public readonly string ProjectId;
         public readonly string WrappedKey;
         public readonly string KeyName;
+        public readonly string ResourcePath = Path.GetFullPath("../../../resources/");
+
+        public readonly CommandLineRunner CommandLineRunner = new CommandLineRunner
+        {
+            VoidMain = Dlp.Main,
+        };
 
         public DlpTestFixture()
         {
-            // TODO remove
-            Environment.SetEnvironmentVariable("GOOGLE_PROJECT_ID", "nodejs-docs-samples");
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "/Users/anassri/nodejs-docs-samples.json");
-            Environment.SetEnvironmentVariable("DLP_DEID_KEY_NAME", "projects/nodejs-docs-samples/locations/global/keyRings/integration-tests-dlp/cryptoKeys/test-key");
-            Environment.SetEnvironmentVariable("DLP_DEID_WRAPPED_KEY", "CiQAaNd+NKZwUklWRkR/57xnFbkQX2YISRHDMpiOG4q92ISwuOkSQQASRgq4htmOs+LXldmKxRvmQ+8MQz3o8xq7zSjG4N0rQbcMgPG7hONPp+PhyKVVbLNds5gMKmx1jclPSTfQT+bH");
-
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             // Authorize the client using Application Default Credentials.
             // See: https://developers.google.com/identity/protocols/application-default-credentials
@@ -57,12 +57,10 @@ namespace GoogleCloudSamples
         const string phone = "(223) 456-7890";
         const string email = "gary@somedomain.org";
         const string cc = "4000-3000-2000-1000";
-        const string inspectFilePath = "test.txt";
         const string inspectStringValue = "hi my phone number is (223) 456-7890 and my email address is " +
             "gary@somedomain.org. You'll find my credit card number is 4000-3000-2000-1000!";
 
         const string ident = "111223333";
-        private string deidFpeStringValue = "Please de-identify the following identifier: 111223333";
         private Regex deidFpeResultRegex = 
             new Regex("Please de-identify the following identifier: TOKEN\\(\\d+\\):(?<ident>.{9})");
         private Regex alphanumRegex = new Regex("[a-zA-Z0-9]*");
@@ -87,10 +85,12 @@ namespace GoogleCloudSamples
         // TODO keep these values, but make their retrieval more idiomatic
         private string DatasetId = "integration_tests_dlp";
         private string TableId = "harmful";
+
         // FYI these values depend on a BQ table in nodejs-docs-samples; we should verify its publicly accessible
         private string QuasiIds = "Age,Gender";
         private string QuasiIdInfoTypes = "AGE,GENDER";
         private string SensitiveAttribute = "Name";
+
         #endregion
 
         readonly CommandLineRunner _dlp = new CommandLineRunner()
@@ -103,46 +103,6 @@ namespace GoogleCloudSamples
         {
             kmsFixture = fixture;
         }
-
-        /*[Fact]
-        public void TestInspectDatastore()
-        {
-            ConsoleOutput output = _dlp.Run('inspectDatastore',
-                ProjectId,
-                'kind' => 'Person',
-                'topic-id' => getenv('DLP_TOPIC'),
-                'subscription-id' => getenv('DLP_SUBSCRIPTION'),
-                'namespace' => 'DLP'
-            ]);
-            Assert.Contains("PERSON_NAME", output.Stdout);
-        }
-
-        [Fact]
-        public void TestInspectBigquery()
-        {
-            ConsoleOutput output = _dlp.Run('inspectBigquery',
-                ProjectId,
-                ProjectId,
-                'dataset' => 'integration_tests_dlp',
-                'table' => 'harmful',
-                'topic-id' => getenv('DLP_TOPIC'),
-                'subscription-id' => getenv('DLP_SUBSCRIPTION')
-            ]);
-            Assert.Contains("PERSON_NAME", output.Stdout);
-        }
-
-        [Fact]
-        public void TestInspectGCS()
-        {
-            ConsoleOutput output = _dlp.Run('inspectGcs',
-                ProjectId,
-                'bucket-id' => getenv('DLP_BUCKET'),
-                'file' => 'harmful.csv',
-                'topic-id' => getenv('DLP_TOPIC'),
-                'subscription-id' => getenv('DLP_SUBSCRIPTION')
-            ]);
-            Assert.Contains("PERSON_NAME", output.Stdout);
-        }*/
 
         [Fact]
         public void TestListInfoTypes()
@@ -161,56 +121,6 @@ namespace GoogleCloudSamples
             Assert.DoesNotContain("AMERICAN_BANKERS_CUSIP_ID", outputB.Stdout);
         }
 
-        [Fact]
-        public void TestInspectString()
-        {
-            // inspect a string with results
-            ConsoleOutput outputA = _dlp.Run(
-                "inspectString",
-                ProjectId,
-                "The name Robert is very common.",
-                "-i", "PERSON_NAME"
-            );
-            Assert.Contains("PERSON_NAME", outputA.Stdout);
-
-            // inspect a string with no results
-            ConsoleOutput outputB = _dlp.Run(
-                "inspectString",
-                ProjectId,
-                "She sells sea shells by the sea shore."
-            );
-            Assert.Contains("No findings", outputB.Stdout);
-        }
-
-        [Fact]
-        public void TestInspectFile()
-        {
-            // inspect a text file with results
-            ConsoleOutput outputA = _dlp.Run(
-                "inspectFile",
-                ProjectId,
-                ResourcePath + "test.txt",
-                "-i", "PERSON_NAME"
-            );
-            Assert.Contains("PERSON_NAME", outputA.Stdout);
-
-            // inspect an image file with results
-            ConsoleOutput outputB = _dlp.Run(
-                "inspectFile",
-                ProjectId,
-                ResourcePath + "test.png",
-                "-i", "PHONE_NUMBER,EMAIL_ADDRESS"
-            );
-            Assert.Contains("PHONE_NUMBER", outputB.Stdout);
-
-            // inspect a file with no results
-            ConsoleOutput outputC = _dlp.Run(
-                "inspectFile",
-                ProjectId,
-                ResourcePath + "harmless.txt"
-            );
-            Assert.Contains("No findings", outputC.Stdout);
-        }
 
         [Fact]
         public void TestDeidMask()
@@ -223,35 +133,6 @@ namespace GoogleCloudSamples
                 "-m", "*"
             );
             Assert.Contains("My SSN is *****9127", output.Stdout);
-        }
-
-        [Fact]
-        public void TestTemplates()
-        {
-            // Creation
-            string name = $"my-inspect-template-{new Guid()}";
-            string displayName = $"My display name {new Guid()}";
-            string description = $"My description {new Guid()}";
-            string fullName = $"projects/{ProjectId}/inspectTemplates/{name}";
-
-            ConsoleOutput output = _dlp.Run(
-                "createInspectTemplate",
-                ProjectId,
-                name,
-                displayName,
-                description);
-
-            Assert.Contains("Successfully created template {fullName}", output.Stdout);
-
-            // List
-            output = _dlp.Run("listTemplates", ProjectId);
-            Assert.Contains($"Template {fullName}", output.Stdout);
-            Assert.Contains($"Display Name: {displayName}", output.Stdout);
-            Assert.Contains($"Description: {description}", output.Stdout);
-
-            // Deletion
-            output = _dlp.Run("deleteTemplate", ProjectId, name);
-            Assert.Contains($"Successfully deleted template {fullName}", output.Stdout);
         }
 
         [Fact]
@@ -324,29 +205,6 @@ namespace GoogleCloudSamples
             // Delete
             ConsoleOutput deleteOutput = _dlp.Run("deleteJobTrigger", fullTriggerId);
             Assert.Contains($"Successfully deleted trigger {fullTriggerId}", deleteOutput.Stdout);
-        }
-
-        [Fact]
-        public void TestInspectTemplates()
-        {
-            // Creation
-            string templateId = $"my-inspect-template-{Guid.NewGuid()}";
-            string displayName = $"'My display name {Guid.NewGuid()}'";
-            string description = $"'My description {Guid.NewGuid()}'";
-
-            ConsoleOutput output = _dlp.Run("createInspectTemplate", CallingProjectId, templateId, displayName, description);
-            Assert.Contains("name: ", output.Stdout);
-            string name = $"projects/{CallingProjectId}/inspectTemplates/{templateId}";
-
-            // List
-            output = _dlp.Run("listTemplates", CallingProjectId);
-            Assert.Contains("Inspect Template Info:", output.Stdout);
-            Assert.Contains($"Display Name: {displayName}", output.Stdout);
-            Assert.Contains($"Description: {description}", output.Stdout);
-
-            // Deletion
-            output = _dlp.Run("deleteTemplate", CallingProjectId, name);
-            Assert.Contains($"Successfully deleted template {name}", output.Stdout);
         }
 
         [Fact]
