@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <StartupObject>GoogleCloudSamples.Dlp</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.2.1" />
+    <PackageReference Include="Google.Api.Gax.Grpc" Version="2.3.0" />
+    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.29.2.999" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.1.0" />
+    <PackageReference Include="Grpc.Core" Version="1.10.0" PrivateAssets="None" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0-beta16" />
+    <PackageReference Include="Google.Cloud.Dlp.V2" Version="1.0.0-beta01" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+</Project>
