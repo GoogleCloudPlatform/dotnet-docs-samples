@@ -70,7 +70,7 @@ namespace Stackdriver
         // [START configure_and_use_logging]
         // [START configure_error_reporting]
         // [START configure_trace]
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
             // Configure logging service.
