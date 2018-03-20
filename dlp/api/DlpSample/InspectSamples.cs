@@ -170,7 +170,7 @@ namespace GoogleCloudSamples
             bool includeQuote,
             IEnumerable<FieldId> identifyingFields,
             IEnumerable<InfoType> infoTypes,
-            string datasetId, 
+            string datasetId,
             string tableId)
         {
             var inspectJob = new InspectJobConfig
@@ -257,7 +257,6 @@ namespace GoogleCloudSamples
                 foreach (var item in firstPage)
                 {
                     Console.WriteLine($"\t {item[""]}");
-
                 }
             }
 
@@ -356,7 +355,6 @@ namespace GoogleCloudSamples
                 foreach (var item in firstPage)
                 {
                     Console.WriteLine($"\t {item[""]}");
-
                 }
             }
 

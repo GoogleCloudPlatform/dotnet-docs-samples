@@ -534,7 +534,7 @@ namespace GoogleCloudSamples
                             opts.ColumnName
                         ),
                         errs => 1);
-                            break;
+                    break;
             }
         }
     }

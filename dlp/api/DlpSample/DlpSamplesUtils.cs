@@ -92,7 +92,8 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <returns>The unpacked value as a string</returns>
         /// <param name="protoValue">Proto value.</param>
-        public static string UnpackValue(Value protoValue) {
+        public static string UnpackValue(Value protoValue)
+        {
             Dictionary<string, object> jsonValue = JsonConvert.DeserializeObject<Dictionary<string, object>>(protoValue.ToString());
             return jsonValue.Values.ElementAt(0).ToString();
         }

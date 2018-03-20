@@ -32,7 +32,7 @@ namespace GoogleCloudSamples
             {
                 ParentAsProjectName = new ProjectName(projectId),
                 Filter = filter,
-                Type = (DlpJobType) Enum.Parse(typeof(DlpJobType), jobType)
+                Type = (DlpJobType)Enum.Parse(typeof(DlpJobType), jobType)
             });
 
             foreach (var job in response)

@@ -38,7 +38,8 @@ namespace GoogleCloudSamples
                 ParentAsProjectName = new ProjectName(projectId),
                 DeidentifyConfig = new DeidentifyConfig
                 {
-                    InfoTypeTransformations = new InfoTypeTransformations {
+                    InfoTypeTransformations = new InfoTypeTransformations
+                    {
                         Transformations = {
                             new InfoTypeTransformations.Types.InfoTypeTransformation
                             {
@@ -104,7 +105,7 @@ namespace GoogleCloudSamples
                                     }
                                 }
                             }
-                        } 
+                        }
                     }
                 }
             };
@@ -316,7 +317,8 @@ namespace GoogleCloudSamples
             List<String> outputLines = new List<string>();
             outputLines.Add(csvLines[0]);
 
-            outputLines.AddRange(response.Item.Table.Rows.Select(ProtoRow => {
+            outputLines.AddRange(response.Item.Table.Rows.Select(ProtoRow =>
+            {
                 var Values = ProtoRow.Values.Select(ProtoValue =>
                 {
                     if (ProtoValue.DateValue != null)

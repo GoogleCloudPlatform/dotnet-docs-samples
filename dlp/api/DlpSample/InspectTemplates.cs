@@ -42,7 +42,7 @@ namespace GoogleCloudSamples
                     Description = description,
                     InspectConfig = new InspectConfig
                     {
-                        MinLikelihood = (Likelihood) Enum.Parse(typeof(Likelihood), likelihood),
+                        MinLikelihood = (Likelihood)Enum.Parse(typeof(Likelihood), likelihood),
                         Limits = new InspectConfig.Types.FindingLimits
                         {
                             MaxFindingsPerRequest = maxFindings

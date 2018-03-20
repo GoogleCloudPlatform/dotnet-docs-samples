@@ -215,7 +215,8 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"  Least common value occurs {bucket.ValueFrequencyLowerBound} time(s).");
                 Console.WriteLine($"  {bucket.BucketSize} unique value(s) total.");
 
-                foreach (var bucketValue in bucket.BucketValues) {
+                foreach (var bucketValue in bucket.BucketValues)
+                {
                     // 'UnpackValue(x)' is a prettier version of 'x.toString()'
                     Console.WriteLine($"  Value {DlpSamplesUtils.UnpackValue(bucketValue.Value)} occurs {bucketValue.Count} time(s).");
                 }
@@ -240,9 +241,9 @@ namespace GoogleCloudSamples
             // Construct + submit the job
             var KAnonymityConfig = new KAnonymityConfig
             {
-                QuasiIds = { quasiIds } 
+                QuasiIds = { quasiIds }
             };
-            
+
             var config = new RiskAnalysisJobConfig
             {
                 PrivacyMetric = new PrivacyMetric
@@ -340,8 +341,9 @@ namespace GoogleCloudSamples
             DlpServiceClient dlp = DlpServiceClient.Create();
 
             // Construct + submit the job
-            var ldiversityConfig = new LDiversityConfig{
-                SensitiveAttribute = new FieldId {  Name = sensitiveAttribute },
+            var ldiversityConfig = new LDiversityConfig
+            {
+                SensitiveAttribute = new FieldId { Name = sensitiveAttribute },
                 QuasiIds = { quasiIds }
             };
 
@@ -422,7 +424,8 @@ namespace GoogleCloudSamples
                     Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => DlpSamplesUtils.UnpackValue(x)))}]");
                     Console.WriteLine($"    Class size: {bucketValue.EquivalenceClassSize}");
 
-                    foreach (var topValue in bucketValue.TopSensitiveValues) {
+                    foreach (var topValue in bucketValue.TopSensitiveValues)
+                    {
                         Console.WriteLine($"    Sensitive value {DlpSamplesUtils.UnpackValue(topValue.Value)} occurs {topValue.Count} time(s).");
                     }
                 }
