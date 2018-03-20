@@ -14,8 +14,10 @@
  * the License.
  */
 
+// [START using_google_cloud_diagnostics]
 using Google.Cloud.Diagnostics.AspNetCore;
 using Google.Cloud.Diagnostics.Common;
+// [END using_google_cloud_diagnostics]
 using Google.Cloud.Trace.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
