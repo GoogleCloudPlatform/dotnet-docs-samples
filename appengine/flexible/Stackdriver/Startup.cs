@@ -70,17 +70,27 @@ namespace Stackdriver
         // [START configure_and_use_logging]
         // [START configure_error_reporting]
         // [START configure_trace]
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
+            ILoggerFactory loggerFactory)
         {
             // Configure logging service.
             loggerFactory.AddGoogle(Configuration["Stackdriver:ProjectId"]);
             var logger = loggerFactory.CreateLogger("testStackdriverLogging");
             // Write the log entry.
             logger.LogInformation("Stackdriver sample started. This is a log message.");
-            // Configure error reporting service.
-            app.UseGoogleExceptionLogging();
             // Configure trace service.
             app.UseGoogleTrace();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // Configure error reporting service.
+                // MUST be called AFTER UseExceptionHandler().
+                app.UseGoogleExceptionLogging();
+            }
 
             app.UseStaticFiles();
 
