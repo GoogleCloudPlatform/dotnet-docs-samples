@@ -115,7 +115,7 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END dlp_create_trigger]
-        
+
         // [START dlp_list_triggers]
         public static object ListJobTriggers(string projectId)
         {
