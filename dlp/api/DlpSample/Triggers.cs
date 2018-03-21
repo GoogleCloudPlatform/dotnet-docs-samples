@@ -42,6 +42,7 @@ namespace GoogleCloudSamples
     /// </summary>
     class JobTriggers
     {
+        // [START dlp_create_trigger]
         public static object CreateJobTrigger(
             string projectId,
             string bucketName,
@@ -113,7 +114,9 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Successfully created trigger {response.Name}");
             return 0;
         }
-
+        // [END dlp_create_trigger]
+        
+        // [START dlp_list_triggers]
         public static object ListJobTriggers(string projectId)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
@@ -137,7 +140,9 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+        // [END dlp_list_triggers]
 
+        // [START dlp_delete_trigger]
         public static object DeleteJobTrigger(string triggerName)
         {
             DlpServiceClient dlp = DlpServiceClient.Create();
@@ -151,5 +156,6 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Successfully deleted trigger {triggerName}.");
             return 0;
         }
+        // [END dlp_delete_trigger]
     }
 }
