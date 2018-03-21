@@ -15,6 +15,7 @@
  */
 
 // [START using_google_cloud_diagnostics]
+
 using Google.Cloud.Diagnostics.AspNetCore;
 using Google.Cloud.Diagnostics.Common;
 // [END using_google_cloud_diagnostics]
