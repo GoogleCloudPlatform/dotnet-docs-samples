@@ -57,12 +57,12 @@ namespace GoogleCloudSamples.Spanner
             Command = "Spanner"
         };
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             try
             {
                 // Delete database created from running the tests.
-                _spannerCmd.Run("deleteSampleDatabase",
+                _spannerCmd.Run("deleteDatabase",
                     s_projectId, s_instanceId, s_databaseId);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
@@ -83,8 +83,6 @@ namespace GoogleCloudSamples.Spanner
         void InitializeDatabase()
         {
             // If the database has not been initialized, retry.
-            _spannerCmd.Run("deleteSampleDatabase",
-                    s_projectId, s_instanceId, s_databaseId);
             _spannerCmd.Run("createSampleDatabase",
                 s_projectId, s_instanceId, s_databaseId);
             _spannerCmd.Run("insertSampleData",
