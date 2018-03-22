@@ -4,6 +4,7 @@ packages/
 *.suo
 .nuget/
 TestResults/
+TestResults.xml
 *.csproj.user
 .idea/
 *.iml

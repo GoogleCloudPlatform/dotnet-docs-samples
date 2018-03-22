@@ -53,9 +53,8 @@ Unzip $env:KOKORO_GFILE_DIR\casperjs-1.1.4-1.zip \
 $casperJsInstallPath = Resolve-Path \casperjs-1.1.4-1
 $env:CASPERJS11_BIN = "$casperJsInstallPath\bin"
 
-# Install Python, for casperjs 1.1
-gci C:\ | Format-Table
-exit
+# Casperjs 1.1 needs python in the path.
+$env:PATH = "$env:PATH;C:\Python27"
 
 # Install dotnet core sdk.
 choco install -y dotnetcore-sdk --version 2.0.0

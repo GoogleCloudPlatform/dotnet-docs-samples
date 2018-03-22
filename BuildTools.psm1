@@ -754,15 +754,12 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
 ##############################
 function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false) {
     $sleepSeconds = 2
-    if ($v11) {
-        New-Item -ItemType Directory -Force -Path TestResults | Out-Null
-    }
     for ($tryCount = 0; $tryCount -lt 5; $tryCount++) {
         Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
         if ($v11) {
             $env:CASPERJS11_URL = $Url
             $casperOut = python (Join-Path $env:CASPERJS11_BIN "casperjs") `
-                -- test --xunit=(Join-Path "TestResults" "TestResults.xml") $TestJs
+                -- test --xunit=TestResults.xml $TestJs
         } else {
             $casperOut = casperjs $TestJs $Url
         }
