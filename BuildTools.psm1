@@ -472,30 +472,6 @@ function Run-TestScripts($TimeoutSeconds=300) {
 
 ##############################################################################
 #.SYNOPSIS
-# Builds and runs .NET core web application in the current directory.
-# Runs test using casperjs.
-#
-#.INPUTS
-# Javascript test files to pass to casperjs.
-##############################################################################
-function BuildAndRun-CoreTest($TestJs = "test.js") {
-    dnvm use 1.0.0-rc1-update1 -r clr
-    dnu restore
-    dnu build
-    $webProcess = Start-Process dnx web -PassThru
-    Try
-    {
-        Start-Sleep -Seconds 4  # Wait for web process to start up.
-        casperjs $TestJs http://localhost:5000
-    }
-    Finally
-    {
-        Stop-Process $webProcess
-    }
-}
-
-##############################################################################
-#.SYNOPSIS
 # Runs code formatter on a project or solution.
 #
 #.INPUTS
@@ -746,12 +722,13 @@ function Run-Kestrel([Parameter(mandatory=$true)][string]$url) {
 # Throws an exception if the test fails.
 #
 ##############################################################################
-function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'test.js', [switch]$LeaveRunning = $false) {
+function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'test.js', 
+    [switch]$LeaveRunning = $false, [switch]$CasperJs11 = $false) {
     $url = "http://localhost:$PortNumber"
     $job = Run-Kestrel($url)
     Try
     {
-        Run-CasperJs $TestJs, $Url
+        Run-CasperJs $TestJs $Url -v11:$CasperJs11
     }
     Finally
     {
@@ -762,12 +739,33 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
         }
     }
 }
-
-function Run-CasperJs($TestJs='test.js', $Url) {
+##############################
+#.SYNOPSIS
+# Runs CasperJs
+#
+#.PARAMETER TestJs
+# The Javascript file to run.
+#
+#.PARAMETER Url
+# The url to pass to the test.  Usually points to running website to test.
+#
+#.PARAMETER v11
+# Use CasperJs version 1.1 instead of 1.0.
+##############################
+function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false) {
     $sleepSeconds = 2
+    if ($v11) {
+        New-Item -ItemType Directory -Force -Path TestResults | Out-Null
+    }
     for ($tryCount = 0; $tryCount -lt 5; $tryCount++) {
         Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
-        $casperOut = casperjs $TestJs $Url
+        if ($v11) {
+            $env:CASPERJS11_URL = $Url
+            $casperOut = python "$env:CASPERJS11_BIN\casperjs" -- test `
+                --xunit=TestResults\TestResults.xml $TestJs
+        } else {
+            $casperOut = casperjs $TestJs $Url
+        }
         if ($LASTEXITCODE -eq 0) {
             $casperOut | Write-Host
             return
