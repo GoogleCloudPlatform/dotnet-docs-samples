@@ -54,7 +54,7 @@ $casperJsInstallPath = Resolve-Path \casperjs-1.1.4-1
 $env:CASPERJS11_BIN = "$casperJsInstallPath\bin"
 
 # Install Python, for casperjs 1.1
-choco install -y python --version 2.7.6
+dir \
 
 # Install dotnet core sdk.
 choco install -y dotnetcore-sdk --version 2.0.0
