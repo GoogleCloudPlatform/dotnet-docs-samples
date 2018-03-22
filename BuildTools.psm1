@@ -761,8 +761,8 @@ function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false) {
         Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
         if ($v11) {
             $env:CASPERJS11_URL = $Url
-            $casperOut = python "$env:CASPERJS11_BIN\casperjs" -- test `
-                --xunit=TestResults\TestResults.xml $TestJs
+            $casperOut = python (Join-Path $env:CASPERJS11_BIN "casperjs") `
+                -- test --xunit=TestResults\TestResults.xml $TestJs
         } else {
             $casperOut = casperjs $TestJs $Url
         }
