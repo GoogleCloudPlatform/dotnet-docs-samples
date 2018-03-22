@@ -27,6 +27,11 @@ ENV PATH "$PATH:/casperjs-casperjs-76fc831/bin"
 # patch bootstrap.js
 COPY bootstrap.js /casperjs-casperjs-76fc831/bin
 
+# install casperjs 1.1
+RUN curl https://github.com/casperjs/casperjs/archive/1.1.4-1.tar.gz -o casperjs-1.1.4-1.tar.gz -L
+RUN tar xvf casperjs-1.1.4-1.tar.gz
+ENV CASPERJS11_BIN /casperjs-1.1.4-1/bin
+
 # Add debugging tools.
 RUN apt-get install git vim -y
 
