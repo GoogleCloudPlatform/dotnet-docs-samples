@@ -48,6 +48,14 @@ $env:PATH = "$env:PATH;$casperJsInstallPath\batchbin"
 Copy-Item -Force github\dotnet-docs-samples\.kokoro\docker\bootstrap.js `
     $casperJsInstallPath\bin\bootstrap.js
 
+# Install casperjs 1.1
+Unzip $env:KOKORO_GFILE_DIR\casperjs-1.1.4-1.zip \
+$casperJsInstallPath = Resolve-Path \casperjs-1.1.4-1
+$env:CASPERJS11_BIN = "$casperJsInstallPath\bin"
+
+# Casperjs 1.1 needs python in the path.
+$env:PATH = "$env:PATH;C:\Python27"
+
 # Install dotnet core sdk.
 choco install -y dotnetcore-sdk --version 2.0.0
 choco install -y --sxs dotnetcore-sdk --version 1.1.2
