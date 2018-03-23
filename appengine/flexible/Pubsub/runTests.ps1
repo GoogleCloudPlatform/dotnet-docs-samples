@@ -19,5 +19,5 @@ BackupAndEdit-TextFile "appsettings.json" `
     @{"your-project-id" = $env:GOOGLE_PROJECT_ID} `
 {
 	dotnet build
-	Run-KestrelTest 5576 localTest.js
+	Run-KestrelTest 5576 localTest.js -CasperJs11
 }
