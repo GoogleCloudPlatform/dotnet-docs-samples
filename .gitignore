@@ -4,7 +4,8 @@ packages/
 *.suo
 .nuget/
 TestResults/
-TestResults.xml
+*TestResults.xml
+*sponge_log.xml
 *.csproj.user
 .idea/
 *.iml

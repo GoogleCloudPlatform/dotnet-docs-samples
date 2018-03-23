@@ -20,5 +20,5 @@ BackupAndEdit-TextFile "appsettings.json" `
 {
 	Copy-Item -Force $env:KOKORO_GFILE_DIR/mysql-client.pfx client.pfx
 	dotnet build
-	Run-KestrelTest 5567
+	Run-KestrelTest 5567 -CasperJs11 -OutXml MySqlTestResults.xml
 }

@@ -440,7 +440,9 @@ function Run-TestScripts($TimeoutSeconds=300) {
     $results = @{}
     Run-TestScriptsOnce $scripts $TimeoutSeconds 'Starting' $results
     # Rename all the test logs to a name Sponge will find.
-    Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 01_sponge_log.xml
+    Get-ChildItem -Recurse *TestResults.xml | ForEach-Object {
+        Rename-Item $_ -NewName "01_$($_.BaseName)_sponge_log.xml"
+    }
     # Retry the failures once.
     $failed = $results['Failed']
     if ($failed) {
@@ -448,7 +450,9 @@ function Run-TestScripts($TimeoutSeconds=300) {
         Run-TestScriptsOnce ($failed | Get-Item) $TimeoutSeconds `
             'Retrying' $results
         # Rename all the test logs to a name Sponge will find.
-        Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 02_sponge_log.xml
+        Get-ChildItem -Recurse *TestResults.xml | ForEach-Object {
+            Rename-Item $_ -NewName "02_$($_.BaseName)_sponge_log.xml"
+        }
     }
 
     # Print a final summary.
@@ -723,12 +727,14 @@ function Run-Kestrel([Parameter(mandatory=$true)][string]$url) {
 #
 ##############################################################################
 function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'test.js', 
-    [switch]$LeaveRunning = $false, [switch]$CasperJs11 = $false) {
+    [switch]$LeaveRunning = $false, [switch]$CasperJs11 = $false,
+    [string]$OutXml='TestResults.xml') 
+{
     $url = "http://localhost:$PortNumber"
     $job = Run-Kestrel($url)
     Try
     {
-        Run-CasperJs $TestJs $Url -v11:$CasperJs11
+        Run-CasperJs $TestJs $Url -v11:$CasperJs11 -OutXml $OutXml
     }
     Finally
     {
@@ -752,7 +758,9 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
 #.PARAMETER v11
 # Use CasperJs version 1.1 instead of 1.0.
 ##############################
-function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false) {
+function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false,
+    [string]$OutXml='TestResults.xml') 
+{
     $sleepSeconds = 2
     for ($tryCount = 0; $tryCount -lt 5; $tryCount++) {
         Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
@@ -762,10 +770,10 @@ function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false) {
             # cannot capture output.  So we use python to invoke it and
             # capture output.
             $casperOut = python (Join-Path $env:CASPERJS11_BIN "casperjs") `
-                -- test --xunit=TestResults.xml $TestJs
+                -- test --xunit=$OutXml $TestJs
             # Casper 1.1 always returns 0, so inspect the xml output
             # to see if a test failed.
-            [xml]$x = Get-Content TestResults.xml         
+            [xml]$x = Get-Content $OutXml         
             $LASTEXITCODE = 0      
             foreach ($suite in $x.testsuites.testsuite) {
                 $LASTEXITCODE += [int] $suite.failures 
