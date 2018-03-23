@@ -440,9 +440,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
     $results = @{}
     Run-TestScriptsOnce $scripts $TimeoutSeconds 'Starting' $results
     # Rename all the test logs to a name Sponge will find.
-    Get-ChildItem -Recurse *TestResults.xml | ForEach-Object {
-        Rename-Item $_ -NewName "01_$($_.BaseName)_sponge_log.xml"
-    }
+    Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 01_sponge_log.xml
     # Retry the failures once.
     $failed = $results['Failed']
     if ($failed) {
@@ -450,9 +448,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
         Run-TestScriptsOnce ($failed | Get-Item) $TimeoutSeconds `
             'Retrying' $results
         # Rename all the test logs to a name Sponge will find.
-        Get-ChildItem -Recurse *TestResults.xml | ForEach-Object {
-            Rename-Item $_ -NewName "02_$($_.BaseName)_sponge_log.xml"
-        }
+        Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 02_sponge_log.xml
     }
 
     # Print a final summary.
@@ -727,14 +723,12 @@ function Run-Kestrel([Parameter(mandatory=$true)][string]$url) {
 #
 ##############################################################################
 function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'test.js', 
-    [switch]$LeaveRunning = $false, [switch]$CasperJs11 = $false,
-    [string]$OutXml='TestResults.xml') 
-{
+    [switch]$LeaveRunning = $false, [switch]$CasperJs11 = $false) {
     $url = "http://localhost:$PortNumber"
     $job = Run-Kestrel($url)
     Try
     {
-        Run-CasperJs $TestJs $Url -v11:$CasperJs11 -OutXml $OutXml
+        Run-CasperJs $TestJs $Url -v11:$CasperJs11
     }
     Finally
     {
@@ -745,6 +739,22 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
         }
     }
 }
+
+##############################
+#.SYNOPSIS
+# Moves TestResults.xml into an output subdirectory.
+#
+#.PARAMETER OutDir
+#The directory to which to move TestResults.xml.  This directory will be created
+#if it does not already exist.
+##############################
+function Move-TestResults($OutDir) {
+    if ($OutDir -and (Test-Path TestResults.xml)) {
+        New-Item -ItemType Directory -Force -Path $OutDir
+        Move-Item TestResults.xml $OutDir
+    }
+}
+
 ##############################
 #.SYNOPSIS
 # Runs CasperJs
@@ -759,8 +769,7 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
 # Use CasperJs version 1.1 instead of 1.0.
 ##############################
 function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false,
-    [string]$OutXml='TestResults.xml') 
-{
+    [string]$OutDir) {
     $sleepSeconds = 2
     for ($tryCount = 0; $tryCount -lt 5; $tryCount++) {
         Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
@@ -770,10 +779,10 @@ function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false,
             # cannot capture output.  So we use python to invoke it and
             # capture output.
             $casperOut = python (Join-Path $env:CASPERJS11_BIN "casperjs") `
-                -- test --xunit=$OutXml $TestJs
+                -- test --xunit=TestResults.xml $TestJs
             # Casper 1.1 always returns 0, so inspect the xml output
             # to see if a test failed.
-            [xml]$x = Get-Content $OutXml         
+            [xml]$x = Get-Content TestResults.xml         
             $LASTEXITCODE = 0      
             foreach ($suite in $x.testsuites.testsuite) {
                 $LASTEXITCODE += [int] $suite.failures 
@@ -1144,4 +1153,3 @@ function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
         "Add copyright to $path."
     }
 }
-
