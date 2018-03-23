@@ -11,6 +11,7 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
+
 using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,7 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace GoogleHomeAspNetCoreDemoServer
 {
     public class Startup
-    { 
+    {
         public void ConfigureServices(IServiceCollection services)
         {
             AddGoogleExceptionLogging(services);
