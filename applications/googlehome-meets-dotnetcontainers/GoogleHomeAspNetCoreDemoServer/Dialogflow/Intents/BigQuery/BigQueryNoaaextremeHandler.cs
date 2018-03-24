@@ -106,6 +106,16 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
                 $"{(double)top["celcius"]:0.0} degrees celcius, at the {top["name"]} monitoring station.");
         }
 
+        /// <summary>
+        /// Given a conversation request, extracts and validates required parameters.
+        /// </summary>
+        /// <param name="req">Conversation request</param>
+        /// <param name="temp">Hottest or coldest temperature indicator</param>
+        /// <param name="year">Year between 1929 and 2017</param>
+        /// <param name="countryCode2">Country code</param>
+        /// <param name="countryName">Country name</param>
+        /// <param name="fipsCountry"></param>
+        /// <returns></returns>
         private static string ExtractAndValidateParameters(ConvRequest req, out string temp, out string year, 
             out string countryCode2, out string countryName, out string fipsCountry)
         {

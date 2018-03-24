@@ -81,6 +81,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
             }
         }
 
+        /// <summary>
+        /// Given an Intent name, finds a handler matching the intent name attribute.
+        /// </summary>
+        /// <param name="intentName">Intent name</param>
+        /// <returns>Handler or null, if no intent found</returns>
         private BaseHandler FindHandler(string intentName)
         {
             var baseHandlerTypes = typeof(BaseHandler).Assembly.GetTypes()
@@ -91,7 +96,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
                           where ((IntentAttribute)attribute).Name == intentName
                           select baseHandlerType;
 
-            var type = typeList.First();
+            var type = typeList.FirstOrDefault();
             if (type == null) return null;
 
             var constructorInfo = type.GetConstructor(new[] { GetType() });

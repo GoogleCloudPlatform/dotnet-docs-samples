@@ -26,6 +26,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Controllers
     /// </summary>
     public class HomeController : Controller
     {
+        // A dictionary of client buffer queues keyed by client ids. 
         private static Dictionary<object, BufferBlock<string>> clientBufferQueues = new Dictionary<object, BufferBlock<string>>();
 
         private readonly IExceptionLogger _exceptionLogger;
@@ -61,7 +62,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Controllers
             {
                 page = await queue.ReceiveAsync(TimeSpan.FromSeconds(15));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogError(e.Message);
                 _exceptionLogger.Log(e);
@@ -76,6 +77,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Controllers
             return Content("Hello World!", "text/plain");
         }
 
+
+        /// <summary>
+        /// Flushes the passed in HTML page to the client.
+        /// </summary>
+        /// <param name="page">Page to flush</param>
         public static void SetPage(string page)
         {
             lock (clientBufferQueues)
@@ -96,6 +102,12 @@ namespace GoogleHomeAspNetCoreDemoServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Given a client id, either returns the buffer queue for that client or creates
+        /// a new queue, if it doesn't exist yet.
+        /// </summary>
+        /// <param name="clientId">Client id</param>
+        /// <returns>Client's buffer queue</returns>
         private static BufferBlock<string> GetOrCreateClientBufferQueue(string clientId)
         {
             BufferBlock<string> queue;

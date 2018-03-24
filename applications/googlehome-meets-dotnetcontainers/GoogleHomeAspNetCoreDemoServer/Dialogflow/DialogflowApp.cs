@@ -78,7 +78,12 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
             }
         }
 
-
+        /// <summary>
+        /// Given a conversation request with a session id, either get the existing
+        /// conversation or create a new one.
+        /// </summary>
+        /// <param name="convRequest">Conversation request</param>
+        /// <returns>Conversation</returns>
         private Conversation GetOrCreateConversation(ConvRequest convRequest)
         {
             Conversation conversation;

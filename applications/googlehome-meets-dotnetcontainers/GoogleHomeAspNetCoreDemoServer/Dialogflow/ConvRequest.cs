@@ -23,8 +23,16 @@ using System.Threading.Tasks;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
 {
+    /// <summary>
+    /// Class that encapsulates a Dialogflow conversation request received from the client.
+    /// </summary>
     public class ConvRequest
     {
+        /// <summary>
+        /// Parses an HTTP request into a Conversation request that Dialogflow expects.
+        /// </summary>
+        /// <param name="httpRequest">HTTP request to parse</param>
+        /// <returns>A conversation request</returns>
         public static async Task<ConvRequest> ParseAsync(HttpRequest httpRequest)
         {
             var json = await ConvertToString(httpRequest);

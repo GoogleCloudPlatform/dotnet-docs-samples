@@ -41,6 +41,9 @@ namespace GoogleHomeAspNetCoreDemoServer
                 .Build();
         }
 
+        /// <summary>
+        /// Read application settings from appsettings.json. 
+        /// </summary>
         private static void ReadAppSettings()
         {
             var config = new ConfigurationBuilder()

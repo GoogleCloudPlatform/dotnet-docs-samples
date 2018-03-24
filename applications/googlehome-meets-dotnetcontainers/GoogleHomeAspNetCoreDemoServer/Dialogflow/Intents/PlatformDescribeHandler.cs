@@ -39,14 +39,18 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         public override async Task<object> Handle(ConvRequest req)
         {
             var platform = await Platform.InstanceAsync();
-
             GetDetailedDescription(platform, out string spokenDescription, out string[] textDescription);
 
             DialogflowApp.Show(string.Join("", textDescription.Select(x => $"<div>{x}</div>")));
-            
             return DialogflowApp.Tell(spokenDescription);
         }
 
+        /// <summary>
+        /// Given a platform, it returns more detailed description of the platform in text and spoken form.
+        /// </summary>
+        /// <param name="platform">Platform to describe</param>
+        /// <param name="spokenDescription">Spoken description of the platform</param>
+        /// <param name="textDescription">Text description of the platform</param>
         private static void GetDetailedDescription(Platform platform, out string spokenDescription, out string[] textDescription)
         {
             // Create a text description, and a spoken description of each platform.
