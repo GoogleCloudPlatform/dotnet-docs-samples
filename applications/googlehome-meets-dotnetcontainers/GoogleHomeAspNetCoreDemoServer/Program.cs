@@ -51,6 +51,7 @@ namespace GoogleHomeAspNetCoreDemoServer
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
 
+            // Read json config into AppSettings.
             AppSettings = new AppSettings();
             config.Bind(AppSettings);
         }

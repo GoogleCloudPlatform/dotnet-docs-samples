@@ -29,10 +29,20 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         {
         }
 
-        // Helper method to combine a list ready for DialogFlow
-        protected static string CombineList(IReadOnlyList<string> col, string nonEmptyPrefix, string onEmpty) =>
-            col.Count == 0 ? onEmpty :
-            nonEmptyPrefix + " " + (col.Count == 1 ? col[0] :
-                $"{string.Join(", ", col.Take(col.Count - 1))}, and {col.Last()}");
+        /// <summary>
+        /// Helper method to convert a list into a comma separated string.
+        /// </summary>
+        /// <param name="col">List to process</param>
+        /// <param name="nonEmptyPrefix">The prefix to add when the list is not empty</param>
+        /// <param name="onEmpty">The string to return when the list is empty.</param>
+        /// <returns></returns>
+        protected static string CombineList(IReadOnlyList<string> col, string nonEmptyPrefix, string onEmpty)
+        {
+            if (col == null || col.Count == 0) return onEmpty;
+ 
+            if (col.Count == 1) return nonEmptyPrefix + " " + col[0];
+
+            return nonEmptyPrefix + " "  + $"{string.Join(", ", col.Take(col.Count - 1))}, and {col.Last()}");
+        }
     }
 }
