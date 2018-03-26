@@ -39,10 +39,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Controllers
         /// <param name="logger">Regular logger</param>
         public HomeController(
             IExceptionLogger exceptionLogger,
-            ILoggerFactory logger)
+            ILogger<HomeController> logger)
         {
             _exceptionLogger = exceptionLogger;
-            _logger = logger.CreateLogger<HomeController>();
+            _logger = logger;
         }
 
         [Route("")]

@@ -27,7 +27,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         private static readonly Dictionary<string, Conversation> conversations = new Dictionary<string, Conversation>();
 
         private readonly IExceptionLogger _exceptionLogger;
-        private readonly ILogger<DialogflowApp> _logger;
+        private readonly ILogger<ConversationController> _logger;
         private readonly IManagedTracer _tracer;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         /// <param name="exceptionLogger">Exception logger</param>
         /// <param name="logger">Regular logger</param>
         /// <param name="tracer">Tracer</param>
-        public DialogflowApp(IExceptionLogger exceptionLogger, ILogger<DialogflowApp> logger, IManagedTracer tracer)
+        public DialogflowApp(IExceptionLogger exceptionLogger, ILogger<ConversationController> logger, IManagedTracer tracer)
         {
             _exceptionLogger = exceptionLogger;
             _logger = logger;

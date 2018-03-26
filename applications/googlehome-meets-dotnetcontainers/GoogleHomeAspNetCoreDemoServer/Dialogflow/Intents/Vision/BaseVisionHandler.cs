@@ -42,7 +42,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
  
             if (col.Count == 1) return nonEmptyPrefix + " " + col[0];
 
-            return nonEmptyPrefix + " "  + $"{string.Join(", ", col.Take(col.Count - 1))}, and {col.Last()}");
+            return nonEmptyPrefix + " "  + $"{string.Join(", ", col.Take(col.Count - 1))}, and {col.Last()}";
         }
     }
 }

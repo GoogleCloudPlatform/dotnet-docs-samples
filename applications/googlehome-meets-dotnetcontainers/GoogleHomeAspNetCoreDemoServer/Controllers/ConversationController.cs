@@ -35,10 +35,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Controllers
         /// <param name="tracer">Tracer</param>
         public ConversationController(
             IExceptionLogger exceptionLogger,
-            ILoggerFactory logger,
+            ILogger<ConversationController> logger,
             IManagedTracer tracer)
         {
-            _dialogFlowApp = new DialogflowApp(exceptionLogger, logger.CreateLogger<DialogflowApp>(), tracer);
+            _dialogFlowApp = new DialogflowApp(exceptionLogger, logger, tracer);
         }
 
         [Route("Conversation")]
