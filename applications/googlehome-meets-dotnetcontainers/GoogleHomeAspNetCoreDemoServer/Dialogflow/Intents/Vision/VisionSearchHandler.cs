@@ -37,7 +37,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        public override async Task<string> Handle(ConvRequest req)
+        public override async Task<string> HandleAsync(ConvRequest req)
         {
             var searchTerm = req.Parameters["searchterm"];
 

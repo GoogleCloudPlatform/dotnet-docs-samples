@@ -39,7 +39,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        public override async Task<string> Handle(ConvRequest req)
+        public override async Task<string> HandleAsync(ConvRequest req)
         {
             var errorMessage = ExtractAndValidateParameters(req, out string temp, out string year, out string countryCode2, 
                 out string countryName, out string fipsCountry);

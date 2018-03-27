@@ -35,7 +35,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        public override async Task<string> Handle(ConvRequest req)
+        public override string Handle(ConvRequest req)
         {
             // Unfocus the image
             _conversation.State.FocusedImage = null;

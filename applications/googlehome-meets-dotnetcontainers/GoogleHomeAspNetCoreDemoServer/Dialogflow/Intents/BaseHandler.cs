@@ -32,10 +32,26 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         }
 
         /// <summary>
-        /// Handles the conversation request.
+        /// Base async method that simply returns a Task with null. 
+        /// Subclasses can override to provide an implementation.
         /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public abstract Task<string> Handle(ConvRequest req);
+        /// <param name="req">Conversation request</param>
+        /// <returns>Task with null</returns>
+
+        public virtual Task<string> HandleAsync(ConvRequest req)
+        {
+            return Task.FromResult<string>(null);
+        }
+
+        /// <summary>
+        /// Base method that simply returns null.
+        /// Sublasses can override to provide an implementation.
+        /// </summary>
+        /// <param name="req">Conversation request</param>
+        /// <returns>null</returns>
+        public virtual string Handle(ConvRequest req)
+        {
+            return null;
+        }
     }
 }

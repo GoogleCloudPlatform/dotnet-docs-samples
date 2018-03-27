@@ -64,8 +64,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
             {
                 using (_tracer.StartSpan(req.IntentName))
                 {
-                    var result = await handler.Handle(req);
-                    return result;
+                    // Call the sync handler, if there is one. If not, call the async handler.
+                    // Otherwise, it's an error.
+                    return handler.Handle(req) ??
+                        await handler.HandleAsync(req) ??
+                        DialogflowApp.Tell("Error. Handler did not return a valid response.");
                 }
             }
             catch (Exception e) when (req.IntentName != "exception.throw")

@@ -36,7 +36,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// </summary>
         /// <param name="req">Conversation request</param>
         /// <returns></returns>
-        public override async Task<string> Handle(ConvRequest req)
+        public override async Task<string> HandleAsync(ConvRequest req)
         {
             var platform = await Platform.InstanceAsync();
             (var spokenDescription, string[] textDescription) = GetDetailedDescription(platform);

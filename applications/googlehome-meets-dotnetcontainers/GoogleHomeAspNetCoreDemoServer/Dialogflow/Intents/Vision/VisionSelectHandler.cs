@@ -34,7 +34,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        public override async Task<string> Handle(ConvRequest req)
+        public override string Handle(ConvRequest req)
         {
             if (!int.TryParse(req.Parameters["index"], out int index))
             {
