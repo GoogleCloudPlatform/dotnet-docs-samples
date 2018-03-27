@@ -36,6 +36,6 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        public abstract Task<object> Handle(ConvRequest req);
+        public abstract Task<string> Handle(ConvRequest req);
     }
 }

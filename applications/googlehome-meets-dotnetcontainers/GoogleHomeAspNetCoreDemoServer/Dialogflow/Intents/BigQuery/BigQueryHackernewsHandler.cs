@@ -38,7 +38,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        public override async Task<object> Handle(ConvRequest req)
+        public override async Task<string> Handle(ConvRequest req)
         {
             // Extract the DialogFlow date, without the time, that has been requested
             // Format is "yyyy-mm-dd"

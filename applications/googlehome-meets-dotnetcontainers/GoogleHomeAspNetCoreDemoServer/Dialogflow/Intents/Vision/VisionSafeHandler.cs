@@ -36,7 +36,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        public override async Task<object> Handle(ConvRequest req)
+        public override async Task<string> Handle(ConvRequest req)
         {
             // Create the client and ask for safe-search info from Vision API ML service.
             var visionClient = ImageAnnotatorClient.Create();

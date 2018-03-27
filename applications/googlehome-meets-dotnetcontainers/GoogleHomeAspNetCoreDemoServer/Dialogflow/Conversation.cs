@@ -65,12 +65,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
                 using (_tracer.StartSpan(req.IntentName))
                 {
                     var result = await handler.Handle(req);
-                    switch (result)
-                    {
-                        case string str: return str;
-                        case Task<string> strTask: return await strTask;
-                        default: return DialogflowApp.Tell($"Error. Unexpected return type: {result.GetType()}");
-                    }
+                    return result;
                 }
             }
             catch (Exception e) when (req.IntentName != "exception.throw")
