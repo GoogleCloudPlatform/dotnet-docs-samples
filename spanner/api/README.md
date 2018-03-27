@@ -70,6 +70,18 @@ can use [this older sample](
 
       batchReadRecords             Batch read sample records from the database.
 
+      addCommitTimestamp            Add a commit timestamp column to the sample Cloud Spanner database table.
+
+      updateDataWithTimestamp       Update data with a newly added commit timestamp column in the sample Cloud Spanner database table.
+
+      queryDataWithTimestamp        Query data with a newly added commit timestamp column in the sample Cloud Spanner database table.
+
+      createTableWithTimestamp      Create a new table with a commit timestamp column in the sample Cloud Spanner database table.
+
+      writeDataWithTimestamp        Write data into table with a commit timestamp column in the sample Cloud Spanner database table.
+
+      queryNewTableWithTimestamp    Query data from table with a commit timestamp column in the sample Cloud Spanner database table.
+
       listDatabaseTables           List all the user-defined tables in the database.
 
       deleteDatabase               Delete a Spanner database.
