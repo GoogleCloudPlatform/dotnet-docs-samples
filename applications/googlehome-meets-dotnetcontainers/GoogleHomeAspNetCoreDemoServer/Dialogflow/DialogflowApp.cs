@@ -73,7 +73,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
 
                 using (_tracer.StartSpan("Conversation"))
                 {
-                    return await conversation.Handle(request);
+                    return await conversation.HandleAsync(request);
                 }
             }
         }

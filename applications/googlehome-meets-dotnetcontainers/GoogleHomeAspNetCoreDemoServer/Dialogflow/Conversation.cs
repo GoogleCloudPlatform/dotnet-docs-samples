@@ -51,7 +51,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         /// </summary>
         /// <param name="req">Conversation request</param>
         /// <returns>A JSON response which is passed back to DialogFlow</returns>
-        public async Task<string> Handle(ConvRequest req)
+        public async Task<string> HandleAsync(ConvRequest req)
         {
             // Use reflection to find the handler method for the requested DialogFlow intent
             var handler = FindHandler(req.IntentName);

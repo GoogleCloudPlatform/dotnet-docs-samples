@@ -24,7 +24,6 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
     /// Handler for all "bigquery.noaaextreme" DialogFlow intent.
     /// </summary>
     [Intent("bigquery.noaaextreme")]
-
     public class BigQueryNoaaextremeHandler : BaseBigQueryHandler
     {
         /// <summary>
