@@ -38,43 +38,53 @@ namespace GoogleCloudSamples.Spanner
         }
     }
 
-    public class SpannerTests : IDisposable
+    public class SpannerFixture : IDisposable
     {
-        private static readonly string s_projectId =
+        public void Dispose()
+        {
+            try
+            {
+                // Delete database created from running the tests.
+                CommandLineRunner runner = new CommandLineRunner()
+                {
+                    Main = Program.Main,
+                    Command = "Spanner"
+                };
+                runner.Run("deleteDatabase",
+                    ProjectId, InstanceId, DatabaseId);
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
+        }
+
+        public string ProjectId { get; private set; } =
             Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         // Allow environment variables to override the default instance and database names.
-        private static readonly string s_instanceId =
+        public string InstanceId { get; private set; } =
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
         private static readonly string s_randomDatabaseName = "my-db-"
             + TestUtil.RandomName();
-        private static readonly string s_databaseId =
+        public string DatabaseId =
             Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
-        private static bool s_initializedDatabase = false;
+        public bool s_initializedDatabase { get; set; } = false;
+    }
 
+    public class SpannerTests : IClassFixture<SpannerFixture>
+    {
+        readonly SpannerFixture _fixture;
         readonly CommandLineRunner _spannerCmd = new CommandLineRunner()
         {
             Main = Program.Main,
             Command = "Spanner"
         };
 
-        public void Dispose()
+        public SpannerTests(SpannerFixture fixture)
         {
-            try
-            {
-                // Delete database created from running the tests.
-                _spannerCmd.Run("deleteSampleDatabase",
-                    s_projectId, s_instanceId, s_databaseId);
-            }
-            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
-        }
-
-        public SpannerTests()
-        {
+            _fixture = fixture;
             lock (this)
             {
-                if (!s_initializedDatabase)
+                if (!_fixture.s_initializedDatabase)
                 {
-                    s_initializedDatabase = true;
+                    _fixture.s_initializedDatabase = true;
                     InitializeDatabase();
                 }
             }
@@ -83,22 +93,20 @@ namespace GoogleCloudSamples.Spanner
         void InitializeDatabase()
         {
             // If the database has not been initialized, retry.
-            _spannerCmd.Run("deleteSampleDatabase",
-                    s_projectId, s_instanceId, s_databaseId);
             _spannerCmd.Run("createSampleDatabase",
-                s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("insertSampleData",
-                s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("addColumn",
-                s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
             int secondAlbumBudget)
         {
             string connectionString =
-                $"Data Source=projects/{s_projectId}/instances/{s_instanceId}"
-                + $"/databases/{s_databaseId}";
+                $"Data Source=projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}"
+                + $"/databases/{_fixture.DatabaseId}";
             // Create connection to Cloud Spanner.
             using (var connection =
                 new SpannerConnection(connectionString))
@@ -132,7 +140,7 @@ namespace GoogleCloudSamples.Spanner
         void TestQueryTransaction()
         {
             ConsoleOutput output = _spannerCmd.Run("queryDataWithTransaction",
-                s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
@@ -142,7 +150,7 @@ namespace GoogleCloudSamples.Spanner
         void TestQueryTransactionCore()
         {
             ConsoleOutput output = _spannerCmd.Run("queryDataWithTransaction",
-                s_projectId, s_instanceId, s_databaseId, "netcore");
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "netcore");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
@@ -153,7 +161,7 @@ namespace GoogleCloudSamples.Spanner
         {
             RefillMarketingBudgetsAsync(300000, 300000).Wait();
             ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
-                s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Transaction complete.", output.Stdout);
         }
@@ -165,7 +173,7 @@ namespace GoogleCloudSamples.Spanner
             try
             {
                 ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
-                    s_projectId, s_instanceId, s_databaseId);
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             }
             catch (Exception e)
             {
@@ -179,7 +187,7 @@ namespace GoogleCloudSamples.Spanner
         {
             Thread.Sleep(TimeSpan.FromSeconds(16));
             ConsoleOutput output = _spannerCmd.Run("readStaleData",
-                s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Go, Go, Go", output.Stdout);
         }
@@ -189,7 +197,7 @@ namespace GoogleCloudSamples.Spanner
         {
             RefillMarketingBudgetsAsync(300000, 300000).Wait();
             ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
-                s_projectId, s_instanceId, s_databaseId, "netcore");
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "netcore");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Transaction complete.", output.Stdout);
         }
@@ -201,7 +209,7 @@ namespace GoogleCloudSamples.Spanner
             try
             {
                 ConsoleOutput output = _spannerCmd.Run("readWriteWithTransaction",
-                    s_projectId, s_instanceId, s_databaseId, "netcore");
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "netcore");
             }
             catch (Exception e)
             {
@@ -215,11 +223,11 @@ namespace GoogleCloudSamples.Spanner
         {
             // Batch insert records.
             ConsoleOutput insertOutput = _spannerCmd.Run("batchInsertRecords",
-                 s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, insertOutput.ExitCode);
             // Batch read records.
             ConsoleOutput readOutput = _spannerCmd.Run("batchReadRecords",
-                s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm the output has valid numbers for row & partition count.
             // Match "[text] [comma separated number] [text] [number] [text]"
@@ -227,6 +235,44 @@ namespace GoogleCloudSamples.Spanner
                 @"Total rows read: \d+(?:,\d{3})* with \d+ partition");
             var match = output_regex.Match(readOutput.Stdout);
             Assert.True(match.Success);
+        }
+
+        [Fact]
+        void TestCommitTimestamp()
+        {
+            // Add a commit timestamp column to an existing table.
+            ConsoleOutput insertOutput = _spannerCmd.Run("addCommitTimestamp",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, insertOutput.ExitCode);
+            // Update records with added commit timestamp column.
+            ConsoleOutput updateOutput = _spannerCmd.Run("updateDataWithTimestamp",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, updateOutput.ExitCode);
+            // Query updated the records from the updated table.
+            ConsoleOutput readOutput = _spannerCmd.Run("queryDataWithTimestamp",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm timestamp column is included in output.
+            Assert.Contains("LastUpdateTime :", readOutput.Stdout);
+            // Create a new table that includes a commit timestamp column.
+            ConsoleOutput createOutput = _spannerCmd.Run("createTableWithTimestamp",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, createOutput.ExitCode);
+            // Write data to the new table.
+            ConsoleOutput writeOutput = _spannerCmd.Run("writeDataWithTimestamp",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, writeOutput.ExitCode);
+            // Query records from the new table.
+            ConsoleOutput readNewTableOutput = _spannerCmd.Run("queryNewTableWithTimestamp",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readNewTableOutput.ExitCode);
+            // Confirm output includes valid timestamps.
+            string columnText = "LastUpdateTime : ";
+            string[] result = readNewTableOutput.Stdout.Split(
+                new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            string valueToTest = result[0].Substring(result[0].IndexOf(columnText) + columnText.Length);
+            DateTime value;
+            Assert.True(DateTime.TryParse(valueToTest, out value));
         }
 
         [Fact(Skip = "Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]
@@ -243,7 +289,7 @@ namespace GoogleCloudSamples.Spanner
             {
                 // Attempt to create another database with same name. Should fail.
                 ConsoleOutput created_again = _spannerCmd.Run("createSampleDatabase",
-                        s_projectId, s_instanceId, s_databaseId);
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             }
             catch (AggregateException e)
             {
@@ -253,7 +299,7 @@ namespace GoogleCloudSamples.Spanner
                     SpannerException spannerException = innerException as SpannerException;
                     if (spannerException != null && spannerException.Message.ToLower().Contains("duplicate"))
                     {
-                        Console.WriteLine($"Database {s_databaseId} already exists.");
+                        Console.WriteLine($"Database {_fixture.DatabaseId} already exists.");
                         rethrow = false;
                         break;
                     }
@@ -265,7 +311,7 @@ namespace GoogleCloudSamples.Spanner
             }
             // List tables to confirm database tables exist.
             ConsoleOutput output = _spannerCmd.Run("listDatabaseTables",
-                    s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Albums", output.Stdout);
             Assert.Contains("Singers", output.Stdout);
@@ -279,7 +325,7 @@ namespace GoogleCloudSamples.Spanner
         void QuerySampleData()
         {
             ConsoleOutput output = _spannerCmd.Run("querySampleData",
-                s_projectId, s_instanceId, s_databaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
