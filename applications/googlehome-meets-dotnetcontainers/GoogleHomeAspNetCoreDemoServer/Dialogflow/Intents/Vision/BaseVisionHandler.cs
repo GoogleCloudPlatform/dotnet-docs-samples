@@ -40,9 +40,9 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         {
             if (col == null || col.Count == 0) return onEmpty;
  
-            if (col.Count == 1) return nonEmptyPrefix + " " + col[0];
+            if (col.Count == 1) return $"{nonEmptyPrefix} {col[0]}";
 
-            return nonEmptyPrefix + " "  + $"{string.Join(", ", col.Take(col.Count - 1))}, and {col.Last()}";
+            return $"{nonEmptyPrefix} {string.Join(", ", col.Take(col.Count - 1))}, and {col.Last()}";
         }
     }
 }
