@@ -10,5 +10,5 @@ endpoints_api_service:
   # 'gcloud endpoints configs list --service=[PROJECT-ID].appspot.com'
   # where [PROJECT-ID].appspot.com is your Endpoints service name.
   name: ENDPOINTS-SERVICE-NAME
-  config_id: ENDPOINTS-CONFIG-ID
+  rollout_strategy: managed
 # [END configuration]
