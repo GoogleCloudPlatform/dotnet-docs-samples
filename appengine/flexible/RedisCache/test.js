@@ -17,7 +17,7 @@ var host = system.env['CASPERJS11_URL'];
 
 currentCount = 0;
 
-casper.test.begin('Test RedisCache sample.', 3, function suite(test) {
+casper.test.begin('Test RedisCache sample.', 8, function suite(test) {
     casper.start(host + '/', function (response) {
         console.log('Starting ' + host + '/');
         test.assertSelectorHasText('H1', 'Redis Incrementer Sample');
