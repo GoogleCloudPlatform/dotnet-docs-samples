@@ -53,7 +53,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
             var image = _conversation.State.ImageList[index - 1];
             _conversation.State.FocusedImage = image;
 
-            DialogflowApp.Show($"<img src=\"{image.Url}\" alt=\"{WebUtility.HtmlEncode(image.Title)}\"/>");
+            DialogflowApp.Show($"<img src=\"{image.Url}\" alt=\"{WebUtility.HtmlEncode(image.Title)}\" style=\"height:100%;width:100%\" />");
 
             return DialogflowApp.Tell($"Picture {index} selected. You can describe, show landmarks or ask whether the image is safe.");
         }
