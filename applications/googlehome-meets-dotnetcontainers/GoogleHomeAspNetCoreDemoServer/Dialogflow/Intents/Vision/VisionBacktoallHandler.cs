@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
@@ -42,7 +43,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
 
             // Update state with list of pictures
             var images = _conversation.State.ImageList;
-            var imagesList = images.Select(x => $"<li><img src=\"{x.Url}\" alt=\"{x.Title}\" style=\"width:200px\" /></li>");
+            var imagesList = images.Select(x => $"<li><img src=\"{x.Url}\" alt=\"{WebUtility.HtmlEncode(x.Title)}\" style=\"width:200px\" /></li>");
             DialogflowApp.Show($"<ol>{string.Join("", imagesList)}</ol>");
 
             return DialogflowApp.Tell("OK, looking at all images now.");
