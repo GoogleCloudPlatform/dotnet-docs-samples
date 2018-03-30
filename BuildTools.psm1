@@ -739,6 +739,22 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
         }
     }
 }
+
+##############################
+#.SYNOPSIS
+# Moves TestResults.xml into an output subdirectory.
+#
+#.PARAMETER OutDir
+#The directory to which to move TestResults.xml.  This directory will be created
+#if it does not already exist.
+##############################
+function Move-TestResults($OutDir) {
+    if ($OutDir -and (Test-Path TestResults.xml)) {
+        New-Item -ItemType Directory -Force -Path $OutDir
+        Move-Item TestResults.xml $OutDir
+    }
+}
+
 ##############################
 #.SYNOPSIS
 # Runs CasperJs
@@ -752,7 +768,8 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
 #.PARAMETER v11
 # Use CasperJs version 1.1 instead of 1.0.
 ##############################
-function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false) {
+function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false,
+    [string]$OutDir) {
     $sleepSeconds = 2
     for ($tryCount = 0; $tryCount -lt 5; $tryCount++) {
         Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
@@ -1136,4 +1153,3 @@ function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
         "Add copyright to $path."
     }
 }
-

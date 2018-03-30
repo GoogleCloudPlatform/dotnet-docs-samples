@@ -19,5 +19,5 @@ BackupAndEdit-TextFile "appsettings.json" `
     @{"your-google-analytics-tracking-id" = $env:TEST_GA_TRACKING_ID} `
 {
 	dotnet build
-	Run-KestrelTest 5558
+	Run-KestrelTest 5558 -CasperJs11
 }

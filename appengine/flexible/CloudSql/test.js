@@ -12,16 +12,16 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// 1.0 style test script not using the `casperjs test` subcommand
-var casper = require('casper').create();
-var host = casper.cli.args[0];
+var system = require('system');
+var host = system.env['CASPERJS11_URL'];
 
-casper.start(host + '/', function (response) {
-    this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('H2', 'Visitor Log');
-});
+casper.test.begin('Home page is OK.', 2, function suite(test) {
+    casper.start(host + '/', function (response) {
+        test.assertEquals(200, response.status);
+        test.assertSelectorHasText('H2', 'Visitor Log');
+    });
 
-casper.run(function () {
-    this.test.done(2);
-    this.test.renderResults(true);
+    casper.run(function () {
+        test.done();
+    });
 });
