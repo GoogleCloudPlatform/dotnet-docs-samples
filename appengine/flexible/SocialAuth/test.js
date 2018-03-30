@@ -12,16 +12,16 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// 1.0 style test script not using the `casperjs test` subcommand
-var casper = require('casper').create();
-var host = casper.cli.args[0];
+var system = require('system');
+var host = system.env['CASPERJS11_URL'];
 
-casper.start(host + '/', function (response) {
-    console.log('Starting ' + host + '/');
-    this.test.assertEquals(302, response.status);
-});
+casper.test.begin('Test SocialAuth sample.', 1, function suite(test) {
+    casper.start(host + '/', function (response) {
+        console.log('Starting ' + host + '/');
+        test.assertEquals(302, response.status);
+    });
 
-casper.run(function () {
-    this.test.done();
-    this.test.renderResults(true);
+    casper.run(function () {
+        test.done();
+    });
 });
