@@ -19,5 +19,5 @@ BackupAndEdit-TextFile "appsettings.json" `
     @{"your-redis-endpoint" = $env:TEST_REDIS_CONFIG} `
 {
 	dotnet build
-	Run-KestrelTest 5559
+	Run-KestrelTest 5559 -CasperJs11
 }
