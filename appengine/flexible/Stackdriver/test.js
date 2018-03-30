@@ -15,7 +15,7 @@
 var system = require('system');
 var host = system.env['CASPERJS11_URL'];
 
-casper.test.begin('Test Stackdriver sample.', 5, function suite(test) {
+casper.test.begin('Test Stackdriver sample.', 3, function suite(test) {
     casper.start(host + '/', function (response) {
         console.log('Starting ' + host + '/');
         test.assertEquals(200, response.status);
