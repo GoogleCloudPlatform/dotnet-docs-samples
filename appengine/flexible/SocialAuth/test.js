@@ -18,7 +18,7 @@ var host = system.env['CASPERJS11_URL'];
 casper.test.begin('Test SocialAuth sample.', 1, function suite(test) {
     casper.start(host + '/', function (response) {
         console.log('Starting ' + host + '/');
-        test.assertEquals(302, response.status);
+        test.assertEquals(response.status, 302);
     });
 
     casper.run(function () {
