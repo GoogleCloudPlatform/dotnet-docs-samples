@@ -66,8 +66,13 @@ Copy-Item -Force $PSScriptRoot\..\.kokoro\docker\bootstrap.js `
     $casperJsInstallPath\bin\bootstrap.js
 # Install casperjs 1.1
 Unzip $env:KOKORO_GFILE_DIR\casperjs-1.1.4-1.zip $installDir
-
-# Copy Activate and Import-Secrets to the environment directory.
-Copy-Item -Force $PSScriptRoot\Activate.ps1,$PSScriptRoot\Import-Secrets.ps1 $Dir
 Set-PsDebug -Off
 
+# Copy Activate.ps1 to the environment directory.
+# And append 2 more lines.
+$activatePs1 = Get-Content $PSScriptRoot\Activate.ps1
+$importSecretsPath = "$PSScriptRoot\Import-Secrets.ps1"
+$buildToolsPath = Resolve-Path "$PSScriptRoot\..\BuildTools.psm1"
+@($activatePs1, '', "& '$importSecretsPath'",
+    "Import-Module -DisableNameChecking '$buildToolsPath'") `
+    | Out-File -Force $Dir\Activate.ps1
