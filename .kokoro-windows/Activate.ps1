@@ -23,7 +23,6 @@ $env:PATH = @("$installDir\codeformatter\bin",
 
 $env:CASPERJS11_BIN = "$installDir\casperjs-1.1.4-1\bin"
 
-$env:KOKORO_GFILE_DIR = "$PSScriptRoot\kokoro"
 if (Get-Module BuildTools) {
     Remove-Module BuildTools
 }
