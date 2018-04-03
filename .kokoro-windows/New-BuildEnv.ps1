@@ -37,7 +37,8 @@ if (-not $chocoPackages.Contains('microsoft-build-tools 14.')) {
     choco install -y --sxs microsoft-build-tools --version 14.0.23107.10
 }
 
-if (-not $chocoPackages.Contains('python 2.7.')) {
+if (-not (($chocoPackages.Contains('python 2.7.') -or
+    (Test-Path "$env:SystemDrive\Python27")))) {
     choco install -y --sxs python --version 2.7.6
 }
 
