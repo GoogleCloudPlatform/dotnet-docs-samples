@@ -38,7 +38,7 @@ casper.test.begin('Home page redirects.', 1, function suite(test) {
     casper.start(host + '/', function (response) {
         console.log('Starting ' + host + '/');
         if (doLog) console.log(JSON.stringify(response, null, 4));
-        test.assertEquals(redirectURLs[0], "https://localhost:44393/");
+        test.assertTruthy(redirectURLs.length, "Expected a redirect.");
     });
 
     casper.run(function () {
