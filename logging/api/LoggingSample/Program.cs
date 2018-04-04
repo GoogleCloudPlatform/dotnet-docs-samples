@@ -19,6 +19,7 @@ using Google.Cloud.Logging.V2;
 using Google.Cloud.Logging.Type;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Google.Api;
 using Google.Api.Gax.Grpc;
 
@@ -38,18 +39,15 @@ namespace GoogleCloudSamples
                 "  dotnet run delete-log log-id\n" +
                 "  dotnet run delete-sink sink-id \n";
 
-        private CallSettings RetryAWhile
-        {
-            get
-            {
-                return CallSettings.FromCallTiming(CallTiming.FromRetry(new RetrySettings(
-                    new BackoffSettings(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10), 2.0),
-                    new BackoffSettings(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10)),
-                    Google.Api.Gax.Expiration.FromTimeout(TimeSpan.FromSeconds(90)),
-                    (Grpc.Core.RpcException e) => e.Status.StatusCode == Grpc.Core.StatusCode.Internal
-                    )));
-            }
-        }
+        private readonly CallSettings RetryAWhile =
+            CallSettings.FromCallTiming(CallTiming.FromRetry(new RetrySettings(
+                    new BackoffSettings(TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(12), 2.0),
+                    new BackoffSettings(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(120)),
+                    Google.Api.Gax.Expiration.FromTimeout(TimeSpan.FromSeconds(180)),
+                    (Grpc.Core.RpcException e) => 
+                    new [] { Grpc.Core.StatusCode.Internal, 
+                        Grpc.Core.StatusCode.DeadlineExceeded }
+                        .Contains(e.Status.StatusCode))));
 
         public bool PrintUsage()
         {
