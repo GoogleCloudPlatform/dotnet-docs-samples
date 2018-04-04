@@ -14,7 +14,7 @@
 Param ($Dir, [switch]$SkipDownloadKokoroDir)
 
 if (-Not $Dir) {
-    $Dir = [string](Resolve-Path "$PSScriptRoot\..\env")
+    $Dir = "$PSScriptRoot\..\env"
 }
 
 # Install choco packages.

@@ -26,4 +26,4 @@ $env:CASPERJS11_BIN = "$installDir\casperjs-1.1.4-1\bin"
 if (Get-Module BuildTools) {
     Remove-Module BuildTools
 }
-# 2 more lines will be appended here.
+# 3 more lines will be appended here.
