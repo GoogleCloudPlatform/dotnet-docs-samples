@@ -15,10 +15,10 @@ Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
 BackupAndEdit-TextFile @("Storage\Program.cs", "QuickStart\Program.cs") `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{       
+{
     dotnet restore
     dotnet build
-    dotnet test --no-build .\StorageTest\StorageTest.csproj
+    dotnet test --test-adapter-path:. --logger:junit --no-build .\StorageTest\StorageTest.csproj
     if ($LASTEXITCODE -ne 0) { throw "FAILED" }
     dotnet run --no-build --project .\QuickStart\QuickStart.csproj
     if ($LASTEXITCODE -ne 0) { throw "FAILED" }

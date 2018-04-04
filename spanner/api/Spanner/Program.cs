@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.Spanner.Data;
 using CommandLine;
@@ -230,6 +231,95 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    [Verb("batchInsertRecords", HelpText = "Batch insert sample records into the database.")]
+    class BatchInsertOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("batchReadRecords", HelpText = "Batch read sample records from the database.")]
+    class BatchReadOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("addCommitTimestamp", HelpText = "Add a commit timestamp column to the sample Cloud Spanner database table.")]
+    class AddCommitTimestampOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("updateDataWithTimestamp", HelpText = "Update data with a newly added commit timestamp column in the sample Cloud Spanner database table.")]
+    class UpdateDataWithTimestampOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("queryDataWithTimestamp", HelpText = "Query data with a newly added commit timestamp column in the sample Cloud Spanner database table.")]
+    class QueryDataWithTimestampOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("createTableWithTimestamp", HelpText = "Create a new table with a commit timestamp column in the sample Cloud Spanner database table.")]
+    class CreateTableWithTimestampOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("writeDataWithTimestamp", HelpText = "Write data into table with a commit timestamp column in the sample Cloud Spanner database table.")]
+    class WriteDataWithTimestampOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    //QueryDataWithTimestampAsync
+    [Verb("queryNewTableWithTimestamp", HelpText = "Query data from table with a commit timestamp column in the sample Cloud Spanner database table.")]
+    class QueryNewTableWithTimestampOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
     [Verb("listDatabaseTables", HelpText = "List all the user-defined tables in the database.")]
     class ListDatabaseTablesOptions
     {
@@ -240,6 +330,18 @@ namespace GoogleCloudSamples.Spanner
         [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
         public string databaseId { get; set; }
     }
+
+    [Verb("deleteDatabase", HelpText = "Delete a Spanner database.")]
+    class DeleteOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database to delete.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
 
     public class Program
     {
@@ -252,7 +354,7 @@ namespace GoogleCloudSamples.Spanner
             InvalidParameter = 1,
         }
 
-        // [START insert_data]
+        // [START spanner_insert_data]
         public class Singer
         {
             public int singerId { get; set; }
@@ -266,12 +368,20 @@ namespace GoogleCloudSamples.Spanner
             public int albumId { get; set; }
             public string albumTitle { get; set; }
         }
-        // [END insert_data]
+        // [END spanner_insert_data]
+
+        public class Performance
+        {
+            public int singerId { get; set; }
+            public int venueId { get; set; }
+            public DateTime eventDate { get; set; }
+            public long revenue { get; set; }
+        }
 
         public static async Task CreateSampleDatabaseAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START create_database]
+            // [START spanner_create_database]
             // Initialize request connection string for database creation.
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}";
@@ -316,13 +426,13 @@ namespace GoogleCloudSamples.Spanner
                 cmd = connection.CreateDdlCommand(createTableStatement);
                 await cmd.ExecuteNonQueryAsync();
             }
-            // [END create_database]
+            // [END spanner_create_database]
         }
 
         public static async Task AddIndexAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START create_index]
+            // [START spanner_create_index]
             // Initialize request argument(s).
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/"
@@ -336,13 +446,13 @@ namespace GoogleCloudSamples.Spanner
                 await createCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the AlbumsByAlbumTitle index.");
-            // [END create_index]
+            // [END spanner_create_index]
         }
 
         public static async Task AddStoringIndexAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START create_storing_index]
+            // [START spanner_create_storing_index]
             // Initialize request argument(s).
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/"
@@ -357,13 +467,13 @@ namespace GoogleCloudSamples.Spanner
                 await createCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the AlbumsByAlbumTitle2 index.");
-            // [END create_storing_index]
+            // [END spanner_create_storing_index]
         }
 
         public static async Task AddColumnAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START add_column]
+            // [START spanner_add_column]
             // Initialize request argument(s).
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/"
@@ -377,13 +487,13 @@ namespace GoogleCloudSamples.Spanner
                 await updateCmd.ExecuteNonQueryAsync();
             }
             Console.WriteLine("Added the MarketingBudget column.");
-            // [END add_column]
+            // [END spanner_add_column]
         }
 
         public static async Task QuerySampleDataAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START query_data]
+            // [START spanner_query_data]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/"
             + $"{instanceId}/databases/{databaseId}";
@@ -405,15 +515,15 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END query_data]
+            // [END spanner_query_data]
         }
 
         public static async Task QueryDataWithIndexAsync(
             string projectId, string instanceId, string databaseId,
             string startTitle = "Aardvark", string endTitle = "Goo")
         {
-            // [START query_data_with_index]
-            // [START read_data_with_index]
+            // [START spanner_query_data_with_index]
+            // [START spanner_read_data_with_index]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -443,15 +553,15 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END read_data_with_index]
-            // [END query_data_with_index]
+            // [END spanner_read_data_with_index]
+            // [END spanner_query_data_with_index]
         }
 
         public static async Task QueryDataWithStoringIndexAsync(
             string projectId, string instanceId, string databaseId,
             string startTitle = "Aardvark", string endTitle = "Goo")
         {
-            // [START read_data_with_storing_index]
+            // [START spanner_read_data_with_storing_index]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -481,7 +591,7 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END read_data_with_storing_index]
+            // [END spanner_read_data_with_storing_index]
         }
 
         public static async Task QueryDataWithTransactionCoreAsync(
@@ -489,7 +599,7 @@ namespace GoogleCloudSamples.Spanner
         {
             Console.WriteLine(".NetCore API sample.");
 
-            // [START read_only_transaction_core]
+            // [START spanner_read_only_transaction_core]
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
@@ -520,8 +630,8 @@ namespace GoogleCloudSamples.Spanner
                                 + reader.GetFieldValue<string>("AlbumTitle"));
                         }
                     }
-                    // Read #2. Even if changes occur in-between the reads, 
-                    // the transaction ensures that Read #1 and Read #2 
+                    // Read #2. Even if changes occur in-between the reads,
+                    // the transaction ensures that Read #1 and Read #2
                     // return the same data.
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
@@ -538,7 +648,7 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             Console.WriteLine("Transaction complete.");
-            // [END read_only_transaction_core]
+            // [END spanner_read_only_transaction_core]
         }
 
         public static async Task<object> ReadStaleDataAsync(
@@ -546,7 +656,7 @@ namespace GoogleCloudSamples.Spanner
         {
             Console.WriteLine(".NetCore API sample.");
 
-            // [START read_stale_data]
+            // [START spanner_read_stale_data]
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
@@ -580,7 +690,7 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END read_stale_data]
+            // [END spanner_read_stale_data]
             return 0;
         }
 
@@ -588,7 +698,7 @@ namespace GoogleCloudSamples.Spanner
         public static async Task QueryDataWithTransactionAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START read_only_transaction]
+            // [START spanner_read_only_transaction]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -620,8 +730,8 @@ namespace GoogleCloudSamples.Spanner
                                 + reader.GetFieldValue<string>("AlbumTitle"));
                         }
                     }
-                    // Read #2. Even if changes occur in-between the reads, 
-                    // the transaction ensures that Read #1 and Read #2 
+                    // Read #2. Even if changes occur in-between the reads,
+                    // the transaction ensures that Read #1 and Read #2
                     // return the same data.
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
@@ -639,13 +749,13 @@ namespace GoogleCloudSamples.Spanner
                 scope.Complete();
                 Console.WriteLine("Transaction complete.");
             }
-            // [END read_only_transaction]
+            // [END spanner_read_only_transaction]
         }
 
         public static async Task WriteDataToNewColumnAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START update_data]
+            // [START spanner_update_data]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -687,13 +797,13 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             Console.WriteLine("Updated data.");
-            // [END update_data]
+            // [END spanner_update_data]
         }
 
         public static async Task QueryNewColumnAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START query_data_with_new_column]
+            // [START spanner_query_data_with_new_column]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -706,22 +816,26 @@ namespace GoogleCloudSamples.Spanner
                 {
                     while (await reader.ReadAsync())
                     {
+                        string budget = string.Empty;
+                        if (reader["MarketingBudget"] != DBNull.Value)
+                        {
+                            budget = reader.GetFieldValue<string>("MarketingBudget");
+                        }
                         Console.WriteLine("SingerId : "
                         + reader.GetFieldValue<string>("SingerId")
                         + " AlbumId : "
                         + reader.GetFieldValue<string>("AlbumId")
-                        + " MarketingBudget : "
-                        + reader.GetFieldValue<string>("MarketingBudget"));
+                        + $" MarketingBudget : {budget}");
                     }
                 }
             }
-            // [END query_data_with_new_column]
+            // [END spanner_query_data_with_new_column]
         }
 
         public static async Task ListDatabaseTablesAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START list_database_tables]
+            // [START spanner_list_database_tables]
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
@@ -741,25 +855,25 @@ namespace GoogleCloudSamples.Spanner
                     }
                 }
             }
-            // [END list_database_tables]
+            // [END spanner_list_database_tables]
         }
 
-        // [START topaz_strategy]
+        // [START spanner_topaz_strategy]
         internal class CustomTransientErrorDetectionStrategy
             : ITransientErrorDetectionStrategy
         {
             public bool IsTransient(Exception ex) =>
                 ex.IsTransientSpannerFault();
         }
-        // [END topaz_strategy]
+        // [END spanner_topaz_strategy]
 
-        // [START read_write_transaction_core]
+        // [START spanner_read_write_transaction_core]
         public static async Task ReadWriteWithTransactionCoreAsync(
             string projectId,
             string instanceId,
             string databaseId)
         {
-            // This sample transfers 200,000 from the MarketingBudget 
+            // This sample transfers 200,000 from the MarketingBudget
             // field of the second Album to the first Album. Make sure to run
             // the addColumn and writeDataToNewColumn samples first,
             // in that order.
@@ -849,15 +963,15 @@ namespace GoogleCloudSamples.Spanner
                 Console.WriteLine("Transaction complete.");
             }
         }
-        // [END read_write_transaction_core]
+        // [END spanner_read_write_transaction_core]
 
-        // [START read_write_transaction]
+        // [START spanner_read_write_transaction]
         public static async Task ReadWriteWithTransactionAsync(
             string projectId,
             string instanceId,
             string databaseId)
         {
-            // This sample transfers 200,000 from the MarketingBudget 
+            // This sample transfers 200,000 from the MarketingBudget
             // field of the second Album to the first Album. Make sure to run
             // the addColumn and writeDataToNewColumn samples first,
             // in that order.
@@ -937,7 +1051,7 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
         }
-        // [END read_write_transaction]
+        // [END spanner_read_write_transaction]
 
         public static async Task DeleteSampleDataAsync(
             string projectId, string instanceId, string databaseId)
@@ -978,7 +1092,7 @@ namespace GoogleCloudSamples.Spanner
                 Console.WriteLine("Deleted data.");
             }
         }
-        // [START insert_data]
+        // [START spanner_insert_data]
         public static async Task InsertSampleDataAsync(
             string projectId, string instanceId, string databaseId)
         {
@@ -1048,12 +1162,12 @@ namespace GoogleCloudSamples.Spanner
                 Console.WriteLine("Inserted data.");
             }
         }
-        // [END insert_data]
+        // [END spanner_insert_data]
 
         public static async Task CreateDatabaseAsync(
             string projectId, string instanceId, string databaseId)
         {
-            // [START create_custom_database]
+            // [START spanner_create_custom_database]
             // Initialize request connection string for database creation.
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}";
@@ -1064,7 +1178,7 @@ namespace GoogleCloudSamples.Spanner
                 var cmd = connection.CreateDdlCommand(createStatement);
                 await cmd.ExecuteNonQueryAsync();
             }
-            // [END create_custom_database]
+            // [END spanner_create_custom_database]
         }
 
         public static async Task<object> DropSampleTables(
@@ -1144,8 +1258,8 @@ namespace GoogleCloudSamples.Spanner
         {
             if (string.IsNullOrEmpty(startTitle) ^ string.IsNullOrWhiteSpace(endTitle))
             {
-                // Only one Title provided: show message that user must 
-                // provide both startTitle and endTitle or exclude them 
+                // Only one Title provided: show message that user must
+                // provide both startTitle and endTitle or exclude them
                 // from their command.
                 Console.WriteLine("Please provide values for both the start "
                     + "of the title index and the end of the title index.");
@@ -1153,10 +1267,10 @@ namespace GoogleCloudSamples.Spanner
                     + "query with default values.");
                 return ExitCode.InvalidParameter;
             }
-            // Call method QueryDataWithIndexAsync() based on whether 
+            // Call method QueryDataWithIndexAsync() based on whether
             // user provided startTitle and endTitle values are empty or null.
             Task response = string.IsNullOrEmpty(startTitle) ?
-                // startTitle not provided, exclude startTitle and endTitle from 
+                // startTitle not provided, exclude startTitle and endTitle from
                 // method call to use default values for both.
                 QueryDataWithIndexAsync(projectId, instanceId, databaseId) :
                 // Both startTitle and endTitle provided, include them both in
@@ -1208,11 +1322,11 @@ namespace GoogleCloudSamples.Spanner
             string databaseId, string startTitle, string endTitle)
         {
             var response = new Task(() => { });
-            // Call method QueryDataWithStoringIndexAsync() based on whether 
+            // Call method QueryDataWithStoringIndexAsync() based on whether
             // user provided startTitle and endTitle values are empty or null.
             if (string.IsNullOrEmpty(startTitle))
             {
-                // startTitle not provided, exclude startTitle and endTitle from 
+                // startTitle not provided, exclude startTitle and endTitle from
                 // method call to use default values for both.
                 response = QueryDataWithStoringIndexAsync(
                         projectId, instanceId, databaseId);
@@ -1220,8 +1334,8 @@ namespace GoogleCloudSamples.Spanner
             else if (!string.IsNullOrEmpty(startTitle)
                 && string.IsNullOrEmpty(endTitle))
             {
-                // Only startTitle provided, show message that user must 
-                // provide both startTitle and endTitle or exclude them 
+                // Only startTitle provided, show message that user must
+                // provide both startTitle and endTitle or exclude them
                 // from their command.
                 Console.WriteLine("Please provide values for both the start "
                     + "of the title index and the end of the title index.");
@@ -1328,7 +1442,7 @@ namespace GoogleCloudSamples.Spanner
                 })
                 : Task.Run(async () =>
                 {
-                    // [START read_write_retry]
+                    // [START spanner_read_write_retry]
                     var retryPolicy = new
                         RetryPolicy<CustomTransientErrorDetectionStrategy>
                             (RetryStrategy.DefaultExponential);
@@ -1336,11 +1450,473 @@ namespace GoogleCloudSamples.Spanner
                     await retryPolicy.ExecuteAsync(() =>
                         ReadWriteWithTransactionAsync(
                                 projectId, instanceId, databaseId));
-                    // [END read_write_retry]
+                    // [END spanner_read_write_retry]
                 });
             response.Wait();
             s_logger.Info($"Response status: {response.Status}");
             return ExitCode.Success;
+        }
+
+        public static object BatchInsertRecords(string projectId,
+            string instanceId, string databaseId)
+        {
+            var responseTask =
+                BatchInsertRecordsAsync(projectId, instanceId, databaseId);
+            Console.WriteLine("Waiting for operation to complete...");
+            responseTask.Wait();
+            Console.WriteLine($"Operation status: {responseTask.Status}");
+            Console.WriteLine($"Inserted records into sample database "
+                + $"{databaseId} on instance {instanceId}");
+            return ExitCode.Success;
+        }
+
+        private static async Task BatchInsertRecordsAsync(string projectId,
+            string instanceId, string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Get current max SingerId.
+            Int64 maxSingerId = 0;
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                // Execute a SQL statement to get current MAX() of SingerId.
+                var cmd = connection.CreateSelectCommand(
+                    @"SELECT MAX(SingerId) as SingerId FROM Singers");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        long parsedValue;
+                        bool result = Int64.TryParse(
+                            reader.GetFieldValue<string>("SingerId"), out parsedValue);
+                        if (result)
+                        {
+                            maxSingerId = parsedValue;
+                        }
+                    }
+                }
+            }
+
+            // Batch insert 249,900 singer records into the Singers table.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                for (int i = 0; i < 100; i++)
+                {
+                    // For details on transaction isolation, see the "Isolation" section in:
+                    // https://cloud.google.com/spanner/docs/transactions#read-write_transactions
+                    using (var tx = await connection.BeginTransactionAsync())
+                    using (var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
+                    {
+                        { "SingerId", SpannerDbType.String },
+                        { "FirstName", SpannerDbType.String },
+                        { "LastName", SpannerDbType.String }
+                    }))
+                    {
+                        cmd.Transaction = tx;
+                        for (var x = 1; x < 2500; x++)
+                        {
+                            maxSingerId++;
+                            string nameSuffix = Guid.NewGuid().ToString().Substring(0, 8);
+                            cmd.Parameters["SingerId"].Value = maxSingerId;
+                            cmd.Parameters["FirstName"].Value = $"FirstName-{nameSuffix}";
+                            cmd.Parameters["LastName"].Value = $"LastName-{nameSuffix}";
+                            cmd.ExecuteNonQuery();
+                        }
+                        await tx.CommitAsync();
+                    }
+                }
+            }
+            Console.WriteLine("Done inserting sample records...");
+        }
+
+        // [START spanner_batch_client]
+        private static int s_partitionId;
+        private static int s_rowsRead;
+        public static object BatchReadRecords(string projectId,
+             string instanceId, string databaseId)
+        {
+            var responseTask =
+                DistributedReadAsync(projectId, instanceId, databaseId);
+            Console.WriteLine("Waiting for operation to complete...");
+            responseTask.Wait();
+            Console.WriteLine($"Operation status: {responseTask.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task DistributedReadAsync(string projectId,
+            string instanceId, string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var transaction =
+                    await connection.BeginReadOnlyTransactionAsync())
+                using (var cmd =
+                    connection.CreateSelectCommand(
+                        "SELECT SingerId, FirstName, LastName FROM Singers"))
+                {
+                    transaction.DisposeBehavior =
+                        DisposeBehavior.CloseResources;
+                    cmd.Transaction = transaction;
+                    var partitions = await cmd.GetReaderPartitionsAsync();
+                    var transactionId = transaction.TransactionId;
+                    await Task.WhenAll(partitions.Select(
+                            x => DistributedReadWorkerAsync(x, transactionId)))
+                                .ConfigureAwait(false);
+                }
+                Console.WriteLine($"Done reading!  Total rows read: "
+                    + $"{s_rowsRead:N0} with {s_partitionId} partition(s)");
+            }
+        }
+
+        private static async Task DistributedReadWorkerAsync(
+            CommandPartition readPartition, TransactionId id)
+        {
+            var localId = Interlocked.Increment(ref s_partitionId);
+            using (var connection = new SpannerConnection(id.ConnectionString))
+            using (var transaction = connection.BeginReadOnlyTransaction(id))
+            {
+                using (var cmd = connection.CreateCommandWithPartition(
+                    readPartition, transaction))
+                {
+                    using (var reader =
+                        await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Interlocked.Increment(ref s_rowsRead);
+                            Console.WriteLine($"Partition ({localId}) "
+                                + $"{reader.GetFieldValue<string>("SingerId")}"
+                                + $" {reader.GetFieldValue<string>("FirstName")}"
+                                + $" {reader.GetFieldValue<string>("LastName")}");
+                        }
+                    }
+                }
+                Console.WriteLine($"Done with single reader {localId}.");
+            }
+        }
+        // [END spanner_batch_client]
+
+        public static object AddCommitTimestamp(string projectId,
+              string instanceId, string databaseId)
+        {
+            var response = AddCommitTimestampAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task AddCommitTimestampAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_add_timestamp_column]
+            // Initialize request argument(s).
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/"
+                + $"{instanceId}/databases/{databaseId}";
+            string alterStatement =
+                "ALTER TABLE Albums ADD COLUMN LastUpdateTime TIMESTAMP "
+                + " OPTIONS (allow_commit_timestamp=true)";
+            // Make the request.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var updateCmd = connection.CreateDdlCommand(alterStatement);
+                await updateCmd.ExecuteNonQueryAsync();
+            }
+            Console.WriteLine("Added LastUpdateTime as a commit timestamp column in Albums table.");
+            // [END spanner_add_timestamp_column]
+        }
+
+        public static object UpdateDataWithTimestampColumn(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = UpdateDataWithTimestampColumnAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task UpdateDataWithTimestampColumnAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_update_data_with_timestamp_column]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateUpdateCommand("Albums",
+                    new SpannerParameterCollection {
+                        {"SingerId", SpannerDbType.Int64},
+                        {"AlbumId", SpannerDbType.Int64},
+                        {"MarketingBudget", SpannerDbType.Int64},
+                        {"LastUpdateTime", SpannerDbType.Timestamp},
+                    });
+                var cmdLookup =
+                    connection.CreateSelectCommand("SELECT * FROM Albums");
+                using (var reader = await cmdLookup.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        if (reader.GetFieldValue<int>("SingerId") == 1
+                            && reader.GetFieldValue<int>("AlbumId") == 1)
+                        {
+                            cmd.Parameters["SingerId"].Value =
+                                reader.GetFieldValue<int>("SingerId");
+                            cmd.Parameters["AlbumId"].Value =
+                                reader.GetFieldValue<int>("AlbumId");
+                            cmd.Parameters["MarketingBudget"].Value = 1000000;
+                            cmd.Parameters["LastUpdateTime"].Value =
+                                SpannerParameter.CommitTimestamp;
+                            await cmd.ExecuteNonQueryAsync();
+                        }
+                        if (reader.GetInt64(0) == 2 && reader.GetInt64(1) == 2)
+                        {
+                            cmd.Parameters["SingerId"].Value =
+                                reader.GetFieldValue<int>("SingerId");
+                            cmd.Parameters["AlbumId"].Value =
+                                reader.GetFieldValue<int>("AlbumId");
+                            cmd.Parameters["MarketingBudget"].Value = 750000;
+                            cmd.Parameters["LastUpdateTime"].Value =
+                                SpannerParameter.CommitTimestamp;
+                            await cmd.ExecuteNonQueryAsync();
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("Updated data.");
+            // [END spanner_update_data_with_timestamp_column]
+        }
+
+        public static object QueryDataWithTimestampColumn(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryDataWithTimestampColumnAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryDataWithTimestampColumnAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_data_with_timestamp_column]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd =
+                    connection.CreateSelectCommand(
+                        "SELECT SingerId, AlbumId, "
+                        + "MarketingBudget, LastUpdateTime FROM Albums");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        string budget = string.Empty;
+                        if (reader["MarketingBudget"] != DBNull.Value)
+                        {
+                            budget = reader.GetFieldValue<string>("MarketingBudget");
+                        }
+                        string timestamp = string.Empty;
+                        if (reader["LastUpdateTime"] != DBNull.Value)
+                        {
+                            timestamp = reader.GetFieldValue<string>("LastUpdateTime");
+                        }
+                        Console.WriteLine("SingerId : "
+                        + reader.GetFieldValue<string>("SingerId")
+                        + " AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + $" MarketingBudget : {budget}"
+                        + $" LastUpdateTime : {timestamp}");
+                    }
+                }
+            }
+            // [END spanner_query_data_with_timestamp_column]
+        }
+
+        public static object CreateTableWithTimestampColumn(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = CreateTableWithTimestampColumnAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task CreateTableWithTimestampColumnAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_create_table_with_timestamp_column]
+            // Initialize request connection string for database creation.
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                // Define create table statement for table with 
+                // commit timestamp column.
+                string createTableStatement =
+               @"CREATE TABLE Performances (
+				SingerId	INT64 NOT NULL,
+				VenueId		INT64 NOT NULL,
+				EventDate	Date,
+				Revenue   INT64,
+				LastUpdateTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)
+			    ) PRIMARY KEY (SingerId, VenueId, EventDate),
+			    INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+                // Make the request.
+                var cmd = connection.CreateDdlCommand(createTableStatement);
+                await cmd.ExecuteNonQueryAsync();
+            }
+            // [END spanner_create_table_with_timestamp_column]
+        }
+
+        public static object WriteDataWithTimestampColumn(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = WriteDataWithTimestampAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task WriteDataWithTimestampAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_insert_data_with_timestamp_column]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
+            List<Performance> performances = new List<Performance> {
+                new Performance {singerId = 1, venueId = 4, eventDate = DateTime.Parse("2017-10-05"),
+                    revenue = 11000},
+                new Performance {singerId = 1, venueId = 19, eventDate = DateTime.Parse("2017-11-02"),
+                    revenue = 15000},
+                new Performance {singerId = 2, venueId = 42, eventDate = DateTime.Parse("2017-12-23"),
+                    revenue = 7000},
+            };
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                // Insert rows into the Performances table.
+                var cmd = connection.CreateInsertCommand("Performances",
+                    new SpannerParameterCollection {
+                        {"SingerId", SpannerDbType.Int64},
+                        {"VenueId", SpannerDbType.Int64},
+                        {"EventDate", SpannerDbType.Date},
+                        {"Revenue", SpannerDbType.Int64},
+                        {"LastUpdateTime", SpannerDbType.Timestamp},
+                });
+                await Task.WhenAll(performances.Select(performance =>
+                {
+                    cmd.Parameters["SingerId"].Value = performance.singerId;
+                    cmd.Parameters["VenueId"].Value = performance.venueId;
+                    cmd.Parameters["EventDate"].Value = performance.eventDate;
+                    cmd.Parameters["Revenue"].Value = performance.revenue;
+                    cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
+                    return cmd.ExecuteNonQueryAsync();
+                }));
+                Console.WriteLine("Inserted data.");
+            }
+            // [END spanner_insert_data_with_timestamp_column]
+        }
+
+        public static object QueryNewTableWithTimestampColumn(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryDataWithTimestampAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryDataWithTimestampAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId, VenueId, EventDate, Revenue, "
+                    + "LastUpdateTime FROM Performances "
+                    + "ORDER BY LastUpdateTime DESC");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine("SingerId : "
+                            + reader.GetFieldValue<string>("SingerId")
+                            + " VenueId : "
+                            + reader.GetFieldValue<string>("VenueId")
+                            + " EventDate : "
+                            + reader.GetFieldValue<string>("EventDate")
+                            + " Revenue : "
+                            + reader.GetFieldValue<string>("Revenue")
+                            + " LastUpdateTime : "
+                            + reader.GetFieldValue<string>("LastUpdateTime")
+                            );
+                    }
+                }
+            }
+        }
+
+
+        public static object DeleteDatabase(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response =
+                DeleteDatabaseAsync(projectId, instanceId, databaseId);
+            Console.WriteLine("Waiting for operation to complete...");
+            response.Wait();
+            Console.WriteLine($"Operation status: {response.Status}");
+            Console.WriteLine($"Deleted sample database {databaseId} on "
+                + $"instance {instanceId}");
+            return ExitCode.Success;
+        }
+
+        private static async Task DeleteDatabaseAsync(string projectId,
+            string instanceId, string databaseId)
+        {
+            // The IAM Role "Cloud Spanner Database Admin" is required for 
+            // performing Administration operations on the database.
+            // For more info see https://cloud.google.com/spanner/docs/iam#roles
+            string AdminConnectionString = $"Data Source=projects/{projectId}/"
+                + $"instances/{instanceId}";
+            using (var connection = new SpannerConnection(AdminConnectionString))
+            using (var cmd = connection.CreateDdlCommand(
+                $@"DROP DATABASE {databaseId}"))
+            {
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+            Console.WriteLine($"Done deleting database: {databaseId}");
         }
 
         public static int Main(string[] args)
@@ -1386,8 +1962,35 @@ namespace GoogleCloudSamples.Spanner
                 .Add((ReadStaleDataOptions opts) =>
                     ReadStaleDataAsync(opts.projectId, opts.instanceId,
                         opts.databaseId).Result)
+                .Add((BatchInsertOptions opts) =>
+                    BatchInsertRecords(opts.projectId, opts.instanceId,
+                        opts.databaseId))
+                .Add((BatchReadOptions opts) =>
+                    BatchReadRecords(opts.projectId, opts.instanceId,
+                        opts.databaseId))
+                .Add((AddCommitTimestampOptions opts) =>
+                    AddCommitTimestamp(opts.projectId, opts.instanceId,
+                        opts.databaseId))
+                .Add((UpdateDataWithTimestampOptions opts) =>
+                    UpdateDataWithTimestampColumn(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithTimestampOptions opts) =>
+                    QueryDataWithTimestampColumn(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((CreateTableWithTimestampOptions opts) =>
+                    CreateTableWithTimestampColumn(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((WriteDataWithTimestampOptions opts) =>
+                    WriteDataWithTimestampColumn(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryNewTableWithTimestampOptions opts) =>
+                    QueryNewTableWithTimestampColumn(opts.projectId,
+                        opts.instanceId, opts.databaseId))
                 .Add((ListDatabaseTablesOptions opts) =>
                     ListDatabaseTables(opts.projectId, opts.instanceId,
+                        opts.databaseId))
+                .Add((DeleteOptions opts) =>
+                    DeleteDatabase(opts.projectId, opts.instanceId,
                         opts.databaseId))
                 .Add((DropSampleTablesOptions opts) =>
                     DropSampleTables(opts.projectId, opts.instanceId,

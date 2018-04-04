@@ -12,29 +12,29 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// 1.0 style test script not using the `casperjs test` subcommand
-var casper = require('casper').create();
-var host = casper.cli.args[0];
+var system = require('system');
+var host = system.env['CASPERJS11_URL'];
 
 currentCount = 0;
 
-casper.start(host + '/', function (response) {
-    console.log('Starting ' + host + '/');
-    this.test.assertSelectorHasText('H1', 'SendGrid Sample');
-    this.test.assertSelectorHasText('body', 'greeting');
-    this.fill('#SendForm', {
-        'Recipient': 'bob@example.com',
-    }, false);
-    console.log('Filled form.');
-});
++casper.test.begin('Test SendGrid sample.', 4, function suite(test) {
+    casper.start(host + '/', function (response) {
+        console.log('Starting ' + host + '/');
+        test.assertSelectorHasText('H1', 'SendGrid Sample');
+        test.assertSelectorHasText('body', 'greeting');
+        this.fill('#SendForm', {
+            'Recipient': 'bob@example.com',
+        }, false);
+        console.log('Filled form.');
+    });
 
-casper.thenClick('#Submit', function (response) {
-    console.log('Submitted form.');
-    this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('body', 'delivered');
-});
+    casper.thenClick('#Submit', function (response) {
+        console.log('Submitted form.');
+        test.assertEquals(200, response.status);
+        test.assertSelectorHasText('body', 'delivered');
+    });
 
-casper.run(function () {
-    this.test.done();
-    this.test.renderResults(true);
+    casper.run(function () {
+        test.done();
+    });
 });

@@ -18,7 +18,7 @@
 <#
 
 PS ...> Import-Module .\BuildTools.psm1
-WARNING: The names of some imported commands from the module 'BuildTools' include unapproved verbs that might make them less 
+WARNING: The names of some imported commands from the module 'BuildTools' include unapproved verbs that might make them less
 discoverable. To find the commands with unapproved verbs, run the Import-Module command again with the Verbose parameter. For
  a list of approved verbs, type Get-Verb.
 PS ...> cd .\aspnet\2-structured-data
@@ -97,7 +97,7 @@ function Add-Setting($Config, [string]$Key, [string]$Value) {
 #
 #.DESCRIPTION
 # When anything in pipelined to the function, outputs the inputs.
-# Otherwise, evaluates the script block and returns the result. 
+# Otherwise, evaluates the script block and returns the result.
 #
 #.PARAMETER ScriptBlock
 # The script block to execute if $input is empty.
@@ -144,9 +144,9 @@ filter Get-Config ($Target, $ArgList, $Mask="Web.config") {
 # Paths to Web.configs that this function modified.
 #
 #.EXAMPLE
-# Update-Config 
+# Update-Config
 ##############################################################################
-filter Update-Config ([switch]$Yes) {        
+filter Update-Config ([switch]$Yes) {
     $configs = Get-Config $_ $args
     foreach($configPath in $configs) {
         if (-not $Yes -and (git status -s $configPath)) {
@@ -168,11 +168,11 @@ filter Update-Config ([switch]$Yes) {
         $connectionString = Select-Xml -Xml $config.Node -XPath "connectionStrings/add[@name='LocalMySqlServer']"
         if ($connectionString) {
             if ($env:GoogleCloudSamples:ConnectionString) {
-                $connectionString.Node.connectionString = $env:GoogleCloudSamples:ConnectionString;        
+                $connectionString.Node.connectionString = $env:GoogleCloudSamples:ConnectionString;
             } elseif ($env:Data:MySql:ConnectionString) {
                 # TODO: Stop checking this old environment variable name when we've
                 # updated all the scripts.
-                $connectionString.Node.connectionString = $env:Data:MySql:ConnectionString;        
+                $connectionString.Node.connectionString = $env:Data:MySql:ConnectionString;
             }
         }
         $config.Node.OwnerDocument.Save($config.Path);
@@ -287,7 +287,7 @@ function Find-Files($Path = $null, [string[]]$Masks = '*', $MaxDepth = -1,
 # UpFind-File *.txt
 ##############################################################################
 function UpFind-File([string[]]$Masks = '*')
-{    
+{
     $dir = Get-Item .
     while (1)
     {
@@ -303,7 +303,7 @@ function UpFind-File([string[]]$Masks = '*')
             return
         }
         $dir = Get-Item $dir.parent.FullName
-    }    
+    }
 }
 
 ##############################################################################
@@ -349,6 +349,80 @@ function Require-Platform([string[]] $platforms) {
     Skip-Test
 }
 
+##############################
+#.SYNOPSIS
+# Runs the list of test scripts.
+#
+#.DESCRIPTION
+# Runs each test script once.  Records the results in $Results.
+#
+#.PARAMETER Scripts
+# A list of scripts to run.  An array of Items.
+#
+#.PARAMETER TimeoutSeconds
+# Give up if a test script takes longer than TimeoutSeconds to run.
+#
+#.PARAMETER Verb
+# Verb to print in output message.
+#
+#.PARAMETER Results
+# Gets filled with the resulting job status and list.  For example:
+# { 'Failed' = @('.\pubsub\api\PubsubTest\runTest.ps1');
+#   'Succeeded' = @('.\trace\api\runTests.ps1', '.\storage\api\runTests.ps1') }
+##############################
+function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
+    [string]$Verb, [hashtable]$Results)
+{
+    foreach ($script in $Scripts) {
+        $startDate = Get-Date
+        $relativePath = Resolve-Path -Relative $script
+        $jobState = 'Failed'
+        Write-Output "$verb $relativePath..."
+        $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
+            ('.\"{0}"' -f $script.Name) {
+            Write-Output ("-" * 79)
+            Write-Output $args[0]
+            Set-Location $args[1]
+            Invoke-Expression $args[2]
+            if ($LASTEXITCODE) {
+                throw "FAILED with exit code $LASTEXITCODE"
+            }
+        }
+        # Call Receive-Job every second so the stdout for the job
+        # streams to my stdout.
+        while ($true) {
+            Wait-Job $job -Timeout 1 | Out-Null
+            $jobState = $job.State
+            foreach ($line in (Receive-Job $job)) {
+                # Look at the output of the job to see if it requested
+                # a longer timeout.
+                if ($line.TimeoutSeconds) {
+                    $TimeoutSeconds = $line.TimeoutSeconds
+                    "Set timeout to $TimeoutSeconds seconds."
+                } elseif ($line.Skipped) {
+                    Write-Output "SKIPPED"
+                    $jobState = 'Skipped'
+                    break
+                } else {
+                    $line
+                }
+            }
+            if ($jobState -eq 'Running') {
+                $deadline = $startDate.AddSeconds($TimeoutSeconds)
+                if ((Get-Date) -gt $deadline) {
+                    Write-Output "TIME OUT"
+                    $jobState = 'Timed Out'
+                    break
+                }
+            } else {
+                break
+            }
+        }
+        Remove-Job -Force $job
+        $results[$jobState] += @($relativePath)
+    }
+}
+
 ##############################################################################
 #.SYNOPSIS
 # Runs powershell scripts and prints a summary of successes and errors.
@@ -362,62 +436,21 @@ function Require-Platform([string[]] $platforms) {
 ##############################################################################
 function Run-TestScripts($TimeoutSeconds=300) {
     $scripts = When-Empty -ArgList ($input + $args) -ScriptBlock { Find-Files -Masks '*runtests*.ps1' } | Get-Item
-    $rootDir = pwd
     # Keep running lists of successes and failures.
-    # Array of strings: the relative path of the inner script.
     $results = @{}
-    foreach ($script in $scripts) {
-        $startDate = Get-Date
-        $relativePath = Resolve-Path -Relative $script.FullName
-        $verb = "Starting"
-        $jobState = 'Failed'  # Retry once on failure.
-        for ($try = 0; $try -lt 2 -and $jobState -eq 'Failed'; ++$try) {
-            Write-Output "$verb $relativePath..."
-            $verb = "Retrying"
-            $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
-                ('.\"{0}"' -f $script.Name) {
-                Write-Output ("-" * 79)
-                Write-Output $args[0]
-                Set-Location $args[1]
-                Invoke-Expression $args[2]
-                if ($LASTEXITCODE) {
-                    throw "FAILED with exit code $LASTEXITCODE"
-                }
-            }
-            # Call Receive-Job every second so the stdout for the job
-            # streams to my stdout. 
-            while ($true) {
-                Wait-Job $job -Timeout 1 | Out-Null
-                $jobState = $job.State
-                foreach ($line in (Receive-Job $job)) {
-                    # Look at the output of the job to see if it requested
-                    # a longer timeout.
-                    if ($line.TimeoutSeconds) {
-                        $TimeoutSeconds = $line.TimeoutSeconds
-                        "Set timeout to $TimeoutSeconds seconds."
-                    } elseif ($line.Skipped) {
-                        Write-Output "SKIPPED"
-                        $jobState = 'Skipped'
-                        break
-                    } else {
-                        $line
-                    }
-                }
-                if ($jobState -eq 'Running') {
-                    $deadline = $startDate.AddSeconds($TimeoutSeconds)                    
-                    if ((Get-Date) -gt $deadline) {
-                        Write-Output "TIME OUT"
-                        $jobState = 'Timed Out'
-                        break
-                    }
-                } else {
-                    break
-                }
-            }
-            Remove-Job -Force $job
-        }
-        $results[$jobState] += @($relativePath)
+    Run-TestScriptsOnce $scripts $TimeoutSeconds 'Starting' $results
+    # Rename all the test logs to a name Sponge will find.
+    Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 01_sponge_log.xml
+    # Retry the failures once.
+    $failed = $results['Failed']
+    if ($failed) {
+        $results['Failed'] = @()
+        Run-TestScriptsOnce ($failed | Get-Item) $TimeoutSeconds `
+            'Retrying' $results
+        # Rename all the test logs to a name Sponge will find.
+        Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 02_sponge_log.xml
     }
+
     # Print a final summary.
     Write-Output ("=" * 79)
     foreach ($key in $results.Keys) {
@@ -434,30 +467,6 @@ function Run-TestScripts($TimeoutSeconds=300) {
     $timeOutCount = $results['Timed Out'].Length
     if ($timeOutCount) {
         throw "$timeOutCount TIMED OUT"
-    }
-}
-
-##############################################################################
-#.SYNOPSIS
-# Builds and runs .NET core web application in the current directory.
-# Runs test using casperjs.
-#
-#.INPUTS
-# Javascript test files to pass to casperjs.
-##############################################################################
-function BuildAndRun-CoreTest($TestJs = "test.js") {
-    dnvm use 1.0.0-rc1-update1 -r clr
-    dnu restore
-    dnu build
-    $webProcess = Start-Process dnx web -PassThru
-    Try
-    {
-        Start-Sleep -Seconds 4  # Wait for web process to start up.
-        casperjs $TestJs http://localhost:5000
-    }
-    Finally
-    {
-        Stop-Process $webProcess
     }
 }
 
@@ -534,7 +543,7 @@ function Convert-2003ProjectToCore($csproj) {
         $doc = [xml] (Get-Content $cspath)
         # This one import causes codeformatter to choke.  Turn it off.
         foreach ($import in $doc.Project.Import | Where-Object `
-            {$_.Project -like '*\Microsoft.WebApplication.targets'}) 
+            {$_.Project -like '*\Microsoft.WebApplication.targets'})
         {
             $import.Condition = 'false'
         }
@@ -558,7 +567,7 @@ function Convert-2003ProjectToCore($csproj) {
 filter Lint-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
-        @($project) | Format-Code            
+        @($project) | Format-Code
         # If git reports a diff, codeformatter changed something, and that's bad.
         $diff = git diff
         if ($diff) {
@@ -607,7 +616,7 @@ function Build-Solution($solution) {
 ##############################################################################
 function Get-PortNumber($SiteName, $ApplicationhostConfig) {
     $node = Select-Xml -Path $ApplicationhostConfig `
-        -XPath "/configuration/system.applicationHost/sites/site[@name='$SiteName']/bindings/binding" | 
+        -XPath "/configuration/system.applicationHost/sites/site[@name='$SiteName']/bindings/binding" |
         Select-Object -ExpandProperty Node
     $chunks = $node.bindingInformation -split ':'
     $chunks[1]
@@ -656,7 +665,7 @@ function Run-IISExpress($SiteName, $ApplicationhostConfig) {
 # specified, searches parent directories for the file.
 #
 ##############################################################################
-function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '', 
+function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
     $TestJs = 'test.js', [switch]$LeaveRunning = $false) {
     if (!$SiteName) {
         $SiteName = (get-item -Path ".\").Name
@@ -695,7 +704,7 @@ function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
 # The job running kestrel.
 ##############################################################################
 function Run-Kestrel([Parameter(mandatory=$true)][string]$url) {
-    Start-Job -ArgumentList (Get-Location), $url -ScriptBlock { 
+    Start-Job -ArgumentList (Get-Location), $url -ScriptBlock {
         Set-Location $args[0]
         $env:ASPNETCORE_URLS = $args[1]
         dotnet run
@@ -713,12 +722,13 @@ function Run-Kestrel([Parameter(mandatory=$true)][string]$url) {
 # Throws an exception if the test fails.
 #
 ##############################################################################
-function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'test.js', [switch]$LeaveRunning = $false) {
+function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'test.js', 
+    [switch]$LeaveRunning = $false, [switch]$CasperJs11 = $false) {
     $url = "http://localhost:$PortNumber"
     $job = Run-Kestrel($url)
     Try
     {
-        Run-CasperJs $TestJs, $Url
+        Run-CasperJs $TestJs $Url -v11:$CasperJs11
     }
     Finally
     {
@@ -730,11 +740,56 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
     }
 }
 
-function Run-CasperJs($TestJs='test.js', $Url) {
+##############################
+#.SYNOPSIS
+# Moves TestResults.xml into an output subdirectory.
+#
+#.PARAMETER OutDir
+#The directory to which to move TestResults.xml.  This directory will be created
+#if it does not already exist.
+##############################
+function Move-TestResults($OutDir) {
+    if ($OutDir -and (Test-Path TestResults.xml)) {
+        New-Item -ItemType Directory -Force -Path $OutDir
+        Move-Item TestResults.xml $OutDir
+    }
+}
+
+##############################
+#.SYNOPSIS
+# Runs CasperJs
+#
+#.PARAMETER TestJs
+# The Javascript file to run.
+#
+#.PARAMETER Url
+# The url to pass to the test.  Usually points to running website to test.
+#
+#.PARAMETER v11
+# Use CasperJs version 1.1 instead of 1.0.
+##############################
+function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false,
+    [string]$OutDir) {
     $sleepSeconds = 2
     for ($tryCount = 0; $tryCount -lt 5; $tryCount++) {
         Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
-        $casperOut = casperjs $TestJs $Url
+        if ($v11) {
+            $env:CASPERJS11_URL = $Url
+            # Casperjs.exe creates a new terminal window, from which we
+            # cannot capture output.  So we use python to invoke it and
+            # capture output.
+            $casperOut = python (Join-Path $env:CASPERJS11_BIN "casperjs") `
+                -- test --xunit=TestResults.xml $TestJs
+            # Casper 1.1 always returns 0, so inspect the xml output
+            # to see if a test failed.
+            [xml]$x = Get-Content TestResults.xml         
+            $LASTEXITCODE = 0      
+            foreach ($suite in $x.testsuites.testsuite) {
+                $LASTEXITCODE += [int] $suite.failures 
+            }
+        } else {
+            $casperOut = casperjs $TestJs $Url
+        }
         if ($LASTEXITCODE -eq 0) {
             $casperOut | Write-Host
             return
@@ -860,7 +915,7 @@ filter Update-Packages ([string] $Mask) {
 ##############################################################################
 function Backup-File(
     [string[]][Parameter(Mandatory=$true,ValueFromPipeline=$true)] $Files,
-    [scriptblock][Parameter(Mandatory=$true)] $ScriptBlock) 
+    [scriptblock][Parameter(Mandatory=$true)] $ScriptBlock)
 {
     $fileMap = @{}
     try {
@@ -909,7 +964,7 @@ function Edit-TextFile(
 
 ##############################################################################
 #.SYNOPSIS
-# Make a backup copy of a file, edit the file, run the script, and restore 
+# Make a backup copy of a file, edit the file, run the script, and restore
 # the file.
 #
 #.PARAMETER Files
@@ -976,7 +1031,7 @@ filter ConvertTo-Utf8 {
 ##############################################################################
 #.SYNOPSIS
 # Given a path to a runTests.ps1 script, find the git timestamp of changes in
-# the same directory. 
+# the same directory.
 ##############################################################################
 function Get-GitTimeStampForScript($script) {
     Push-Location
@@ -995,5 +1050,106 @@ function Get-GitTimeStampForScript($script) {
         return ($newestDate | Sort-Object -Descending) -join "+"
     } finally {
         Pop-Location
+    }
+}
+
+# Notice the year is incomplete.  We fill it in Add-Copyright below.
+$copyrightTemplate = @"
+Copyright 20 Google
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+"@
+
+
+##############################
+#.SYNOPSIS
+# Detects whether the source file contains a copyright notice.
+#
+#.PARAMETER path
+# The path the the source file to examine.
+#
+#.EXAMPLE
+# Has-Copyright foo.cs
+##############################
+function Has-Copyright ($path)
+{
+    # Just search for all the letters in the same order.  Imperfect, but
+    # quick and effective given the variety of whitespace and comment syntaxes
+    # across programming languages.
+    $haystack = Get-Content -Raw $path
+    $needle = ($copyrightTemplate -replace '\s', '').ToCharArray()
+    if ($haystack.Length -lt $needle.Length) {
+        return $false
+    }
+    $ineedle = 0
+    foreach ($hay in $haystack.ToCharArray()) {
+        if ($needle[$ineedle] -eq $hay) {
+            $ineedle += 1;
+            if ($ineedle -eq $needle.Length) {
+                return $true
+            }
+        }
+    }
+    return $false
+}
+
+##############################
+#.SYNOPSIS
+# Adds copyright notice to source files that lack a copyright notice.
+#
+#.DESCRIPTION
+# Does not modify files that already have a copyright notice.
+#
+#.PARAMETER Files
+# The files to examine.  When empty, recursively searches directory for
+# files with extensins .cs, .cshtml, and .ps1.
+#
+#.EXAMPLE
+# Add-Copyright
+##############################
+function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
+{
+    if (-not $Files)
+    {
+        $Files = '.cs', '.cshtml', '.ps1' | ForEach-Object {
+            Get-ChildItem -Recurse "*$_"
+        }
+    }
+    $year = (Get-Date -UFormat "%Y")
+    $copyrightLines = $copyrightTemplate.Replace(
+        "Copyright 20 Google", "Copyright (c) $year Google LLC.") `
+        -split '\r\n|\r|\n'
+    foreach ($path in $Files) {
+        if (Has-Copyright $path) { continue }
+        $dot = $path.LastIndexOf('.')
+        $ext = $path.Substring($dot)
+        $lineCommentPrefix = switch ($ext)
+        {
+            '.cs' { '//' }
+            '.cshtml' { '//' }
+            '.ps1' { '#'}
+        }
+        $tempPath = $path + ".tmp"
+        $copyright = "$lineCommentPrefix " + (
+            $copyrightLines -join "`n$lineCommentPrefix ")
+        $header = if ('.cshtml' -eq $ext) {
+            '@{', $copyright, '}', ''
+        } else {
+            $copyright, '' # Append an empty line too.
+        }
+        $header | Out-File -Encoding UTF8 $tempPath
+        Get-Content $path | Out-File -Append -Encoding UTF8 $tempPath
+        Move-Item -Force $tempPath $path
+        "Add copyright to $path."
     }
 }

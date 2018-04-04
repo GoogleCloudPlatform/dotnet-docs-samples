@@ -14,8 +14,11 @@
  * the License.
  */
 
+// [START using_google_cloud_diagnostics]
+
 using Google.Cloud.Diagnostics.AspNetCore;
 using Google.Cloud.Diagnostics.Common;
+// [END using_google_cloud_diagnostics]
 using Google.Cloud.Trace.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,23 +44,21 @@ namespace Stackdriver
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // [START configure_services_logging]
+        // [START configure_services_error_reporting]
+        // [START configure_services_trace]
         public void ConfigureServices(IServiceCollection services)
         {
-            // [START configure_services_logging]
-            // [START configure_services_error_reporting]
             services.AddOptions();
             services.Configure<StackdriverOptions>(
                 Configuration.GetSection("Stackdriver"));
-            // [END configure_services_logging]
             services.AddGoogleExceptionLogging(options =>
             {
                 options.ProjectId = Configuration["Stackdriver:ProjectId"];
                 options.ServiceName = Configuration["Stackdriver:ServiceName"];
                 options.Version = Configuration["Stackdriver:Version"];
             });
-            // [END configure_services_error_reporting]
 
-            // [START configure_services_trace]
             // Add trace service.
             services.AddGoogleTrace(options =>
             {
@@ -65,33 +66,29 @@ namespace Stackdriver
                 options.Options = TraceOptions.Create(
                     bufferOptions: BufferOptions.NoBuffer());
             });
-            // [END configure_services_trace]
 
             // Add framework services.
             services.AddMvc();
         }
+        // [END configure_services_logging]
+        // [END configure_services_error_reporting]
+        // [END configure_services_trace]
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // [START configure_and_use_logging]
+        // [START configure_error_reporting]
+        // [START configure_trace]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             // Configure logging service.
             loggerFactory.AddGoogle(Configuration["Stackdriver:ProjectId"]);
             var logger = loggerFactory.CreateLogger("testStackdriverLogging");
-
             // Write the log entry.
             logger.LogInformation("Stackdriver sample started. This is a log message.");
-            // [END configure_and_use_logging]
-
-            // [START configure_error_reporting]
             // Configure error reporting service.
             app.UseGoogleExceptionLogging();
-            // [END configure_error_reporting]
-
-            // [START configure_trace]
             // Configure trace service.
             app.UseGoogleTrace();
-            // [END configure_trace]
 
             app.UseStaticFiles();
 
@@ -101,8 +98,9 @@ namespace Stackdriver
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            // [START configure_and_use_logging]
         }
         // [END configure_and_use_logging]
+        // [END configure_error_reporting]
+        // [END configure_trace]
     }
 }

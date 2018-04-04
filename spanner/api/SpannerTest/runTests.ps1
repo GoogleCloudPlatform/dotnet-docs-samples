@@ -14,11 +14,13 @@
 
 # TODO: Resurrect this test when bug 68199801 is fixed.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
-
+Require-Platform Win*
+Set-TestTimeout 600
 
 BackupAndEdit-TextFile "..\QuickStart\Program.cs" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{ 
+{
     dotnet restore
-    dotnet test
+    dotnet build
+    dotnet test --test-adapter-path:. --logger:junit --no-build --no-restore -v detailed
 }

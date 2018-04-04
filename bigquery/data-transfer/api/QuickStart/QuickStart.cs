@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-// [START bigquery_data_transfer_quickstart]
+// [START bigquerydatatransfer_quickstart]
 
 using System;
 using Google.Api.Gax;
@@ -43,4 +43,4 @@ namespace GoogleCloudSamples
         }
     }
 }
-// [END bigquery_data_transfer_quickstart]
+// [END bigquerydatatransfer_quickstart]

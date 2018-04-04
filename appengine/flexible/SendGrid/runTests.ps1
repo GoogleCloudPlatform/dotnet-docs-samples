@@ -19,5 +19,5 @@ BackupAndEdit-TextFile "appsettings.json" `
     @{"your-sendgrid-api-key" = $env:TEST_SENDGRID_API_KEY} `
 {
 	dotnet build
-	Run-KestrelTest 5565
+	Run-KestrelTest 5565 -CasperJs11
 }

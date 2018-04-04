@@ -22,7 +22,7 @@ namespace GoogleCloudSamples
 {
     public class QuickStart
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             // Instantiates a client
             PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
@@ -30,8 +30,11 @@ namespace GoogleCloudSamples
             // Your Google Cloud Platform project ID
             string projectId = "YOUR-PROJECT-ID";
             // [END pubsub_quickstart]
-            Debug.Assert(projectId != "YOUR-PROJECT" + "-ID",
-                "Edit Program.cs and replace YOUR-PROJECT-ID with your project id.");
+            if (projectId == "YOUR-PROJECT" + "-ID")
+            {
+                Console.WriteLine("Edit Program.cs and replace YOUR-PROJECT-ID with your project id.");
+                return -1;
+            }
             // [START pubsub_quickstart]
 
             // The name for the new topic
@@ -48,6 +51,7 @@ namespace GoogleCloudSamples
             {
                 Console.WriteLine($"Topic {topicName} already exists.");
             }
+            return 0;
         }
     }
 }

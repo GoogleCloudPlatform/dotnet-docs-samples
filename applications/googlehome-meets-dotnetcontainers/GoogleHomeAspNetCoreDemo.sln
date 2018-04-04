@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleHomeAspNetCoreDemoServer", "GoogleHomeAspNetCoreDemoServer\GoogleHomeAspNetCoreDemoServer.csproj", "{23496996-FF3C-43BF-9312-D52556238A5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23496996-FF3C-43BF-9312-D52556238A5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23496996-FF3C-43BF-9312-D52556238A5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23496996-FF3C-43BF-9312-D52556238A5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23496996-FF3C-43BF-9312-D52556238A5D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A63FFF7-75E3-461E-9A5A-E70B214926E8}
+	EndGlobalSection
+EndGlobal
