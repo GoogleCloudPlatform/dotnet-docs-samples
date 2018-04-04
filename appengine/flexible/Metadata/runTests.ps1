@@ -29,4 +29,4 @@ try {
 } catch {
 }
 $jsTest = if ($runningWithGoogleCloudIpAddress) {"cloudTest.js"} else {"localTest.js"}
-Run-KestrelTest 5571 $jsTest
+Run-KestrelTest 5571 $jsTest -CasperJs11

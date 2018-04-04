@@ -23,3 +23,4 @@ google_application_credentials.json
 **/kmsCipher.key
 /tmpB19A.tmp
 /dlp/tmp6849.tmp
+env/

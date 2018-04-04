@@ -12,37 +12,37 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// 1.0 style test script not using the `casperjs test` subcommand
-var casper = require('casper').create();
-var host = casper.cli.args[0];
+var system = require('system');
+var host = system.env['CASPERJS11_URL'];
 
-casper.start(host + '/', function (response) {
-    console.log('Starting ' + host + '/');
-    this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('H1', 'Cloud Storage Sample');
-    this.fill('#TextForm', {
-        'content': 'sunshine',
-    }, false);
-    console.log('Filled form.');
-});
+casper.test.begin('Fill form.', 6, function suite(test) {
+    casper.start(host + '/', function (response) {
+        console.log('Starting ' + host + '/');
+        test.assertEquals(200, response.status);
+        test.assertSelectorHasText('H1', 'Cloud Storage Sample');
+        this.fill('#TextForm', {
+            'content': 'sunshine',
+        }, false);
+        console.log('Filled form.');
+    });
 
-casper.thenClick('#Submit', function (response) {
-    console.log('Submitted form.');
-    this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('#content', 'sunshine');
-    this.fill('#TextForm', {
-        'content': 'rain',
-    }, false);
-    console.log('Filled form.');
-});
+    casper.thenClick('#Submit', function (response) {
+        console.log('Submitted form.');
+        test.assertEquals(200, response.status);
+        test.assertSelectorHasText('#content', 'sunshine');
+        this.fill('#TextForm', {
+            'content': 'rain',
+        }, false);
+        console.log('Filled form.');
+    });
 
-casper.thenClick('#Submit', function (response) {
-    console.log('Submitted form.');
-    this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('#content', 'rain');
-});
+    casper.thenClick('#Submit', function (response) {
+        console.log('Submitted form.');
+        test.assertEquals(200, response.status);
+        test.assertSelectorHasText('#content', 'rain');
+    });
 
-casper.run(function () {
-    this.test.done();
-    this.test.renderResults(true);
+    casper.run(function () {
+        test.done();
+    });
 });

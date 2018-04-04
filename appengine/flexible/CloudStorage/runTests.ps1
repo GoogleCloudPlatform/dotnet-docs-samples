@@ -28,5 +28,5 @@ BackupAndEdit-TextFile "appsettings.json" `
 		Test-GcsObject -Bucket $env:TEST_GOOGLE_BUCKET_NAME -ObjectName sample.txt)) {
 		Remove-GcsObject -Bucket $env:TEST_GOOGLE_BUCKET_NAME -ObjectName sample.txt
 	}
-	Run-KestrelTest 5570
+	Run-KestrelTest 5570 -CasperJs11
 }
