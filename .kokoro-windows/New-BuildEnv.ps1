@@ -67,10 +67,9 @@ Unzip $env:KOKORO_GFILE_DIR\codeformatter.zip $installDir\codeformatter
 Unzip $env:KOKORO_GFILE_DIR\phantomjs-2.1.1-windows.zip $installDir
 # Install casperjs
 Unzip $env:KOKORO_GFILE_DIR\n1k0-casperjs-1.0.3-0-g76fc831.zip $installDir
-$casperJsInstallPath = Resolve-Path \n1k0-casperjs-76fc831
 # Patch casperjs
 Copy-Item -Force $PSScriptRoot\..\.kokoro\docker\bootstrap.js `
-    $casperJsInstallPath\bin\bootstrap.js
+    $installDir\n1k0-casperjs-76fc831\bin\bootstrap.js
 # Install casperjs 1.1
 Unzip $env:KOKORO_GFILE_DIR\casperjs-1.1.4-1.zip $installDir
 Set-PsDebug -Off
