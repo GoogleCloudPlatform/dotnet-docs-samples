@@ -10,12 +10,12 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" Version="1.32.2" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.1" />
     <PackageReference Include="Grpc.Auth" Version="1.8.3" />
-    <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.32.0.896" />
-    <PackageReference Include="Google.Cloud.Vision.V1P1Beta1" Version="1.0.0-beta01" />
-    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.0.1" />
+    <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.32.2.1146" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.1.0" />
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="2.0.0" />
   </ItemGroup>
 

@@ -68,6 +68,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
             query.Cx = Program.AppSettings.CustomSearchSettings.EngineId;
             query.SearchType = CseResource.ListRequest.SearchTypeEnum.Image;
             query.Num = 5;
+            query.ImgSize = CseResource.ListRequest.ImgSizeEnum.Medium;
             return query;
         }
 
