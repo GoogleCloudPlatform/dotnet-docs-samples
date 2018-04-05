@@ -12,31 +12,31 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// 1.0 style test script not using the `casperjs test` subcommand
-var casper = require('casper').create();
-var host = casper.cli.args[0];
+var system = require('system');
+var host = system.env['CASPERJS11_URL'];
 
-casper.start(host + '/', function (response) {
-    console.log('Starting ' + host + '/');
-    this.test.assertEquals(response.status, 200);
-});
+casper.test.begin('Fill form with cat image.', 4, function suite(test) {
+    casper.start(host + '/', function (response) {
+        console.log('Starting ' + host + '/');
+        test.assertEquals(response.status, 200);
+    });
 
-casper.thenOpen(host + '/Home/Naughty', function (response) {
-    this.test.assertEquals(response.status, 200);
-    this.fill('form', {
-        'files': ['../../../vision/api/VisionTest/data/cat.jpg']
-    }, false);
-    console.log('Filled form.');
-});
+    casper.thenOpen(host + '/Home/Naughty', function (response) {
+        test.assertEquals(response.status, 200);
+        this.fill('form', {
+            'files': ['../../../vision/api/VisionTest/data/cat.jpg']
+        }, false);
+        console.log('Filled form.');
+    });
 
-casper.thenClick('#submit', function (response) {
-    console.log('Submitted.  New location is ' + this.getCurrentUrl());
-    this.test.assertEquals(response.status, 200);
-    this.test.assertEquals(this.fetchText('#adult'),
-        'Adult: VeryUnlikely');
-});
+    casper.thenClick('#submit', function (response) {
+        console.log('Submitted.  New location is ' + this.getCurrentUrl());
+        test.assertEquals(response.status, 200);
+        test.assertEquals(this.fetchText('#adult'),
+            'Adult: VeryUnlikely');
+    });
 
-casper.run(function () {
-    this.test.done();
-    this.test.renderResults(true);
+    casper.run(function () {
+        test.done();
+    });
 });
