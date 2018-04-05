@@ -312,6 +312,7 @@ namespace GoogleCloudSamples
             // [START vision_web_entities_include_geo_results_uri]
             // [START vision_web_entities_include_geo_results]
             var client = ImageAnnotatorClient.Create();
+
             var image_context = new ImageContext()
             {
                 WebDetectionParams = new WebDetectionParams()
@@ -319,18 +320,21 @@ namespace GoogleCloudSamples
                     IncludeGeoResults = true
                 }
             };
+
             WebDetection annotation = client.DetectWebInformation(
                 image,
                 image_context
             );
+
             foreach (var entity in annotation.WebEntities)
             {
-                Console.WriteLine($"Score: {0}", entity.Score);
-                Console.WriteLine($"Description: {0}", entity.Description);
+                Console.WriteLine("Score: {0}", entity.Score);
+                Console.WriteLine("Description: {0}", entity.Description);
             }
             // [END vision_web_entities_include_geo_results]
             // [END vision_web_entities_include_geo_results_uri]
             return 0;
+
         }
 
         private static object DetectDocText(Image image)

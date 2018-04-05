@@ -185,6 +185,7 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Score", output.Stdout);
             Assert.Contains("Description:", output.Stdout);
+            Assert.Contains("Zepra", output.Stdout);
         }
 
         [Fact]
