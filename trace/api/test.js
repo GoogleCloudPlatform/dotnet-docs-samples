@@ -12,23 +12,23 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// 1.0 style test script not using the `casperjs test` subcommand
-var casper = require('casper').create();
-var host = casper.cli.args[0];
+var system = require('system');
+var host = system.env['CASPERJS11_URL'];
 
-casper.start(host + '/', function (response) {
-    console.log('Starting ' + host + '/');
-    this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('H1', 'Stackdriver Trace Sample');
-});
+casper.test.begin('Visit home and /Trace.', 4, function suite(test) {
+    casper.start(host + '/', function (response) {
+        console.log('Starting ' + host + '/');
+        test.assertEquals(200, response.status);
+        test.assertSelectorHasText('H1', 'Stackdriver Trace Sample');
+    });
 
-casper.start(host + '/Trace', function (response) {
-    console.log('Starting ' + host + '/Trace');
-    this.test.assertEquals(200, response.status);
-    this.test.assertSelectorHasText('H1', 'Stackdriver Trace Sample');
-});
+    casper.thenOpen(host + '/Trace', function (response) {
+        console.log('Starting ' + host + '/Trace');
+        test.assertEquals(200, response.status);
+        test.assertSelectorHasText('H1', 'Stackdriver Trace Sample');
+    });
 
-casper.run(function () {
-    this.test.done();
-    this.test.renderResults(true);
+    casper.run(function () {
+        test.done();
+    });
 });

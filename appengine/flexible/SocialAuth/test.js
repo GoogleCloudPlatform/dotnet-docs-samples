@@ -12,16 +12,36 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// 1.0 style test script not using the `casperjs test` subcommand
-var casper = require('casper').create();
-var host = casper.cli.args[0];
+var system = require('system');
+var host = system.env['CASPERJS11_URL'];
 
-casper.start(host + '/', function (response) {
-    console.log('Starting ' + host + '/');
-    this.test.assertEquals(302, response.status);
-});
+casper.test.begin('Home page redirects.', 1, function suite(test) {
+    var redirectURLs = [],
+        doLog = false;
+    // Observing redirects with casperjs is difficult.  See:
+    // https://stackoverflow.com/questions/27021176/how-to-prevent-redirects-in-casperjs
+    casper.on("resource.requested", function (requestData, networkRequest) {
+        if (doLog) console.log('Request (#' + requestData.id + '): ' + JSON.stringify(requestData) + "\n");
+        if (redirectURLs.indexOf(requestData.url) !== -1) {
+            // this is a redirect url
+            networkRequest.abort();
+        }
+    });
 
-casper.run(function () {
-    this.test.done();
-    this.test.renderResults(true);
+    casper.on("resource.received", function (response) {
+        if (doLog) console.log('Response (#' + response.id + ', stage "' + response.stage + '"): ' + JSON.stringify(response) + "\n");
+        if (response.status === 302) { // use your status here
+            redirectURLs.push(response.redirectURL);
+        }
+    });
+
+    casper.start(host + '/', function (response) {
+        console.log('Starting ' + host + '/');
+        if (doLog) console.log(JSON.stringify(response, null, 4));
+        test.assertTruthy(redirectURLs.length, "Expected a redirect.");
+    });
+
+    casper.run(function () {
+        test.done();
+    });
 });
