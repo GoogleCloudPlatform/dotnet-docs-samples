@@ -12,16 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-github\dotnet-docs-samples\.kokoro-windows\New-BuildEnv env -SkipDownloadKokoroDir
-env\Activate.ps1
+$installDir = Resolve-Path "$PSScriptRoot\install"
 
-Push-Location
-try {
-    Set-Location github\dotnet-docs-samples\
-    Lint-Code
-} finally {
-    Pop-Location
+$env:PATH = @("$installDir\codeformatter\bin",
+    "$installDir\phantomjs-2.1.1-windows\bin",
+    "$installDir\n1k0-casperjs-76fc831\batchbin",
+    "$env:SystemDrive\Python27",
+    "$env:SystemDrive\Program Files (x86)\MSBuild\14.0\Bin",
+    $env:PATH) -join ';'
+
+$env:CASPERJS11_BIN = "$installDir\casperjs-1.1.4-1\bin"
+
+if (Get-Module BuildTools) {
+    Remove-Module BuildTools
 }
-
-# Run the tests.
-github\dotnet-docs-samples\.kokoro\main.ps1
+# 3 more lines will be appended here.
