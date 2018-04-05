@@ -35,6 +35,7 @@ using Newtonsoft.Json.Converters;
 
 namespace GoogleCloudSamples
 {
+    // [START do_not_submit]
     class OptionsBase
     {
         [Option('p', "projectid", Required = true, HelpText = "Your Google project id.")]
