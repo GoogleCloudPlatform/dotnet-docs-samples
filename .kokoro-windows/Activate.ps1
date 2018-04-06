@@ -15,7 +15,7 @@
 $installDir = Resolve-Path "$PSScriptRoot/install"
 
 $env:PATH = @("$installDir/codeformatter/bin",
-    "$installDir/phantomjs-1.9.8-windows/bin",
+    "$installDir/phantomjs-1.9.8-windows",
     "$installDir/n1k0-casperjs-76fc831/batchbin",
     "$env:SystemDrive/Python27",
     "$env:SystemDrive/Program Files (x86)/MSBuild/14.0/Bin",
