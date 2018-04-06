@@ -66,7 +66,7 @@ Set-PsDebug -Trace 1
 # Install codeformatter
 Unzip $env:KOKORO_GFILE_DIR/codeformatter.zip $installDir/codeformatter
 # Install phantomjs
-Unzip $env:KOKORO_GFILE_DIR/phantomjs-2.1.1-windows.zip $installDir
+Unzip $env:KOKORO_GFILE_DIR/phantomjs-1.9.8-windows.zip $installDir
 # Install casperjs
 Unzip $env:KOKORO_GFILE_DIR/n1k0-casperjs-1.0.3-0-g76fc831.zip $installDir
 # Patch casperjs
