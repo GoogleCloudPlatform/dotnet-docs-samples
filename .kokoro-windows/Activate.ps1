@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$installDir = Resolve-Path "$PSScriptRoot\install"
+$installDir = Resolve-Path "$PSScriptRoot/install"
 
-$env:PATH = @("$installDir\codeformatter\bin",
-    "$installDir\phantomjs-2.1.1-windows\bin",
-    "$installDir\n1k0-casperjs-76fc831\batchbin",
-    "$env:SystemDrive\Python27",
-    "$env:SystemDrive\Program Files (x86)\MSBuild\14.0\Bin",
+$env:PATH = @("$installDir/codeformatter/bin",
+    "$installDir/phantomjs-1.9.8-windows",
+    "$installDir/n1k0-casperjs-76fc831/batchbin",
+    "$env:SystemDrive/Python27",
+    "$env:SystemDrive/Program Files (x86)/MSBuild/14.0/Bin",
     $env:PATH) -join ';'
 
-$env:CASPERJS11_BIN = "$installDir\casperjs-1.1.4-1\bin"
+$env:CASPERJS11_BIN = "$installDir/casperjs-1.1.4-1/bin"
 
 if (Get-Module BuildTools) {
     Remove-Module BuildTools
