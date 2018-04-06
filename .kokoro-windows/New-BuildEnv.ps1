@@ -52,7 +52,7 @@ if (-not $SkipDownloadKokoroDir) {
     $env:KOKORO_GFILE_DIR = Join-Path $Dir 'kokoro'
     (New-Item -Path $env:KOKORO_GFILE_DIR -ItemType Directory -Force).FullName
     # Copy all the files from our kokoro secrets bucket.
-    gsutil cp gs://cloud-devrel-kokoro-resources/dotnet-docs-samples/* $env:KOKORO_GFILE_DIR
+    gsutil -m cp gs://cloud-devrel-kokoro-resources/dotnet-docs-samples/* $env:KOKORO_GFILE_DIR
 }
 
 # Prepare to unzip the files.
