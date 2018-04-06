@@ -21,7 +21,7 @@ $env:PATH = @("$installDir/codeformatter/bin",
     "$env:SystemDrive/Program Files (x86)/MSBuild/14.0/Bin",
     $env:PATH) -join ';'
 
-$env:CASPERJS11_BIN = "$installDir/casperjs-casperjs-b5c59e1/bin"
+$env:CASPERJS11_BIN = "$installDir/casperjs-1.1.4-1/bin"
 
 if (Get-Module BuildTools) {
     Remove-Module BuildTools
