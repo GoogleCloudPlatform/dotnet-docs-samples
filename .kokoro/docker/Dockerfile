@@ -1,3 +1,6 @@
+# $ docker build -t gcr.io/cloud-devrel-kokoro-resources/dotnet .
+# $ gcloud docker -- push gcr.io/cloud-devrel-kokoro-resources/dotnet
+
 # start with a powershell image.
 FROM microsoft/powershell
 
@@ -12,10 +15,9 @@ RUN apt-get -y install dotnet-sdk-2.0.0 dotnet-dev-1.1.4
 # install phantomjs
 # steps from https://www.vultr.com/docs/how-to-install-phantomjs-on-ubuntu-16-04
 RUN apt-get install build-essential chrpath libssl-dev libxft-dev libfreetype6-dev libfreetype6 libfontconfig1-dev libfontconfig1 -y
-RUN curl https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 -O -L
-RUN ls -lash phantomjs-2.1.1-linux-x86_64.tar.bz2
-RUN tar xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2 -C /usr/local/share/
-RUN ln -s /usr/local/share/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/
+RUN curl https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-1.9.8-linux-x86_64.tar.bz2 -O -L
+RUN tar xvjf phantomjs-1.9.8-linux-x86_64.tar.bz2  -C /usr/local/share/
+RUN ln -s /usr/local/share/phantomjs-1.9.8-linux-x86_64/bin/phantomjs /usr/local/bin/
 
 # install python (required by casperjs)
 RUN apt-get install python -y
