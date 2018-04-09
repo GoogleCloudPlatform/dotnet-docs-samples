@@ -31,7 +31,7 @@ namespace Stackdriver
 {
     public class Startup
     {
-        public Startup (IConfiguration configuration)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
