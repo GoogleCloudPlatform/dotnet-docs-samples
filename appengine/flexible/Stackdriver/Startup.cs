@@ -31,17 +31,12 @@ namespace Stackdriver
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // [START configure_services_logging]
@@ -78,17 +73,27 @@ namespace Stackdriver
         // [START configure_and_use_logging]
         // [START configure_error_reporting]
         // [START configure_trace]
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+            ILoggerFactory loggerFactory)
         {
             // Configure logging service.
             loggerFactory.AddGoogle(Configuration["Stackdriver:ProjectId"]);
             var logger = loggerFactory.CreateLogger("testStackdriverLogging");
             // Write the log entry.
             logger.LogInformation("Stackdriver sample started. This is a log message.");
-            // Configure error reporting service.
-            app.UseGoogleExceptionLogging();
             // Configure trace service.
             app.UseGoogleTrace();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // Configure error reporting service.
+                // MUST be called AFTER UseExceptionHandler().
+                app.UseGoogleExceptionLogging();
+            }
 
             app.UseStaticFiles();
 
