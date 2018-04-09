@@ -42,6 +42,10 @@ if ([environment]::OSVersion.Platform -match 'Win*') {
         (Test-Path "$env:SystemDrive/Python27")))) {
         choco install -y --sxs python --version 2.7.6
     }
+
+    if (-not $chocoPackages.Contains('selenium-chrome-driver 2.')) {
+        choco install -y selenium-chrome-driver
+    }
 }
 
 # Create environment directory structure.
