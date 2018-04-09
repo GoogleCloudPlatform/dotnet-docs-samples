@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Counters performance</title>
+
+    <style type="text/css">
+        body, html {
+            font-family: sans-serif;
+        }
+    </style>
+
+    <script src="vis.min.js"></script>
+    <link href="vis.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<h2>Counters</h2>
+
+<div id="visualization"></div>
+
+<script type="text/javascript">
+
+    var container = document.getElementById('visualization');
+    var groupItems = GROUPS;
+    var groups = new vis.DataSet(groupItems);
+
+    var items = ITEMS;
+    var dataset = new vis.DataSet(items);
+    var options = {
+        style:'bar',
+        stack:false,
+        barChart: {width:150, align:'right', sideBySide:true}, // align: left, center, right
+        drawPoints: false,
+        dataAxis: {
+            icons:true
+        },
+        orientation:'top',
+        legend: {
+            enabled: true,
+            position: 'top-right'
+        },
+        start: 1,
+        end: 17,
+        hiddenDates: [{start: 3, end: 4}, {start: 5, end: 8}, {start: 9, end:16 }],
+        showMajorLabels: false,
+    };
+    var graph2d = new vis.Graph2d(container, items, groups, options);
+
+</script>
+</body>
+</html>

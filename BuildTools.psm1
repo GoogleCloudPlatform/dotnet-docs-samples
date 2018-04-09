@@ -703,11 +703,30 @@ function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
 #.RETURNS
 # The job running kestrel.
 ##############################################################################
-function Run-Kestrel([Parameter(mandatory=$true)][string]$url) {
-    Start-Job -ArgumentList (Get-Location), $url -ScriptBlock {
+function Run-Kestrel([Parameter(mandatory=$true)][string]$url)
+{
+    $kestrelJob = Start-Job -ArgumentList (Get-Location), $url -ScriptBlock {
         Set-Location $args[0]
         $env:ASPNETCORE_URLS = $args[1]
         dotnet run
+    }
+    # Wait for Kestrel to come up.
+    while(-not $started) {
+        Start-Sleep -Seconds 1
+        $lines = Receive-Job $kestrelJob
+        $lines | Write-Host
+        if (($kestrelJob | Get-Job).State -ne 'Running') {
+            throw "Kestrel failed to start."
+        }
+        foreach ($line in $lines) {
+            if ($line -like 'Application started.*') {
+                return $kestrelJob
+            }
+        }
+        $seconds++
+        if ($seconds -gt 120) {
+            throw "Kestrel took > 120 seconds to start up."
+        }
     }
 }
 
@@ -725,7 +744,7 @@ function Run-Kestrel([Parameter(mandatory=$true)][string]$url) {
 function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'test.js', 
     [switch]$LeaveRunning = $false, [switch]$CasperJs11 = $false) {
     $url = "http://localhost:$PortNumber"
-    $job = Run-Kestrel($url)
+    $job = Run-Kestrel $url
     Try
     {
         Run-CasperJs $TestJs $Url -v11:$CasperJs11

@@ -1,0 +1,9 @@
+﻿service: websolver
+runtime: aspnetcore
+env: flex
+
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 10
+  cpu_utilization:
+    target_utilization: 0.2
