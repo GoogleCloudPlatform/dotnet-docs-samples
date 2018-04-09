@@ -54,7 +54,7 @@ namespace Sudokumb
         public long LocallyExaminedBoardCount
         {
             get => _locallyExaminedBoardCount.Count;
-            private set {}
+            private set { }
         }
 
         public SolveStateStore(DatastoreDb datastore,

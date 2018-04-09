@@ -29,7 +29,7 @@ namespace Sudokumb
     {
         static void Main(string[] args)
         {
-            var counterTypes = new []
+            var counterTypes = new[]
             {
                 typeof(UnsynchronizedCounter),
                 typeof(LockingCounter),
@@ -49,7 +49,7 @@ namespace Sudokumb
                 });
                 visItems.Add(RunBenchmark(1, type, groupNumber++));
             }
-            foreach (int taskCount in new int [] {2, 4, 8, 16})
+            foreach (int taskCount in new int[] { 2, 4, 8, 16 })
             {
                 groupNumber = 1;
                 foreach (var type in counterTypes.Skip(1))
@@ -65,7 +65,7 @@ namespace Sudokumb
             int groupNumber)
         {
             long count = RunBenchmark(taskCount,
-                (ICounter) Activator.CreateInstance(counterType));
+                (ICounter)Activator.CreateInstance(counterType));
             return new VisItem()
             {
                 x = taskCount,
@@ -89,7 +89,7 @@ namespace Sudokumb
                 });
             }
             long count = 0;
-            for (int i = 0; i < 3; ++ i)
+            for (int i = 0; i < 3; ++i)
             {
                 Thread.Sleep(1000);
                 count = counter.Count;

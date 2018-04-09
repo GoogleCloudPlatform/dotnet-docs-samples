@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.CloudKMS.v1;
 using Google.Apis.CloudKMS.v1.Data;
@@ -53,7 +54,7 @@ namespace SocialAuth.Services
         readonly IOptions<KmsDataProtectionProviderOptions> _options;
         // Keep a cache of DataProtectors we create to reduce calls to the
         // _kms service.
-        readonly ConcurrentDictionary<string, IDataProtector> 
+        readonly ConcurrentDictionary<string, IDataProtector>
             _dataProtectorCache =
             new ConcurrentDictionary<string, IDataProtector>();
 
@@ -132,7 +133,7 @@ namespace SocialAuth.Services
                 keyName = string.Format("{0}/cryptoKeys/{1}",
                     keyRingName, keyId);
             }
-            var newProtector = new KmsDataProtector(_kms, keyName, 
+            var newProtector = new KmsDataProtector(_kms, keyName,
                 (string innerPurpose) =>
                 this.CreateProtector($"{purpose}.{innerPurpose}"));
             _dataProtectorCache.TryAdd(purpose, newProtector);

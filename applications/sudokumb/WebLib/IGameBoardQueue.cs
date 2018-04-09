@@ -36,7 +36,7 @@ namespace Sudokumb
         {
             // Create a new request and publish it to pubsub.
             string solveRequestId = Guid.NewGuid().ToString();
-            await queue.Publish(solveRequestId, new [] { gameBoard },
+            await queue.Publish(solveRequestId, new[] { gameBoard },
                 cancellationToken);
             return solveRequestId;
         }

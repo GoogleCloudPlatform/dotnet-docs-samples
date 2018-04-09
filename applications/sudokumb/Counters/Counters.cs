@@ -22,72 +22,72 @@ namespace Sudokumb
     public interface ICounter
     {
         void Increase(long amount);
-        long Count {get; }
+        long Count { get; }
     }
 
     public class UnsynchronizedCounter : ICounter
     {
-        long count_ = 0;
-        public long Count => count_;
+        long _count = 0;
+        public long Count => _count;
         public void Increase(long amount)
         {
-            count_ += amount;
+            _count += amount;
         }
     }
 
     public class LockingCounter : ICounter
     {
-        long count_ = 0;
-        object thisLock = new object();
+        long _count = 0;
+        readonly object _thisLock = new object();
 
         public long Count
         {
             get
             {
-                lock(thisLock)
+                lock (_thisLock)
                 {
-                    return count_;
+                    return _count;
                 }
             }
         }
 
         public void Increase(long amount)
         {
-            lock(thisLock)
+            lock (_thisLock)
             {
-                count_ += amount;
+                _count += amount;
             }
         }
     }
 
     public class InterlockedCounter : ICounter
     {
-        long count_ = 0;
+        long _count = 0;
 
-        public long Count => Interlocked.CompareExchange(ref count_, 0, 0);
+        public long Count => Interlocked.CompareExchange(ref _count, 0, 0);
 
         public void Increase(long amount)
         {
-            Interlocked.Add(ref count_, amount);
+            Interlocked.Add(ref _count, amount);
         }
     }
 
     public class ShardedCounter : ICounter
     {
-        object thisLock_ = new object();
-        long deadShardSum_ = 0;
-        List<Shard> shards_ = new List<Shard>();
-        readonly LocalDataStoreSlot slot_ = Thread.AllocateDataSlot();
+        readonly object _thisLock = new object();
+        long _deadShardSum = 0;
+        List<Shard> _shards = new List<Shard>();
+        readonly LocalDataStoreSlot _slot = Thread.AllocateDataSlot();
 
         public long Count
         {
             get
             {
-                long sum = deadShardSum_;
+                long sum = _deadShardSum;
                 List<Shard> livingShards_ = new List<Shard>();
-                lock (thisLock_)
+                lock (_thisLock)
                 {
-                    foreach (Shard shard in shards_)
+                    foreach (Shard shard in _shards)
                     {
                         sum += shard.Count;
                         if (shard.Owner.IsAlive)
@@ -96,10 +96,10 @@ namespace Sudokumb
                         }
                         else
                         {
-                            deadShardSum_ += shard.Count;
+                            _deadShardSum += shard.Count;
                         }
                     }
-                    shards_ = livingShards_;
+                    _shards = livingShards_;
                 }
                 return sum;
             }
@@ -107,15 +107,15 @@ namespace Sudokumb
 
         public void Increase(long amount)
         {
-            Shard counter = Thread.GetData(slot_) as Shard;
+            Shard counter = Thread.GetData(_slot) as Shard;
             if (null == counter)
             {
                 counter = new Shard()
                 {
                     Owner = Thread.CurrentThread
                 };
-                Thread.SetData(slot_, counter);
-                lock (thisLock_) shards_.Add(counter);
+                Thread.SetData(_slot, counter);
+                lock (_thisLock) _shards.Add(counter);
             }
             counter.Increase(amount);
         }

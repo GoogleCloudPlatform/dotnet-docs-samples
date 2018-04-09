@@ -42,23 +42,23 @@ namespace Sudokumb
         /// <summary>
         /// Settings get stored in datastore.
         /// </summary>
-        readonly DatastoreDb datastore_;
+        readonly DatastoreDb _datastore;
         /// <summary>
         /// The key to the one entity that contains all the settings.
         /// </summary>
-        readonly Key key_;
-
-        // Cache the datastore entity so we don't query datastore a million
-        // times, which would slow us down.  Performance optimization.
-        object cachedEntityLock_ = new object();
-        Task<Entity> cachedEntity_;
-        DateTime cachedEntityExpires_;
+        readonly Key _key;
+        readonly
+                // Cache the datastore entity so we don't query datastore a million
+                // times, which would slow us down.  Performance optimization.
+                object _cachedEntityLock = new object();
+        Task<Entity> _cachedEntity;
+        DateTime _cachedEntityExpires;
 
         public AdminSettings(DatastoreDb datastore)
         {
-            cachedEntityExpires_ = DateTime.MinValue;
-            datastore_ = datastore;
-            key_ = new KeyFactory(datastore.ProjectId, datastore.NamespaceId,
+            _cachedEntityExpires = DateTime.MinValue;
+            _datastore = datastore;
+            _key = new KeyFactory(datastore.ProjectId, datastore.NamespaceId,
                 ENTITY_KIND).CreateKey(1);
         }
 
@@ -78,15 +78,15 @@ namespace Sudokumb
 
         Task<Entity> LookupEntityAsync()
         {
-            lock(cachedEntityLock_)
+            lock (_cachedEntityLock)
             {
                 var now = DateTime.Now;
-                if (now > cachedEntityExpires_)
+                if (now > _cachedEntityExpires)
                 {
-                    cachedEntityExpires_ = now.AddSeconds(10);
-                    cachedEntity_ = datastore_.LookupAsync(key_);
+                    _cachedEntityExpires = now.AddSeconds(10);
+                    _cachedEntity = _datastore.LookupAsync(_key);
                 }
-                return cachedEntity_;
+                return _cachedEntity;
             }
         }
 
@@ -94,15 +94,15 @@ namespace Sudokumb
         {
             Entity entity = new Entity()
             {
-                Key = key_,
+                Key = _key,
                 [DUMB_EXPIRES] = when
             };
-            lock(cachedEntityLock_)
+            lock (_cachedEntityLock)
             {
-                cachedEntity_ = Task.FromResult(entity);
-                cachedEntityExpires_ = DateTime.Now.AddSeconds(10);
+                _cachedEntity = Task.FromResult(entity);
+                _cachedEntityExpires = DateTime.Now.AddSeconds(10);
             }
-            return datastore_.UpsertAsync(entity);
+            return _datastore.UpsertAsync(entity);
         }
 
         public async Task<DateTime?> GetDumbExpiresAsync()
@@ -112,7 +112,7 @@ namespace Sudokumb
             {
                 return null;
             }
-            return (DateTime?) entity[DUMB_EXPIRES];
+            return (DateTime?)entity[DUMB_EXPIRES];
         }
     }
 }

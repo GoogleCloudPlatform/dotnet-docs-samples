@@ -26,13 +26,13 @@ namespace Sudokumb
 {
     public class DatastoreRoleStore<R> : IRoleStore<R> where R : IdentityRole, new()
     {
-        readonly         DatastoreDb _datastore;
-        readonly         KeyFactory _roleKeyFactory;
+        readonly DatastoreDb _datastore;
+        readonly KeyFactory _roleKeyFactory;
 
         const string
-            KIND = "webuserrole",            
-            NORMALIZED_NAME = "normalized-name",            
-            ROLE_NAME = "name",            
+            KIND = "webuserrole",
+            NORMALIZED_NAME = "normalized-name",
+            ROLE_NAME = "name",
             CONCURRENCY_STAMP = "concurrency-stamp";
 
         public DatastoreRoleStore(DatastoreDb datastore)

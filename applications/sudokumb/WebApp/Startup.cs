@@ -125,7 +125,7 @@ namespace WebApp
             {
                 var rewriteOptions = new RewriteOptions()
                 {
-                    Rules = {new RewriteHttpsOnAppEngine(HttpsPolicy.Required)}
+                    Rules = { new RewriteHttpsOnAppEngine(HttpsPolicy.Required) }
                 };
                 app.UseRewriter(rewriteOptions);
             }

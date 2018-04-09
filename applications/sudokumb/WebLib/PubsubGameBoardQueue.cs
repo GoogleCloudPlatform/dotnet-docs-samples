@@ -85,9 +85,9 @@ namespace Sudokumb
             _publisherApi = PublisherServiceApiClient.Create();
             var subscriberApi = SubscriberServiceApiClient.Create();
             _publisherClient = PublisherClient.Create(MyTopic,
-                new [] { _publisherApi});
+                new[] { _publisherApi });
             _subscriberClient = SubscriberClient.Create(MySubscription,
-                new [] {subscriberApi}, new SubscriberClient.Settings()
+                new[] { subscriberApi }, new SubscriberClient.Settings()
                 {
                     StreamAckDeadline = TimeSpan.FromMinutes(1)
                 });
@@ -120,21 +120,21 @@ namespace Sudokumb
 
         public TopicName MyTopic
         {
-             get
-             {
-                 var opts = _options.Value;
-                 return new TopicName(opts.ProjectId, opts.TopicId);
-             }
+            get
+            {
+                var opts = _options.Value;
+                return new TopicName(opts.ProjectId, opts.TopicId);
+            }
         }
 
         public SubscriptionName MySubscription
         {
-             get
-             {
-                 var opts = _options.Value;
-                 return new SubscriptionName(opts.ProjectId,
-                    opts.SubscriptionId);
-             }
+            get
+            {
+                var opts = _options.Value;
+                return new SubscriptionName(opts.ProjectId,
+                   opts.SubscriptionId);
+            }
         }
 
         public async Task<bool> Publish(string solveRequestId,
@@ -144,7 +144,7 @@ namespace Sudokumb
             var messages = gameBoards.Select(board => new GameBoardMessage()
             {
                 SolveRequestId = solveRequestId,
-                Stack = new [] {new BoardAndWidth { Board = board, ParallelBranches = 1} },
+                Stack = new[] { new BoardAndWidth { Board = board, ParallelBranches = 1 } },
             });
             var pubsubMessages = messages.Select(message => new PubsubMessage()
             {
@@ -291,7 +291,7 @@ namespace Sudokumb
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            Task.Run(async() =>
+            Task.Run(async () =>
             {
                 // This potentially hammers the CPU, so wait until everything
                 // else starts up.

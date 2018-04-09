@@ -32,7 +32,7 @@ namespace Sudokumb
     public class DatastoreCounterOptions
     {
         public string Kind { get; set; } = "Counter";
-        public TimeSpan CondenseFrequency {get; set;} = TimeSpan.FromDays(1);
+        public TimeSpan CondenseFrequency { get; set; } = TimeSpan.FromDays(1);
     }
 
     // Rolls over the DatastoreCounter at half the CondenseFrequency.
@@ -67,7 +67,7 @@ namespace Sudokumb
             get
             {
                 DateTime now = DateTime.UtcNow;
-                lock(_thisLock)
+                lock (_thisLock)
                 {
                     if (now - _counterBirthday >
                         (_options.Value.CondenseFrequency / 2))
@@ -120,7 +120,7 @@ namespace Sudokumb
         Task _hostedService;
         readonly ILogger _logger;
         readonly IManagedTracer _tracer;
-        ConcurrentDictionary<string, ICounter> _localCounters
+readonly         ConcurrentDictionary<string, ICounter> _localCounters
              = new ConcurrentDictionary<string, ICounter>();
 
         internal DatastoreCounter(DatastoreDb datastore,
@@ -151,7 +151,7 @@ namespace Sudokumb
                 };
                 long count = 0;
                 var lazyResults = _datastore.RunQueryLazilyAsync(query,
-                    callSettings:callSettings).GetEnumerator();
+                    callSettings: callSettings).GetEnumerator();
                 while (await lazyResults.MoveNext())
                 {
                     Entity entity = lazyResults.Current;
@@ -184,7 +184,7 @@ namespace Sudokumb
                 Projection = { "__key__" }
             };
             var lazyResults = _datastore.RunQueryLazilyAsync(query,
-                callSettings:callSettings).GetEnumerator();
+                callSettings: callSettings).GetEnumerator();
             while (await lazyResults.MoveNext())
             {
                 oldKeys.Add(lazyResults.Current.Key.Path.Last().Name);
@@ -192,7 +192,7 @@ namespace Sudokumb
             oldKeys.Sort();
             // Find groups of old keys with matching counter ids.
             int firstInGroup = 0;
-            for(int i = 1; i < oldKeys.Count; ++i)
+            for (int i = 1; i < oldKeys.Count; ++i)
             {
                 int groupSize = i - firstInGroup;
                 if (GetCounterId(oldKeys[i]) == GetCounterId(oldKeys[firstInGroup])
@@ -249,7 +249,7 @@ namespace Sudokumb
         {
             System.Diagnostics.Debug.Assert(null == _cancelHostedService);
             _cancelHostedService = new CancellationTokenSource();
-            _hostedService = Task.Run(async() => await HostedServiceMainAsync(
+            _hostedService = Task.Run(async () => await HostedServiceMainAsync(
                 _cancelHostedService.Token));
             return Task.CompletedTask;
         }
@@ -262,7 +262,7 @@ namespace Sudokumb
 
         public ICounter GetLocalCounter(string id) =>
             _localCounters.GetOrAdd(id,
-                (key) => (ICounter) new InterlockedCounter());
+                (key) => (ICounter)new InterlockedCounter());
 
         async Task UpdateDatastoreFromLocalCountersAsync(
             Dictionary<string, long> localCountersSnapshot,
@@ -301,7 +301,7 @@ namespace Sudokumb
             var rand = new Random();
             Dictionary<string, long> localCountersSnapshot
                 = new Dictionary<string, long>();
-            DateTime nextCondense = DateTime.UtcNow.AddSeconds(rand.Next((int)                
+            DateTime nextCondense = DateTime.UtcNow.AddSeconds(rand.Next((int)
                 _options.Value.CondenseFrequency.TotalSeconds * 2));
             while (true)
             {
@@ -315,9 +315,10 @@ namespace Sudokumb
                     await UpdateDatastoreFromLocalCountersAsync(
                         localCountersSnapshot, cancellationToken);
                     DateTime now = DateTime.UtcNow;
-                    if (now > nextCondense) {
+                    if (now > nextCondense)
+                    {
                         await CondenseOldCounters(cancellationToken);
-                        nextCondense = DateTime.UtcNow.AddSeconds(rand.Next((int)                
+                        nextCondense = DateTime.UtcNow.AddSeconds(rand.Next((int)
                             _options.Value.CondenseFrequency.TotalSeconds * 2));
                     }
                 }

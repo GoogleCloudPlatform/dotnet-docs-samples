@@ -38,7 +38,7 @@ namespace Sudokumb
 
         // Additional properties we store for each User instance
         // in a ConditionalWeakTable. 
-        public class UserAddendum 
+        public class UserAddendum
         {
             public string NormalizedUserName { get; set; }
             public List<string> Roles { get; set; } = new List<string>();
@@ -49,11 +49,11 @@ namespace Sudokumb
 
         const string
             USER_KIND = "webuser",
-            NORMALIZED_EMAIL = "normalized-email",            
-            NORMALIZED_NAME = "normalized-name",            
-            USER_NAME = "user-name",            
-            CONCURRENCY_STAMP = "concurrency-stamp",            
-            PASSWORD_HASH = "password-hash",            
+            NORMALIZED_EMAIL = "normalized-email",
+            NORMALIZED_NAME = "normalized-name",
+            USER_NAME = "user-name",
+            CONCURRENCY_STAMP = "concurrency-stamp",
+            PASSWORD_HASH = "password-hash",
             ROLES = "roles",
             NORMALIZED_NAME_INDEX_KIND = "webuser-nnindex",
             USER_KEY = "key";
@@ -130,7 +130,7 @@ namespace Sudokumb
             var result = await InTransactionAsync(
                 cancellationToken, async (transaction, callSettings) =>
             {
-                transaction.Insert(new [] { entity, indexEntity });
+                transaction.Insert(new[] { entity, indexEntity });
                 await transaction.CommitAsync(callSettings);
             });
             if (result.Succeeded)
@@ -148,7 +148,7 @@ namespace Sudokumb
             return InTransactionAsync(
                 cancellationToken, async (transaction, callSettings) =>
             {
-                transaction.Delete(new [] { KeyFromUserId(user.Id), 
+                transaction.Delete(new[] { KeyFromUserId(user.Id),
                     _nnindexKeyFactory.CreateKey(user.NormalizedUserName) });
                 await transaction.CommitAsync(callSettings);
             });
@@ -174,7 +174,7 @@ namespace Sudokumb
                     var indexEntity = await transaction.LookupAsync(
                         _nnindexKeyFactory.CreateKey(normalizedUserName),
                         callSettings);
-                    if (null == indexEntity) 
+                    if (null == indexEntity)
                     {
                         return null;
                     }
@@ -186,7 +186,7 @@ namespace Sudokumb
             when (e.Status.StatusCode == StatusCode.NotFound)
             {
                 return null;
-            }            
+            }
         }
 
         public Task<string> GetNormalizedUserNameAsync(U user, CancellationToken cancellationToken)
@@ -229,7 +229,7 @@ namespace Sudokumb
             {
                 // NormalizedUserName was not modified.  The common and efficient case.
                 return await Rpc.TranslateExceptionsAsync(() =>
-                    _datastore.UpsertAsync(UserToEntity(user), 
+                    _datastore.UpsertAsync(UserToEntity(user),
                     CallSettings.FromCancellationToken(cancellationToken)));
             }
             Entity entity = UserToEntity(user);
@@ -238,7 +238,7 @@ namespace Sudokumb
                 Key = _nnindexKeyFactory.CreateKey(user.NormalizedUserName),
                 [USER_KEY] = entity.Key
             };
-            var result = await InTransactionAsync(cancellationToken, 
+            var result = await InTransactionAsync(cancellationToken,
                 async (transaction, callSettings) =>
             {
                 // NormalizedUserName was modified.  Have to update the
@@ -312,7 +312,7 @@ namespace Sudokumb
         }
 
         async Task<IdentityResult> InTransactionAsync(
-            
+
             CancellationToken cancellationToken,
             Func<DatastoreTransaction, CallSettings, Task> f)
         {
@@ -334,7 +334,7 @@ namespace Sudokumb
                     Code = e.Status.Detail,
                     Description = e.Message
                 });
-            }            
+            }
         }
     }
 }

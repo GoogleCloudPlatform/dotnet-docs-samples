@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +24,7 @@ namespace Sudokumb
 {
     public class Tests
     {
-        static string s_boardA =
+        static readonly string s_boardA =
             "123|   |789" +
             "   |   |   " +
             "   |   |   " +
@@ -35,14 +36,13 @@ namespace Sudokumb
             "  1|   |   " +
             " 5 |  3|   " +
             "3  |   |1  ";
+        readonly
 
-
-        GameBoard _boardA = GameBoard.Create(s_boardA);
+                GameBoard _boardA = GameBoard.Create(s_boardA);
 
         [Fact]
-        public void TestAccessors() 
+        public void TestAccessors()
         {
-
             Assert.Equal("123   789", _boardA.Row(0));
             Assert.Equal(" 7  5    ", _boardA.Row(4));
             Assert.Equal("3     1  ", _boardA.Row(8));

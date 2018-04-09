@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,18 +30,18 @@ namespace Sudokumb
     public class GameBoard
     {
         // Legal characters that can appear in _board.
-        private static string _legalCharacters = "123456789 ";
+        private static readonly string s_legalCharacters = "123456789 ";
         // An empty game board.  The initial state.
-        private static string _blankBoard = new string(' ', 81);
+        private static readonly string s_blankBoard = new string(' ', 81);
         // A group is one of the 9 3x3 regions in the sudoku board.
-        private static int[,] s_groupCenters = new int[9, 2]
+        private static readonly int[,] s_groupCenters = new int[9, 2]
         {
             {1, 1}, {1, 4}, {1, 8},
             {4, 1}, {4, 4}, {4, 8},
             {8, 1}, {8, 4}, {8, 8}
         };
 
-        private string _board = _blankBoard;
+        private string _board = s_blankBoard;
 
         /// <summary>
         /// The Sudoku game board is represented as an 81-character long string.
@@ -62,7 +63,7 @@ namespace Sudokumb
                 }
                 foreach (char c in value)
                 {
-                    if (_legalCharacters.IndexOf(c) < 0)
+                    if (s_legalCharacters.IndexOf(c) < 0)
                         throw new ArgumentException("value", $"Illegal character: {c}");
                 }
                 for (int i = 0; i < 9; ++i)
@@ -70,11 +71,11 @@ namespace Sudokumb
                     if (!IsLegal(GetRow(i, value)))
                         throw new BadGameBoardException($"Row {i} contains duplicates: {GetRow(i, value)}");
                     if (!IsLegal(GetColumn(i, value)))
-                        throw new BadGameBoardException($"Column {i} contains duplicates: {GetColumn(i ,value)}");
+                        throw new BadGameBoardException($"Column {i} contains duplicates: {GetColumn(i, value)}");
                     int row = s_groupCenters[i, 0];
                     int col = s_groupCenters[i, 1];
                     if (!IsLegal(GetGroup(row, col, value)))
-                        throw new BadGameBoardException( 
+                        throw new BadGameBoardException(
                             $"Group at row {row} column {col} contains duplicates: {GetGroup(row, col, value)}");
                 }
                 _board = value;
@@ -90,7 +91,7 @@ namespace Sudokumb
         /// <summary>
         /// The set of characters that can appear in a valid game board.
         /// </summary>
-        public static string LegalCharacters { get { return _legalCharacters; } }
+        public static string LegalCharacters { get { return s_legalCharacters; } }
 
         /// <summary>
         /// Returns the elements in the row specified by zero-indexed rowNumber.
@@ -197,7 +198,7 @@ namespace Sudokumb
         public string ToPrettyString()
         {
             var s = new StringBuilder();
-            for (int i = 0; i < Board.Length;  i += 9)
+            for (int i = 0; i < Board.Length; i += 9)
             {
                 s.AppendFormat("{0}|{1}|{2}\n", _board.Substring(i, 3),
                     _board.Substring(i + 3, 3), _board.Substring(i + 6, 3));
@@ -225,14 +226,16 @@ namespace Sudokumb
         /// 3 . .   . . .   1 . .
         /// </summary>
         /// <param name="input">An input stream.  Try Console.OpenStandordInput()</param>
-        public static GameBoard ParseHandInput(Stream input) {
+        public static GameBoard ParseHandInput(Stream input)
+        {
             var reader = new StreamReader(input);
             // Parse the first line to see if it's a simple format or pretty
             // format.
             StringBuilder board = new StringBuilder();
-            do {
+            do
+            {
                 int n = reader.Read();
-                if (n < 0) 
+                if (n < 0)
                 {
                     throw new ArgumentException("Input stream did contain a full board.");
                 }
@@ -273,7 +276,7 @@ namespace Sudokumb
                     b[i++], b[i++], b[i++],
                     b[i++], b[i++], b[i++]);
                 if (i == 27 || i == 54)
-                {                    
+                {
                     s.AppendLine();
                 }
             }
