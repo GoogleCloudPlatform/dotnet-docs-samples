@@ -120,8 +120,8 @@ namespace Sudokumb
         Task _hostedService;
         readonly ILogger _logger;
         readonly IManagedTracer _tracer;
-readonly         ConcurrentDictionary<string, ICounter> _localCounters
-             = new ConcurrentDictionary<string, ICounter>();
+        readonly ConcurrentDictionary<string, ICounter> _localCounters
+                     = new ConcurrentDictionary<string, ICounter>();
 
         internal DatastoreCounter(DatastoreDb datastore,
             IOptions<DatastoreCounterOptions> options,
