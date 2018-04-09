@@ -93,6 +93,7 @@ namespace GoogleCloudSamples
             return verbMap.Run(args);
         }
 
+        // [START monitoring_alert_list_policies]
         static void ListAlertPolicies(string projectId)
         {
             var client = AlertPolicyServiceClient.Create();
@@ -111,8 +112,10 @@ namespace GoogleCloudSamples
                 Console.WriteLine();
             }
         }
+        // [END monitoring_alert_list_policies]
 
         // [START monitoring_alert_backup_policies]
+        // [START monitoring_alert_list_channels]
         static void BackupPolicies(string projectId, string filePath)
         {
             var policyClient = AlertPolicyServiceClient.Create();
@@ -127,8 +130,12 @@ namespace GoogleCloudSamples
                 }, new ProtoMessageConverter()));
         }
         // [END monitoring_alert_backup_policies]
+        // [END monitoring_alert_list_channels]
 
         // [START monitoring_alert_restore_policies]
+        // [START monitoring_alert_create_policy]
+        // [START monitoring_alert_create_channel]
+        // [START monitoring_alert_update_channel]
         static void RestorePolicies(string projectId, string filePath)
         {
             var policyClient = AlertPolicyServiceClient.Create();
@@ -144,6 +151,7 @@ namespace GoogleCloudSamples
             var channelNameMap = new Dictionary<string, string>();
             foreach (NotificationChannel channel in backup.Channels)
             {
+                // [END monitoring_alert_create_policy]
                 try
                 {
                     bool updated = false;
@@ -179,9 +187,12 @@ namespace GoogleCloudSamples
                     // If one failed, continue trying to update the others.
                     exceptions.Add(e);
                 }
+                // [START monitoring_alert_create_policy]
             }
             foreach (AlertPolicy policy in backup.Policies)
             {
+                // [END monitoring_alert_create_channel]
+                // [END monitoring_alert_update_channel]
                 string policyName = policy.Name;
                 // These two fields cannot be set directly, so clear them.
                 policy.CreationRecord = null;
@@ -227,12 +238,17 @@ namespace GoogleCloudSamples
                     // If one failed, continue trying to update the others.
                     exceptions.Add(e);
                 }
-            }
+            }            
+            // [START monitoring_alert_create_channel]
+            // [START monitoring_alert_update_channel]
             if (exceptions.Count > 0)
             {
                 throw new AggregateException(exceptions);
             }
         }
+        // [END monitoring_alert_create_policy]
+        // [END monitoring_alert_create_channel]
+        // [END monitoring_alert_update_channel]
 
         // [START monitoring_alert_backup_policies]
         class BackupRecord
