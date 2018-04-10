@@ -17,6 +17,7 @@ using Xunit;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using Xunit.Abstractions;
+using GoogleCloudSamples;
 
 namespace Sudokumb
 {
@@ -45,6 +46,8 @@ namespace Sudokumb
     {
         private readonly ITestOutputHelper _output;
         private readonly IWebDriver _browser;
+
+        private readonly RetryRobot _retryRobot = new RetryRobot();
 
         public WebAppTest(ITestOutputHelper output, WebDriverTestFixture fixture)
         {
@@ -81,5 +84,25 @@ namespace Sudokumb
             title = _browser.FindElement(By.CssSelector("title"));
             Assert.Contains("Solve", title.InnerText());
         }
+
+        [Fact]
+        public void SubmitPuzzle()
+        {
+            _browser.Navigate().GoToUrl("http://localhost:5510");
+            IWebElement link = _browser.FindElement(By.Id("nav-solve"));
+            link.Click();
+
+            IWebElement button = _browser.FindElement(By.CssSelector(".btn-primary"));
+            button.Click();
+
+            IWebElement solvingMessage = _browser.FindElement(By.CssSelector("#solvingMessage"));
+            // After a second or two, message should say "Examined N boards."
+            _retryRobot.Eventually(() => 
+                Assert.Contains("Examined", solvingMessage.InnerText()));
+
+            // And it should eventually find a solution.
+            IWebElement solutionPre = _browser.FindElement(By.CssSelector("#solutionPre"));
+            _retryRobot.Eventually(() => Assert.True(solutionPre.Displayed));
+        } 
     }
 }

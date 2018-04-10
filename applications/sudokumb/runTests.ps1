@@ -55,6 +55,7 @@ try {
 			}
 			# Clean up datastore.
 			Pop-Location
+			Start-Sleep -Seconds 15  # Wait for datastore eventual consistency.
 			dotnet run --no-restore --no-build --project 'Remove-DatastoreNamespace/Remove-DatastoreNamespace.csproj' `
 				-- -p $env:GOOGLE_PROJECT_ID -n $randomNamespace
 		}		
