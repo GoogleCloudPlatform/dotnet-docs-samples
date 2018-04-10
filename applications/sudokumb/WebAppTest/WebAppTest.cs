@@ -37,7 +37,7 @@ namespace Sudokumb
 
         public void Dispose()
         {
-            WebDriver.Close();
+            WebDriver.Quit();
         }
     }
 
