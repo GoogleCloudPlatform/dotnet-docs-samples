@@ -43,8 +43,8 @@ if ([environment]::OSVersion.Platform -match 'Win*') {
         choco install -y --sxs python --version 2.7.6
     }
 
-    if (-not $chocoPackages.Contains('selenium-gecko-driver')) {
-        choco install -y selenium-gecko-driver
+    if (-not $chocoPackages.Contains('selenium-chrome-driver 2.')) {
+        choco install -y selenium-chrome-driver
     }
 }
 
