@@ -32,7 +32,8 @@ namespace Sudokumb
         public IWebDriver WebDriver { get; private set; }
         public WebDriverTestFixture()
         {
-            WebDriver = new ChromeDriver(ChromeDriverService.CreateDefaultService(),
+            WebDriver = new ChromeDriver(
+                ChromeDriverService.CreateDefaultService(),
                 new ChromeOptions(), TimeSpan.FromMinutes(3));
         }
 
@@ -49,7 +50,8 @@ namespace Sudokumb
 
         private readonly RetryRobot _retryRobot = new RetryRobot();
 
-        public WebAppTest(ITestOutputHelper output, WebDriverTestFixture fixture)
+        public WebAppTest(ITestOutputHelper output,
+            WebDriverTestFixture fixture)
         {
             _output = output;
             _browser = fixture.WebDriver;
@@ -79,7 +81,8 @@ namespace Sudokumb
             Assert.Contains("Home Page", title.InnerText());
 
             // Click the Try it! button.
-            IWebElement button = _browser.FindElement(By.CssSelector(".btn-primary"));
+            IWebElement button = _browser.FindElement(
+                By.CssSelector(".btn-primary"));
             button.Click();
             title = _browser.FindElement(By.CssSelector("title"));
             Assert.Contains("Solve", title.InnerText());
@@ -92,67 +95,91 @@ namespace Sudokumb
             IWebElement link = _browser.FindElement(By.Id("nav-solve"));
             link.Click();
 
-            IWebElement button = _browser.FindElement(By.CssSelector(".btn-primary"));
+            IWebElement button = _browser.FindElement(
+                By.CssSelector(".btn-primary"));
             button.Click();
 
-            IWebElement solvingMessage = _browser.FindElement(By.CssSelector("#solvingMessage"));
+            IWebElement solvingMessage = _browser.FindElement(
+                By.CssSelector("#solvingMessage"));
             // After a second or two, message should say "Examined N boards."
-            _retryRobot.Eventually(() => 
+            _retryRobot.Eventually(() =>
                 Assert.Contains("Examined", solvingMessage.InnerText()));
 
             // And it should eventually find a solution.
-            IWebElement solutionPre = _browser.FindElement(By.CssSelector("#solutionPre"));
+            IWebElement solutionPre = _browser.FindElement(
+                By.CssSelector("#solutionPre"));
             _retryRobot.Eventually(() => Assert.True(solutionPre.Displayed));
-        } 
- 
+        }
+
         [Fact]
         public void RegisterUserAndLogin()
         {
-            _browser.Navigate().GoToUrl("http://localhost:5510");
-            IWebElement link = _browser.FindElement(By.Id("nav-register"));
-            link.Click();
-
-            Assert.Contains("Register", _browser.Title);
-            string email = "joe@example.com";
-            string password = ",byc;sC3";
-
-            _browser.FindElement(By.Name("Email")).SendKeys(email);
-            _browser.FindElement(By.Name("Password")).SendKeys(password);
-            _browser.FindElement(By.Name("ConfirmPassword")).SendKeys(password);
-            _browser.FindElement(By.CssSelector("button[type=\"submit\"]")).Click();
-
-            // Make sure we see hello joe!
-            IWebElement manage = _browser.FindElement(By.CssSelector("a[title=\"Manage\"]"));
-            Assert.Contains($"Hello {email}!", manage.InnerText());
-
-            // Logout.
-            _browser.FindElement(By.CssSelector("#nav-logout")).Click();
-            try 
+            try
             {
-                manage = _browser.FindElement(By.CssSelector("a[title=\"Manage\"]"));
-                Assert.DoesNotContain(email, manage.InnerText());
+                _browser.Navigate().GoToUrl("http://localhost:5510");
+                IWebElement link = _browser.FindElement(By.Id("nav-register"));
+                link.Click();
+
+                Assert.Contains("Register", _browser.Title);
+                string email = "joe@example.com";
+                string password = ",byc;sC3";
+
+                _browser.FindElement(By.Name("Email")).SendKeys(email);
+                _browser.FindElement(By.Name("Password")).SendKeys(password);
+                _browser.FindElement(
+                    By.Name("ConfirmPassword")).SendKeys(password);
+                _browser.FindElement(
+                    By.CssSelector("button[type=\"submit\"]")).Click();
+
+                // Make sure we see hello joe!
+                IWebElement manage = _browser.FindElement(
+                    By.CssSelector("a[title=\"Manage\"]"));
+                Assert.Contains($"Hello {email}!", manage.InnerText());
+
+                // Logout.
+                _browser.FindElement(By.CssSelector("#nav-logout")).Click();
+                try
+                {
+                    manage = _browser.FindElement(
+                        By.CssSelector("a[title=\"Manage\"]"));
+                    Assert.DoesNotContain(email, manage.InnerText());
+                }
+                catch (NoSuchElementException)
+                {
+                    // The "Hello joe" element does not exist.  Good.
+                }
+
+                // Try logging in with the wrong password.
+                _browser.FindElement(By.CssSelector("#nav-login")).Click();
+                _browser.FindElement(By.Name("Email")).SendKeys(email);
+                _browser.FindElement(
+                    By.Name("Password")).SendKeys("badpassword");
+                _browser.FindElement(
+                    By.CssSelector("button[type=\"submit\"]")).Click();
+                IWebElement errors = _browser.FindElement(
+                    By.CssSelector("div.validation-summary-errors li"));
+                Assert.Contains(errors.InnerText(), "Invalid login attempt.");
+
+                // Try logging in with the correct password.
+                _browser.FindElement(By.Name("Password")).SendKeys(password);
+                _browser.FindElement
+                (By.CssSelector("button[type=\"submit\"]")).Click();
+                manage = _browser.FindElement(
+                    By.CssSelector("a[title=\"Manage\"]"));
+                Assert.Contains($"Hello {email}!", manage.InnerText());
             }
-            catch (NoSuchElementException) 
+            finally
             {
-                // The "Hello joe" element does not exist.  Good.
+                // Logout so we don't break other tests.
+                try
+                {
+                    _browser.FindElement(By.CssSelector("#nav-logout")).Click();
+                }
+                catch (NoSuchElementException)
+                {
+                    // Not logged in.  Ok.
+                }
             }
-            
-            // Try logging in with the wrong password.
-            _browser.FindElement(By.CssSelector("#nav-login")).Click();
-            _browser.FindElement(By.Name("Email")).SendKeys(email);
-            _browser.FindElement(By.Name("Password")).SendKeys("badpassword");
-            _browser.FindElement(By.CssSelector("button[type=\"submit\"]")).Click();
-            IWebElement errors = _browser.FindElement(By.CssSelector("div.validation-summary-errors li"));
-            Assert.Contains(errors.InnerText(), "Invalid login attempt.");
-
-            // Try logging in with the correct password.
-            _browser.FindElement(By.Name("Password")).SendKeys(password);
-            _browser.FindElement(By.CssSelector("button[type=\"submit\"]")).Click();
-            manage = _browser.FindElement(By.CssSelector("a[title=\"Manage\"]"));
-            Assert.Contains($"Hello {email}!", manage.InnerText());
-
-            // Logout so we don't break other tests.
-            _browser.FindElement(By.CssSelector("#nav-logout")).Click();
         }
     }
 }
