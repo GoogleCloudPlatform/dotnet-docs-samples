@@ -15,7 +15,7 @@
 using System;
 using Xunit;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 using Xunit.Abstractions;
 
 namespace Sudokumb
@@ -31,8 +31,7 @@ namespace Sudokumb
         public IWebDriver WebDriver { get; private set; }
         public WebDriverTestFixture()
         {
-            WebDriver = new ChromeDriver(ChromeDriverService.CreateDefaultService(),
-                new ChromeOptions(), TimeSpan.FromMinutes(3));
+            WebDriver = new FirefoxDriver();
         }
 
         public void Dispose()
