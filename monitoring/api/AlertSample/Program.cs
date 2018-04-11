@@ -238,9 +238,9 @@ namespace GoogleCloudSamples
                     // If one failed, continue trying to update the others.
                     exceptions.Add(e);
                 }
-            }
             // [START monitoring_alert_create_channel]
             // [START monitoring_alert_update_channel]
+            }
             if (exceptions.Count > 0)
             {
                 throw new AggregateException(exceptions);
