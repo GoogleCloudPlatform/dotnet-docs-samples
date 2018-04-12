@@ -19,7 +19,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    class CommandLineUtilSample
+    public class CommandLineUtilSample
     {
         [Verb("v1")] class Verb1 { };
         [Verb("v2")] class Verb2 { };
@@ -39,7 +39,7 @@ namespace GoogleCloudSamples
         [Verb("v16")] class Verb16 { };
         [Verb("v17")] class Verb17 { };
 
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
             var verbMap = new VerbMap<int>();
             verbMap
