@@ -12,18 +12,18 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-Import-Module -DisableNameChecking ..\..\..\..\BuildTools.psm1
-
-Require-Platform Win*
-
-dotnet restore
-$url = "http://localhost:7412"
-$job = Run-Kestrel($url)
-Start-Sleep -Seconds 5
+Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+Set-PSDebug -Trace 1
 try {
-	.\Test.ps1 "$url/echo"
+	Push-Location
+	Set-Location IO.Swagger
+	$url = "http://localhost:7412"
+	$job = Run-Kestrel $url
+	cd ../IO.SwaggerTest
+	dotnet test --test-adapter-path:. --logger:junit
 } finally {
 	Stop-Job $job
 	Receive-Job $job
 	Remove-Job $job
+	Pop-Location
 }
