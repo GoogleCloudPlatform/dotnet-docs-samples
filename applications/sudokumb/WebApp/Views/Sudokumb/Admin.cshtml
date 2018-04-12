@@ -1,0 +1,51 @@
+@{
+// Copyright (c) 2018 Google LLC.
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not
+// use this file except in compliance with the License. You may obtain a copy of
+// the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+// License for the specific language governing permissions and limitations under
+// the License.
+}
+
+@model WebApp.Models.SudokumbViewModels.AdminViewModel
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<h2>@ViewData["Title"]</h2>
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <form method="post">
+                <p>
+                    In Dumb mode, Sudokumb will solve the puzzle
+                    in a very inefficient way.  It will pump millions
+                    of messages through Pub/Sub, and burn lots of CPU.
+                </p>
+                @if (Model.CurrentDumbHours > 0) {
+                    <p class="text-danger">
+                        Dumb mode is set to expire in @(Model.CurrentDumbHours.ToString("F2"))
+                        hours.
+                    </p>
+                }
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-check">
+                    <input asp-for="DumbHours" class="form-check-input" />
+                    <label asp-for="DumbHours"></label>
+                    <span asp-validation-for="DumbHours" class="text-danger"></span>
+                </div>
+                <br/>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
