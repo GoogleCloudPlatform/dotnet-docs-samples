@@ -13,13 +13,13 @@
 # the License.
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
-Set-PSDebug -Trace 1
 try {
 	Push-Location
 	Set-Location IO.Swagger
 	$url = "http://localhost:7412"
 	$job = Run-Kestrel $url
-	cd ../IO.SwaggerTest
+	Set-Location ../IO.SwaggerTest
+	$env:ASPNETCORE_URLS = $url
 	dotnet test --test-adapter-path:. --logger:junit
 } finally {
 	Stop-Job $job
