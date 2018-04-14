@@ -679,7 +679,7 @@ function Run-IISExpressTest($SiteName = '', $ApplicationhostConfig = '',
     Try
     {
         Start-Sleep -Seconds 4  # Wait for web process to start up.
-        casperjs $TestJs http://localhost:$port
+        Run-CasperJs $TestJs http://localhost:$port -v11
         if ($LASTEXITCODE) {
             throw "Casperjs failed with error code $LASTEXITCODE"
         }
