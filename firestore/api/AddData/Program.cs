@@ -128,7 +128,8 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_add_simple_doc_as_entity]
             DocumentReference docRef = db.Collection("cities").Document("LA");
-            City city = new City{
+            City city = new City
+            {
                 Name = "Los Angeles",
                 State = "CA",
                 Country = "USA",
@@ -220,7 +221,7 @@ Where command is one of
             };
             initialData.Add("Favorites", favorites);
             WriteResult initialResult = await frankDocRef.SetAsync(initialData);
-            
+
             // Update age and favorite color
             Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
             {

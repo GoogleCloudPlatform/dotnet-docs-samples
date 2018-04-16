@@ -59,21 +59,27 @@ Where command is one of
             {
                 DocumentSnapshot snapshot = await transaction.GetDocumentSnapshotAsync(cityRef);
                 long newPopulation = snapshot.GetField<long>("Population") + 1;
-                if (newPopulation <= 1000000) {
+                if (newPopulation <= 1000000)
+                {
                     Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
                     {
                         { new FieldPath("Population"), newPopulation}
                     };
                     transaction.Update(cityRef, updates);
                     return true;
-                } else {
+                }
+                else
+                {
                     return false;
                 }
             });
 
-            if (transactionResult) {
+            if (transactionResult)
+            {
                 Console.WriteLine("Population updated successfully.");
-            } else {
+            }
+            else
+            {
                 Console.WriteLine("Sorry! Population is too big.");
             }
             // [END fs_return_info_transaction]

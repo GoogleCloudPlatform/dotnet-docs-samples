@@ -133,11 +133,12 @@ namespace GoogleCloudSamples
             CollectionReference collectionReference = db.Collection(collection);
             QuerySnapshot snapshot = await collectionReference.SnapshotAsync();
             IReadOnlyList<DocumentSnapshot> documents = snapshot.Documents;
-            foreach (DocumentSnapshot document in documents) {
+            foreach (DocumentSnapshot document in documents)
+            {
                 await document.Reference.DeleteAsync();
             }
         }
-        
+
         // QUICKSTART TESTS
         [Fact]
         public void InitializeProjectIdTest()
@@ -218,7 +219,7 @@ namespace GoogleCloudSamples
         {
             var output = RunAddData("set-requires-id", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added document with ID: new-city-id.", output.Stdout);
-            DeleteCollection("cities").Wait();;
+            DeleteCollection("cities").Wait(); ;
         }
 
         [Fact]
@@ -279,7 +280,7 @@ namespace GoogleCloudSamples
         public void DeleteFieldTest()
         {
             RunGetData("retrieve-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            var output = RunDeleteData("delete-field",Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunDeleteData("delete-field", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Deleted the Capital field from the BJ document in the cities collection.", output.Stdout);
             DeleteCollection("cities").Wait();
         }

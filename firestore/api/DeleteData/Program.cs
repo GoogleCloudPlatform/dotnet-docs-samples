@@ -62,8 +62,10 @@ Where command is one of
         {
             QuerySnapshot snapshot = await collectionReference.Limit(batchSize).SnapshotAsync();
             IReadOnlyList<DocumentSnapshot> documents = snapshot.Documents;
-            while (documents.Count > 0) {
-                foreach (DocumentSnapshot document in documents) {
+            while (documents.Count > 0)
+            {
+                foreach (DocumentSnapshot document in documents)
+                {
                     Console.WriteLine("Deleting document {0}", document.Id);
                     await document.Reference.DeleteAsync();
                 }

@@ -85,13 +85,13 @@ Where command is one of
                 Console.WriteLine("User: {0}", document.Id);
                 Dictionary<string, object> documentDictionary = document.ToDictionary();
                 Console.WriteLine("First: {0}", documentDictionary["First"]);
-                if (documentDictionary.ContainsKey("Middle")) {
+                if (documentDictionary.ContainsKey("Middle"))
+                {
                     Console.WriteLine("Middle: {0}", documentDictionary["Middle"]);
                 }
                 Console.WriteLine("Last: {0}", documentDictionary["Last"]);
                 Console.WriteLine("Born: {0}", documentDictionary["Born"]);
                 Console.WriteLine();
-
             }
             // [START fs_get_all]
         }
@@ -108,7 +108,6 @@ Where command is one of
                 new ArraySegment<string>(args, 1, args.Length - 1));
             switch (command)
             {
-
                 case "initialize-project-id":
                     InitializeProjectId(project);
                     break;

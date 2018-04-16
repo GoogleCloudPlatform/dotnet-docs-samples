@@ -40,7 +40,8 @@ Where command is one of
             Query query = citiesRef.OrderBy("Population").StartAt(1000000);
             // [END fs_start_at_field_query_cursor]
             QuerySnapshot querySnapshot = await query.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by start at population 1000000 field query cursor", documentSnapshot.Id);
             }
         }
@@ -53,7 +54,8 @@ Where command is one of
             Query query = citiesRef.OrderBy("Population").EndAt(1000000);
             // [END fs_end_at_field_query_cursor]
             QuerySnapshot querySnapshot = await query.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by end at population 1000000 field query cursor", documentSnapshot.Id);
             }
         }
@@ -68,7 +70,8 @@ Where command is one of
             // Get the last document from the results
             QuerySnapshot querySnapshot = await firstQuery.SnapshotAsync();
             long lastPopulation = 0;
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 lastPopulation = documentSnapshot.GetField<long>("Population");
             }
 
@@ -77,7 +80,8 @@ Where command is one of
             Query secondQuery = citiesRef.OrderBy("Population").StartAfter(lastPopulation);
             QuerySnapshot secondQuerySnapshot = await secondQuery.SnapshotAsync();
             // [END fs_paginated_query_cursor]
-            foreach (DocumentSnapshot documentSnapshot in secondQuerySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in secondQuerySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by paginated query cursor.", documentSnapshot.Id);
             }
         }
@@ -90,11 +94,13 @@ Where command is one of
             Query query2 = db.Collection("cities").OrderBy("Name").OrderBy("State").StartAt("Springfield", "Missouri");
             // [END fs_multiple_cursor_conditions]
             QuerySnapshot snapshot1 = await query1.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in snapshot1.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in snapshot1.Documents)
+            {
                 Console.WriteLine("Document {0} returned by start at Springfield query.", documentSnapshot.Id);
             }
             QuerySnapshot snapshot2 = await query2.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in snapshot2.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in snapshot2.Documents)
+            {
                 Console.WriteLine("Document {0} returned by start at Springfield, Missouri query.", documentSnapshot.Id);
             }
         }
