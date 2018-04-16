@@ -22,9 +22,7 @@ This sample requires [.NET Core 2.0](
 
 5. When prompted, select 'Start in test mode' and click 'Enable'.
 
-6. Set up 3 indexes in the Firebase console. Visit the [Managing Indexes](https://cloud.google.com/firestore/docs/query-data/indexing) documentation to see how to do this.
-
-Create one for the 'cities' collection with 'Name' ascending and 'State' ascending. Create another for the 'cities' collection with 'State' ascending and 'Population' descending. Create a final one for the 'cities' collection with 'State' ascending and 'Population' ascending.
+6. Set up 3 indexes in the Firebase console. Visit the [Managing Indexes](https://cloud.google.com/firestore/docs/query-data/indexing) documentation to see how to do this. Create one for the 'cities' collection with 'Name' ascending and 'State' ascending. Create another for the 'cities' collection with 'State' ascending and 'Population' descending. Create a final one for the 'cities' collection with 'State' ascending and 'Population' ascending.
 
 7.  From a Powershell command line, run the Quickstart sample:
     ```
