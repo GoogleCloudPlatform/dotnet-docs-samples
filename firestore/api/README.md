@@ -18,11 +18,15 @@ This sample requires [.NET Core 2.0](
 
 3. Open the [Firebase Console](https://console.firebase.google.com/) and create a new project. (You can't use both Cloud Firestore and Cloud Datastore in the same project, which might affect apps using App Engine. Try using Cloud Firestore with a different project if this is the case).
 
-4. In the Database section, click Try Firestore Beta.
+4. In the Database section, click the 'Get Started' button for Cloud Firestore Beta.
 
-5. Click Enable.
+5. When prompted, select 'Start in test mode' and click 'Enable'.
 
-6.  From a Powershell command line, run the Quickstart sample:
+6. Set up 3 indexes in the Firebase console. Visit the [Managing Indexes](https://cloud.google.com/firestore/docs/query-data/indexing) documentation to see how to do this.
+
+Create one for the 'cities' collection with 'Name' ascending and 'State' ascending. Create another for the 'cities' collection with 'State' ascending and 'Population' descending. Create a final one for the 'cities' collection with 'State' ascending and 'Population' ascending.
+
+7.  From a Powershell command line, run the Quickstart sample:
     ```
     PS C:\...\dotnet-docs-samples\firestore\api\Quickstart> dotnet run
 
@@ -36,7 +40,7 @@ This sample requires [.NET Core 2.0](
         retrieve-all-documents
     ```
 
-7.  And run the AddData sample to add data to Cloud Firestore:
+8.  And run the AddData sample to add data to Cloud Firestore:
     ```
     PS C:\...\dotnet-docs-samples\firestore\api\AddData> dotnet run
 
