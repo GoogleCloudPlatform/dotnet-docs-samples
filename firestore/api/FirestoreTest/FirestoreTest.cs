@@ -137,7 +137,6 @@ namespace GoogleCloudSamples
             {
                 await document.Reference.DeleteAsync();
             }
-<<<<<<< HEAD
         }
 
         public void Dispose()
@@ -149,11 +148,6 @@ namespace GoogleCloudSamples
         }
         
         // QUICKSTART TESTS
-=======
-        }
-
-        // QUICKSTART TESTS
->>>>>>> a0004af273a5befa019a4c78c365c79ba776f863
         [Fact]
         public void InitializeProjectIdTest()
         {
@@ -226,10 +220,6 @@ namespace GoogleCloudSamples
         {
             var output = RunAddData("set-requires-id", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added document with ID: new-city-id.", output.Stdout);
-<<<<<<< HEAD
-=======
-            DeleteCollection("cities").Wait(); ;
->>>>>>> a0004af273a5befa019a4c78c365c79ba776f863
         }
 
         [Fact]
