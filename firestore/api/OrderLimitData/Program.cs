@@ -45,7 +45,8 @@ Where command is one of
             Query query = citiesRef.OrderBy("Name").Limit(3);
             // [END fs_order_by_name_limit_query]
             QuerySnapshot querySnapshot = await query.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by order by name with limit query", documentSnapshot.Id);
             }
         }
@@ -58,7 +59,8 @@ Where command is one of
             Query query = citiesRef.OrderByDescending("Name").Limit(3);
             // [END fs_order_by_name_desc_limit_query]
             QuerySnapshot querySnapshot = await query.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by order by name descending with limit query", documentSnapshot.Id);
             }
         }
@@ -71,7 +73,8 @@ Where command is one of
             Query query = citiesRef.OrderBy("State").OrderByDescending("Population");
             // [END fs_order_by_state_and_population_query]
             QuerySnapshot querySnapshot = await query.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by order by state and descending population query", documentSnapshot.Id);
             }
         }
@@ -87,7 +90,8 @@ Where command is one of
                 .Limit(2);
             // [END fs_where_order_by_limit_query]
             QuerySnapshot querySnapshot = await query.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by where order by limit query", documentSnapshot.Id);
             }
         }
@@ -102,7 +106,8 @@ Where command is one of
                 .OrderBy("Population");
             // [END fs_range_order_by_query]
             QuerySnapshot querySnapshot = await query.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by range with order by query", documentSnapshot.Id);
             }
         }

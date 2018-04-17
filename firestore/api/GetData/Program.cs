@@ -87,13 +87,17 @@ Where command is one of
             // [START fs_get_doc_as_map]
             DocumentReference docRef = db.Collection("cities").Document("SF");
             DocumentSnapshot snapshot = await docRef.SnapshotAsync();
-            if (snapshot.Exists) {
+            if (snapshot.Exists)
+            {
                 Console.WriteLine("Document data for {0} document:", snapshot.Id);
                 Dictionary<string, object> city = snapshot.ToDictionary();
-                foreach (KeyValuePair<string, object> pair in city) {
+                foreach (KeyValuePair<string, object> pair in city)
+                {
                     Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
                 }
-            } else {
+            }
+            else
+            {
                 Console.WriteLine("Document {0} does not exist!", snapshot.Id);
             }
             // [END fs_get_doc_as_map]
@@ -125,7 +129,8 @@ Where command is one of
             // [START fs_get_doc_as_entity]
             DocumentReference docRef = db.Collection("cities").Document("BJ");
             DocumentSnapshot snapshot = await docRef.SnapshotAsync();
-            if (snapshot.Exists) {
+            if (snapshot.Exists)
+            {
                 Console.WriteLine("Document data for {0} document:", snapshot.Id);
                 City city = snapshot.Deserialize<City>();
                 Console.WriteLine("Name: {0}", city.Name);
@@ -133,7 +138,9 @@ Where command is one of
                 Console.WriteLine("Country: {0}", city.Country);
                 Console.WriteLine("Capital: {0}", city.Capital);
                 Console.WriteLine("Population: {0}", city.Population);
-            } else {
+            }
+            else
+            {
                 Console.WriteLine("Document {0} does not exist!", snapshot.Id);
             }
             // [END fs_get_doc_as_entity]
@@ -145,15 +152,20 @@ Where command is one of
             // [START fs_get_multiple_docs]
             Query capitalQuery = db.Collection("cities").Where("Capital", QueryOperator.Equal, true);
             QuerySnapshot capitalQuerySnapshot = await capitalQuery.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in capitalQuerySnapshot.Documents) {
-                if (documentSnapshot.Exists) {
+            foreach (DocumentSnapshot documentSnapshot in capitalQuerySnapshot.Documents)
+            {
+                if (documentSnapshot.Exists)
+                {
                     Console.WriteLine("Document data for {0} document:", documentSnapshot.Id);
                     Dictionary<string, object> city = documentSnapshot.ToDictionary();
-                    foreach (KeyValuePair<string, object> pair in city) {
+                    foreach (KeyValuePair<string, object> pair in city)
+                    {
                         Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
                     }
                     Console.WriteLine("");
-                } else {
+                }
+                else
+                {
                     Console.WriteLine("Document {0} does not exist!", documentSnapshot.Id);
                 }
             }
@@ -166,15 +178,20 @@ Where command is one of
             // [START fs_get_all_docs]
             Query allCitiesQuery = db.Collection("cities");
             QuerySnapshot allCitiesQuerySnapshot = await allCitiesQuery.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents) {
-                if (documentSnapshot.Exists) {
+            foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents)
+            {
+                if (documentSnapshot.Exists)
+                {
                     Console.WriteLine("Document data for {0} document:", documentSnapshot.Id);
                     Dictionary<string, object> city = documentSnapshot.ToDictionary();
-                    foreach (KeyValuePair<string, object> pair in city) {
+                    foreach (KeyValuePair<string, object> pair in city)
+                    {
                         Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
                     }
                     Console.WriteLine("");
-                } else {
+                }
+                else
+                {
                     Console.WriteLine("Document {0} does not exist!", documentSnapshot.Id);
                 }
             }
@@ -203,7 +220,8 @@ Where command is one of
             // [START fs_get_collections]
             DocumentReference cityRef = db.Collection("cities").Document("SF");
             IList<CollectionReference> subcollections = await cityRef.ListCollectionsAsync().ToList();
-            foreach (CollectionReference subcollectionRef in subcollections) {
+            foreach (CollectionReference subcollectionRef in subcollections)
+            {
                 Console.WriteLine("Found subcollection with ID: {0}", subcollectionRef.Id);
             }
             // [END fs_get_collections]

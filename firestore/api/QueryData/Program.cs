@@ -89,7 +89,8 @@ Where command is one of
             CollectionReference citiesRef = db.Collection("cities");
             Query query = citiesRef.Where("State", QueryOperator.Equal, "CA");
             QuerySnapshot querySnapshot = await query.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by query State=CA", documentSnapshot.Id);
             }
             // [END fs_create_query_state]
@@ -102,7 +103,8 @@ Where command is one of
             CollectionReference citiesRef = db.Collection("cities");
             Query query = citiesRef.Where("Capital", QueryOperator.Equal, true);
             QuerySnapshot querySnapshot = await query.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by query Capital=true", documentSnapshot.Id);
             }
             // [END fs_create_query_capital]
@@ -118,15 +120,18 @@ Where command is one of
             Query nameQuery = citiesRef.Where("Name", QueryOperator.GreaterThanOrEqual, "San Francisco");
             // [END fs_simple_queries]
             QuerySnapshot stateQuerySnapshot = await stateQuery.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in stateQuerySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in stateQuerySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by query State=CA", documentSnapshot.Id);
             }
             QuerySnapshot populationQuerySnapshot = await populationQuery.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in populationQuerySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in populationQuerySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by query Population>1000000", documentSnapshot.Id);
             }
             QuerySnapshot nameQuerySnapshot = await nameQuery.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in nameQuerySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in nameQuerySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by query Name>=San Francisco", documentSnapshot.Id);
             }
         }
@@ -141,7 +146,8 @@ Where command is one of
                 .Where("Name", QueryOperator.Equal, "San Francisco");
             // [END fs_chained_query]
             QuerySnapshot querySnapshot = await chainedQuery.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by query State=CA and Name=San Francisco", documentSnapshot.Id);
             }
         }
@@ -156,7 +162,8 @@ Where command is one of
                 .Where("Population", QueryOperator.LessThan, 1000000);
             // [END fs_composite_index_chained_query]
             QuerySnapshot querySnapshot = await chainedQuery.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by query State=CA and Population<1000000", documentSnapshot.Id);
             }
         }
@@ -171,7 +178,8 @@ Where command is one of
                 .Where("State", QueryOperator.LessThanOrEqual, "IN");
             // [END fs_range_query]
             QuerySnapshot querySnapshot = await rangeQuery.SnapshotAsync();
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
                 Console.WriteLine("Document {0} returned by query CA<=State<=IN", documentSnapshot.Id);
             }
         }
