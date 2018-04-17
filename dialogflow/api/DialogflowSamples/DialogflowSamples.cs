@@ -23,8 +23,6 @@ namespace GoogleCloudSamples
         {
             var verbMap = new VerbMap<object>();
 
-            verbMap.Add((TestOptions opts) => TestCommand());
-
             ContextManagement.RegisterCommands(verbMap);
             IntentManagement.RegisterCommands(verbMap);
             EntityManagement.RegisterCommands(verbMap);
@@ -34,14 +32,6 @@ namespace GoogleCloudSamples
             verbMap.NotParsedFunc = (err) => 1;
 
             return (int)verbMap.Run(args);
-        }
-
-        [Verb("test", HelpText = "Testing Test Setup")]
-        class TestOptions { }
-        public static int TestCommand()
-        {
-            Console.WriteLine("Ran Test command OK, returning 0");
-            return 0;
         }
     }
 
