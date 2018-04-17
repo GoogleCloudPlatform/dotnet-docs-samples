@@ -53,9 +53,9 @@ namespace GoogleCloudSamples
         public string IapClientId { get; set; } = IAP_CLIENT_ID;
     }
 
-    class Program
+    public class IAPClientMain
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             CommandLine.Parser.Default.ParseArguments<Options>(args)
                 .WithParsed<Options>(opts => Console.WriteLine(
