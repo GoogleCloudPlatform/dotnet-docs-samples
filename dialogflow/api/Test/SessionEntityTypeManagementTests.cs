@@ -24,11 +24,11 @@ namespace GoogleCloudSamples
         {
             // Create EntityType with display name
             // (Required for Session EntityType management)
-            Run("entity-types:create", EntityTypeDisplayName, "Map");
+            Run("entity-types:create", _entityTypeDisplayName, "Map");
             Assert.Equal(0, ExitCode);
         }
 
-        readonly string EntityTypeDisplayName = TestUtil.RandomName();
+        readonly string _entityTypeDisplayName = TestUtil.RandomName();
 
         [Fact]
         void TestCreateEntityType()
@@ -38,17 +38,17 @@ namespace GoogleCloudSamples
 
             RunWithSessionId("session-entity-types:list");
             Assert.Equal(0, ExitCode);
-            Assert.DoesNotContain(EntityTypeDisplayName, Stdout);
+            Assert.DoesNotContain(_entityTypeDisplayName, Stdout);
 
             // Create Session EntityType
-            RunWithSessionId("session-entity-types:create", EntityTypeDisplayName, entityValuesArgument);
+            RunWithSessionId("session-entity-types:create", _entityTypeDisplayName, entityValuesArgument);
             Assert.Equal(0, ExitCode);
             Assert.Contains("Created SessionEntityType:", Stdout);
-            Assert.Contains(EntityTypeDisplayName, Stdout);
+            Assert.Contains(_entityTypeDisplayName, Stdout);
 
             RunWithSessionId("session-entity-types:list");
             Assert.Equal(0, ExitCode);
-            Assert.Contains(EntityTypeDisplayName, Stdout);
+            Assert.Contains(_entityTypeDisplayName, Stdout);
         }
 
         [Fact]
@@ -57,22 +57,22 @@ namespace GoogleCloudSamples
             var entityValues = new[] { TestUtil.RandomName() };
             var entityValuesArgument = string.Join(',', entityValues);
 
-            RunWithSessionId("session-entity-types:create", EntityTypeDisplayName, entityValuesArgument);
+            RunWithSessionId("session-entity-types:create", _entityTypeDisplayName, entityValuesArgument);
             Assert.Equal(0, ExitCode);
             Assert.Contains("Created SessionEntityType:", Stdout);
 
             RunWithSessionId("session-entity-types:list");
             Assert.Equal(0, ExitCode);
-            Assert.Contains(EntityTypeDisplayName, Stdout);
+            Assert.Contains(_entityTypeDisplayName, Stdout);
 
             // Delete Session EntityType
-            RunWithSessionId("session-entity-types:delete", EntityTypeDisplayName);
+            RunWithSessionId("session-entity-types:delete", _entityTypeDisplayName);
             Assert.Equal(0, ExitCode);
             Assert.Contains("Deleted SessionEntityType", Stdout);
 
             RunWithSessionId("session-entity-types:list");
             Assert.Equal(0, ExitCode);
-            Assert.DoesNotContain(EntityTypeDisplayName, Stdout);
+            Assert.DoesNotContain(_entityTypeDisplayName, Stdout);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace GoogleCloudSamples
 
             var operation = client.BatchCreateEntities(
                 parent: new EntityTypeName(projectId, entityTypeId),
-                entities: new [] { entity }
+                entities: new[] { entity }
             );
 
             operation.PollUntilCompleted();
@@ -110,7 +110,7 @@ namespace GoogleCloudSamples
 
             var operation = client.BatchDeleteEntities(
                 parent: new EntityTypeName(projectId, entityTypeId),
-                entityValues: new [] { entityValue }
+                entityValues: new[] { entityValue }
             );
 
             operation.PollUntilCompleted();

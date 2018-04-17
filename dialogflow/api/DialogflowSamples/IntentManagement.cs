@@ -91,7 +91,7 @@ namespace GoogleCloudSamples
         // [END dialogflow_create_intent]
 
         [Verb("intents:list", HelpText = "Print list of entities for given Intent")]
-        public class ListOptions : OptionsWithProjectId {}
+        public class ListOptions : OptionsWithProjectId { }
 
         // [START dialogflow_list_intents]
         public static int List(string projectId)
@@ -141,7 +141,6 @@ namespace GoogleCloudSamples
                     }
                 }
                 Console.WriteLine();
-
             }
 
             return 0;

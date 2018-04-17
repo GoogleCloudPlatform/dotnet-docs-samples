@@ -71,7 +71,7 @@ namespace GoogleCloudSamples
         // [END dialogflow_create_session_entity_type]
 
         [Verb("session-entity-types:list", HelpText = "Print list of all session entity types")]
-        public class ListOptions : OptionsWithProjectIdAndSessionId {}
+        public class ListOptions : OptionsWithProjectIdAndSessionId { }
 
         // [START dialogflow_list_session_entity_types]
         public static int List(string projectId, string sessionId)
