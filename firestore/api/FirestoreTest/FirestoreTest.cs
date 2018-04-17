@@ -26,7 +26,7 @@ using Google.Cloud.Firestore;
 
 namespace GoogleCloudSamples
 {
-    public class FirestoreTests
+    public class FirestoreTests : IDisposable
     {
         readonly CommandLineRunner _quickstart = new CommandLineRunner()
         {
@@ -137,6 +137,14 @@ namespace GoogleCloudSamples
                 await document.Reference.DeleteAsync();
             }
         }
+
+        public void Dispose()
+        {
+            DeleteCollection("users").Wait();
+            DeleteCollection("cities").Wait();
+            DeleteCollection("data").Wait();
+            DeleteCollection("cities/SF/neighborhoods").Wait();
+        }
         
         // QUICKSTART TESTS
         [Fact]
@@ -151,7 +159,6 @@ namespace GoogleCloudSamples
         {
             var output = RunQuickstart("add-data-1", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added data to the alovelace document in the users collection.", output.Stdout);
-            DeleteCollection("users").Wait();
         }
 
         [Fact]
@@ -159,7 +166,6 @@ namespace GoogleCloudSamples
         {
             var output = RunQuickstart("add-data-2", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added data to the aturing document in the users collection.", output.Stdout);
-            DeleteCollection("users").Wait();
         }
 
         [Fact]
@@ -177,7 +183,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Middle: Mathison", output.Stdout);
             Assert.Contains("Last: Turing", output.Stdout);
             Assert.Contains("Born: 1912", output.Stdout);
-            DeleteCollection("users").Wait();
         }
 
         // ADD DATA TESTS
@@ -186,7 +191,6 @@ namespace GoogleCloudSamples
         {
             var output = RunAddData("add-doc-as-map", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added data to the LA document in the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -194,7 +198,6 @@ namespace GoogleCloudSamples
         {
             var output = RunAddData("update-create-if-missing", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Merged data into the LA document in the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -202,7 +205,6 @@ namespace GoogleCloudSamples
         {
             var output = RunAddData("add-doc-data-types", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Set multiple data-type data for the one document in the data collection.", output.Stdout);
-            DeleteCollection("data").Wait();
         }
 
         [Fact]
@@ -210,7 +212,6 @@ namespace GoogleCloudSamples
         {
             var output = RunAddData("add-simple-doc-as-entity", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added custom City object to the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -218,7 +219,6 @@ namespace GoogleCloudSamples
         {
             var output = RunAddData("set-requires-id", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added document with ID: new-city-id.", output.Stdout);
-            DeleteCollection("cities").Wait();;
         }
 
         [Fact]
@@ -226,7 +226,6 @@ namespace GoogleCloudSamples
         {
             var output = RunAddData("add-doc-data-with-auto-id", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added document with ID:", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -236,7 +235,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Added document with ID:", output.Stdout);
             Assert.Contains("Added data to the", output.Stdout);
             Assert.Contains("document in the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -245,7 +243,6 @@ namespace GoogleCloudSamples
             RunAddData("set-requires-id", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunAddData("update-doc", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Updated the Capital field of the new-city-id document in the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -253,7 +250,6 @@ namespace GoogleCloudSamples
         {
             var output = RunAddData("update-nested-fields", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Updated the age and favorite color fields of the Frank document in the users collection.", output.Stdout);
-            DeleteCollection("users").Wait();
         }
 
         [Fact]
@@ -262,7 +258,6 @@ namespace GoogleCloudSamples
             RunAddData("set-requires-id", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunAddData("update-server-timestamp", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Updated the Timestamp field of the new-city-id document in the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         // DELETE DATA TESTS
@@ -272,7 +267,6 @@ namespace GoogleCloudSamples
             RunGetData("retrieve-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunDeleteData("delete-doc", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Deleted the DC document in the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -281,7 +275,6 @@ namespace GoogleCloudSamples
             RunGetData("retrieve-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunDeleteData("delete-field",Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Deleted the Capital field from the BJ document in the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -302,7 +295,6 @@ namespace GoogleCloudSamples
         {
             var output = RunGetData("retrieve-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added example cities data to the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -316,7 +308,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Country: USA", output.Stdout);
             Assert.Contains("Capital: False", output.Stdout);
             Assert.Contains("Population: 860000", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -329,7 +320,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Country: China", output.Stdout);
             Assert.Contains("Capital: True", output.Stdout);
             Assert.Contains("Population: 21500000", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -345,7 +335,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Country: Japan", output.Stdout);
             Assert.Contains("Capital: True", output.Stdout);
             Assert.Contains("Population: 9000000", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -363,7 +352,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Country: USA", output.Stdout);
             Assert.Contains("Capital: False", output.Stdout);
             Assert.Contains("Population: 3900000", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -374,8 +362,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Added data to the Marina document in the neighborhoods subcollection in the SF document in the cities collection.", addSubcollectionOutput.Stdout);
             var getCollectionsOutput = RunGetData("get-collections", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Found subcollection with ID: neighborhoods", getCollectionsOutput.Stdout);
-            DeleteCollection("cities/SF/neighborhoods").Wait();
-            DeleteCollection("cities").Wait();
         }
 
         // QUERY DATA TESTS
@@ -384,7 +370,6 @@ namespace GoogleCloudSamples
         {
             var output = RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Added example cities data to the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -394,7 +379,6 @@ namespace GoogleCloudSamples
             var output = RunQueryData("create-query-state", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document LA returned by query State=CA", output.Stdout);
             Assert.Contains("Document SF returned by query State=CA", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -405,7 +389,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Document DC returned by query Capital=true", output.Stdout);
             Assert.Contains("Document TOK returned by query Capital=true", output.Stdout);
             Assert.Contains("Document BJ returned by query Capital=true", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -421,7 +404,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Document SF returned by query Name>=San Francisco", output.Stdout);
             Assert.Contains("Document TOK returned by query Name>=San Francisco", output.Stdout);
             Assert.Contains("Document DC returned by query Name>=San Francisco", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -430,7 +412,6 @@ namespace GoogleCloudSamples
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunQueryData("chained-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document SF returned by query State=CA and Name=San Francisco", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -439,7 +420,6 @@ namespace GoogleCloudSamples
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunQueryData("composite-index-chained-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document SF returned by query State=CA and Population<1000000", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -449,7 +429,6 @@ namespace GoogleCloudSamples
             var output = RunQueryData("range-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document LA returned by query CA<=State<=IN", output.Stdout);
             Assert.Contains("Document SF returned by query CA<=State<=IN", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -457,7 +436,6 @@ namespace GoogleCloudSamples
         {
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunQueryData("invalid-range-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            DeleteCollection("cities").Wait();
         }
 
         // ORDER LIMIT DATA TESTS
@@ -469,7 +447,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Document BJ returned by order by name with limit query", output.Stdout);
             Assert.Contains("Document LA returned by order by name with limit query", output.Stdout);
             Assert.Contains("Document SF returned by order by name with limit query", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -480,7 +457,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Document DC returned by order by name descending with limit query", output.Stdout);
             Assert.Contains("Document TOK returned by order by name descending with limit query", output.Stdout);
             Assert.Contains("Document SF returned by order by name descending with limit query", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -493,7 +469,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Document BJ returned by order by state and descending population query", output.Stdout);
             Assert.Contains("Document DC returned by order by state and descending population query", output.Stdout);
             Assert.Contains("Document TOK returned by order by state and descending population query", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -503,7 +478,6 @@ namespace GoogleCloudSamples
             var output = RunOrderLimitData("where-order-by-limit-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document LA returned by where order by limit query", output.Stdout);
             Assert.Contains("Document TOK returned by where order by limit query", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -514,7 +488,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Document LA returned by range with order by query", output.Stdout);
             Assert.Contains("Document TOK returned by range with order by query", output.Stdout);
             Assert.Contains("Document BJ returned by range with order by query", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -522,7 +495,6 @@ namespace GoogleCloudSamples
         {
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunOrderLimitData("invalid-range-order-by-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            DeleteCollection("cities").Wait();
         }
 
         // DATA MODEL TESTS
@@ -557,7 +529,6 @@ namespace GoogleCloudSamples
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunTransactionsAndBatchedWrites("run-simple-transaction", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Ran a simple transaction to update the population field in the SF document in the cities collection.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -566,7 +537,6 @@ namespace GoogleCloudSamples
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunTransactionsAndBatchedWrites("return-info-transaction", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Population updated successfully.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -575,7 +545,6 @@ namespace GoogleCloudSamples
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunTransactionsAndBatchedWrites("batch-write", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Batch write successfully completed.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         // PAGINATE DATA TESTS
@@ -587,7 +556,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Document LA returned by start at population 1000000 field query cursor", output.Stdout);
             Assert.Contains("Document TOK returned by start at population 1000000 field query cursor", output.Stdout);
             Assert.Contains("Document BJ returned by start at population 1000000 field query cursor", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -597,7 +565,6 @@ namespace GoogleCloudSamples
             var output = RunPaginateData("end-at-field-query-cursor", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document DC returned by end at population 1000000 field query cursor", output.Stdout);
             Assert.Contains("Document SF returned by end at population 1000000 field query cursor", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -607,7 +574,6 @@ namespace GoogleCloudSamples
             var output = RunPaginateData("paginated-query-cursor", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document TOK returned by paginated query cursor.", output.Stdout);
             Assert.Contains("Document BJ returned by paginated query cursor.", output.Stdout);
-            DeleteCollection("cities").Wait();
         }
 
         [Fact]
@@ -615,7 +581,6 @@ namespace GoogleCloudSamples
         {
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             RunPaginateData("multiple-cursor-conditions", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            DeleteCollection("cities").Wait();
         }
     }
 }
