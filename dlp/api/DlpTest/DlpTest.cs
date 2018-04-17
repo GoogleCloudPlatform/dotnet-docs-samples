@@ -16,6 +16,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.CloudKMS.v1;
 using Google.Apis.CloudKMS.v1.Data;
 using Google.Apis.Services;
+using Google.Cloud.Dlp.V2;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -93,6 +94,8 @@ namespace GoogleCloudSamples
 
         #endregion
 
+        private readonly RetryRobot _retryRobot = new RetryRobot();
+
         readonly CommandLineRunner _dlp = new CommandLineRunner()
         {
             VoidMain = Dlp.Main,
@@ -102,6 +105,24 @@ namespace GoogleCloudSamples
         public DlpTest(DlpTestFixture fixture)
         {
             _kmsFixture = fixture;
+        }
+
+        public void Dispose()
+        {
+            // Delete any jobs created by the test.
+            DlpServiceClient dlp = DlpServiceClient.Create();
+            var result = dlp.ListDlpJobs(new ListDlpJobsRequest
+            {
+                ParentAsProjectName = new ProjectName(ProjectId),
+                Type = DlpJobType.RiskAnalysisJob
+            });
+            foreach (var job in result)
+            {
+                dlp.DeleteDlpJob(new DeleteDlpJobRequest()
+                {
+                    Name = job.Name
+                });
+            }
         }
 
         [Fact]
@@ -305,19 +326,47 @@ namespace GoogleCloudSamples
             Assert.Matches(new Regex("Values: \\[\\d{2},Female,US\\]"), output.Stdout);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
+        [Fact]
         public void TestJobs()
         {
+            // Create job.
+            DlpServiceClient dlp = DlpServiceClient.Create();
+            var dlpJob = dlp.CreateDlpJob(new CreateDlpJobRequest()
+            {
+                ParentAsProjectName = new ProjectName(ProjectId),
+                RiskJob = new RiskAnalysisJobConfig()
+                {
+                    PrivacyMetric = new PrivacyMetric()
+                    {
+                        CategoricalStatsConfig = new PrivacyMetric.Types.CategoricalStatsConfig()
+                        {
+                            Field = new FieldId()
+                            {
+                                Name = "zip_code"
+                            }
+                        }
+                    },
+                    SourceTable = new BigQueryTable()
+                    {
+                        ProjectId = "bigquery-public-data",
+                        DatasetId = "san_francisco",
+                        TableId = "bikeshare_trips"
+                    }
+                }
+            });
             Regex dlpJobRegex = new Regex("projects/.*/dlpJobs/r-\\d+");
 
-            // List
-            ConsoleOutput listOutput = _dlp.Run("listJobs", CallingProjectId, "state=DONE", "RiskAnalysisJob");
-            Assert.Matches(dlpJobRegex, listOutput.Stdout);
+            _retryRobot.Eventually(() =>
+            {
+                // List jobs.
+                ConsoleOutput listOutput = _dlp.Run("listJobs", CallingProjectId, "state=DONE", "RiskAnalysisJob");
+                Assert.Matches(dlpJobRegex, listOutput.Stdout);
 
-            // Delete
-            string jobName = dlpJobRegex.Match(listOutput.Stdout).Value;
-            ConsoleOutput deleteOutput = _dlp.Run("deleteJob", jobName);
-            Assert.Contains($"Successfully deleted job {jobName}", deleteOutput.Stdout);
+                // Delete created job.
+                string jobName = dlpJobRegex.Match(listOutput.Stdout).Value;
+                ConsoleOutput deleteOutput = _dlp.Run("deleteJob", jobName);
+                Assert.Contains($"Successfully deleted job {jobName}", deleteOutput.Stdout);
+            });
         }
     }
 }
