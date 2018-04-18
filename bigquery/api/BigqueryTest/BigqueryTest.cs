@@ -145,7 +145,7 @@ namespace GoogleCloudSamples
         }
         // [END bigquery_delete_table]
 
-        // [START import_file_from_gcs]
+        // [START bigquery_load_table_gcs_csv]
         public void ImportDataFromCloudStorage(string projectId, string datasetId,
             string tableId, BigQueryClient client, string fileName, string folder = null)
         {
@@ -171,7 +171,7 @@ namespace GoogleCloudSamples
                 job.PollUntilCompleted();
             }
         }
-        // [END import_file_from_gcs]
+        // [END bigquery_load_table_gcs_csv]
 
         // [START bigquery_query_legacy]
         public BigQueryResults LegacySqlAsyncQuery(string projectId, string datasetId,
@@ -303,7 +303,7 @@ namespace GoogleCloudSamples
             job.GetQueryResults();
         }
 
-        // [START copy_table]
+        // [START bigquery_copy_table]
         public void CopyTable(
             string datasetId, string tableIdToBeCopied, string newTableId, BigQueryClient client)
         {
@@ -316,7 +316,7 @@ namespace GoogleCloudSamples
             // Wait for the job to complete.
             job.GetQueryResults();
         }
-        // [END copy_table]
+        // [END bigquery_copy_table]
 
         public string GetFileNameFromCloudStorage(string bucket, string fileName)
         {
