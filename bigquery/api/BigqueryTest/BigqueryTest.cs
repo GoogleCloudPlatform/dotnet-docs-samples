@@ -340,9 +340,9 @@ namespace GoogleCloudSamples
         // [END bigquery_list_datasets]
 
         // [START bigquery_list_tables]
-        public List<BigQueryDataset> ListTables(BigQueryClient client)
+        public List<BigQueryTable> ListTables(BigQueryClient client, string datasetId)
         {
-            var tables = _client.ListTables(datasetId).ToList();
+            var tables = client.ListTables(datasetId).ToList();
             return tables;
         }
         // [END bigquery_list_tables]
@@ -375,7 +375,7 @@ namespace GoogleCloudSamples
             var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM [{table.FullyQualifiedId}]";
             BigQueryResults results = LegacySqlAsyncQuery(
-                projectId, datasetId, tableId, query, 10000, _client);
+                projectId, datasetId, tableId, query, _client);
             Assert.True(results.Count() > 0);
         }
 
@@ -400,17 +400,6 @@ namespace GoogleCloudSamples
             CreateDataset(datasetId, _client);
             var datasets = ListDatasets(_client);
             Assert.True(datasets.Count() > 0);
-        }
-
-        [Fact]
-        public void TestBrowseRows()
-        {
-            string projectId = "bigquery-public-data";
-            string datasetId = "samples";
-            string tableId = "shakespeare";
-            int numberOfRows = 20;
-            int recordCount = ListRows(projectId, datasetId, tableId, numberOfRows, _client);
-            Assert.True(recordCount == numberOfRows);
         }
 
         [Fact]
@@ -463,8 +452,8 @@ namespace GoogleCloudSamples
             _datasetsToDelete.Add(datasetId);
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
-            var tables = _client.ListTables(datasetId).ToList();
-            Assert.False(tables.Count() == 0);
+            var tables = ListTables(_client, datasetId);
+            Assert.True(tables.Count() > 0);
         }
 
         [Fact]
