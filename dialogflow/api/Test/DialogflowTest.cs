@@ -15,6 +15,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -28,6 +29,21 @@ namespace GoogleCloudSamples
         public string Stdout => Output.Stdout;
         public int ExitCode => Output.ExitCode;
 
+        // Multiple tests depend on existing EntityTypes.
+        //
+        // This helper method creates an EntityType via `entity-types:create`
+        // and returns the EntityType's ID.
+        public string CreateEntityType(string displayName = null, string kindName = "Map")
+        {
+            if (string.IsNullOrEmpty(displayName))
+                displayName = TestUtil.RandomName();
+            Run("entity-types:create", displayName, kindName);
+            var outputPattern = new Regex(
+                $"Created EntityType: projects/{ProjectId}/agent/entityTypes/(?<entityTypeId>.*)"
+            );
+            return outputPattern.Match(Stdout).Groups["entityTypeId"].Value;
+        }
+
         public readonly CommandLineRunner _dialogflow = new CommandLineRunner()
         {
             Main = DialogflowSamples.Main,
@@ -38,9 +54,9 @@ namespace GoogleCloudSamples
         // Project ID argument is always set.
         // Session ID argument available as a parameter.
         // Sets helper properties to last console output.
-        public ConsoleOutput Run(string command, params string[] args)
+        public ConsoleOutput Run(string command, params object[] args)
         {
-            var arguments = args.ToList();
+            var arguments = args.Select((arg) => arg.ToString()).ToList();
             arguments.Insert(0, command);
             arguments.AddRange(new [] { "--projectId", ProjectId });
 
@@ -49,7 +65,7 @@ namespace GoogleCloudSamples
             return Output;
         }
 
-        public ConsoleOutput RunWithSessionId(string command, params string[] args)
+        public ConsoleOutput RunWithSessionId(string command, params object[] args)
         {
             var arguments = args.ToList();
             arguments.AddRange(new[] { "--sessionId", SessionId });

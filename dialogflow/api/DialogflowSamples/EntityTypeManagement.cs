@@ -104,7 +104,7 @@ namespace GoogleCloudSamples
 
             client.DeleteEntityType(new EntityTypeName(projectId, entityTypeId: entityTypeId));
 
-            Console.WriteLine($"Deleted EntityType {entityTypeId}");
+            Console.WriteLine($"Deleted EntityType: {entityTypeId}");
 
             return 0;
         }

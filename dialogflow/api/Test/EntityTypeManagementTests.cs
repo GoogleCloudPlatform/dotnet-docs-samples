@@ -13,55 +13,49 @@
 // the License.
 
 using System;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
     public class EntityTypeManagementTests : DialogflowTest
     {
+        readonly string DisplayName = TestUtil.RandomName();
+        readonly string KindName = "Map";
+
         [Fact]
-        void TestCreateEntityType()
+        void TestCreate()
         {
-            var entityTypeDisplayName = TestUtil.RandomName();
-            var entityTypeKind = "Map";
+            Run("entity-types:list");
+            Assert.DoesNotContain(DisplayName, Stdout);
+
+            Run("entity-types:create", DisplayName, KindName);
+            Assert.Contains("Created EntityType:", Stdout);
 
             Run("entity-types:list");
-            Assert.Equal(0, ExitCode);
-            Assert.DoesNotContain(entityTypeDisplayName, Stdout);
+            Assert.Contains(DisplayName, Stdout);
+        }
 
-            Run("entity-types:create", entityTypeDisplayName, entityTypeKind);
-            Assert.Equal(0, ExitCode);
-            Assert.Contains($"Created EntityType:", Stdout);
+        [Fact(Skip = "Not implemented")]
+        void TestList()
+        {
 
-            Run("entity-types:list");
-            Assert.Equal(0, ExitCode);
-            Assert.Contains(entityTypeDisplayName, Stdout);
         }
 
         [Fact]
-        void TestDeleteEntityType()
+        void TestDelete()
         {
-            var entityTypeDisplayName = TestUtil.RandomName();
-            var entityTypeKind = "Map";
-
-            Run("entity-types:create", entityTypeDisplayName, entityTypeKind);
-            Assert.Equal(0, ExitCode);
-
-            // Get the ID of the created EntityType from output of entity-types:create.
+            // Create a new EntityType via `entity-types:create` and get it's ID
             // The EntityType ID is needed to delete, the display name is not sufficient.
-            var pattern = new Regex("Created EntityType: projects/(?<projectId>[^/]+)/agent/entityTypes/(?<entityTypeId>.*)");
-            var match = pattern.Match(Stdout);
-            Assert.True(match.Success);
-            var entityTypeId = match.Groups["entityTypeId"].Value;
+            var entityTypeId = CreateEntityType(DisplayName);
 
             Run("entity-types:list");
-            Assert.Equal(0, ExitCode);
-            Assert.Contains(entityTypeDisplayName, Stdout);
+            Assert.Contains(DisplayName, Stdout);
 
             Run("entity-types:delete", entityTypeId);
-            Assert.Equal(0, ExitCode);
-            Assert.DoesNotContain(entityTypeDisplayName, Stdout);
+            Assert.Contains($"Deleted EntityType: {entityTypeId}", Stdout);
+
+            Run("entity-types:list");
+            Assert.DoesNotContain(DisplayName, Stdout);
         }
     }
 }

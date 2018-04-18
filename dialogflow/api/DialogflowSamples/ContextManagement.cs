@@ -37,7 +37,7 @@ namespace GoogleCloudSamples
             [Value(0, MetaName = "contextId", HelpText = "ID of new Context", Required = true)]
             public string ContextId { get; set; }
 
-            [Value(0, MetaName = "lifespanCount", HelpText = "Lifespan Count of new Context", Required = true, Default = 1)]
+            [Value(1, MetaName = "lifespanCount", HelpText = "Lifespan Count of new Context", Default = 1)]
             public int LifespanCount { get; set; }
         }
 

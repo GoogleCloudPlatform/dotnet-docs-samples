@@ -115,7 +115,7 @@ namespace GoogleCloudSamples
                 projectId, sessionId, entityTypeDisplayName
             ));
 
-            Console.WriteLine($"Deleted SessionEntityType {entityTypeDisplayName}");
+            Console.WriteLine($"Deleted SessionEntityType: {entityTypeDisplayName}");
 
             return 0;
         }

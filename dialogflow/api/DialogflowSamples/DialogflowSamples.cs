@@ -25,6 +25,7 @@ namespace GoogleCloudSamples
 
             verbMap.Add((TestOptions opts) => TestCommand());
 
+            DetectIntentTexts.RegisterCommands(verbMap);
             ContextManagement.RegisterCommands(verbMap);
             IntentManagement.RegisterCommands(verbMap);
             EntityManagement.RegisterCommands(verbMap);

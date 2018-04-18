@@ -84,7 +84,7 @@ namespace GoogleCloudSamples
                 intent: intent
             );
 
-            Console.WriteLine($"Created Intent: {newIntent.DisplayName}");
+            Console.WriteLine($"Created Intent: {newIntent.Name}");
 
             return 0;
         }
