@@ -13,12 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-// [START all]
 
 using System;
-// [START create_bigquery_client]
+// [START bigquery_client_default_credentials]
 using Google.Cloud.BigQuery.V2;
-// [END create_bigquery_client]
+// [END bigquery_client_default_credentials]
 using Google.Cloud.Storage.V1;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,7 +99,7 @@ namespace GoogleCloudSamples
 
         public BigQueryTest()
         {
-            // [START create_bigquery_client]
+            // [START bigquery_client_default_credentials]
             // By default, the Google.Bigquery.V2 library client will authenticate 
             // using the service account file (created in the Google Developers 
             // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS 
@@ -109,17 +108,17 @@ namespace GoogleCloudSamples
             // automatic.
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _client = BigQueryClient.Create(_projectId);
-            // [END create_bigquery_client]
+            // [END bigquery_client_default_credentials]
         }
 
-        // [START create_dataset]
+        // [START bigquery_create_dataset]
         public void CreateDataset(string datasetId, BigQueryClient client)
         {
             var dataset = client.GetOrCreateDataset(datasetId);
         }
-        // [END create_dataset]
+        // [END bigquery_create_dataset]
 
-        // [START create_table]
+        // [START bigquery_create_table]
         public void CreateTable(string datasetId, string tableId, BigQueryClient client)
         {
             var dataset = client.GetDataset(datasetId);
@@ -132,19 +131,19 @@ namespace GoogleCloudSamples
             // Create the table if it doesn't exist.
             BigQueryTable table = dataset.GetOrCreateTable(tableId, schema);
         }
-        // [END create_table]
+        // [END bigquery_create_table]
 
         public void DeleteDataset(string datasetId, BigQueryClient client)
         {
             _retryDeleteBusy.Eventually(() => client.DeleteDataset(datasetId));
         }
 
-        // [START delete_table]
+        // [START bigquery_delete_table]
         public void DeleteTable(string datasetId, string tableId, BigQueryClient client)
         {
             client.DeleteTable(_projectId, datasetId, tableId);
         }
-        // [END delete_table]
+        // [END bigquery_delete_table]
 
         // [START import_file_from_gcs]
         public void ImportDataFromCloudStorage(string projectId, string datasetId,
@@ -174,37 +173,25 @@ namespace GoogleCloudSamples
         }
         // [END import_file_from_gcs]
 
-        // [START sync_query]
-        public BigQueryResults SyncQuery(string projectId, string datasetId, string tableId,
-            string query, double timeoutMs, BigQueryClient client)
-        {
-            var table = client.GetTable(projectId, datasetId, tableId);
-            BigQueryJob job = client.CreateQueryJob(query,
-                parameters: null,
-                options: new QueryOptions { UseQueryCache = false });
-            // Get the query result, waiting for the timespan specified in milliseconds.
-            BigQueryResults result = client.GetQueryResults(job.Reference.JobId,
-                new GetQueryResultsOptions { Timeout = TimeSpan.FromMilliseconds(timeoutMs) });
-            return result;
-        }
-        // [END sync_query]
-
-        // [START sync_query_legacy_sql]
-        public BigQueryResults LegacySqlSyncQuery(string projectId, string datasetId,
-            string tableId, string query, double timeoutMs, BigQueryClient client)
+        // [START bigquery_query_legacy]
+        public BigQueryResults LegacySqlAsyncQuery(string projectId, string datasetId,
+            string tableId, string query, BigQueryClient client)
         {
             var table = client.GetTable(projectId, datasetId, tableId);
             BigQueryJob job = client.CreateQueryJob(query,
                 parameters: null,
                 options: new QueryOptions { UseLegacySql = true });
-            // Get the query result, waiting for the timespan specified in milliseconds.
-            BigQueryResults result = client.GetQueryResults(job.Reference.JobId,
-                new GetQueryResultsOptions { Timeout = TimeSpan.FromMilliseconds(timeoutMs) });
-            return result;
-        }
-        // [END sync_query_legacy_sql]
 
-        // [START async_query]
+            // Wait for the job to complete.
+            job.PollUntilCompleted();
+
+            // Then we can fetch the results, either via the job or by accessing
+            // the destination table.
+            return client.GetQueryResults(job.Reference.JobId);
+        }
+        // [END bigquery_query_legacy]
+
+        // [START bigquery_query]
         public BigQueryResults AsyncQuery(string projectId, string datasetId, string tableId,
             string query, BigQueryClient client)
         {
@@ -220,10 +207,10 @@ namespace GoogleCloudSamples
             // the destination table.
             return client.GetQueryResults(job.Reference.JobId);
         }
-        // [END async_query]
+        // [END bigquery_query]
 
 
-        // [START import_from_file]
+        // [START bigquery_load_from_file]
         public void UploadJsonFromFile(string projectId, string datasetId, string tableId,
             string fileName, BigQueryClient client)
         {
@@ -240,9 +227,9 @@ namespace GoogleCloudSamples
                 job.PollUntilCompleted();
             }
         }
-        // [END import_from_file]
+        // [END bigquery_load_from_file]
 
-        // [START stream_row]
+        // [START bigquery_table_insert_rows]
         public void UploadJsonStreaming(string datasetId, string tableId,
             BigQueryClient client)
         {
@@ -260,9 +247,9 @@ namespace GoogleCloudSamples
             };
             client.InsertRows(datasetId, tableId, row1, row2);
         }
-        // [END stream_row]
+        // [END bigquery_table_insert_rows]
 
-        // [START export_to_cloud_storage]
+        // [START bigquery_extract_table]
         public void ExportJsonToGcs(
             string datasetId, string tableId, string bucketName, string fileName,
             BigQueryClient client)
@@ -282,7 +269,7 @@ namespace GoogleCloudSamples
                 var obj = gcsClient.UploadObject(bucketName, fileName, contentType, stream);
             }
         }
-        // [END export_to_cloud_storage]
+        // [END bigquery_extract_table]
 
         public void ExportCsvToGcs(
             string datasetId, string tableId, string bucketName, string fileName, BigQueryClient client)
@@ -344,40 +331,23 @@ namespace GoogleCloudSamples
             gcsClient.DeleteObject(bucket, fileName);
         }
 
-        // [START list_datasets]
+        // [START bigquery_list_datasets]
         public List<BigQueryDataset> ListDatasets(BigQueryClient client)
         {
             var datasets = client.ListDatasets().ToList();
             return datasets;
         }
-        // [END list_datasets]
+        // [END bigquery_list_datasets]
 
-        // [START list_projects]
-        public List<CloudProject> ListProjects(BigQueryClient client)
+        // [START bigquery_list_tables]
+        public List<BigQueryDataset> ListTables(BigQueryClient client)
         {
-            var projects = client.ListProjects().ToList();
-            return projects;
+            var tables = _client.ListTables(datasetId).ToList();
+            return tables;
         }
-        // [END list_projects]
+        // [END bigquery_list_tables]
 
-        // [START list_rows]
-        public int ListRows(
-            string projectId, string datasetId, string tableId, int numberOfRows,
-            BigQueryClient client)
-        {
-            int recordCount = 0;
-            var result = client.ListRows(projectId, datasetId, tableId, null,
-                new ListRowsOptions { PageSize = numberOfRows });
-            foreach (var row in result.Take(numberOfRows))
-            {
-                Console.WriteLine($"{row["word"]}: {row["corpus"]}");
-                recordCount++;
-            }
-            return recordCount;
-        }
-        // [END list_rows]
-
-        // [START browse_table]
+        // [START bigquery_browse_table]
         public int TableDataList(
             string datasetId, string tableId, int pageSize, BigQueryClient client)
         {
@@ -394,30 +364,17 @@ namespace GoogleCloudSamples
             }
             return recordCount;
         }
-        // [END browse_table]
+        // [END bigquery_browse_table]
 
         [Fact]
-        public void TestSyncQuery()
-        {
-            string projectId = "bigquery-public-data";
-            string datasetId = "samples";
-            string tableId = "shakespeare";
-            var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table}
-                GROUP BY title ORDER BY unique_words DESC LIMIT 42";
-            BigQueryResults results = SyncQuery(projectId, datasetId, tableId, query, 10000, _client);
-            Assert.True(results.Count() > 0);
-        }
-
-        [Fact]
-        public void TestLegacySqlSyncQuery()
+        public void TestLegacySqlAsyncQuery()
         {
             string projectId = "bigquery-public-data";
             string datasetId = "samples";
             string tableId = "shakespeare";
             var table = _client.GetTable(projectId, datasetId, tableId);
             string query = $"SELECT TOP(corpus, 42) as title, COUNT(*) as unique_words FROM [{table.FullyQualifiedId}]";
-            BigQueryResults results = LegacySqlSyncQuery(
+            BigQueryResults results = LegacySqlAsyncQuery(
                 projectId, datasetId, tableId, query, 10000, _client);
             Assert.True(results.Count() > 0);
         }
@@ -443,13 +400,6 @@ namespace GoogleCloudSamples
             CreateDataset(datasetId, _client);
             var datasets = ListDatasets(_client);
             Assert.True(datasets.Count() > 0);
-        }
-
-        [Fact]
-        public void TestListProjects()
-        {
-            var projects = ListProjects(_client);
-            Assert.True(projects.Count() > 0);
         }
 
         [Fact]
@@ -513,9 +463,7 @@ namespace GoogleCloudSamples
             _datasetsToDelete.Add(datasetId);
             CreateDataset(datasetId, _client);
             CreateTable(datasetId, newTableId, _client);
-            // [START list_tables]
             var tables = _client.ListTables(datasetId).ToList();
-            // [END list_tables]
             Assert.False(tables.Count() == 0);
         }
 
