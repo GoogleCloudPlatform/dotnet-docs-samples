@@ -21,7 +21,7 @@
 
 # Names of the two files containing secrets.
 $secrets = 'secrets.ps1'
-$credentials = 'silver-python2-01aab03dac88.json'
+$credentials = 'dotnet-docs-samples-tests-9715b8c501e8.json'
 $kokorodir = $env:KOKORO_GFILE_DIR
 if (-not $kokorodir) {
     $tempfile = [System.IO.Path]::GetTempFileName()
