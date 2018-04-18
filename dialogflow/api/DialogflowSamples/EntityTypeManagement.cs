@@ -61,7 +61,7 @@ namespace GoogleCloudSamples
         // [END dialogflow_create_entity_type]
 
         [Verb("entity-types:list", HelpText = "Print list of all entity types")]
-        public class ListOptions : OptionsWithProjectId {}
+        public class ListOptions : OptionsWithProjectId { }
 
         // [START dialogflow_list_entity_types]
         public static int List(string projectId)

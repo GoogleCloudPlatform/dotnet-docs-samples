@@ -58,7 +58,7 @@ namespace GoogleCloudSamples
         {
             var arguments = args.Select((arg) => arg.ToString()).ToList();
             arguments.Insert(0, command);
-            arguments.AddRange(new [] { "--projectId", ProjectId });
+            arguments.AddRange(new[] { "--projectId", ProjectId });
 
             Output = _dialogflow.Run(arguments.ToArray());
 

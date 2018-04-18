@@ -43,7 +43,7 @@ namespace GoogleCloudSamples
 
         // [START dialogflow_create_context]
         public static int Create(string projectId,
-                                 string sessionId, 
+                                 string sessionId,
                                  string contextId,
                                  int lifespanCount = 1)
         {
@@ -65,7 +65,7 @@ namespace GoogleCloudSamples
         // [END dialogflow_create_context]
 
         [Verb("contexts:list", HelpText = "Print list of entities for given Context")]
-        public class ListOptions : OptionsWithProjectIdAndSessionId {}
+        public class ListOptions : OptionsWithProjectIdAndSessionId { }
 
         // [START dialogflow_list_contexts]
         public static int List(string projectId, string sessionId)
