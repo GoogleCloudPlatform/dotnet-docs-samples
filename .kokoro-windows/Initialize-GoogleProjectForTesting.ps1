@@ -20,15 +20,26 @@ $services = @(
     'clouderrorreporting.googleapis.com')
 $roles = @(
     'roles/dlp.admin',
-    'roles/errorreporting.admin')
+    'roles/errorreporting.admin',
+    'roles/cloudkms.admin',
+    'roles/cloudkms.cryptoKeyEncrypterDecrypter',
+    'roles/logging.logWriter',
+    'roles/logging.admin',
+    'roles/logging.privateLogViewer')
 
 Write-Host "Enabling $services..."
 gcloud services enable $services
-
-foreach ($role in $roles) {
+function Bind($serviceAccountEmail, $role, $projectId) {
     Write-Host "Binding $serviceAccountEmail to $role..."
     $out = gcloud projects add-iam-policy-binding $projectId --member=serviceAccount:$serviceAccountEmail --role=$role
     if ($LASTEXITCODE) {
         throw $out
     }
-} 
+}
+
+foreach ($role in $roles) {
+    Bind $serviceAccountEmail $role $projectId
+}
+
+# Special binding for IAP.
+Bind $serviceAccountEmail roles/iap.httpsResourceAccessor surferjeff-iap
