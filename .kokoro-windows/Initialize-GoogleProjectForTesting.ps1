@@ -15,8 +15,12 @@
 param([string][Parameter(Mandatory=$true)]$serviceAccountEmail, 
     [string][Parameter(Mandatory=$true)]$projectId)
 
-$services = @('dlp.googleapis.com')
-$roles = @('roles/dlp.admin')
+$services = @(
+    'dlp.googleapis.com', 
+    'clouderrorreporting.googleapis.com')
+$roles = @(
+    'roles/dlp.admin',
+    'roles/errorreporting.admin')
 
 Write-Host "Enabling $services..."
 gcloud services enable $services
