@@ -20,7 +20,7 @@
 #>
 
 # Names of the two files containing secrets.
-$secrets = 'secrets.ps1'
+$secrets = 'secrets2.ps1'
 $credentials = 'dotnet-docs-samples-tests-9715b8c501e8.json'
 $kokorodir = $env:KOKORO_GFILE_DIR
 if (-not $kokorodir) {
