@@ -19,31 +19,45 @@ namespace GoogleCloudSamples
 {
     public class EntityManagementTests : DialogflowTest
     {
-        readonly string EntityTypeDisplayName = TestUtil.RandomName();
+        string EntityTypeId { get; set; }
+        readonly string EntityValue = TestUtil.RandomName();
+        readonly string[] Synonyms = new[] { "synonym1", "synonym2" };
+        string SynonymsInput => string.Join(',', Synonyms);
 
         public EntityManagementTests()
         {
             // Create EntityType for each test.
             // Required as prerequisite for Entity management.
-            CreateEntityType(EntityTypeDisplayName);
+            EntityTypeId = CreateEntityType();
         }
 
-        [Fact(Skip = "Not implemented")]
+        [Fact]
         void TestCreate()
         {
+            Run("entities:list", EntityTypeId);
+            Assert.DoesNotContain(EntityValue, Stdout);
 
+            Run("entities:create", EntityTypeId, EntityValue, SynonymsInput);
+            Assert.Contains("Waiting for the entity creation operation to complete.", Stdout);
+            Assert.Contains("Entity creation completed.", Stdout);
+
+            Run("entities:list", EntityTypeId);
+            Assert.Contains(EntityValue, Stdout);
         }
 
-        [Fact(Skip = "Not implemented")]
-        void TestList()
-        {
-
-        }
-
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         void TestDelete()
         {
+            Run("entities:create", EntityTypeId, EntityValue, SynonymsInput);
+            Run("entities:list", EntityTypeId);
+            Assert.Contains(EntityValue, Stdout);
 
+            Run("entities:delete", EntityTypeId, EntityValue);
+            Assert.Contains("Waiting for the entity deletion operation to complete.", Stdout);
+            Assert.Contains($"Deleted Entity: {EntityValue}", Stdout);
+
+            Run("entities:list", EntityTypeId);
+            Assert.DoesNotContain(EntityValue, Stdout);
         }
     }
 }

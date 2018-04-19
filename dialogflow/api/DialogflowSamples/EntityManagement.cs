@@ -60,9 +60,10 @@ namespace GoogleCloudSamples
                 entities: new[] { entity }
             );
 
+            Console.WriteLine("Waiting for the entity creation operation to complete.");
             operation.PollUntilCompleted();
 
-            Console.WriteLine($"Completed create entity operation for {entityValue}");
+            Console.WriteLine($"Entity creation completed.");
 
             return 0;
         }
@@ -113,9 +114,10 @@ namespace GoogleCloudSamples
                 entityValues: new[] { entityValue }
             );
 
+            Console.WriteLine("Waiting for the entity deletion operation to complete.");
             operation.PollUntilCompleted();
 
-            Console.WriteLine($"Completed delete entity operation for {entityValue}");
+            Console.WriteLine($"Deleted Entity: {entityValue}");
 
             return 0;
         }

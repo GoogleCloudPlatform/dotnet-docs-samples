@@ -36,12 +36,6 @@ namespace GoogleCloudSamples
             Assert.Contains(ContextId, Stdout);
         }
 
-        [Fact(Skip = "Not implemented")]
-        void TestList()
-        {
-
-        }
-
         [Fact]
         void TestDelete()
         {

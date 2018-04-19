@@ -25,68 +25,30 @@ namespace GoogleCloudSamples
 
         public SessionEntityTypeManagementTests()
         {
-<<<<<<< HEAD
             // Create EntityType for each test.
             // Required as prerequisite for Session EntityType management.
-            CreateEntityType(EntityTypeDisplayName);
+            CreateEntityType(displayName: EntityTypeDisplayName);
         }
 
-=======
-            // Create EntityType with display name
-            // (Required for Session EntityType management)
-            Run("entity-types:create", _entityTypeDisplayName, "Map");
-            Assert.Equal(0, ExitCode);
-        }
-
-        readonly string _entityTypeDisplayName = TestUtil.RandomName();
-
->>>>>>> 6b0ec3bb438e746331215e1a642e1be0da3ccf6d
         [Fact]
         void TestCreate()
         {
             RunWithSessionId("session-entity-types:list");
-<<<<<<< HEAD
             Assert.DoesNotContain(EntityTypeDisplayName, Stdout);
 
             RunWithSessionId("session-entity-types:create", EntityTypeDisplayName, EntityValuesArgument);
-=======
-            Assert.Equal(0, ExitCode);
-            Assert.DoesNotContain(_entityTypeDisplayName, Stdout);
-
-            // Create Session EntityType
-            RunWithSessionId("session-entity-types:create", _entityTypeDisplayName, entityValuesArgument);
-            Assert.Equal(0, ExitCode);
->>>>>>> 6b0ec3bb438e746331215e1a642e1be0da3ccf6d
             Assert.Contains("Created SessionEntityType:", Stdout);
-            Assert.Contains(_entityTypeDisplayName, Stdout);
+            Assert.Contains(EntityTypeDisplayName, Stdout);
 
             RunWithSessionId("session-entity-types:list");
-<<<<<<< HEAD
             Assert.Contains(EntityTypeDisplayName, Stdout);
-=======
-            Assert.Equal(0, ExitCode);
-            Assert.Contains(_entityTypeDisplayName, Stdout);
->>>>>>> 6b0ec3bb438e746331215e1a642e1be0da3ccf6d
         }
-
-        [Fact(Skip = "Not implemented")]
-        void TestList()
-        {
-
-<<<<<<< HEAD
-        }
-=======
-            RunWithSessionId("session-entity-types:create", _entityTypeDisplayName, entityValuesArgument);
-            Assert.Equal(0, ExitCode);
-            Assert.Contains("Created SessionEntityType:", Stdout);
->>>>>>> 6b0ec3bb438e746331215e1a642e1be0da3ccf6d
 
         [Fact]
         void TestDelete()
         {
             RunWithSessionId("session-entity-types:create", EntityTypeDisplayName, EntityValuesArgument);
             RunWithSessionId("session-entity-types:list");
-<<<<<<< HEAD
             Assert.Contains(EntityTypeDisplayName, Stdout);
 
             RunWithSessionId("session-entity-types:delete", EntityTypeDisplayName);
@@ -94,19 +56,6 @@ namespace GoogleCloudSamples
 
             RunWithSessionId("session-entity-types:list");
             Assert.DoesNotContain(EntityTypeDisplayName, Stdout);
-=======
-            Assert.Equal(0, ExitCode);
-            Assert.Contains(_entityTypeDisplayName, Stdout);
-
-            // Delete Session EntityType
-            RunWithSessionId("session-entity-types:delete", _entityTypeDisplayName);
-            Assert.Equal(0, ExitCode);
-            Assert.Contains("Deleted SessionEntityType", Stdout);
-
-            RunWithSessionId("session-entity-types:list");
-            Assert.Equal(0, ExitCode);
-            Assert.DoesNotContain(_entityTypeDisplayName, Stdout);
->>>>>>> 6b0ec3bb438e746331215e1a642e1be0da3ccf6d
         }
     }
 }
