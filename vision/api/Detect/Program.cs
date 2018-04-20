@@ -334,7 +334,6 @@ namespace GoogleCloudSamples
             // [END vision_web_entities_include_geo_results]
             // [END vision_web_entities_include_geo_results_uri]
             return 0;
-
         }
 
         private static object DetectDocText(Image image)
