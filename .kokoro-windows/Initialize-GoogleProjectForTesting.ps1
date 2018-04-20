@@ -24,8 +24,17 @@
 #.PARAMETER projectId
 #The google cloud project id where the tests will run.
 ##############################
-param([string][Parameter(Mandatory=$true)]$serviceAccountEmail, 
-    [string][Parameter(Mandatory=$true)]$projectId)
+param([string]$serviceAccountEmail, [string]$projectId)
+
+if (-not $serviceAccountEmail) {
+    $serviceAccountEmail = (Get-Content $env:GOOGLE_APPLICATION_CREDENTIALS `
+        | ConvertFrom-Json).client_email
+}
+
+if (-not $projectId) {
+    $projectId = (Get-Content $env:GOOGLE_APPLICATION_CREDENTIALS `
+    | ConvertFrom-Json).project_id
+}
 
 # Keep this list sorted so it's easy to find an api and avoid duplicates.
 $services = @"
@@ -58,6 +67,7 @@ vision.googleapis.com
 $roles = @"
 roles/bigquery.admin
 roles/clouddebugger.user
+roles/cloudiot.admin
 roles/cloudkms.admin
 roles/cloudkms.cryptoKeyEncrypterDecrypter
 roles/cloudsql.client
