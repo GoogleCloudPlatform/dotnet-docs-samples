@@ -12,5 +12,4 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-dotnet restore
-dotnet run -- -c $env:TEST_IAP_CLIENT_ID -u $env:TEST_IAP_URI
+dotnet test --test-adapter-path:. --logger:junit

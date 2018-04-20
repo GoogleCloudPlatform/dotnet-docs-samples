@@ -602,8 +602,12 @@ namespace GoogleCloudSamples
             {
                 // [START namespace_run_query]
                 KeyFactory keyFactory = _db.CreateKeyFactory("__namespace__");
-                Key startNamespace = keyFactory.CreateKey("g");
-                Key endNamespace = keyFactory.CreateKey("h");
+                // List all the namespaces between a lower and upper bound.
+                string lowerBound = _db.NamespaceId.Substring(0,
+                    _db.NamespaceId.Length - 1);
+                string upperBound = _db.NamespaceId + "z";
+                Key startNamespace = keyFactory.CreateKey(lowerBound);
+                Key endNamespace = keyFactory.CreateKey(upperBound);
                 Query query = new Query("__namespace__")
                 {
                     Filter = Filter.And(
@@ -616,7 +620,7 @@ namespace GoogleCloudSamples
                     namespaces.Add(entity.Key.Path[0].Name);
                 };
                 // [END namespace_run_query]
-                Assert.Equal(new[] { "ghijklmnop" }, namespaces.ToArray());
+                Assert.Contains(_db.NamespaceId, namespaces.ToArray());
             });
         }
 
