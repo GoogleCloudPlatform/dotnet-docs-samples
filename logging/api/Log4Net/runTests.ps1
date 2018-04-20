@@ -15,7 +15,8 @@ Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
 BackupAndEdit-TextFile "Web.config" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{       
+{
+    $env:LOG4NET_DIR = $PSScriptRoot        
     Build-Solution
     Run-IISExpressTest
 }
