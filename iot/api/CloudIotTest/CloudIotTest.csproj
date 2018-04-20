@@ -13,7 +13,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CloudIotSample.csproj" />
+    <ProjectReference Include="..\CloudIotSample\CloudIotSample.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
   <ItemGroup>
