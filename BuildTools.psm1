@@ -642,10 +642,6 @@ function Run-IISExpress($SiteName, $ApplicationhostConfig) {
     if (!$ApplicationhostConfig) {
         $ApplicationhostConfig = UpFind-File 'applicationhost.config'
     }
-    # Applicationhost.config expects the environment variable
-    # DOTNET_DOCS_SAMPLES to point to the same directory containing
-    # applicationhost.config.
-    $env:DOTNET_DOCS_SAMPLES = (Get-Item $ApplicationhostConfig).DirectoryName
     $argList = ('/config:"' + $ApplicationhostConfig + '"'), "/site:$SiteName", "/apppool:Clr4IntegratedAppPool"
     Start-Process iisexpress.exe  -ArgumentList $argList -PassThru
 }
