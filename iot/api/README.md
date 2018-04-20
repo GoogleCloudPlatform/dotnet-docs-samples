@@ -18,21 +18,21 @@ or the command line.
 3. Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the
 service account JSON from the Google Cloud Console:
 
-```
-    set GOOGLE_APPLICATION_CREDENTIALS=creds.json
+```powershell
+    PS > $env:GOOGLE_APPLICATION_CREDENTIALS="creds.json"
 ```
 
 4. Set the `GOOGLE_PROJECT_ID` environment variable:
 
-```
-    set GOOGLE_PROJECT_ID=your-project-id
+```powershell
+    PS > $env:GOOGLE_PROJECT_ID="your-project-id"
 ```
 
 5.  From a Powershell command line, restore the NuGet packages and call
 `run` to see a list of subcommands like getRegistry or getDevice:
-    ```
-    PS C:\...\dotnet-docs-samples\iot\api\> dotnet restore
-    PS C:\...\dotnet-docs-samples\iot\api\> dotnet run
+    ```powershell
+    PS C:\...\dotnet-docs-samples\iot\api\CloudIotSample> dotnet restore
+    PS C:\...\dotnet-docs-samples\iot\api\CloudIotSample> dotnet run
 
     CloudIotSample 1.0.0
     Copyright (C) 2018 CloudIotSample

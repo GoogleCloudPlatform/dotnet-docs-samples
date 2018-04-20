@@ -23,36 +23,202 @@ namespace GoogleCloudSamples
     // <summary>
     /// Runs the sample app's methods and tests the outputs
     // </summary>
-    public class CommonTests
+    public class CommonTests : IClassFixture<IotTestFixture>
     {
-        // For testing, hardcode region and pull the project ID from environment.
-        private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private static readonly string s_regionId = "us-central1";
-        private static readonly string s_serviceAccount = "serviceAccount:cloud-iot@system.gserviceaccount.com";
-        private static readonly string s_testID = Guid.NewGuid().ToString().Split("-")[0];
-
-        readonly CommandLineRunner _cloudIot = new CommandLineRunner()
-        {
-            VoidMain = CloudIotSample.Main,
-            Command = "CloudIotSample"
-        };
-
-        protected ConsoleOutput Run(params string[] args)
-        {
-            return _cloudIot.Run(args);
-        }
-
         private readonly RetryRobot _retryRobot = new RetryRobot()
         {
             RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) }
         };
+        private readonly IotTestFixture _fixture;
+
+        public CommonTests(IotTestFixture fixture)
+        {
+            _fixture = fixture;
+        }
+
+        ConsoleOutput Run(params string[] args) => _fixture.Run(args);
 
         private void Eventually(Action action) => _retryRobot.Eventually(action);
 
-        private void CreatePubSubTopic(String name)
+        [Fact]
+        public void TestListRegistries()
+        {
+            var listRegistryOutput = Run("listRegistries", _fixture.ProjectId, _fixture.RegionId);
+            Assert.Contains("Registries:", listRegistryOutput.Stdout);
+        }
+
+        [Fact]
+        public void TestGetRegistry()
+        {
+            var getRegistryOutput = Run("getRegistry", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId);
+            Assert.Contains("Registry:", getRegistryOutput.Stdout);
+        }
+
+        [Fact]
+        public void TestCreateUnauthDevice()
+        {
+            var deviceId = "dotnettest-unauth-" + _fixture.TestId;
+
+            var createUnauthOut = Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            Assert.Contains("Device created:", createUnauthOut.Stdout);
+
+            var deleteUnauthOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            Assert.Contains("Removed device:", deleteUnauthOut.Stdout);
+        }
+
+        [Fact]
+        public void TestGetDeviceConfigs()
+        {
+            var deviceId = "dotnettest-unauth-" + _fixture.TestId;
+
+            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            try
+            {
+                var getConfigsOut = Run("getDeviceConfigs", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                Assert.Contains("Configurations:", getConfigsOut.Stdout);
+            }
+            finally
+            {
+                // Tear down Device, Registry, and IoT PubSub topic
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            }
+        }
+
+        [Fact]
+        public void TestCreateEsDevice()
+        {
+            var deviceId = "dotnettest-createES-" + _fixture.TestId;
+
+            var createEsOut = Run("createDeviceEs", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/ec_public.pem");
+            Assert.Contains("Device created:", createEsOut.Stdout);
+
+            var deleteEsOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            Assert.Contains("Removed device:", deleteEsOut.Stdout);
+        }
+
+        [Fact]
+        public void TestCreateRsaDevice()
+        {
+            var deviceId = "dotnettest-createRSA-" + _fixture.TestId;
+
+            var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
+            Assert.Contains("Device created:", createRsaOut.Stdout);
+
+            var deleteRsaOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            Assert.Contains("Removed device:", deleteRsaOut.Stdout);
+        }
+
+        [Fact]
+        public void TestCreatePatchEsDevice()
+        {
+            var deviceId = "dotnettest-unauth-es-" + _fixture.TestId;
+
+            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            try
+            {
+                var patchUnauthOut = Run("patchDeviceEs", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/ec_public.pem");
+                Assert.Contains("Device patched:", patchUnauthOut.Stdout);
+            }
+            finally
+            {
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            }
+        }
+
+        [Fact]
+        public void TestCreatePatchRsaDevice()
+        {
+            var deviceId = "dotnettest-unauth-rsa-" + _fixture.TestId;
+
+            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            try
+            {
+                var patchUnauthOut = Run("patchDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
+                Assert.Contains("Device patched:", patchUnauthOut.Stdout);
+            }
+            finally
+            {
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            }
+        }
+
+        [Fact]
+        public void TestSetDeviceConfig()
+        {
+            var deviceId = "dotnettest-config-" + _fixture.TestId;
+
+            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            try
+            {
+                var setDeviceOut = Run("setDeviceConfig", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test");
+                Assert.Contains("Configuration updated to: 2", setDeviceOut.Stdout);
+            }
+            finally
+            {
+                // Tear down Registry and IoT PubSub topic
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            }
+        }
+
+        [Fact]
+        public void TestGetSetIamBinding()
+        {
+            var member = "group:dpebot@google.com";
+            var role = "roles/viewer";
+
+            var setIamOutput = Run("setIamPolicy", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, role, member);
+            Assert.DoesNotContain("RequestError", setIamOutput.Stdout);
+
+            var getIamOutput = Run("getIamPolicy", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId);
+            System.Diagnostics.Trace.WriteLine(getIamOutput.Stdout);
+            Assert.Contains("Role: roles/viewer", getIamOutput.Stdout);
+        }
+
+        [Fact]
+        public void TestListDevicesNoRegistry()
+        {
+            var registryId = $"{_fixture.TestId}-notfounddevicereg";
+            var listDevicesOutput = Run("listDevices", _fixture.ProjectId, _fixture.RegionId, registryId);
+            Assert.Contains("A registry with the name", listDevicesOutput.Stdout);
+        }
+
+        [Fact]
+        public void TestGetDeviceRegistryNotFound()
+        {
+            var registryId = $"{_fixture.TestId}-notfoundregistry";
+            var listDevicesOutput = Run("getRegistry", _fixture.ProjectId, _fixture.RegionId, registryId);
+            Assert.Contains("A registry with the name", listDevicesOutput.Stdout);
+        }
+    }
+
+    public class IotTestFixture : IDisposable
+    {
+        public TopicName TopicName { get; private set; }
+        public string RegistryId { get; private set; }
+
+        public string TestId { get; private set; }
+
+        public string ProjectId { get; private set; }
+        public string ServiceAccount { get; private set; }
+
+        public string RegionId { get; private set; }
+
+        public IotTestFixture()
+        {
+            RegionId = "us-central1";
+            ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            ServiceAccount = "serviceAccount:cloud-iot@system.gserviceaccount.com";
+            TestId = TestUtil.RandomName();
+            TopicName = new TopicName(ProjectId, "iot-test-" + TestId);
+            RegistryId = "iot-test" + TestId;
+            CreatePubSubTopic(this.TopicName);
+            Assert.Equal(0, Run("createRegistry", ProjectId, RegionId,
+                RegistryId, TopicName.TopicId).ExitCode);
+        }
+
+        public void CreatePubSubTopic(TopicName topicName)
         {
             var publisher = PublisherClient.Create();
-            var topicName = new TopicName(s_projectId, name);
             try
             {
                 publisher.CreateTopic(topicName);
@@ -67,269 +233,40 @@ namespace GoogleCloudSamples
                     {
                         new Binding {
                             Role = "roles/pubsub.publisher",
-                            Members = { s_serviceAccount }
+                            Members = { ServiceAccount }
                         }
                     }
             };
             SetIamPolicyRequest request = new SetIamPolicyRequest
             {
-                Resource = $"projects/{s_projectId}/topics/{topicName.TopicId}",
+                Resource = $"projects/{ProjectId}/topics/{topicName.TopicId}",
                 Policy = policy
             };
             Policy response = publisher.SetIamPolicy(request);
             Console.WriteLine($"Topic IAM Policy updated: {response}");
         }
 
-        private void DeletePubSubTopic(String name)
+        public void DeletePubSubTopic(TopicName topicName)
         {
             var publisher = PublisherClient.Create();
-            var topicName = new TopicName(s_projectId, name);
             publisher.DeleteTopic(topicName);
         }
 
-        [Fact]
-        public void TestCreateDeleteRegistry()
+        readonly CommandLineRunner _cloudIot = new CommandLineRunner()
         {
-            var registryId = $"{s_testID}testcreatereg";
-            var topicId = "dotnettest-create";
+            VoidMain = CloudIotSample.Main,
+            Command = "CloudIotSample"
+        };
 
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-
-            var createRegistryOutput = Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-            Assert.DoesNotContain("A registry with the name", createRegistryOutput.Stdout);
-
-            var deleteRegOutput = Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            Assert.DoesNotContain("was not found", deleteRegOutput.Stdout);
-
-            // Tear down IoT PubSub topic
-            DeletePubSubTopic(topicId);
+        public ConsoleOutput Run(params string[] args)
+        {
+            return _cloudIot.Run(args);
         }
 
-        [Fact]
-        public void TestListRegistries()
+        public void Dispose()
         {
-            var registryId = $"{s_testID}testlistreg";
-            var topicId = "dotnettest-list";
-
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-
-            var listRegistryOutput = Run("listRegistries", s_projectId, s_regionId);
-            Assert.Contains("Registries:", listRegistryOutput.Stdout);
-
-            // Tear down Registry and IoT PubSub topic
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestGetRegistry()
-        {
-            var registryId = $"{s_testID}testgetreg";
-            var topicId = "dotnettest-list";
-
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-
-            var getRegistryOutput = Run("getRegistry", s_projectId, s_regionId, registryId);
-            Assert.Contains("Registry:", getRegistryOutput.Stdout);
-
-            // Tear down Registry and IoT PubSub topic
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestCreateUnauthDevice()
-        {
-            var topicId = "dotnettest-createunauth";
-            var registryId = $"{s_testID}testcreatedevice-unauth";
-            var deviceId = "dotnettest-unauth";
-
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-
-            var createUnauthOut = Run("createDeviceNoAuth", s_projectId, s_regionId, registryId, deviceId);
-            Assert.Contains("Device created:", createUnauthOut.Stdout);
-
-            var deleteUnauthOut = Run("deleteDevice", s_projectId, s_regionId, registryId, deviceId);
-            Assert.Contains("Removed device:", deleteUnauthOut.Stdout);
-
-            // Tear down Registry and IoT PubSub topic
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestGetDeviceConfigs()
-        {
-            var topicId = "dotnettest-createunauth";
-            var registryId = $"{s_testID}testcreatedevice-unauth";
-            var deviceId = "dotnettest-unauth";
-
-            // Build up IoT PubSub Topic, registry, and device
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-            Run("createDeviceNoAuth", s_projectId, s_regionId, registryId, deviceId);
-
-            var getConfigsOut = Run("getDeviceConfigs", s_projectId, s_regionId, registryId, deviceId);
-            Assert.Contains("Configurations:", getConfigsOut.Stdout);
-
-            // Tear down Device, Registry, and IoT PubSub topic
-            Run("deleteDevice", s_projectId, s_regionId, registryId, deviceId);
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestCreateEsDevice()
-        {
-            var topicId = "dotnettest-createES";
-            var registryId = $"{s_testID}testcreatedevice-createES";
-            var deviceId = "dotnettest-createES";
-
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-
-            var createEsOut = Run("createDeviceEs", s_projectId, s_regionId, registryId, deviceId, "test/data/ec_public.pem");
-            Assert.Contains("Device created:", createEsOut.Stdout);
-
-            var deleteEsOut = Run("deleteDevice", s_projectId, s_regionId, registryId, deviceId);
-            Assert.Contains("Removed device:", deleteEsOut.Stdout);
-
-            // Tear down Registry and IoT PubSub topic
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestCreateRsaDevice()
-        {
-            var topicId = "dotnettest-createRSA";
-            var registryId = $"{s_testID}testcreatedevice-createRSA";
-            var deviceId = "dotnettest-createRSA";
-
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-
-            var createRsaOut = Run("createDeviceRsa", s_projectId, s_regionId, registryId, deviceId, "test/data/rsa_cert.pem");
-            Assert.Contains("Device created:", createRsaOut.Stdout);
-
-            var deleteRsaOut = Run("deleteDevice", s_projectId, s_regionId, registryId, deviceId);
-            Assert.Contains("Removed device:", deleteRsaOut.Stdout);
-
-            // Tear down Registry and IoT PubSub topic
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestCreatePatchEsDevice()
-        {
-            var topicId = "dotnettest-createunauth-es";
-            var registryId = $"{s_testID}testcreatedevice-createunauth-es";
-            var deviceId = "dotnettest-unauth-es";
-
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-            Run("createDeviceNoAuth", s_projectId, s_regionId, registryId, deviceId);
-
-            var patchUnauthOut = Run("patchDeviceEs", s_projectId, s_regionId, registryId, deviceId, "test/data/ec_public.pem");
-            Assert.Contains("Device patched:", patchUnauthOut.Stdout);
-
-            // Tear down Registry and IoT PubSub topic
-            Run("deleteDevice", s_projectId, s_regionId, registryId, deviceId);
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestCreatePatchRsaDevice()
-        {
-            var topicId = "dotnettest-createunauth-rsa";
-            var registryId = $"{s_testID}testcreatedevice-unauth-rsa";
-            var deviceId = "dotnettest-unauth-rsa";
-
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-            Run("createDeviceNoAuth", s_projectId, s_regionId, registryId, deviceId);
-
-            var patchUnauthOut = Run("patchDeviceRsa", s_projectId, s_regionId, registryId, deviceId, "test/data/rsa_cert.pem");
-            Assert.Contains("Device patched:", patchUnauthOut.Stdout);
-
-            // Tear down Registry and IoT PubSub topic
-            Run("deleteDevice", s_projectId, s_regionId, registryId, deviceId);
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestSetDeviceConfig()
-        {
-            var topicId = "dotnettest-configtest";
-            var registryId = $"{s_testID}testcreatedevice-config";
-            var deviceId = "dotnettest-config";
-
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-            Run("createDeviceNoAuth", s_projectId, s_regionId, registryId, deviceId);
-
-            var setDeviceOut = Run("setDeviceConfig", s_projectId, s_regionId, registryId, deviceId, "test");
-            Assert.Contains("Configuration updated to: 2", setDeviceOut.Stdout);
-
-            // Tear down Registry and IoT PubSub topic
-            Run("deleteDevice", s_projectId, s_regionId, registryId, deviceId);
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestGetSetIamBinding()
-        {
-            var registryId = $"{s_testID}testsetiamreg";
-            var topicId = "dotnettest-getsetiam";
-            var member = "group:dpebot@google.com";
-            var role = "roles/viewer";
-
-            // Build up IoT PubSub Topic
-            CreatePubSubTopic(topicId);
-            Run("createRegistry", s_projectId, s_regionId, registryId, topicId);
-
-            var setIamOutput = Run("setIamPolicy", s_projectId, s_regionId, registryId, role, member);
-            Assert.DoesNotContain("RequestError", setIamOutput.Stdout);
-
-            var getIamOutput = Run("getIamPolicy", s_projectId, s_regionId, registryId);
-            System.Diagnostics.Trace.WriteLine(getIamOutput.Stdout);
-            Assert.Contains("Role: roles/viewer", getIamOutput.Stdout);
-
-            // Tear down Registry and IoT PubSub topic
-            Run("deleteRegistry", s_projectId, s_regionId, registryId);
-            DeletePubSubTopic(topicId);
-        }
-
-        [Fact]
-        public void TestListDevicesNoRegistry()
-        {
-            var registryId = $"{s_testID}-notfounddevicereg";
-            var listDevicesOutput = Run("listDevices", s_projectId, s_regionId, registryId);
-            Assert.Contains("A registry with the name", listDevicesOutput.Stdout);
-        }
-
-        [Fact]
-        public void TestGetDeviceRegistryNotFound()
-        {
-            var registryId = $"{s_testID}-notfoundregistry";
-            var listDevicesOutput = Run("getRegistry", s_projectId, s_regionId, registryId);
-            Assert.Contains("A registry with the name", listDevicesOutput.Stdout);
+            var deleteRegOutput = Run("deleteRegistry", ProjectId, RegionId, RegistryId);
+            DeletePubSubTopic(this.TopicName);
         }
     }
 }

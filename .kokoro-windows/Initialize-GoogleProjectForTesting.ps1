@@ -24,38 +24,50 @@
 #.PARAMETER projectId
 #The google cloud project id where the tests will run.
 ##############################
-param([string][Parameter(Mandatory=$true)]$serviceAccountEmail, 
-    [string][Parameter(Mandatory=$true)]$projectId)
+param([string]$serviceAccountEmail, [string]$projectId)
 
+if (-not $serviceAccountEmail) {
+    $serviceAccountEmail = (Get-Content $env:GOOGLE_APPLICATION_CREDENTIALS `
+        | ConvertFrom-Json).client_email
+}
+
+if (-not $projectId) {
+    $projectId = (Get-Content $env:GOOGLE_APPLICATION_CREDENTIALS `
+    | ConvertFrom-Json).project_id
+}
+
+# Keep this list sorted so it's easy to find an api and avoid duplicates.
 $services = @"
 bigquery-json.googleapis.com
-clouddebugger.googleapis.com
-datastore.googleapis.com
-storage-component.googleapis.com
-pubsub.googleapis.com
-speech.googleapis.com
-vision.googleapis.com
-storage-api.googleapis.com
-stackdriver.googleapis.com
-clouderrorreporting.googleapis.com
-logging.googleapis.com
 cloudapis.googleapis.com
-monitoring.googleapis.com
-language.googleapis.com
-stackdriverprovisioning.googleapis.com
-compute.googleapis.com
-sql-component.googleapis.com
+clouddebugger.googleapis.com
+clouderrorreporting.googleapis.com
+cloudiot.googleapis.com
 cloudkms.googleapis.com
 cloudtrace.googleapis.com
+compute.googleapis.com
+datastore.googleapis.com
 dlp.googleapis.com
+language.googleapis.com
+logging.googleapis.com
+monitoring.googleapis.com
+pubsub.googleapis.com
 servicemanagement.googleapis.com
-videointelligence.googleapis.com
+speech.googleapis.com
+sql-component.googleapis.com
+stackdriver.googleapis.com
+stackdriverprovisioning.googleapis.com
+storage-api.googleapis.com
+storage-component.googleapis.com
 translate.googleapis.com
+videointelligence.googleapis.com
+vision.googleapis.com
 "@
 
 $roles = @"
 roles/bigquery.admin
 roles/clouddebugger.user
+roles/cloudiot.admin
 roles/cloudkms.admin
 roles/cloudkms.cryptoKeyEncrypterDecrypter
 roles/cloudsql.client
@@ -76,8 +88,19 @@ roles/pubsub.admin
 roles/storage.admin
 "@
 
-Write-Host "Enabling $services..."
-gcloud services enable $services
+# Enabling services takes a while, so only enable the services that are not
+# already enabled.
+$enabledServices = (gcloud services list --enabled --format json | convertfrom-json).serviceName
+$alreadyEnabledServices = $enabledServices | Where-Object {$enabledServices.Contains($_)}
+$servicesToEnable = $services.Split() | Where-Object {-not $enabledServices.Contains($_)}
+if ($alreadyEnabledServices) {
+    "Some services are already enabled:", $alreadyEnabledServices | Write-Host
+}
+if ($servicesToEnable) {
+    Write-Host "Enabling $servicesToEnable..."
+    gcloud services enable $servicesToEnable
+}
+
 function Bind($serviceAccountEmail, $role, $projectId) {
     Write-Host "Binding $serviceAccountEmail to $role..."
     $out = gcloud projects add-iam-policy-binding $projectId --member=serviceAccount:$serviceAccountEmail --role=$role
