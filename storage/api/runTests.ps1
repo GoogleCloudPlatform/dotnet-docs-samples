@@ -13,7 +13,7 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
-BackupAndEdit-TextFile @("Storage\Program.cs", "QuickStart\Program.cs") `
+BackupAndEdit-TextFile @("Storage\Storage.cs", "QuickStart\QuickStart.cs") `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {
     dotnet restore
