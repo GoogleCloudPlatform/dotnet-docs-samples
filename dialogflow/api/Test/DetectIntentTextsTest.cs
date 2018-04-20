@@ -22,7 +22,7 @@ namespace GoogleCloudSamples
         [Fact]
         void TestDetectIntentFromTexts()
         {
-            var texts = new [] { "hello", "book a meeting room", "Mountain View" };
+            var texts = new[] { "hello", "book a meeting room", "Mountain View" };
             var textsArgument = string.Join(',', texts);
 
             RunWithSessionId("detect-intent:texts", textsArgument);

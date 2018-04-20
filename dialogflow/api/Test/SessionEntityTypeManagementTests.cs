@@ -19,43 +19,43 @@ namespace GoogleCloudSamples
 {
     public class SessionEntityTypeManagementTests : DialogflowTest
     {
-        readonly string EntityTypeDisplayName = TestUtil.RandomName();
-        readonly string[] EntityValues = new[] { "value1", "value2" };
-        string EntityValuesArgument => string.Join(',', EntityValues);
+        readonly string _entityTypeDisplayName = TestUtil.RandomName();
+        readonly string[] _entityValues = new[] { "value1", "value2" };
+        string EntityValuesArgument => string.Join(',', _entityValues);
 
         public SessionEntityTypeManagementTests()
         {
             // Create EntityType for each test.
             // Required as prerequisite for Session EntityType management.
-            CreateEntityType(displayName: EntityTypeDisplayName);
+            CreateEntityType(displayName: _entityTypeDisplayName);
         }
 
         [Fact]
         void TestCreate()
         {
             RunWithSessionId("session-entity-types:list");
-            Assert.DoesNotContain(EntityTypeDisplayName, Stdout);
+            Assert.DoesNotContain(_entityTypeDisplayName, Stdout);
 
-            RunWithSessionId("session-entity-types:create", EntityTypeDisplayName, EntityValuesArgument);
+            RunWithSessionId("session-entity-types:create", _entityTypeDisplayName, EntityValuesArgument);
             Assert.Contains("Created SessionEntityType:", Stdout);
-            Assert.Contains(EntityTypeDisplayName, Stdout);
+            Assert.Contains(_entityTypeDisplayName, Stdout);
 
             RunWithSessionId("session-entity-types:list");
-            Assert.Contains(EntityTypeDisplayName, Stdout);
+            Assert.Contains(_entityTypeDisplayName, Stdout);
         }
 
         [Fact]
         void TestDelete()
         {
-            RunWithSessionId("session-entity-types:create", EntityTypeDisplayName, EntityValuesArgument);
+            RunWithSessionId("session-entity-types:create", _entityTypeDisplayName, EntityValuesArgument);
             RunWithSessionId("session-entity-types:list");
-            Assert.Contains(EntityTypeDisplayName, Stdout);
+            Assert.Contains(_entityTypeDisplayName, Stdout);
 
-            RunWithSessionId("session-entity-types:delete", EntityTypeDisplayName);
-            Assert.Contains($"Deleted SessionEntityType: {EntityTypeDisplayName}", Stdout);
+            RunWithSessionId("session-entity-types:delete", _entityTypeDisplayName);
+            Assert.Contains($"Deleted SessionEntityType: {_entityTypeDisplayName}", Stdout);
 
             RunWithSessionId("session-entity-types:list");
-            Assert.DoesNotContain(EntityTypeDisplayName, Stdout);
+            Assert.DoesNotContain(_entityTypeDisplayName, Stdout);
         }
     }
 }

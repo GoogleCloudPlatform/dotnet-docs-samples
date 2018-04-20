@@ -19,20 +19,20 @@ namespace GoogleCloudSamples
 {
     public class EntityTypeManagementTests : DialogflowTest
     {
-        readonly string DisplayName = TestUtil.RandomName();
-        readonly string KindName = "Map";
+        readonly string _displayName = TestUtil.RandomName();
+        readonly string _kindName = "Map";
 
         [Fact]
         void TestCreate()
         {
             Run("entity-types:list");
-            Assert.DoesNotContain(DisplayName, Stdout);
+            Assert.DoesNotContain(_displayName, Stdout);
 
-            Run("entity-types:create", DisplayName, KindName);
+            Run("entity-types:create", _displayName, _kindName);
             Assert.Contains("Created EntityType:", Stdout);
 
             Run("entity-types:list");
-            Assert.Contains(DisplayName, Stdout);
+            Assert.Contains(_displayName, Stdout);
         }
 
         [Fact]
@@ -40,16 +40,16 @@ namespace GoogleCloudSamples
         {
             // Create a new EntityType via `entity-types:create` and get it's ID
             // The EntityType ID is needed to delete, the display name is not sufficient.
-            var entityTypeId = CreateEntityType(DisplayName);
+            var entityTypeId = CreateEntityType(_displayName);
 
             Run("entity-types:list");
-            Assert.Contains(DisplayName, Stdout);
+            Assert.Contains(_displayName, Stdout);
 
             Run("entity-types:delete", entityTypeId);
             Assert.Contains($"Deleted EntityType: {entityTypeId}", Stdout);
 
             Run("entity-types:list");
-            Assert.DoesNotContain(DisplayName, Stdout);
+            Assert.DoesNotContain(_displayName, Stdout);
         }
     }
 }

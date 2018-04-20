@@ -20,9 +20,9 @@ namespace GoogleCloudSamples
     public class EntityManagementTests : DialogflowTest
     {
         string EntityTypeId { get; set; }
-        readonly string EntityValue = TestUtil.RandomName();
-        readonly string[] Synonyms = new[] { "synonym1", "synonym2" };
-        string SynonymsInput => string.Join(',', Synonyms);
+        readonly string _entityValue = TestUtil.RandomName();
+        readonly string[] _synonyms = new[] { "synonym1", "synonym2" };
+        string SynonymsInput => string.Join(',', _synonyms);
 
         public EntityManagementTests()
         {
@@ -35,29 +35,29 @@ namespace GoogleCloudSamples
         void TestCreate()
         {
             Run("entities:list", EntityTypeId);
-            Assert.DoesNotContain(EntityValue, Stdout);
+            Assert.DoesNotContain(_entityValue, Stdout);
 
-            Run("entities:create", EntityTypeId, EntityValue, SynonymsInput);
+            Run("entities:create", EntityTypeId, _entityValue, SynonymsInput);
             Assert.Contains("Waiting for the entity creation operation to complete.", Stdout);
             Assert.Contains("Entity creation completed.", Stdout);
 
             Run("entities:list", EntityTypeId);
-            Assert.Contains(EntityValue, Stdout);
+            Assert.Contains(_entityValue, Stdout);
         }
 
         [Fact]
         void TestDelete()
         {
-            Run("entities:create", EntityTypeId, EntityValue, SynonymsInput);
+            Run("entities:create", EntityTypeId, _entityValue, SynonymsInput);
             Run("entities:list", EntityTypeId);
-            Assert.Contains(EntityValue, Stdout);
+            Assert.Contains(_entityValue, Stdout);
 
-            Run("entities:delete", EntityTypeId, EntityValue);
+            Run("entities:delete", EntityTypeId, _entityValue);
             Assert.Contains("Waiting for the entity deletion operation to complete.", Stdout);
-            Assert.Contains($"Deleted Entity: {EntityValue}", Stdout);
+            Assert.Contains($"Deleted Entity: {_entityValue}", Stdout);
 
             Run("entities:list", EntityTypeId);
-            Assert.DoesNotContain(EntityValue, Stdout);
+            Assert.DoesNotContain(_entityValue, Stdout);
         }
     }
 }

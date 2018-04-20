@@ -19,35 +19,35 @@ namespace GoogleCloudSamples
 {
     public class ContextManagementTests : DialogflowTest
     {
-        readonly string ContextId = TestUtil.RandomName();
-        readonly int LifespanCount = 1;
+        readonly string _contextId = TestUtil.RandomName();
+        readonly int _lifespanCount = 1;
 
         [Fact]
         void TestCreate()
         {
             RunWithSessionId("contexts:list");
-            Assert.DoesNotContain(ContextId, Stdout);
+            Assert.DoesNotContain(_contextId, Stdout);
 
-            RunWithSessionId("contexts:create", ContextId, LifespanCount);
-            var contextPath = $"projects/{ProjectId}/agent/sessions/{SessionId}/contexts/{ContextId}";
+            RunWithSessionId("contexts:create", _contextId, _lifespanCount);
+            var contextPath = $"projects/{ProjectId}/agent/sessions/{SessionId}/contexts/{_contextId}";
             Assert.Contains($"Created Context: {contextPath}", Stdout);
 
             RunWithSessionId("contexts:list");
-            Assert.Contains(ContextId, Stdout);
+            Assert.Contains(_contextId, Stdout);
         }
 
         [Fact]
         void TestDelete()
         {
-            RunWithSessionId("contexts:create", ContextId);
+            RunWithSessionId("contexts:create", _contextId);
             RunWithSessionId("contexts:list");
-            Assert.Contains(ContextId, Stdout);
+            Assert.Contains(_contextId, Stdout);
 
-            RunWithSessionId("contexts:delete", ContextId);
-            Assert.Contains($"Deleted Context: {ContextId}", Stdout);
+            RunWithSessionId("contexts:delete", _contextId);
+            Assert.Contains($"Deleted Context: {_contextId}", Stdout);
 
             RunWithSessionId("contexts:list");
-            Assert.DoesNotContain(ContextId, Stdout);
+            Assert.DoesNotContain(_contextId, Stdout);
         }
     }
 }

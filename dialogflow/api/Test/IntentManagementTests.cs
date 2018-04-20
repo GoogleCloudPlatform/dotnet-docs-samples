@@ -20,10 +20,10 @@ namespace GoogleCloudSamples
 {
     public class IntentManagementTests : DialogflowTest
     {
-        readonly string DisplayName = TestUtil.RandomName();
-        readonly string MessageText = "fake message for testing";
-        readonly string[] TrainingPhrasesParts = new[] { "test part 1", "test part 2" };
-        string TrainingPartPhrasesArgument => string.Join(',', TrainingPhrasesParts);
+        readonly string _displayName = TestUtil.RandomName();
+        readonly string _messageText = "fake message for testing";
+        readonly string[] _trainingPhrasesParts = new[] { "test part 1", "test part 2" };
+        string TrainingPartPhrasesArgument => string.Join(',', _trainingPhrasesParts);
 
         Regex CreateOutputPattern => new Regex(
             $"Created Intent: projects/{ProjectId}/agent/intents/(?<intentId>.*)");
@@ -36,32 +36,32 @@ namespace GoogleCloudSamples
         void TestCreate()
         {
             Run("intents:list");
-            Assert.DoesNotContain(DisplayName, Stdout);
+            Assert.DoesNotContain(_displayName, Stdout);
 
-            Run("intents:create", DisplayName, MessageText, TrainingPartPhrasesArgument);
+            Run("intents:create", _displayName, _messageText, TrainingPartPhrasesArgument);
             Assert.Matches(CreateOutputPattern, Stdout);
 
             Run("intents:list");
-            Assert.Contains(DisplayName, Stdout);
+            Assert.Contains(_displayName, Stdout);
         }
 
         [Fact]
         void TestDelete()
         {
-            Run("intents:create", DisplayName, MessageText, TrainingPartPhrasesArgument);
+            Run("intents:create", _displayName, _messageText, TrainingPartPhrasesArgument);
 
             // Get the ID of the created Intent to delete from output of intents:create.
             // The Intent ID is needed to delete, the display name is not sufficient.
             var intentId = GetIntentId(createOutput: Stdout);
 
             Run("intents:list");
-            Assert.Contains(DisplayName, Stdout);
+            Assert.Contains(_displayName, Stdout);
 
             Run("intents:delete", intentId);
             Assert.Contains($"Deleted Intent: {intentId}", Stdout);
 
             Run("intents:list");
-            Assert.DoesNotContain(DisplayName, Stdout);
+            Assert.DoesNotContain(_displayName, Stdout);
         }
     }
 }
