@@ -351,29 +351,48 @@ function Require-Platform([string[]] $platforms) {
 
 $junitOutputTemplate = @"
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites disabled="" errors="" failures="" name="" tests="" time="">
+<testsuites disabled="" errors="" failures="" name="" tests="1" time="">
     <testsuite disabled="" errors="" failures="" hostname="" id=""
-               name="" package="" skipped="" tests="" time="" timestamp="">
-        <properties>
-            <property name="" value=""/>
-        </properties>
+               name="" package="" skipped="" tests="1" time="" timestamp="">
         <testcase assertions="" classname="" name="" status="" time="">
             <system-out/>
+            <failure message="" />
         </testcase>
-        <system-out/>
-        <system-err/>
     </testsuite>
 </testsuites>
 "@
 
-function Write-BuildFailureXml([string]$script, [string[]] $log) {
+function Write-FailureXml([string]$script, [string[]] $log, 
+    [System.TimeSpan]$elapsed, [switch]$timedOut) 
+{
+    $elapsedSeconds = [string] $elapsed.TotalSeconds
+    $relPath = [string](Resolve-Path -relative $script)
     $xml = [xml]$junitOutputTemplate
     $xml.testsuites.failures = "1"
-    $xml.testsuites.testsuite.name = [string](Resolve-Path -relative $script)
+    $xml.testsuites.time = $elapsedSeconds
+    $xml.testsuites.testsuite.name = $script
+    $xml.testsuites.testsuite.time = $elapsedSeconds
     $xml.testsuites.testsuite.failures = "1"
-    $xml.testsuites.testsuite.testcase.classname = "BUILD"
+    $xml.testsuites.testsuite.testcase.classname = $relPath
+    $xml.testsuites.testsuite.testcase.time = $elapsedSeconds
+    $failureMessage = if ($timedOut) { 'TIMED OUT' } else { 'BUILD FAILED' }
+    $xml.testsuites.testsuite.testcase.failure.message = $failureMessage
     $systemOut = $log -join '`n'
     $xml.testsuites.testsuite.testcase.'system-out' = $systemOut
+    $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
+    $xml.Save($testResultsXml)
+}
+
+function Write-SkippedXml([string]$script, [System.TimeSpan]$elapsed) 
+{
+    $elapsedSeconds = [string] $elapsed.TotalSeconds
+    $relPath = [string](Resolve-Path -relative $script)
+    $xml = [xml]$junitOutputTemplate
+    $xml.testsuites.time = $elapsedSeconds
+    $xml.testsuites.testsuite.name = $script
+    $xml.testsuites.testsuite.time = $elapsedSeconds
+    $xml.testsuites.testsuite.skipped = "1"
+    $xml.testsuites.testsuite.RemoveChild($xml.SelectSingleNode("//testcase")) | Out-Null
     $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
     $xml.Save($testResultsXml)
 }
@@ -452,8 +471,13 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         }
         Remove-Job -Force $job
         $results[$jobState] += @($relativePath)
-        if ($jobState -eq 'Failed' -and -not (Get-ChildItem -Recurse TestResults.xml)) {
-            Write-BuildFailureXml $script (Get-Content $tempOut)
+        if ($jobState -ne 'Success' -and -not (Get-ChildItem -Recurse TestResults.xml)) {
+            $elapsed = (Get-Date) - $startDate
+            if ($jobState -eq 'Skipped') {
+                Write-SkippedXml $script $elapsed
+            } else {
+                Write-FailureXml $script (Get-Content $tempOut) $elapsed -timedOut:($jobState -eq 'Timed Out')
+            }
         }
     }
 }
