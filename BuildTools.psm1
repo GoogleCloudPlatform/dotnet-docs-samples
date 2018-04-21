@@ -350,13 +350,10 @@ function Require-Platform([string[]] $platforms) {
 }
 
 $junitOutputTemplate = @"
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites disabled="" errors="" failures="" name="" tests="1" time="">
-    <testsuite disabled="" errors="" failures="" hostname="" id=""
-               name="" package="" skipped="" tests="1" time="" timestamp="">
-        <testcase assertions="" classname="" name="" status="" time="">
+<testsuites failures="" tests="1" time="">
+    <testsuite id="0" failures="" name="" tests="1" time="">
+        <testcase classname="runTests" name="runTests" time="">
             <system-out/>
-            <failure message="" />
         </testcase>
     </testsuite>
 </testsuites>
@@ -382,17 +379,17 @@ function Write-FailureXml([string]$script, [string[]] $log,
     [System.TimeSpan]$elapsed, [switch]$timedOut) 
 {
     $elapsedSeconds = [string] $elapsed.TotalSeconds
-    $relPath = [string](Resolve-Path -relative $script)
     $xml = [xml]$junitOutputTemplate
     $xml.testsuites.failures = "1"
     $xml.testsuites.time = $elapsedSeconds
     $xml.testsuites.testsuite.name = $script
     $xml.testsuites.testsuite.time = $elapsedSeconds
     $xml.testsuites.testsuite.failures = "1"
-    $xml.testsuites.testsuite.testcase.classname = $relPath
     $xml.testsuites.testsuite.testcase.time = $elapsedSeconds
     $failureMessage = if ($timedOut) { 'TIMED OUT' } else { 'BUILD FAILED' }
-    $xml.testsuites.testsuite.testcase.failure.message = $failureMessage
+    $failureXml = [xml]"<failure message='$failureMessage' />"
+    $xml.testsuites.testsuite.testcase.AppendChild($xml.ImportNode(
+        $failureXml.FirstChild, $True))
     $systemOut = $log -join '`n'
     $xml.testsuites.testsuite.testcase.'system-out' = $systemOut
     $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
@@ -413,11 +410,17 @@ function Write-SkippedXml([string]$script, [System.TimeSpan]$elapsed)
 {
     $elapsedSeconds = [string] $elapsed.TotalSeconds
     $xml = [xml]$junitOutputTemplate
+    $xml.testsuites.failures = "0"
     $xml.testsuites.time = $elapsedSeconds
     $xml.testsuites.testsuite.name = $script
     $xml.testsuites.testsuite.time = $elapsedSeconds
-    $xml.testsuites.testsuite.skipped = "1"
-    $xml.testsuites.testsuite.RemoveChild($xml.SelectSingleNode("//testcase")) | Out-Null
+    $xml.testsuites.testsuite.failures = "0"
+    $xml.testsuites.testsuite.testcase.time = $elapsedSeconds
+    $skippedXml = [xml]'<skipped/>'
+    $xml.testsuites.testsuite.testcase.AppendChild($xml.ImportNode(
+        $skippedXml.FirstChild, $True))
+    $systemOut = $log -join '`n'
+    $xml.testsuites.testsuite.testcase.'system-out' = $systemOut
     $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
     $xml.Save($testResultsXml)
 }
