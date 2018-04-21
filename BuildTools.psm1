@@ -349,6 +349,39 @@ function Require-Platform([string[]] $platforms) {
     Skip-Test
 }
 
+$junitOutputTemplate = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites disabled="" errors="" failures="" name="" tests="" time="">
+    <testsuite disabled="" errors="" failures="" hostname="" id=""
+               name="" package="" skipped="" tests="" time="" timestamp="">
+        <properties>
+            <property name="" value=""/>
+        </properties>
+        <testcase assertions="" classname="" name="" status="" time="">
+            <skipped/>
+            <error message="" type=""/>
+            <failure message="" type=""/>
+            <system-out/>
+            <system-err/>
+        </testcase>
+        <system-out/>
+        <system-err/>
+    </testsuite>
+</testsuites>
+"@
+
+function Report-BuildFailure([string]$script, [string[]] $log) {
+    $xml = [xml]$junitOutputTemplate
+    $xml.testsuites.failures = "1"
+    $xml.testsuites.testsuite.name = $script
+    $xml.testsuites.testsuite.failures = "1"
+    $xml.testsuites.testsuite.testcase.classname = "BUILD"
+    $failureMessage = $log -join '`n'
+    $xml.testsuites.testsuite.testcase.failure.message = $failureMessage
+    $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
+    $xml.Save($testResultsXml)
+}
+
 ##############################
 #.SYNOPSIS
 # Runs the list of test scripts.
@@ -377,13 +410,15 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         $startDate = Get-Date
         $relativePath = Resolve-Path -Relative $script
         $jobState = 'Failed'
+        $tempOut = New-TemporaryFile
+        Write-Output [string]$tempOut
         Write-Output "$verb $relativePath..."
         $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
-            ('.\"{0}"' -f $script.Name) {
+            ('.\"{0}"' -f $script.Name), $tempOut {
             Write-Output ("-" * 79)
             Write-Output $args[0]
             Set-Location $args[1]
-            Invoke-Expression $args[2]
+            Invoke-Expression $args[2] | Tee-Object -FilePath $args[3]
             if ($LASTEXITCODE) {
                 throw "FAILED with exit code $LASTEXITCODE"
             }
@@ -404,6 +439,7 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
                     $jobState = 'Skipped'
                     break
                 } else {
+                    # $lines.Add($line)
                     $line
                 }
             }
@@ -420,6 +456,9 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         }
         Remove-Job -Force $job
         $results[$jobState] += @($relativePath)
+        if ($jobState -eq 'Failed' -and -not (Get-ChildItem -Recurse TestResults.xml)) {
+            Report-BuildFailure $relativePath (Get-Content $tempOut)
+        }
     }
 }
 
@@ -440,7 +479,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
     $results = @{}
     Run-TestScriptsOnce $scripts $TimeoutSeconds 'Starting' $results
     # Rename all the test logs to a name Sponge will find.
-    Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 01_sponge_log.xml
+    Get-ChildItem -Recurse TestResults.xml | Rename-Item -Force -NewName 01_sponge_log.xml
     # Retry the failures once.
     $failed = $results['Failed']
     if ($failed) {
@@ -448,7 +487,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
         Run-TestScriptsOnce ($failed | Get-Item) $TimeoutSeconds `
             'Retrying' $results
         # Rename all the test logs to a name Sponge will find.
-        Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 02_sponge_log.xml
+        Get-ChildItem -Recurse TestResults.xml | Rename-Item -Force -NewName 02_sponge_log.xml
     }
 
     # Print a final summary.
@@ -766,7 +805,7 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
 function Move-TestResults($OutDir) {
     if ($OutDir -and (Test-Path TestResults.xml)) {
         New-Item -ItemType Directory -Force -Path $OutDir
-        Move-Item TestResults.xml $OutDir
+        Move-Item -Force TestResults.xml $OutDir
     }
 }
 
