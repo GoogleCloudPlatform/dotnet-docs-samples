@@ -358,11 +358,7 @@ $junitOutputTemplate = @"
             <property name="" value=""/>
         </properties>
         <testcase assertions="" classname="" name="" status="" time="">
-            <skipped/>
-            <error message="" type=""/>
-            <failure message="" type=""/>
             <system-out/>
-            <system-err/>
         </testcase>
         <system-out/>
         <system-err/>
@@ -370,14 +366,14 @@ $junitOutputTemplate = @"
 </testsuites>
 "@
 
-function Report-BuildFailure([string]$script, [string[]] $log) {
+function Write-BuildFailureXml([string]$script, [string[]] $log) {
     $xml = [xml]$junitOutputTemplate
     $xml.testsuites.failures = "1"
-    $xml.testsuites.testsuite.name = $script
+    $xml.testsuites.testsuite.name = [string](Resolve-Path -relative $script)
     $xml.testsuites.testsuite.failures = "1"
     $xml.testsuites.testsuite.testcase.classname = "BUILD"
-    $failureMessage = $log -join '`n'
-    $xml.testsuites.testsuite.testcase.failure.message = $failureMessage
+    $systemOut = $log -join '`n'
+    $xml.testsuites.testsuite.testcase.'system-out' = $systemOut
     $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
     $xml.Save($testResultsXml)
 }
@@ -457,7 +453,7 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         Remove-Job -Force $job
         $results[$jobState] += @($relativePath)
         if ($jobState -eq 'Failed' -and -not (Get-ChildItem -Recurse TestResults.xml)) {
-            Report-BuildFailure $relativePath (Get-Content $tempOut)
+            Write-BuildFailureXml $script (Get-Content $tempOut)
         }
     }
 }
