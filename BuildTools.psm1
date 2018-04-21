@@ -362,6 +362,22 @@ $junitOutputTemplate = @"
 </testsuites>
 "@
 
+##############################
+#.SYNOPSIS
+# Composes a junit xml file that reports a build failure, or timeout.
+#
+#.PARAMETER script
+# The path the the test script that failed.
+#
+#.PARAMETER log
+# The output of the test script.
+#
+#.PARAMETER elapsed
+# The time spent running the test script.
+#
+#.PARAMETER timedOut
+# $True when the test scripped timed out rather than failed.
+##############################
 function Write-FailureXml([string]$script, [string[]] $log, 
     [System.TimeSpan]$elapsed, [switch]$timedOut) 
 {
@@ -383,10 +399,19 @@ function Write-FailureXml([string]$script, [string[]] $log,
     $xml.Save($testResultsXml)
 }
 
+##############################
+#.SYNOPSIS
+# Composes a junit test script reporting a skipped test.
+#
+#.PARAMETER script
+# The path the the test script that failed.
+#
+#.PARAMETER elapsed
+# The time spent running the test script.
+##############################
 function Write-SkippedXml([string]$script, [System.TimeSpan]$elapsed) 
 {
     $elapsedSeconds = [string] $elapsed.TotalSeconds
-    $relPath = [string](Resolve-Path -relative $script)
     $xml = [xml]$junitOutputTemplate
     $xml.testsuites.time = $elapsedSeconds
     $xml.testsuites.testsuite.name = $script
