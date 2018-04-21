@@ -452,7 +452,6 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         $relativePath = Resolve-Path -Relative $script
         $jobState = 'Failed'
         $tempOut = [System.IO.Path]::GetTempFileName()
-        Write-Output [string]$tempOut
         Write-Output "$verb $relativePath..."
         $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
             ('.\"{0}"' -f $script.Name), $tempOut {
@@ -497,7 +496,9 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         }
         Remove-Job -Force $job
         $results[$jobState] += @($relativePath)
-        if ($jobState -ne 'Success' -and -not (Get-ChildItem -Recurse TestResults.xml)) {
+        # If the script left no TestResults.xml, create one.
+        $parentDir = (Get-Item $script).Directory
+        if ($jobState -ne 'Success' -and -not (Get-ChildItem -Path $parentDir -Recurse -Filter TestResults.xml)) {
             $elapsed = (Get-Date) - $startDate
             if ($jobState -eq 'Skipped') {
                 Write-SkippedXml $script $elapsed
