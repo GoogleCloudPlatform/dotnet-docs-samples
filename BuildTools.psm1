@@ -450,7 +450,7 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         $startDate = Get-Date
         $relativePath = Resolve-Path -Relative $script
         $jobState = 'Failed'
-        $tempOut = New-TemporaryFile
+        $tempOut = [System.IO.Path]::GetTempFileName()
         Write-Output [string]$tempOut
         Write-Output "$verb $relativePath..."
         $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
