@@ -353,7 +353,6 @@ $junitOutputTemplate = @"
 <testsuites failures="" tests="1" time="">
     <testsuite id="0" failures="" name="" tests="1" time="">
         <testcase classname="runTests" name="runTests" time="">
-            <system-out/>
         </testcase>
     </testsuite>
 </testsuites>
@@ -386,12 +385,11 @@ function Write-FailureXml([string]$script, [string[]] $log,
     $xml.testsuites.testsuite.time = $elapsedSeconds
     $xml.testsuites.testsuite.failures = "1"
     $xml.testsuites.testsuite.testcase.time = $elapsedSeconds
-    $failureMessage = if ($timedOut) { 'TIMED OUT' } else { 'BUILD FAILED' }
-    $failureXml = [xml]"<failure message='$failureMessage' />"
+    $errorMessage = if ($timedOut) { 'TIMED OUT' } else { 'BUILD FAILED' }
+    $errorXml = [xml]"<error message='$errorMessage' />"
+    $errorXml.FirstChild.InnerText = ($log -join "`n") + "`n$errorMessage"
     $xml.testsuites.testsuite.testcase.AppendChild($xml.ImportNode(
-        $failureXml.FirstChild, $True))
-    $systemOut = $log -join '`n'
-    $xml.testsuites.testsuite.testcase.'system-out' = $systemOut
+        $errorXml.FirstChild, $True))
     $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
     $xml.Save($testResultsXml)
 }
