@@ -389,7 +389,7 @@ function Write-FailureXml([string]$script, [string[]] $log,
     $errorXml = [xml]"<error message='$errorMessage' />"
     $errorXml.FirstChild.InnerText = ($log -join "`n") + "`n$errorMessage"
     $xml.testsuites.testsuite.testcase.AppendChild($xml.ImportNode(
-        $errorXml.FirstChild, $True))
+        $errorXml.FirstChild, $True)) | Out-Null
     $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
     $xml.Save($testResultsXml)
 }
@@ -416,9 +416,7 @@ function Write-SkippedXml([string]$script, [System.TimeSpan]$elapsed)
     $xml.testsuites.testsuite.testcase.time = $elapsedSeconds
     $skippedXml = [xml]'<skipped/>'
     $xml.testsuites.testsuite.testcase.AppendChild($xml.ImportNode(
-        $skippedXml.FirstChild, $True))
-    $systemOut = $log -join '`n'
-    $xml.testsuites.testsuite.testcase.'system-out' = $systemOut
+        $skippedXml.FirstChild, $True)) | Out-Null
     $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
     $xml.Save($testResultsXml)
 }
