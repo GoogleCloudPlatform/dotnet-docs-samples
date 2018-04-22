@@ -349,6 +349,78 @@ function Require-Platform([string[]] $platforms) {
     Skip-Test
 }
 
+$junitOutputTemplate = @"
+<testsuites failures="" tests="1" time="">
+    <testsuite id="0" failures="" name="" tests="1" time="">
+        <testcase classname="runTests" name="runTests" time="">
+        </testcase>
+    </testsuite>
+</testsuites>
+"@
+
+##############################
+#.SYNOPSIS
+# Composes a junit xml file that reports a build failure, or timeout.
+#
+#.PARAMETER script
+# The path the the test script that failed.
+#
+#.PARAMETER log
+# The output of the test script.
+#
+#.PARAMETER elapsed
+# The time spent running the test script.
+#
+#.PARAMETER timedOut
+# $True when the test scripped timed out rather than failed.
+##############################
+function Write-FailureXml([string]$script, [string[]] $log, 
+    [System.TimeSpan]$elapsed, [switch]$timedOut) 
+{
+    $elapsedSeconds = [string] $elapsed.TotalSeconds
+    $xml = [xml]$junitOutputTemplate
+    $xml.testsuites.failures = "1"
+    $xml.testsuites.time = $elapsedSeconds
+    $xml.testsuites.testsuite.name = $script
+    $xml.testsuites.testsuite.time = $elapsedSeconds
+    $xml.testsuites.testsuite.failures = "1"
+    $xml.testsuites.testsuite.testcase.time = $elapsedSeconds
+    $errorMessage = if ($timedOut) { 'TIMED OUT' } else { 'BUILD FAILED' }
+    $errorXml = [xml]"<error message='$errorMessage' />"
+    $errorXml.FirstChild.InnerText = ($log -join "`n") + "`n$errorMessage"
+    $xml.testsuites.testsuite.testcase.AppendChild($xml.ImportNode(
+        $errorXml.FirstChild, $True)) | Out-Null
+    $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
+    $xml.Save($testResultsXml)
+}
+
+##############################
+#.SYNOPSIS
+# Composes a junit test script reporting a skipped test.
+#
+#.PARAMETER script
+# The path the the test script that failed.
+#
+#.PARAMETER elapsed
+# The time spent running the test script.
+##############################
+function Write-SkippedXml([string]$script, [System.TimeSpan]$elapsed) 
+{
+    $elapsedSeconds = [string] $elapsed.TotalSeconds
+    $xml = [xml]$junitOutputTemplate
+    $xml.testsuites.failures = "0"
+    $xml.testsuites.time = $elapsedSeconds
+    $xml.testsuites.testsuite.name = $script
+    $xml.testsuites.testsuite.time = $elapsedSeconds
+    $xml.testsuites.testsuite.failures = "0"
+    $xml.testsuites.testsuite.testcase.time = $elapsedSeconds
+    $skippedXml = [xml]'<skipped/>'
+    $xml.testsuites.testsuite.testcase.AppendChild($xml.ImportNode(
+        $skippedXml.FirstChild, $True)) | Out-Null
+    $testResultsXml = Join-Path (Split-Path -Parent $script) "TestResults.xml"
+    $xml.Save($testResultsXml)
+}
+
 ##############################
 #.SYNOPSIS
 # Runs the list of test scripts.
@@ -377,13 +449,14 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         $startDate = Get-Date
         $relativePath = Resolve-Path -Relative $script
         $jobState = 'Failed'
+        $tempOut = [System.IO.Path]::GetTempFileName()
         Write-Output "$verb $relativePath..."
         $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
-            ('.\"{0}"' -f $script.Name) {
+            ('.\"{0}"' -f $script.Name), $tempOut {
             Write-Output ("-" * 79)
             Write-Output $args[0]
             Set-Location $args[1]
-            Invoke-Expression $args[2]
+            Invoke-Expression $args[2] | Tee-Object -FilePath $args[3]
             if ($LASTEXITCODE) {
                 throw "FAILED with exit code $LASTEXITCODE"
             }
@@ -404,6 +477,7 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
                     $jobState = 'Skipped'
                     break
                 } else {
+                    # $lines.Add($line)
                     $line
                 }
             }
@@ -420,6 +494,16 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         }
         Remove-Job -Force $job
         $results[$jobState] += @($relativePath)
+        # If the script left no TestResults.xml, create one.
+        $parentDir = (Get-Item $script).Directory
+        if ($jobState -ne 'Success' -and -not (Get-ChildItem -Path $parentDir -Recurse -Filter TestResults.xml)) {
+            $elapsed = (Get-Date) - $startDate
+            if ($jobState -eq 'Skipped') {
+                Write-SkippedXml $script $elapsed
+            } else {
+                Write-FailureXml $script (Get-Content $tempOut) $elapsed -timedOut:($jobState -eq 'Timed Out')
+            }
+        }
     }
 }
 
@@ -440,7 +524,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
     $results = @{}
     Run-TestScriptsOnce $scripts $TimeoutSeconds 'Starting' $results
     # Rename all the test logs to a name Sponge will find.
-    Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 01_sponge_log.xml
+    Get-ChildItem -Recurse TestResults.xml | Rename-Item -Force -NewName 01_sponge_log.xml
     # Retry the failures once.
     $failed = $results['Failed']
     if ($failed) {
@@ -448,7 +532,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
         Run-TestScriptsOnce ($failed | Get-Item) $TimeoutSeconds `
             'Retrying' $results
         # Rename all the test logs to a name Sponge will find.
-        Get-ChildItem -Recurse TestResults.xml | Rename-Item -NewName 02_sponge_log.xml
+        Get-ChildItem -Recurse TestResults.xml | Rename-Item -Force -NewName 02_sponge_log.xml
     }
 
     # Print a final summary.
@@ -766,7 +850,7 @@ function Run-KestrelTest([Parameter(mandatory=$true)]$PortNumber, $TestJs = 'tes
 function Move-TestResults($OutDir) {
     if ($OutDir -and (Test-Path TestResults.xml)) {
         New-Item -ItemType Directory -Force -Path $OutDir
-        Move-Item TestResults.xml $OutDir
+        Move-Item -Force TestResults.xml $OutDir
     }
 }
 
