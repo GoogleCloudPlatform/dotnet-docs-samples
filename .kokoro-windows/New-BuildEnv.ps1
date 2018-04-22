@@ -42,6 +42,10 @@ if (-not (($chocoPackages.Contains('python 2.7.') -or
     choco install -y --sxs python --version 2.7.6
 }
 
+if (-not $chocoPackages.Contains('iisexpress')) {
+    choco install -y --sxs iisexpress
+}
+
 # Create environment directory structure.
 $Dir = (New-Item -Path $Dir -ItemType Directory -Force).FullName
 $installDir = Join-Path $Dir 'install'
