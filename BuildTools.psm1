@@ -453,6 +453,7 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         Write-Output "$verb $relativePath..."
         $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
             ('.\"{0}"' -f $script.Name), $tempOut {
+            $ErrorActionPreference = "Stop"
             Write-Output ("-" * 79)
             Write-Output $args[0]
             Set-Location $args[1]
@@ -496,7 +497,7 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         $results[$jobState] += @($relativePath)
         # If the script left no TestResults.xml, create one.
         $parentDir = (Get-Item $script).Directory
-        if ($jobState -ne 'Success' -and -not (Get-ChildItem -Path $parentDir -Recurse -Filter TestResults.xml)) {
+        if ($jobState -ne 'Completed' -and -not (Get-ChildItem -Path $parentDir -Recurse -Filter TestResults.xml)) {
             $elapsed = (Get-Date) - $startDate
             if ($jobState -eq 'Skipped') {
                 Write-SkippedXml $script $elapsed
