@@ -19,14 +19,5 @@ BackupAndEdit-TextFile "appsettings.json" `
     @{"your-google-bucket-name" = $env:TEST_GOOGLE_BUCKET_NAME} `
 {
 	dotnet build
-	try {
-		$googleCloudToolsForPowershellInstalled = Get-Command Test-GcsObject
-	} catch {
-		Write-Information 'Google Cloud Powershell extension is not installed'.
-	}
-	if ($googleCloudToolsForPowershellInstalled -and (
-		Test-GcsObject -Bucket $env:TEST_GOOGLE_BUCKET_NAME -ObjectName sample.txt)) {
-		Remove-GcsObject -Bucket $env:TEST_GOOGLE_BUCKET_NAME -ObjectName sample.txt
-	}
 	Run-KestrelTest 5570 -CasperJs11
 }

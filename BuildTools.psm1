@@ -452,12 +452,12 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         $tempOut = [System.IO.Path]::GetTempFileName()
         Write-Output "$verb $relativePath..."
         $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
-            ('.\"{0}"' -f $script.Name), $tempOut {
+            ('.\"{0}"' -f $script.Name) {
             $ErrorActionPreference = "Stop"
             Write-Output ("-" * 79)
             Write-Output $args[0]
             Set-Location $args[1]
-            Invoke-Expression $args[2] | Tee-Object -FilePath $args[3]
+            Invoke-Expression $args[2]
             if ($LASTEXITCODE) {
                 throw "FAILED with exit code $LASTEXITCODE"
             }
@@ -467,7 +467,7 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         while ($true) {
             Wait-Job $job -Timeout 1 | Out-Null
             $jobState = $job.State
-            foreach ($line in (Receive-Job $job)) {
+            foreach ($line in (Receive-Job $job) | Tee-Object -Append -FilePath $tempOut) {
                 # Look at the output of the job to see if it requested
                 # a longer timeout.
                 if ($line.TimeoutSeconds) {
@@ -478,7 +478,6 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
                     $jobState = 'Skipped'
                     break
                 } else {
-                    # $lines.Add($line)
                     $line
                 }
             }
