@@ -12,23 +12,21 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sudokumb;
-using WebApp.Models;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using WebApp.Models.SudokumbViewModels;
-using WebApp.Services;
 
 namespace WebApp.Controllers
 {
     public class SudokumbController : Controller
     {
-        readonly IGameBoardQueue _gameBoardQueue;
-        readonly AdminSettings _adminSettings;
-        readonly SolveStateStore _solveStateStore;
+        private readonly IGameBoardQueue _gameBoardQueue;
+        private readonly AdminSettings _adminSettings;
+        private readonly SolveStateStore _solveStateStore;
 
         public SudokumbController(IGameBoardQueue gameBoardQueue,
             AdminSettings adminSettings,
@@ -81,9 +79,8 @@ namespace WebApp.Controllers
             });
         }
 
-
         [HttpGet]
-        [Authorize(Roles="admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Admin()
         {
             DateTime? dumbExpires = await _adminSettings.GetDumbExpiresAsync();
@@ -91,7 +88,7 @@ namespace WebApp.Controllers
             AdminViewModel model = new AdminViewModel()
             {
                 CurrentDumbHours =
-                    !dumbExpires.HasValue || dumbExpires.Value <  now
+                    !dumbExpires.HasValue || dumbExpires.Value < now
                     ? 0 : (dumbExpires.Value - now).TotalHours,
                 DumbHours = 1
             };
@@ -99,7 +96,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles="admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Admin(AdminViewModel model)
         {
             if (model.DumbHours < 0)

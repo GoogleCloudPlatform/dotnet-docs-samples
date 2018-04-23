@@ -12,11 +12,10 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Datastore.V1;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
-using Google.Cloud.Datastore.V1;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Sudokumb
 {
@@ -43,14 +42,17 @@ namespace Sudokumb
         /// Settings get stored in datastore.
         /// </summary>
         private readonly DatastoreDb _datastore;
+
         /// <summary>
         /// The key to the one entity that contains all the settings.
         /// </summary>
         private readonly Key _key;
+
         private readonly
                 // Cache the datastore entity so we don't query datastore a million
                 // times, which would slow us down.  Performance optimization.
                 object _cachedEntityLock = new object();
+
         private Task<Entity> _cachedEntity;
         private DateTime _cachedEntityExpires;
 

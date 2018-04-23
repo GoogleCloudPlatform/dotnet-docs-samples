@@ -12,18 +12,13 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Google.Api.Gax.Grpc;
 using Google.Cloud.Datastore.V1;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Sudokumb;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sudokumb
 {
@@ -34,6 +29,7 @@ namespace Sudokumb
         ///  Null means the puzzle hasn't been completely solved.
         /// </summary>
         public GameBoard Solution { get; set; }
+
         /// <summary>
         /// How many game boards have been examined while searching for the
         /// solution?

@@ -13,7 +13,6 @@
 // the License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -29,6 +28,7 @@ namespace Sudokumb
         /// </summary>
         /// <param name="amount">The amount to increase the counter.</param>
         void Increase(long amount);
+
         /// <summary>
         /// Get the current count.
         /// </summary>
@@ -44,6 +44,7 @@ namespace Sudokumb
     {
         private long _count = 0;
         public long Count => _count;
+
         public void Increase(long amount)
         {
             _count += amount;
@@ -102,10 +103,13 @@ namespace Sudokumb
     {
         // Protects _deadShardSum and _shards.
         private readonly object _thisLock = new object();
+
         // The total sum from the shards from the threads which have terminated.
         private long _deadShardSum = 0;
+
         // The list of shards.
         private List<Shard> _shards = new List<Shard>();
+
         // The thread-local slot where shards are stored.
         private readonly LocalDataStoreSlot _slot = Thread.AllocateDataSlot();
 

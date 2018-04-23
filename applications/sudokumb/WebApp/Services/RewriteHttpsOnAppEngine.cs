@@ -13,10 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using Microsoft.AspNetCore.Rewrite;
+using System.Linq;
 
 namespace Sudokumb
 {
@@ -24,8 +25,7 @@ namespace Sudokumb
 
     public class RewriteHttpsOnAppEngine : IRule
     {
-
-        readonly HttpsPolicy _httpsPolicy;
+        private readonly HttpsPolicy _httpsPolicy;
 
         public RewriteHttpsOnAppEngine(HttpsPolicy httpsPolicy)
         {
@@ -36,7 +36,7 @@ namespace Sudokumb
         /// A path that we should ignore because App Engine hits it multiple
         /// times per second, and it doesn't need to be https.
         /// </summary>
-        static PathString s_healthCheckPathString =
+        private static PathString s_healthCheckPathString =
             new PathString("/_ah/health");
 
         /// <summary>

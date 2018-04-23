@@ -12,12 +12,6 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Google.Api.Gax.Grpc;
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
@@ -27,6 +21,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sudokumb
 {
@@ -36,14 +36,17 @@ namespace Sudokumb
         /// The Google Cloud project id.
         /// </summary>
         public string ProjectId { get; set; }
+
         /// <summary>
         /// The Pub/sub subscription from which solve messages are read.
         /// </summary>
         public string SubscriptionId { get; set; } = "sudokumb4";
+
         /// <summary>
         /// The Pub/sub topic where solve messages are written.
         /// </summary>
         public string TopicId { get; set; } = "sudokumb4";
+
         /// <summary>
         /// When exploring the game tree, the number of branches that should
         /// be explored in parallel.
@@ -312,5 +315,3 @@ namespace Sudokumb
         public BoardAndWidth[] Stack { get; set; }
     }
 }
-
-

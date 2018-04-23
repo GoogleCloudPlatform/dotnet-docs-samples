@@ -33,6 +33,7 @@ namespace SocialAuth.Services
         /// Your Google project id.
         /// </summary>
         public string ProjectId { get; set; }
+
         /// <summary>
         /// global, us-east1, etc.
         /// </summary>
@@ -40,6 +41,7 @@ namespace SocialAuth.Services
         /// See https://cloud.google.com/kms/docs/locations for a complete list.
         /// </remarks>
         public string Location { get; set; } = "global";
+
         /// <summary>
         /// Name of the key ring to store the keys in.
         /// </summary>
@@ -54,7 +56,9 @@ namespace SocialAuth.Services
     {
         // The kms service.
         private readonly CloudKMSService _kms;
+
         private readonly IOptions<KmsDataProtectionProviderOptions> _options;
+
         // Keep a cache of DataProtectors we create to reduce calls to the
         // _kms service.
         private readonly ConcurrentDictionary<string, IDataProtector>
@@ -183,7 +187,7 @@ namespace SocialAuth.Services
         }
 
         /// <summary>
-        /// A simple hash function used to avoid collisions when mapping 
+        /// A simple hash function used to avoid collisions when mapping
         /// purposes to key ids.  Must be stable across platforms.
         /// </summary>
         private static int QuickHash(string s)

@@ -19,6 +19,7 @@ namespace WebApp.Models.SudokumbViewModels
     public class AdminViewModel
     {
         public double CurrentDumbHours { get; set; }
+
         [DisplayName("Hours to be dumb")]
         public double DumbHours { get; set; }
     }

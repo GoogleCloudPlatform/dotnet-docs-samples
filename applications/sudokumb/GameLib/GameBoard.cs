@@ -20,7 +20,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sudokumb
 {
@@ -31,8 +30,10 @@ namespace Sudokumb
     {
         // Legal characters that can appear in _board.
         private static readonly string s_legalCharacters = "123456789 ";
+
         // An empty game board.  The initial state.
         private static readonly string s_blankBoard = new string(' ', 81);
+
         // A group is one of the 9 3x3 regions in the sudoku board.
         private static readonly int[,] s_groupCenters = new int[9, 2]
         {
@@ -47,8 +48,8 @@ namespace Sudokumb
         /// The Sudoku game board is represented as an 81-character long string.
         /// The first 9 characters are row 1.  The next 9 are row 2, etc.
         /// The only acceptable characters are 1-9 and space.
-        /// 
-        /// If you try to set Board to an invalid state, it will throw an 
+        ///
+        /// If you try to set Board to an invalid state, it will throw an
         /// exception.
         /// </summary>
         public string Board
@@ -217,7 +218,7 @@ namespace Sudokumb
         /// . . .   . . .   . . .
         /// . . .   . . .   . . .
         ///
-        /// . . .   4 . .   . . .                
+        /// . . .   4 . .   . . .
         /// . 7 .   . 5 .   . . .
         /// . . .   . . 6   2 . .
         ///

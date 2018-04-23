@@ -12,26 +12,19 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Google.Cloud.Datastore.V1;
+using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Sudokumb;
 using WebApp.Models;
 using WebApp.Services;
-using Sudokumb;
-using Google.Cloud.Datastore.V1;
-using Microsoft.Extensions.Hosting;
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Rewrite;
-using Google.Cloud.Diagnostics.AspNetCore;
-using Microsoft.Extensions.Logging;
 
 namespace WebApp
 {

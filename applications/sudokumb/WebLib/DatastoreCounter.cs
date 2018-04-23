@@ -12,12 +12,6 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Google.Api.Gax.Grpc;
 using Google.Cloud.Datastore.V1;
 using Google.Cloud.Diagnostics.Common;
@@ -25,7 +19,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Sudokumb;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sudokumb
 {
@@ -120,6 +119,7 @@ namespace Sudokumb
         private Task _hostedService;
         private readonly ILogger _logger;
         private readonly IManagedTracer _tracer;
+
         private readonly ConcurrentDictionary<string, ICounter> _localCounters
                      = new ConcurrentDictionary<string, ICounter>();
 
@@ -331,5 +331,3 @@ namespace Sudokumb
         }
     }
 }
-
-

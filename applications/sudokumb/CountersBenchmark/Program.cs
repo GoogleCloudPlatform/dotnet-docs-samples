@@ -12,16 +12,15 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Microsoft.Extensions.FileProviders;
+using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Microsoft.Extensions.FileProviders;
-using System.Reflection;
 
 namespace Sudokumb
 {
@@ -88,6 +87,8 @@ namespace Sudokumb
                         counter.Increase(1);
                 });
             }
+            // Run the incrementing tasks for 3 seconds, and print the running
+            // count once per second.
             long count = 0;
             for (int i = 0; i < 3; ++i)
             {
