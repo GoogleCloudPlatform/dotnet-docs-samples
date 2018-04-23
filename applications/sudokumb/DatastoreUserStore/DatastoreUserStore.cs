@@ -122,6 +122,8 @@ namespace Sudokumb
             CancellationToken cancellationToken)
         {
             _logger.LogDebug("CreateAsync({0})", user.NormalizedEmail);
+            // In a single transaction, insert a webuser entity and a
+            // webuser-nnindex entity.
             user.Id = Guid.NewGuid().ToString();
             var entity = UserToEntity(user);
             Entity indexEntity = new Entity()
@@ -333,6 +335,8 @@ namespace Sudokumb
             }
             catch (Grpc.Core.RpcException e)
             {
+                _logger.LogWarning(1, e,
+                    "Exception during datastore transaction.");
                 return IdentityResult.Failed(new IdentityError()
                 {
                     Code = e.Status.Detail,
