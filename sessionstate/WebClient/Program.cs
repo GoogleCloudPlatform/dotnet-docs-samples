@@ -26,17 +26,17 @@ namespace WebClient
 {
     internal class Options
     {
-        [Option('d', "delay", DefaultValue = 1000, HelpText = "Milliseconds to delay between page fetches.")]
-        public int Delay { get; set; }
+        [Option('d', "delay", HelpText = "Milliseconds to delay between page fetches.")]
+        public int Delay { get; set; } = 1000;
 
-        [Option('c', "clients", DefaultValue = 100, HelpText = "Number of HTTP clients.")]
-        public int ClientCount { get; set; }
+        [Option('c', "clients", HelpText = "Number of HTTP clients.")]
+        public int ClientCount { get; set; } = 100;
 
         [Option('u', "baseUri", Required = true, HelpText = "The base url running the WebApp.")]
         public string BaseUri { get; set; }
 
-        [Option('s', "sizeMultiplier", DefaultValue = 40, HelpText = "Multiplier for session value size.")]
-        public int SizeMultiplier { get; set; }
+        [Option('s', "sizeMultiplier", HelpText = "Multiplier for session value size.")]
+        public int SizeMultiplier { get; set; } = 40;
     }
 
     internal class Program
@@ -105,16 +105,14 @@ namespace WebClient
             return stopwatch.ElapsedMilliseconds / 60.0;
         }
 
-        private static int Main(string[] args)
+        private static void Main(string[] args)
         {
-            var options = new Options();
-            var parsed = Parser.Default.ParseArguments(args, options);
-            if (!parsed)
-            {
-                Console.WriteLine(
-                    HelpText.AutoBuild(options).RenderParsingErrorsText(options, 0));
-                return -1;
-            }
+            CommandLine.Parser.Default.ParseArguments<Options>(args)
+              .WithParsed<Options>(opts => RunOptionsAndReturnExitCode(opts));
+        }
+
+        private static int RunOptionsAndReturnExitCode(Options options)
+        {
             Uri baseAddress = new Uri(options.BaseUri);
             var stopwatch = new Stopwatch();
             var tasks = new Task<double>[options.ClientCount];

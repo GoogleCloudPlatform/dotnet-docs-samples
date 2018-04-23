@@ -21,7 +21,7 @@ BackupAndEdit-TextFile "WebApp\Web.config" `
     Build-Solution
     $env:WEBAPP_ROOT = "$PSScriptRoot\WebApp"
     $proc = Run-IISExpress -SiteName WebApp
-    .\WebClient\bin\Debug\WebClient.exe -u http://localhost:61123/ -c 3
+    dotnet run -p WebClient\WebClient.csproj -- -u http://localhost:61123/ -c 3
     Stop-Process $proc
     if ($LASTEXITCODE -ne 0) {
         throw "WebClient failed!"
