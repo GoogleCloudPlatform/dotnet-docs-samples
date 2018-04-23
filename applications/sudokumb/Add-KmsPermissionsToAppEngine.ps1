@@ -12,6 +12,18 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+##############################
+#.SYNOPSIS
+# Updates permissions for KMS so that the App Engine default service account
+# can create KMS keys and encrypt and decrypt data.
+#
+#.DESCRIPTION
+# Make sure you have created an App Engine application before running this
+# script.
+#
+#.EXAMPLE
+# .\Add-KmsPermissionsToAppEngine.ps1.
+##############################
 $accounts = gcloud iam service-accounts list --format=json | ConvertFrom-Json
 $appEngineAccount = $accounts | `
     Where-Object displayName -eq 'App Engine default service account'

@@ -19,15 +19,30 @@ using System.Threading;
 
 namespace Sudokumb
 {
+    /// <summary>
+    /// A simple counter interface.
+    /// </summary>
     public interface ICounter
     {
+        /// <summary>
+        /// Increase the count be the amount.
+        /// </summary>
+        /// <param name="amount">The amount to increase the counter.</param>
         void Increase(long amount);
+        /// <summary>
+        /// Get the current count.
+        /// </summary>
+        /// <returns>The current count.</returns>
         long Count { get; }
     }
 
+    /// <summary>
+    /// Implement the ICounter interface without thread synchronization.
+    /// Do not call its methods from multiple threads.
+    /// </summary>
     public class UnsynchronizedCounter : ICounter
     {
-        long _count = 0;
+        private long _count = 0;
         public long Count => _count;
         public void Increase(long amount)
         {
@@ -35,10 +50,13 @@ namespace Sudokumb
         }
     }
 
+    /// <summary>
+    /// Implement the ICounter interface using regular C# locks.
+    /// </summary>
     public class LockingCounter : ICounter
     {
-        long _count = 0;
-        readonly object _thisLock = new object();
+        private long _count = 0;
+        private readonly object _thisLock = new object();
 
         public long Count
         {
@@ -60,9 +78,13 @@ namespace Sudokumb
         }
     }
 
+    /// <summary>
+    /// Implement the ICounterInterface using System.Threading.Interlocked
+    /// functions.
+    /// </summary>
     public class InterlockedCounter : ICounter
     {
-        long _count = 0;
+        private long _count = 0;
 
         public long Count => Interlocked.CompareExchange(ref _count, 0, 0);
 
@@ -72,17 +94,27 @@ namespace Sudokumb
         }
     }
 
+    /// <summary>
+    /// Implement the ICounterInterface by creating thread-local counters
+    /// fore each thread.
+    /// </summary>
     public class ShardedCounter : ICounter
     {
-        readonly object _thisLock = new object();
-        long _deadShardSum = 0;
-        List<Shard> _shards = new List<Shard>();
-        readonly LocalDataStoreSlot _slot = Thread.AllocateDataSlot();
+        // Protects _deadShardSum and _shards.
+        private readonly object _thisLock = new object();
+        // The total sum from the shards from the threads which have terminated.
+        private long _deadShardSum = 0;
+        // The list of shards.
+        private List<Shard> _shards = new List<Shard>();
+        // The thread-local slot where shards are stored.
+        private readonly LocalDataStoreSlot _slot = Thread.AllocateDataSlot();
 
         public long Count
         {
             get
             {
+                // Sum over all the shards, and clean up dead shards at the
+                // same time.
                 long sum = _deadShardSum;
                 List<Shard> livingShards_ = new List<Shard>();
                 lock (_thisLock)
@@ -107,6 +139,7 @@ namespace Sudokumb
 
         public void Increase(long amount)
         {
+            // Increase counter for this thread.
             Shard counter = Thread.GetData(_slot) as Shard;
             if (null == counter)
             {

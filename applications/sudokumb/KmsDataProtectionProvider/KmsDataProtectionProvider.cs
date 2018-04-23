@@ -36,6 +36,9 @@ namespace SocialAuth.Services
         /// <summary>
         /// global, us-east1, etc.
         /// </summary>
+        /// <remarks>
+        /// See https://cloud.google.com/kms/docs/locations for a complete list.
+        /// </remarks>
         public string Location { get; set; } = "global";
         /// <summary>
         /// Name of the key ring to store the keys in.

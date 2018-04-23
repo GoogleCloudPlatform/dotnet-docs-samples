@@ -113,13 +113,13 @@ Most of what Sudokumb does is actually pretty smart.
 
 1.  Open ***Sudokumb.sln**.
 
-2.  In the **Solution Explorer** window, right-click the **Sudokumb** project 
+2.  In the **Solution Explorer** window, right-click the **Sudokumb** solution 
     and choose **Set StartUp Projects...".
 
 3.  Click **Multiple startup projects:**.  Change the **Action** from **None**
     to **Start** for the projects **WebApp** and **WebSolver**.
 
-4.  Click **OK** to close the **Solution 'Sudokumb' Propert Pages** window.
+4.  Click **OK** to close the **Solution 'Sudokumb' Property Pages** window.
 
 5.  Press the **F5** key to run. 
 

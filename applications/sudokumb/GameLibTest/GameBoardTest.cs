@@ -22,7 +22,7 @@ using Xunit;
 
 namespace Sudokumb
 {
-    public class Tests
+    public class GameBoardTests
     {
         static readonly string s_boardA =
             "123|   |789" +
@@ -36,9 +36,8 @@ namespace Sudokumb
             "  1|   |   " +
             " 5 |  3|   " +
             "3  |   |1  ";
-        readonly
 
-                GameBoard _boardA = GameBoard.Create(s_boardA);
+        readonly GameBoard _boardA = GameBoard.Create(s_boardA);
 
         [Fact]
         public void TestAccessors()
