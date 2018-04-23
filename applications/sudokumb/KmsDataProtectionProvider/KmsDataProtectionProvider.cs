@@ -53,11 +53,11 @@ namespace SocialAuth.Services
     public class KmsDataProtectionProvider : IDataProtectionProvider
     {
         // The kms service.
-        readonly CloudKMSService _kms;
-        readonly IOptions<KmsDataProtectionProviderOptions> _options;
+        private readonly CloudKMSService _kms;
+        private readonly IOptions<KmsDataProtectionProviderOptions> _options;
         // Keep a cache of DataProtectors we create to reduce calls to the
         // _kms service.
-        readonly ConcurrentDictionary<string, IDataProtector>
+        private readonly ConcurrentDictionary<string, IDataProtector>
             _dataProtectorCache =
             new ConcurrentDictionary<string, IDataProtector>();
 
@@ -149,7 +149,7 @@ namespace SocialAuth.Services
         /// </summary>
         /// <param name="purpose">The purpose of the key.</param>
         /// <returns>A key id that's safe to pass to Create().</returns>
-        static string EscapeKeyId(string purpose)
+        private static string EscapeKeyId(string purpose)
         {
             StringBuilder keyIdBuilder = new StringBuilder();
             char prevC = ' ';
@@ -186,7 +186,7 @@ namespace SocialAuth.Services
         /// A simple hash function used to avoid collisions when mapping 
         /// purposes to key ids.  Must be stable across platforms.
         /// </summary>
-        static int QuickHash(string s)
+        private static int QuickHash(string s)
         {
             int hash = 17;
             foreach (char c in s)
@@ -199,9 +199,9 @@ namespace SocialAuth.Services
 
     public class KmsDataProtector : IDataProtector
     {
-        readonly CloudKMSService _kms;
-        readonly string _keyName;
-        readonly Func<string, IDataProtector> _dataProtectorFactory;
+        private readonly CloudKMSService _kms;
+        private readonly string _keyName;
+        private readonly Func<string, IDataProtector> _dataProtectorFactory;
 
         internal KmsDataProtector(CloudKMSService kms, string keyName,
             Func<string, IDataProtector> dataProtectorFactory)

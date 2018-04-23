@@ -42,17 +42,17 @@ namespace Sudokumb
         /// <summary>
         /// Settings get stored in datastore.
         /// </summary>
-        readonly DatastoreDb _datastore;
+        private readonly DatastoreDb _datastore;
         /// <summary>
         /// The key to the one entity that contains all the settings.
         /// </summary>
-        readonly Key _key;
-        readonly
+        private readonly Key _key;
+        private readonly
                 // Cache the datastore entity so we don't query datastore a million
                 // times, which would slow us down.  Performance optimization.
                 object _cachedEntityLock = new object();
-        Task<Entity> _cachedEntity;
-        DateTime _cachedEntityExpires;
+        private Task<Entity> _cachedEntity;
+        private DateTime _cachedEntityExpires;
 
         public AdminSettings(DatastoreDb datastore)
         {
@@ -62,7 +62,7 @@ namespace Sudokumb
                 ENTITY_KIND).CreateKey(1);
         }
 
-        const string ENTITY_KIND = "AdminSettings",
+        private const string ENTITY_KIND = "AdminSettings",
             DUMB_EXPIRES = "dumbExpires";
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Sudokumb
                 dumbExpires > DateTime.UtcNow;
         }
 
-        Task<Entity> LookupEntityAsync()
+        private Task<Entity> LookupEntityAsync()
         {
             lock (_cachedEntityLock)
             {

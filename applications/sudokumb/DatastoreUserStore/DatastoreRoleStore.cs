@@ -26,10 +26,10 @@ namespace Sudokumb
 {
     public class DatastoreRoleStore<R> : IRoleStore<R> where R : IdentityRole, new()
     {
-        readonly DatastoreDb _datastore;
-        readonly KeyFactory _roleKeyFactory;
+        private readonly DatastoreDb _datastore;
+        private readonly KeyFactory _roleKeyFactory;
 
-        const string
+        private const string
             KIND = "webuserrole",
             NORMALIZED_NAME = "normalized-name",
             ROLE_NAME = "name",
@@ -41,9 +41,9 @@ namespace Sudokumb
             _roleKeyFactory = new KeyFactory(_datastore.ProjectId, _datastore.NamespaceId, KIND);
         }
 
-        Key KeyFromRoleId(string roleId) => _roleKeyFactory.CreateKey(roleId);
+        private Key KeyFromRoleId(string roleId) => _roleKeyFactory.CreateKey(roleId);
 
-        Entity RoleToEntity(R role)
+        private Entity RoleToEntity(R role)
         {
             var entity = new Entity()
             {
@@ -56,7 +56,7 @@ namespace Sudokumb
             return entity;
         }
 
-        R EntityToRole(Entity entity)
+        private R EntityToRole(Entity entity)
         {
             if (null == entity)
             {

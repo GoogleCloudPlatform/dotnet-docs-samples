@@ -19,7 +19,7 @@ using Google.Cloud.Datastore.V1;
 
 namespace Remove_DatastoreNamespace
 {
-    class Options
+    internal class Options
     {
         [Option('p', "projectid", Required = true, HelpText = "Your Google Cloud Project ID")]
         public string ProjectId { get; set; }
@@ -27,15 +27,15 @@ namespace Remove_DatastoreNamespace
         [Option('n', "namespace", Required = true, HelpText = "The namespace to delete.")]
         public string Namespace { get; set; }
     }
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             CommandLine.Parser.Default.ParseArguments<Options>(args)
                 .WithParsed<Options>(opts => RemoveNamespace(opts));
         }
 
-        static int RemoveNamespace(Options opts)
+        private static int RemoveNamespace(Options opts)
         {
             var datastore = DatastoreDb.Create(opts.ProjectId, opts.Namespace);
             var query = new Query()

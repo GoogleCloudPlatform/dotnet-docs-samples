@@ -22,7 +22,7 @@ namespace Sudokumb
 {
     public class InMemoryGameBoardStackImpl
     {
-        readonly Solver _solver;
+        private readonly Solver _solver;
         private readonly SolveStateStore _solveStateStore;
 
         public InMemoryGameBoardStackImpl(Solver solver,

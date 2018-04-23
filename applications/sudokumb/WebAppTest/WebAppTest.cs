@@ -21,7 +21,7 @@ using GoogleCloudSamples;
 
 namespace Sudokumb
 {
-    static class Extensions
+    internal static class Extensions
     {
         public static string InnerText(this IWebElement webElement) =>
             webElement.GetAttribute("innerText");

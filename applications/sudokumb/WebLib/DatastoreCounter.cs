@@ -40,15 +40,15 @@ namespace Sudokumb
     // condensation, and later counter gets written again.
     internal class DatastoreCounterSingleton : IHostedService
     {
-        readonly DatastoreDb _datastore;
-        readonly IOptions<DatastoreCounterOptions> _options;
-        readonly ILogger<DatastoreCounter> _logger;
-        readonly IManagedTracer _tracer;
-        readonly object _thisLock = new object();
-        DatastoreCounter _counter;
-        DatastoreCounter _oldCounter;
+        private readonly DatastoreDb _datastore;
+        private readonly IOptions<DatastoreCounterOptions> _options;
+        private readonly ILogger<DatastoreCounter> _logger;
+        private readonly IManagedTracer _tracer;
+        private readonly object _thisLock = new object();
+        private DatastoreCounter _counter;
+        private DatastoreCounter _oldCounter;
 
-        DateTime _counterBirthday;
+        private DateTime _counterBirthday;
 
         public DatastoreCounterSingleton(DatastoreDb datastore,
             IOptions<DatastoreCounterOptions> options,
@@ -111,16 +111,16 @@ namespace Sudokumb
 
     public class DatastoreCounter : IHostedService
     {
-        const string COUNT = "count", TIMESTAMP = "timestamp";
-        readonly DatastoreDb _datastore;
-        readonly IOptions<DatastoreCounterOptions> _options;
-        readonly KeyFactory _keyFactory;
-        readonly string _shard = Guid.NewGuid().ToString();
-        CancellationTokenSource _cancelHostedService;
-        Task _hostedService;
-        readonly ILogger _logger;
-        readonly IManagedTracer _tracer;
-        readonly ConcurrentDictionary<string, ICounter> _localCounters
+        private const string COUNT = "count", TIMESTAMP = "timestamp";
+        private readonly DatastoreDb _datastore;
+        private readonly IOptions<DatastoreCounterOptions> _options;
+        private readonly KeyFactory _keyFactory;
+        private readonly string _shard = Guid.NewGuid().ToString();
+        private CancellationTokenSource _cancelHostedService;
+        private Task _hostedService;
+        private readonly ILogger _logger;
+        private readonly IManagedTracer _tracer;
+        private readonly ConcurrentDictionary<string, ICounter> _localCounters
                      = new ConcurrentDictionary<string, ICounter>();
 
         internal DatastoreCounter(DatastoreDb datastore,
@@ -165,7 +165,7 @@ namespace Sudokumb
             }
         }
 
-        string GetCounterId(string keyName)
+        private string GetCounterId(string keyName)
         {
             int colon = keyName.LastIndexOf(':');
             string counterId = keyName.Substring(0, colon);
@@ -215,7 +215,7 @@ namespace Sudokumb
             }
         }
 
-        async Task CondenseOldCounters(IEnumerable<string> keyNames,
+        private async Task CondenseOldCounters(IEnumerable<string> keyNames,
             CallSettings callSettings)
         {
             var keys = keyNames.Select((keyName) => _keyFactory.CreateKey(keyName));
@@ -264,7 +264,7 @@ namespace Sudokumb
             _localCounters.GetOrAdd(id,
                 (key) => (ICounter)new InterlockedCounter());
 
-        async Task UpdateDatastoreFromLocalCountersAsync(
+        private async Task UpdateDatastoreFromLocalCountersAsync(
             Dictionary<string, long> localCountersSnapshot,
             CancellationToken cancellationToken)
         {

@@ -25,9 +25,9 @@ using System.Reflection;
 
 namespace Sudokumb
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var counterTypes = new[]
             {
@@ -61,7 +61,7 @@ namespace Sudokumb
             Console.WriteLine(new System.Uri(indexPath).AbsoluteUri);
         }
 
-        static VisItem RunBenchmark(int taskCount, Type counterType,
+        private static VisItem RunBenchmark(int taskCount, Type counterType,
             int groupNumber)
         {
             long count = RunBenchmark(taskCount,
@@ -74,7 +74,7 @@ namespace Sudokumb
             };
         }
 
-        static long RunBenchmark(int taskCount, ICounter counter)
+        private static long RunBenchmark(int taskCount, ICounter counter)
         {
             Console.WriteLine("Running benchmark for {0} with {1} tasks...",
                 counter.GetType().FullName, taskCount);
@@ -100,7 +100,7 @@ namespace Sudokumb
             return count;
         }
 
-        static string RenderResults(IEnumerable<VisItem> items,
+        private static string RenderResults(IEnumerable<VisItem> items,
             IEnumerable<VisGroup> groups)
         {
             string tempDir = Path.GetTempFileName();
@@ -118,7 +118,7 @@ namespace Sudokumb
             return indexHtml;
         }
 
-        static string ReadEmbeddedFile(string name)
+        private static string ReadEmbeddedFile(string name)
         {
             var embeddedProvider = new EmbeddedFileProvider(
                 Assembly.GetEntryAssembly());
@@ -128,7 +128,7 @@ namespace Sudokumb
             return reader.ReadToEnd();
         }
 
-        static void UnpackEmbeddedFile(string name, string outputPath)
+        private static void UnpackEmbeddedFile(string name, string outputPath)
         {
             var embeddedProvider = new EmbeddedFileProvider(
                 Assembly.GetEntryAssembly());
@@ -142,7 +142,7 @@ namespace Sudokumb
     /// <summary>
     /// A Visjs data point.
     /// </summary>
-    class VisItem
+    internal class VisItem
     {
         public int x { get; set; }
         public long y { get; set; }
@@ -152,7 +152,7 @@ namespace Sudokumb
     /// <summary>
     /// A Visjs group definition.
     /// </summary>
-    class VisGroup
+    internal class VisGroup
     {
         public int id { get; set; }
         public string content { get; set; }

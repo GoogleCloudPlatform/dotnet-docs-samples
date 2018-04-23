@@ -31,10 +31,10 @@ namespace Sudokumb
     public class DatastoreUserStore<U> : IUserPasswordStore<U>, IUserRoleStore<U>, IUserStore<U>
         where U : IdentityUser<string>, new()
     {
-        readonly DatastoreDb _datastore;
-        readonly KeyFactory _userKeyFactory;
-        readonly KeyFactory _nnindexKeyFactory;
-        readonly Microsoft.Extensions.Logging.ILogger _logger;
+        private readonly DatastoreDb _datastore;
+        private readonly KeyFactory _userKeyFactory;
+        private readonly KeyFactory _nnindexKeyFactory;
+        private readonly Microsoft.Extensions.Logging.ILogger _logger;
 
         // Additional properties we store for each User instance
         // in a ConditionalWeakTable. 
@@ -44,10 +44,10 @@ namespace Sudokumb
             public List<string> Roles { get; set; } = new List<string>();
         };
 
-        static readonly ConditionalWeakTable<U, UserAddendum> s_userAddendums
+        private static readonly ConditionalWeakTable<U, UserAddendum> s_userAddendums
             = new ConditionalWeakTable<U, UserAddendum>();
 
-        const string
+        private const string
             USER_KIND = "webuser",
             NORMALIZED_EMAIL = "normalized-email",
             NORMALIZED_NAME = "normalized-name",
@@ -69,9 +69,9 @@ namespace Sudokumb
             _logger = logger;
         }
 
-        Key KeyFromUserId(string userId) => _userKeyFactory.CreateKey(userId);
+        private Key KeyFromUserId(string userId) => _userKeyFactory.CreateKey(userId);
 
-        Entity UserToEntity(U user)
+        private Entity UserToEntity(U user)
         {
             var entity = new Entity()
             {
@@ -90,7 +90,7 @@ namespace Sudokumb
             return entity;
         }
 
-        U EntityToUser(Entity entity)
+        private U EntityToUser(Entity entity)
         {
             if (null == entity)
             {
@@ -311,7 +311,7 @@ namespace Sudokumb
             return Task.FromResult(!string.IsNullOrWhiteSpace(user.PasswordHash));
         }
 
-        async Task<IdentityResult> InTransactionAsync(
+        private async Task<IdentityResult> InTransactionAsync(
 
             CancellationToken cancellationToken,
             Func<DatastoreTransaction, CallSettings, Task> f)

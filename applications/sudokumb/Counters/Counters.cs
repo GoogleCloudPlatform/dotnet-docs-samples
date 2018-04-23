@@ -153,7 +153,7 @@ namespace Sudokumb
             counter.Increase(amount);
         }
 
-        class Shard : InterlockedCounter
+        private class Shard : InterlockedCounter
         {
             public Thread Owner { get; set; }
         }

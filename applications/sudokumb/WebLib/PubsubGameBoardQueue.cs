@@ -164,7 +164,7 @@ namespace Sudokumb
         private readonly SolveStateStore _solveStateStore;
         private readonly IDumb _idumb;
         private readonly InMemoryGameBoardStackImpl _inMemoryGameBoardStack;
-        readonly Solver _solver;
+        private readonly Solver _solver;
 
         public PubsubGameBoardQueueSolver(
             IOptions<PubsubGameBoardQueueOptions> options,
@@ -185,7 +185,7 @@ namespace Sudokumb
         /// <param name="pubsubMessage">The message as it arrived from Pub/Sub.
         /// </param>
         /// <returns>Ack or Nack</returns>
-        async Task<SubscriberClient.Reply> ProcessOneMessage(
+        private async Task<SubscriberClient.Reply> ProcessOneMessage(
             PubsubMessage pubsubMessage, CancellationToken cancellationToken)
         {
             // Unpack the pubsub message.
@@ -300,13 +300,13 @@ namespace Sudokumb
             _subscriberClient.StopAsync(cancellationToken);
     }
 
-    class BoardAndWidth
+    internal class BoardAndWidth
     {
         public GameBoard Board { get; set; }
         public int? ParallelBranches { get; set; }
     }
 
-    class GameBoardMessage
+    internal class GameBoardMessage
     {
         public string SolveRequestId { get; set; }
         public BoardAndWidth[] Stack { get; set; }

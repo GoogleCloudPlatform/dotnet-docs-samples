@@ -43,13 +43,13 @@ namespace Sudokumb
 
     public class SolveStateStore
     {
-        const string SOLUTION_KIND = "Solution";
-        readonly DatastoreDb _datastore;
-        readonly KeyFactory _solutionKeyFactory;
-        readonly DatastoreCounter _datastoreCounter;
-        readonly IMemoryCache _cache;
-        readonly ILogger _logger;
-        readonly ICounter _locallyExaminedBoardCount = new InterlockedCounter();
+        private const string SOLUTION_KIND = "Solution";
+        private readonly DatastoreDb _datastore;
+        private readonly KeyFactory _solutionKeyFactory;
+        private readonly DatastoreCounter _datastoreCounter;
+        private readonly IMemoryCache _cache;
+        private readonly ILogger _logger;
+        private readonly ICounter _locallyExaminedBoardCount = new InterlockedCounter();
 
         public long LocallyExaminedBoardCount
         {

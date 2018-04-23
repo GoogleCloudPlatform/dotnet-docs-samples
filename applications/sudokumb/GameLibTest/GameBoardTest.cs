@@ -24,7 +24,7 @@ namespace Sudokumb
 {
     public class GameBoardTests
     {
-        static readonly string s_boardA =
+        private static readonly string s_boardA =
             "123|   |789" +
             "   |   |   " +
             "   |   |   " +
@@ -37,7 +37,7 @@ namespace Sudokumb
             " 5 |  3|   " +
             "3  |   |1  ";
 
-        readonly GameBoard _boardA = GameBoard.Create(s_boardA);
+        private readonly GameBoard _boardA = GameBoard.Create(s_boardA);
 
         [Fact]
         public void TestAccessors()
