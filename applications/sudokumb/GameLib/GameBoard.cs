@@ -31,11 +31,16 @@ namespace Sudokumb
         // Legal characters that can appear in _board.
         private static readonly string s_legalCharacters = "123456789 ";
 
+        // The total number of characters in _board.
+        private const int GAMEBOARD_LENGTH = 81;
+        // The number of rows, columns, and groups on the board.
+        private const int DIM = 9;
         // An empty game board.  The initial state.
-        private static readonly string s_blankBoard = new string(' ', 81);
+        private static readonly string s_blankBoard = new string(' ',
+            GAMEBOARD_LENGTH);
 
         // A group is one of the 9 3x3 regions in the sudoku board.
-        private static readonly int[,] s_groupCenters = new int[9, 2]
+        private static readonly int[,] s_groupCenters = new int[DIM, 2]
         {
             {1, 1}, {1, 4}, {1, 8},
             {4, 1}, {4, 4}, {4, 8},
@@ -58,16 +63,17 @@ namespace Sudokumb
             set
             {
                 // Validate the board.
-                if (value.Length != 81)
+                if (value.Length != GAMEBOARD_LENGTH)
                 {
-                    throw new ArgumentException("value", "String must be 81 characters.");
+                    throw new ArgumentException("value",
+                        $"String must be {GAMEBOARD_LENGTH} characters.");
                 }
                 foreach (char c in value)
                 {
                     if (s_legalCharacters.IndexOf(c) < 0)
                         throw new ArgumentException("value", $"Illegal character: {c}");
                 }
-                for (int i = 0; i < 9; ++i)
+                for (int i = 0; i < DIM; ++i)
                 {
                     if (!IsLegal(GetRow(i, value)))
                         throw new BadGameBoardException($"Row {i} contains duplicates: {GetRow(i, value)}");
@@ -85,7 +91,7 @@ namespace Sudokumb
 
         public static GameBoard Create(string board) => new GameBoard()
         {
-            Board = new string(board.Where((c) =>
+            Board = new string(board.Where(c =>
                 LegalCharacters.Contains(c)).ToArray())
         };
 
@@ -102,8 +108,8 @@ namespace Sudokumb
 
         private static string GetRow(int rowNumber, string board)
         {
-            Debug.Assert(rowNumber >= 0 && rowNumber < 9);
-            return board.Substring(9 * rowNumber, 9);
+            Debug.Assert(rowNumber >= 0 && rowNumber < DIM);
+            return board.Substring(DIM * rowNumber, DIM);
         }
 
         /// <summary>
@@ -114,11 +120,11 @@ namespace Sudokumb
 
         private static string GetColumn(int colNumber, string board)
         {
-            Debug.Assert(colNumber >= 0 && colNumber < 9);
-            char[] column = new char[9];
-            for (int i = 0; i < 9; ++i)
+            Debug.Assert(colNumber >= 0 && colNumber < DIM);
+            char[] column = new char[DIM];
+            for (int i = 0; i < DIM; ++i)
             {
-                column[i] = board[colNumber + (i * 9)];
+                column[i] = board[colNumber + (i * DIM)];
             }
             return new string(column);
         }
@@ -135,13 +141,13 @@ namespace Sudokumb
 
         private static string GetGroup(int rowNumber, int colNumber, string board)
         {
-            Debug.Assert(colNumber >= 0 && colNumber < 9);
-            Debug.Assert(rowNumber >= 0 && rowNumber < 9);
-            int start = (rowNumber - (rowNumber % 3)) * 9 +
+            Debug.Assert(colNumber >= 0 && colNumber < DIM);
+            Debug.Assert(rowNumber >= 0 && rowNumber < DIM);
+            int start = (rowNumber - (rowNumber % 3)) * DIM +
                 colNumber - (colNumber % 3);
             return board.Substring(start, 3)
-                + board.Substring(start + 9, 3)
-                + board.Substring(start + 18, 3);
+                + board.Substring(start + DIM, 3)
+                + board.Substring(start + 2 * DIM, 3);
         }
 
         /// <summary>
@@ -155,8 +161,8 @@ namespace Sudokumb
             int i = _board.IndexOf(' ');
             if (i >= 0)
             {
-                int rowNumber = i / 9;
-                int colNumber = i % 9;
+                int rowNumber = i / DIM;
+                int colNumber = i % DIM;
                 char[] board = _board.ToCharArray();
                 foreach (char move in GetLegalMoves(rowNumber, colNumber))
                 {
@@ -199,7 +205,7 @@ namespace Sudokumb
         public string ToPrettyString()
         {
             var s = new StringBuilder();
-            for (int i = 0; i < Board.Length; i += 9)
+            for (int i = 0; i < Board.Length; i += DIM)
             {
                 s.AppendFormat("{0}|{1}|{2}\n", _board.Substring(i, 3),
                     _board.Substring(i + 3, 3), _board.Substring(i + 6, 3));
@@ -253,7 +259,7 @@ namespace Sudokumb
                 {
                     board.Append(" ");
                 }
-            } while (board.Length < 81);
+            } while (board.Length < GAMEBOARD_LENGTH);
             return GameBoard.Create(board.ToString());
         }
 

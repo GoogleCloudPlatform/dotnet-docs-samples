@@ -26,6 +26,11 @@ using System.Threading.Tasks;
 
 namespace Sudokumb
 {
+    /// <summary>
+    /// Stores AspNet user information in Google Cloud Datastore.
+    /// Implements CRUD operations for IUserStore, IUserRoleStore, and
+    /// IUserPasswordStore.
+    /// </summary>
     public class DatastoreUserStore<U> : IUserPasswordStore<U>, IUserRoleStore<U>, IUserStore<U>
         where U : IdentityUser<string>, new()
     {
@@ -59,12 +64,12 @@ namespace Sudokumb
         public DatastoreUserStore(DatastoreDb datastore,
             ILogger<DatastoreUserStore<U>> logger)
         {
-            _datastore = datastore;
+            _datastore = datastore ?? throw new ArgumentNullException(nameof(datastore));
             _userKeyFactory = new KeyFactory(_datastore.ProjectId,
                 _datastore.NamespaceId, USER_KIND);
             _nnindexKeyFactory = new KeyFactory(_datastore.ProjectId,
                 _datastore.NamespaceId, NORMALIZED_NAME_INDEX_KIND);
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private Key KeyFromUserId(string userId) => _userKeyFactory.CreateKey(userId);

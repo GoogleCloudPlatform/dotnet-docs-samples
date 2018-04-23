@@ -21,6 +21,10 @@ using System.Threading.Tasks;
 
 namespace Sudokumb
 {
+    /// <summary>
+    /// Stores AspNet user role information in Google Cloud Datastore.
+    /// Implements ordinary CRUD operations for IRoleStore.
+    /// </summary>
     public class DatastoreRoleStore<R> : IRoleStore<R> where R : IdentityRole, new()
     {
         private readonly DatastoreDb _datastore;
@@ -34,7 +38,7 @@ namespace Sudokumb
 
         public DatastoreRoleStore(DatastoreDb datastore)
         {
-            _datastore = datastore;
+            _datastore = datastore ?? throw new System.ArgumentNullException(nameof(datastore));
             _roleKeyFactory = new KeyFactory(_datastore.ProjectId, _datastore.NamespaceId, KIND);
         }
 
