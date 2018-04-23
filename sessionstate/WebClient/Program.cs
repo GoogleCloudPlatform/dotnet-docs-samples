@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using CommandLine;
-using CommandLine.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -39,7 +38,7 @@ namespace WebClient
         public int SizeMultiplier { get; set; } = 40;
     }
 
-    internal class Program
+    public class Program
     {
         private static async Task PutValueAsync(HttpClient client, int key, string value)
         {
@@ -105,7 +104,7 @@ namespace WebClient
             return stopwatch.ElapsedMilliseconds / 60.0;
         }
 
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
             CommandLine.Parser.Default.ParseArguments<Options>(args)
               .WithParsed<Options>(opts => RunOptionsAndReturnExitCode(opts));
