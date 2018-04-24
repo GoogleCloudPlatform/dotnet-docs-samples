@@ -787,11 +787,8 @@ function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false,
     [string]$OutDir) {
     if ($v11) {
         $env:CASPERJS11_URL = $Url
-        # Casperjs.exe creates a new terminal window, from which we
-        # cannot capture output.  So we use python to invoke it and
-        # capture output.
-        $casperOut = python (Join-Path $env:CASPERJS11_BIN "casperjs") `
-            -- test --xunit=TestResults.xml $TestJs
+        Start-Process (Join-Path $env:CASPERJS11_BIN "casperjs") `
+            test, --xunit=TestResults.xml, $TestJs -Wait -NoNewWindow
         # Casper 1.1 always returns 0, so inspect the xml output
         # to see if a test failed.
         [xml]$x = Get-Content TestResults.xml         
@@ -800,13 +797,11 @@ function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false,
             $LASTEXITCODE += [int] $suite.failures 
         }
     } else {
-        $casperOut = casperjs $TestJs $Url
+        casperjs $TestJs $Url
     }
     if ($LASTEXITCODE -eq 0) {
-        $casperOut | Write-Host
         return
     }
-    $casperOut | Write-Host
     throw "Casperjs failed with error code $LASTEXITCODE"
 }
 
