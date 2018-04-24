@@ -787,7 +787,7 @@ function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false,
     [string]$OutDir) {
     if ($v11) {
         $env:CASPERJS11_URL = $Url
-        Start-Process (Join-Path $env:CASPERJS11_BIN "casperjs.exe") `
+        Start-Process (Join-Path $env:CASPERJS11_BIN "casperjs") `
             test, --xunit=TestResults.xml, $TestJs -Wait -NoNewWindow
         # Casper 1.1 always returns 0, so inspect the xml output
         # to see if a test failed.
