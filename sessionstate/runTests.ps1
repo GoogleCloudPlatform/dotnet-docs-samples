@@ -26,7 +26,7 @@ BackupAndEdit-TextFile "WebApp\Web.config" `
     $env:WEBAPP_ROOT = "$PSScriptRoot\WebApp"
     $proc = Run-IISExpress -SiteName WebApp
     dotnet test WebClientTest\WebClientTest.csproj --test-adapter-path:. `
-        --logger:junit --no-build --no-restore -v n
+        --logger:junit
     Stop-Process $proc
     if ($LASTEXITCODE -ne 0) {
         throw "WebClient failed!"
