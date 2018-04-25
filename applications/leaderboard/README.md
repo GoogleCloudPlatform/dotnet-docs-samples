@@ -9,6 +9,17 @@ This sample requires [.NET Core 2.0](
 [Visual Studio 2017](
     https://www.visualstudio.com/), or the command line.
 
+This sample includes extra directories step1, step2, step3, step4 and step5 that contain partial versions of this sample app. These directories are intended to provide guidance as part of a separate Codelab walk-through where the application is built in the following stages:
+
+* step1 - Create the sample database along with the tables Players and Scores.
+* step2 - Populate the Players tables with sample data.
+* step3 - Populate the Scores table with sample data.
+* step4 - Run sample queries including sorting the results by timestamp.
+* step5 - Delete the sample database.
+
+If you only want to run the complete sample refer to the application in the Leaderboard directory.
+
+
 ## Build and Run
 
 1.  **Follow the instructions in the [root README](../../README.md)**.
@@ -26,25 +37,21 @@ This sample requires [.NET Core 2.0](
     ERROR(S):
     No verb selected.
 
-    createSampleDatabase    Create a sample Cloud Spanner database along with sample tables in your project.
+    createSampleDatabase       Create a sample Cloud Spanner database along with sample tables in your project.
 
-    insertPlayers           Batch insert 100 sample Player records into the database.
+    insertPlayers              Insert 100 sample Player records into the database.
 
-    insertScores            Insert sample score data into Scores sample Cloud Spanner database table.
+    insertScores               Insert sample score data into Scores sample Cloud Spanner database table.
 
-    queryTopTenAllTime      Query players with top ten scores of all time from sample Cloud Spanner database table.
+    queryTopTenAllTime         Query players with top ten scores of all time from sample Cloud Spanner database table.
 
-    queryTopTenOfYear       Query players with top ten scores of the past year from sample Cloud Spanner database table.
+    queryTopTenWithTimespan    Query players with top ten scores within a specific timespan from sample Cloud Spanner database table.
 
-    queryTopTenOfMonth      Query players with top ten scores of the past month from sample Cloud Spanner database table.
+    deleteDatabase             Delete a Spanner database.
 
-    queryTopTenOfWeek       Query players with top ten scores of the past week from sample Cloud Spanner database table.
+    help                       Display more information on a specific command.
 
-    deleteDatabase          Delete a Spanner database.
-
-    help                    Display more information on a specific command.
-
-    version                 Display version information.
+    version                    Display version information.
 
     ```
 

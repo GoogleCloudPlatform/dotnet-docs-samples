@@ -105,15 +105,17 @@ namespace GoogleCloudSamples.Leaderboard
             string valueToTest = result[0].Substring(result[0].IndexOf(columnText) + columnText.Length);
             DateTime value;
             Assert.True(DateTime.TryParse(valueToTest, out value));
-            // Test that other Top Ten queries run successfully.
-            ConsoleOutput queryTopTenOfYearOutput = _spannerCmd.Run("queryTopTenOfYear",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            // Test that Top Ten Players of the Year (within past 8760 hours) runs successfully.
+            ConsoleOutput queryTopTenOfYearOutput = _spannerCmd.Run("queryTopTenWithTimespan",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "8760");
             Assert.Equal(0, queryTopTenOfYearOutput.ExitCode);
-            ConsoleOutput queryTopTenOfMonthOutput = _spannerCmd.Run("queryTopTenOfMonth",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            // Test that Top Ten Players of the Month (within past 730 hours) runs successfully.
+            ConsoleOutput queryTopTenOfMonthOutput = _spannerCmd.Run("queryTopTenWithTimespan",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "730");
             Assert.Equal(0, queryTopTenOfMonthOutput.ExitCode);
-            ConsoleOutput queryTopTenOfWeekOutput = _spannerCmd.Run("queryTopTenOfWeek",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            // Test that Top Ten Players of the Week (within past 168 hours) runs successfully.
+            ConsoleOutput queryTopTenOfWeekOutput = _spannerCmd.Run("queryTopTenWithTimespan",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "168");
             Assert.Equal(0, queryTopTenOfWeekOutput.ExitCode);
         }
     }

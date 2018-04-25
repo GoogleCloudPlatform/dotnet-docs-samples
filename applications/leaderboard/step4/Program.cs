@@ -65,8 +65,8 @@ namespace GoogleCloudSamples.Leaderboard
         public string databaseId { get; set; }
     }
 
-    [Verb("queryTopTenOfYear", HelpText = "Query players with top ten scores of the past year from sample Cloud Spanner database table.")]
-    class QueryTopTenOfYearOptions
+    [Verb("queryTopTenWithTimespan", HelpText = "Query players with top ten scores within a specific timespan from sample Cloud Spanner database table.")]
+    class QueryTopTenWithTimespanOptions
     {
         [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
         public string projectId { get; set; }
@@ -74,28 +74,8 @@ namespace GoogleCloudSamples.Leaderboard
         public string instanceId { get; set; }
         [Value(2, HelpText = "The ID of the database where the sample data resides.", Required = true)]
         public string databaseId { get; set; }
-    }
-
-    [Verb("queryTopTenOfMonth", HelpText = "Query players with top ten scores of the past month from sample Cloud Spanner database table.")]
-    class QueryTopTenOfMonthOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample data resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample data resides.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
-    [Verb("queryTopTenOfWeek", HelpText = "Query players with top ten scores of the past week from sample Cloud Spanner database table.")]
-    class QueryTopTenOfWeekOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample data resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample data resides.", Required = true)]
-        public string databaseId { get; set; }
+        [Value(3, HelpText = "The timespan in hours that will be used to filter the results based on a record's timestamp.", Required = true)]
+        public int timespan { get; set; }
     }
 
     public class Program
@@ -184,50 +164,47 @@ namespace GoogleCloudSamples.Leaderboard
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
-
-            // Get current max PlayerId.
-            Int64 maxPlayerId = 0;
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                // Execute a SQL statement to get current MAX() of PlayerId.
-                var cmd = connection.CreateSelectCommand(
-                    @"SELECT MAX(PlayerId) as PlayerId FROM Players");
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        long parsedValue;
-                        if (reader["PlayerId"] != DBNull.Value)
-                        {
-                            bool result = Int64.TryParse(
-                                reader.GetFieldValue<string>("PlayerId"), out parsedValue);
-                            if (result)
-                            {
-                                maxPlayerId = parsedValue;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Insert 100 player records into the Players table.
+            Int64 numberOfPlayers = 0;
             using (var connection = new SpannerConnection(connectionString))
             {
                 await connection.OpenAsync();
                 using (var tx = await connection.BeginTransactionAsync())
-                using (var cmd = connection.CreateInsertCommand("Players", new SpannerParameterCollection
                 {
-                    { "PlayerId", SpannerDbType.String },
-                    { "PlayerName", SpannerDbType.String }
-                }))
-                {
+                    // Execute a SQL statement to get current number of records in the Players table.
+                    var cmd = connection.CreateSelectCommand(
+                        @"SELECT Count(PlayerId) as PlayerCount FROM Players");
                     cmd.Transaction = tx;
-                    for (var x = 1; x <= 100; x++)
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        maxPlayerId++;
-                        cmd.Parameters["PlayerId"].Value = maxPlayerId;
-                        cmd.Parameters["PlayerName"].Value = $"Player {maxPlayerId}";
-                        cmd.ExecuteNonQuery();
+                        while (await reader.ReadAsync())
+                        {
+                            long parsedValue;
+                            if (reader["PlayerCount"] != DBNull.Value)
+                            {
+                                bool result = Int64.TryParse(
+                                    reader.GetFieldValue<string>("PlayerCount"), out parsedValue);
+                                if (result)
+                                {
+                                    numberOfPlayers = parsedValue;
+                                }
+                            }
+                        }
+                    }
+                    // Insert 100 player records into the Players table.
+                    using (cmd = connection.CreateInsertCommand("Players", new SpannerParameterCollection
+                    {
+                        { "PlayerId", SpannerDbType.String },
+                        { "PlayerName", SpannerDbType.String }
+                    }))
+                    {
+                        cmd.Transaction = tx;
+                        for (var x = 1; x <= 100; x++)
+                        {
+                            numberOfPlayers++;
+                            cmd.Parameters["PlayerId"].Value = Math.Abs(Guid.NewGuid().GetHashCode());
+                            cmd.Parameters["PlayerName"].Value = $"Player {numberOfPlayers}";
+                            cmd.ExecuteNonQuery();
+                        }
                     }
                     await tx.CommitAsync();
                 }
@@ -335,17 +312,17 @@ namespace GoogleCloudSamples.Leaderboard
             }
         }
 
-        public static object QueryTopTenOfYear(string projectId,
-            string instanceId, string databaseId)
+        public static object QueryTopTenWithTimespan(string projectId,
+            string instanceId, string databaseId, int timespan)
         {
-            var response = QueryTopTenOfYearAsync(
-                projectId, instanceId, databaseId);
+            var response = QueryTopTenWithTimespanAsync(
+                projectId, instanceId, databaseId, timespan);
             response.Wait();
             return ExitCode.Success;
         }
 
-        public static async Task QueryTopTenOfYearAsync(
-            string projectId, string instanceId, string databaseId)
+        public static async Task QueryTopTenWithTimespanAsync(
+            string projectId, string instanceId, string databaseId, int timespan)
         {
             string connectionString =
             $"Data Source=projects/{projectId}/instances/"
@@ -354,92 +331,11 @@ namespace GoogleCloudSamples.Leaderboard
             using (var connection = new SpannerConnection(connectionString))
             {
                 var cmd = connection.CreateSelectCommand(
-                    @"SELECT p.PlayerId, p.PlayerName, s.Score, s.Timestamp
+                    $@"SELECT p.PlayerId, p.PlayerName, s.Score, s.Timestamp
                         FROM Players p
                         JOIN Scores s ON p.PlayerId = s.PlayerId
-                        WHERE s.Timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 8760 HOUR)
-                        ORDER BY s.Score DESC LIMIT 10");
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine("PlayerId : "
-                            + reader.GetFieldValue<string>("PlayerId")
-                            + " PlayerName : "
-                            + reader.GetFieldValue<string>("PlayerName")
-                            + " Score : "
-                            + reader.GetFieldValue<string>("Score")
-                            + " Timestamp : "
-                            + reader.GetFieldValue<string>("Timestamp"));
-                    }
-                }
-            }
-        }
-
-        public static object QueryTopTenOfMonth(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryTopTenOfMonthAsync(
-                projectId, instanceId, databaseId);
-            response.Wait();
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryTopTenOfMonthAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/"
-            + $"{instanceId}/databases/{databaseId}";
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    @"SELECT p.PlayerId, p.PlayerName, s.Score, s.Timestamp
-                        FROM Players p
-                        JOIN Scores s ON p.PlayerId = s.PlayerId
-                        WHERE s.Timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 730 HOUR)
-                        ORDER BY s.Score DESC LIMIT 10");
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine("PlayerId : "
-                            + reader.GetFieldValue<string>("PlayerId")
-                            + " PlayerName : "
-                            + reader.GetFieldValue<string>("PlayerName")
-                            + " Score : "
-                            + reader.GetFieldValue<string>("Score")
-                            + " Timestamp : "
-                            + reader.GetFieldValue<string>("Timestamp"));
-                    }
-                }
-            }
-        }
-
-        public static object QueryTopTenOfWeek(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryTopTenOfWeekAsync(
-                projectId, instanceId, databaseId);
-            response.Wait();
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryTopTenOfWeekAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/"
-            + $"{instanceId}/databases/{databaseId}";
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    @"SELECT p.PlayerId, p.PlayerName, s.Score, s.Timestamp
-                        FROM Players p
-                        JOIN Scores s ON p.PlayerId = s.PlayerId
-                        WHERE s.Timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 168 HOUR)
+                        WHERE s.Timestamp >
+                        TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL {timespan.ToString()} HOUR)
                         ORDER BY s.Score DESC LIMIT 10");
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
@@ -471,13 +367,8 @@ namespace GoogleCloudSamples.Leaderboard
                     opts.projectId, opts.instanceId, opts.databaseId))
                 .Add((QueryTopTenAllTimeOptions opts) => QueryTopTenAllTime(
                     opts.projectId, opts.instanceId, opts.databaseId))
-                .Add((QueryTopTenOfYearOptions opts) => QueryTopTenOfYear(
-                    opts.projectId, opts.instanceId, opts.databaseId))
-                .Add((QueryTopTenOfMonthOptions opts) => QueryTopTenOfMonth(
-                    opts.projectId, opts.instanceId, opts.databaseId))
-                .Add((QueryTopTenOfWeekOptions opts) => QueryTopTenOfWeek(
-                    opts.projectId, opts.instanceId, opts.databaseId))
-                .NotParsedFunc = (err) => 1;
+                .Add((QueryTopTenWithTimespanOptions opts) => QueryTopTenWithTimespan(
+                    opts.projectId, opts.instanceId, opts.databaseId, opts.timespan))
             return (int)verbMap.Run(args);
         }
     }

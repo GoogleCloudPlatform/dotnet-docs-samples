@@ -129,50 +129,47 @@ namespace GoogleCloudSamples.Leaderboard
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
-
-            // Get current max PlayerId.
-            Int64 maxPlayerId = 0;
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                // Execute a SQL statement to get current MAX() of PlayerId.
-                var cmd = connection.CreateSelectCommand(
-                    @"SELECT MAX(PlayerId) as PlayerId FROM Players");
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        long parsedValue;
-                        if (reader["PlayerId"] != DBNull.Value)
-                        {
-                            bool result = Int64.TryParse(
-                                reader.GetFieldValue<string>("PlayerId"), out parsedValue);
-                            if (result)
-                            {
-                                maxPlayerId = parsedValue;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Insert 100 player records into the Players table.
+            Int64 numberOfPlayers = 0;
             using (var connection = new SpannerConnection(connectionString))
             {
                 await connection.OpenAsync();
                 using (var tx = await connection.BeginTransactionAsync())
-                using (var cmd = connection.CreateInsertCommand("Players", new SpannerParameterCollection
                 {
-                    { "PlayerId", SpannerDbType.String },
-                    { "PlayerName", SpannerDbType.String }
-                }))
-                {
+                    // Execute a SQL statement to get current number of records in the Players table.
+                    var cmd = connection.CreateSelectCommand(
+                        @"SELECT Count(PlayerId) as PlayerCount FROM Players");
                     cmd.Transaction = tx;
-                    for (var x = 1; x <= 100; x++)
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        maxPlayerId++;
-                        cmd.Parameters["PlayerId"].Value = maxPlayerId;
-                        cmd.Parameters["PlayerName"].Value = $"Player {maxPlayerId}";
-                        cmd.ExecuteNonQuery();
+                        while (await reader.ReadAsync())
+                        {
+                            long parsedValue;
+                            if (reader["PlayerCount"] != DBNull.Value)
+                            {
+                                bool result = Int64.TryParse(
+                                    reader.GetFieldValue<string>("PlayerCount"), out parsedValue);
+                                if (result)
+                                {
+                                    numberOfPlayers = parsedValue;
+                                }
+                            }
+                        }
+                    }
+                    // Insert 100 player records into the Players table.
+                    using (cmd = connection.CreateInsertCommand("Players", new SpannerParameterCollection
+                    {
+                        { "PlayerId", SpannerDbType.String },
+                        { "PlayerName", SpannerDbType.String }
+                    }))
+                    {
+                        cmd.Transaction = tx;
+                        for (var x = 1; x <= 100; x++)
+                        {
+                            numberOfPlayers++;
+                            cmd.Parameters["PlayerId"].Value = Math.Abs(Guid.NewGuid().GetHashCode());
+                            cmd.Parameters["PlayerName"].Value = $"Player {numberOfPlayers}";
+                            cmd.ExecuteNonQuery();
+                        }
                     }
                     await tx.CommitAsync();
                 }
