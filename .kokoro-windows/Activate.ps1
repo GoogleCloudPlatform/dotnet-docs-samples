@@ -19,7 +19,8 @@ $env:PATH = @("$installDir\codeformatter\bin",
     "$installDir\n1k0-casperjs-76fc831\batchbin",
     "$env:SystemDrive\Python27",
     $env:PATH,
-    "$env:SystemDrive/Program Files (x86)/MSBuild/14.0/Bin") -join ';'
+    "$env:SystemDrive/Program Files (x86)/MSBuild/14.0/Bin",
+    "$env:SystemDrive\Program Files (x86)\IIS Express") -join ';'
 
 $env:CASPERJS11_BIN = "$installDir\casperjs-1.1.4-1\bin"
 

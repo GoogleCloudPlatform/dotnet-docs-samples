@@ -19,8 +19,9 @@ BackupAndEdit-TextFile "WebApp\Web.config" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {       
     Build-Solution
+    $env:WEBAPP_ROOT = "$PSScriptRoot\WebApp"
     $proc = Run-IISExpress -SiteName WebApp
-    .\WebClient\bin\Debug\WebClient.exe -u http://localhost:61123/ -d 100 -c 3
+    .\WebClient\bin\Debug\WebClient.exe -u http://localhost:61123/ -c 3
     Stop-Process $proc
     if ($LASTEXITCODE -ne 0) {
         throw "WebClient failed!"
