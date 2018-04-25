@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.1.1-beta" />
+    <PackageReference Include="Google.Cloud.Spanner.Data" Version="2.0.0-beta01" />
+    <PackageReference Include="Google.Cloud.Spanner.V1" Version="1.1.0-beta02" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
+  </ItemGroup>
+
+</Project>
