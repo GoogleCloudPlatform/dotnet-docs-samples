@@ -17,8 +17,12 @@ Require-Platform Win*
 
 BackupAndEdit-TextFile "WebApp\Web.config" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{       
-    Build-Solution
+{
+    nuget restore
+    msbuild WebApp\WebApp.csproj
+    if ($LASTEXITCODE) {
+        throw "msbuild returned $LASTEXITCODE."        
+    }
     $env:WEBAPP_ROOT = "$PSScriptRoot\WebApp"
     $proc = Run-IISExpress -SiteName WebApp
     dotnet test WebClientTest\WebClientTest.csproj --test-adapter-path:. `
