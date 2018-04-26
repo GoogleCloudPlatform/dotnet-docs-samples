@@ -5,6 +5,8 @@ This is the companion sample for a number of [medium.com stories](https://medium
 **Sudokumb** is a [Sudoku](https://en.wikipedia.org/wiki/Sudoku) solver. In order to demonstrate some cool features of <a href="https://cloud.google.com/">Google Cloud Platform <img src="http://cloud.google.com/_static/images/cloud/products/logos/svg/gcp.svg" width=32></a>,
 Sudokumb solves the puzzles in a very dumb way.
 
+![](./WebApp/wwwroot/images/Screenshot.png)
+
 ## Smart
 
 Most of what Sudokumb does is actually pretty smart.
