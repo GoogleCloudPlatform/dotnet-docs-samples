@@ -16,8 +16,6 @@ using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
 
 namespace GoogleCloudSamples
 {
@@ -27,8 +25,9 @@ namespace GoogleCloudSamples
     /// </summary>
     public class RandomBucketFixture : IDisposable
     {
-        readonly StorageClient _storage = StorageClient.Create();
-        readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly StorageClient _storage = StorageClient.Create();
+        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
         public RandomBucketFixture()
         {
             BucketName = RandomBucketName();
@@ -62,9 +61,10 @@ namespace GoogleCloudSamples
     /// </summary>
     public class BucketCollector : IDisposable
     {
-        readonly StorageClient _storage = StorageClient.Create();
-        readonly string _bucketName;
-        readonly SortedDictionary<string, SortedSet<string>> _garbage =
+        private readonly StorageClient _storage = StorageClient.Create();
+        private readonly string _bucketName;
+
+        private readonly SortedDictionary<string, SortedSet<string>> _garbage =
         new SortedDictionary<string, SortedSet<string>>();
 
         public BucketCollector(string bucketName)

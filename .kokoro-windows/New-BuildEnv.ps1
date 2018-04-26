@@ -43,6 +43,9 @@ if (-not (($chocoPackages.Contains('python 2.7.') -or
     choco install -y --sxs python --version 2.7.6
 }
 
+if (-not $chocoPackages.Contains('selenium-chrome-driver 2.')) {
+    choco install -y selenium-chrome-driver
+}
 if (-not $chocoPackages.Contains('iisexpress')) {
     choco install -y --sxs iisexpress
 }
@@ -55,7 +58,7 @@ if (-not $SkipDownloadKokoroDir) {
     $env:KOKORO_GFILE_DIR = Join-Path $Dir 'kokoro'
     (New-Item -Path $env:KOKORO_GFILE_DIR -ItemType Directory -Force).FullName
     # Copy all the files from our kokoro secrets bucket.
-    gsutil cp gs://cloud-devrel-kokoro-resources/dotnet-docs-samples/* $env:KOKORO_GFILE_DIR
+    gsutil -m cp gs://cloud-devrel-kokoro-resources/dotnet-docs-samples/* $env:KOKORO_GFILE_DIR
 }
 
 # Prepare to unzip the files.

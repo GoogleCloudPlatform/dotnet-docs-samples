@@ -1,0 +1,92 @@
+@{
+// Copyright (c) 2018 Google LLC.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not
+// use this file except in compliance with the License. You may obtain a copy of
+// the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+// License for the specific language governing permissions and limitations under
+// the License.
+}
+
+@model WebApp.Models.SudokumbViewModels.IndexViewModel
+
+@{
+    ViewData["Title"] = "Solve";
+}
+
+<h2>@ViewData["Title"]</h2>
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                <h4>Enter an incomplete Sudoku puzzle.</h4>
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Form.Puzzle"></label>
+                    <textarea asp-for="Form.Puzzle" rows=12 cols=24
+                        class="form-control" style="font-family:monospace;">
+                    </textarea>
+                    <span asp-validation-for="Form.Puzzle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Solve</button>
+                </div>
+            </form>
+        </section>
+    </div>
+    @{
+        bool solving = Model.Solution == null && Model.SolveRequestId != null;
+        bool solved = Model.Solution != null;
+        string displaySolutionCol =
+            solving || solved ? "display:block" : "display:none";
+        string displaySolutionPre = solved ? "display:block" : "display:none";
+        string displaySolvingMessage =
+            solving ? "display:block" : "display:none";
+    }
+    <div id=solutionCol class="col-md-4"
+        style="@displaySolutionCol">
+        <section>
+                <h4>Solution</h4>
+                <hr />
+                <div id=solvingMessage style="@displaySolvingMessage">
+                    Solving...
+                </div>
+                <pre id=solutionPre style="@displaySolutionPre">@Model.Solution</pre>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    @if (solving)
+    {
+        <script>
+        var delayMs = 2000;
+
+        function handleSolveResponse(response) {
+            $("#solvingMessage").text(
+                "Examined " + response.boardsExaminedCount + " boards...");
+            if (response.solution) {
+                $("#solutionPre").text(response.solution);
+                $("#solutionPre").show(1000);
+            }
+            delayMs = delayMs * 1.2;  // backoff 20%
+            setTimeout(scheduleStatusCheck, delayMs);
+        }
+
+        function scheduleStatusCheck() {
+            $.getJSON('@Url.Action("Solve", new { Id = Model.SolveRequestId })',
+                handleSolveResponse);
+        }
+
+        $(document).ready(scheduleStatusCheck);
+        </script>
+    }
+}

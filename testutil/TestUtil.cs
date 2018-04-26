@@ -45,7 +45,7 @@ namespace GoogleCloudSamples
         }
     }
 
-    // TODO: Remove this class and use 
+    // TODO: Remove this class and use
     //       Transient Fault Handling Application Block:
     //       https://msdn.microsoft.com/en-us/library/dn440719(v=pandp.60).aspx
     public class RetryRobot
@@ -111,6 +111,7 @@ namespace GoogleCloudSamples
     {
         // Use a lock to protect globally-shared stdout.
         private static readonly object s_lock = new object();
+
         public Func<string[], int> Main { get; set; }
         public Action<string[]> VoidMain { get; set; }
         public string Command { get; set; }
