@@ -13,11 +13,12 @@
 // the License.
 
 using System;
+using System.IO;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class DetectIntentTextsTest : DialogflowTest
+    public class DetectIntentTest : DialogflowTest
     {
         [Fact]
         void TestDetectIntentFromTexts()
@@ -26,7 +27,6 @@ namespace GoogleCloudSamples
             var textsArgument = string.Join(',', texts);
 
             RunWithSessionId("detect-intent:texts", textsArgument);
-            Assert.Equal(0, ExitCode);
 
             // "hello"
             Assert.Contains("Query text: hello", Stdout);
@@ -47,6 +47,19 @@ namespace GoogleCloudSamples
             // Assert these lines are printed.
             Assert.Contains("Intent confidence:", Stdout);
             Assert.Contains("Fulfillment text:", Stdout);
+        }
+
+        [Fact]
+        void TestDetectIntentFromAudio()
+        {
+            var audioFile = Path.Combine("Resources", "book_a_room.wav");
+
+            RunWithSessionId("detect-intent:audio", audioFile);
+
+            Assert.Contains("Query text: book a room", Stdout);
+            Assert.Contains("Intent detected: room.reservation", Stdout);
+            Assert.Contains("Fulfillment text: I can help with that. Where would you like to reserve a room?", Stdout);
+            Assert.Matches(@"Intent confidence: \d", Stdout);
         }
     }
 }

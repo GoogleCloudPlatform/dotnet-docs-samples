@@ -11,11 +11,14 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
     <ProjectReference Include="..\DialogflowSamples\DialogflowSamples.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+    <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="BaseTest.cs" />
+    <Content Include="..\resources\book_a_room.wav">
+      <Link>resources\book_a_room.wav</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

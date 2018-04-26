@@ -11,4 +11,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\230pm.wav" />
+    <None Remove="Resources\RoomReservation.zip" />
+    <None Remove="Resources\book_a_room.wav" />
+    <None Remove="Resources\half_an_hour.wav" />
+    <None Remove="Resources\mountain_view.wav" />
+    <None Remove="Resources\today.wav" />
+    <None Remove="Resources\two_people.wav" />
+  </ItemGroup>
 </Project>
