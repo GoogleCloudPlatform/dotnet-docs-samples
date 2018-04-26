@@ -6,8 +6,6 @@
     DialogflowSamples 0.0.0.0
     Copyright (C) 1 author
     
-      test                           Testing Test Setup
-    
       contexts:create                Create new Context
     
       contexts:list                  Print list of entities for given Context
