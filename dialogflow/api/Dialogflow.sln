@@ -1,0 +1,35 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2017
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogflowSamples", "DialogflowSamples\DialogflowSamples.csproj", "{3B1379A8-80F0-4AFD-AF78-8CEAFF6A5DF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogflowSampleTests", "Test\DialogflowSampleTests.csproj", "{751CA59D-EBBE-4D26-964C-0502CD5EC984}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineUtil", "..\..\commandlineutil\Lib\CommandLineUtil.csproj", "{374E48A5-C43C-4719-878B-73A03820B65E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testutil", "..\..\testutil\testutil.csproj", "{B620A334-A8D8-4883-B530-8C890E6C0879}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B1379A8-80F0-4AFD-AF78-8CEAFF6A5DF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B1379A8-80F0-4AFD-AF78-8CEAFF6A5DF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B1379A8-80F0-4AFD-AF78-8CEAFF6A5DF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B1379A8-80F0-4AFD-AF78-8CEAFF6A5DF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{374E48A5-C43C-4719-878B-73A03820B65E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{374E48A5-C43C-4719-878B-73A03820B65E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{374E48A5-C43C-4719-878B-73A03820B65E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{374E48A5-C43C-4719-878B-73A03820B65E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{751CA59D-EBBE-4D26-964C-0502CD5EC984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{751CA59D-EBBE-4D26-964C-0502CD5EC984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{751CA59D-EBBE-4D26-964C-0502CD5EC984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{751CA59D-EBBE-4D26-964C-0502CD5EC984}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B620A334-A8D8-4883-B530-8C890E6C0879}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B620A334-A8D8-4883-B530-8C890E6C0879}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B620A334-A8D8-4883-B530-8C890E6C0879}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B620A334-A8D8-4883-B530-8C890E6C0879}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

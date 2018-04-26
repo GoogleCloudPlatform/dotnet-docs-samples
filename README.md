@@ -72,7 +72,7 @@ But no sample will work until you:
     git clone https://github.com/GoogleCloudPlatform/dotnet-docs-samples
     ```
     Browse the directories, find a solution (.sln) file, open it with
-    Visual Studio 2015 or later, and run it!
+    [Visual Studio 2017](https://www.visualstudio.com/) or later, and run it!
 
 
 ## Contributing changes

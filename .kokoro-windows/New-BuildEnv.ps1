@@ -19,7 +19,8 @@ if (-Not $Dir) {
 
 # Install choco packages.
 get-command choco -ErrorAction Stop
-$chocoPackages = (choco list -li) -join ' '
+choco list -li | Tee-Object -Variable chocoList
+$chocoPackages = ($chocoList) -join ' '
 
 if (-not $chocoPackages.Contains('Microsoft .NET Core SDK - 2.0.')) {
     choco install -y --sxs dotnetcore-sdk --version 2.0.0    
@@ -45,6 +46,10 @@ if (-not (($chocoPackages.Contains('python 2.7.') -or
 if (-not $chocoPackages.Contains('selenium-chrome-driver 2.')) {
     choco install -y selenium-chrome-driver
 }
+if (-not $chocoPackages.Contains('iisexpress')) {
+    choco install -y --sxs iisexpress
+}
+
 # Create environment directory structure.
 $Dir = (New-Item -Path $Dir -ItemType Directory -Force).FullName
 $installDir = Join-Path $Dir 'install'

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Dialogflow.V2" Version="1.0.0-beta01" />
+    <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
+    <ProjectReference Include="..\DialogflowSamples\DialogflowSamples.csproj" />
+    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="BaseTest.cs" />
+  </ItemGroup>
+</Project>

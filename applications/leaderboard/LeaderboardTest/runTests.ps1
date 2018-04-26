@@ -12,18 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-Import-Module -DisableNameChecking ..\..\..\..\BuildTools.psm1
-
-Require-Platform Win*
+Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
+Set-TestTimeout 600
 
 dotnet restore
-$url = "http://localhost:7412"
-$job = Run-Kestrel($url)
-Start-Sleep -Seconds 5
-try {
-	.\Test.ps1 "$url/echo"
-} finally {
-	Stop-Job $job
-	Receive-Job $job
-	Remove-Job $job
-}
+dotnet build
+dotnet test --test-adapter-path:. --logger:junit --no-build --no-restore -v detailed

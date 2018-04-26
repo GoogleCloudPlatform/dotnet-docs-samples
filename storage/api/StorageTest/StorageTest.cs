@@ -628,7 +628,8 @@ namespace GoogleCloudSamples
                 var enabled = Run("enable-requester-pays", _bucketName);
                 AssertSucceeded(enabled);
 
-                var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
+                var uploaded = Run("upload", _bucketName, "-pay",
+                    Collect("Hello.txt"));
                 AssertSucceeded(uploaded);
 
                 var downloaded = Run("download", _bucketName, "-pay",

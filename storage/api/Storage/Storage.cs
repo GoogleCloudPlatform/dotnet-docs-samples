@@ -599,13 +599,17 @@ namespace GoogleCloudSamples
         void EnableRequesterPays(string bucketName)
         {
             var storage = StorageClient.Create();
-            var bucket = storage.GetBucket(bucketName);
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                UserProject = s_projectId
+            });
             bucket.Billing = bucket.Billing ?? new Bucket.BillingData();
             bucket.Billing.RequesterPays = true;
             bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
             {
                 // Use IfMetagenerationMatch to avoid race conditions.
-                IfMetagenerationMatch = bucket.Metageneration
+                IfMetagenerationMatch = bucket.Metageneration,
+                UserProject = s_projectId
             });
         }
         // [END storage_enable_requester_pays]
@@ -614,13 +618,17 @@ namespace GoogleCloudSamples
         void DisableRequesterPays(string bucketName)
         {
             var storage = StorageClient.Create();
-            var bucket = storage.GetBucket(bucketName);
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                UserProject = s_projectId
+            });
             bucket.Billing = bucket.Billing ?? new Bucket.BillingData();
             bucket.Billing.RequesterPays = false;
             bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
             {
                 // Use IfMetagenerationMatch to avoid race conditions.
-                IfMetagenerationMatch = bucket.Metageneration
+                IfMetagenerationMatch = bucket.Metageneration,
+                UserProject = s_projectId
             });
         }
         // [END storage_disable_requester_pays]
@@ -629,7 +637,10 @@ namespace GoogleCloudSamples
         bool GetRequesterPays(string bucketName)
         {
             var storage = StorageClient.Create();
-            var bucket = storage.GetBucket(bucketName);
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                UserProject = s_projectId
+            });
             bool? requesterPaysOrNull = bucket.Billing?.RequesterPays;
             bool requesterPays =
                 requesterPaysOrNull.HasValue ? requesterPaysOrNull.Value : false;
@@ -639,22 +650,39 @@ namespace GoogleCloudSamples
         // [END storage_get_requester_pays_status]
 
         // [START storage_download_file_requester_pays]
-        private void DownloadObjectRequesterPays(string bucketName, string objectName,
-            string localPath = null)
+        private void DownloadObjectRequesterPays(string bucketName,
+            string objectName, string localPath = null)
         {
             var storage = StorageClient.Create();
             localPath = localPath ?? Path.GetFileName(objectName);
             using (var outputFile = File.OpenWrite(localPath))
             {
-                storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions()
-                {
-                    UserProject = s_projectId
-                });
+                storage.DownloadObject(bucketName, objectName, outputFile,
+                    new DownloadObjectOptions()
+                    {
+                        UserProject = s_projectId
+                    });
             }
             Console.WriteLine(
                 $"downloaded {objectName} to {localPath} paid by {s_projectId}.");
         }
         // [END storage_download_file_requester_pays]
+
+        private void UploadFileRequesterPays(string bucketName, string localPath,
+            string objectName = null)
+        {
+            var storage = StorageClient.Create();
+            using (var f = File.OpenRead(localPath))
+            {
+                objectName = objectName ?? Path.GetFileName(localPath);
+                storage.UploadObject(bucketName, objectName, null, f,
+                    new UploadObjectOptions()
+                    {
+                        UserProject = s_projectId,
+                    });
+                Console.WriteLine($"Uploaded {objectName}.");
+            }
+        }
 
         public bool PrintUsage()
         {
@@ -736,14 +764,19 @@ namespace GoogleCloudSamples
 
                     case "upload":
                         encryptionKey = PullFlag("-key", ref args, requiresValue: true);
+                        requesterPays = PullFlag("-pay", ref args, requiresValue: false);
                         if (args.Length < 3 && PrintUsage()) return -1;
-                        if (encryptionKey == null)
+                        if (encryptionKey != null)
                         {
-                            UploadFile(args[1], args[2], args.Length < 4 ? null : args[3]);
+                            UploadEncryptedFile(encryptionKey, args[1], args[2], args.Length < 4 ? null : args[3]);
+                        }
+                        else if (requesterPays != null)
+                        {
+                            UploadFileRequesterPays(args[1], args[2], args.Length < 4 ? null : args[3]);
                         }
                         else
                         {
-                            UploadEncryptedFile(encryptionKey, args[1], args[2], args.Length < 4 ? null : args[3]);
+                            UploadFile(args[1], args[2], args.Length < 4 ? null : args[3]);
                         }
                         break;
 

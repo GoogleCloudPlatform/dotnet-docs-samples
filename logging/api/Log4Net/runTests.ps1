@@ -13,9 +13,12 @@
 # the License.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
+Require-Platform Win*
+
 BackupAndEdit-TextFile "Web.config" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{       
+{
+    $env:LOG4NET_DIR = $PSScriptRoot        
     Build-Solution
     Run-IISExpressTest
 }
