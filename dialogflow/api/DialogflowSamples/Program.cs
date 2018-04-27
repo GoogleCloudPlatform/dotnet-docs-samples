@@ -25,6 +25,7 @@ namespace GoogleCloudSamples
 
             DetectIntentTexts.RegisterCommands(verbMap);
             DetectIntentAudio.RegisterCommands(verbMap);
+            DetectIntentStreaming.RegisterCommands(verbMap);
             ContextManagement.RegisterCommands(verbMap);
             IntentManagement.RegisterCommands(verbMap);
             EntityManagement.RegisterCommands(verbMap);

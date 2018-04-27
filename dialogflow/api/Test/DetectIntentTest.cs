@@ -61,5 +61,18 @@ namespace GoogleCloudSamples
             Assert.Contains("Fulfillment text: I can help with that. Where would you like to reserve a room?", Stdout);
             Assert.Matches(@"Intent confidence: \d", Stdout);
         }
+
+        [Fact]
+        void TestDetectIntentFromStreamingAudio()
+        {
+            var audioFile = Path.Combine("Resources", "book_a_room.wav");
+
+            RunWithSessionId("detect-intent:stream", audioFile);
+
+            Assert.Contains("Intermediate transcript:", Stdout);
+            Assert.Contains("book a room", Stdout);
+            Assert.Contains("Detected intent:", Stdout);
+            Assert.Contains("room.reservation", Stdout);
+        }
     }
 }
