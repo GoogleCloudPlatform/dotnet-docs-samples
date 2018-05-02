@@ -21,37 +21,37 @@ using CommandLine;
 
 namespace GoogleCloudSamples.Leaderboard
 {
-    [Verb("createSampleDatabase", HelpText = "Create a sample Cloud Spanner database along with sample tables in your project.")]
-    class CreateSampleDatabaseOptions
+    [Verb("create", HelpText = "Create a sample Cloud Spanner database "
+        + "along with sample 'Players' and 'Scores' tables in your project.")]
+    class CreateOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use when creating Cloud Spanner resources.", Required = true)]
+        [Value(0, HelpText = "The project ID of the project to use "
+            + "when creating Cloud Spanner resources.", Required = true)]
         public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database will be created.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance where the sample database "
+            + "will be created.", Required = true)]
         public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the sample database to create.", Required = true)]
+        [Value(2, HelpText = "The ID of the sample database to create.",
+            Required = true)]
         public string databaseId { get; set; }
     }
 
-    [Verb("insertPlayers", HelpText = "Insert 100 sample Player records into the database.")]
-    class InsertPlayerOptions
+    [Verb("insert", HelpText = "Insert sample 'players' records or 'scores' records "
+        + "into the database.")]
+    class InsertOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        [Value(0, HelpText = "The project ID of the project to use "
+            + "when managing Cloud Spanner resources.", Required = true)]
         public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.",
+            Required = true)]
         public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        [Value(2, HelpText = "The ID of the database where the sample database resides.",
+            Required = true)]
         public string databaseId { get; set; }
-    }
-
-    [Verb("insertScores", HelpText = "Insert sample score data into Scores sample Cloud Spanner database table.")]
-    class InsertScoresOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample data will be inserted.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample data will be inserted.", Required = true)]
-        public string databaseId { get; set; }
+        [Value(3, HelpText = "The type of insert to perform, 'players' or 'scores'.",
+            Required = true)]
+        public string insertType { get; set; }
     }
 
     public class Program
@@ -62,11 +62,11 @@ namespace GoogleCloudSamples.Leaderboard
             InvalidParameter = 1,
         }
 
-        public static object CreateSampleDatabase(string projectId,
+        public static object Create(string projectId,
             string instanceId, string databaseId)
         {
             var response =
-                CreateSampleDatabaseAsync(projectId, instanceId, databaseId);
+                CreateAsync(projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
             response.Wait();
             Console.WriteLine($"Operation status: {response.Status}");
@@ -75,7 +75,7 @@ namespace GoogleCloudSamples.Leaderboard
             return ExitCode.Success;
         }
 
-        public static async Task CreateSampleDatabaseAsync(
+        public static async Task CreateAsync(
             string projectId, string instanceId, string databaseId)
         {
             // Initialize request connection string for database creation.
@@ -90,7 +90,8 @@ namespace GoogleCloudSamples.Leaderboard
                 {
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
+                catch (SpannerException e) when
+                    (e.ErrorCode == ErrorCode.AlreadyExists)
                 {
                     // OK.
                 }
@@ -100,36 +101,52 @@ namespace GoogleCloudSamples.Leaderboard
             using (var connection = new SpannerConnection(connectionString))
             {
                 // Define create table statement for table #1.
-                string createTableStatement =
+                string createPlayersTableStatement =
                @"CREATE TABLE Players(
                     PlayerId INT64 NOT NULL,
                     PlayerName STRING(2048) NOT NULL
                 ) PRIMARY KEY(PlayerId)";
-                // Make the request.
-                var cmd = connection.CreateDdlCommand(createTableStatement);
-                await cmd.ExecuteNonQueryAsync();
                 // Define create table statement for table #2.
-                createTableStatement =
+                string createScoresTableStatement =
                 @"CREATE TABLE Scores(
                     PlayerId INT64 NOT NULL,
                     Score INT64 NOT NULL,
                     Timestamp TIMESTAMP NOT NULL OPTIONS(allow_commit_timestamp=true)
-                ) PRIMARY KEY(PlayerId, Timestamp), INTERLEAVE IN PARENT Players ON DELETE NO ACTION";
+                ) PRIMARY KEY(PlayerId, Timestamp),
+                    INTERLEAVE IN PARENT Players ON DELETE NO ACTION";
                 // Make the request.
-                cmd = connection.CreateDdlCommand(createTableStatement);
+                var cmd = connection.CreateDdlCommand(
+                    createPlayersTableStatement, createScoresTableStatement);
                 await cmd.ExecuteNonQueryAsync();
             }
         }
 
-        public static object InsertPlayers(string projectId,
-            string instanceId, string databaseId)
+        public static object Insert(string projectId,
+            string instanceId, string databaseId, string insertType)
         {
-            var responseTask =
-                InsertPlayersAsync(projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
-            responseTask.Wait();
-            Console.WriteLine($"Operation status: {responseTask.Status}");
-            Console.WriteLine($"Inserted records into sample database "
+            if (insertType.ToLower() == "players")
+            {
+                var responseTask =
+                    InsertPlayersAsync(projectId, instanceId, databaseId);
+                Console.WriteLine("Waiting for insert players operation to complete...");
+                responseTask.Wait();
+                Console.WriteLine($"Operation status: {responseTask.Status}");
+            }
+            else if (insertType.ToLower() == "scores")
+            {
+                var responseTask =
+                    InsertScoresAsync(projectId, instanceId, databaseId);
+                Console.WriteLine("Waiting for insert scores operation to complete...");
+                responseTask.Wait();
+                Console.WriteLine($"Operation status: {responseTask.Status}");
+            }
+            else
+            {
+                Console.WriteLine("Invalid value for 'type of insert'. "
+                    + "Specify 'players' or 'scores'.");
+                return ExitCode.InvalidParameter;
+            }
+            Console.WriteLine($"Inserted {insertType} into sample database "
                 + $"{databaseId} on instance {instanceId}");
             return ExitCode.Success;
         }
@@ -146,7 +163,8 @@ namespace GoogleCloudSamples.Leaderboard
                 await connection.OpenAsync();
                 using (var tx = await connection.BeginTransactionAsync())
                 {
-                    // Execute a SQL statement to get current number of records in the Players table.
+                    // Execute a SQL statement to get current number of records
+                    // in the Players table.
                     var cmd = connection.CreateSelectCommand(
                         @"SELECT Count(PlayerId) as PlayerCount FROM Players");
                     cmd.Transaction = tx;
@@ -158,7 +176,8 @@ namespace GoogleCloudSamples.Leaderboard
                             if (reader["PlayerCount"] != DBNull.Value)
                             {
                                 bool result = Int64.TryParse(
-                                    reader.GetFieldValue<string>("PlayerCount"), out parsedValue);
+                                    reader.GetFieldValue<string>("PlayerCount"),
+                                        out parsedValue);
                                 if (result)
                                 {
                                     numberOfPlayers = parsedValue;
@@ -167,7 +186,8 @@ namespace GoogleCloudSamples.Leaderboard
                         }
                     }
                     // Insert 100 player records into the Players table.
-                    using (cmd = connection.CreateInsertCommand("Players", new SpannerParameterCollection
+                    using (cmd = connection.CreateInsertCommand(
+                        "Players", new SpannerParameterCollection
                     {
                         { "PlayerId", SpannerDbType.String },
                         { "PlayerName", SpannerDbType.String }
@@ -177,8 +197,10 @@ namespace GoogleCloudSamples.Leaderboard
                         for (var x = 1; x <= 100; x++)
                         {
                             numberOfPlayers++;
-                            cmd.Parameters["PlayerId"].Value = Math.Abs(Guid.NewGuid().GetHashCode());
-                            cmd.Parameters["PlayerName"].Value = $"Player {numberOfPlayers}";
+                            cmd.Parameters["PlayerId"].Value =
+                                Math.Abs(Guid.NewGuid().GetHashCode());
+                            cmd.Parameters["PlayerName"].Value =
+                                $"Player {numberOfPlayers}";
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -186,17 +208,6 @@ namespace GoogleCloudSamples.Leaderboard
                 }
             }
             Console.WriteLine("Done inserting player records...");
-        }
-
-        public static object InsertScores(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = InsertScoresAsync(
-                projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
-            response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
-            return ExitCode.Success;
         }
 
         public static async Task InsertScoresAsync(
@@ -211,13 +222,19 @@ namespace GoogleCloudSamples.Leaderboard
             {
                 await connection.OpenAsync();
                 Random r = new Random();
+                bool playerRecordsFound = false;
                 var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Players");
                 using (var reader = await cmdLookup.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
+                        if (!playerRecordsFound)
+                        {
+                            playerRecordsFound = true;
+                        }
                         using (var tx = await connection.BeginTransactionAsync())
-                        using (var cmd = connection.CreateInsertCommand("Scores", new SpannerParameterCollection
+                        using (var cmd = connection.CreateInsertCommand(
+                            "Scores", new SpannerParameterCollection
                         {
                             { "PlayerId", SpannerDbType.String },
                             { "Score", SpannerDbType.Int64 },
@@ -228,37 +245,47 @@ namespace GoogleCloudSamples.Leaderboard
                             for (var x = 1; x <= 4; x++)
                             {
                                 DateTime randomTimestamp = DateTime.Now
-                                    .AddYears(r.Next(-1, 1))
+                                    .AddYears(r.Next(-2, 1))
                                     .AddMonths(r.Next(-12, 1))
                                     .AddDays(r.Next(-10, 1))
                                     .AddSeconds(r.Next(-60, 0))
                                     .AddMilliseconds(r.Next(-100000, 0));
-                                cmd.Parameters["PlayerId"].Value = reader.GetFieldValue<int>("PlayerId");
-                                // Insert random value for score between 10000 and 1000000.
+                                cmd.Parameters["PlayerId"].Value =
+                                    reader.GetFieldValue<int>("PlayerId");
+                                // Insert random score value between 10000 and 1000000.
                                 cmd.Parameters["Score"].Value = r.Next(1000, 1000001);
-                                // Insert random past timestamp value into Timestamp column.
-                                cmd.Parameters["Timestamp"].Value = randomTimestamp.ToString("o");
+                                // Insert random past timestamp
+                                // value into Timestamp column.
+                                cmd.Parameters["Timestamp"].Value =
+                                    randomTimestamp.ToString("o");
                                 cmd.ExecuteNonQuery();
                             }
                             await tx.CommitAsync();
                         }
                     }
+                    if (!playerRecordsFound)
+                    {
+                        Console.WriteLine("Parameter 'scores' is invalid since "
+                        + "no player records currently exist. First insert players "
+                        + "then insert scores.");
+                        Environment.Exit((int)ExitCode.InvalidParameter);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Done inserting score records...");
+                    }
                 }
             }
-            Console.WriteLine("Done inserting score records...");
         }
 
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
             verbMap
-                .Add((CreateSampleDatabaseOptions opts) =>
-                    CreateSampleDatabase(opts.projectId, opts.instanceId,
-                        opts.databaseId))
-                .Add((InsertPlayerOptions opts) => InsertPlayers(
+                .Add((CreateOptions opts) => Create(
                     opts.projectId, opts.instanceId, opts.databaseId))
-                .Add((InsertScoresOptions opts) => InsertScores(
-                    opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((InsertOptions opts) => Insert(
+                    opts.projectId, opts.instanceId, opts.databaseId, opts.insertType))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
