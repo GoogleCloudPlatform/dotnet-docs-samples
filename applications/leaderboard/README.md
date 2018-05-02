@@ -9,13 +9,12 @@ This sample requires [.NET Core 2.0](
 [Visual Studio 2017](
     https://www.visualstudio.com/), or the command line.
 
-This sample includes extra directories step1, step2, step3, step4 and step5 that contain partial versions of this sample app. These directories are intended to provide guidance as part of a separate Codelab walk-through where the application is built in the following stages:
+This sample includes extra directories step5, step6, and step7 that contain partial versions of this sample app. These directories are intended to provide guidance as part of a separate Codelab walk-through where the application is built in the following stages
+that correspond to the steps in Codelab:
 
-* step1 - Create the sample database along with the tables Players and Scores.
-* step2 - Populate the Players tables with sample data.
-* step3 - Populate the Scores table with sample data.
-* step4 - Run sample queries including sorting the results by timestamp.
-* step5 - Delete the sample database.
+* step5 - Create the sample database along with the tables Players and Scores.
+* step6 - Populate the Players and Scores tables with sample data.
+* step7 - Run sample queries including sorting the results by timestamp.
 
 If you only want to run the complete sample refer to the application in the Leaderboard directory.
 
