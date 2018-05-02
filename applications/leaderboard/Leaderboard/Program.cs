@@ -21,69 +21,66 @@ using CommandLine;
 
 namespace GoogleCloudSamples.Leaderboard
 {
-    [Verb("createSampleDatabase", HelpText = "Create a sample Cloud Spanner database along with sample tables in your project.")]
-    class CreateSampleDatabaseOptions
+    [Verb("create", HelpText = "Create a sample Cloud Spanner database "
+        + "along with sample 'Players' and 'Scores' tables in your project.")]
+    class CreateOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use when creating Cloud Spanner resources.", Required = true)]
+        [Value(0, HelpText = "The project ID of the project to use "
+            + "when creating Cloud Spanner resources.", Required = true)]
         public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database will be created.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance where the sample database "
+            + "will be created.", Required = true)]
         public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the sample database to create.", Required = true)]
+        [Value(2, HelpText = "The ID of the sample database to create.",
+            Required = true)]
         public string databaseId { get; set; }
     }
 
-    [Verb("insertPlayers", HelpText = "Insert 100 sample Player records into the database.")]
-    class InsertPlayerOptions
+    [Verb("insert", HelpText = "Insert sample 'players' records or 'scores' records "
+        + "into the database.")]
+    class InsertOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        [Value(0, HelpText = "The project ID of the project to use "
+            + "when managing Cloud Spanner resources.", Required = true)]
         public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.",
+            Required = true)]
         public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        [Value(2, HelpText = "The ID of the database where the sample database resides.",
+            Required = true)]
         public string databaseId { get; set; }
+        [Value(3, HelpText = "The type of insert to perform, 'players' or 'scores'.",
+            Required = true)]
+        public string insertType { get; set; }
     }
 
-    [Verb("insertScores", HelpText = "Insert sample score data into Scores sample Cloud Spanner database table.")]
-    class InsertScoresOptions
+    [Verb("query", HelpText = "Query players with 'Top Ten' scores within a specific timespan "
+        + "from sample Cloud Spanner database table.")]
+    class QueryOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        [Value(0, HelpText = "The project ID of the project to use "
+            + "when managing Cloud Spanner resources.", Required = true)]
         public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample data will be inserted.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance where the sample data resides.",
+            Required = true)]
         public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample data will be inserted.", Required = true)]
+        [Value(2, HelpText = "The ID of the database where the sample data resides.",
+            Required = true)]
         public string databaseId { get; set; }
-    }
-
-    [Verb("queryTopTenAllTime", HelpText = "Query players with top ten scores of all time from sample Cloud Spanner database table.")]
-    class QueryTopTenAllTimeOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample data resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample data resides.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
-    [Verb("queryTopTenWithTimespan", HelpText = "Query players with top ten scores within a specific timespan from sample Cloud Spanner database table.")]
-    class QueryTopTenWithTimespanOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample data resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample data resides.", Required = true)]
-        public string databaseId { get; set; }
-        [Value(3, HelpText = "The timespan in hours that will be used to filter the results based on a record's timestamp.", Required = true)]
+        [Value(3, Default = 0, HelpText = "The timespan in hours that will be used to filter the "
+            + "results based on a record's timestamp. The default will return the "
+            + "'Top Ten' scores of all time.")]
         public int timespan { get; set; }
     }
 
-    [Verb("deleteDatabase", HelpText = "Delete a Spanner database.")]
+    [Verb("delete", HelpText = "Delete a Spanner database.")]
     class DeleteOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        [Value(0, HelpText = "The project ID of the project to use "
+            + "when managing Cloud Spanner resources.", Required = true)]
         public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.",
+            Required = true)]
         public string instanceId { get; set; }
         [Value(2, HelpText = "The ID of the database to delete.", Required = true)]
         public string databaseId { get; set; }
@@ -97,11 +94,11 @@ namespace GoogleCloudSamples.Leaderboard
             InvalidParameter = 1,
         }
 
-        public static object CreateSampleDatabase(string projectId,
+        public static object Create(string projectId,
             string instanceId, string databaseId)
         {
             var response =
-                CreateSampleDatabaseAsync(projectId, instanceId, databaseId);
+                CreateAsync(projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
             response.Wait();
             Console.WriteLine($"Operation status: {response.Status}");
@@ -110,61 +107,69 @@ namespace GoogleCloudSamples.Leaderboard
             return ExitCode.Success;
         }
 
-        public static async Task CreateSampleDatabaseAsync(
+        public static async Task CreateAsync(
             string projectId, string instanceId, string databaseId)
         {
             // Initialize request connection string for database creation.
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}";
-            // Make the request.
             using (var connection = new SpannerConnection(connectionString))
             {
                 string createStatement = $"CREATE DATABASE `{databaseId}`";
-                var cmd = connection.CreateDdlCommand(createStatement);
+                string[] createTableStatements = new string[] {
+                  // Define create table statement for Players table.
+                  @"CREATE TABLE Players(
+                  PlayerId INT64 NOT NULL,
+                  PlayerName STRING(2048) NOT NULL
+                  ) PRIMARY KEY(PlayerId)",
+                  // Define create table statement for Scores table.
+                  @"CREATE TABLE Scores(
+                  PlayerId INT64 NOT NULL,
+                  Score INT64 NOT NULL,
+                  Timestamp TIMESTAMP NOT NULL OPTIONS(allow_commit_timestamp=true)
+                  ) PRIMARY KEY(PlayerId, Timestamp),
+                    INTERLEAVE IN PARENT Players ON DELETE NO ACTION" };
+                // Make the request.
+                var cmd = connection.CreateDdlCommand(
+                    createStatement, createTableStatements);
                 try
                 {
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
+                catch (SpannerException e) when
+                    (e.ErrorCode == ErrorCode.AlreadyExists)
                 {
                     // OK.
                 }
             }
-            // Update connection string with Database ID for table creation.
-            connectionString = connectionString + $"/databases/{databaseId}";
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                // Define create table statement for table #1.
-                string createTableStatement =
-               @"CREATE TABLE Players(
-                    PlayerId INT64 NOT NULL,
-                    PlayerName STRING(2048) NOT NULL
-                ) PRIMARY KEY(PlayerId)";
-                // Make the request.
-                var cmd = connection.CreateDdlCommand(createTableStatement);
-                await cmd.ExecuteNonQueryAsync();
-                // Define create table statement for table #2.
-                createTableStatement =
-                @"CREATE TABLE Scores(
-                    PlayerId INT64 NOT NULL,
-                    Score INT64 NOT NULL,
-                    Timestamp TIMESTAMP NOT NULL OPTIONS(allow_commit_timestamp=true)
-                ) PRIMARY KEY(PlayerId, Timestamp), INTERLEAVE IN PARENT Players ON DELETE NO ACTION";
-                // Make the request.
-                cmd = connection.CreateDdlCommand(createTableStatement);
-                await cmd.ExecuteNonQueryAsync();
-            }
         }
 
-        public static object InsertPlayers(string projectId,
-            string instanceId, string databaseId)
+        public static object Insert(string projectId,
+            string instanceId, string databaseId, string insertType)
         {
-            var responseTask =
-                InsertPlayersAsync(projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
-            responseTask.Wait();
-            Console.WriteLine($"Operation status: {responseTask.Status}");
-            Console.WriteLine($"Inserted records into sample database "
+            if (insertType.ToLower() == "players")
+            {
+                var responseTask =
+                    InsertPlayersAsync(projectId, instanceId, databaseId);
+                Console.WriteLine("Waiting for insert players operation to complete...");
+                responseTask.Wait();
+                Console.WriteLine($"Operation status: {responseTask.Status}");
+            }
+            else if (insertType.ToLower() == "scores")
+            {
+                var responseTask =
+                    InsertScoresAsync(projectId, instanceId, databaseId);
+                Console.WriteLine("Waiting for insert scores operation to complete...");
+                responseTask.Wait();
+                Console.WriteLine($"Operation status: {responseTask.Status}");
+            }
+            else
+            {
+                Console.WriteLine("Invalid value for 'type of insert'. "
+                    + "Specify 'players' or 'scores'.");
+                return ExitCode.InvalidParameter;
+            }
+            Console.WriteLine($"Inserted {insertType} into sample database "
                 + $"{databaseId} on instance {instanceId}");
             return ExitCode.Success;
         }
@@ -181,7 +186,8 @@ namespace GoogleCloudSamples.Leaderboard
                 await connection.OpenAsync();
                 using (var tx = await connection.BeginTransactionAsync())
                 {
-                    // Execute a SQL statement to get current number of records in the Players table.
+                    // Execute a SQL statement to get current number of records
+                    // in the Players table.
                     var cmd = connection.CreateSelectCommand(
                         @"SELECT Count(PlayerId) as PlayerCount FROM Players");
                     cmd.Transaction = tx;
@@ -193,7 +199,8 @@ namespace GoogleCloudSamples.Leaderboard
                             if (reader["PlayerCount"] != DBNull.Value)
                             {
                                 bool result = Int64.TryParse(
-                                    reader.GetFieldValue<string>("PlayerCount"), out parsedValue);
+                                    reader.GetFieldValue<string>("PlayerCount"),
+                                        out parsedValue);
                                 if (result)
                                 {
                                     numberOfPlayers = parsedValue;
@@ -202,7 +209,8 @@ namespace GoogleCloudSamples.Leaderboard
                         }
                     }
                     // Insert 100 player records into the Players table.
-                    using (cmd = connection.CreateInsertCommand("Players", new SpannerParameterCollection
+                    using (cmd = connection.CreateInsertCommand(
+                        "Players", new SpannerParameterCollection
                     {
                         { "PlayerId", SpannerDbType.String },
                         { "PlayerName", SpannerDbType.String }
@@ -212,8 +220,10 @@ namespace GoogleCloudSamples.Leaderboard
                         for (var x = 1; x <= 100; x++)
                         {
                             numberOfPlayers++;
-                            cmd.Parameters["PlayerId"].Value = Math.Abs(Guid.NewGuid().GetHashCode());
-                            cmd.Parameters["PlayerName"].Value = $"Player {numberOfPlayers}";
+                            cmd.Parameters["PlayerId"].Value =
+                                Math.Abs(Guid.NewGuid().GetHashCode());
+                            cmd.Parameters["PlayerName"].Value =
+                                $"Player {numberOfPlayers}";
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -221,17 +231,6 @@ namespace GoogleCloudSamples.Leaderboard
                 }
             }
             Console.WriteLine("Done inserting player records...");
-        }
-
-        public static object InsertScores(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = InsertScoresAsync(
-                projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
-            response.Wait();
-            Console.WriteLine($"Operation status: {response.Status}");
-            return ExitCode.Success;
         }
 
         public static async Task InsertScoresAsync(
@@ -246,13 +245,19 @@ namespace GoogleCloudSamples.Leaderboard
             {
                 await connection.OpenAsync();
                 Random r = new Random();
+                bool playerRecordsFound = false;
                 var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Players");
                 using (var reader = await cmdLookup.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
+                        if (!playerRecordsFound)
+                        {
+                            playerRecordsFound = true;
+                        }
                         using (var tx = await connection.BeginTransactionAsync())
-                        using (var cmd = connection.CreateInsertCommand("Scores", new SpannerParameterCollection
+                        using (var cmd = connection.CreateInsertCommand(
+                            "Scores", new SpannerParameterCollection
                         {
                             { "PlayerId", SpannerDbType.String },
                             { "Score", SpannerDbType.Int64 },
@@ -263,76 +268,49 @@ namespace GoogleCloudSamples.Leaderboard
                             for (var x = 1; x <= 4; x++)
                             {
                                 DateTime randomTimestamp = DateTime.Now
-                                    .AddYears(r.Next(-1, 1))
+                                    .AddYears(r.Next(-2, 1))
                                     .AddMonths(r.Next(-12, 1))
                                     .AddDays(r.Next(-10, 1))
                                     .AddSeconds(r.Next(-60, 0))
                                     .AddMilliseconds(r.Next(-100000, 0));
-                                cmd.Parameters["PlayerId"].Value = reader.GetFieldValue<int>("PlayerId");
-                                // Insert random value for score between 10000 and 1000000.
+                                cmd.Parameters["PlayerId"].Value =
+                                    reader.GetFieldValue<int>("PlayerId");
+                                // Insert random score value between 10000 and 1000000.
                                 cmd.Parameters["Score"].Value = r.Next(1000, 1000001);
-                                // Insert random past timestamp value into Timestamp column.
-                                cmd.Parameters["Timestamp"].Value = randomTimestamp.ToString("o");
+                                // Insert random past timestamp
+                                // value into Timestamp column.
+                                cmd.Parameters["Timestamp"].Value =
+                                    randomTimestamp.ToString("o");
                                 cmd.ExecuteNonQuery();
                             }
                             await tx.CommitAsync();
                         }
                     }
-                }
-            }
-            Console.WriteLine("Done inserting score records...");
-        }
-
-        public static object QueryTopTenAllTime(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryTopTenAllTimeAsync(
-                projectId, instanceId, databaseId);
-            response.Wait();
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryTopTenAllTimeAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/"
-            + $"{instanceId}/databases/{databaseId}";
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    @"SELECT p.PlayerId, p.PlayerName, s.Score, s.Timestamp
-                        FROM Players p
-                        JOIN Scores s ON p.PlayerId = s.PlayerId
-                        ORDER BY s.Score DESC LIMIT 10");
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
+                    if (!playerRecordsFound)
                     {
-                        Console.WriteLine("PlayerId : "
-                            + reader.GetFieldValue<string>("PlayerId")
-                            + " PlayerName : "
-                            + reader.GetFieldValue<string>("PlayerName")
-                            + " Score : "
-                            + reader.GetFieldValue<string>("Score")
-                            + " Timestamp : "
-                            + reader.GetFieldValue<string>("Timestamp"));
+                        Console.WriteLine("Parameter 'scores' is invalid since "
+                        + "no player records currently exist. First insert players "
+                        + "then insert scores.");
+                        Environment.Exit((int)ExitCode.InvalidParameter);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Done inserting score records...");
                     }
                 }
             }
         }
 
-        public static object QueryTopTenWithTimespan(string projectId,
+        public static object Query(string projectId,
             string instanceId, string databaseId, int timespan)
         {
-            var response = QueryTopTenWithTimespanAsync(
+            var response = QueryAsync(
                 projectId, instanceId, databaseId, timespan);
             response.Wait();
             return ExitCode.Success;
         }
 
-        public static async Task QueryTopTenWithTimespanAsync(
+        public static async Task QueryAsync(
             string projectId, string instanceId, string databaseId, int timespan)
         {
             string connectionString =
@@ -341,35 +319,52 @@ namespace GoogleCloudSamples.Leaderboard
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
             {
-                var cmd = connection.CreateSelectCommand(
-                    $@"SELECT p.PlayerId, p.PlayerName, s.Score, s.Timestamp
-                        FROM Players p
-                        JOIN Scores s ON p.PlayerId = s.PlayerId
-                        WHERE s.Timestamp >
-                        TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL {timespan.ToString()} HOUR)
-                        ORDER BY s.Score DESC LIMIT 10");
+                string sqlCommand;
+                if (timespan == 0)
+                {
+                    // No timespan specified. Query Top Ten scores of all time.
+                    sqlCommand =
+                        @"SELECT p.PlayerId, p.PlayerName, s.Score, s.Timestamp
+                            FROM Players p
+                            JOIN Scores s ON p.PlayerId = s.PlayerId
+                            ORDER BY s.Score DESC LIMIT 10";
+                }
+                else
+                {
+                    // Query Top Ten scores filtered by the timepan specified.
+                    sqlCommand =
+                        $@"SELECT p.PlayerId, p.PlayerName, s.Score, s.Timestamp
+                            FROM Players p
+                            JOIN Scores s ON p.PlayerId = s.PlayerId
+                            WHERE s.Timestamp >
+                            TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                INTERVAL {timespan.ToString()} HOUR)
+                            ORDER BY s.Score DESC LIMIT 10";
+                }
+                var cmd = connection.CreateSelectCommand(sqlCommand);
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
                         Console.WriteLine("PlayerId : "
-                            + reader.GetFieldValue<string>("PlayerId")
-                            + " PlayerName : "
-                            + reader.GetFieldValue<string>("PlayerName")
-                            + " Score : "
-                            + reader.GetFieldValue<string>("Score")
-                            + " Timestamp : "
-                            + reader.GetFieldValue<string>("Timestamp"));
+                          + reader.GetFieldValue<string>("PlayerId")
+                          + " PlayerName : "
+                          + reader.GetFieldValue<string>("PlayerName")
+                          + " Score : "
+                          + string.Format("{0:n0}",
+                            Int64.Parse(reader.GetFieldValue<string>("Score")))
+                          + " Timestamp : "
+                          + reader.GetFieldValue<string>("Timestamp").Substring(0, 10));
                     }
                 }
             }
         }
 
-        public static object DeleteDatabase(string projectId,
+        public static object Delete(string projectId,
             string instanceId, string databaseId)
         {
             var response =
-                DeleteDatabaseAsync(projectId, instanceId, databaseId);
+                DeleteAsync(projectId, instanceId, databaseId);
             Console.WriteLine("Waiting for operation to complete...");
             response.Wait();
             Console.WriteLine($"Operation status: {response.Status}");
@@ -378,7 +373,7 @@ namespace GoogleCloudSamples.Leaderboard
             return ExitCode.Success;
         }
 
-        private static async Task DeleteDatabaseAsync(string projectId,
+        private static async Task DeleteAsync(string projectId,
             string instanceId, string databaseId)
         {
             string AdminConnectionString = $"Data Source=projects/{projectId}/"
@@ -396,19 +391,14 @@ namespace GoogleCloudSamples.Leaderboard
         {
             var verbMap = new VerbMap<object>();
             verbMap
-                .Add((CreateSampleDatabaseOptions opts) =>
-                    CreateSampleDatabase(opts.projectId, opts.instanceId,
-                        opts.databaseId))
-                .Add((InsertPlayerOptions opts) => InsertPlayers(
+                .Add((CreateOptions opts) => Create(
                     opts.projectId, opts.instanceId, opts.databaseId))
-                .Add((InsertScoresOptions opts) => InsertScores(
-                    opts.projectId, opts.instanceId, opts.databaseId))
-                .Add((QueryTopTenAllTimeOptions opts) => QueryTopTenAllTime(
-                    opts.projectId, opts.instanceId, opts.databaseId))
-                .Add((QueryTopTenWithTimespanOptions opts) => QueryTopTenWithTimespan(
+                .Add((InsertOptions opts) => Insert(
+                    opts.projectId, opts.instanceId, opts.databaseId, opts.insertType))
+                .Add((QueryOptions opts) => Query(
                     opts.projectId, opts.instanceId, opts.databaseId, opts.timespan))
-                .Add((DeleteOptions opts) =>
-                    DeleteDatabase(opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((DeleteOptions opts) => Delete(
+                    opts.projectId, opts.instanceId, opts.databaseId))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
