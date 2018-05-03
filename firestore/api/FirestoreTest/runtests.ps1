@@ -12,5 +12,28 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-dotnet restore
-dotnet test --test-adapter-path:. --logger:junit
+Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+
+$randomString = ""
+1..10 | foreach {
+	$char = [char] (65 + (Get-Random 26) )
+	$randomString = $randomString+$char
+}
+$usersCollection = "kokoro-test-users-"+$randomString
+$citiesCollection = "kokoro-test-cities-"+$randomString
+$dataCollection = "kokoro-test-data-"+$randomString
+
+BackupAndEdit-TextFile "FirestoreTest.cs","..\Quickstart\Program.cs","..\AddData\Program.cs","..\DataModel\Program.cs","..\DeleteData\Program.cs","..\GetData\Program.cs","..\ManageIndexes\Program.cs","..\OrderLimitData\Program.cs","..\PaginateData\Program.cs","..\QueryData\Program.cs","..\TransactionsAndBatchedWrites\Program.cs" `
+	@{'db.Collection("users")' = 'db.Collection("'+$usersCollection+'")';
+	  'db.Collection("cities")' = 'db.Collection("'+$citiesCollection+'")';
+	  'db.Collection("data")' = 'db.Collection("'+$dataCollection+'")';
+	  'DeleteCollection("users")' = 'DeleteCollection("'+$usersCollection+'")';
+	  'DeleteCollection("cities")' = 'DeleteCollection("'+$citiesCollection+'")';
+	  'DeleteCollection("data")' = 'DeleteCollection("'+$dataCollection+'")';
+	  'DeleteCollection("cities/SF/neighborhoods")' = 'DeleteCollection("'+$citiesCollection+'/SF/neighborhoods")';
+	  'YOUR_COLLECTION_NAME' = $citiesCollection;
+	  } `
+{
+    dotnet restore
+    dotnet test
+}

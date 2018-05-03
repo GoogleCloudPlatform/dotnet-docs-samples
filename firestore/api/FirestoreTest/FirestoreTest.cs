@@ -127,6 +127,17 @@ namespace GoogleCloudSamples
             return _paginateData.Run(args);
         }
 
+        readonly CommandLineRunner _manageIndexes = new CommandLineRunner()
+        {
+            VoidMain = ManageIndexes.Main,
+            Command = "dotnet run"
+        };
+
+        protected ConsoleOutput RunManageIndexes(params string[] args)
+        {
+            return _manageIndexes.Run(args);
+        }
+
         private static async Task DeleteCollection(string collection)
         {
             FirestoreDb db = FirestoreDb.Create(Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -142,9 +153,9 @@ namespace GoogleCloudSamples
         public void Dispose()
         {
             DeleteCollection("users").Wait();
+            DeleteCollection("cities/SF/neighborhoods").Wait();
             DeleteCollection("cities").Wait();
             DeleteCollection("data").Wait();
-            DeleteCollection("cities/SF/neighborhoods").Wait();
         }
         
         // QUICKSTART TESTS
@@ -418,6 +429,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void CompositeIndexChainedQueryTest()
         {
+            var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunQueryData("composite-index-chained-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document SF returned by query State=CA and Population<1000000", output.Stdout);
@@ -463,6 +476,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void OrderByStateAndPopulationQueryTest()
         {
+            var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunOrderLimitData("order-by-state-and-population-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document LA returned by order by state and descending population query", output.Stdout);
@@ -580,6 +595,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void MultipleCursorConditionsTest()
         {
+            var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             RunPaginateData("multiple-cursor-conditions", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
         }
