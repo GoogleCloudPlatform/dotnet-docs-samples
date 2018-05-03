@@ -157,7 +157,7 @@ namespace GoogleCloudSamples
             DeleteCollection("cities").Wait();
             DeleteCollection("data").Wait();
         }
-        
+
         // QUICKSTART TESTS
         [Fact]
         public void InitializeProjectIdTest()
