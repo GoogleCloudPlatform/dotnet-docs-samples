@@ -13,6 +13,7 @@
 # the License.
 
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
+Require-Platform Win*
 Set-TestTimeout 600
 
 dotnet restore
