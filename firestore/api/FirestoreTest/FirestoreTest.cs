@@ -26,7 +26,46 @@ using Google.Cloud.Firestore;
 
 namespace GoogleCloudSamples
 {
-    public class FirestoreTests : IDisposable
+    public class FirestoreFixture : IDisposable
+    {
+
+        // Clean-up function to delete all documents in a collection
+        private static async Task DeleteCollection(string collection)
+        {
+            FirestoreDb db = FirestoreDb.Create(Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            CollectionReference collectionReference = db.Collection(collection);
+            QuerySnapshot snapshot = await collectionReference.SnapshotAsync();
+            IReadOnlyList<DocumentSnapshot> documents = snapshot.Documents;
+            foreach (DocumentSnapshot document in documents)
+            {
+                await document.Reference.DeleteAsync();
+            }
+        }
+        
+        // Clean up function to delete all collections and indexes after testing is complete
+        public void Dispose()
+        {
+            CommandLineRunner _manageIndexes = new CommandLineRunner()
+            {
+                VoidMain = ManageIndexes.Main,
+                Command = "dotnet run"
+            };
+
+            ConsoleOutput RunManageIndexes(params string[] args)
+            {
+                return _manageIndexes.Run(args);
+            }
+
+            DeleteCollection("users").Wait();
+            DeleteCollection("cities/SF/neighborhoods").Wait();
+            DeleteCollection("cities").Wait();
+            DeleteCollection("data").Wait();
+            var manageIndexesOutput = RunManageIndexes("delete-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Index deletion completed!", manageIndexesOutput.Stdout);
+        }
+    }
+
+    public class FirestoreTests : IClassFixture<FirestoreFixture>
     {
         readonly CommandLineRunner _quickstart = new CommandLineRunner()
         {
@@ -136,26 +175,6 @@ namespace GoogleCloudSamples
         protected ConsoleOutput RunManageIndexes(params string[] args)
         {
             return _manageIndexes.Run(args);
-        }
-
-        private static async Task DeleteCollection(string collection)
-        {
-            FirestoreDb db = FirestoreDb.Create(Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            CollectionReference collectionReference = db.Collection(collection);
-            QuerySnapshot snapshot = await collectionReference.SnapshotAsync();
-            IReadOnlyList<DocumentSnapshot> documents = snapshot.Documents;
-            foreach (DocumentSnapshot document in documents)
-            {
-                await document.Reference.DeleteAsync();
-            }
-        }
-
-        public void Dispose()
-        {
-            DeleteCollection("users").Wait();
-            DeleteCollection("cities/SF/neighborhoods").Wait();
-            DeleteCollection("cities").Wait();
-            DeleteCollection("data").Wait();
         }
 
         // QUICKSTART TESTS

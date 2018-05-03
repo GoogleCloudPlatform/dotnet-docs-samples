@@ -186,6 +186,7 @@ Where command is one of
                 UriBuilder deleteUri = new UriBuilder(uriString);
                 await http.DeleteAsync(deleteUri.Uri);
             }
+            Console.WriteLine("Index deletion completed!");
         }
         // [END fs_delete_indexes]
 
