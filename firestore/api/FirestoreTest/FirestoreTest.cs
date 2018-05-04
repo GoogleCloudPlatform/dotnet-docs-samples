@@ -28,7 +28,6 @@ namespace GoogleCloudSamples
 {
     public class FirestoreFixture : IDisposable
     {
-
         // Clean-up function to delete all documents in a collection
         private static async Task DeleteCollection(string collection)
         {
@@ -41,7 +40,7 @@ namespace GoogleCloudSamples
                 await document.Reference.DeleteAsync();
             }
         }
-        
+
         // Clean up function to delete all collections and indexes after testing is complete
         public void Dispose()
         {
@@ -53,8 +52,8 @@ namespace GoogleCloudSamples
 
             ConsoleOutput RunManageIndexes(params string[] args)
             {
-                return _manageIndexes.Run(args);
-            }
+    return _manageIndexes.Run(args);
+}
 
             DeleteCollection("users").Wait();
             DeleteCollection("cities/SF/neighborhoods").Wait();

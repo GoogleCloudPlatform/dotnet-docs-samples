@@ -102,7 +102,8 @@ Where command is one of
             foreach (var index in result.indexes)
             {
                 Console.WriteLine(index.name);
-                if (index.collectionId == collectionId & index.state == "READY") {
+                if (index.collectionId == collectionId & index.state == "READY")
+                {
                     numIndexesCreated = numIndexesCreated + 1;
                 }
             }
@@ -175,14 +176,15 @@ Where command is one of
 
             foreach (var index in result.indexes)
             {
-                if (index.collectionId == collectionId) {
+                if (index.collectionId == collectionId)
+                {
                     string name = index.name;
                     indexesToBeDeleted.Add(name);
                 }
             }
             foreach (string indexToBeDeleted in indexesToBeDeleted)
             {
-                uriString = "https://firestore.googleapis.com/v1beta1/" +  indexToBeDeleted;
+                uriString = "https://firestore.googleapis.com/v1beta1/" + indexToBeDeleted;
                 UriBuilder deleteUri = new UriBuilder(uriString);
                 await http.DeleteAsync(deleteUri.Uri);
             }
