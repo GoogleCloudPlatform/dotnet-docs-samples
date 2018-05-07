@@ -17,11 +17,14 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Xunit;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
     public class DialogflowTest
     {
+        protected RetryRobot _retryRobot = new RetryRobot();
         public readonly string ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         public readonly string SessionId = TestUtil.RandomName();
 
@@ -50,19 +53,28 @@ namespace GoogleCloudSamples
             Command = "Dialogflow"
         };
 
+        // Dialogflow enforces no more than 60 requests per minute per project.
+        // Many agents may be running the test at the same time, so limit
+        // our requests to 10 per minute.
+        static readonly ThrottleTokenPool s_throttleTokenPool =
+            new ThrottleTokenPool(10, TimeSpan.FromSeconds(61));
+
         // Run command and return output.
         // Project ID argument is always set.
         // Session ID argument available as a parameter.
         // Sets helper properties to last console output.
         public ConsoleOutput Run(string command, params object[] args)
         {
-            var arguments = args.Select((arg) => arg.ToString()).ToList();
-            arguments.Insert(0, command);
-            arguments.AddRange(new[] { "--projectId", ProjectId });
+            using (var thottleToken = s_throttleTokenPool.Acquire())
+            {
+                var arguments = args.Select((arg) => arg.ToString()).ToList();
+                arguments.Insert(0, command);
+                arguments.AddRange(new[] { "--projectId", ProjectId });
 
-            Output = _dialogflow.Run(arguments.ToArray());
+                Output = _dialogflow.Run(arguments.ToArray());
 
-            return Output;
+                return Output;
+            }
         }
 
         public ConsoleOutput RunWithSessionId(string command, params object[] args)
@@ -70,6 +82,52 @@ namespace GoogleCloudSamples
             var arguments = args.ToList();
             arguments.AddRange(new[] { "--sessionId", SessionId });
             return Run(command, arguments.ToArray());
+        }
+    }
+
+    // TODO: Move this class into test helpers.
+    /// <summary>
+    /// Schedules throttling.
+    /// </summary>
+    class ThrottleTokenPool
+    {
+        private readonly TimeSpan _timeSpan;
+        private readonly BlockingCollection<ThrottleToken> _pool =
+            new BlockingCollection<ThrottleToken>();
+        public ThrottleTokenPool(int tokenCount, TimeSpan timeSpan)
+        {
+            for (int i = 0; i < tokenCount; ++i)
+            {
+                _pool.Add(new ThrottleToken(this));
+            }
+
+            _timeSpan = timeSpan;
+        }
+
+        public IDisposable Acquire() => _pool.Take();
+
+        internal void Release(ThrottleToken token)
+        {
+            Task.Run(async () =>
+            {
+                await Task.Delay(_timeSpan);
+                _pool.Add(token);
+            });
+        }
+    }
+
+    class ThrottleToken : IDisposable
+    {
+        readonly ThrottleTokenPool _pool;
+
+        public ThrottleToken(ThrottleTokenPool pool)
+        {
+            _pool = pool;
+        }
+
+        public void Dispose()
+        {
+            _pool.Release(this);
         }
     }
 }

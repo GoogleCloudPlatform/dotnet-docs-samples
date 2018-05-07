@@ -41,23 +41,33 @@ namespace GoogleCloudSamples
             Assert.Contains("Waiting for the entity creation operation to complete.", Stdout);
             Assert.Contains("Entity creation completed.", Stdout);
 
-            Run("entities:list", EntityTypeId);
-            Assert.Contains(_entityValue, Stdout);
+            _retryRobot.Eventually(() =>
+            {
+                Run("entities:list", EntityTypeId);
+                Assert.Contains(_entityValue, Stdout);
+            });
         }
 
         [Fact]
         void TestDelete()
         {
             Run("entities:create", EntityTypeId, _entityValue, SynonymsInput);
-            Run("entities:list", EntityTypeId);
-            Assert.Contains(_entityValue, Stdout);
+
+            _retryRobot.Eventually(() =>
+            {
+                Run("entities:list", EntityTypeId);
+                Assert.Contains(_entityValue, Stdout);
+            });
 
             Run("entities:delete", EntityTypeId, _entityValue);
             Assert.Contains("Waiting for the entity deletion operation to complete.", Stdout);
             Assert.Contains($"Deleted Entity: {_entityValue}", Stdout);
 
-            Run("entities:list", EntityTypeId);
-            Assert.DoesNotContain(_entityValue, Stdout);
+            _retryRobot.Eventually(() =>
+            {
+                Run("entities:list", EntityTypeId);
+                Assert.DoesNotContain(_entityValue, Stdout);
+            });
         }
     }
 }

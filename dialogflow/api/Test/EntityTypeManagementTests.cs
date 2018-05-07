@@ -31,8 +31,11 @@ namespace GoogleCloudSamples
             Run("entity-types:create", _displayName, _kindName);
             Assert.Contains("Created EntityType:", Stdout);
 
-            Run("entity-types:list");
-            Assert.Contains(_displayName, Stdout);
+            _retryRobot.Eventually(() =>
+            {
+                Run("entity-types:list");
+                Assert.Contains(_displayName, Stdout);
+            });
         }
 
         [Fact]
@@ -42,14 +45,20 @@ namespace GoogleCloudSamples
             // The EntityType ID is needed to delete, the display name is not sufficient.
             var entityTypeId = CreateEntityType(_displayName);
 
-            Run("entity-types:list");
-            Assert.Contains(_displayName, Stdout);
+            _retryRobot.Eventually(() =>
+            {
+                Run("entity-types:list");
+                Assert.Contains(_displayName, Stdout);
+            });
 
             Run("entity-types:delete", entityTypeId);
             Assert.Contains($"Deleted EntityType: {entityTypeId}", Stdout);
 
-            Run("entity-types:list");
-            Assert.DoesNotContain(_displayName, Stdout);
+            _retryRobot.Eventually(() =>
+            {
+                Run("entity-types:list");
+                Assert.DoesNotContain(_displayName, Stdout);
+            });
         }
     }
 }

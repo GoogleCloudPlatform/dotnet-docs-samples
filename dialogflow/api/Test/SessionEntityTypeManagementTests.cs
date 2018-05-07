@@ -40,22 +40,32 @@ namespace GoogleCloudSamples
             Assert.Contains("Created SessionEntityType:", Stdout);
             Assert.Contains(_entityTypeDisplayName, Stdout);
 
-            RunWithSessionId("session-entity-types:list");
-            Assert.Contains(_entityTypeDisplayName, Stdout);
+            _retryRobot.Eventually(() =>
+           {
+               RunWithSessionId("session-entity-types:list");
+               Assert.Contains(_entityTypeDisplayName, Stdout);
+           });
         }
 
         [Fact]
         void TestDelete()
         {
             RunWithSessionId("session-entity-types:create", _entityTypeDisplayName, EntityValuesArgument);
-            RunWithSessionId("session-entity-types:list");
-            Assert.Contains(_entityTypeDisplayName, Stdout);
+
+            _retryRobot.Eventually(() =>
+            {
+                RunWithSessionId("session-entity-types:list");
+                Assert.Contains(_entityTypeDisplayName, Stdout);
+            });
 
             RunWithSessionId("session-entity-types:delete", _entityTypeDisplayName);
             Assert.Contains($"Deleted SessionEntityType: {_entityTypeDisplayName}", Stdout);
 
-            RunWithSessionId("session-entity-types:list");
-            Assert.DoesNotContain(_entityTypeDisplayName, Stdout);
+            _retryRobot.Eventually(() =>
+            {
+                RunWithSessionId("session-entity-types:list");
+                Assert.DoesNotContain(_entityTypeDisplayName, Stdout);
+            });
         }
     }
 }
