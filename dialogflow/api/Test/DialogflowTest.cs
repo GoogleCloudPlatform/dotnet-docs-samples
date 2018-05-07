@@ -94,6 +94,17 @@ namespace GoogleCloudSamples
         private readonly TimeSpan _timeSpan;
         private readonly BlockingCollection<ThrottleToken> _pool =
             new BlockingCollection<ThrottleToken>();
+        /// <summary>
+        /// Creates a throttle token pool.
+        /// </summary>
+        /// <example>
+        /// Throttle number of tokens that can be acquired to 20 per minute.
+        /// new ThrottleTokenPool(20, TimeSpan.FromMinutes(1))
+        /// </example>
+        /// <param name="tokenCount">Number of tokens.  Controls number
+        /// of simultaneous operations than can be executing.</param>
+        /// <param name="timeSpan">Every given timeSpan, a new set
+        /// of tokens becomes available.</param>
         public ThrottleTokenPool(int tokenCount, TimeSpan timeSpan)
         {
             for (int i = 0; i < tokenCount; ++i)
@@ -104,6 +115,10 @@ namespace GoogleCloudSamples
             _timeSpan = timeSpan;
         }
 
+        /// <summary>
+        /// Acquires a token.  Blocks until a token is available.
+        /// </summary>
+        /// <returns>The token.</returns>
         public IDisposable Acquire() => _pool.Take();
 
         internal void Release(ThrottleToken token)
