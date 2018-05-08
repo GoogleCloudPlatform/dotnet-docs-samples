@@ -30,13 +30,13 @@ $proxy = Start-Job -ArgumentList (Get-Location) -ScriptBlock {
 }
 try {
 	dotnet restore
-	Receive-Job $proxy
+	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
 	BackupAndEdit-TextFile "appsettings.json" `
 		@{'Uid=aspnetuser;Pwd=;Host=cloudsql;Database=visitors' = $env:TEST_CLOUDSQL2_POSTGRESQL_CONNECTIONSTRING; `
 		'MySQL' = 'PostgreSQL'} `
 	{
 		dotnet build
-		Receive-Job $proxy
+		Receive-Job $proxy -ErrorAction 'SilentlyContinue'
 		try {
 			Run-KestrelTest 5567 -CasperJs11
 		} finally {
@@ -46,6 +46,6 @@ try {
 	}
 } finally {
 	Stop-Job $proxy
-	Receive-Job $proxy
+	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
 	Remove-Job $proxy
 }
