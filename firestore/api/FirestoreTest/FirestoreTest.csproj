@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Firestore" Version="1.0.0-beta02" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="xunit" Version="2.3.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Quickstart\Quickstart.csproj" />
+    <ProjectReference Include="..\AddData\AddData.csproj" />
+    <ProjectReference Include="..\DeleteData\DeleteData.csproj" />
+    <ProjectReference Include="..\GetData\GetData.csproj" />
+    <ProjectReference Include="..\QueryData\QueryData.csproj" />
+    <ProjectReference Include="..\OrderLimitData\OrderLimitData.csproj" />
+    <ProjectReference Include="..\DataModel\DataModel.csproj" />
+    <ProjectReference Include="..\TransactionsAndBatchedWrites\TransactionsAndBatchedWrites.csproj" />
+    <ProjectReference Include="..\PaginateData\PaginateData.csproj" />
+    <ProjectReference Include="..\ManageIndexes\ManageIndexes.csproj" />
+    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+  </ItemGroup>
+</Project>
