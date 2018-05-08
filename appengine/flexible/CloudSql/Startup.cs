@@ -51,7 +51,7 @@ namespace CloudSql
         public void ConfigureServices(IServiceCollection services)
         {
             string projectId = Google.Api.Gax.Platform.Instance().ProjectId;
-            if (!string.IsNullOrEmpty(projectId)) 
+            if (!string.IsNullOrEmpty(projectId))
             {
                 services.AddGoogleExceptionLogging(options =>
                 {
