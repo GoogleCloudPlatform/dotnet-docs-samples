@@ -32,22 +32,32 @@ namespace GoogleCloudSamples
             var contextPath = $"projects/{ProjectId}/agent/sessions/{SessionId}/contexts/{_contextId}";
             Assert.Contains($"Created Context: {contextPath}", Stdout);
 
-            RunWithSessionId("contexts:list");
-            Assert.Contains(_contextId, Stdout);
+            _retryRobot.Eventually(() =>
+            {
+                RunWithSessionId("contexts:list");
+                Assert.Contains(_contextId, Stdout);
+            });
         }
 
         [Fact]
         void TestDelete()
         {
             RunWithSessionId("contexts:create", _contextId);
-            RunWithSessionId("contexts:list");
-            Assert.Contains(_contextId, Stdout);
+
+            _retryRobot.Eventually(() =>
+            {
+                RunWithSessionId("contexts:list");
+                Assert.Contains(_contextId, Stdout);
+            });
 
             RunWithSessionId("contexts:delete", _contextId);
             Assert.Contains($"Deleted Context: {_contextId}", Stdout);
 
-            RunWithSessionId("contexts:list");
-            Assert.DoesNotContain(_contextId, Stdout);
+            _retryRobot.Eventually(() =>
+            {
+                RunWithSessionId("contexts:list");
+                Assert.DoesNotContain(_contextId, Stdout);
+            });
         }
     }
 }
