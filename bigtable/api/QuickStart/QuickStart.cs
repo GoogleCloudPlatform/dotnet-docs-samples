@@ -11,12 +11,10 @@ namespace GoogleCloudSamples.Bigtable
     {
         // Set up some Cloud Bigtable metadata for convinience
         // Your Google Cloud Platform project ID
-        //private const string projectId = "YOUR-PROJECT-ID";
-        private const string projectId = "grass-clump-479";
-
+        private const string projectId = "YOUR-PROJECT-ID";
+        
         // You Google Cloud Bigtable instance ID
-        //private const string instanceId = "YOUR-INSTANCE-ID";
-        private const string instanceId = "dotnet-perf";
+        private const string instanceId = "YOUR-INSTANCE-ID";
 
         // The name of a table.
         private const string tableId = "Hello-Bigtable";
