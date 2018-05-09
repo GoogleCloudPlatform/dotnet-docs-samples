@@ -20,8 +20,6 @@ using Xunit;
 using static Google.Cloud.Monitoring.V3.Aggregation.Types;
 using static Google.Cloud.Monitoring.V3.AlertPolicy.Types.Condition.Types;
 using static Google.Cloud.Monitoring.V3.AlertPolicy.Types;
-using Xunit.Abstractions;
-using Google.Protobuf;
 
 namespace GoogleCloudSamples
 {
@@ -33,21 +31,15 @@ namespace GoogleCloudSamples
             Command = "AlertSample"
         };
         private readonly AlertTestFixture _fixture;
-        private readonly ITestOutputHelper _output;
 
-        public AlertTest(AlertTestFixture fixture, ITestOutputHelper output)
+        public AlertTest(AlertTestFixture fixture)
         {
             _fixture = fixture;
-            this._output = output;
         }
 
         [Fact]
         public void TestList()
         {
-            _output.WriteLine(Google.Protobuf.JsonFormatter.Default
-                    .Format((IMessage)_fixture.Alert));
-            _output.WriteLine(Google.Protobuf.JsonFormatter.Default
-                    .Format((IMessage)_fixture.Channel));
             var result = _alert.Run("list", "-p", _fixture.ProjectId);
             Assert.Equal(0, result.ExitCode);
         }
