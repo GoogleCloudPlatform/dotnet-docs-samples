@@ -93,7 +93,7 @@ Where command is one of
                 Console.WriteLine("Born: {0}", documentDictionary["Born"]);
                 Console.WriteLine();
             }
-            // [START fs_get_all]
+            // [END fs_get_all]
         }
 
         public static void Main(string[] args)

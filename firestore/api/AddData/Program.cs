@@ -66,7 +66,7 @@ Where command is one of
             };
             WriteResult writeResult = await docRef.SetAsync(update, SetOptions.MergeAll);
             Console.WriteLine(writeResult.UpdateTime);
-            // [END fs_add_doc_as_map]
+            // [END fs_update_create_if_missing]
             Console.WriteLine("Merged data into the LA document in the cities collection.");
         }
 
