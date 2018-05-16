@@ -576,56 +576,6 @@ namespace GoogleCloudSamples.Bigtable
             return 0;
         }
 
-        public static object UpdateLabels(string projectId, string instanceId)
-        {
-            // [START create_bigtableInstanceAdminClient]
-            BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END create_bigtableInstanceAdminClient]
-
-            // Print current instance information
-            GetInstance(projectId, instanceId);
-
-            // [START Update_Labels]
-            // Create an instance object with label.
-            Instance currentInstance = new Instance
-            {
-                InstanceName = new InstanceName(projectId, instanceId),
-                Labels = { { "test", "bigtable-example" } }
-            };
-
-            // Initialize request argument(s).
-            PartialUpdateInstanceRequest partialUpdateInstanceRequest = new PartialUpdateInstanceRequest
-            {
-                UpdateMask = new FieldMask
-                {
-                    Paths =
-                    {
-                        "labels"
-                    }
-                },
-                Instance = currentInstance
-            };
-            try
-            {
-                // Make request
-                Operation<Instance, UpdateInstanceMetadata> response = bigtableInstanceAdminClient.PartialUpdateInstance(partialUpdateInstanceRequest);
-                Console.WriteLine("Waiting for operation to complete...");
-                // Poll until the returned long-running operation is complete
-                Operation<Instance, UpdateInstanceMetadata> completedResponse = response.PollUntilCompleted();
-                // [END Update_InstanceDisplayName]
-                // Print updated instance information.
-                Console.WriteLine($"Printing updated instance information");
-                GetInstance(projectId, instanceId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception updating {instanceId} instance");
-                Console.WriteLine(ex.Message);
-            }
-
-            return 0;
-        }
-
         public static object UpdateInstanceMultipleFields(string projectId, string instanceId, string newDisplayName)
         {
             // [START create_bigtableInstanceAdminClient]
@@ -917,7 +867,7 @@ namespace GoogleCloudSamples.Bigtable
                     CreateTwoClusterInstanceOptions, ListInstancesOptions,
                     GetInstanceOptions,
                     UpdateInstanceDisplayNameOptions, UpgradeInstanceToProdOptions,
-                    AddLabelsOptions, UpdateLabelsOptions,
+                    AddLabelsOptions,
                     UpdateInstanceMultipleFieldsOptions,
                     DeleteInstanceOptions, CreateClusterOptions, GetClusterOptions,
                     ListAllClustersOptions,
@@ -931,7 +881,6 @@ namespace GoogleCloudSamples.Bigtable
                     (UpdateInstanceDisplayNameOptions opts) => UpdateInstanceDisplayName(opts.projectId, opts.instanceId, opts.newDisplayName),
                     (UpgradeInstanceToProdOptions opts) => UpgradeInstanceToProd(opts.projectId, opts.instanceId),
                     (AddLabelsOptions opts) => AddLabels(opts.projectId, opts.instanceId),
-                    (UpdateLabelsOptions opts) => UpdateLabels(opts.projectId, opts.instanceId),
                     (UpdateInstanceMultipleFieldsOptions opts) => UpdateInstanceMultipleFields(opts.projectId, opts.instanceId, opts.newDisplayName),
                     (DeleteInstanceOptions opts) => DeleteInstance(opts.projectId, opts.instanceId),
                     (CreateClusterOptions opts) => CreateCluster(opts.projectId, opts.instanceId),
