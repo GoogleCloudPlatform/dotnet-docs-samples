@@ -34,10 +34,10 @@ namespace GoogleCloudSamples
             new DateTime(1998, 4, 18, 0, 0, 0, DateTimeKind.Utc);
         private readonly DateTime _endDate =
             new DateTime(2013, 4, 18, 0, 0, 0, DateTimeKind.Utc);
-        // [START retry]
+        // [START datastore_retry]
         private readonly int _retryCount = 3;
         private readonly int _retryDelayMs = 500;
-        // [END retry]
+        // [END datastore_retry]
         private readonly RetryRobot _retryRobot = new RetryRobot()
         {
             RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) },
@@ -85,40 +85,40 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestIncompleteKey()
         {
-            // [START incomplete_key]
+            // [START datastore_incomplete_key]
             Key incompleteKey = _db.CreateKeyFactory("Task").CreateIncompleteKey();
             Key key = _db.AllocateId(incompleteKey);
-            // [END incomplete_key]
+            // [END datastore_incomplete_key]
             Assert.True(IsValidKey(key));
         }
 
         [Fact]
         public void TestNamedKey()
         {
-            // [START named_key]
+            // [START datastore_named_key]
             Key key = _db.CreateKeyFactory("Task").CreateKey("sampleTask");
-            // [END named_key]
+            // [END datastore_named_key]
             Assert.True(IsValidKey(key));
         }
 
         [Fact]
         public void TestKeyWithParent()
         {
-            // [START key_with_parent]
+            // [START datastore_key_with_parent]
             Key rootKey = _db.CreateKeyFactory("TaskList").CreateKey("default");
             Key key = new KeyFactory(rootKey, "Task").CreateKey("sampleTask");
-            // [END key_with_parent]
+            // [END datastore_key_with_parent]
             Assert.True(IsValidKey(key));
         }
 
         [Fact]
         public void TestKeyWithMultilevelParent()
         {
-            // [START key_with_multilevel_parent]
+            // [START datastore_key_with_multilevel_parent]
             Key rootKey = _db.CreateKeyFactory("User").CreateKey("Alice");
             Key taskListKey = new KeyFactory(rootKey, "TaskList").CreateKey("default");
             Key key = new KeyFactory(taskListKey, "Task").CreateKey("sampleTask");
-            // [END key_with_multilevel_parent]
+            // [END datastore_key_with_multilevel_parent]
             Assert.True(IsValidKey(key));
         }
 
@@ -131,7 +131,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestEntityWithParent()
         {
-            // [START entity_with_parent]
+            // [START datastore_entity_with_parent]
             Key taskListKey = _db.CreateKeyFactory("TaskList").CreateKey(TestUtil.RandomName());
             Key taskKey = new KeyFactory(taskListKey, "Task").CreateKey("sampleTask");
             Entity task = new Entity()
@@ -142,14 +142,14 @@ namespace GoogleCloudSamples
                 ["priority"] = 4,
                 ["description"] = "Learn Cloud Datastore"
             };
-            // [END entity_with_parent]
+            // [END datastore_entity_with_parent]
             AssertValidEntity(task);
         }
 
         [Fact]
         public void TestProperties()
         {
-            // [START properties]
+            // [START datastore_properties]
             Entity task = new Entity()
             {
                 Key = _db.CreateKeyFactory("Task").CreateKey("sampleTask"),
@@ -164,28 +164,28 @@ namespace GoogleCloudSamples
                     ExcludeFromIndexes = true
                 },
             };
-            // [END properties]
+            // [END datastore_properties]
             AssertValidEntity(task);
         }
 
         [Fact]
         public void TestArrayValue()
         {
-            // [START array_value]
+            // [START datastore_array_value]
             Entity task = new Entity()
             {
                 Key = _db.CreateKeyFactory("Task").CreateKey("sampleTask"),
                 ["collaborators"] = new ArrayValue() { Values = { "alice", "bob" } },
                 ["tags"] = new ArrayValue() { Values = { "fun", "programming" } }
             };
-            // [END array_value]
+            // [END datastore_array_value]
             AssertValidEntity(task);
         }
 
         [Fact]
         public void TestBasicEntity()
         {
-            // [START basic_entity]
+            // [START datastore_basic_entity]
             Entity task = new Entity()
             {
                 Key = _db.CreateKeyFactory("Task").CreateKey("sampleTask"),
@@ -194,16 +194,16 @@ namespace GoogleCloudSamples
                 ["priority"] = 4,
                 ["description"] = "Learn Cloud Datastore"
             };
-            // [END basic_entity]
+            // [END datastore_basic_entity]
             AssertValidEntity(task);
         }
 
         [Fact]
         public void TestUpsert()
         {
-            // [START upsert]
+            // [START datastore_upsert]
             _db.Upsert(_sampleTask);
-            // [END upsert]
+            // [END datastore_upsert]
             Assert.Equal(_sampleTask, _db.Lookup(_sampleTask.Key));
             // Make sure a second upsert doesn't throw an exception.
             _db.Upsert(_sampleTask);
@@ -212,13 +212,13 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestInsert()
         {
-            // [START insert]
+            // [START datastore_insert]
             Entity task = new Entity()
             {
                 Key = _keyFactory.CreateIncompleteKey()
             };
             task.Key = _db.Insert(task);
-            // [END insert]
+            // [END datastore_insert]
             Assert.Equal(task, _db.Lookup(task.Key));
             // Make sure a second insert throws an exception.
             Grpc.Core.RpcException e = Assert.Throws<Grpc.Core.RpcException>(() =>
@@ -243,9 +243,9 @@ namespace GoogleCloudSamples
         public void TestLookup()
         {
             _db.Upsert(_sampleTask);
-            // [START lookup]
+            // [START datastore_lookup]
             Entity task = _db.Lookup(_sampleTask.Key);
-            // [END lookup]
+            // [END datastore_lookup]
             Assert.Equal(_sampleTask, task);
         }
 
@@ -254,10 +254,10 @@ namespace GoogleCloudSamples
         public void TestUpdate()
         {
             _db.Upsert(_sampleTask);
-            // [START update]
+            // [START datastore_update]
             _sampleTask["priority"] = 5;
             _db.Update(_sampleTask);
-            // [END update]
+            // [END datastore_update]
             Assert.Equal(_sampleTask, _db.Lookup(_sampleTask.Key));
         }
 
@@ -265,9 +265,9 @@ namespace GoogleCloudSamples
         public void TestDelete()
         {
             _db.Upsert(_sampleTask);
-            // [START delete]
+            // [START datastore_delete]
             _db.Delete(_sampleTask.Key);
-            // [END delete]
+            // [END datastore_delete]
             Assert.Null(_db.Lookup(_sampleTask.Key));
         }
 
@@ -299,7 +299,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestBatchUpsert()
         {
-            // [START batch_upsert]
+            // [START datastore_batch_upsert]
             var taskList = new[]
             {
                 new Entity()
@@ -320,7 +320,7 @@ namespace GoogleCloudSamples
                 }
             };
             var keyList = _db.Upsert(taskList[0], taskList[1]);
-            // [END batch_upsert]
+            // [END datastore_batch_upsert]
             taskList[0].Key = keyList[0];
             taskList[1].Key = keyList[1];
             Assert.Equal(taskList[0], _db.Lookup(keyList[0]));
@@ -330,13 +330,13 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestBatchLookup()
         {
-            // [START batch_lookup]
+            // [START datastore_batch_lookup]
             var keys = new Key[] { _keyFactory.CreateKey(1), _keyFactory.CreateKey(2) };
-            // [END batch_lookup]
+            // [END datastore_batch_lookup]
             var expectedTasks = UpsertBatch(keys[0], keys[1]);
-            // [START batch_lookup]
+            // [START datastore_batch_lookup]
             var tasks = _db.Lookup(keys[0], keys[1]);
-            // [END batch_lookup]
+            // [END datastore_batch_lookup]
             Assert.Equal(expectedTasks[0], tasks[0]);
             Assert.Equal(expectedTasks[1], tasks[1]);
         }
@@ -344,16 +344,16 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestBatchDelete()
         {
-            // [START batch_delete]
+            // [START datastore_batch_delete]
             var keys = new Key[] { _keyFactory.CreateKey(1), _keyFactory.CreateKey(2) };
-            // [END batch_delete]
+            // [END datastore_batch_delete]
             UpsertBatch(keys[0], keys[1]);
             var lookups = _db.Lookup(keys);
             Assert.NotNull(lookups[0]);
             Assert.NotNull(lookups[1]);
-            // [START batch_delete]
+            // [START datastore_batch_delete]
             _db.Delete(keys);
-            // [END batch_delete]
+            // [END datastore_batch_delete]
             lookups = _db.Lookup(keys[0], keys[1]);
             Assert.Null(lookups[0]);
             Assert.Null(lookups[1]);
@@ -399,14 +399,14 @@ namespace GoogleCloudSamples
         public void TestBasicQuery()
         {
             UpsertTaskList();
-            // [START basic_query]
+            // [START datastore_basic_query]
             Query query = new Query("Task")
             {
                 Filter = Filter.And(Filter.Equal("done", false),
                     Filter.GreaterThanOrEqual("priority", 4)),
                 Order = { { "priority", PropertyOrder.Types.Direction.Descending } }
             };
-            // [END basic_query]
+            // [END datastore_basic_query]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -416,10 +416,10 @@ namespace GoogleCloudSamples
             UpsertTaskList();
             Eventually(() =>
             {
-                // [START run_query]
+                // [START datastore_run_query]
                 Query query = new Query("Task");
                 DatastoreQueryResults tasks = _db.RunQuery(query);
-                // [END run_query]
+                // [END datastore_run_query]
                 Assert.False(IsEmpty(tasks));
             });
         }
@@ -430,12 +430,12 @@ namespace GoogleCloudSamples
             UpsertTaskList();
             Eventually(() =>
             {
-                // [START property_filter]
+                // [START datastore_property_filter]
                 Query query = new Query("Task")
                 {
                     Filter = Filter.Equal("done", false)
                 };
-                // [END property_filter]
+                // [END datastore_property_filter]
                 var tasks = _db.RunQuery(query);
                 Assert.False(IsEmpty(tasks));
             });
@@ -445,13 +445,13 @@ namespace GoogleCloudSamples
         public void TestCompositeFilter()
         {
             UpsertTaskList();
-            // [START composite_filter]
+            // [START datastore_composite_filter]
             Query query = new Query("Task")
             {
                 Filter = Filter.And(Filter.Equal("done", false),
                     Filter.Equal("priority", 4)),
             };
-            // [END composite_filter]
+            // [END datastore_composite_filter]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -459,12 +459,12 @@ namespace GoogleCloudSamples
         public void TestKeyFilter()
         {
             UpsertTaskList();
-            // [START key_filter]
+            // [START datastore_key_filter]
             Query query = new Query("Task")
             {
                 Filter = Filter.GreaterThan("__key__", _keyFactory.CreateKey("aTask"))
             };
-            // [END key_filter]
+            // [END datastore_key_filter]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -472,12 +472,12 @@ namespace GoogleCloudSamples
         public void TestAscendingSort()
         {
             UpsertTaskList();
-            // [START ascending_sort]
+            // [START datastore_ascending_sort]
             Query query = new Query("Task")
             {
                 Order = { { "created", PropertyOrder.Types.Direction.Ascending } }
             };
-            // [END ascending_sort]
+            // [END datastore_ascending_sort]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -485,12 +485,12 @@ namespace GoogleCloudSamples
         public void TestDescendingSort()
         {
             UpsertTaskList();
-            // [START descending_sort]
+            // [START datastore_descending_sort]
             Query query = new Query("Task")
             {
                 Order = { { "created", PropertyOrder.Types.Direction.Descending } }
             };
-            // [END descending_sort]
+            // [END datastore_descending_sort]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -498,13 +498,13 @@ namespace GoogleCloudSamples
         public void TestMultiSort()
         {
             UpsertTaskList();
-            // [START multi_sort]
+            // [START datastore_multi_sort]
             Query query = new Query("Task")
             {
                 Order = { { "priority", PropertyOrder.Types.Direction.Descending },
                     { "created", PropertyOrder.Types.Direction.Ascending } }
             };
-            // [END multi_sort]
+            // [END datastore_multi_sort]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -512,13 +512,13 @@ namespace GoogleCloudSamples
         public void TestKindlessQuery()
         {
             UpsertTaskList();
-            // [START kindless_query]
+            // [START datastore_kindless_query]
             Query query = new Query()
             {
                 Filter = Filter.GreaterThan("__key__",
                     _keyFactory.CreateKey("aTask"))
             };
-            // [END kindless_query]
+            // [END datastore_kindless_query]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -526,13 +526,13 @@ namespace GoogleCloudSamples
         public void TestAncestorQuery()
         {
             string keyName = UpsertTaskList();
-            // [START ancestor_query]
+            // [START datastore_ancestor_query]
             Query query = new Query("Task")
             {
                 Filter = Filter.HasAncestor(_db.CreateKeyFactory("TaskList")
                     .CreateKey(keyName))
             };
-            // [END ancestor_query]
+            // [END datastore_ancestor_query]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -540,12 +540,12 @@ namespace GoogleCloudSamples
         public void TestProjectionQuery()
         {
             UpsertTaskList();
-            // [START projection_query]
+            // [START datastore_projection_query]
             Query query = new Query("Task")
             {
                 Projection = { "priority", "percent_complete" }
             };
-            // [END projection_query]
+            // [END datastore_projection_query]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -553,7 +553,7 @@ namespace GoogleCloudSamples
         public void TestRunProjectionQuery()
         {
             UpsertTaskList();
-            // [START run_query_projection]
+            // [START datastore_run_query_projection]
             Query query = new Query("Task")
             {
                 Projection = { "priority", "percent_complete" }
@@ -565,7 +565,7 @@ namespace GoogleCloudSamples
                 priorities.Add((long)entity["priority"]);
                 percentCompletes.Add((double)entity["percent_complete"]);
             }
-            // [END run_query_projection]
+            // [END datastore_run_query_projection]
             Eventually(() =>
             {
                 Assert.Equal(new long[] { 4L }, priorities.ToArray());
@@ -577,12 +577,12 @@ namespace GoogleCloudSamples
         public void TestKeysOnlyQuery()
         {
             UpsertTaskList();
-            // [START keys_only_query]
+            // [START datastore_keys_only_query]
             Query query = new Query("Task")
             {
                 Projection = { "__key__" }
             };
-            // [END keys_only_query]
+            // [END datastore_keys_only_query]
             Eventually(() =>
             {
                 foreach (Entity task in _db.RunQuery(query).Entities)
@@ -600,7 +600,7 @@ namespace GoogleCloudSamples
             UpsertTaskList();
             Eventually(() =>
             {
-                // [START namespace_run_query]
+                // [START datastore_namespace_run_query]
                 KeyFactory keyFactory = _db.CreateKeyFactory("__namespace__");
                 // List all the namespaces between a lower and upper bound.
                 string lowerBound = _db.NamespaceId.Substring(0,
@@ -619,7 +619,7 @@ namespace GoogleCloudSamples
                 {
                     namespaces.Add(entity.Key.Path[0].Name);
                 };
-                // [END namespace_run_query]
+                // [END datastore_namespace_run_query]
                 Assert.Contains(_db.NamespaceId, namespaces.ToArray());
             });
         }
@@ -630,14 +630,14 @@ namespace GoogleCloudSamples
             UpsertTaskList();
             Eventually(() =>
             {
-                // [START kind_run_query]
+                // [START datastore_kind_run_query]
                 Query query = new Query("__kind__");
                 var kinds = new List<string>();
                 foreach (Entity entity in _db.RunQuery(query).Entities)
                 {
                     kinds.Add(entity.Key.Path[0].Name);
                 };
-                // [END kind_run_query]
+                // [END datastore_kind_run_query]
                 Assert.Contains("Task", kinds);
             });
         }
@@ -648,7 +648,7 @@ namespace GoogleCloudSamples
             UpsertTaskList();
             Eventually(() =>
             {
-                // [START property_run_query]
+                // [START datastore_property_run_query]
                 Query query = new Query("__property__");
                 var properties = new List<string>();
                 foreach (Entity entity in _db.RunQuery(query).Entities)
@@ -658,7 +658,7 @@ namespace GoogleCloudSamples
                     if (kind == "Task")
                         properties.Add(property);
                 };
-                // [END property_run_query]
+                // [END datastore_property_run_query]
                 properties.Sort();
                 Assert.Equal(new[] { "category", "completed", "created",
                     "done", "percent_complete", "priority", "tag" },
@@ -673,7 +673,7 @@ namespace GoogleCloudSamples
             UpsertTaskList();
             Eventually(() =>
             {
-                // [START property_by_kind_run_query]
+                // [START datastore_property_by_kind_run_query]
                 Key key = _db.CreateKeyFactory("__kind__").CreateKey("Task");
                 Query query = new Query("__property__")
                 {
@@ -690,7 +690,7 @@ namespace GoogleCloudSamples
                     properties.Add($"{property}:" +
                         string.Join(",", representations));
                 };
-                // [END property_by_kind_run_query]
+                // [END datastore_property_by_kind_run_query]
                 properties.Sort();
                 Assert.Equal(new[] {
                     "category:STRING",
@@ -710,7 +710,7 @@ namespace GoogleCloudSamples
             UpsertTaskList();
             Eventually(() =>
             {
-                // [START property_filtering_run_query]
+                // [START datastore_property_filtering_run_query]
                 Key key = _db.CreateKeyFactory("__kind__").CreateKey("Task");
                 Key startKey = new KeyFactory(key, "__property__")
                     .CreateKey("priority");
@@ -725,7 +725,7 @@ namespace GoogleCloudSamples
                     string property = entity.Key.Path[1].Name;
                     properties.Add($"{kind}.{property}");
                 };
-                // [END property_filtering_run_query]
+                // [END datastore_property_filtering_run_query]
                 properties.Sort();
                 Assert.NotEmpty(properties);
             });
@@ -737,7 +737,7 @@ namespace GoogleCloudSamples
             UpsertTaskList();
             Eventually(() =>
             {
-                // [START distinct_query]
+                // [START datastore_distinct_query]
                 Query query = new Query("Task")
                 {
                     Projection = { "category", "priority" },
@@ -747,7 +747,7 @@ namespace GoogleCloudSamples
                         {"priority", PropertyOrder.Types.Direction.Ascending}
                     }
                 };
-                // [END distinct_query]
+                // [END datastore_distinct_query]
                 Assert.False(IsEmpty(_db.RunQuery(query)));
             });
         }
@@ -758,7 +758,7 @@ namespace GoogleCloudSamples
             UpsertTaskList();
             Eventually(() =>
             {
-                // [START distinct_on_query]
+                // [START datastore_distinct_on_query]
                 Query query = new Query("Task")
                 {
                     Projection = { "category", "priority" },
@@ -768,7 +768,7 @@ namespace GoogleCloudSamples
                         {"priority", PropertyOrder.Types.Direction.Ascending }
                     }
                 };
-                // [END distinct_on_query]
+                // [END datastore_distinct_on_query]
                 Assert.False(IsEmpty(_db.RunQuery(query)));
             });
         }
@@ -777,13 +777,13 @@ namespace GoogleCloudSamples
         public void TestArrayValueInequalityRange()
         {
             UpsertTaskList();
-            // [START array_value_inequality_range]
+            // [START datastore_array_value_inequality_range]
             Query query = new Query("Task")
             {
                 Filter = Filter.And(Filter.GreaterThan("tag", "learn"),
                     Filter.LessThan("tag", "math"))
             };
-            // [END array_value_inequality_range]
+            // [END datastore_array_value_inequality_range]
             Eventually(() => Assert.True(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -791,13 +791,13 @@ namespace GoogleCloudSamples
         public void TestArrayValueEquality()
         {
             UpsertTaskList();
-            // [START array_value_equality]
+            // [START datastore_array_value_equality]
             Query query = new Query("Task")
             {
                 Filter = Filter.And(Filter.Equal("tag", "fun"),
                     Filter.Equal("tag", "programming"))
             };
-            // [END array_value_equality]
+            // [END datastore_array_value_equality]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -805,13 +805,13 @@ namespace GoogleCloudSamples
         public void TestInequalityRange()
         {
             UpsertTaskList();
-            // [START inequality_range]
+            // [START datastore_inequality_range]
             Query query = new Query("Task")
             {
                 Filter = Filter.And(Filter.GreaterThan("created", _startDate),
                     Filter.LessThan("created", _endDate))
             };
-            // [END inequality_range]
+            // [END datastore_inequality_range]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -819,13 +819,13 @@ namespace GoogleCloudSamples
         public void TestInequalityInvalid()
         {
             UpsertTaskList();
-            // [START inequality_invalid]
+            // [START datastore_inequality_invalid]
             Query query = new Query("Task")
             {
                 Filter = Filter.And(Filter.GreaterThan("created", _startDate),
                     Filter.GreaterThan("priority", 3))
             };
-            // [END inequality_invalid]
+            // [END datastore_inequality_invalid]
             Exception e = Assert.Throws<Grpc.Core.RpcException>(() =>
                 IsEmpty(_db.RunQuery(query)));
         }
@@ -834,14 +834,14 @@ namespace GoogleCloudSamples
         public void TestEqualAndInequalityRange()
         {
             UpsertTaskList();
-            // [START equal_and_inequality_range]
+            // [START datastore_equal_and_inequality_range]
             Query query = new Query("Task")
             {
                 Filter = Filter.And(Filter.Equal("priority", 4),
                     Filter.GreaterThan("created", _startDate),
                     Filter.LessThan("created", _endDate))
             };
-            // [END equal_and_inequality_range]
+            // [END datastore_equal_and_inequality_range]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -849,14 +849,14 @@ namespace GoogleCloudSamples
         public void TestInequalitySort()
         {
             UpsertTaskList();
-            // [START inequality_sort]
+            // [START datastore_inequality_sort]
             Query query = new Query("Task")
             {
                 Filter = Filter.GreaterThan("priority", 3),
                 Order = { { "priority", PropertyOrder.Types.Direction.Ascending},
                     {"created", PropertyOrder.Types.Direction.Ascending } }
             };
-            // [END inequality_sort]
+            // [END datastore_inequality_sort]
             Eventually(() => Assert.False(IsEmpty(_db.RunQuery(query))));
         }
 
@@ -864,13 +864,13 @@ namespace GoogleCloudSamples
         public void TestInequalitySortInvalidNotSame()
         {
             UpsertTaskList();
-            // [START inequality_sort_invalid_not_same]
+            // [START datastore_inequality_sort_invalid_not_same]
             Query query = new Query("Task")
             {
                 Filter = Filter.GreaterThan("priority", 3),
                 Order = { { "created", PropertyOrder.Types.Direction.Ascending } }
             };
-            // [END inequality_sort_invalid_not_same]
+            // [END datastore_inequality_sort_invalid_not_same]
             Exception e = Assert.Throws<Grpc.Core.RpcException>(() =>
                 IsEmpty(_db.RunQuery(query)));
         }
@@ -879,14 +879,14 @@ namespace GoogleCloudSamples
         public void TestInequalitySortInvalidNotFirst()
         {
             UpsertTaskList();
-            // [START inequality_sort_invalid_not_first]
+            // [START datastore_inequality_sort_invalid_not_first]
             Query query = new Query("Task")
             {
                 Filter = Filter.GreaterThan("priority", 3),
                 Order = { {"created", PropertyOrder.Types.Direction.Ascending },
                     { "priority", PropertyOrder.Types.Direction.Ascending} }
             };
-            // [END inequality_sort_invalid_not_first]
+            // [END datastore_inequality_sort_invalid_not_first]
             Exception e = Assert.Throws<Grpc.Core.RpcException>(() =>
                 IsEmpty(_db.RunQuery(query)));
         }
@@ -895,12 +895,12 @@ namespace GoogleCloudSamples
         public void TestLimit()
         {
             UpsertTaskList();
-            // [START limit]
+            // [START datastore_limit]
             Query query = new Query("Task")
             {
                 Limit = 5,
             };
-            // [END limit]
+            // [END datastore_limit]
             Eventually(() => Assert.InRange(_db.RunQuery(query).Entities.Count(), 1, 5));
         }
 
@@ -921,7 +921,7 @@ namespace GoogleCloudSamples
 
         private string CursorPaging(int pageSize, string pageCursor)
         {
-            // [START cursor_paging]
+            // [START datastore_cursor_paging]
             Query query = new Query("Task")
             {
                 Limit = pageSize,
@@ -930,7 +930,7 @@ namespace GoogleCloudSamples
                 query.StartCursor = ByteString.FromBase64(pageCursor);
 
             return _db.RunQuery(query).EndCursor?.ToBase64();
-            // [END cursor_paging]
+            // [END datastore_cursor_paging]
         }
 
         private IReadOnlyList<Key> UpsertBalances()
@@ -952,7 +952,7 @@ namespace GoogleCloudSamples
             return new[] { from.Key, to.Key };
         }
 
-        // [START transactional_update]
+        // [START datastore_transactional_update]
         private void TransferFunds(Key fromKey, Key toKey, long amount)
         {
             using (var transaction = _db.BeginTransaction())
@@ -964,7 +964,7 @@ namespace GoogleCloudSamples
                 transaction.Commit();
             }
         }
-        // [END transactional_update]
+        // [END datastore_transactional_update]
 
         private void TransferFunds(Key fromKey, Key toKey, long amount,
             DatastoreTransaction transaction)
@@ -1002,7 +1002,7 @@ namespace GoogleCloudSamples
             }
         }
 
-        // [START transactional_retry]
+        // [START datastore_transactional_retry]
         /// <summary>
         /// Retry the action when a Grpc.Core.RpcException is thrown.
         /// </summary>
@@ -1051,12 +1051,12 @@ namespace GoogleCloudSamples
             });
             Assert.Equal(2, tryCount);
         }
-        // [END transactional_retry]
+        // [END datastore_transactional_retry]
 
         [Fact]
         public void TestTransactionalGetOrCreate()
         {
-            // [START transactional_get_or_create]
+            // [START datastore_transactional_get_or_create]
             Entity task;
             using (var transaction = _db.BeginTransaction())
             {
@@ -1067,7 +1067,7 @@ namespace GoogleCloudSamples
                     transaction.Commit();
                 }
             }
-            // [END transactional_get_or_create]
+            // [END datastore_transactional_get_or_create]
             Assert.Equal(_sampleTask, _db.Lookup(_sampleTask.Key));
         }
 
@@ -1079,7 +1079,7 @@ namespace GoogleCloudSamples
                 .CreateKey(keyName);
             Entity taskListEntity = new Entity() { Key = taskListKey };
             _db.Upsert(taskListEntity);
-            // [START transactional_single_entity_group_read_only]
+            // [START datastore_transactional_single_entity_group_read_only]
             Entity taskList;
             IReadOnlyList<Entity> tasks;
             using (var transaction = _db.BeginTransaction())
@@ -1092,7 +1092,7 @@ namespace GoogleCloudSamples
                 tasks = transaction.RunQuery(query).Entities;
                 transaction.Commit();
             }
-            // [END transactional_single_entity_group_read_only]
+            // [END datastore_transactional_single_entity_group_read_only]
             Assert.Equal(taskListEntity, taskList);
             Assert.Collection(tasks, task => { });
         }
@@ -1103,7 +1103,7 @@ namespace GoogleCloudSamples
             string keyName = UpsertTaskList();
             Eventually(() =>
             {
-                // [START eventual_consistent_query]
+                // [START datastore_eventual_consistent_query]
                 Query query = new Query("Task")
                 {
                     Filter = Filter.HasAncestor(_db.CreateKeyFactory("TaskList")
@@ -1111,7 +1111,7 @@ namespace GoogleCloudSamples
                 };
                 var results = _db.RunQuery(query,
                     ReadOptions.Types.ReadConsistency.Eventual);
-                // [END eventual_consistent_query]
+                // [END datastore_eventual_consistent_query]
                 Assert.False(IsEmpty(results));
             });
         }
@@ -1120,12 +1120,12 @@ namespace GoogleCloudSamples
         public void TestUnindexedPropertyQuery()
         {
             UpsertTaskList();
-            // [START unindexed_property_query]
+            // [START datastore_unindexed_property_query]
             Query query = new Query("Task")
             {
                 Filter = Filter.Equal("description", "Learn Cloud Datastore")
             };
-            // [END unindexed_property_query]
+            // [END datastore_unindexed_property_query]
             Eventually(() =>
             {
                 var tasks = _db.RunQuery(query).Entities;
@@ -1136,7 +1136,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestExplodingProperties()
         {
-            // [START exploding_properties]
+            // [START datastore_exploding_properties]
             Entity task = new Entity()
             {
                 Key = _db.CreateKeyFactory("Task").CreateKey("sampleTask"),
@@ -1144,7 +1144,7 @@ namespace GoogleCloudSamples
                 ["collaborators"] = new ArrayValue() { Values = { "alice", "bob", "charlie" } },
                 ["created"] = DateTime.UtcNow
             };
-            // [END exploding_properties]
+            // [END datastore_exploding_properties]
             // Avoid test failure due to float rounding differences.
             task["created"] = new DateTime(2016, 8, 12, 9, 0, 0, DateTimeKind.Utc);
             AssertValidEntity(task);
