@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// [START generate_iap_request]
+// [START iap_make_request]
 
 using System;
 using System.Collections.Generic;
@@ -133,4 +133,4 @@ namespace GoogleCloudSamples
                                         TimeSpan.Zero)).TotalSeconds);
     }
 }
-// [END generate_iap_request]
+// [END iap_make_request]
