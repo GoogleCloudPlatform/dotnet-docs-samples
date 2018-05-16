@@ -102,6 +102,26 @@ namespace GoogleCloudSamples.Bigtable
         public string instanceId { get; set; }
     }
 
+    [Verb("updateLabels", HelpText = "Update exisitng labels")]
+    class UpdateLabelsOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The instanceId of the instance to be updated.", Required = true)]
+        public string instanceId { get; set; }
+    }
+
+    [Verb("updateInstanceMultipleFields", HelpText = "Change a display name and update labels of an existing instance in one request")]
+    class UpdateInstanceMultipleFieldsOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The instanceId of the instance to be updated.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The new displayName for the instance.", Required = false)]
+        public string newDisplayName { get; set; }
+    }
+
     [Verb("deleteInstance", HelpText = "Delete an instance from a project.")]
     class DeleteInstanceOptions
     {
@@ -129,6 +149,13 @@ namespace GoogleCloudSamples.Bigtable
         public string instanceId { get; set; }
         [Value(3, HelpText = "ClusterId to being requested.", Required = true)]
         public string clusterId { get; set; }
+    }
+
+    [Verb("listAllClusters", HelpText = "List information about all clusters in a project")]
+    class ListAllClustersOptions 
+    {
+        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
+        public string projectId { get; set; }
     }
 
     [Verb("listClusters", HelpText = "Lists information about clusters in an instance.")]
@@ -508,7 +535,7 @@ namespace GoogleCloudSamples.Bigtable
             // Print current instance information
             GetInstance(projectId, instanceId);
 
-            // [START Add_Label]
+            // [START Add_Labels]
             // Create an instance object with label.
             Instance currentInstance = new Instance
             {
@@ -523,6 +550,108 @@ namespace GoogleCloudSamples.Bigtable
                 {
                     Paths =
                     {
+                        "labels"
+                    }
+                },
+                Instance = currentInstance
+            };
+            try
+            {
+                // Make request
+                Operation<Instance, UpdateInstanceMetadata> response = bigtableInstanceAdminClient.PartialUpdateInstance(partialUpdateInstanceRequest);
+                Console.WriteLine("Waiting for operation to complete...");
+                // Poll until the returned long-running operation is complete
+                Operation<Instance, UpdateInstanceMetadata> completedResponse = response.PollUntilCompleted();
+                // [END Update_InstanceDisplayName]
+                // Print updated instance information.
+                Console.WriteLine($"Printing updated instance information");
+                GetInstance(projectId, instanceId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception updating {instanceId} instance");
+                Console.WriteLine(ex.Message);
+            }
+
+            return 0;
+        }
+
+        public static object UpdateLabels(string projectId, string instanceId)
+        {
+            // [START create_bigtableInstanceAdminClient]
+            BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
+            // [END create_bigtableInstanceAdminClient]
+
+            // Print current instance information
+            GetInstance(projectId, instanceId);
+
+            // [START Update_Labels]
+            // Create an instance object with label.
+            Instance currentInstance = new Instance
+            {
+                InstanceName = new InstanceName(projectId, instanceId),
+                Labels = { { "test", "bigtable-example" } }
+            };
+
+            // Initialize request argument(s).
+            PartialUpdateInstanceRequest partialUpdateInstanceRequest = new PartialUpdateInstanceRequest
+            {
+                UpdateMask = new FieldMask
+                {
+                    Paths =
+                    {
+                        "labels"
+                    }
+                },
+                Instance = currentInstance
+            };
+            try
+            {
+                // Make request
+                Operation<Instance, UpdateInstanceMetadata> response = bigtableInstanceAdminClient.PartialUpdateInstance(partialUpdateInstanceRequest);
+                Console.WriteLine("Waiting for operation to complete...");
+                // Poll until the returned long-running operation is complete
+                Operation<Instance, UpdateInstanceMetadata> completedResponse = response.PollUntilCompleted();
+                // [END Update_InstanceDisplayName]
+                // Print updated instance information.
+                Console.WriteLine($"Printing updated instance information");
+                GetInstance(projectId, instanceId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception updating {instanceId} instance");
+                Console.WriteLine(ex.Message);
+            }
+
+            return 0;
+        }
+
+        public static object UpdateInstanceMultipleFields(string projectId, string instanceId, string newDisplayName)
+        {
+            // [START create_bigtableInstanceAdminClient]
+            BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
+            // [END create_bigtableInstanceAdminClient]
+
+            // Print current instance information
+            GetInstance(projectId, instanceId);
+
+            // [START Update_InstanceDisplayName]
+            // Create an instance object with new display name.
+            Instance currentInstance = new Instance
+            {
+                InstanceName = new InstanceName(projectId, instanceId),
+                DisplayName = newDisplayName,
+                Labels = {{"test", "updated displayName"}}
+            };
+
+            // Initialize request argument(s).
+            PartialUpdateInstanceRequest partialUpdateInstanceRequest = new PartialUpdateInstanceRequest
+            {
+                UpdateMask = new FieldMask
+                {
+                    Paths =
+                    {
+                        "display_name",
                         "labels"
                     }
                 },
@@ -646,6 +775,40 @@ namespace GoogleCloudSamples.Bigtable
             return 0;
         }
 
+        public static object ListAllClusters(string projectId)
+        {
+            // [START create_bigtableInstanceAdminClient]
+            BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
+            // [END create_bigtableInstanceAdminClient]
+
+            // [START list_Clusters]
+            // Initialize request argument(s)
+            ListClustersRequest listClustersRequest = new ListClustersRequest
+            {
+                ParentAsInstanceName = new InstanceName(projectId, "-")
+            };
+
+            try
+            {
+                // Make a request.
+                Console.WriteLine("Waiting for operation to complete...");
+                ListClustersResponse response = bigtableInstanceAdminClient.ListClusters(listClustersRequest);
+                Console.WriteLine($"{"Cluster count:",-25}{response.Clusters.Count}");
+                foreach (Cluster clstr in response.Clusters)
+                {
+                    PrintClusterInfo(clstr);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception while requesting information about clusters in {projectId} project");
+                Console.WriteLine(ex.Message);
+            }
+            // [END list_Clusters]
+
+            return 0;
+        }
+        
         public static object ListClusters(string projectId, string instanceId)
         {
             // [START create_bigtableInstanceAdminClient]
@@ -752,10 +915,12 @@ namespace GoogleCloudSamples.Bigtable
             Parser.Default.ParseArguments<
                     CreateProdSsdInstanceOptions, CreateDevHddInstanceOptions, 
                     CreateTwoClusterInstanceOptions, ListInstancesOptions,
-                    GetInstanceOptions, PartialUpdateInstanceOptions,
+                    GetInstanceOptions,
                     UpdateInstanceDisplayNameOptions, UpgradeInstanceToProdOptions,
-                    AddLabelsOptions,
+                    AddLabelsOptions, UpdateLabelsOptions,
+                    UpdateInstanceMultipleFieldsOptions,
                     DeleteInstanceOptions, CreateClusterOptions, GetClusterOptions,
+                    ListAllClustersOptions,
                     ListClustersOptions, UpdateClusterNodeCountOptions>(args)
                 .MapResult(
                     (CreateProdSsdInstanceOptions opts) => CreateProdSsdInstance(opts.projectId, opts.displayName),
@@ -763,14 +928,15 @@ namespace GoogleCloudSamples.Bigtable
                     (CreateTwoClusterInstanceOptions opts) => CreateTwoClusterInstance(opts.projectId, opts.displayName),
                     (ListInstancesOptions opts) => ListInstances(opts.projectId),
                     (GetInstanceOptions opts) => GetInstance(opts.projectId, opts.instanceId),
-                    (PartialUpdateInstanceOptions opts) => PartialUpdateInstance(opts.projectId, opts.instanceId,
-                        opts.displayName, opts.uppgradeToProd, opts.labels),
                     (UpdateInstanceDisplayNameOptions opts) => UpdateInstanceDisplayName(opts.projectId, opts.instanceId, opts.newDisplayName),
                     (UpgradeInstanceToProdOptions opts) => UpgradeInstanceToProd(opts.projectId, opts.instanceId),
                     (AddLabelsOptions opts) => AddLabels(opts.projectId, opts.instanceId),
+                    (UpdateLabelsOptions opts) => UpdateLabels(opts.projectId, opts.instanceId),
+                    (UpdateInstanceMultipleFieldsOptions opts) => UpdateInstanceMultipleFields(opts.projectId, opts.instanceId, opts.newDisplayName),
                     (DeleteInstanceOptions opts) => DeleteInstance(opts.projectId, opts.instanceId),
                     (CreateClusterOptions opts) => CreateCluster(opts.projectId, opts.instanceId),
                     (GetClusterOptions opts) => GetCluster(opts.projectId, opts.instanceId, opts.clusterId),
+                    (ListAllClustersOptions opts) => ListAllClusters(opts.projectId),
                     (ListClustersOptions opts) => ListClusters(opts.projectId, opts.instanceId),
                     (UpdateClusterNodeCountOptions opts) =>
                         UpdateClusterNodeCount(opts.projectId, opts.instanceId, opts.clusterId, opts.nodes), errs => 1);
