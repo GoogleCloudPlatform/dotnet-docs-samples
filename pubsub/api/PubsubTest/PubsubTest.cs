@@ -13,9 +13,7 @@
 // limitations under the License.
 
 using System;
-// [START create_publisher_client]
 using Google.Cloud.PubSub.V1;
-// [END create_publisher_client]
 using Google.Cloud.Iam.V1;
 using System.Linq;
 using Google.Protobuf;
@@ -142,7 +140,6 @@ namespace GoogleCloudSamples
 
         void Eventually(Action action) => _retryRobot.Eventually(action);
 
-        // [START retry]
         /// <summary>
         /// Creates new CallSettings that will retry an RPC that fails.
         /// </summary>
@@ -177,11 +174,9 @@ namespace GoogleCloudSamples
                     RetrySettings.NoJitter)),
                 metadata => metadata.Add("ClientVersion", "1.0.0"), null, null);
         }
-        // [END retry]
 
         public PubsubTest()
         {
-            // [START create_publisher_client]
             // By default, the Google.Pubsub.V1 library client will authenticate
             // using the service account file (created in the Google Developers
             // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS
@@ -190,16 +185,13 @@ namespace GoogleCloudSamples
             // a Google Compute Engine VM, authentication is completely
             // automatic.
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            // [END create_publisher_client]
             _publisher = CreatePublisherClient();
             _subscriber = CreateSubscriberClient();
         }
 
         public PublisherServiceApiClient CreatePublisherClient()
         {
-            // [START create_publisher_client]
             PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-            // [END create_publisher_client]
             return publisher;
         }
 
@@ -212,7 +204,7 @@ namespace GoogleCloudSamples
         public TestIamPermissionsResponse TestTopicIamPermissionsResponse(string topicId,
             PublisherServiceApiClient publisher)
         {
-            // [START pubsub_test_topic_permissons]
+            // [START pubsub_test_topic_permissions]
             List<string> permissions = new List<string>();
             permissions.Add("pubsub.topics.get");
             permissions.Add("pubsub.topics.update");
@@ -223,13 +215,13 @@ namespace GoogleCloudSamples
             };
             TestIamPermissionsResponse response = publisher.TestIamPermissions(request);
             return response;
-            // [END pubsub_test_topic_permissons]
+            // [END pubsub_test_topic_permissions]
         }
 
         public TestIamPermissionsResponse TestSubscriptionIamPermissionsResponse(
             string subscriptionId, PublisherServiceApiClient publisher)
         {
-            // [START pubsub_test_subscription_permissons]
+            // [START pubsub_test_subscription_permissions]
             List<string> permissions = new List<string>();
             permissions.Add("pubsub.subscriptions.get");
             permissions.Add("pubsub.subscriptions.update");
@@ -240,10 +232,9 @@ namespace GoogleCloudSamples
             };
             TestIamPermissionsResponse response = publisher.TestIamPermissions(request);
             return response;
-            // [END pubsub_test_subscription_permissons]
+            // [END pubsub_test_subscription_permissions]
         }
 
-        // [START retry]
         internal void RpcRetry(string topicId, string subscriptionId,
             PublisherServiceApiClient publisher, SubscriberServiceApiClient subscriber)
         {
@@ -280,7 +271,6 @@ namespace GoogleCloudSamples
                 // Already exists.  That's fine.
             }
         }
-        // [END retry]
 
         [Fact]
         public void TestCreateTopic()

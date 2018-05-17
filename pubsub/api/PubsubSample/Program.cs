@@ -194,11 +194,9 @@ namespace GoogleCloudSamples
     {
         public static object CreateTopic(string projectId, string topicId)
         {
-            // [START create_publisher_client]
+            // [START pubsub_create_topic]
             PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-            // [END create_publisher_client]
 
-            // [START create_topic]
             TopicName topicName = new TopicName(projectId, topicId);
             try
             {
@@ -209,15 +207,15 @@ namespace GoogleCloudSamples
             {
                 // Already exists.  That's fine.
             }
-            // [END create_topic]
+            // [END pubsub_create_topic]
             return 0;
         }
 
         public static object CreateSubscription(string projectId, string topicId,
             string subscriptionId)
         {
+            // [START pubsub_create_pull_subscription]
             SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
-            // [START create_subscription]
             TopicName topicName = new TopicName(projectId, topicId);
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
@@ -232,18 +230,18 @@ namespace GoogleCloudSamples
             {
                 // Already exists.  That's fine.
             }
-            // [END create_subscription]
+            // [END pubsub_create_pull_subscription]
             return 0;
         }
 
         public static PublisherClient GetPublisher(string projectId,
             string topicId)
         {
-            // [START publish_message]
+            // [START pubsub_publish]
             PublisherServiceApiClient publisherClient = PublisherServiceApiClient.Create();
             PublisherClient publisher = PublisherClient.Create(
                 new TopicName(projectId, topicId), new[] { publisherClient });
-            // [END publish_message]
+            // [END pubsub_publish]
             return publisher;
         }
 
@@ -271,7 +269,7 @@ namespace GoogleCloudSamples
         public static object PublishMessages(PublisherClient publisher,
             IEnumerable<string> messageTexts)
         {
-            // [START publish_message]
+            // [START pubsub_quickstart_publisher]
             // [START pubsub_publisher_batch_settings]
             var publishTasks = new List<Task<string>>();
             // SimplePublisher collects messages into appropriately sized
@@ -285,20 +283,20 @@ namespace GoogleCloudSamples
                 Console.WriteLine("Published message {0}", task.Result);
             }
             // [END pubsub_publisher_batch_settings]
-            // [END publish_message]
+            // [END pubsub_quickstart_publisher]
             return 0;
         }
 
         static SubscriberClient GetSubscriber(string projectId,
             string subscriptionId)
         {
-            // [START pull_messages]
+            // [START pubsub_subscriber_sync_pull]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
             SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { subscriberClient });
-            // [END pull_messages]
+            // [END pubsub_subscriber_sync_pull]
             return subscriber;
         }
 
@@ -330,7 +328,7 @@ namespace GoogleCloudSamples
 
         public static object PullMessages(SubscriberClient subscriber, bool acknowledge)
         {
-            // [START pull_messages]
+            // [START pubsub_quickstart_subscriber]
             // [START pubsub_subscriber_flow_settings]
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
@@ -348,7 +346,7 @@ namespace GoogleCloudSamples
             Thread.Sleep(3000);
             subscriber.StopAsync(CancellationToken.None).Wait();
             // [END pubsub_subscriber_flow_settings]
-            // [END pull_messages]
+            // [END pubsub_quickstart_subscriber]
             return 0;
         }
 
@@ -451,14 +449,14 @@ namespace GoogleCloudSamples
 
         public static object ListProjectTopics(PublisherServiceApiClient publisher, string projectId)
         {
-            // [START list_topics]
+            // [START pubsub_list_topics]
             ProjectName projectName = new ProjectName(projectId);
             IEnumerable<Topic> topics = publisher.ListTopics(projectName);
-            // [END list_topics]         
             foreach (Topic topic in topics)
             {
                 Console.WriteLine($"{topic.Name}");
             }
+            // [END pubsub_list_topics]
             return 0;
         }
 
@@ -486,40 +484,40 @@ namespace GoogleCloudSamples
 
         public static object ListSubscriptions(string projectId)
         {
+            // [START pubsub_list_subscriptions]
             SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
-            // [START list_subscriptions]
             ProjectName projectName = new ProjectName(projectId);
             IEnumerable<Subscription> subscriptions =
                 subscriber.ListSubscriptions(projectName);
-            // [END list_subscriptions]
             foreach (Subscription subscription in subscriptions)
             {
                 Console.WriteLine($"{subscription}");
             }
+            // [END pubsub_list_subscriptions]
             return 0;
         }
 
         public static object DeleteSubscription(string projectId,
             string subscriptionId)
         {
+            // [START pubsub_delete_subscription]
             SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
-            // [START delete_subscription]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
             subscriber.DeleteSubscription(subscriptionName);
-            // [END delete_subscription]
             Console.WriteLine("Subscription deleted.");
+            // [END pubsub_delete_subscription]
             return 0;
         }
 
         public static object DeleteTopic(string projectId, string topicId)
         {
+            // [START pubsub_delete_topic]
             PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-            // [START delete_topic]
             TopicName topicName = new TopicName(projectId, topicId);
             publisher.DeleteTopic(topicName);
-            // [END delete_topic]
             Console.WriteLine("Topic deleted.");
+            // [END pubsub_delete_topic]
             return 0;
         }
 

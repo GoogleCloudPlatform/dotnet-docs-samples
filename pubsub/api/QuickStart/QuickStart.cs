@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.using System;
 
-// [START pubsub_quickstart]
+// [START pubsub_quickstart_create_topic]
 
 using Google.Cloud.PubSub.V1;
 using System;
@@ -29,13 +29,13 @@ namespace GoogleCloudSamples
 
             // Your Google Cloud Platform project ID
             string projectId = "YOUR-PROJECT-ID";
-            // [END pubsub_quickstart]
+            // [END pubsub_quickstart_create_topic]
             if (projectId == "YOUR-PROJECT" + "-ID")
             {
                 Console.WriteLine("Edit Program.cs and replace YOUR-PROJECT-ID with your project id.");
                 return -1;
             }
-            // [START pubsub_quickstart]
+            // [START pubsub_quickstart_create_topic]
 
             // The name for the new topic
             var topicName = new TopicName(projectId, "my-new-topic");
@@ -55,4 +55,4 @@ namespace GoogleCloudSamples
         }
     }
 }
-// [END pubsub_quickstart]
+// [END pubsub_quickstart_create_topic]
