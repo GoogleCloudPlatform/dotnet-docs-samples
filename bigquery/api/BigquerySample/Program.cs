@@ -62,7 +62,7 @@ BigquerySample <project_id>";
                 foreach (var row in result)
                 {
                     Console.WriteLine($"{row["url"]}: {row["view_count"]} views");
-                }
+                }            
                 // [END bigquery_simple_app_print]
             }
             Console.WriteLine("\nPress any key...");
