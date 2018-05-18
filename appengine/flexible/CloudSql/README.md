@@ -5,8 +5,12 @@ when running in Google App Engine Flexible Environment.
 
 ## Prerequisites
 
-1.  **Follow the instructions in the [root README](../../../README.md).**
+0.  **Follow the instructions in the [root README](../../../README.md).**
   
+1.  Enable APIs for your project.
+    [Click here](https://console.cloud.google.com/flows/enableapi?apiid=sqladmin.googleapis.com&showconfirmation=true)
+    to visit Cloud Platform Console and enable the Google Cloud SQL API.
+
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.
 
