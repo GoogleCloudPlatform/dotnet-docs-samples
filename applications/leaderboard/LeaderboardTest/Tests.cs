@@ -35,7 +35,7 @@ namespace GoogleCloudSamples.Leaderboard
                     Main = Program.Main,
                     Command = "Leaderboard"
                 };
-                runner.Run("deleteDatabase",
+                runner.Run("delete",
                     ProjectId, InstanceId, DatabaseId);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
