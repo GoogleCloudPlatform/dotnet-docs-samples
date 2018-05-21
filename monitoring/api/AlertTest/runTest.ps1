@@ -11,7 +11,14 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+
 dotnet restore
 dotnet build
-dotnet test --test-adapter-path:. --logger:junit --no-restore --no-build -v n
+
+if ((Get-Date) -lt (Get-Date 2018-05-23)) {
+    Skip-Test
+} else {
+    dotnet test --test-adapter-path:. --logger:junit --no-restore --no-build -v n
+}
 
