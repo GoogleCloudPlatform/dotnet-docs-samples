@@ -53,7 +53,7 @@ namespace GoogleCloudSamples.VideoIntelligence
 
     public class Analyzer
     {
-        // [START analyze_shots_gcs]
+        // [START video_analyze_shots]
         public static object AnalyzeShotsGcs(string uri)
         {
             var client = VideoIntelligenceServiceClient.Create();
@@ -73,9 +73,9 @@ namespace GoogleCloudSamples.VideoIntelligence
             }
             return 0;
         }
-        // [END analyze_shots_gcs]
+        // [END video_analyze_shots]
 
-        // [START analyze_labels]
+        // [START video_analyze_labels_local]
         public static object AnalyzeLabels(string path)
         {
             var client = VideoIntelligenceServiceClient.Create();
@@ -94,9 +94,9 @@ namespace GoogleCloudSamples.VideoIntelligence
             return 0;
         }
 
-        // [END analyze_labels]
+        // [END video_analyze_labels_local]
 
-        // [START analyze_labels_gcs]
+        // [START video_analyze_labels_gcs]
         public static object AnalyzeLabelsGcs(string uri)
         {
             var client = VideoIntelligenceServiceClient.Create();
@@ -115,7 +115,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             return 0;
         }
 
-        // [START analyze_labels]
+        // [START video_analyze_labels_local]
         static void PrintLabels(string labelName,
             IEnumerable<LabelAnnotation> labelAnnotations)
         {
@@ -136,10 +136,10 @@ namespace GoogleCloudSamples.VideoIntelligence
                 }
             }
         }
-        // [END analyze_labels]
-        // [END analyze_labels_gcs]
+        // [END video_analyze_labels_local]
+        // [END video_analyze_labels_gcs]
 
-        // [START analyze_explicitcontent_gcs]
+        // [START video_analyze_explicit_content]
         public static object AnalyzeExplicitContentGcs(string uri)
         {
             var client = VideoIntelligenceServiceClient.Create();
@@ -160,7 +160,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             }
             return 0;
         }
-        // [END analyze_explicitcontent_gcs]
+        // [END video_analyze_explicit_content]
 
         public static void Main(string[] args)
         {
