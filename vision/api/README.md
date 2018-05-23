@@ -55,6 +55,8 @@ can use [this older sample](
 
       web            Find web pages with matching images.
 
+      web-geo        Find web pages with matching images includinggeo results.
+
       doc-text       Detect text in a document image.
 
       help           Display more information on a specific command.
