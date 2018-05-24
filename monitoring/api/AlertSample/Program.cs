@@ -136,6 +136,7 @@ namespace GoogleCloudSamples
         }
         // [END monitoring_alert_list_policies]
 
+        // [START monitoring_alert_list_channels]
         static void ListNotificationChannels(string projectId)
         {
             var client = NotificationChannelServiceClient.Create();
@@ -150,9 +151,9 @@ namespace GoogleCloudSamples
                 Console.WriteLine();
             }
         }
+        // [END monitoring_alert_list_channels]
 
         // [START monitoring_alert_backup_policies]
-        // [START monitoring_alert_list_channels]
         static void BackupPolicies(string projectId, string filePath)
         {
             var policyClient = AlertPolicyServiceClient.Create();
@@ -167,7 +168,6 @@ namespace GoogleCloudSamples
                 }, new ProtoMessageConverter()));
         }
         // [END monitoring_alert_backup_policies]
-        // [END monitoring_alert_list_channels]
 
         // [START monitoring_alert_restore_policies]
         // [START monitoring_alert_create_policy]
@@ -403,22 +403,37 @@ namespace GoogleCloudSamples
             AlertPolicyName policyName;
             if (!AlertPolicyName.TryParse(policyNameString, out policyName))
             {
-                throw new BadNameException();
+                string message = string.Format(
+                    @"{0} is not a valid alert policy name.
+                    Policy names look like this: {1}.",
+                    policyNameString,
+                    new AlertPolicyName("project-id", "alert-policy-id"));
+                throw new Exception(message);
             }
             client.DeleteAlertPolicy(policyName);
             Console.WriteLine($"Deleted {policyName}.");
         }
-        static void DeleteNotificationChannel(string channelNameString, bool force)
+
+        // [START monitoring_alert_delete_channel]
+        static void DeleteNotificationChannel(string channelNameString,
+            bool force)
         {
             var client = NotificationChannelServiceClient.Create();
             NotificationChannelName channelName;
-            if (!NotificationChannelName.TryParse(channelNameString, out channelName))
+            if (!NotificationChannelName.TryParse(channelNameString,
+                out channelName))
             {
-                throw new BadNameException();
+                string message = string.Format(
+                    @"{0} is not a valid notification channel name.
+                    Channel names look like this: {1}.",
+                    channelNameString,
+                    new NotificationChannelName("project-id",
+                        "notification-channel-id"));
+                throw new Exception(message);
             }
             client.DeleteNotificationChannel(channelName, force);
             Console.WriteLine($"Deleted {channelName}.");
         }
-        public class BadNameException : Exception { }
+        // [END monitoring_alert_delete_channel]
     }
 }
