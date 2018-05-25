@@ -12,11 +12,10 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Vision.V1;
+using System;
 using System.IO;
 using Xunit;
-using System.Drawing;
-using System;
-using Google.Cloud.Vision.V1;
 
 namespace GoogleCloudSamples
 {
