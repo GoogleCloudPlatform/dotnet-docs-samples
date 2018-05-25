@@ -251,9 +251,10 @@ namespace GoogleCloudSamples
     /// </summary>
     public class PublicUriTests : CommonTests
     {
-        RetryRobot _retryRobot = new RetryRobot()
+        readonly RetryRobot _retryRobot = new RetryRobot()
         {
-            ShouldRetry = (Exception e) => {
+            ShouldRetry = (Exception e) =>
+            {
                 // Sometimes the API is not able to access the URL.
                 // Is github throttling us?
                 var annotateImageException = e as AnnotateImageException;
