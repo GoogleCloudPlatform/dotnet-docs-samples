@@ -15,6 +15,8 @@
 using System.IO;
 using Xunit;
 using System.Drawing;
+using System;
+using Google.Cloud.Vision.V1;
 
 namespace GoogleCloudSamples
 {
@@ -63,7 +65,7 @@ namespace GoogleCloudSamples
         public static byte[] ToPngBytes(string imagePath)
         {
             var stream = new MemoryStream();
-            using (var image = Image.FromFile(imagePath))
+            using (var image = System.Drawing.Image.FromFile(imagePath))
                 image.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
             var buffer = new byte[stream.Length];
             stream.Read(buffer, 0, buffer.Length);
@@ -249,6 +251,17 @@ namespace GoogleCloudSamples
     /// </summary>
     public class PublicUriTests : CommonTests
     {
+        RetryRobot _retryRobot = new RetryRobot()
+        {
+            ShouldRetry = (Exception e) => {
+                // Sometimes the API is not able to access the URL.
+                // Is github throttling us?
+                var annotateImageException = e as AnnotateImageException;
+                return annotateImageException != null &&
+                    annotateImageException.Message.Contains("URL");
+            }
+        };
+
         readonly CommandLineRunner _detect = new CommandLineRunner()
         {
             VoidMain = DetectProgram.Main,
@@ -263,7 +276,8 @@ namespace GoogleCloudSamples
                 "dotnet-docs-samples/master/vision/api/VisionTest/data/";
             string filePublicUri =
                 uriPrefix + uriSampleFilePath + Path.GetFileName(args[1]);
-            return _detect.Run(args[0], filePublicUri);
+            return _retryRobot.Eventually(
+                () => _detect.Run(args[0], filePublicUri));
         }
     }
 
