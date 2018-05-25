@@ -21,10 +21,10 @@ namespace Sudokumb
     public class InMemoryGameBoardStackImpl
     {
         private readonly Solver _solver;
-        private readonly SolveStateStore _solveStateStore;
+        private readonly ISolveStateStore _solveStateStore;
 
         public InMemoryGameBoardStackImpl(Solver solver,
-            SolveStateStore solveStateStore)
+            ISolveStateStore solveStateStore)
         {
             _solver = solver;
             _solveStateStore = solveStateStore;
@@ -59,7 +59,7 @@ namespace Sudokumb
     public class InMemoryGameBoardStack : InMemoryGameBoardStackImpl, IGameBoardQueue
     {
         public InMemoryGameBoardStack(Solver solver,
-            SolveStateStore solveStateStore)
+            ISolveStateStore solveStateStore)
             : base(solver, solveStateStore)
         {
         }
