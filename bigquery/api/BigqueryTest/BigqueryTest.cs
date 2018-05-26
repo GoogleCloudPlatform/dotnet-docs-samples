@@ -99,15 +99,14 @@ namespace GoogleCloudSamples
 
         public BigQueryTest()
         {
-			// [START bigquery_client_default_credentials]
-			// By default, the Google.Bigquery.V2 library client will authenticate 
-			// using the service account file (created in the Google Developers 
-			// Console) specified by the GOOGLE_APPLICATION_CREDENTIALS 
-			// environment variable. If you are running on
-			// a Google Compute Engine VM, authentication is completely 
-			// automatic.
-			_projectId = "bigquery-quickstart-203500";//Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"); // TODO: FIX THIS HACK!
-			Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "/Users/erschmid/Devtools/svc-acct.json");
+            // [START bigquery_client_default_credentials]
+            // By default, the Google.Bigquery.V2 library client will authenticate 
+            // using the service account file (created in the Google Developers 
+            // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS 
+            // environment variable. If you are running on
+            // a Google Compute Engine VM, authentication is completely 
+            // automatic.
+            _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _client = BigQueryClient.Create(_projectId);
             // [END bigquery_client_default_credentials]
         }
@@ -393,31 +392,27 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestImportFromCloudStorage()
         {
-			var datasetId = $"datasetForLoadCSV{DateTime.Now.Millisecond}";
-            var newTableID = $"tableForTestImportDataFromJSON{RandomSuffix()}";
+            var datasetId = $"datasetForLoadCSV{DateTime.Now.Millisecond}";
+            var newTableID = $"tableForTestImportDataFromCSV{RandomSuffix()}";
 
             // Test parameters.
-			string csvGcsSampleFile = "gs://cloud-samples-data/bigquery/us-states/us-states.csv";
-			string field1 = "name";
-			string field2 = "post_abbr";
-			string expectedFirstRowName = "Alabama";
+            string expectedFirstRowName = "Alabama";
             
-			// Import data.
-			GoogleCloudSamples.BiqQuerySnippets.LoadTableFromCSV(datasetId, newTableID, _client,
-			    csvGcsSampleFile, field1, field2);
+            // Import data.
+            GoogleCloudSamples.BiqQuerySnippets.LoadTableFromCSV(datasetId, newTableID, _client);
 
-			// Run query to get table data.
-			var newTable = _client.GetTable(datasetId, newTableID);
-			string query = $"SELECT {field1}, {field2} FROM {newTable}" +
-				$"ORDER BY {field1}, {field2}";
+            // Run query to get table data.
+            var newTable = _client.GetTable(datasetId, newTableID);
+            string query = $"SELECT name, post_abbr FROM {newTable}" +
+                $"ORDER BY name, post_abbr";
 
-			BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableID,
+            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableID,
                 query, _client);
-			var row = results.First();
+            var row = results.First();
 
             // Check results.
-			Assert.Equal(expectedFirstRowName, row[field1]);
-			Assert.True(results.Count() == 50);
+            Assert.Equal(expectedFirstRowName, row["name"]);
+            Assert.True(results.Count() == 50);
         }
         
         [Fact]
@@ -457,32 +452,28 @@ namespace GoogleCloudSamples
 
         [Fact]
         public void TestImportDataFromJSON()
-		{
-			var datasetId = $"datasetForLoadJson{DateTime.Now.Millisecond}";
-			var newTableID = $"tableForTestImportDataFromJSON{RandomSuffix()}";
+        {
+            var datasetId = $"datasetForLoadJson{DateTime.Now.Millisecond}";
+            var newTableID = $"tableForTestImportDataFromJSON{RandomSuffix()}";
 
             // JSON file below has 50 items in it.
-			var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.json";
-			var field1 = "name";
-			var field2 = "post_abbr";
-			string expectedFirstRowName = "Alabama";
+            string expectedFirstRowName = "Alabama";
 
-			GoogleCloudSamples.BiqQuerySnippets.LoadTableFromJSON(_client, datasetId, newTableID, 
-			    gcsURI, field1, field2);
+            GoogleCloudSamples.BiqQuerySnippets.LoadTableFromJSON(_client, datasetId, newTableID);
 
-			// Run query to get table data.
+            // Run query to get table data.
             var newTable = _client.GetTable(datasetId, newTableID);
-            string query = $"SELECT {field1}, {field2} FROM {newTable}" +
-                $"ORDER BY {field1}, {field2}";
+            string query = $"SELECT name, post_abbr FROM {newTable}" +
+                $"ORDER BY name, post_abbr";
 
             BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableID,
                 query, _client);
             var row = results.First();
 
             // Check results.
-            Assert.Equal(expectedFirstRowName, row[field1]);
+            Assert.Equal(expectedFirstRowName, row["name"]);
             Assert.True(results.Count() == 50);
-		}
+        }
 
         [Fact]
         public void TestImportDataFromStream()

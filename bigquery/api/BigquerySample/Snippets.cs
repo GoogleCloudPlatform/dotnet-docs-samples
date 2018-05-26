@@ -6,26 +6,23 @@ namespace GoogleCloudSamples
 {
     public static class BiqQuerySnippets
     {
-		/// <summary>
+        /// <summary>
         /// Loads the table from a JSON source.
         /// </summary>
         /// <param name="client">BigQuery client</param>
-		/// <param name="datasetId"></param>
-		/// <param name="tableId"></param>
-		/// <param name="gcsURI"></param>
-		/// <param name="field1"></param>
-		/// <param name="field2"></param>
+        /// <param name="datasetId"></param>
+        /// <param name="tableId"></param>
         public static void LoadTableFromJSON(BigQueryClient client,
-		    string datasetId, string tableId, string gcsURI, string field1,
-		    string field2)
+            string datasetId, string tableId)
         {
             // [START bigquery_load_table_gcs_json]
-            var dataset = client.CreateDataset(datasetId);
+            var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.json";
 
-            var schema = new TableSchemaBuilder
-            {
-                { field1, BigQueryDbType.String },
-                { field2, BigQueryDbType.String }
+            var dataset = client.CreateDataset(datasetId);
+            
+            var schema = new TableSchemaBuilder {
+                { "name", BigQueryDbType.String },
+                { "post_abbr", BigQueryDbType.String }
             }.Build();
             
             var jobOptions = new CreateLoadJobOptions()
@@ -38,7 +35,7 @@ namespace GoogleCloudSamples
 
             loadJob.PollUntilCompleted();
 
-			// [END bigquery_load_table_gcs_json]
+            // [END bigquery_load_table_gcs_json]
 
         }
 
@@ -48,33 +45,32 @@ namespace GoogleCloudSamples
         /// <param name="datasetId">Dataset identifier.</param>
         /// <param name="tableId">Table identifier.</param>
         /// <param name="client">A BigQuery client.</param>
-        /// <param name="gcsURI">URI of the source.</param>
-        /// <param name="field1">Field in the source file.</param>
-        /// <param name="field2">Another field in the source file.</param>
         public static void LoadTableFromCSV(string datasetId,
-		    string tableId, BigQueryClient client, string gcsURI, string field1, string field2)
+            string tableId, BigQueryClient client)
         {
-			// [START bigquery_load_table_gcs_csv]
-			var dataset = client.CreateDataset(datasetId);
+            // [START bigquery_load_table_gcs_csv]
+            var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.json";
+
+            var dataset = client.CreateDataset(datasetId);
             
-			var schema = new TableSchemaBuilder {
-				{ field1, BigQueryDbType.String },
-				{ field2, BigQueryDbType.String }
-			}.Build();
+            var schema = new TableSchemaBuilder {
+                { "name", BigQueryDbType.String },
+                { "post_abbr", BigQueryDbType.String }
+            }.Build();
 
-			var jobOptions = new CreateLoadJobOptions()
-			{
-				// The source format defaults to CSV; line below is optional.
-				SourceFormat = FileFormat.Csv,
+            var jobOptions = new CreateLoadJobOptions()
+            {
+                // The source format defaults to CSV; line below is optional.
+                SourceFormat = FileFormat.Csv,
                 SkipLeadingRows = 1
-			};
+            };
 
-			var loadJob = client.CreateLoadJob(gcsURI, dataset.GetTableReference(tableId),
-			    schema, jobOptions);
+            var loadJob = client.CreateLoadJob(gcsURI, dataset.GetTableReference(tableId),
+                schema, jobOptions);
 
-			loadJob.PollUntilCompleted();
+            loadJob.PollUntilCompleted();
       
-			// [END bigquery_load_table_gcs_csv]
+            // [END bigquery_load_table_gcs_csv]
         }
         
     }
