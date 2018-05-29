@@ -98,7 +98,7 @@ namespace Sudokumb
             }
             cancel.Cancel();
             Task.WaitAll(tasks);
-            return count;
+            return count / 3;
         }
 
         private static string RenderResults(IEnumerable<VisItem> items,
