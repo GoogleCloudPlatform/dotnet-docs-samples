@@ -57,7 +57,7 @@ namespace GoogleCloudSamples
         // Many agents may be running the test at the same time, so limit
         // our requests to 10 per minute.
         static readonly ThrottleTokenPool s_throttleTokenPool =
-            new ThrottleTokenPool(15, TimeSpan.FromSeconds(90));
+            new ThrottleTokenPool(10, TimeSpan.FromSeconds(60));
 
         // Run command and return output.
         // Project ID argument is always set.
@@ -70,9 +70,19 @@ namespace GoogleCloudSamples
                 var arguments = args.Select((arg) => arg.ToString()).ToList();
                 arguments.Insert(0, command);
                 arguments.AddRange(new[] { "--projectId", ProjectId });
-
-                Output = _dialogflow.Run(arguments.ToArray());
-
+                try
+                {
+                    Output = _dialogflow.Run(arguments.ToArray());
+                }
+                catch (Grpc.Core.RpcException e)
+                when (e.Status.StatusCode == Grpc.Core.StatusCode.ResourceExhausted)
+                {
+                    // Throttle some more!
+                    int randomDelay = new Random().Next(60, 120);
+                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(randomDelay));
+                    // And try once more.
+                    Output = _dialogflow.Run(arguments.ToArray());
+                }
                 return Output;
             }
         }
