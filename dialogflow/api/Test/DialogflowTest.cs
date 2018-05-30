@@ -57,7 +57,7 @@ namespace GoogleCloudSamples
         // Many agents may be running the test at the same time, so limit
         // our requests to 10 per minute.
         static readonly ThrottleTokenPool s_throttleTokenPool =
-            new ThrottleTokenPool(10, TimeSpan.FromSeconds(61));
+            new ThrottleTokenPool(15, TimeSpan.FromSeconds(90));
 
         // Run command and return output.
         // Project ID argument is always set.
