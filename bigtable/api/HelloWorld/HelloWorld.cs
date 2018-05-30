@@ -7,7 +7,7 @@ using Google.Cloud.Bigtable.Admin.V2;
 
 namespace GoogleCloudSamples.Bigtable
 {
-    class QuickStart
+    class HelloWorld
     {
         // Set up some Cloud Bigtable metadata for convinience
         // Your Google Cloud Platform project ID
@@ -199,12 +199,12 @@ namespace GoogleCloudSamples.Bigtable
 
             if (projectId == "YOUR-PROJECT" + "-ID")
             {
-                Console.WriteLine("Edit QuickStart.cs and replace YOUR-PROJECT-ID with your project id.");
+                Console.WriteLine("Edit HelloWorld.cs and replace YOUR-PROJECT-ID with your project id.");
                 return -1;
             }
             if (instanceId == "YOUR-INSTANCE" + "-ID")
             {
-                Console.WriteLine("Edit QuickStart.cs and replace YOUR-INSTANCE-ID with your instance id.");
+                Console.WriteLine("Edit HelloWorld.cs and replace YOUR-INSTANCE-ID with your instance id.");
                 return -1;
             }
 
