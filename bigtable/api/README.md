@@ -3,12 +3,7 @@
 A collection of samples that demonstrate how to call the
 [Google Cloud Bigtable API](https://cloud.google.com/bigtable/docs/) from C#.
 
-    This sample requires [.NET Core 2.0](
-        https://www.microsoft.com/net/core) or later.  That means using
-    [Visual Studio 2017](
-        https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
-can use [this older sample](
-    https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/spanner/api).
+This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or later.  That means using [Visual Studio 2017](https://www.visualstudio.com/), or the command line.
 
 ## Build and Run
 
@@ -23,13 +18,13 @@ can use [this older sample](
     documentation](https://cloud.google.com/bigtable/docs/creating-instance) to
     create a Cloud Bigtable instance if necessary.
 
-7.  Edit `QuickStart\Quickstart.cs`, and replace YOUR-PROJECT-ID with id
+7.  Edit `HelloWorld\HelloWorld.cs`, and replace YOUR-PROJECT-ID with id
     of the project you created in step 1. 
-    Also replace YOUR-INDEX-ID with id of your instance you created in step 5.
+    Also replace YOUR-INSTANCE-ID with id of your instance you created in step 5.
 
-9.  From a Powershell command line, run the QuickStart sample:
+9.  From a Powershell command line, run the HelloWorld sample:
     ```
-    PS C:\...\dotnet-docs-samples\bigtable\api\QuickStart> dotnet run
+    PS C:\...\dotnet-docs-samples\bigtable\api\HelloWorld> dotnet run
     ```
     You will see output resembling the following, interspersed with informational logging
     from the underlying libraries:
@@ -64,7 +59,7 @@ can use [this older sample](
  
     *  Click **Delete**.
  
-     ![Delete]( https://cloud.google.com/bigtable/img/delete-quickstart-instance.png)
+     ![Delete]( https://cloud.google.com/bigtable/img/delete-HelloWorld-instance.png)
  
     * Type the instance ID, then click **Delete** to delete the instance.
 ## Contributing changes
