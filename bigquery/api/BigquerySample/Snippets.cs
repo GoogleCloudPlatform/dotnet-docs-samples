@@ -49,7 +49,7 @@ namespace GoogleCloudSamples
             string tableId, BigQueryClient client)
         {
             // [START bigquery_load_table_gcs_csv]
-            var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.json";
+            var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.csv";
 
             var dataset = client.CreateDataset(datasetId);
             
