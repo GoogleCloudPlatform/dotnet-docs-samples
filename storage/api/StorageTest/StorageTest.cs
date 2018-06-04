@@ -593,7 +593,7 @@ namespace GoogleCloudSamples
         {
             var addBucketDefaultKmsKeyResponse =
                 Run("add-bucket-default-kms-key", _bucketName1,
-                    _kmsKeyRing, _kmsKeyName);
+                    s_kmsKeyLocation, _kmsKeyRing, _kmsKeyName);
             AssertSucceeded(addBucketDefaultKmsKeyResponse);
         }
 
