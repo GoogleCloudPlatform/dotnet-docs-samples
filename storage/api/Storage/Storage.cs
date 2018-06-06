@@ -36,6 +36,7 @@ namespace GoogleCloudSamples
             "  Storage list\n" +
             "  Storage list bucket-name [prefix] [delimiter]\n" +
             "  Storage get-metadata bucket-name object-name\n" +
+            "  Storage get-bucket-metadata bucket-name\n" +
             "  Storage make-public bucket-name object-name\n" +
             "  Storage upload [-key encryption-key] bucket-name local-file-path [object-name]\n" +
             "  Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
@@ -258,6 +259,38 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Updated:\t{storageObject.Updated}");
         }
         // [END storage_get_metadata]
+
+        private void GetBucketMetadata(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetBucket(bucketName);
+            Console.WriteLine($"Bucket:\t{storageObject.Name}");
+            Console.WriteLine($"Acl:\t{storageObject.Acl}");
+            Console.WriteLine($"Billing:\t{storageObject.Billing}");
+            Console.WriteLine($"Cors:\t{storageObject.Cors}");
+            Console.WriteLine($"DefaultEventBasedHold:\t{storageObject.DefaultEventBasedHold}");
+            Console.WriteLine($"DefaultObjectAcl:\t{storageObject.DefaultObjectAcl}");
+            Console.WriteLine($"Encryption:\t{storageObject.Encryption}");
+            if (storageObject.Encryption != null)
+            {
+                Console.WriteLine($"KmsKeyName:\t{storageObject.Encryption.DefaultKmsKeyName}");
+            }
+            Console.WriteLine($"Id:\t{storageObject.Id}");
+            Console.WriteLine($"Kind:\t{storageObject.Kind}");
+            Console.WriteLine($"Lifecycle:\t{storageObject.Lifecycle}");
+            Console.WriteLine($"Location:\t{storageObject.Location}");
+            Console.WriteLine($"Logging:\t{storageObject.Logging}");
+            Console.WriteLine($"Metageneration:\t{storageObject.Metageneration}");
+            Console.WriteLine($"Owner:\t{storageObject.Owner}");
+            Console.WriteLine($"ProjectNumber:\t{storageObject.ProjectNumber}");
+            Console.WriteLine($"RetentionPolicy:\t{storageObject.RetentionPolicy}");
+            Console.WriteLine($"SelfLink:\t{storageObject.SelfLink}");
+            Console.WriteLine($"StorageClass:\t{storageObject.StorageClass}");
+            Console.WriteLine($"TimeCreated:\t{storageObject.TimeCreated}");
+            Console.WriteLine($"Updated:\t{storageObject.Updated}");
+            Console.WriteLine($"Versioning:\t{storageObject.Versioning}");
+            Console.WriteLine($"Website:\t{storageObject.Website}");
+        }
 
         // [START storage_make_public]
         private void MakePublic(string bucketName, string objectName)
@@ -515,8 +548,7 @@ namespace GoogleCloudSamples
         private void AddBucketDefaultKmsKey(string bucketName,
             string keyLocation, string kmsKeyRing, string kmsKeyName)
         {
-            string KeyLocation = keyLocation;
-            string KeyPrefix = $"projects/{s_projectId}/locations/{KeyLocation}";
+            string KeyPrefix = $"projects/{s_projectId}/locations/{keyLocation}";
             string FullKeyringName = $"{KeyPrefix}/keyRings/{kmsKeyRing}";
             string FullKeyName = $"{FullKeyringName}/cryptoKeys/{kmsKeyName}";
             var storage = StorageClient.Create();
@@ -541,8 +573,7 @@ namespace GoogleCloudSamples
             string keyLocation, string kmsKeyRing, string kmsKeyName,
             string localPath, string objectName = null)
         {
-            string KeyLocation = keyLocation;
-            string KeyPrefix = $"projects/{s_projectId}/locations/{KeyLocation}";
+            string KeyPrefix = $"projects/{s_projectId}/locations/{keyLocation}";
             string FullKeyringName = $"{KeyPrefix}/keyRings/{kmsKeyRing}";
             string FullKeyName = $"{FullKeyringName}/cryptoKeys/{kmsKeyName}";
 
@@ -883,6 +914,11 @@ namespace GoogleCloudSamples
                         GetMetadata(args[1], args[2]);
                         break;
 
+                    case "get-bucket-metadata":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        GetBucketMetadata(args[1]);
+                        break;
+                        
                     case "make-public":
                         if (args.Length < 3 && PrintUsage()) return -1;
                         MakePublic(args[1], args[2]);

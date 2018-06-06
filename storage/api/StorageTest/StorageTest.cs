@@ -595,6 +595,8 @@ namespace GoogleCloudSamples
                 Run("add-bucket-default-kms-key", _bucketName1,
                     s_kmsKeyLocation, _kmsKeyRing, _kmsKeyName);
             AssertSucceeded(addBucketDefaultKmsKeyResponse);
+            var bucketMetadata = Run("get-bucket-metadata", _bucketName1);
+            Assert.Contains(_kmsKeyName, bucketMetadata.Stdout);
         }
 
         [Fact]
