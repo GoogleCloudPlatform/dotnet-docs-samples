@@ -919,7 +919,7 @@ namespace GoogleCloudSamples
                         if (args.Length < 2 && PrintUsage()) return -1;
                         GetBucketMetadata(args[1]);
                         break;
-                        
+
                     case "make-public":
                         if (args.Length < 3 && PrintUsage()) return -1;
                         MakePublic(args[1], args[2]);
