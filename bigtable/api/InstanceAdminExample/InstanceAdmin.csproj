@@ -15,8 +15,4 @@
     <Folder Include="Properties\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
-  </ItemGroup>
-
 </Project>
