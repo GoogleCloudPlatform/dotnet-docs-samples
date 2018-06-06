@@ -1,4 +1,18 @@
-﻿using System;
+﻿// Copyright 2018 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -14,7 +28,7 @@ namespace GoogleCloudSamples.Bigtable
         private const string projectId = "YOUR-PROJECT-ID";
         
         // You Google Cloud Bigtable instance ID
-        private const string instanceId = "YOUR-INSTANCE-ID";
+        private const string instanceId = "my-bigtable-instance";
 
         // The name of a table.
         private const string tableId = "Hello-Bigtable";
@@ -200,11 +214,6 @@ namespace GoogleCloudSamples.Bigtable
             if (projectId == "YOUR-PROJECT" + "-ID")
             {
                 Console.WriteLine("Edit HelloWorld.cs and replace YOUR-PROJECT-ID with your project id.");
-                return -1;
-            }
-            if (instanceId == "YOUR-INSTANCE" + "-ID")
-            {
-                Console.WriteLine("Edit HelloWorld.cs and replace YOUR-INSTANCE-ID with your instance id.");
                 return -1;
             }
 
