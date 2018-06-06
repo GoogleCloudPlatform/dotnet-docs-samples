@@ -647,8 +647,6 @@ namespace GoogleCloudSamples
                 File.ReadAllText("Hello-downloaded.txt"));
         }
 
-
-
         [Fact]
         public void TestEnableAndDisableRequesterPays()
         {
