@@ -249,6 +249,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Generation:\t{storageObject.Generation}");
             Console.WriteLine($"Id:\t{storageObject.Id}");
             Console.WriteLine($"Kind:\t{storageObject.Kind}");
+            Console.WriteLine($"KmsKeyName:\t{storageObject.KmsKeyName}");
             Console.WriteLine($"Md5Hash:\t{storageObject.Md5Hash}");
             Console.WriteLine($"MediaLink:\t{storageObject.MediaLink}");
             Console.WriteLine($"Metageneration:\t{storageObject.Metageneration}");

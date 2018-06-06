@@ -606,6 +606,8 @@ namespace GoogleCloudSamples
                     _bucketName1, s_kmsKeyLocation, _kmsKeyRing,
                     _kmsKeyName, CollectRegionalObject("Hello.txt"));
             AssertSucceeded(uploadWithKmsKeyResponse);
+            var objectMetadata = Run("get-metadata", _bucketName1, "Hello.txt");
+            Assert.Contains(_kmsKeyName, objectMetadata.Stdout);
         }
 
         [Fact]
