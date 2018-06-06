@@ -52,6 +52,7 @@ can use [this older sample](
 	  Storage list
 	  Storage list bucket-name [prefix] [delimiter]
 	  Storage get-metadata bucket-name object-name
+	  Storage get-bucket-metadata bucket-name
 	  Storage make-public bucket-name object-name
 	  Storage upload [-key encryption-key] bucket-name local-file-path [object-name]
 	  Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name
