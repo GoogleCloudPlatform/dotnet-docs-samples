@@ -10,16 +10,21 @@ namespace GoogleCloudSamples.Bigtable
         static int Main(string[] args)
         {
             // Your Google Cloud Platform project ID
-            string projectId = "YOUR-PROJECT-ID";
+            const string projectId = "YOUR-PROJECT-ID";
+            // The name of the Cloud Bigtable instance
+            const string instanceId = "YOUR-INSTANCE-ID";
             // [END bigtable_quickstart]
             if (projectId == "YOUR-PROJECT" + "-ID")
             {
-                Console.WriteLine("Edit Program.cs and replace YOUR-PROJECT-ID with your project id.");
+                Console.WriteLine("Edit QuickStart.cs and replace YOUR-PROJECT-ID with your project id.");
+                return -1;
+            }
+            if (instanceId == "YOUR-INSTANCE" + "-ID")
+            {
+                Console.WriteLine("Edit QuickStart.cs and replace YOUR-INSTANCE-ID with your instance id.");
                 return -1;
             }
             // [START bigtable_quickstart]
-            // The name of the Cloud Bigtable instance
-            const string instanceId = "my-bigtable-instance";
             // The name of the Cloud Bigtable table
             const string tableId = "my-table";
       

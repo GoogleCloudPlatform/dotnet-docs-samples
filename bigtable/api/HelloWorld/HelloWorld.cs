@@ -54,7 +54,7 @@ namespace GoogleCloudSamples.Bigtable
                 Console.WriteLine($"Create new table: {tableId} with column family: {columnFamily}, Instance: {instanceId}");
 
                 // Check whether a table with given TableName already exists.
-                if (!DoesTableExist(bigtableTableAdminClient))
+                if (!TableExist(bigtableTableAdminClient))
                 {
                     bigtableTableAdminClient.CreateTable(
                         new InstanceName(projectId, instanceId),
@@ -76,7 +76,7 @@ namespace GoogleCloudSamples.Bigtable
                             }
                         });
                     // Confirm that table was created successfully.
-                    Console.WriteLine(DoesTableExist(bigtableTableAdminClient)
+                    Console.WriteLine(TableExist(bigtableTableAdminClient)
                         ? $"Table {tableId} created succsessfully\n"
                         : $"There was a problem creating a table {tableId}");
                 }
@@ -176,7 +176,7 @@ namespace GoogleCloudSamples.Bigtable
                 Console.WriteLine($"Delete table: {tableId}");
 
                 bigtableTableAdminClient.DeleteTable(name: new Google.Cloud.Bigtable.Admin.V2.TableName(projectId, instanceId, tableId));
-                if (DoesTableExist(bigtableTableAdminClient) == false)
+                if (!TableExist(bigtableTableAdminClient))
                 {
                     Console.WriteLine($"Table: {tableId} deleted succsessfully");
                 }
@@ -188,7 +188,7 @@ namespace GoogleCloudSamples.Bigtable
             }
         }
 
-        private static bool DoesTableExist(BigtableTableAdminClient bigtableTableAdminClient)
+        private static bool TableExist(BigtableTableAdminClient bigtableTableAdminClient)
         {
             var tables = bigtableTableAdminClient.ListTables(new InstanceName(projectId, instanceId));
             return tables.Any(x => x.TableName.TableId == tableId);
