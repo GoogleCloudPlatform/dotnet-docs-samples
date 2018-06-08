@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InstanceAdmin", "InstanceAd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableAdmin", "TableAdminExample\TableAdmin.csproj", "{32FA2C3F-5105-4C2F-A857-2EA3AC6C55FB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineUtil", "..\..\commandlineutil\Lib\CommandLineUtil.csproj", "{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{32FA2C3F-5105-4C2F-A857-2EA3AC6C55FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32FA2C3F-5105-4C2F-A857-2EA3AC6C55FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32FA2C3F-5105-4C2F-A857-2EA3AC6C55FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
