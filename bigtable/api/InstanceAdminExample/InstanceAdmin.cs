@@ -24,8 +24,6 @@ namespace GoogleCloudSamples.Bigtable
     [Verb("createProdInstance", HelpText = "Create a `PRODUCTION` type Instance with SSD storage type in this project.")]
     class CreateProdInstanceOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
-        public string projectId { get; set; }
         [Value(1, HelpText = "The displayName for an instance to create.", Required = true)]
         public string displayName { get; set; }
     }
@@ -33,33 +31,25 @@ namespace GoogleCloudSamples.Bigtable
     [Verb("createDevInstance", HelpText = "Create a `DEVELOPMENT` type Instance with HDD storage type in this project.")]
     class CreateDevInstanceOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
-        public string projectId { get; set; }
         [Value(1, HelpText = "The displayName for an instance to create.", Required = true)]
         public string displayName { get; set; }
     }
 
-    [Verb("listInstances", HelpText = "Lists information about instances in a project.")]
+    [Verb("listInstances", HelpText = "Lists instances in a project.")]
     class ListInstancesOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
-        public string projectId { get; set; }
     }
 
     [Verb("getInstance", HelpText = "Gets information about an instance in a project.")]
     class GetInstanceOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
-        public string projectId { get; set; }
         [Value(1, HelpText = "The instanceId to get.", Required = true)]
         public string instanceId { get; set; }
     }
 
-    [Verb("listClusters", HelpText = "Lists information about clusters in an instance.")]
+    [Verb("listClusters", HelpText = "Lists clusters in an instance.")]
     class ListClustersOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
-        public string projectId { get; set; }
         [Value(1, HelpText = "The instanceId of the instance for which a list of clusters is requested.", Required = true)]
         public string instanceId { get; set; }
     }
@@ -67,8 +57,6 @@ namespace GoogleCloudSamples.Bigtable
     [Verb("createCluster", HelpText = "Creates an additional replicated cluster within an instance.")]
     class CreateClusterOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
-        public string projectId { get; set; }
         [Value(1, HelpText = "The instanceId to which cluster belongs.", Required = true)]
         public string instanceId { get; set; }
     }
@@ -76,8 +64,6 @@ namespace GoogleCloudSamples.Bigtable
     [Verb("deleteCluster", HelpText = "Delete a cluater from an instance.")]
     class DeleteClusterOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
-        public string projectId { get; set; }
         [Value(1, HelpText = "The instanceId to which cluster belongs.", Required = true)]
         public string instanceId { get; set; }
     }
@@ -85,15 +71,16 @@ namespace GoogleCloudSamples.Bigtable
     [Verb("deleteInstance", HelpText = "Delete an instance from a project.")]
     class DeleteInstanceOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use for bigtable operations.", Required = true)]
-        public string projectId { get; set; }
         [Value(1, HelpText = "The instanceId of the instance to delete.", Required = true)]
         public string instanceId { get; set; }
     }
 
     class InstanceAdmin
     {
-        public static object CreateProdInstance(string projectId, string displayName)
+        // Your Google Cloud Platform project ID
+        private const string projectId = "YOUR-PROJECT-ID";
+
+        public static object CreateProdInstance(string displayName)
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
@@ -173,7 +160,7 @@ namespace GoogleCloudSamples.Bigtable
             return 0;
         }
 
-        public static object CreateDevInstance(string projectId, string displayName)
+        public static object CreateDevInstance(string displayName)
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
@@ -248,7 +235,7 @@ namespace GoogleCloudSamples.Bigtable
             return 0;
         }
         
-        public static object ListInstances(string projectId)
+        public static object ListInstances()
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
@@ -287,7 +274,7 @@ namespace GoogleCloudSamples.Bigtable
             return 0;
         }
 
-        public static object GetInstance(string projectId, string instanceId)
+        public static object GetInstance(string instanceId)
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
@@ -318,7 +305,7 @@ namespace GoogleCloudSamples.Bigtable
             return 0;
         }
 
-        public static object ListClusters(string projectId, string instanceId)
+        public static object ListClusters(string instanceId)
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
@@ -356,14 +343,14 @@ namespace GoogleCloudSamples.Bigtable
             return 0;
         }
         
-        public static object CreateCluster(string projectId, string instanceId)
+        public static object CreateCluster(string instanceId)
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
             // [END bigtable_create_bigtableInstanceAdminClient]
 
             Console.WriteLine("Print current instance information");
-            GetInstance(projectId, instanceId);
+            GetInstance(instanceId);
 
             // Please refer to the link below for the full list of availabel locations:
             // https://cloud.google.com/bigtable/docs/locations
@@ -401,7 +388,7 @@ namespace GoogleCloudSamples.Bigtable
                 // [END bigtable_create_cluster]
                 Console.WriteLine($"Cluster {request.ClusterId} was created successfully in instance {instanceId}");
                 Console.WriteLine("Print intance information after cluster is created");
-                GetInstance(projectId, instanceId);
+                GetInstance(instanceId);
                 // [START bigtable_create_cluster]
             }
             catch (Exception ex)
@@ -414,14 +401,14 @@ namespace GoogleCloudSamples.Bigtable
             return 0;
         }
 
-        public static object DeleteCluster(string projectId, string instanceId)
+        public static object DeleteCluster(string instanceId)
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
             // [END bigtable_create_bigtableInstanceAdminClient]
 
             Console.WriteLine("Print current instance information");
-            GetInstance(projectId, instanceId);
+            GetInstance(instanceId);
 
             Console.WriteLine("Deleting cluster");
             // [START bigtable_delete_cluster]
@@ -440,7 +427,7 @@ namespace GoogleCloudSamples.Bigtable
                 // [END bigtable_delete_cluster]
                 Console.WriteLine($"Cluster {request.ClusterName.ClusterId} was deleted successfully from instance {instanceId}");
                 Console.WriteLine("Print intance information after cluster is deleted");
-                GetInstance(projectId, instanceId);
+                GetInstance(instanceId);
                 // [START bigtable_delete_cluster]
             }
             catch (Exception ex)
@@ -452,14 +439,14 @@ namespace GoogleCloudSamples.Bigtable
             return 0;
         }
 
-        public static object DeleteInstance(string projectId, string instanceId)
+        public static object DeleteInstance(string instanceId)
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
             // [END bigtable_create_bigtableInstanceAdminClient]
 
             Console.WriteLine("Print list of instances in the project");
-            ListInstances(projectId);
+            ListInstances();
 
             Console.WriteLine("Deleting Instance");
             // [START bigtable_delete_instance]
@@ -477,7 +464,7 @@ namespace GoogleCloudSamples.Bigtable
                 // [END bigtable_delete_instance]
                 Console.WriteLine($"Instance {instanceId} deleted successfuly");
                 Console.WriteLine("Print list of instances in the project after instance is deleted");
-                ListInstances(projectId);
+                ListInstances();
                 // [START bigtable_delete_instance]
             }
             catch (Exception ex)
@@ -504,7 +491,7 @@ namespace GoogleCloudSamples.Bigtable
                     Console.WriteLine($"{"{",26}{labelsKey} : {instance.Labels[labelsKey]}}}");
                 }
             }
-            ListClusters(instance.InstanceName.ProjectId, instance.InstanceName.InstanceId);
+            ListClusters(instance.InstanceName.InstanceId);
         }
 
         private static void PrintClusterInfo(Cluster cluster)
@@ -515,22 +502,29 @@ namespace GoogleCloudSamples.Bigtable
                 $"\n{"  Location:",-30}{cluster.LocationAsLocationName.LocationId}\n{"  Node Count:",-30}{cluster.ServeNodes}\n{"  State:",-30}{cluster.State}\n");
         }
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
+            if (projectId == "YOUR-PROJECT" + "-ID")
+            {
+                Console.WriteLine("Edit InstanceAdmin.cs and replace YOUR-PROJECT-ID with your project id.");
+                return -1;
+            }
+
             Parser.Default.ParseArguments<
                     CreateProdInstanceOptions, CreateDevInstanceOptions,
                     ListInstancesOptions, GetInstanceOptions,
                     ListClustersOptions, CreateClusterOptions,
                     DeleteClusterOptions, DeleteInstanceOptions >(args)
                 .MapResult(
-                    (CreateProdInstanceOptions opts) => CreateProdInstance(opts.projectId, opts.displayName),
-                    (CreateDevInstanceOptions opts) => CreateDevInstance(opts.projectId, opts.displayName),
-                    (ListInstancesOptions opts) => ListInstances(opts.projectId),
-                    (GetInstanceOptions opts) => GetInstance(opts.projectId, opts.instanceId),
-                    (ListClustersOptions opts) => ListClusters(opts.projectId, opts.instanceId),
-                    (CreateClusterOptions opts) => CreateCluster(opts.projectId, opts.instanceId),
-                    (DeleteClusterOptions opts) => DeleteCluster(opts.projectId, opts.instanceId),
-                    (DeleteInstanceOptions opts) => DeleteInstance(opts.projectId, opts.instanceId), errs => 1);
+                    (CreateProdInstanceOptions opts) => CreateProdInstance(opts.displayName),
+                    (CreateDevInstanceOptions opts) => CreateDevInstance(opts.displayName),
+                    (ListInstancesOptions opts) => ListInstances(),
+                    (GetInstanceOptions opts) => GetInstance(opts.instanceId),
+                    (ListClustersOptions opts) => ListClusters(opts.instanceId),
+                    (CreateClusterOptions opts) => CreateCluster(opts.instanceId),
+                    (DeleteClusterOptions opts) => DeleteCluster(opts.instanceId),
+                    (DeleteInstanceOptions opts) => DeleteInstance(opts.instanceId), errs => 1);
+            return 0;
         }
     }
 }
