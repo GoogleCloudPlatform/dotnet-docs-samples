@@ -34,7 +34,8 @@ namespace GoogleCloudSamples.Bigtable
                 BigtableClient bigtableClient = BigtableClient.Create();
 
                 // Read a row from my-table using a row key
-                Row row = bigtableClient.ReadRow(new TableName(projectId, instanceId, tableId), "r1", RowFilters.CellsPerRowLimit(1));
+                Row row = bigtableClient.ReadRow(
+                    new TableName(projectId, instanceId, tableId), "r1", RowFilters.CellsPerRowLimit(1));
                 // Print the row key and data (column value, labels, timestamp)
                 Console.WriteLine($"{"Row key:",-30}{row.Key.ToStringUtf8()}\n" +
                                   $"{"  Column Family:",-30}{row.Families[0].Name}\n" +
