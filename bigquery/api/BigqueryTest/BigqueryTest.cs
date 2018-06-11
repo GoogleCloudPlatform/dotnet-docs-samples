@@ -145,34 +145,6 @@ namespace GoogleCloudSamples
         }
         // [END bigquery_delete_table]
 
-        // [START bigquery_load_table_gcs_csv]
-        public void ImportDataFromCloudStorage(string projectId, string datasetId,
-            string tableId, BigQueryClient client, string fileName, string folder = null)
-        {
-            StorageClient gcsClient = StorageClient.Create();
-
-            using (var stream = new MemoryStream())
-            {
-                // Set Cloud Storage Bucket name. This uses a bucket named the same as the project.
-                string bucket = projectId;
-                // If folder is passed in, add it to Cloud Storage File Path using "/" character
-                string filePath = string.IsNullOrEmpty(folder) ? fileName : folder + "/" + fileName;
-                // Download Google Cloud Storage object into stream
-                gcsClient.DownloadObject(projectId, filePath, stream);
-
-                // This example uploads data to an existing table. If the upload will create a new table
-                // or if the schema in the JSON isn't identical to the schema in the table,
-                // create a schema to pass into the call instead of passing in a null value.
-                BigQueryJob job = client.UploadJson(datasetId, tableId, null, stream);
-                // Use the job to find out when the data has finished being inserted into the table,
-                // report errors etc.
-
-                // Wait for the job to complete.
-                job.PollUntilCompleted();
-            }
-        }
-        // [END bigquery_load_table_gcs_csv]
-
         // [START bigquery_query_legacy]
         public BigQueryResults LegacySqlAsyncQuery(string projectId, string datasetId,
             string tableId, string query, BigQueryClient client)
@@ -420,29 +392,29 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestImportFromCloudStorage()
         {
-            string datasetId = "datasetForTestImportFromCloudStorage";
-            string newTableId = "tableForTestImportFromCloudStorage";
-            string jsonGcsSampleFile = "sample.json";
-            string gcsFolder = "test";
-            string gcsUploadTestWord = "exampleJsonFromGCS";
-            _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableId));
-            _datasetsToDelete.Add(datasetId);
-            CreateDataset(datasetId, _client);
-            CreateTable(datasetId, newTableId, _client);
-            // Import data.
-            ImportDataFromCloudStorage(_projectId, datasetId, newTableId, _client,
-                jsonGcsSampleFile, gcsFolder);
-            // Run query to get table data.
-            var newTable = _client.GetTable(datasetId, newTableId);
-            string query = $"SELECT title, unique_words FROM {newTable} " +
-                "ORDER BY unique_words, title";
-            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId,
-                query, _client);
-            // Get first row and confirm it contains the expected value.
-            var row = results.First();
-            Assert.Equal(gcsUploadTestWord, row["title"]);
-        }
+            var datasetId = $"datasetForLoadCSV{DateTime.Now.Millisecond}";
+            var newTableID = $"tableForTestImportDataFromCSV{RandomSuffix()}";
 
+            // Test parameters.
+            string expectedFirstRowName = "Alabama";
+            
+            // Import data.
+            GoogleCloudSamples.BiqQuerySnippets.LoadTableFromCSV(datasetId, newTableID, _client);
+
+            // Run query to get table data.
+            var newTable = _client.GetTable(datasetId, newTableID);
+            string query = $"SELECT name, post_abbr FROM {newTable}" +
+                $"ORDER BY name, post_abbr";
+
+            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableID,
+                query, _client);
+            var row = results.First();
+
+            // Check results.
+            Assert.Equal(expectedFirstRowName, row["name"]);
+            Assert.True(results.Count() == 50);
+        }
+        
         [Fact]
         public void TestListTables()
         {
@@ -476,6 +448,31 @@ namespace GoogleCloudSamples
             BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableId, query, _client);
             var row = results.Last();
             Assert.Equal(uploadTestWordValue, row["unique_words"]);
+        }
+
+        [Fact]
+        public void TestImportDataFromJSON()
+        {
+            var datasetId = $"datasetForLoadJson{DateTime.Now.Millisecond}";
+            var newTableID = $"tableForTestImportDataFromJSON{RandomSuffix()}";
+
+            // JSON file below has 50 items in it.
+            string expectedFirstRowName = "Alabama";
+
+            GoogleCloudSamples.BiqQuerySnippets.LoadTableFromJSON(_client, datasetId, newTableID);
+
+            // Run query to get table data.
+            var newTable = _client.GetTable(datasetId, newTableID);
+            string query = $"SELECT name, post_abbr FROM {newTable}" +
+                $"ORDER BY name, post_abbr";
+
+            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableID,
+                query, _client);
+            var row = results.First();
+
+            // Check results.
+            Assert.Equal(expectedFirstRowName, row["name"]);
+            Assert.True(results.Count() == 50);
         }
 
         [Fact]
