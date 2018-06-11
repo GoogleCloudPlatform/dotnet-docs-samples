@@ -28,7 +28,7 @@ namespace GoogleCloudSamples.Bigtable
         private const string projectId = "YOUR-PROJECT-ID";
         
         // You Google Cloud Bigtable instance ID
-        private const string instanceId = "my-bigtable-instance";
+        private const string instanceId = "YOUR-INSTANCE-ID";
 
         // The name of a table.
         private const string tableId = "Hello-Bigtable";
@@ -214,6 +214,11 @@ namespace GoogleCloudSamples.Bigtable
             if (projectId == "YOUR-PROJECT" + "-ID")
             {
                 Console.WriteLine("Edit HelloWorld.cs and replace YOUR-PROJECT-ID with your project id.");
+                return -1;
+            }
+            if (instanceId == "YOUR-INSTANCE" + "-ID")
+            {
+                Console.WriteLine("Edit HelloWorld.cs and replace YOUR-INSTANCE-ID with your instance id.");
                 return -1;
             }
 
