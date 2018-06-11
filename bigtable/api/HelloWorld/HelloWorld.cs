@@ -184,7 +184,6 @@ namespace GoogleCloudSamples.Bigtable
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception while running HelloWorld {ex.Message}");
-                throw;
             }
         }
 
