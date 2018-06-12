@@ -397,7 +397,7 @@ namespace GoogleCloudSamples
 
             // Test parameters.
             string expectedFirstRowName = "Alabama";
-            
+
             // Import data.
             GoogleCloudSamples.BiqQuerySnippets.LoadTableFromCSV(datasetId, newTableID, _client);
 
@@ -414,7 +414,7 @@ namespace GoogleCloudSamples
             Assert.Equal(expectedFirstRowName, row["name"]);
             Assert.True(results.Count() == 50);
         }
-        
+
         [Fact]
         public void TestListTables()
         {
