@@ -24,6 +24,24 @@
 #.EXAMPLE
 # .\Add-KmsPermissionsToAppEngine.ps1.
 ##############################
+# Keep this list sorted so it's easy to find an api and avoid duplicates.
+$services = @"
+cloudkms.googleapis.com
+"@
+
+# Enabling services takes a while, so only enable the services that are not
+# already enabled.
+$enabledServices = (gcloud services list --enabled --format json | convertfrom-json).serviceName
+$alreadyEnabledServices = $enabledServices | Where-Object {$enabledServices.Contains($_)}
+$servicesToEnable = $services.Split() | Where-Object {-not $enabledServices.Contains($_)}
+if ($alreadyEnabledServices) {
+    "Some services are already enabled:", $alreadyEnabledServices | Write-Host
+}
+if ($servicesToEnable) {
+    Write-Host "Enabling $servicesToEnable..."
+    gcloud services enable $servicesToEnable
+}
+
 $accounts = gcloud iam service-accounts list --format=json | ConvertFrom-Json
 $appEngineAccount = $accounts | `
     Where-Object displayName -eq 'App Engine default service account'
