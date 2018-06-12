@@ -19,24 +19,23 @@ namespace GoogleCloudSamples
             var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.json";
 
             var dataset = client.CreateDataset(datasetId);
-            
+
             var schema = new TableSchemaBuilder {
                 { "name", BigQueryDbType.String },
                 { "post_abbr", BigQueryDbType.String }
             }.Build();
-            
+
             var jobOptions = new CreateLoadJobOptions()
             {
                 SourceFormat = FileFormat.NewlineDelimitedJson
             };
 
             var loadJob = client.CreateLoadJob(gcsURI, dataset.GetTableReference(tableId),
-                schema, jobOptions);                                  
+                schema, jobOptions);
 
             loadJob.PollUntilCompleted();
 
             // [END bigquery_load_table_gcs_json]
-
         }
 
         /// <summary>
@@ -52,7 +51,7 @@ namespace GoogleCloudSamples
             var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.csv";
 
             var dataset = client.CreateDataset(datasetId);
-            
+
             var schema = new TableSchemaBuilder {
                 { "name", BigQueryDbType.String },
                 { "post_abbr", BigQueryDbType.String }
@@ -69,9 +68,8 @@ namespace GoogleCloudSamples
                 schema, jobOptions);
 
             loadJob.PollUntilCompleted();
-      
+
             // [END bigquery_load_table_gcs_csv]
         }
-        
     }
 }
