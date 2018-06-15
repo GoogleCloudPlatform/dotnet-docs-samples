@@ -1943,8 +1943,8 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
-        public static object InsertStructSampleData(string projectId,
-            string instanceId, string databaseId)
+        public static object InsertStructSampleData(
+            string projectId, string instanceId, string databaseId)
         {
             var response = InsertStructSampleDataAsync(
                 projectId, instanceId, databaseId);
@@ -1995,8 +1995,8 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_write_data_for_struct_queries]
         }
 
-        public static object QueryDataWithStruct(string projectId,
-            string instanceId, string databaseId)
+        public static object QueryDataWithStruct(
+            string projectId, string instanceId, string databaseId)
         {
             var response = QueryDataWithStructAsync(
                 projectId, instanceId, databaseId);
