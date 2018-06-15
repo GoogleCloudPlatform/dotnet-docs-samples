@@ -78,12 +78,12 @@ namespace GoogleCloudSamples
             string customRegexesStr,
             char separator = ',')
         {
-            IEnumerable<CustomInfoType> dictionary = new [] {};
+            IEnumerable<CustomInfoType> dictionary = new[] { };
             if (!String.IsNullOrEmpty(customDictionariesStr))
             {
                 try
                 {
-                    dictionary = new [] {
+                    dictionary = new[] {
                         new CustomInfoType
                         {
                             InfoType = new InfoType
@@ -115,11 +115,11 @@ namespace GoogleCloudSamples
                     {
                         InfoType = new InfoType
                         {
-                                Name = String.Format("CUSTOM_REGEX_{0}", idx)
+                            Name = String.Format("CUSTOM_REGEX_{0}", idx)
                         },
                         Regex = new CustomInfoType.Types.Regex
                         {
-                                Pattern = regexes[idx]
+                            Pattern = regexes[idx]
                         }
                     };
                 }
