@@ -216,7 +216,12 @@ namespace GoogleCloudSamples
     }
 
     [Verb("deidFpe", HelpText = "DeIdentify content via a Cloud KMS encryption key.")]
-    class DeidFpeOptions : FpeOptions { }
+    class DeidFpeOptions : FpeOptions
+    {
+        [Option('i', "info-types", HelpText = "Comma-separated infoTypes of information to match.",
+            Default = "PHONE_NUMBER,EMAIL_ADDRESS,CREDIT_CARD_NUMBER,US_SOCIAL_SECURITY_NUMBER")]
+        public string InfoTypes { get; set; }
+    }
 
     [Verb("reidFpe", HelpText = "ReIdentify content removed by a previous call to deidFpe.")]
     class ReidFpeOptions : FpeOptions { }
