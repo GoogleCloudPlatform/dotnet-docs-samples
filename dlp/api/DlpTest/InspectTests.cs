@@ -56,7 +56,7 @@ namespace DlpTest
                 _testSettings.ProjectId,
                 "My name is Robert and my phone number is (425) 634-9233.",
                 "-c", "Robert",
-                "-r", "(\\d{3}) \\d{3}-\\d{4}"
+                "-r", "\\(\\d{3}\\) \\d{3}-\\d{4}"
             );
             Assert.Contains("CUSTOM_DICTIONARY", outputC.Stdout);
             Assert.Contains("CUSTOM_REGEX_0", outputC.Stdout);
@@ -67,7 +67,7 @@ namespace DlpTest
                 _testSettings.ProjectId,
                 "She sells sea shells by the sea shore.",
                 "-c", "Robert",
-                "-r", "(\\d{3}) \\d{3}-\\d{4}"
+                "-r", "\\(\\d{3}\\) \\d{3}-\\d{4}"
             );
             Assert.Contains("No findings", outputD.Stdout);
         }
