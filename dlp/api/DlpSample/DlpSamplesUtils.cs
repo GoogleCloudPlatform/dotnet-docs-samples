@@ -78,7 +78,7 @@ namespace GoogleCloudSamples
             string customRegexesStr,
             char separator = ',')
         {
-            IEnumerable<CustomInfoType> dictionary = new[] { };
+            IEnumerable<CustomInfoType> dictionary = new CustomInfoType[] { };
             if (!String.IsNullOrEmpty(customDictionariesStr))
             {
                 try
@@ -94,7 +94,7 @@ namespace GoogleCloudSamples
                             {
                                 WordList = new CustomInfoType.Types.Dictionary.Types.WordList
                                 {
-                                    Words = { customDictionariesStr.split(separator) }
+                                    Words = { String.Split(customDictionariesStr, separator) }
                                 }
                             }
                         }
@@ -106,8 +106,8 @@ namespace GoogleCloudSamples
                     return null;
                 }
             }
-            string[] regexes = customRegexesStr.Split(separator);
-            IEnumerable<CustomInfoType> regexes = Enumerable.Range(0, regexes.Length).Select(idx =>
+            string[] regexes = String.Split(customRegexesStr, separator);
+            IEnumerable<CustomInfoType> regexTypes = Enumerable.Range(0, regexes.Length).Select(idx =>
             {
                 try
                 {
@@ -129,7 +129,7 @@ namespace GoogleCloudSamples
                     return null;
                 }
             }).Where(it => it != null);
-            return dictionary.Concat(regexes);
+            return Enumerable.Concat(dictionary, regexTypes);
         }
 
         /// <summary>
