@@ -231,6 +231,61 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    [Verb("insertStructSampleData", HelpText = "Insert sample data that can be queried using Spanner structs.")]
+    class InsertStructSampleDataOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample data will be inserted.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample data will be inserted.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("queryDataWithStruct", HelpText = "Query sample data in the sample Cloud Spanner database table using a Spanner struct.")]
+    class QueryDataWithStructOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("queryDataWithArrayOfStruct", HelpText = "Query sample data in the sample Cloud Spanner database table using an array of Spanner structs.")]
+    class QueryDataWithArrayOfStructOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("queryDataWithStructField", HelpText = "Query data sample data in the sample Cloud Spanner database table using a field in a Spanner struct.")]
+    class QueryDataWithStructFieldOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("queryDataWithNestedStructField", HelpText = "Query data sample data in the sample Cloud Spanner database table using a field in a nested Spanner struct.")]
+    class QueryDataWithNestedStructFieldOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
     [Verb("batchInsertRecords", HelpText = "Batch insert sample records into the database.")]
     class BatchInsertOptions
     {
@@ -1888,6 +1943,267 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
+        public static object InsertStructSampleData(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = InsertStructSampleDataAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task InsertStructSampleDataAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_write_data_for_struct_queries]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
+            List<Singer> singers = new List<Singer> {
+                new Singer {singerId = 6, firstName = "Elena",
+                    lastName = "Campbell"},
+                new Singer {singerId = 7, firstName = "Gabriel",
+                    lastName = "Wright"},
+                new Singer {singerId = 8, firstName = "Benjamin",
+                    lastName = "Martinez"},
+                new Singer {singerId = 9, firstName = "Hannah",
+                    lastName = "Harris"},
+            };
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                // Insert rows into the Singers table.
+                var cmd = connection.CreateInsertCommand("Singers",
+                    new SpannerParameterCollection {
+                        {"SingerId", SpannerDbType.Int64},
+                        {"FirstName", SpannerDbType.String},
+                        {"LastName", SpannerDbType.String}
+                });
+                await Task.WhenAll(singers.Select(singer =>
+                {
+                    cmd.Parameters["SingerId"].Value = singer.singerId;
+                    cmd.Parameters["FirstName"].Value = singer.firstName;
+                    cmd.Parameters["LastName"].Value = singer.lastName;
+                    return cmd.ExecuteNonQueryAsync();
+                }));
+                Console.WriteLine("Inserted struct data.");
+            }
+            // [END spanner_write_data_for_struct_queries]
+        }
+
+        public static object QueryDataWithStruct(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryDataWithStructAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryDataWithStructAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_create_struct_with_data]
+            var nameStruct = new SpannerStruct
+            {
+                { "FirstName", SpannerDbType.String, "Elena" },
+                { "LastName", SpannerDbType.String, "Campbell" },
+            };
+            // [END spanner_create_struct_with_data]
+
+            // [START spanner_query_data_with_struct]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                using (var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId FROM Singers "
+                    + "WHERE STRUCT<FirstName STRING, LastName STRING>"
+                    + "(FirstName, LastName) = @name"))
+                {
+                    cmd.Parameters.Add("name", nameStruct.GetSpannerDbType(), nameStruct);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Console.WriteLine(
+                                reader.GetFieldValue<string>("SingerId"));
+                        }
+                    }
+                }
+            }
+            // [END spanner_query_data_with_struct]
+        }
+
+        public static object QueryDataWithArrayOfStruct(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = QueryDataWithArrayOfStructAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryDataWithArrayOfStructAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_create_user_defined_struct]
+            var nameType = new SpannerStruct {
+                { "FirstName", SpannerDbType.String, null},
+                { "LastName", SpannerDbType.String, null}
+            };
+            // [END spanner_create_user_defined_struct]
+
+            // [START spanner_create_array_of_struct_with_data]
+            var bandMembers = new List<SpannerStruct>
+            {
+                new SpannerStruct { { "FirstName", SpannerDbType.String, "Elena" },
+                    { "LastName", SpannerDbType.String, "Campbell" } },
+                new SpannerStruct { { "FirstName", SpannerDbType.String, "Gabriel" },
+                    { "LastName", SpannerDbType.String, "Wright" } },
+                new SpannerStruct { { "FirstName", SpannerDbType.String, "Benjamin" },
+                    { "LastName", SpannerDbType.String, "Martinez" } },
+            };
+            // [END spanner_create_array_of_struct_with_data]
+
+
+            // [START spanner_query_data_with_array_of_struct]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                using (var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId FROM Singers "
+                    + "WHERE STRUCT<FirstName STRING, LastName STRING>"
+                    + "(FirstName, LastName) IN UNNEST(@names)"))
+                {
+                    cmd.Parameters.Add("names",
+                        SpannerDbType.ArrayOf(nameType.GetSpannerDbType()),
+                            bandMembers);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Console.WriteLine(
+                                reader.GetFieldValue<string>("SingerId"));
+                        }
+                    }
+                }
+            }
+            // [END spanner_query_data_with_array_of_struct]
+        }
+
+        public static object QueryDataWithStructField(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = QueryDataWithStructFieldAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+
+        public static async Task QueryDataWithStructFieldAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_field_access_on_struct_parameters]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            var structParam = new SpannerStruct
+            {
+                { "FirstName", SpannerDbType.String, "Elena" },
+                { "LastName", SpannerDbType.String, "Campbell" },
+            };
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                using (var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId FROM Singers WHERE FirstName = @name.FirstName"))
+                {
+                    cmd.Parameters.Add("name", structParam.GetSpannerDbType(), structParam);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Console.WriteLine(
+                                reader.GetFieldValue<string>("SingerId"));
+                        }
+                    }
+                }
+            }
+            // [END spanner_field_access_on_struct_parameters]
+        }
+
+        public static object QueryDataWithNestedStructField(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = QueryDataWithNestedStructFieldAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryDataWithNestedStructFieldAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_field_access_on_nested_struct_parameters]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            SpannerStruct name1 = new SpannerStruct
+            {
+                { "FirstName", SpannerDbType.String, "Elena" },
+                { "LastName", SpannerDbType.String, "Campbell" }
+            };
+            SpannerStruct name2 = new SpannerStruct
+            {
+                { "FirstName", SpannerDbType.String, "Hannah" },
+                { "LastName", SpannerDbType.String, "Harris" }
+            };
+            SpannerStruct songInfo = new SpannerStruct
+            {
+                { "song_name", SpannerDbType.String, "Imagination" },
+                { "artistNames", SpannerDbType.ArrayOf(name1.GetSpannerDbType()), new[] { name1, name2 } }
+            };
+
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                using (var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId, @song_info.song_name "
+                    + "FROM Singers WHERE STRUCT<FirstName STRING, LastName STRING>(FirstName, LastName) "
+                    + "IN UNNEST(@song_info.artistNames)"))
+                {
+                    cmd.Parameters.Add("song_info",
+                        songInfo.GetSpannerDbType(),
+                            songInfo);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Console.WriteLine(
+                                reader.GetFieldValue<string>("SingerId"));
+                            Console.WriteLine(
+                                reader.GetFieldValue<string>(1));
+                        }
+                    }
+                }
+            }
+            // [END spanner_field_access_on_nested_struct_parameters]
+        }
 
         public static object DeleteDatabase(string projectId,
             string instanceId, string databaseId)
@@ -1905,7 +2221,7 @@ namespace GoogleCloudSamples.Spanner
         private static async Task DeleteDatabaseAsync(string projectId,
             string instanceId, string databaseId)
         {
-            // The IAM Role "Cloud Spanner Database Admin" is required for 
+            // The IAM Role "Cloud Spanner Database Admin" is required for
             // performing Administration operations on the database.
             // For more info see https://cloud.google.com/spanner/docs/iam#roles
             string AdminConnectionString = $"Data Source=projects/{projectId}/"
@@ -1962,6 +2278,21 @@ namespace GoogleCloudSamples.Spanner
                 .Add((ReadStaleDataOptions opts) =>
                     ReadStaleDataAsync(opts.projectId, opts.instanceId,
                         opts.databaseId).Result)
+                .Add((InsertStructSampleDataOptions opts) =>
+                    InsertStructSampleData(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithStructOptions opts) =>
+                    QueryDataWithStruct(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithArrayOfStructOptions opts) =>
+                    QueryDataWithArrayOfStruct(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithStructFieldOptions opts) =>
+                    QueryDataWithStructField(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithNestedStructFieldOptions opts) =>
+                    QueryDataWithNestedStructField(opts.projectId,
+                        opts.instanceId, opts.databaseId))
                 .Add((BatchInsertOptions opts) =>
                     BatchInsertRecords(opts.projectId, opts.instanceId,
                         opts.databaseId))
