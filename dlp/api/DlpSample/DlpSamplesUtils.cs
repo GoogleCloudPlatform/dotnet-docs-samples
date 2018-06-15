@@ -68,6 +68,68 @@ namespace GoogleCloudSamples
         }
 
         /// <summary>
+        /// Split and parse a string representation of a custom dictionary and custom regexes.
+        /// </summary>
+        /// <param name="customDictionariesStr">Comma (default)-separated list of dictionary words.</param>
+        /// <param name="customRegexesStr">Comma (default)-separated list of regexes.</param>
+        /// <returns>IEnumerable of CustomInfoType items.</returns>
+        public static IEnumerable<CustomInfoType> ParseCustomInfoTypes(
+            string customDictionariesStr,
+            string customRegexesStr,
+            char separator = ',')
+        {
+            IEnumerable<CustomInfoType> dictionary;
+            try
+            {
+                dictionary = new [] {
+                    new CustomInfoType
+                    {
+                        InfoType = new InfoType
+                        {
+                            Name = "CUSTOM_DICTIONARY"
+                        },
+                        Dictionary = new CustomInfoType.Types.Dictionary
+                        {
+                            WordList = new CustomInfoType.Types.Dictionary.Types.WordList
+                            {
+                                Words = { customDictionariesStr.split(separator) }
+                            }
+                        }
+                    }
+                };
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to parse dictionary {customDictionariesStr}: {e}");
+                return null;
+            }
+            string[] regexes = customRegexesStr.Split(separator);
+            IEnumerable<CustomInfoType> regexes = Enumerable.Range(0, regexes.Length).Select(idx =>
+            {
+                try
+                {
+                    return new CustomInfoType
+                    {
+                        InfoType = new InfoType
+                        {
+                                Name = String.Format("CUSTOM_REGEX_{0}", idx)
+                        },
+                        Regex = new CustomInfoType.Types.Regex
+                        {
+                                Pattern = regexes[idx]
+                        }
+                    };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Failed to parse regexes {customRegexesStr}: {e}");
+                    return null;
+                }
+            }).Where(it => it != null);
+            return dictionary.Concat(regexes);
+        }
+
+        /// <summary>
         /// Split and parse a string representation of several quasi-identifiers.
         /// </summary>
         /// <param name="quasiIdsStr">Comma (default)-separated list of quasi-identifiers to split.</param>

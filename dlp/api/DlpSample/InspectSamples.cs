@@ -35,7 +35,8 @@ namespace GoogleCloudSamples
             string minLikelihood,
             int maxFindings,
             bool includeQuote,
-            IEnumerable<InfoType> infoTypes)
+            IEnumerable<InfoType> infoTypes,
+            IEnumerable<CustomInfoType> customInfoTypes)
         {
             var inspectConfig = new InspectConfig
             {
@@ -45,7 +46,8 @@ namespace GoogleCloudSamples
                     MaxFindingsPerRequest = maxFindings
                 },
                 IncludeQuote = includeQuote,
-                InfoTypes = { infoTypes }
+                InfoTypes = { infoTypes },
+                CustomInfoTypes = { customInfoTypes }
             };
             var request = new InspectContentRequest
             {
@@ -101,7 +103,8 @@ namespace GoogleCloudSamples
             string minLikelihood,
             int maxFindings,
             bool includeQuote,
-            IEnumerable<InfoType> infoTypes)
+            IEnumerable<InfoType> infoTypes,
+            IEnumerable<CustomInfoType> customInfoTypes)
         {
             var fileStream = new FileStream(file, FileMode.Open);
             try
@@ -114,7 +117,8 @@ namespace GoogleCloudSamples
                         MaxFindingsPerRequest = maxFindings
                     },
                     IncludeQuote = includeQuote,
-                    InfoTypes = { infoTypes }
+                    InfoTypes = { infoTypes },
+                    CustomInfoTypes = { customInfoTypes }
                 };
                 DlpServiceClient dlp = DlpServiceClient.Create();
                 InspectContentResponse response = dlp.InspectContent(new InspectContentRequest
@@ -170,6 +174,7 @@ namespace GoogleCloudSamples
             bool includeQuote,
             IEnumerable<FieldId> identifyingFields,
             IEnumerable<InfoType> infoTypes,
+            IEnumerable<CustomInfoType> customInfoTypes,
             string datasetId,
             string tableId)
         {
@@ -201,6 +206,7 @@ namespace GoogleCloudSamples
                 InspectConfig = new InspectConfig
                 {
                     InfoTypes = { infoTypes },
+                    CustomInfoTypes = { customInfoTypes },
                     Limits = new FindingLimits
                     {
                         MaxFindingsPerRequest = maxFindings
@@ -273,6 +279,7 @@ namespace GoogleCloudSamples
             string kindName,
             string namespaceId,
             IEnumerable<InfoType> infoTypes,
+            IEnumerable<CustomInfoType> customInfoTypes,
             string datasetId,
             string tableId)
         {
@@ -299,6 +306,7 @@ namespace GoogleCloudSamples
                 InspectConfig = new InspectConfig
                 {
                     InfoTypes = { infoTypes },
+                    CustomInfoTypes = { customInfoTypes },
                     Limits = new FindingLimits
                     {
                         MaxFindingsPerRequest = maxFindings
@@ -371,6 +379,7 @@ namespace GoogleCloudSamples
             int maxFindings,
             bool includeQuote,
             IEnumerable<InfoType> infoTypes,
+            IEnumerable<CustomInfoType> customInfoTypes,
             string bucketName,
             string topicId,
             string subscriptionId)
@@ -388,6 +397,7 @@ namespace GoogleCloudSamples
                 InspectConfig = new InspectConfig
                 {
                     InfoTypes = { infoTypes },
+                    CustomInfoTypes = { customInfoTypes },
                     ExcludeInfoTypes = false,
                     IncludeQuote = includeQuote,
                     Limits = new FindingLimits

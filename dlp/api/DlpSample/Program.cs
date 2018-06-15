@@ -27,6 +27,12 @@ namespace GoogleCloudSamples
             Default = "PHONE_NUMBER,EMAIL_ADDRESS,CREDIT_CARD_NUMBER,US_SOCIAL_SECURITY_NUMBER")]
         public string InfoTypes { get; set; }
 
+        [Option('c', "custom-dictionary", HelpText = "Comma-separated dictionary phrases to match.", Default = "")]
+        public string CustomDictionary { get; set; }
+
+        [Option('r', "custom-regexes", HelpText = "Comma-separated regexes to match.", Default = "")]
+        public string CustomRegexes { get; set; }
+
         [Option('l', "minimum-likelihood",
             HelpText = "The minimum likelihood required before returning a match (0-5).", Default = "Unlikely")]
         public string MinLikelihood { get; set; }
@@ -409,6 +415,7 @@ namespace GoogleCloudSamples
                         !opts.NoIncludeQuote,
                         DlpSamplesUtils.ParseIdentifyingFields(opts.IdentifyingFields),
                         DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes),
                         opts.DatasetId,
                         opts.TableId),
                     (InspectDatastoreOptions opts) => InspectSamples.InspectCloudDataStore(
@@ -419,6 +426,7 @@ namespace GoogleCloudSamples
                         opts.KindName,
                         opts.NamespaceId,
                         DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes),
                         opts.DatasetId,
                         opts.TableId),
                     (InspectGcsOptions opts) => InspectSamples.InspectGCS(
@@ -427,6 +435,7 @@ namespace GoogleCloudSamples
                         opts.MaxFindings,
                         !opts.NoIncludeQuote,
                         DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes),
                         opts.BucketName,
                         opts.TopicId,
                         opts.SubscriptionId),
@@ -456,14 +465,16 @@ namespace GoogleCloudSamples
                             opts.MinLikelihood,
                             opts.MaxFindings,
                             !opts.NoIncludeQuote,
-                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes)),
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                            DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes)),
                         (InspectFileOptions opts) => InspectSamples.InspectFile(
                             opts.ProjectId,
                             opts.File,
                             opts.MinLikelihood,
                             opts.MaxFindings,
                             !opts.NoIncludeQuote,
-                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes)),
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                            DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes)),
                         (CreateTemplateOptions opts) => InspectTemplates.CreateInspectTemplate(
                             opts.ProjectId,
                             opts.TemplateId,
