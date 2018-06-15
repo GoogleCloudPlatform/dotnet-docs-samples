@@ -78,30 +78,33 @@ namespace GoogleCloudSamples
             string customRegexesStr,
             char separator = ',')
         {
-            IEnumerable<CustomInfoType> dictionary;
-            try
+            IEnumerable<CustomInfoType> dictionary = new [] {};
+            if (!String.IsNullOrEmpty(customDictionariesStr))
             {
-                dictionary = new [] {
-                    new CustomInfoType
-                    {
-                        InfoType = new InfoType
+                try
+                {
+                    dictionary = new [] {
+                        new CustomInfoType
                         {
-                            Name = "CUSTOM_DICTIONARY"
-                        },
-                        Dictionary = new CustomInfoType.Types.Dictionary
-                        {
-                            WordList = new CustomInfoType.Types.Dictionary.Types.WordList
+                            InfoType = new InfoType
                             {
-                                Words = { customDictionariesStr.split(separator) }
+                                Name = "CUSTOM_DICTIONARY"
+                            },
+                            Dictionary = new CustomInfoType.Types.Dictionary
+                            {
+                                WordList = new CustomInfoType.Types.Dictionary.Types.WordList
+                                {
+                                    Words = { customDictionariesStr.split(separator) }
+                                }
                             }
                         }
-                    }
-                };
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Failed to parse dictionary {customDictionariesStr}: {e}");
-                return null;
+                    };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Failed to parse dictionary {customDictionariesStr}: {e}");
+                    return null;
+                }
             }
             string[] regexes = customRegexesStr.Split(separator);
             IEnumerable<CustomInfoType> regexes = Enumerable.Range(0, regexes.Length).Select(idx =>
