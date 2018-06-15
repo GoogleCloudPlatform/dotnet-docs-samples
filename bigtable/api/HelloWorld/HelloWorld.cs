@@ -111,7 +111,7 @@ namespace GoogleCloudSamples.Bigtable
                 try
                 {
                     bigtableClient.MutateRow(tableNameClient, rowKeyPrefix + greetingIndex, MutationBuilder(greetingIndex));
-                    Console.WriteLine($"\tGreeting: --{greetings[greetingIndex]}-- written successfully");
+                    Console.WriteLine($"\tGreeting:   -- {greetings[greetingIndex], -18}-- written successfully");
                 }
                 catch (Exception ex)
                 {
@@ -145,7 +145,7 @@ namespace GoogleCloudSamples.Bigtable
                     greetingIndex = mapToOriginalGreetingIndex[(int)entry.Index];
                     if (entry.Status.Code == 0)
                     {
-                        Console.WriteLine($"\tGreeting: --{greetings[greetingIndex]}-- written successfully");
+                        Console.WriteLine($"\tGreeting:   -- {greetings[greetingIndex], -18}-- written successfully");
                     }
                     else
                     {
@@ -163,7 +163,9 @@ namespace GoogleCloudSamples.Bigtable
                 Row rowRead = bigtableClient.ReadRow(
                     tableNameClient, rowKey: rowKeyPrefix + rowIndex, filter: RowFilters.CellsPerRowLimit(1));
                 Console.WriteLine(
-                    $"\tRow key: {rowRead.Key.ToStringUtf8()}, Value: {rowRead.Families[0].Columns[0].Cells[0].Value.ToStringUtf8()}");
+                    $"\tRow key: {rowRead.Key.ToStringUtf8()} " +
+                    $"  -- Value: {rowRead.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(), -16} " +
+                    $"  -- Time Stamp: {rowRead.Families[0].Columns[0].Cells[0].TimestampMicros}");
 
                 Console.WriteLine("Read all rows using streaming");
                 // stream the content of the whole table. Apply filter to terurn latest only cell values accross all rows.
@@ -195,13 +197,15 @@ namespace GoogleCloudSamples.Bigtable
 
         // Builds a <see cref="Mutation"/> for <see cref="MutateRowRequest"/> or an <see cref="MutateRowsRequest.Types.Entry"/>
         private static Mutation MutationBuilder(int greetingNumber) =>
-            Mutations.SetCell(columnFamily, columnName, greetings[greetingNumber]);
+            Mutations.SetCell(columnFamily, columnName, greetings[greetingNumber], new BigtableVersion(DateTime.UtcNow));
 
         private static async Task PrintReadRowsAsync(ReadRowsStream responseRead)
         {
             await responseRead.ForEachAsync(row =>
             {
-                Console.WriteLine($"\tRow key: {row.Key.ToStringUtf8()}, Value: {row.Families[0].Columns[0].Cells[0].Value.ToStringUtf8()}");
+                Console.WriteLine($"\tRow key: {row.Key.ToStringUtf8()} " +
+                                  $"  -- Value: {row.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
+                                  $"  -- Time Stamp: {row.Families[0].Columns[0].Cells[0].TimestampMicros}");
             });
         }
 
