@@ -23,42 +23,17 @@ namespace GoogleHomeAspNetCoreDemoServer
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            AddGoogleExceptionLogging(services);
-
-            AddGoogleTracing(services);
-
             services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseGoogleExceptionLogging();
-            app.UseGoogleTrace();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
             app.UseMvc();
-        }
-
-        private static void AddGoogleTracing(IServiceCollection services)
-        {
-            services.AddGoogleTrace(options =>
-            {
-                options.ProjectId = Program.AppSettings.GoogleCloudSettings.ProjectId;
-            });
-        }
-
-        private static void AddGoogleExceptionLogging(IServiceCollection services)
-        {
-            services.AddGoogleExceptionLogging(options =>
-            {
-                options.ProjectId = Program.AppSettings.GoogleCloudSettings.ProjectId;
-                options.ServiceName = Program.AppSettings.GoogleCloudSettings.ServiceName;
-                options.Version = Program.AppSettings.GoogleCloudSettings.Version;
-            });
         }
     }
 }
