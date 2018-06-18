@@ -36,7 +36,7 @@ namespace GoogleHomeAspNetCoreDemoServer
             ReadAppSettings();
 
             return WebHost.CreateDefaultBuilder(args)
-                .UseGoogleDiagnostics(AppSettings.GoogleCloudSettings.ProjectId)
+                .UseGoogleDiagnostics(AppSettings.GoogleCloudSettings.ProjectId, "default", "v0")
                 .UseStartup<Startup>()
                 .Build();
         }
