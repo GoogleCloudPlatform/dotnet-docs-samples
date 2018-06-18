@@ -16,9 +16,10 @@ using CommandLine;
 using Google.Cloud.Dlp.V2;
 using System;
 using System.Collections.Generic;
+using static Google.Cloud.Dlp.V2.CloudStorageOptions.Types;
 using static Google.Cloud.Dlp.V2.InspectConfig.Types;
 using static Google.Cloud.Dlp.V2.JobTrigger.Types;
-using static Google.Cloud.Dlp.V2.CloudStorageOptions.Types;
+using static Google.Cloud.Dlp.V2.StorageConfig.Types;
 
 namespace GoogleCloudSamples
 {
@@ -48,6 +49,7 @@ namespace GoogleCloudSamples
             string bucketName,
             string minLikelihood,
             int maxFindings,
+            bool autoPopulateTimespan,
             int scanPeriod,
             IEnumerable<InfoType> infoTypes,
             string triggerId,
@@ -78,6 +80,10 @@ namespace GoogleCloudSamples
                         {
                             Url = $"gs://{bucketName}/*"
                         }
+                    },
+                    TimespanConfig = new TimespanConfig
+                    {
+                        EnableAutoPopulationOfTimespanConfig = autoPopulateTimespan
                     }
                 }
             };
