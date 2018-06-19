@@ -94,7 +94,7 @@ namespace GoogleCloudSamples
                             {
                                 WordList = new CustomInfoType.Types.Dictionary.Types.WordList
                                 {
-                                    Words = { customDictionariesStr.Split(separator) }
+                                    Words = { customDictionariesStr.Split(new char[] { separator }) }
                                 }
                             }
                         }
@@ -106,7 +106,7 @@ namespace GoogleCloudSamples
                     return null;
                 }
             }
-            string[] regexes = customRegexesStr.Split(separator);
+            string[] regexes = customRegexesStr.Split(new char[] { separator });
             IEnumerable<CustomInfoType> regexTypes = Enumerable.Range(0, regexes.Length).Select(idx =>
             {
                 try
