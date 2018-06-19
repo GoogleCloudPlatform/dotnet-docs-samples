@@ -364,6 +364,7 @@ namespace GoogleCloudSamples
             });
             Regex dlpJobRegex = new Regex("projects/.*/dlpJobs/r-\\d+");
 
+            _retryRobot.ShouldRetry = ex => true;
             _retryRobot.Eventually(() =>
             {
                 // List jobs.
