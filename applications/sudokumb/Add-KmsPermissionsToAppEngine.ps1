@@ -24,6 +24,8 @@
 #.EXAMPLE
 # .\Add-KmsPermissionsToAppEngine.ps1.
 ##############################
+gcloud services enable cloudkms.googleapis.com
+
 $accounts = gcloud iam service-accounts list --format=json | ConvertFrom-Json
 $appEngineAccount = $accounts | `
     Where-Object displayName -eq 'App Engine default service account'
