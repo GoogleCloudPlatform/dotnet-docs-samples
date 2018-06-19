@@ -349,7 +349,7 @@ namespace GoogleCloudSamples
             var jobName = dlpJob.Name;
 
             // Make sure the job finishes before inspecting the results.
-            // Alternatively, we can inspect results opportunistically, but 
+            // Alternatively, we can inspect results opportunistically, but
             // for testing purposes, we want consistent outcome
             bool jobFinished = EnsureJobFinishes(projectId, jobName);
             if (jobFinished)

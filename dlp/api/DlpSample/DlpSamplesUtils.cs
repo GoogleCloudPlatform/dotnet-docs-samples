@@ -106,29 +106,32 @@ namespace GoogleCloudSamples
                     return null;
                 }
             }
-            string[] regexes = customRegexesStr.Split(new char[] { separator });
-            IEnumerable<CustomInfoType> regexTypes = Enumerable.Range(0, regexes.Length).Select(idx =>
-            {
-                try
+            IEnumerable<CustomInfoType> regexTypes = new CustomInfoType[] { };
+            if (!String.IsNullOrEmpty(customRegexesStr)) {
+                string[] regexes = customRegexesStr.Split(new char[] { separator });
+                regexTypes = Enumerable.Range(0, regexes.Length).Select(idx =>
                 {
-                    return new CustomInfoType
+                    try
                     {
-                        InfoType = new InfoType
+                        return new CustomInfoType
                         {
-                            Name = String.Format("CUSTOM_REGEX_{0}", idx)
-                        },
-                        Regex = new CustomInfoType.Types.Regex
-                        {
-                            Pattern = regexes[idx]
-                        }
-                    };
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Failed to parse regexes {customRegexesStr}: {e}");
-                    return null;
-                }
-            }).Where(it => it != null);
+                            InfoType = new InfoType
+                            {
+                                Name = String.Format("CUSTOM_REGEX_{0}", idx)
+                            },
+                            Regex = new CustomInfoType.Types.Regex
+                            {
+                                Pattern = regexes[idx]
+                            }
+                        };
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Failed to parse regexes {customRegexesStr}: {e}");
+                        return null;
+                    }
+                }).Where(it => it != null);
+            }
             return Enumerable.Concat(dictionary, regexTypes);
         }
 
