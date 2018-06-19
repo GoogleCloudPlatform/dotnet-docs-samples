@@ -496,13 +496,14 @@ namespace GoogleCloudSamples
                         (DeidMaskOptions opts) => DeIdentify.DeidMask(
                             opts.ProjectId,
                             opts.Value,
-                            opts.InfoTypes,
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
                             opts.Mask,
                             opts.Num,
                             opts.Reverse),
                         (DeidFpeOptions opts) => DeIdentify.DeidFpe(
                             opts.ProjectId,
                             opts.Value,
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
                             opts.KeyName,
                             opts.WrappedKeyFile,
                             opts.Alphabet),
@@ -555,7 +556,6 @@ namespace GoogleCloudSamples
                         ),
                         errs => 1);
                     break;
->>>>>>> master
             }
         }
     }
