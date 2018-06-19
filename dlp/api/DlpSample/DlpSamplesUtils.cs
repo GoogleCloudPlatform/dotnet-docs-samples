@@ -107,7 +107,8 @@ namespace GoogleCloudSamples
                 }
             }
             IEnumerable<CustomInfoType> regexTypes = new CustomInfoType[] { };
-            if (!String.IsNullOrEmpty(customRegexesStr)) {
+            if (!String.IsNullOrEmpty(customRegexesStr))
+            {
                 string[] regexes = customRegexesStr.Split(new char[] { separator });
                 regexTypes = Enumerable.Range(0, regexes.Length).Select(idx =>
                 {
