@@ -255,6 +255,9 @@ namespace GoogleCloudSamples
         [Value(2, HelpText = "How often to wait between scans, in days. (minimum = 1 day)", Required = true)]
         public int ScanPeriod { get; set; }
 
+        [Option("autoPopulateTimespan", HelpText = "Limit scan to new content only.")]
+        public bool AutoPopulateTimespan { get; set; }
+
         [Option('t', "triggerId", HelpText = "The name of the trigger to be created.", Default = "")]
         public string TriggerId { get; set; }
 
@@ -493,14 +496,13 @@ namespace GoogleCloudSamples
                         (DeidMaskOptions opts) => DeIdentify.DeidMask(
                             opts.ProjectId,
                             opts.Value,
-                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                            opts.InfoTypes,
                             opts.Mask,
                             opts.Num,
                             opts.Reverse),
                         (DeidFpeOptions opts) => DeIdentify.DeidFpe(
                             opts.ProjectId,
                             opts.Value,
-                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
                             opts.KeyName,
                             opts.WrappedKeyFile,
                             opts.Alphabet),
@@ -520,6 +522,7 @@ namespace GoogleCloudSamples
                             opts.BucketName,
                             opts.MinLikelihood,
                             opts.MaxFindings,
+                            opts.AutoPopulateTimespan,
                             opts.ScanPeriod,
                             DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
                             opts.TriggerId,
@@ -552,6 +555,7 @@ namespace GoogleCloudSamples
                         ),
                         errs => 1);
                     break;
+>>>>>>> master
             }
         }
     }
