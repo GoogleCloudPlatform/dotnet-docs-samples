@@ -97,9 +97,9 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"\tCreated: {template.CreateTime}");
                 Console.WriteLine($"\tUpdated: {template.UpdateTime}");
                 Console.WriteLine("Configuration:");
-                Console.WriteLine($"\tMin Likelihood: {template.InspectConfig.MinLikelihood}");
-                Console.WriteLine($"\tInclude quotes: {template.InspectConfig.IncludeQuote}");
-                Console.WriteLine($"\tMax findings per request: {template.InspectConfig.Limits.MaxFindingsPerRequest}");
+                Console.WriteLine($"\tMin Likelihood: {template.InspectConfig?.MinLikelihood}");
+                Console.WriteLine($"\tInclude quotes: {template.InspectConfig?.IncludeQuote}");
+                Console.WriteLine($"\tMax findings per request: {template.InspectConfig?.Limits.MaxFindingsPerRequest}");
             }
 
             return null;
