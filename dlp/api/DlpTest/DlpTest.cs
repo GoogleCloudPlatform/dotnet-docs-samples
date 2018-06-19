@@ -210,6 +210,7 @@ namespace GoogleCloudSamples
                 "-i", "PERSON_NAME,US_ZIP",
                 _bucketName,
                 "1",
+                "--autoPopulateTimespan",
                 "-l", "Unlikely",
                 "-m", "0",
                 "-t", triggerId,
