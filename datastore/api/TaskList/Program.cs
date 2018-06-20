@@ -109,7 +109,6 @@ namespace GoogleCloudSamples
         }
         // [END datastore_delete_entity]
 
-        // [START datastore_format_results]
         static IEnumerable<string> FormatTasks(IEnumerable<Entity> tasks)
         {
             var results = new List<string>();
@@ -122,7 +121,6 @@ namespace GoogleCloudSamples
             }
             return results;
         }
-        // [END datastore_format_results]
 
         void HandleCommandLine(string commandLine)
         {
