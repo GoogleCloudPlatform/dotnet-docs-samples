@@ -106,9 +106,9 @@ namespace GoogleCloudSamples
         private void ListObjects(string bucketName)
         {
             var storage = StorageClient.Create();
-            foreach (var bucket in storage.ListObjects(bucketName, ""))
+            foreach (var storageObject in storage.ListObjects(bucketName, ""))
             {
-                Console.WriteLine(bucket.Name);
+                Console.WriteLine(storageObject.Name);
             }
         }
         // [END storage_list_files]
