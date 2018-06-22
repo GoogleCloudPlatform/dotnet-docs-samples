@@ -5,9 +5,9 @@ using Google.Cloud.Bigtable.V2;
 
 namespace GoogleCloudSamples.Bigtable
 {
-    class QuickStart
+    public class QuickStart
     {
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
             // Your Google Cloud Platform project ID
             const string projectId = "YOUR-PROJECT-ID";

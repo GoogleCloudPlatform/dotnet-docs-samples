@@ -99,7 +99,7 @@ namespace GoogleCloudSamples.Bigtable
         public string tableId { get; set; }
     }
 
-    class TableAdmin
+    public class TableAdmin
     {
         private const string projectId = "YOUR-PROJECT-ID";
 
@@ -666,7 +666,7 @@ namespace GoogleCloudSamples.Bigtable
             Console.WriteLine($"{"GC Rule:", -30}{family.GcRule}");
         }
 
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
             if (projectId == "YOUR-PROJECT" + "-ID")
             {

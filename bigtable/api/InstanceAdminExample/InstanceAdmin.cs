@@ -75,7 +75,7 @@ namespace GoogleCloudSamples.Bigtable
         public string instanceId { get; set; }
     }
 
-    class InstanceAdmin
+    public class InstanceAdmin
     {
         // Your Google Cloud Platform project ID
         private const string projectId = "YOUR-PROJECT-ID";
@@ -502,7 +502,7 @@ namespace GoogleCloudSamples.Bigtable
                 $"\n{"  Location:",-30}{cluster.LocationAsLocationName.LocationId}\n{"  Node Count:",-30}{cluster.ServeNodes}\n{"  State:",-30}{cluster.State}\n");
         }
 
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
             if (projectId == "YOUR-PROJECT" + "-ID")
             {

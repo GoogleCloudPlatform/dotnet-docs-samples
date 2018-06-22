@@ -21,7 +21,7 @@ using Google.Cloud.Bigtable.Admin.V2;
 
 namespace GoogleCloudSamples.Bigtable
 {
-    class HelloWorld
+    public class HelloWorld
     {
         // Set up some Cloud Bigtable metadata for convinience
         // Your Google Cloud Platform project ID
