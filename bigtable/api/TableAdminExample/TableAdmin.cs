@@ -85,7 +85,7 @@ namespace GoogleCloudSamples.Bigtable
         public string tableId { get; set; }
     }
 
-    [Verb("deleteFamily", HelpText = "Delets a columnFamily.")]
+    [Verb("deleteFamily", HelpText = "Deletes a columnFamily.")]
     class DeleteFamilyOptions
     {
         [Value(0, HelpText = "The table to use.", Required = true)]

@@ -22,11 +22,11 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
 
 4.  Follow the [cbt tutorial](https://cloud.google.com/bigtable/docs/quickstart-cbt) to install the cbt       command line tool. Here are the cbt commands to create a table, column       family and add some data:
     ```
-    cbt -project <YOUR-PROJECT-ID> -instance<YOUR-INSTANCE-ID> createtable my-table
-    cbt -project <YOUR-PROJECT-ID> -instance<YOUR-INSTANCE-ID> createfamily my-table cf1
-    cbt -project <YOUR-PROJECT-ID> -instance<YOUR-INSTANCE-ID> set my-table r1 cf1:c1=test-value
+    cbt -project <YOUR-PROJECT-ID> -instance <YOUR-INSTANCE-ID> createtable my-table
+    cbt -project <YOUR-PROJECT-ID> -instance <YOUR-INSTANCE-ID> createfamily my-table cf1
+    cbt -project <YOUR-PROJECT-ID> -instance <YOUR-INSTANCE-ID> set my-table r1 cf1:c1=test-value
     ```
-5.  Edit `QuickStart\QuickCharge.cs`, and replace YOUR-PROJECT-ID with id
+5.  Edit `QuickStart\QuickStart.cs`, and replace YOUR-PROJECT-ID with id
     of the project you created in step 1. Also replace YOUR-INSTANCE-ID with id of your instance you created in step 3.
 
 6.  From a Powershell command line, execute the following command to run the QuickStart sample to read the row you just wrote using `cbt`:
@@ -88,9 +88,9 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
 
     createCluster         Creates an additional replicated cluster within an instance.
 
-    deleteCluster         Delete a cluater from an instance.
+    deleteCluster         Deletes a cluster from an instance.
 
-    deleteInstance        Delete an instance from a project.
+    deleteInstance        Deletes an instance from a project.
 
     help                  Display more information on a specific command.
 
@@ -99,7 +99,7 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
     ### Subcommand example:
     ```
     dotnet run createProdInstance my-instance
-    Createing a PRODUCTION instance
+    Creating a PRODUCTION instance
     Waiting for operation to complete...
     Instance: my-instance Prod was successfully created in grass-clump-479 project
     --------------------------------------------------
@@ -156,7 +156,7 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
 
     updateFamily                Update the column family metadata to update the GC rule.
 
-    deleteFamily                Delets a columnFamily.
+    deleteFamily                Deletes a columnFamily.
 
     deleteTable                 Deletes a table from the Instance.
 

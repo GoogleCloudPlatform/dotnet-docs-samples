@@ -61,14 +61,14 @@ namespace GoogleCloudSamples.Bigtable
         public string instanceId { get; set; }
     }
 
-    [Verb("deleteCluster", HelpText = "Delete a cluater from an instance.")]
+    [Verb("deleteCluster", HelpText = "Deletes a cluster from an instance.")]
     class DeleteClusterOptions
     {
         [Value(1, HelpText = "The instanceId to which cluster belongs.", Required = true)]
         public string instanceId { get; set; }
     }
 
-    [Verb("deleteInstance", HelpText = "Delete an instance from a project.")]
+    [Verb("deleteInstance", HelpText = "Deletes an instance from a project.")]
     class DeleteInstanceOptions
     {
         [Value(1, HelpText = "The instanceId of the instance to delete.", Required = true)]
@@ -86,7 +86,7 @@ namespace GoogleCloudSamples.Bigtable
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
             // [END bigtable_create_bigtableInstanceAdminClient]
 
-            Console.WriteLine("Createing a PRODUCTION instance");
+            Console.WriteLine("Creating a PRODUCTION instance");
             // [START bigtable_create_prod_instance]
             // Creates a Production Instance with "<intanceId>-prod" instance id
             // with cluster id "ssd-cluster1", 3 nodes and location us-east1-b.
@@ -166,7 +166,7 @@ namespace GoogleCloudSamples.Bigtable
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
             // [END bigtable_create_bigtableInstanceAdminClient]
 
-            Console.WriteLine("Createing a DEVELOPMENT instance");
+            Console.WriteLine("Creating a DEVELOPMENT instance");
             // [START bigtable_create_dev_instance]
             // Creates a DEVELOPMENT Instance with "<intanceId>-dev" instance id
             // with cluster id "hdd-cluster" and location us-east1-b.

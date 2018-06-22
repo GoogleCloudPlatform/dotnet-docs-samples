@@ -168,7 +168,7 @@ namespace GoogleCloudSamples.Bigtable
                     $"  -- Time Stamp: {rowRead.Families[0].Columns[0].Cells[0].TimestampMicros}");
 
                 Console.WriteLine("Read all rows using streaming");
-                // stream the content of the whole table. Apply filter to terurn latest only cell values accross all rows.
+                // stream the content of the whole table. Apply filter to return latest only cell values accross all rows.
                 ReadRowsStream responseRead = bigtableClient.ReadRows(tableNameClient, filter: RowFilters.CellsPerRowLimit(1));
 
                 Task printRead = PrintReadRowsAsync(responseRead);
