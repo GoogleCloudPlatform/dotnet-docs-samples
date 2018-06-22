@@ -28,7 +28,7 @@ namespace GoogleCloudSamples
         public static object DeidMask(
             string projectId,
             string dataValue,
-            string infoTypes,
+            IEnumerable<InfoType> infoTypes,
             string maskingCharacter,
             int numberToMask,
             bool reverseOrder)
@@ -36,6 +36,10 @@ namespace GoogleCloudSamples
             var request = new DeidentifyContentRequest
             {
                 ParentAsProjectName = new ProjectName(projectId),
+                InspectConfig = new InspectConfig
+                {
+                    InfoTypes = { infoTypes }
+                },
                 DeidentifyConfig = new DeidentifyConfig
                 {
                     InfoTypeTransformations = new InfoTypeTransformations
@@ -74,6 +78,7 @@ namespace GoogleCloudSamples
         public static object DeidFpe(
             string projectId,
             string dataValue,
+            IEnumerable<InfoType> infoTypes,
             string keyName,
             string wrappedKey,
             string alphabet)
@@ -115,6 +120,10 @@ namespace GoogleCloudSamples
                 new DeidentifyContentRequest
                 {
                     ParentAsProjectName = new ProjectName(projectId),
+                    InspectConfig = new InspectConfig
+                    {
+                        InfoTypes = { infoTypes }
+                    },
                     DeidentifyConfig = deidentifyConfig,
                     Item = new ContentItem { Value = dataValue }
                 });
