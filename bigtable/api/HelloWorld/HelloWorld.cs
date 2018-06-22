@@ -26,7 +26,7 @@ namespace GoogleCloudSamples.Bigtable
         // Set up some Cloud Bigtable metadata for convinience
         // Your Google Cloud Platform project ID
         private const string projectId = "YOUR-PROJECT-ID";
-        
+
         // You Google Cloud Bigtable instance ID
         private const string instanceId = "YOUR-INSTANCE-ID";
 
@@ -36,12 +36,12 @@ namespace GoogleCloudSamples.Bigtable
         private const string columnFamily = "cf";
         // The name of a culomn inside the column family.
         private const string columnName = "greeting";
-        // Some friendly greetings to write to Cloud Bigtable
-        private static readonly string[] greetings = { "Hello World!", "Hellow Bigtable!", "Hellow C#!" };
-        // This List containce mapping indices from MutateRowsRequest to greetings[].
-        private static List<int> mapToOriginalGreetingIndex;
+        // Some friendly s_greetings to write to Cloud Bigtable
+        private static readonly string[] s_greetings = { "Hello World!", "Hellow Bigtable!", "Hellow C#!" };
+        // This List containce mapping indices from MutateRowsRequest to s_greetings[].
+        private static List<int> s_mapToOriginalGreetingIndex;
         private const string rowKeyPrefix = "greeting";
-        private static int greetingIndex;
+        private static int s_greetingIndex;
 
         private static void DoHelloWorld()
         {
@@ -104,18 +104,18 @@ namespace GoogleCloudSamples.Bigtable
                       
                        https://cloud.google.com/bigtable/docs/schema-design */
 
-                Console.WriteLine($"Write some greetings to the table {tableId}");
+                Console.WriteLine($"Write some s_greetings to the table {tableId}");
 
                 // Insert 1 row using MutateRow()
-                greetingIndex = 0;
+                s_greetingIndex = 0;
                 try
                 {
-                    bigtableClient.MutateRow(tableNameClient, rowKeyPrefix + greetingIndex, MutationBuilder(greetingIndex));
-                    Console.WriteLine($"\tGreeting:   -- {greetings[greetingIndex], -18}-- written successfully");
+                    bigtableClient.MutateRow(tableNameClient, rowKeyPrefix + s_greetingIndex, MutationBuilder(s_greetingIndex));
+                    Console.WriteLine($"\tGreeting:   -- {s_greetings[s_greetingIndex], -18}-- written successfully");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"\tFailed to write Greeting: --{greetings[greetingIndex]}");
+                    Console.WriteLine($"\tFailed to write Greeting: --{s_greetings[s_greetingIndex]}");
                     Console.WriteLine(ex.Message);
                     throw;
                 }
@@ -127,13 +127,13 @@ namespace GoogleCloudSamples.Bigtable
                     TableNameAsTableName = tableNameClient
                 };
 
-                mapToOriginalGreetingIndex = new List<int>();
-                while (++greetingIndex < greetings.Length)
+                s_mapToOriginalGreetingIndex = new List<int>();
+                while (++s_greetingIndex < s_greetings.Length)
                 {
-                    mapToOriginalGreetingIndex.Add(greetingIndex);
+                    s_mapToOriginalGreetingIndex.Add(s_greetingIndex);
                     // Build an entry for every greeting (consists of rowkey and a collection of mutations).
-                    string rowKey = rowKeyPrefix + greetingIndex;
-                    request.Entries.Add(Mutations.CreateEntry(rowKey, MutationBuilder(greetingIndex)));
+                    string rowKey = rowKeyPrefix + s_greetingIndex;
+                    request.Entries.Add(Mutations.CreateEntry(rowKey, MutationBuilder(s_greetingIndex)));
                 }
 
                 // Make the request to write multiple rows.
@@ -142,14 +142,14 @@ namespace GoogleCloudSamples.Bigtable
                 // Check the Status code of each entry to insure that it was written successfully
                 foreach (MutateRowsResponse.Types.Entry entry in response.Entries)
                 {
-                    greetingIndex = mapToOriginalGreetingIndex[(int)entry.Index];
+                    s_greetingIndex = s_mapToOriginalGreetingIndex[(int)entry.Index];
                     if (entry.Status.Code == 0)
                     {
-                        Console.WriteLine($"\tGreeting:   -- {greetings[greetingIndex], -18}-- written successfully");
+                        Console.WriteLine($"\tGreeting:   -- {s_greetings[s_greetingIndex], -18}-- written successfully");
                     }
                     else
                     {
-                        Console.WriteLine($"\tFailed to write Greeting: --{greetings[greetingIndex]}");
+                        Console.WriteLine($"\tFailed to write Greeting: --{s_greetings[s_greetingIndex]}");
                         Console.WriteLine(entry.Status.Message);
                     }
                 }
@@ -164,7 +164,7 @@ namespace GoogleCloudSamples.Bigtable
                     tableNameClient, rowKey: rowKeyPrefix + rowIndex, filter: RowFilters.CellsPerRowLimit(1));
                 Console.WriteLine(
                     $"\tRow key: {rowRead.Key.ToStringUtf8()} " +
-                    $"  -- Value: {rowRead.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(), -16} " +
+                    $"  -- Value: {rowRead.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
                     $"  -- Time Stamp: {rowRead.Families[0].Columns[0].Cells[0].TimestampMicros}");
 
                 Console.WriteLine("Read all rows using streaming");
@@ -197,7 +197,7 @@ namespace GoogleCloudSamples.Bigtable
 
         // Builds a <see cref="Mutation"/> for <see cref="MutateRowRequest"/> or an <see cref="MutateRowsRequest.Types.Entry"/>
         private static Mutation MutationBuilder(int greetingNumber) =>
-            Mutations.SetCell(columnFamily, columnName, greetings[greetingNumber], new BigtableVersion(DateTime.UtcNow));
+            Mutations.SetCell(columnFamily, columnName, s_greetings[greetingNumber], new BigtableVersion(DateTime.UtcNow));
 
         private static async Task PrintReadRowsAsync(ReadRowsStream responseRead)
         {

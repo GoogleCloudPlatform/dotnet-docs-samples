@@ -1,4 +1,5 @@
 ﻿// [START bigtable_quickstart]
+
 using System;
 // Imports the Google Cloud client library
 using Google.Cloud.Bigtable.V2;
@@ -27,7 +28,7 @@ namespace GoogleCloudSamples.Bigtable
             // [START bigtable_quickstart]
             // The name of the Cloud Bigtable table
             const string tableId = "my-table";
-      
+
             try
             {
                 // Creates a Bigtable client

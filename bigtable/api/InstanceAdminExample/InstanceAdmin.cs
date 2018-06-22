@@ -105,7 +105,7 @@ namespace GoogleCloudSamples.Bigtable
                 // If not set, will default to PRODUCTION type.
                 // Instance type can be upgraded from DEVELOPMENT to PRODUCTION but can not be dowgraded after instance is created.
                 Type = Instance.Types.Type.Production,
-                Labels = { {"prod-label", "prod-label"}}
+                Labels = { { "prod-label", "prod-label" } }
             };
 
             // The first cluster to be created within the instance.
@@ -132,7 +132,7 @@ namespace GoogleCloudSamples.Bigtable
                 // Only PRODUCTION type instance can be created with more than one cluster.
                 // Currently all clusters must have the same storage type.
                 // Clusters must be set to different locations.
-                Clusters = {{"ssd-cluster1", myCluster1}}
+                Clusters = { { "ssd-cluster1", myCluster1 } }
             };
 
             try
@@ -234,7 +234,7 @@ namespace GoogleCloudSamples.Bigtable
             // [END bigtable_create_dev_instance]
             return 0;
         }
-        
+
         public static object ListInstances()
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
@@ -342,7 +342,7 @@ namespace GoogleCloudSamples.Bigtable
 
             return 0;
         }
-        
+
         public static object CreateCluster(string instanceId)
         {
             // [START bigtable_create_bigtableInstanceAdminClient]
@@ -384,7 +384,7 @@ namespace GoogleCloudSamples.Bigtable
                 Operation<Cluster, CreateClusterMetadata> response = bigtableInstanceAdminClient.CreateCluster(request);
                 // Poll until the returned long-running operation is complete
                 Operation<Cluster, CreateClusterMetadata> completedResponse = response.PollUntilCompleted();
-                
+
                 // [END bigtable_create_cluster]
                 Console.WriteLine($"Cluster {request.ClusterId} was created successfully in instance {instanceId}");
                 Console.WriteLine("Print intance information after cluster is created");
@@ -475,7 +475,7 @@ namespace GoogleCloudSamples.Bigtable
             // [END bigtable_delete_instance]
             return 0;
         }
-        
+
         private static void PrintInstanceInfo(Instance instance)
         {
             Console.WriteLine(new string('-', 50));
@@ -514,7 +514,7 @@ namespace GoogleCloudSamples.Bigtable
                     CreateProdInstanceOptions, CreateDevInstanceOptions,
                     ListInstancesOptions, GetInstanceOptions,
                     ListClustersOptions, CreateClusterOptions,
-                    DeleteClusterOptions, DeleteInstanceOptions >(args)
+                    DeleteClusterOptions, DeleteInstanceOptions>(args)
                 .MapResult(
                     (CreateProdInstanceOptions opts) => CreateProdInstance(opts.displayName),
                     (CreateDevInstanceOptions opts) => CreateDevInstance(opts.displayName),

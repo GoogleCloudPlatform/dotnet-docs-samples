@@ -105,7 +105,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private const string instanceId = "YOUR-INSTANCE-ID";
 
-        private static readonly InstanceName instanceName = new InstanceName(projectId, instanceId);
+        private static readonly InstanceName s_instanceName = new InstanceName(projectId, instanceId);
 
         private static object CreateTable(string tableId)
         {
@@ -125,7 +125,7 @@ namespace GoogleCloudSamples.Bigtable
 
             CreateTableRequest request = new CreateTableRequest
             {
-                ParentAsInstanceName = instanceName,
+                ParentAsInstanceName = s_instanceName,
                 Table = table,
                 TableId = tableId
             };
@@ -167,7 +167,7 @@ namespace GoogleCloudSamples.Bigtable
             // Initialize request argument(s).
             ListTablesRequest request = new ListTablesRequest
             {
-                ParentAsInstanceName = instanceName
+                ParentAsInstanceName = s_instanceName
             };
             try
             {
@@ -253,7 +253,7 @@ namespace GoogleCloudSamples.Bigtable
             ModifyColumnFamiliesRequest request = new ModifyColumnFamiliesRequest
             {
                 TableName = tableName,
-                Modifications = {modification}
+                Modifications = { modification }
             };
             try
             {
@@ -285,7 +285,7 @@ namespace GoogleCloudSamples.Bigtable
             // where 1 = most recent version
             // Initialize request argument(s).
             // Define the GC policy to retain only the most recent 2 versions
-            GcRule maxVersionsRule = new GcRule { MaxNumVersions = 2};
+            GcRule maxVersionsRule = new GcRule { MaxNumVersions = 2 };
 
             // Column family to create
             ColumnFamily columnFamily = new ColumnFamily { GcRule = maxVersionsRule };
@@ -464,7 +464,7 @@ namespace GoogleCloudSamples.Bigtable
                     new GcRule {Intersection = intersectionRule}
                 }
             };
-            
+
             GcRule gcRule = new GcRule { Union = nestedRule };
 
             // Column family to create
@@ -521,7 +521,7 @@ namespace GoogleCloudSamples.Bigtable
             TableName tableName = new TableName(projectId, instanceId, tableId);
 
             // Modification to update column family
-            ModifyColumnFamiliesRequest.Types.Modification modification =new ModifyColumnFamiliesRequest.Types.Modification
+            ModifyColumnFamiliesRequest.Types.Modification modification = new ModifyColumnFamiliesRequest.Types.Modification
             {
                 Update = columnFamily,
                 Id = "cf1"
@@ -641,11 +641,11 @@ namespace GoogleCloudSamples.Bigtable
         }
 
         private static bool TableExist(BigtableTableAdminClient bigtableTableAdminClient, string tableId)
-        {            
+        {
             // Check if table exists
             Console.WriteLine("Checking if table exists...");
 
-            var tables = bigtableTableAdminClient.ListTables(instanceName);
+            var tables = bigtableTableAdminClient.ListTables(s_instanceName);
             return tables.Any(x => x.TableName.TableId == tableId);
         }
 
@@ -653,17 +653,17 @@ namespace GoogleCloudSamples.Bigtable
         {
             Console.WriteLine(new string('-', 50));
             Console.WriteLine("Printing table information");
-            Console.WriteLine($"{"Table ID:", -30}{table.TableName.TableId}");
+            Console.WriteLine($"{"Table ID:",-30}{table.TableName.TableId}");
             foreach (KeyValuePair<string, ColumnFamily> ColumnFamily in table.ColumnFamilies)
             {
-                Console.WriteLine($"{"Column family:", -30}{ColumnFamily.Key}");
+                Console.WriteLine($"{"Column family:",-30}{ColumnFamily.Key}");
                 PrintGcRuleInfo(ColumnFamily.Value);
             }
         }
 
         private static void PrintGcRuleInfo(ColumnFamily family)
         {
-            Console.WriteLine($"{"GC Rule:", -30}{family.GcRule}");
+            Console.WriteLine($"{"GC Rule:",-30}{family.GcRule}");
         }
 
         public static int Main(string[] args)
