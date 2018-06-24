@@ -36,7 +36,7 @@ namespace GoogleCloudSamples.Bigtable
         private const string columnFamily = "cf";
         // The name of a culomn inside the column family.
         private const string columnName = "greeting";
-        // Some friendly s_greetings to write to Cloud Bigtable
+        // Some friendly greetings to write to Cloud Bigtable
         private static readonly string[] s_greetings = { "Hello World!", "Hellow Bigtable!", "Hellow C#!" };
         // This List containce mapping indices from MutateRowsRequest to s_greetings[].
         private static List<int> s_mapToOriginalGreetingIndex;
@@ -104,14 +104,14 @@ namespace GoogleCloudSamples.Bigtable
                       
                        https://cloud.google.com/bigtable/docs/schema-design */
 
-                Console.WriteLine($"Write some s_greetings to the table {tableId}");
+                Console.WriteLine($"Write some greetings to the table {tableId}");
 
                 // Insert 1 row using MutateRow()
                 s_greetingIndex = 0;
                 try
                 {
                     bigtableClient.MutateRow(tableNameClient, rowKeyPrefix + s_greetingIndex, MutationBuilder(s_greetingIndex));
-                    Console.WriteLine($"\tGreeting:   -- {s_greetings[s_greetingIndex], -18}-- written successfully");
+                    Console.WriteLine($"\tGreeting:   -- {s_greetings[s_greetingIndex],-18}-- written successfully");
                 }
                 catch (Exception ex)
                 {
@@ -145,7 +145,7 @@ namespace GoogleCloudSamples.Bigtable
                     s_greetingIndex = s_mapToOriginalGreetingIndex[(int)entry.Index];
                     if (entry.Status.Code == 0)
                     {
-                        Console.WriteLine($"\tGreeting:   -- {s_greetings[s_greetingIndex], -18}-- written successfully");
+                        Console.WriteLine($"\tGreeting:   -- {s_greetings[s_greetingIndex],-18}-- written successfully");
                     }
                     else
                     {
