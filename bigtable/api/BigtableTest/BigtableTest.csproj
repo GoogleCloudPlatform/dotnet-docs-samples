@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Bigtable.Admin.V2" Version="1.0.0-alpha04" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+    <ProjectReference Include="..\HelloWorld\HelloWorld.csproj" />
+    <ProjectReference Include="..\InstanceAdminExample\InstanceAdmin.csproj" />
+    <ProjectReference Include="..\QuickStart\QuickStart.csproj" />
+    <ProjectReference Include="..\TableAdminExample\TableAdmin.csproj" />
+  </ItemGroup>
+
+</Project>
