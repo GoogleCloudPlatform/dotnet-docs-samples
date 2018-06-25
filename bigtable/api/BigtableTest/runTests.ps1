@@ -14,6 +14,7 @@
 
 # TODO: Resurrect this test when bug 68199801 is fixed.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
+Require-Platform Win*
 Set-TestTimeout 600
 
 BackupAndEdit-TextFile "..\QuickStart\QuickStart.cs", "..\HelloWorld\HelloWorld.cs", "..\TableAdminExample\TableAdmin.cs",  "..\InstanceAdminExample\InstanceAdmin.cs" `
