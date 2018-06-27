@@ -392,9 +392,10 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestImportFromCloudStorage()
         {
-            var datasetId = $"datasetForLoadCSV{DateTime.Now.Millisecond}";
+            var datasetId = $"datasetForLoadCSV{DateTime.Now.Ticks}";
             var newTableID = $"tableForTestImportDataFromCSV{RandomSuffix()}";
-
+            _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableID));
+            _datasetsToDelete.Add(datasetId);
             // Test parameters.
             string expectedFirstRowName = "Alabama";
 
@@ -453,8 +454,10 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestImportDataFromJSON()
         {
-            var datasetId = $"datasetForLoadJson{DateTime.Now.Millisecond}";
+            var datasetId = $"datasetForLoadJson{DateTime.Now.Ticks}";
             var newTableID = $"tableForTestImportDataFromJSON{RandomSuffix()}";
+            _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableID));
+            _datasetsToDelete.Add(datasetId);
 
             // JSON file below has 50 items in it.
             string expectedFirstRowName = "Alabama";
