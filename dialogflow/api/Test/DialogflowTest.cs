@@ -49,7 +49,7 @@ namespace GoogleCloudSamples
 
         public readonly CommandLineRunner _dialogflow = new CommandLineRunner()
         {
-            Main = DialogflowSamples.Main,
+            Main = Program.Main,
             Command = "Dialogflow"
         };
 

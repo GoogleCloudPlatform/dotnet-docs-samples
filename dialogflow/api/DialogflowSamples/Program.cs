@@ -17,13 +17,15 @@ using CommandLine;
 
 namespace GoogleCloudSamples
 {
-    public class DialogflowSamples
+    public class Program
     {
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
 
             DetectIntentTexts.RegisterCommands(verbMap);
+            DetectIntentAudio.RegisterCommands(verbMap);
+            DetectIntentStreaming.RegisterCommands(verbMap);
             ContextManagement.RegisterCommands(verbMap);
             IntentManagement.RegisterCommands(verbMap);
             EntityManagement.RegisterCommands(verbMap);
