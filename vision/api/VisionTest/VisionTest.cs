@@ -12,7 +12,9 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Storage.V1;
 using System.IO;
+using System.Linq;
 using Xunit;
 using System.Drawing;
 
@@ -194,6 +196,25 @@ namespace GoogleCloudSamples
             Assert.Contains("Bounding Polygon:", output.Stdout);
             Assert.Contains("\tX:", output.Stdout);
             Assert.Contains("\tY:", output.Stdout);
+        }
+
+        [Fact]
+        public void DetectDocument()
+        {
+            var bucketName = System.Environment.GetEnvironmentVariable("CLOUD_STORAGE_BUCKET");
+            var outputPrefix = "OCR_PDF_TEST_OUTPUT";
+            var gcsSourceURI = $"gs://{bucketName}/HodgeConj.pdf";
+            var gcsDestinationURI = $"gs://{bucketName}/{outputPrefix}/";
+
+            var output = Run("ocr", gcsSourceURI, gcsDestinationURI);
+            var storageClient = StorageClient.Create();
+            var bucket = storageClient.GetBucket(bucketName);
+            var blobList = storageClient.ListObjects(bucketName, outputPrefix);
+
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Full text:", output.Stdout);
+            Assert.Contains("Hodge conjecture", output.Stdout);
+            Assert.Equal(blobList.Count(), 1);
         }
     }
 
