@@ -68,7 +68,7 @@ namespace Sudokumb
             return new VisItem()
             {
                 x = taskCount,
-                y = count,
+                y = count / 1000000,
                 group = groupNumber
             };
         }
