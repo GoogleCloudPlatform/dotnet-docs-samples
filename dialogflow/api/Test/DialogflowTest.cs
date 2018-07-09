@@ -19,18 +19,41 @@ using System.Text.RegularExpressions;
 using Xunit;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Diagnostics;
 
 namespace GoogleCloudSamples
 {
-    public class DialogflowTest
+    struct CleanupAction 
+    {
+        public Action Action;
+        public CancellationTokenSource Cancel;
+    };
+
+    public class DialogflowTest : IDisposable
     {
         protected RetryRobot _retryRobot = new RetryRobot();
+        private List<CleanupAction> _cleanupActions = new List<CleanupAction>();
         public readonly string ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         public readonly string SessionId = TestUtil.RandomName();
 
         public ConsoleOutput Output { get; set; }
         public string Stdout => Output.Stdout;
         public int ExitCode => Output.ExitCode;
+
+        public CancellationTokenSource CleanupAfterTest(Action action) 
+        {
+            var cleanupAction = new CleanupAction
+            {
+                Action = action,
+                Cancel = new CancellationTokenSource()
+            };
+            _cleanupActions.Add(cleanupAction);
+            return cleanupAction.Cancel;
+        }
+
+        public CancellationTokenSource CleanupAfterTest(string command, 
+            params string[] args) => CleanupAfterTest(() => Run(command, args));
 
         // Multiple tests depend on existing EntityTypes.
         //
@@ -44,7 +67,9 @@ namespace GoogleCloudSamples
             var outputPattern = new Regex(
                 $"Created EntityType: projects/{ProjectId}/agent/entityTypes/(?<entityTypeId>.*)"
             );
-            return outputPattern.Match(Stdout).Groups["entityTypeId"].Value;
+            string id = outputPattern.Match(Stdout).Groups["entityTypeId"].Value;
+            CleanupAfterTest("entities:delete", id);
+            return id;
         }
 
         public readonly CommandLineRunner _dialogflow = new CommandLineRunner()
@@ -92,6 +117,24 @@ namespace GoogleCloudSamples
             var arguments = args.ToList();
             arguments.AddRange(new[] { "--sessionId", SessionId });
             return Run(command, arguments.ToArray());
+        }
+
+        public void Dispose()
+        {
+            foreach (var action in _cleanupActions)
+            {
+                try
+                {
+                    if (!action.Cancel.Token.IsCancellationRequested)
+                    {
+                        action.Action();
+                    }
+                }
+                catch (Exception e) 
+                {
+                    Console.Error.WriteLine(e.Message);
+                }
+            }
         }
     }
 
