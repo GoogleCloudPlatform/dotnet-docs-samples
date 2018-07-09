@@ -24,7 +24,7 @@ using System.Diagnostics;
 
 namespace GoogleCloudSamples
 {
-    struct CleanupAction 
+    struct CleanupAction
     {
         public Action Action;
         public CancellationTokenSource Cancel;
@@ -33,7 +33,7 @@ namespace GoogleCloudSamples
     public class DialogflowTest : IDisposable
     {
         protected RetryRobot _retryRobot = new RetryRobot();
-        private List<CleanupAction> _cleanupActions = new List<CleanupAction>();
+        private readonly List<CleanupAction> _cleanupActions = new List<CleanupAction>();
         public readonly string ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         public readonly string SessionId = TestUtil.RandomName();
 
@@ -41,7 +41,7 @@ namespace GoogleCloudSamples
         public string Stdout => Output.Stdout;
         public int ExitCode => Output.ExitCode;
 
-        public CancellationTokenSource CleanupAfterTest(Action action) 
+        public CancellationTokenSource CleanupAfterTest(Action action)
         {
             var cleanupAction = new CleanupAction
             {
@@ -52,7 +52,7 @@ namespace GoogleCloudSamples
             return cleanupAction.Cancel;
         }
 
-        public CancellationTokenSource CleanupAfterTest(string command, 
+        public CancellationTokenSource CleanupAfterTest(string command,
             params string[] args) => CleanupAfterTest(() => Run(command, args));
 
         // Multiple tests depend on existing EntityTypes.
@@ -130,7 +130,7 @@ namespace GoogleCloudSamples
                         action.Action();
                     }
                 }
-                catch (Exception e) 
+                catch (Exception e)
                 {
                     Console.Error.WriteLine(e.Message);
                 }

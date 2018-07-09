@@ -32,7 +32,7 @@ namespace GoogleCloudSamples
             var contextPath = $"projects/{ProjectId}/agent/sessions/{SessionId}/contexts/{_contextId}";
             Assert.Contains($"Created Context: {contextPath}", Stdout);
 
-            CleanupAfterTest(() => RunWithSessionId("contexts:delete", 
+            CleanupAfterTest(() => RunWithSessionId("contexts:delete",
                 _contextId));
 
             _retryRobot.Eventually(() =>
