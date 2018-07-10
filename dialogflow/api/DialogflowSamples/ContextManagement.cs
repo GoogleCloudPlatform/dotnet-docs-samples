@@ -113,10 +113,10 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-       // [END dialogflow_delete_context]
- 
+        // [END dialogflow_delete_context]
+
         [Verb("contexts:delete-all", HelpText = "Delete specified Context")]
-        public class DeleteAllOptions : OptionsWithProjectIdAndSessionId {}
+        public class DeleteAllOptions : OptionsWithProjectIdAndSessionId { }
 
         public static int DeleteAllContexts(string projectId, string sessionId)
         {

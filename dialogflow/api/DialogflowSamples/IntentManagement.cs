@@ -28,8 +28,8 @@ namespace GoogleCloudSamples
             verbMap
                 .Add((CreateOptions opts) => Create(opts.ProjectId, opts.DisplayName, opts.MessageText, opts.TrainingPhrasesParts))
                 .Add((ListOptions opts) => List(opts.ProjectId))
-                .Add((DeleteOptions opts) => 
-                    opts.IntentIds.Count() == 1 ? 
+                .Add((DeleteOptions opts) =>
+                    opts.IntentIds.Count() == 1 ?
                     Delete(opts.ProjectId, opts.IntentIds.First()) :
                     BatchDelete(opts.ProjectId, opts.IntentIds));
         }
@@ -173,8 +173,9 @@ namespace GoogleCloudSamples
             IEnumerable<string> intentIds)
         {
             var client = IntentsClient.Create();
-            var intents = intentIds.Select( id => new Intent() { 
-                Name = new IntentName(projectId, id).ToString() 
+            var intents = intentIds.Select(id => new Intent()
+            {
+                Name = new IntentName(projectId, id).ToString()
             });
             client.BatchDeleteIntents(new ProjectAgentName(projectId), intents);
             return 0;

@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
         {
             verbMap.Add((CreateOptions opts) => Create(opts.ProjectId, opts.DisplayName, opts.Kind))
                 .Add((ListOptions opts) => List(opts.ProjectId))
-                .Add((DeleteOptions opts) => 
+                .Add((DeleteOptions opts) =>
                     opts.EntityTypeId.Count() == 1 ?
                     Delete(opts.ProjectId, opts.EntityTypeId.First()) :
                     BatchDelete(opts.ProjectId, opts.EntityTypeId));
