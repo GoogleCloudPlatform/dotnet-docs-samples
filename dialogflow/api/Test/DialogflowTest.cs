@@ -108,6 +108,7 @@ namespace GoogleCloudSamples
                     // And try once more.
                     Output = _dialogflow.Run(arguments.ToArray());
                 }
+                Console.WriteLine(Output.Stdout);
                 return Output;
             }
         }
