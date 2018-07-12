@@ -15,16 +15,14 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
+using System.Linq;
 using Google.Cloud.Spanner.Data;
 using CommandLine;
-using System.Transactions;
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
-using System.Collections.Generic;
 using log4net;
-using System.Linq;
-using System.Collections.Specialized;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -397,6 +395,40 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    public class RetryRobot
+    {
+        public TimeSpan FirstRetryDelay { get; set; } = TimeSpan.FromSeconds(1000);
+        public float DelayMultiplier { get; set; } = 2;
+        public int MaxTryCount { get; set; } = 7;
+        public Func<Exception, bool> ShouldRetry { get; set; }
+
+        /// <summary>
+        /// Retry action when assertion fails.
+        /// </summary>
+        /// <param name="func"></param>
+        public T Eventually<T>(Func<T> func)
+        {
+            TimeSpan delay = FirstRetryDelay;
+            for (int i = 0; ; ++i)
+            {
+                try
+                {
+                    return func();
+                }
+                catch (Exception e)
+                when (ShouldCatch(e) && i < MaxTryCount)
+                {
+                    Thread.Sleep(delay);
+                    delay *= (int)DelayMultiplier;
+                }
+            }
+        }
+
+        private bool ShouldCatch(Exception e)
+        {
+            return ShouldRetry != null && ShouldRetry(e);
+        }
+    }
 
     public class Program
     {
@@ -912,15 +944,6 @@ namespace GoogleCloudSamples.Spanner
             }
             // [END spanner_list_database_tables]
         }
-
-        // [START spanner_topaz_strategy]
-        internal class CustomTransientErrorDetectionStrategy
-            : ITransientErrorDetectionStrategy
-        {
-            public bool IsTransient(Exception ex) =>
-                ex.IsTransientSpannerFault();
-        }
-        // [END spanner_topaz_strategy]
 
         // [START spanner_read_write_transaction_core]
         public static async Task ReadWriteWithTransactionCoreAsync(
@@ -1461,15 +1484,14 @@ namespace GoogleCloudSamples.Spanner
             string projectId, string instanceId,
             string databaseId, string platform)
         {
-            var retryPolicy =
-                new RetryPolicy<CustomTransientErrorDetectionStrategy>
-                    (RetryStrategy.DefaultExponential);
+            var retryRobot = new RetryRobot { MaxTryCount = 3, DelayMultiplier = 2, ShouldRetry = (e) => e.IsTransientSpannerFault() };
 
-            var response = platform == s_netCorePlatform
-                ? retryPolicy.ExecuteAsync(() =>
+            var response = platform ==
+                s_netCorePlatform
+                ? retryRobot.Eventually(() =>
                     QueryDataWithTransactionCoreAsync(projectId,
                         instanceId, databaseId))
-                : retryPolicy.ExecuteAsync(() =>
+                : retryRobot.Eventually(() =>
                     QueryDataWithTransactionAsync(projectId,
                         instanceId, databaseId));
 
@@ -1487,22 +1509,18 @@ namespace GoogleCloudSamples.Spanner
             var response = platform == s_netCorePlatform
                 ? Task.Run(async () =>
                 {
-                    var retryPolicy = new
-                        RetryPolicy<CustomTransientErrorDetectionStrategy>
-                        (RetryStrategy.DefaultExponential);
+                    var retryRobot = new RetryRobot { MaxTryCount = 3, DelayMultiplier = 2, ShouldRetry = (e) => e.IsTransientSpannerFault() };
 
-                    await retryPolicy.ExecuteAsync(
+                    await retryRobot.Eventually(
                         () => ReadWriteWithTransactionCoreAsync(
                             projectId, instanceId, databaseId));
                 })
                 : Task.Run(async () =>
                 {
                     // [START spanner_read_write_retry]
-                    var retryPolicy = new
-                        RetryPolicy<CustomTransientErrorDetectionStrategy>
-                            (RetryStrategy.DefaultExponential);
+                    var retryRobot = new RetryRobot { MaxTryCount = 3, DelayMultiplier = 2, ShouldRetry = (e) => e.IsTransientSpannerFault() };
 
-                    await retryPolicy.ExecuteAsync(() =>
+                    await retryRobot.Eventually(() =>
                         ReadWriteWithTransactionAsync(
                                 projectId, instanceId, databaseId));
                     // [END spanner_read_write_retry]
