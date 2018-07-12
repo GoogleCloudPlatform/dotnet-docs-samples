@@ -13,6 +13,8 @@
 // the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using CommandLine;
 using Google.Cloud.Dialogflow.V2;
 
@@ -25,7 +27,10 @@ namespace GoogleCloudSamples
         {
             verbMap.Add((CreateOptions opts) => Create(opts.ProjectId, opts.DisplayName, opts.Kind))
                 .Add((ListOptions opts) => List(opts.ProjectId))
-                .Add((DeleteOptions opts) => Delete(opts.ProjectId, opts.EntityTypeId));
+                .Add((DeleteOptions opts) =>
+                    opts.EntityTypeId.Count() == 1 ?
+                    Delete(opts.ProjectId, opts.EntityTypeId.First()) :
+                    BatchDelete(opts.ProjectId, opts.EntityTypeId));
         }
 
         [Verb("entity-types:create", HelpText = "Create new entity type")]
@@ -94,7 +99,7 @@ namespace GoogleCloudSamples
         public class DeleteOptions : OptionsWithProjectId
         {
             [Value(0, MetaName = "entityTypeId", HelpText = "ID of EntityType", Required = true)]
-            public string EntityTypeId { get; set; }
+            public IEnumerable<string> EntityTypeId { get; set; }
         }
 
         // [START dialogflow_delete_entity_type]
@@ -109,5 +114,14 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END dialogflow_delete_entity_type]
+        public static int BatchDelete(string projectId, IEnumerable<string> entityTypeIds)
+        {
+            var client = EntityTypesClient.Create();
+            var entityTypeNames = entityTypeIds.Select(
+                id => new EntityTypeName(projectId, id).ToString());
+            client.BatchDeleteEntityTypes(new ProjectAgentName(projectId),
+                entityTypeNames);
+            return 0;
+        }
     }
 }
