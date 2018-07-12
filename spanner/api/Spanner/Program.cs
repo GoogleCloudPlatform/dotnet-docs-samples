@@ -1485,8 +1485,8 @@ namespace GoogleCloudSamples.Spanner
             string databaseId, string platform)
         {
             var retryRobot = new RetryRobot { MaxTryCount = 3, DelayMultiplier = 2, ShouldRetry = (e) => e.IsTransientSpannerFault() };
-            
-            var response = platform ==                 
+
+            var response = platform ==
                 s_netCorePlatform
                 ? retryRobot.Eventually(() =>
                     QueryDataWithTransactionCoreAsync(projectId,
