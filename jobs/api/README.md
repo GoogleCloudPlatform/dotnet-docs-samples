@@ -10,13 +10,11 @@ This sample requires [.NET Core 2.0](
 
 1.  **Follow the instructions in the [root README](../../README.md)**.
 
-4.  Enable APIs for your project.
+2  Enable APIs for your project.
     [Click here](https://pantheon.corp.google.com/flows/enableapi?apiid=jobs.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Key Management Service API.
 
-7. Edit [QuickStart.cs](QuickStart/QuickStart.cs), and replace YOUR-PROJECT-ID with the id of the project you created in step 1.
-
-8.  From a Powershell command line:
+3.  From a Powershell command line:
     ```
     PS C:\...\dotnet-docs-samples\jobs\api\QuickStart> dotnet restore
     PS C:\...\dotnet-docs-samples\jobs\api\QuickStart> dotnet run
