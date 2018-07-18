@@ -48,6 +48,7 @@ cloudtrace.googleapis.com
 compute.googleapis.com
 datastore.googleapis.com
 dlp.googleapis.com
+jobs.googleapis.com
 language.googleapis.com
 logging.googleapis.com
 monitoring.googleapis.com
