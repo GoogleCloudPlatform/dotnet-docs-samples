@@ -23,10 +23,10 @@ namespace GoogleCloudSamples
 {
     public static class ServiceAccounts
     {
-        private static IamService iam;
-        
+        private static IamService s_iam;
+
         // [START iam_create_service_account]
-        public static ServiceAccount CreateServiceAccount(string projectId, 
+        public static ServiceAccount CreateServiceAccount(string projectId,
             string name, string displayName)
         {
             var request = new CreateServiceAccountRequest
@@ -38,7 +38,7 @@ namespace GoogleCloudSamples
                 }
             };
 
-            ServiceAccount serviceAccount = iam.Projects.ServiceAccounts
+            ServiceAccount serviceAccount = s_iam.Projects.ServiceAccounts
                 .Create(request, "projects/" + projectId).Execute();
 
             Console.WriteLine("Created service account: " + serviceAccount.Email);
@@ -49,7 +49,7 @@ namespace GoogleCloudSamples
         // [START iam_list_service_accounts]
         public static IList<ServiceAccount> ListServiceAccounts(string projectId)
         {
-            ListServiceAccountsResponse response = iam.Projects.ServiceAccounts
+            ListServiceAccountsResponse response = s_iam.Projects.ServiceAccounts
                 .List("projects/" + projectId).Execute();
             IList<ServiceAccount> serviceAccounts = response.Accounts;
 
@@ -65,17 +65,17 @@ namespace GoogleCloudSamples
         // [END iam_list_service_accounts]
 
         // [START iam_rename_service_account]
-        public static ServiceAccount RenameServiceAccount(string email, 
+        public static ServiceAccount RenameServiceAccount(string email,
             string newDisplayName)
         {
             // First, get a ServiceAccount using List() or Get()
-            string resource = "projects/-/serviceAccounts/" + email; 
-            ServiceAccount serviceAccount = iam.Projects.ServiceAccounts
+            string resource = "projects/-/serviceAccounts/" + email;
+            ServiceAccount serviceAccount = s_iam.Projects.ServiceAccounts
                 .Get(resource).Execute();
 
             // Then you can update the display name
             serviceAccount.DisplayName = newDisplayName;
-            serviceAccount = iam.Projects.ServiceAccounts.Update(
+            serviceAccount = s_iam.Projects.ServiceAccounts.Update(
                 serviceAccount, resource).Execute();
 
             Console.WriteLine($"Updated display name for {serviceAccount.Email} " +
@@ -87,8 +87,8 @@ namespace GoogleCloudSamples
         // [START iam_delete_service_account]
         public static void DeleteServiceAccount(string email)
         {
-            string resource = "projects/-/serviceAccounts/" + email; 
-            iam.Projects.ServiceAccounts.Delete(resource).Execute();
+            string resource = "projects/-/serviceAccounts/" + email;
+            s_iam.Projects.ServiceAccounts.Delete(resource).Execute();
 
             Console.WriteLine("Deleted service account: " + email);
         }
@@ -96,26 +96,30 @@ namespace GoogleCloudSamples
 
         public static void Main(string[] args)
         {
-            Init(); 
+            Init();
             Parser.Default.ParseArguments<
                 CreateServiceAccountOptions,
                 ListServiceAccountOptions,
                 RenameServiceAccountOptions,
                 DeleteServiceAccountOptions
                 >(args).MapResult(
-                (CreateServiceAccountOptions x) => { 
+                (CreateServiceAccountOptions x) =>
+                {
                     CreateServiceAccount(x.ProjectId, x.Name, x.DisplayName);
                     return 0;
                 },
-                (ListServiceAccountOptions x) => {
+                (ListServiceAccountOptions x) =>
+                {
                     ListServiceAccounts(x.ProjectId);
                     return 0;
                 },
-                (RenameServiceAccountOptions x) => {
+                (RenameServiceAccountOptions x) =>
+                {
                     RenameServiceAccount(x.Email, x.DisplayName);
                     return 0;
                 },
-                (DeleteServiceAccountOptions x) => {
+                (DeleteServiceAccountOptions x) =>
+                {
                     DeleteServiceAccount(x.Email);
                     return 0;
                 },
@@ -126,7 +130,7 @@ namespace GoogleCloudSamples
         {
             GoogleCredential credential = GoogleCredential.GetApplicationDefault()
                 .CreateScoped(IamService.Scope.CloudPlatform);
-            iam = new IamService(new IamService.Initializer
+            s_iam = new IamService(new IamService.Initializer
             {
                 HttpClientInitializer = credential
             });

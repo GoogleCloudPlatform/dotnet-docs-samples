@@ -28,7 +28,6 @@ namespace GoogleCloudSamples
     [Verb("list", HelpText = "Lists the keys for a service account.")]
     internal class ListKeyOptions
     {
-
         [Option("service-account-email", HelpText = "The service account's email.", Required = true)]
         public string ServiceAccountEmail { get; set; }
     }

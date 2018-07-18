@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START iam_quickstart]
+
 using System;
 using System.Collections.Generic;
 using Google.Apis.Auth.OAuth2;
@@ -23,7 +24,7 @@ public class QuickStart
 {
     public static void Main(string[] args)
     {
-    	// Get credentials
+        // Get credentials
         GoogleCredential credential = GoogleCredential.GetApplicationDefault()
             .CreateScoped(IamService.Scope.CloudPlatform);
 

@@ -9,7 +9,7 @@ namespace GoogleCloudSamples
         public void TestServiceAccounts()
         {
             string projectId = Environment.GetEnvironmentVariable(
-                "GOOGLE_PROJECT_ID");      
+                "GOOGLE_PROJECT_ID");
             var rand = new Random().Next(0, 1000);
             string name = "dotnet-test-" + rand;
             string email = $"{name}@{projectId}.iam.gserviceaccount.com";

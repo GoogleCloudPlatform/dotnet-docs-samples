@@ -39,7 +39,6 @@ namespace GoogleCloudSamples
     [Verb("rename", HelpText = "Updates a service account's display name.")]
     internal class RenameServiceAccountOptions
     {
-
         [Option("email", HelpText = "The service account email.", Required = true)]
         public string Email { get; set; }
 
@@ -50,7 +49,6 @@ namespace GoogleCloudSamples
     [Verb("delete", HelpText = "Deletes a service account.")]
     internal class DeleteServiceAccountOptions
     {
-
         [Option("email", HelpText = "The service account's email.", Required = true)]
         public string Email { get; set; }
     }

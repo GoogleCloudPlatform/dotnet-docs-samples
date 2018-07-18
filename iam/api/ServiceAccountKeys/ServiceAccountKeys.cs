@@ -23,12 +23,12 @@ namespace GoogleCloudSamples
 {
     public class ServiceAccountKeys
     {
-        private static IamService service;
+        private static IamService s_service;
 
         // [START iam_create_key]
         public static ServiceAccountKey CreateKey(string serviceAccountEmail)
         {
-            ServiceAccountKey key = service.Projects.ServiceAccounts.Keys.Create(
+            ServiceAccountKey key = s_service.Projects.ServiceAccounts.Keys.Create(
                 new CreateServiceAccountKeyRequest(),
                 "projects/-/serviceAccounts/" + serviceAccountEmail)
                 .Execute();
@@ -41,7 +41,7 @@ namespace GoogleCloudSamples
         // [START iam_list_keys]
         public static IList<ServiceAccountKey> ListKeys(string serviceAccountEmail)
         {
-            IList<ServiceAccountKey> keys = service.Projects.ServiceAccounts.Keys
+            IList<ServiceAccountKey> keys = s_service.Projects.ServiceAccounts.Keys
                 .List($"projects/-/serviceAccounts/{serviceAccountEmail}")
                 .Execute().Keys;
 
@@ -56,7 +56,7 @@ namespace GoogleCloudSamples
         // [START iam_delete_key]
         public static void DeleteKey(string fullKeyName)
         {
-            service.Projects.ServiceAccounts.Keys.Delete(fullKeyName).Execute();
+            s_service.Projects.ServiceAccounts.Keys.Delete(fullKeyName).Execute();
             Console.WriteLine("Deleted key: " + fullKeyName);
         }
         // [END iam_delete_key]
@@ -69,15 +69,18 @@ namespace GoogleCloudSamples
                 ListKeyOptions,
                 DeleteKeyOptions
                 >(args).MapResult(
-                (CreateKeyOptions x) => {
+                (CreateKeyOptions x) =>
+                {
                     CreateKey(x.ServiceAccountEmail);
                     return 0;
                 },
-                (ListKeyOptions x) => {
+                (ListKeyOptions x) =>
+                {
                     ListKeys(x.ServiceAccountEmail);
                     return 0;
                 },
-                (DeleteKeyOptions x) => {
+                (DeleteKeyOptions x) =>
+                {
                     DeleteKey(x.FullKeyName);
                     return 0;
                 },
@@ -88,11 +91,10 @@ namespace GoogleCloudSamples
         {
             GoogleCredential credential = GoogleCredential.GetApplicationDefault()
                 .CreateScoped(IamService.Scope.CloudPlatform);
-            service = new IamService(new IamService.Initializer
+            s_service = new IamService(new IamService.Initializer
             {
                 HttpClientInitializer = credential
             });
-
         }
     }
 }

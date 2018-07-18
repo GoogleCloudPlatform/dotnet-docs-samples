@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
                 "GOOGLE_PROJECT_ID");
             string resource = "//cloudresourcemanager.googleapis.com/projects/" +
                 project;
-                 
+
             GrantableRoles.Main(new[] { resource });
         }
     }
