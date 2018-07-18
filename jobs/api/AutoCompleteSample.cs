@@ -1,5 +1,3 @@
-// TODO(acasale): Completion API doesn't appear to be available in the C# lib.
-
 /*
  * Copyright 2018 Google LLC
  *
