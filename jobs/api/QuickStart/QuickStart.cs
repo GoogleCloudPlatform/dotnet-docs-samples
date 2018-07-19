@@ -20,8 +20,8 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using System;
 // Imports the Google Cloud Job Discovery client library
-using Google.Apis.JobService.v2;
-using Google.Apis.JobService.v2.Data;
+using Google.Apis.CloudTalentSolution.v3;
+using Google.Apis.CloudTalentSolution.v3.Data;
 using System.Linq;
 
 namespace GoogleCloudSamples
@@ -38,18 +38,21 @@ namespace GoogleCloudSamples
             {
                 credential = credential.CreateScoped(new[]
                 {
-                    Google.Apis.JobService.v2.JobServiceService.Scope.Jobs
+                    Google.Apis.CloudTalentSolution.v3.CloudTalentSolutionService.Scope.Jobs
                 });
             }
             // Instantiate the Cloud Key Management Service API.
-            JobServiceService jobServiceClient = new JobServiceService(new BaseClientService.Initializer
+            CloudTalentSolutionService jobServiceClient = new CloudTalentSolutionService(new BaseClientService.Initializer
             {
                 HttpClientInitializer = credential,
                 GZipEnabled = false
             });
 
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            string parent = $"projects/{projectId}";
+
             // List companies.
-            ListCompaniesResponse result = jobServiceClient.Companies.List().Execute();
+            ListCompaniesResponse result = jobServiceClient.Projects.Companies.List(parent).Execute();
             Console.WriteLine("Request Id: " + result.Metadata.RequestId);
             if (result.Companies != null)
             {

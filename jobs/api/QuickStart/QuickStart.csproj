@@ -3,8 +3,10 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RestoreSources>$(RestoreSources);/Users/zhenhu/google-api-dotnet-client/NuPkgs/Generated;https://api.nuget.org/v3/index.json</RestoreSources>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Google.Apis.CloudTalentSolution.v3" Version="1.32.2.1278" />
     <PackageReference Include="Google.Apis.JobService.v2" Version="1.34.0.1247" />
   </ItemGroup>
 </Project>
