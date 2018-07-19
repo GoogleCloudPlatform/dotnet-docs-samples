@@ -68,8 +68,11 @@ namespace GoogleCloudSamples
         [Value(0, HelpText = "The Google Storage location of the source file")]
         public string SourceURI { get; set; }
 
-        [Value(1, HelpText = "The Google Storage location for output")]
-        public string OutputURI { get; set; }
+        [Value(1, HelpText = "The destination Google Storage bucket name (no schema)")]
+        public string OutputBucket { get; set; }
+
+        [Value(1, HelpText = "The destination Google Storage prefix (no bucket name)")]
+        public string OutputPrefix { get; set; }
     }
 
     public class DetectProgram
@@ -334,47 +337,36 @@ namespace GoogleCloudSamples
         }
 
         // [START vision_async_detect_document_ocr]
-        private static object DetectDocument(string gcsSourceUri, string gcsDestinationUri)
+        private static object DetectDocument(string gcsSourceUri, 
+            string gcsDestinationBucketName, string gcsDestinationPrefixName)
         {
-
-            // Supported mime_types are: 'application/pdf' and 'image/tiff'
-            string mimeType = "application/pdf";
-
-            // How many pages should be grouped into each json output file.
-            // With a file of 5 pages
-            int batchSize = 2;
-
             var client = ImageAnnotatorClient.Create();
 
-            var feature = new Feature{
-                Type = Feature.Types.Type.DocumentTextDetection
-            };
-
-            var gcsSource = new GcsSource
+            var asyncRequest = new AsyncAnnotateFileRequest
             {
-                Uri = gcsSourceUri
+                InputConfig = new InputConfig
+                {
+                    GcsSource = new GcsSource
+                    {
+                        Uri = gcsSourceUri
+                    },
+                    // Supported mime_types are: 'application/pdf' and 'image/tiff'
+                    MimeType = "application/pdf"
+                },
+                OutputConfig = new OutputConfig
+                {
+                    // How many pages should be grouped into each json output file.
+                    BatchSize = 2,
+                    GcsDestination = new GcsDestination {
+                        Uri = $"gs://{gcsDestinationBucketName}/{gcsDestinationPrefixName}"
+                    }
+                }
             };
 
-            var inputConfig = new InputConfig { 
-                GcsSource = gcsSource,
-                MimeType = mimeType
-            };
-
-            var gcsDestination = new GcsDestination { 
-                Uri = gcsDestinationUri
-            };
-
-            var outputConfig = new OutputConfig { 
-                BatchSize = batchSize,
-                GcsDestination = gcsDestination
-            };
-
-            var asyncRequest = new AsyncAnnotateFileRequest {
-                InputConfig = inputConfig,
-                OutputConfig = outputConfig
-            };
-
-            asyncRequest.Features.Add(feature);
+            asyncRequest.Features.Add(new Feature
+            {
+                Type = Feature.Types.Type.DocumentTextDetection
+            });
 
             List<AsyncAnnotateFileRequest> requests =
                 new List<AsyncAnnotateFileRequest>();
@@ -389,17 +381,11 @@ namespace GoogleCloudSamples
             // Once the rquest has completed and the output has been
             // written to GCS, we can list all the output files.
             var storageClient = StorageClient.Create();
-
-            Uri destinationBucket = new Uri(gcsDestinationUri, UriKind.Absolute);
-            string bucketName = destinationBucket.Host;
-            string prefix = destinationBucket.GetComponents(
-                UriComponents.Path, UriFormat.UriEscaped)
-                    .TrimEnd('/');
-            
-            var bucket = storageClient.GetBucket(bucketName);
+            var bucket = storageClient.GetBucket(gcsDestinationBucketName);
 
             // List objects with the given prefix.
-            var blobList = storageClient.ListObjects(bucketName, prefix);
+            var blobList = storageClient.ListObjects(gcsDestinationBucketName, 
+                gcsDestinationPrefixName);
             Console.WriteLine("Output files:");
             foreach (var blob in blobList)
             {
@@ -409,14 +395,14 @@ namespace GoogleCloudSamples
             // Process the first output file from GCS.
             // Select the first JSON file from the objects in the list.
             var output = blobList.Where(x => x.Name.Contains(".json")).First();
-            var localPath = Path.GetFileName(output.Name);
-            using (var stream = new FileStream(localPath, 
-                FileMode.OpenOrCreate, FileAccess.ReadWrite))
+
+            var jsonString = "";
+            using (var stream = new MemoryStream())
             {
                 storageClient.DownloadObject(output, stream);
+                jsonString = System.Text.Encoding.UTF8.GetString(stream.ToArray());
             }
 
-            string jsonString = File.ReadAllText(localPath);
             var response = JsonParser.Default
                         .Parse<AnnotateFileResponse>(jsonString);
 
@@ -429,9 +415,6 @@ namespace GoogleCloudSamples
             // annotation/pages/blocks/paragraphs/words/symbols
             // including confidence scores and bounding boxes
             Console.WriteLine($"Full text: \n {annotation.Text}");
-
-            // Clean up local file.
-            File.Delete(localPath);
 
             return 0;
         }
@@ -463,7 +446,7 @@ namespace GoogleCloudSamples
                 (DetectCropHintOptions opts) => DetectCropHint(ImageFromArg(opts.FilePath)),
                 (DetectWebOptions opts) => DetectWeb(ImageFromArg(opts.FilePath)),
                 (DetectDocTextOptions opts) => DetectDocText(ImageFromArg(opts.FilePath)),
-                (DetectDocumentOptions opts) => DetectDocument(opts.SourceURI, opts.OutputURI),
+                (DetectDocumentOptions opts) => DetectDocument(opts.SourceURI, opts.OutputBucket, opts.OutputPrefix),
                 errs => 1);
         }
     }
