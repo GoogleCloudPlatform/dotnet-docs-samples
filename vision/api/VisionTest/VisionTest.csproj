@@ -33,6 +33,10 @@
       <Link>data\faulkner.jpg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="data\HodgeConj.pdf">
+      <Link>data\HodgeConj.pdf</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="data\logo.jpg">
       <Link>data\logo.jpg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
