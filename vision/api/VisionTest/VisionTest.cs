@@ -78,28 +78,11 @@ namespace GoogleCloudSamples
     /// These require uploading a .pdf to Google Cloud Storage
     /// and then API results are saved to Google Cloud Storage
     /// </summary>
-    public class PdfDocumentTests : IClassFixture<RandomBucketFixture>
+    public class PdfDocumentTests : LocalTests, IClassFixture<RandomBucketFixture>
     {
         readonly string _bucketName;
         readonly BucketCollector _bucketCollector;
         readonly string _pdfFileName = "HodgeConj.pdf";
-
-        readonly CommandLineRunner _detect = new CommandLineRunner()
-        {
-            VoidMain = DetectProgram.Main,
-            Command = "Detect"
-        };
-
-        public ConsoleOutput Run(params string[] args)
-        {
-            string objectName = "VisionTest/" + Path.GetFileName(args[1]);
-            string[] cmdArgs = { args[0], $"gs://{_bucketName}/{objectName}" };
-            using (var collector = new BucketCollector(_bucketName))
-            {
-                collector.CopyToBucket(args[1], objectName);
-                return _detect.Run(cmdArgs);
-            }
-        }
 
         public PdfDocumentTests(RandomBucketFixture bucketFixture)
         {
