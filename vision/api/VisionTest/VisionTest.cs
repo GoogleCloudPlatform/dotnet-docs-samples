@@ -105,7 +105,6 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Full text:", output.Stdout);
             Assert.Contains("Hodge conjecture", output.Stdout);
-            Assert.Equal(blobList.Count(), 1);
         }
 
         public void Dispose() => _bucketCollector.Dispose();
