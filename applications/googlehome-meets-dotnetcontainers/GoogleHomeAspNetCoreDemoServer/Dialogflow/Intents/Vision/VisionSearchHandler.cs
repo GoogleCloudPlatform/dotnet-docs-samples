@@ -61,14 +61,15 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
             return DialogflowApp.Tell($"Found some pictures of: {searchTerm}. Now, select a picture.");
         }
 
-        // Configure the search query with the requested subject, asking for 5 images
+        // Configure the search query with the requested subject, asking for images
         private static CseResource.ListRequest CreateSearchQuery(CustomsearchService searchService, string searchTerm)
         {
             var query = searchService.Cse.List(searchTerm);
             query.Cx = Program.AppSettings.CustomSearchSettings.EngineId;
             query.SearchType = CseResource.ListRequest.SearchTypeEnum.Image;
-            query.Num = 5;
-            query.ImgSize = CseResource.ListRequest.ImgSizeEnum.Medium;
+            query.Num = 10;
+            query.ImgSize = CseResource.ListRequest.ImgSizeEnum.Large;
+            query.Safe = CseResource.ListRequest.SafeEnum.High;
             return query;
         }
 

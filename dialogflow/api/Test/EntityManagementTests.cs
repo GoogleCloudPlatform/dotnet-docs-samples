@@ -40,6 +40,7 @@ namespace GoogleCloudSamples
             Run("entities:create", EntityTypeId, _entityValue, SynonymsInput);
             Assert.Contains("Waiting for the entity creation operation to complete.", Stdout);
             Assert.Contains("Entity creation completed.", Stdout);
+            CleanupAfterTest("entities:delete", EntityTypeId, _entityValue);
 
             _retryRobot.Eventually(() =>
             {

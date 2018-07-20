@@ -19,18 +19,41 @@ using System.Text.RegularExpressions;
 using Xunit;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Diagnostics;
 
 namespace GoogleCloudSamples
 {
-    public class DialogflowTest
+    struct CleanupAction
+    {
+        public Action Action;
+        public CancellationTokenSource Cancel;
+    };
+
+    public class DialogflowTest : IDisposable
     {
         protected RetryRobot _retryRobot = new RetryRobot();
+        private readonly List<CleanupAction> _cleanupActions = new List<CleanupAction>();
         public readonly string ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         public readonly string SessionId = TestUtil.RandomName();
 
         public ConsoleOutput Output { get; set; }
         public string Stdout => Output.Stdout;
         public int ExitCode => Output.ExitCode;
+
+        public CancellationTokenSource CleanupAfterTest(Action action)
+        {
+            var cleanupAction = new CleanupAction
+            {
+                Action = action,
+                Cancel = new CancellationTokenSource()
+            };
+            _cleanupActions.Add(cleanupAction);
+            return cleanupAction.Cancel;
+        }
+
+        public CancellationTokenSource CleanupAfterTest(string command,
+            params string[] args) => CleanupAfterTest(() => Run(command, args));
 
         // Multiple tests depend on existing EntityTypes.
         //
@@ -44,7 +67,9 @@ namespace GoogleCloudSamples
             var outputPattern = new Regex(
                 $"Created EntityType: projects/{ProjectId}/agent/entityTypes/(?<entityTypeId>.*)"
             );
-            return outputPattern.Match(Stdout).Groups["entityTypeId"].Value;
+            string id = outputPattern.Match(Stdout).Groups["entityTypeId"].Value;
+            CleanupAfterTest("entities:delete", id);
+            return id;
         }
 
         public readonly CommandLineRunner _dialogflow = new CommandLineRunner()
@@ -57,7 +82,7 @@ namespace GoogleCloudSamples
         // Many agents may be running the test at the same time, so limit
         // our requests to 10 per minute.
         static readonly ThrottleTokenPool s_throttleTokenPool =
-            new ThrottleTokenPool(10, TimeSpan.FromSeconds(61));
+            new ThrottleTokenPool(10, TimeSpan.FromSeconds(60));
 
         // Run command and return output.
         // Project ID argument is always set.
@@ -70,9 +95,20 @@ namespace GoogleCloudSamples
                 var arguments = args.Select((arg) => arg.ToString()).ToList();
                 arguments.Insert(0, command);
                 arguments.AddRange(new[] { "--projectId", ProjectId });
-
-                Output = _dialogflow.Run(arguments.ToArray());
-
+                try
+                {
+                    Output = _dialogflow.Run(arguments.ToArray());
+                }
+                catch (Grpc.Core.RpcException e)
+                when (e.Status.StatusCode == Grpc.Core.StatusCode.ResourceExhausted)
+                {
+                    // Throttle some more!
+                    int randomDelay = new Random().Next(60, 120);
+                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(randomDelay));
+                    // And try once more.
+                    Output = _dialogflow.Run(arguments.ToArray());
+                }
+                Console.WriteLine(Output.Stdout);
                 return Output;
             }
         }
@@ -82,6 +118,24 @@ namespace GoogleCloudSamples
             var arguments = args.ToList();
             arguments.AddRange(new[] { "--sessionId", SessionId });
             return Run(command, arguments.ToArray());
+        }
+
+        public void Dispose()
+        {
+            foreach (var action in _cleanupActions)
+            {
+                try
+                {
+                    if (!action.Cancel.Token.IsCancellationRequested)
+                    {
+                        action.Action();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine(e.Message);
+                }
+            }
         }
     }
 

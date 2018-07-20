@@ -19,7 +19,7 @@ namespace GoogleCloudSamples
 {
     public class DetectIntentTextsTest : DialogflowTest
     {
-        [Fact]
+        [Fact(Skip = "b/110877421")]
         void TestDetectIntentFromTexts()
         {
             var texts = new[] { "hello", "book a meeting room", "Mountain View" };

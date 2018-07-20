@@ -27,6 +27,12 @@ namespace GoogleCloudSamples
             Default = "PHONE_NUMBER,EMAIL_ADDRESS,CREDIT_CARD_NUMBER,US_SOCIAL_SECURITY_NUMBER")]
         public string InfoTypes { get; set; }
 
+        [Option('c', "custom-dictionary", HelpText = "Comma-separated dictionary phrases to match.", Default = "")]
+        public string CustomDictionary { get; set; }
+
+        [Option('r', "custom-regexes", HelpText = "Comma-separated regexes to match.", Default = "")]
+        public string CustomRegexes { get; set; }
+
         [Option('l', "minimum-likelihood",
             HelpText = "The minimum likelihood required before returning a match (0-5).", Default = "Unlikely")]
         public string MinLikelihood { get; set; }
@@ -210,7 +216,12 @@ namespace GoogleCloudSamples
     }
 
     [Verb("deidFpe", HelpText = "DeIdentify content via a Cloud KMS encryption key.")]
-    class DeidFpeOptions : FpeOptions { }
+    class DeidFpeOptions : FpeOptions
+    {
+        [Option('i', "info-types", HelpText = "Comma-separated infoTypes of information to match.",
+            Default = "PHONE_NUMBER,EMAIL_ADDRESS,CREDIT_CARD_NUMBER,US_SOCIAL_SECURITY_NUMBER")]
+        public string InfoTypes { get; set; }
+    }
 
     [Verb("reidFpe", HelpText = "ReIdentify content removed by a previous call to deidFpe.")]
     class ReidFpeOptions : FpeOptions { }
@@ -243,6 +254,9 @@ namespace GoogleCloudSamples
 
         [Value(2, HelpText = "How often to wait between scans, in days. (minimum = 1 day)", Required = true)]
         public int ScanPeriod { get; set; }
+
+        [Option("autoPopulateTimespan", HelpText = "Limit scan to new content only.")]
+        public bool AutoPopulateTimespan { get; set; }
 
         [Option('t', "triggerId", HelpText = "The name of the trigger to be created.", Default = "")]
         public string TriggerId { get; set; }
@@ -409,6 +423,7 @@ namespace GoogleCloudSamples
                         !opts.NoIncludeQuote,
                         DlpSamplesUtils.ParseIdentifyingFields(opts.IdentifyingFields),
                         DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes),
                         opts.DatasetId,
                         opts.TableId),
                     (InspectDatastoreOptions opts) => InspectSamples.InspectCloudDataStore(
@@ -419,6 +434,7 @@ namespace GoogleCloudSamples
                         opts.KindName,
                         opts.NamespaceId,
                         DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes),
                         opts.DatasetId,
                         opts.TableId),
                     (InspectGcsOptions opts) => InspectSamples.InspectGCS(
@@ -427,6 +443,7 @@ namespace GoogleCloudSamples
                         opts.MaxFindings,
                         !opts.NoIncludeQuote,
                         DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                        DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes),
                         opts.BucketName,
                         opts.TopicId,
                         opts.SubscriptionId),
@@ -456,14 +473,16 @@ namespace GoogleCloudSamples
                             opts.MinLikelihood,
                             opts.MaxFindings,
                             !opts.NoIncludeQuote,
-                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes)),
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                            DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes)),
                         (InspectFileOptions opts) => InspectSamples.InspectFile(
                             opts.ProjectId,
                             opts.File,
                             opts.MinLikelihood,
                             opts.MaxFindings,
                             !opts.NoIncludeQuote,
-                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes)),
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
+                            DlpSamplesUtils.ParseCustomInfoTypes(opts.CustomDictionary, opts.CustomRegexes)),
                         (CreateTemplateOptions opts) => InspectTemplates.CreateInspectTemplate(
                             opts.ProjectId,
                             opts.TemplateId,
@@ -477,13 +496,14 @@ namespace GoogleCloudSamples
                         (DeidMaskOptions opts) => DeIdentify.DeidMask(
                             opts.ProjectId,
                             opts.Value,
-                            opts.InfoTypes,
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
                             opts.Mask,
                             opts.Num,
                             opts.Reverse),
                         (DeidFpeOptions opts) => DeIdentify.DeidFpe(
                             opts.ProjectId,
                             opts.Value,
+                            DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
                             opts.KeyName,
                             opts.WrappedKeyFile,
                             opts.Alphabet),
@@ -503,6 +523,7 @@ namespace GoogleCloudSamples
                             opts.BucketName,
                             opts.MinLikelihood,
                             opts.MaxFindings,
+                            opts.AutoPopulateTimespan,
                             opts.ScanPeriod,
                             DlpSamplesUtils.ParseInfoTypes(opts.InfoTypes),
                             opts.TriggerId,

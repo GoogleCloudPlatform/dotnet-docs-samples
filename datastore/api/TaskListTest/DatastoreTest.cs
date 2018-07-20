@@ -34,10 +34,8 @@ namespace GoogleCloudSamples
             new DateTime(1998, 4, 18, 0, 0, 0, DateTimeKind.Utc);
         private readonly DateTime _endDate =
             new DateTime(2013, 4, 18, 0, 0, 0, DateTimeKind.Utc);
-        // [START datastore_retry]
         private readonly int _retryCount = 3;
         private readonly int _retryDelayMs = 500;
-        // [END datastore_retry]
         private readonly RetryRobot _retryRobot = new RetryRobot()
         {
             RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) },
@@ -728,27 +726,6 @@ namespace GoogleCloudSamples
                 // [END datastore_property_filtering_run_query]
                 properties.Sort();
                 Assert.NotEmpty(properties);
-            });
-        }
-
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/346")]
-        public void TestDistinctQuery()
-        {
-            UpsertTaskList();
-            Eventually(() =>
-            {
-                // [START datastore_distinct_query]
-                Query query = new Query("Task")
-                {
-                    Projection = { "category", "priority" },
-                    DistinctOn = { "category", "priority" },
-                    Order = {
-                        {"category", PropertyOrder.Types.Direction.Ascending},
-                        {"priority", PropertyOrder.Types.Direction.Ascending}
-                    }
-                };
-                // [END datastore_distinct_query]
-                Assert.False(IsEmpty(_db.RunQuery(query)));
             });
         }
 
