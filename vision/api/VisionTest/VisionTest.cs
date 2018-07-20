@@ -113,8 +113,6 @@ namespace GoogleCloudSamples
         public void Dispose() => _bucketCollector.Dispose();
     }
 
-
-
     /// <summary>
     /// For every DetectYadaYada function, we need to test with a local file
     /// and with a file on Google Cloud Storage.  This class contains all
