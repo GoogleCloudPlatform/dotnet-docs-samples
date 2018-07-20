@@ -95,15 +95,13 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestDetectPdfDocument()
         {
-            var outputPrefix = "OCR_PDF_TEST_OUTPUT";
+            var outputPrefix = "outputJsonFilePrefix";
             var gcsSourceURI = $"gs://{_bucketName}/{_pdfFileName}";
-            var gcsDestinationURI = $"gs://{_bucketName}/{outputPrefix}/";
+            var output = Run("ocr", gcsSourceURI, _bucketName, outputPrefix);
 
-            var output = Run("ocr", gcsSourceURI, gcsDestinationURI);
             var storageClient = StorageClient.Create();
             var bucket = storageClient.GetBucket(_bucketName);
             var blobList = storageClient.ListObjects(_bucketName, outputPrefix);
-
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Full text:", output.Stdout);
             Assert.Contains("Hodge conjecture", output.Stdout);
