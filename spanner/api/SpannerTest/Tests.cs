@@ -97,6 +97,8 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("insertSampleData",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            _spannerCmd.Run("insertStructSampleData",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("addColumn",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
         }
@@ -273,6 +275,40 @@ namespace GoogleCloudSamples.Spanner
             string valueToTest = result[0].Substring(result[0].IndexOf(columnText) + columnText.Length);
             DateTime value;
             Assert.True(DateTime.TryParse(valueToTest, out value));
+        }
+
+        [Fact]
+        void TestStructParameters()
+        {
+            // Query records using a Spanner struct.
+            ConsoleOutput readOutput = _spannerCmd.Run("queryDataWithStruct",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("6", readOutput.Stdout);
+            // Query records using an array of Spanner structs.
+            readOutput = _spannerCmd.Run("queryDataWithArrayOfStruct",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("6", readOutput.Stdout);
+            Assert.Contains("7", readOutput.Stdout);
+            Assert.Contains("8", readOutput.Stdout);
+            // Query records using a field value contained in a Spanner struct.
+            readOutput = _spannerCmd.Run("queryDataWithStructField",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("6", readOutput.Stdout);
+            // Query records using a field value contained in a nested Spanner struct.
+            readOutput = _spannerCmd.Run("queryDataWithNestedStructField",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("6", readOutput.Stdout);
+            Assert.Contains("Imagination", readOutput.Stdout);
+            Assert.Contains("9", readOutput.Stdout);
+            Assert.Contains("Imagination", readOutput.Stdout);
         }
 
         [Fact(Skip = "Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]

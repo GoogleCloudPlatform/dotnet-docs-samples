@@ -28,7 +28,8 @@ namespace GoogleCloudSamples
             verbMap
                 .Add((CreateOptions opts) => Create(opts.ProjectId, opts.SessionId, opts.ContextId, opts.LifespanCount))
                 .Add((ListOptions opts) => List(opts.ProjectId, opts.SessionId))
-                .Add((DeleteOptions opts) => Delete(opts.ProjectId, opts.SessionId, opts.ContextId));
+                .Add((DeleteOptions opts) => Delete(opts.ProjectId, opts.SessionId, opts.ContextId))
+                .Add((DeleteAllOptions opts) => DeleteAllContexts(opts.ProjectId, opts.SessionId));
         }
 
         [Verb("contexts:create", HelpText = "Create new Context")]
@@ -113,5 +114,15 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END dialogflow_delete_context]
+
+        [Verb("contexts:delete-all", HelpText = "Delete specified Context")]
+        public class DeleteAllOptions : OptionsWithProjectIdAndSessionId { }
+
+        public static int DeleteAllContexts(string projectId, string sessionId)
+        {
+            var client = ContextsClient.Create();
+            client.DeleteAllContexts(new SessionName(projectId, sessionId));
+            return 0;
+        }
     }
 }

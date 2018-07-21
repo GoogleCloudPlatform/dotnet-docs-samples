@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace GoogleCloudSamples
 {
@@ -31,9 +32,11 @@ namespace GoogleCloudSamples
         private static readonly string s_usage =
             "Usage: \n" +
             "  Storage create [new-bucket-name]\n" +
+            "  Storage create-regional-bucket location [new-bucket-name]\n" +
             "  Storage list\n" +
             "  Storage list bucket-name [prefix] [delimiter]\n" +
             "  Storage get-metadata bucket-name object-name\n" +
+            "  Storage get-bucket-metadata bucket-name\n" +
             "  Storage make-public bucket-name object-name\n" +
             "  Storage upload [-key encryption-key] bucket-name local-file-path [object-name]\n" +
             "  Storage copy source-bucket-name source-object-name dest-bucket-name dest-object-name\n" +
@@ -44,6 +47,9 @@ namespace GoogleCloudSamples
             "  Storage view-bucket-iam-members bucket-name\n" +
             "  Storage add-bucket-iam-member bucket-name member\n" +
             "  Storage remove-bucket-iam-member bucket-name role member\n" +
+            "  Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name\n" +
+            "  Storage upload-with-kms-key bucket-name key-location\n" +
+            "                              key-ring key-name local-file-path [object-name]\n" +
             "  Storage print-acl bucket-name\n" +
             "  Storage print-acl bucket-name object-name\n" +
             "  Storage add-owner bucket-name user-email\n" +
@@ -67,6 +73,14 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Created {bucketName}.");
         }
         // [END storage_create_bucket]
+
+        private void CreateRegionalBucket(string location, string bucketName)
+        {
+            var storage = StorageClient.Create();
+            Bucket bucket = new Bucket { Location = location, Name = bucketName };
+            storage.CreateBucket(s_projectId, bucket);
+            Console.WriteLine($"Created {bucketName}.");
+        }
 
         // [START storage_list_buckets]
         private void ListBuckets()
@@ -92,9 +106,9 @@ namespace GoogleCloudSamples
         private void ListObjects(string bucketName)
         {
             var storage = StorageClient.Create();
-            foreach (var bucket in storage.ListObjects(bucketName, ""))
+            foreach (var storageObject in storage.ListObjects(bucketName, ""))
             {
-                Console.WriteLine(bucket.Name);
+                Console.WriteLine(storageObject.Name);
             }
         }
         // [END storage_list_files]
@@ -235,6 +249,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Generation:\t{storageObject.Generation}");
             Console.WriteLine($"Id:\t{storageObject.Id}");
             Console.WriteLine($"Kind:\t{storageObject.Kind}");
+            Console.WriteLine($"KmsKeyName:\t{storageObject.KmsKeyName}");
             Console.WriteLine($"Md5Hash:\t{storageObject.Md5Hash}");
             Console.WriteLine($"MediaLink:\t{storageObject.MediaLink}");
             Console.WriteLine($"Metageneration:\t{storageObject.Metageneration}");
@@ -245,6 +260,38 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Updated:\t{storageObject.Updated}");
         }
         // [END storage_get_metadata]
+
+        private void GetBucketMetadata(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetBucket(bucketName);
+            Console.WriteLine($"Bucket:\t{storageObject.Name}");
+            Console.WriteLine($"Acl:\t{storageObject.Acl}");
+            Console.WriteLine($"Billing:\t{storageObject.Billing}");
+            Console.WriteLine($"Cors:\t{storageObject.Cors}");
+            Console.WriteLine($"DefaultEventBasedHold:\t{storageObject.DefaultEventBasedHold}");
+            Console.WriteLine($"DefaultObjectAcl:\t{storageObject.DefaultObjectAcl}");
+            Console.WriteLine($"Encryption:\t{storageObject.Encryption}");
+            if (storageObject.Encryption != null)
+            {
+                Console.WriteLine($"KmsKeyName:\t{storageObject.Encryption.DefaultKmsKeyName}");
+            }
+            Console.WriteLine($"Id:\t{storageObject.Id}");
+            Console.WriteLine($"Kind:\t{storageObject.Kind}");
+            Console.WriteLine($"Lifecycle:\t{storageObject.Lifecycle}");
+            Console.WriteLine($"Location:\t{storageObject.Location}");
+            Console.WriteLine($"Logging:\t{storageObject.Logging}");
+            Console.WriteLine($"Metageneration:\t{storageObject.Metageneration}");
+            Console.WriteLine($"Owner:\t{storageObject.Owner}");
+            Console.WriteLine($"ProjectNumber:\t{storageObject.ProjectNumber}");
+            Console.WriteLine($"RetentionPolicy:\t{storageObject.RetentionPolicy}");
+            Console.WriteLine($"SelfLink:\t{storageObject.SelfLink}");
+            Console.WriteLine($"StorageClass:\t{storageObject.StorageClass}");
+            Console.WriteLine($"TimeCreated:\t{storageObject.TimeCreated}");
+            Console.WriteLine($"Updated:\t{storageObject.Updated}");
+            Console.WriteLine($"Versioning:\t{storageObject.Versioning}");
+            Console.WriteLine($"Website:\t{storageObject.Website}");
+        }
 
         // [START storage_make_public]
         private void MakePublic(string bucketName, string objectName)
@@ -498,6 +545,53 @@ namespace GoogleCloudSamples
         }
         // [END remove_bucket_iam_member]
 
+        // [START storage_set_bucket_default_kms_key]
+        private void AddBucketDefaultKmsKey(string bucketName,
+            string keyLocation, string kmsKeyRing, string kmsKeyName)
+        {
+            string KeyPrefix = $"projects/{s_projectId}/locations/{keyLocation}";
+            string FullKeyringName = $"{KeyPrefix}/keyRings/{kmsKeyRing}";
+            string FullKeyName = $"{FullKeyringName}/cryptoKeys/{kmsKeyName}";
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+            {
+                Projection = Projection.Full
+            });
+            bucket.Encryption = new Bucket.EncryptionData
+            {
+                DefaultKmsKeyName = FullKeyName
+            };
+            var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration,
+            });
+        }
+        // [END storage_set_bucket_default_kms_key]
+
+        // [START storage_upload_with_kms_key]
+        private void UploadEncryptedFileWithKmsKey(string bucketName,
+            string keyLocation, string kmsKeyRing, string kmsKeyName,
+            string localPath, string objectName = null)
+        {
+            string KeyPrefix = $"projects/{s_projectId}/locations/{keyLocation}";
+            string FullKeyringName = $"{KeyPrefix}/keyRings/{kmsKeyRing}";
+            string FullKeyName = $"{FullKeyringName}/cryptoKeys/{kmsKeyName}";
+
+            var storage = StorageClient.Create();
+            using (var f = File.OpenRead(localPath))
+            {
+                objectName = objectName ?? Path.GetFileName(localPath);
+                storage.UploadObject(bucketName, objectName, null, f,
+                    new UploadObjectOptions()
+                    {
+                        KmsKeyName = FullKeyName
+                    });
+                Console.WriteLine($"Uploaded {objectName}.");
+            }
+        }
+        // [END storage_upload_with_kms_key]
+
         // [START storage_print_file_acl]
         private void PrintObjectAcl(string bucketName, string objectName)
         {
@@ -740,6 +834,11 @@ namespace GoogleCloudSamples
                         CreateBucket(args.Length < 2 ? RandomBucketName() : args[1]);
                         break;
 
+                    case "create-regional-bucket":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        CreateRegionalBucket(args[1], args.Length < 3 ? RandomBucketName() : args[2]);
+                        break;
+
                     case "list":
                         if (args.Length < 2)
                             ListBuckets();
@@ -780,6 +879,12 @@ namespace GoogleCloudSamples
                         }
                         break;
 
+                    case "upload-with-kms-key":
+                        if (args.Length < 6 && PrintUsage()) return -1;
+                        UploadEncryptedFileWithKmsKey(args[1], args[2], args[3],
+                            args[4], args[5], args.Length < 7 ? null : args[6]);
+                        break;
+
                     case "download":
                         encryptionKey = PullFlag("-key", ref args, requiresValue: true);
                         requesterPays = PullFlag("-pay", ref args, requiresValue: false);
@@ -808,6 +913,11 @@ namespace GoogleCloudSamples
                     case "get-metadata":
                         if (args.Length < 3 && PrintUsage()) return -1;
                         GetMetadata(args[1], args[2]);
+                        break;
+
+                    case "get-bucket-metadata":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        GetBucketMetadata(args[1]);
                         break;
 
                     case "make-public":
@@ -885,6 +995,11 @@ namespace GoogleCloudSamples
                     case "remove-bucket-iam-member":
                         if (args.Length < 4 && PrintUsage()) return -1;
                         RemoveBucketIamMember(args[1], args[2], args[3]);
+                        break;
+
+                    case "add-bucket-default-kms-key":
+                        if (args.Length < 5 && PrintUsage()) return -1;
+                        AddBucketDefaultKmsKey(args[1], args[2], args[3], args[4]);
                         break;
 
                     case "generate-signed-url":

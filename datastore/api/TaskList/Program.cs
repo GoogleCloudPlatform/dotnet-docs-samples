@@ -31,15 +31,15 @@ namespace GoogleCloudSamples
 
         TaskList(string projectId)
         {
-            // [START build_service]
+            // [START datastore_build_service]
             // Create an authorized Datastore service using Application Default Credentials.
             _db = DatastoreDb.Create(projectId);
             // Create a Key factory to construct keys associated with this project.
             _keyFactory = _db.CreateKeyFactory("Task");
-            // [END build_service]
+            // [END datastore_build_service]
         }
 
-        // [START add_entity]
+        // [START datastore_add_entity]
         /// <summary>
         ///  Adds a task entity to the Datastore
         /// </summary>
@@ -60,9 +60,9 @@ namespace GoogleCloudSamples
             };
             return _db.Insert(task);
         }
-        // [END add_entity]
+        // [END datastore_add_entity]
 
-        // [START update_entity]
+        // [START datastore_update_entity]
         /// <summary>
         /// Marks a task entity as done.
         /// </summary>
@@ -82,9 +82,9 @@ namespace GoogleCloudSamples
                 return task != null;
             }
         }
-        // [END update_entity]
+        // [END datastore_update_entity]
 
-        // [START retrieve_entities]
+        // [START datastore_retrieve_entities]
         /// <summary>
         /// Returns a list of all task entities in ascending order of creation time.
         /// </summary>
@@ -96,9 +96,9 @@ namespace GoogleCloudSamples
             };
             return _db.RunQuery(query).Entities;
         }
-        // [END retrieve_entities]
+        // [END datastore_retrieve_entities]
 
-        // [START delete_entity]
+        // [START datastore_delete_entity]
         /// <summary>
         /// Deletes a task entity.
         /// </summary>
@@ -107,9 +107,8 @@ namespace GoogleCloudSamples
         {
             _db.Delete(_keyFactory.CreateKey(id));
         }
-        // [END delete_entity]
+        // [END datastore_delete_entity]
 
-        // [START format_results]
         static IEnumerable<string> FormatTasks(IEnumerable<Entity> tasks)
         {
             var results = new List<string>();
@@ -122,7 +121,6 @@ namespace GoogleCloudSamples
             }
             return results;
         }
-        // [END format_results]
 
         void HandleCommandLine(string commandLine)
         {

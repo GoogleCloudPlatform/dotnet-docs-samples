@@ -40,6 +40,8 @@ namespace GoogleCloudSamples
 
             Run("intents:create", _displayName, _messageText, TrainingPartPhrasesArgument);
             Assert.Matches(CreateOutputPattern, Stdout);
+            var intentId = GetIntentId(createOutput: Stdout);
+            CleanupAfterTest("intents:delete", intentId);
 
             _retryRobot.Eventually(() =>
             {
@@ -56,6 +58,7 @@ namespace GoogleCloudSamples
             // Get the ID of the created Intent to delete from output of intents:create.
             // The Intent ID is needed to delete, the display name is not sufficient.
             var intentId = GetIntentId(createOutput: Stdout);
+            var cancelCleanup = CleanupAfterTest("intents:delete", intentId);
 
             _retryRobot.Eventually(() =>
             {
@@ -65,6 +68,7 @@ namespace GoogleCloudSamples
 
             Run("intents:delete", intentId);
             Assert.Contains($"Deleted Intent: {intentId}", Stdout);
+            cancelCleanup.Cancel();
 
             _retryRobot.Eventually(() =>
            {

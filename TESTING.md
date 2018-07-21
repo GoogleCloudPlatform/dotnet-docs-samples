@@ -48,5 +48,5 @@
 8.  Run the test script:
 
     ```
-    C:\...\dotnet-docs-samples> powershell buildAndRunTests.ps1
+    C:\...\dotnet-docs-samples> powershell .\buildAndRunTests.ps1
     ```

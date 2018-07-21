@@ -49,7 +49,10 @@ namespace Sudokumb
         private readonly ITestOutputHelper _output;
         private readonly IWebDriver _browser;
 
-        private readonly RetryRobot _retryRobot = new RetryRobot();
+        private readonly RetryRobot _retryRobot = new RetryRobot()
+        {
+            RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) }
+        };
 
         public WebAppTest(ITestOutputHelper output,
             WebDriverTestFixture fixture)

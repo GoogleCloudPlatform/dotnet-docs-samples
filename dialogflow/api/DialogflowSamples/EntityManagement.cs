@@ -94,7 +94,7 @@ namespace GoogleCloudSamples
         }
         // [END dialogflow_list_entities]
 
-        [Verb("entities:delete", HelpText = "Delete specified EntityType")]
+        [Verb("entities:delete", HelpText = "Delete specified Entity")]
         public class DeleteOptions : OptionsWithProjectId
         {
             [Value(0, MetaName = "entityTypeId", HelpText = "ID of existing EntityType", Required = true)]

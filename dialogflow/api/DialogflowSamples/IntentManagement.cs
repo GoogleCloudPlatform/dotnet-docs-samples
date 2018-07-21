@@ -28,7 +28,10 @@ namespace GoogleCloudSamples
             verbMap
                 .Add((CreateOptions opts) => Create(opts.ProjectId, opts.DisplayName, opts.MessageText, opts.TrainingPhrasesParts))
                 .Add((ListOptions opts) => List(opts.ProjectId))
-                .Add((DeleteOptions opts) => Delete(opts.ProjectId, opts.IntentId));
+                .Add((DeleteOptions opts) =>
+                    opts.IntentIds.Count() == 1 ?
+                    Delete(opts.ProjectId, opts.IntentIds.First()) :
+                    BatchDelete(opts.ProjectId, opts.IntentIds));
         }
 
         [Verb("intents:create", HelpText = "Create new Intent")]
@@ -151,14 +154,13 @@ namespace GoogleCloudSamples
         public class DeleteOptions : OptionsWithProjectId
         {
             [Value(0, MetaName = "intentId", HelpText = "ID of existing Intent", Required = true)]
-            public string IntentId { get; set; }
+            public IEnumerable<string> IntentIds { get; set; }
         }
 
         // [START dialogflow_delete_intent]
         public static int Delete(string projectId, string intentId)
         {
             var client = IntentsClient.Create();
-
             client.DeleteIntent(new IntentName(projectId, intentId));
 
             Console.WriteLine($"Deleted Intent: {intentId}");
@@ -166,5 +168,17 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END dialogflow_delete_intent]
+
+        public static int BatchDelete(string projectId,
+            IEnumerable<string> intentIds)
+        {
+            var client = IntentsClient.Create();
+            var intents = intentIds.Select(id => new Intent()
+            {
+                Name = new IntentName(projectId, id).ToString()
+            });
+            client.BatchDeleteIntents(new ProjectAgentName(projectId), intents);
+            return 0;
+        }
     }
 }

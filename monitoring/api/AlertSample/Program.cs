@@ -41,8 +41,27 @@ namespace GoogleCloudSamples
         public string ProjectId { get; set; }
     };
 
+    [Verb("delete", HelpText = "Delete alert policy")]
+    class DeleteAlertPolicyOptions
+    {
+        [Option('m', "policyname", HelpText = "The name of the policy to delete.", Required = true)]
+        public string PolicyName { get; set; }
+    }
+
+    [Verb("delete-channel", HelpText = "Delete alert policy")]
+    class DeleteNotificationChannelOptions
+    {
+        [Option('m', "channelname", HelpText = "The name of the channel to delete.", Required = true)]
+        public string ChannelName { get; set; }
+        [Option('f', "force", Required = false)]
+        public bool Force { get; set; } = false;
+    }
+
     [Verb("list", HelpText = "List alert policies.")]
     class ListPoliciesOptions : OptionsBase { };
+
+    [Verb("list-channels", HelpText = "List notification channels.")]
+    class ListChannelsOptions : OptionsBase { };
 
     [Verb("backup", HelpText = "Save the current list of alert policies to a .json file.")]
     class BackupPoliciesOptions : OptionsBase
@@ -89,6 +108,9 @@ namespace GoogleCloudSamples
                 .Add((ReplaceChannelsOptions opts) => ReplaceChannels(opts.ProjectId, opts.AlertId, opts.ChannelId))
                 .Add((EnablePoliciesOptions opts) => EnablePolicies(opts.ProjectId, opts.Filter, true))
                 .Add((DisablePoliciesOptions opts) => EnablePolicies(opts.ProjectId, opts.Filter, false))
+                .Add((DeleteAlertPolicyOptions opts) => DeleteAlertPolicy(opts.PolicyName))
+                .Add((ListChannelsOptions opts) => ListNotificationChannels(opts.ProjectId))
+                .Add((DeleteNotificationChannelOptions opts) => DeleteNotificationChannel(opts.ChannelName, opts.Force))
                 .SetNotParsedFunc((errs) => 1);
             return verbMap.Run(args);
         }
@@ -114,8 +136,24 @@ namespace GoogleCloudSamples
         }
         // [END monitoring_alert_list_policies]
 
-        // [START monitoring_alert_backup_policies]
         // [START monitoring_alert_list_channels]
+        static void ListNotificationChannels(string projectId)
+        {
+            var client = NotificationChannelServiceClient.Create();
+            var response = client.ListNotificationChannels(new ProjectName(projectId));
+            foreach (NotificationChannel channel in response)
+            {
+                Console.WriteLine(channel.Name);
+                if (channel.DisplayName != null)
+                {
+                    Console.WriteLine(channel.DisplayName);
+                }
+                Console.WriteLine();
+            }
+        }
+        // [END monitoring_alert_list_channels]
+
+        // [START monitoring_alert_backup_policies]
         static void BackupPolicies(string projectId, string filePath)
         {
             var policyClient = AlertPolicyServiceClient.Create();
@@ -130,7 +168,6 @@ namespace GoogleCloudSamples
                 }, new ProtoMessageConverter()));
         }
         // [END monitoring_alert_backup_policies]
-        // [END monitoring_alert_list_channels]
 
         // [START monitoring_alert_restore_policies]
         // [START monitoring_alert_create_policy]
@@ -359,5 +396,44 @@ namespace GoogleCloudSamples
         }
         // [END monitoring_alert_enable_policies]
         // [END monitoring_alert_disable_policies]
+
+        static void DeleteAlertPolicy(string policyNameString)
+        {
+            var client = AlertPolicyServiceClient.Create();
+            AlertPolicyName policyName;
+            if (!AlertPolicyName.TryParse(policyNameString, out policyName))
+            {
+                string message = string.Format(
+                    @"{0} is not a valid alert policy name.
+                    Policy names look like this: {1}.",
+                    policyNameString,
+                    new AlertPolicyName("project-id", "alert-policy-id"));
+                throw new Exception(message);
+            }
+            client.DeleteAlertPolicy(policyName);
+            Console.WriteLine($"Deleted {policyName}.");
+        }
+
+        // [START monitoring_alert_delete_channel]
+        static void DeleteNotificationChannel(string channelNameString,
+            bool force)
+        {
+            var client = NotificationChannelServiceClient.Create();
+            NotificationChannelName channelName;
+            if (!NotificationChannelName.TryParse(channelNameString,
+                out channelName))
+            {
+                string message = string.Format(
+                    @"{0} is not a valid notification channel name.
+                    Channel names look like this: {1}.",
+                    channelNameString,
+                    new NotificationChannelName("project-id",
+                        "notification-channel-id"));
+                throw new Exception(message);
+            }
+            client.DeleteNotificationChannel(channelName, force);
+            Console.WriteLine($"Deleted {channelName}.");
+        }
+        // [END monitoring_alert_delete_channel]
     }
 }

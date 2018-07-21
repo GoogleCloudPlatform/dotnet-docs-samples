@@ -151,7 +151,8 @@ namespace GoogleCloudSamples
                 ProjectId,
                 "'My SSN is 372819127.'",
                 "-n", "5",
-                "-m", "*"
+                "-m", "*",
+                "-i", "US_SOCIAL_SECURITY_NUMBER"
             );
             Assert.Contains("My SSN is *****9127", output.Stdout);
         }
@@ -187,7 +188,14 @@ namespace GoogleCloudSamples
             string alphabet = "Numeric";
 
             // Deid
-            ConsoleOutput deidOutput = _dlp.Run("deidFpe", CallingProjectId, data, KeyName, WrappedKey, alphabet);
+            ConsoleOutput deidOutput = _dlp.Run(
+                "deidFpe",
+                CallingProjectId,
+                data,
+                KeyName,
+                WrappedKey,
+                alphabet,
+                "-i", "US_SOCIAL_SECURITY_NUMBER");
             Assert.Matches(new Regex("My SSN is TOKEN\\(9\\):\\d+"), deidOutput.Stdout);
 
             // Reid
@@ -210,6 +218,7 @@ namespace GoogleCloudSamples
                 "-i", "PERSON_NAME,US_ZIP",
                 _bucketName,
                 "1",
+                "--autoPopulateTimespan",
                 "-l", "Unlikely",
                 "-m", "0",
                 "-t", triggerId,
@@ -356,6 +365,7 @@ namespace GoogleCloudSamples
             });
             Regex dlpJobRegex = new Regex("projects/.*/dlpJobs/r-\\d+");
 
+            _retryRobot.ShouldRetry = ex => true;
             _retryRobot.Eventually(() =>
             {
                 // List jobs.

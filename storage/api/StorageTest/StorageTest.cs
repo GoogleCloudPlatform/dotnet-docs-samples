@@ -88,13 +88,16 @@ namespace GoogleCloudSamples
         public BucketFixture()
         {
             BucketName = StorageTest.CreateRandomBucket();
+            BucketName1 = StorageTest.CreateRandomRegionalBucket();
         }
         public void Dispose()
         {
             StorageTest.DeleteBucket(BucketName);
+            StorageTest.DeleteBucket(BucketName1);
         }
 
         public string BucketName { get; private set; }
+        public string BucketName1 { get; private set; }
     }
 
     public class GarbageCollector : IDisposable
@@ -113,6 +116,13 @@ namespace GoogleCloudSamples
     public class StorageTest : BaseTest, IDisposable, IClassFixture<BucketFixture>
     {
         private readonly string _bucketName;
+        private readonly string _bucketName1;
+        private readonly string _kmsKeyRing =
+            Environment.GetEnvironmentVariable("STORAGE_KMS_KEYRING");
+        private readonly string _kmsKeyName =
+            Environment.GetEnvironmentVariable("STORAGE_KMS_KEYNAME");
+        private readonly static string s_kmsKeyLocation = "us-west1";
+
         /// <summary>
         /// Maintain a list of objects that must be deleted at the end of the test.
         /// </summary>
@@ -122,6 +132,7 @@ namespace GoogleCloudSamples
         public StorageTest(BucketFixture fixture)
         {
             _bucketName = fixture.BucketName;
+            _bucketName1 = fixture.BucketName1;
         }
 
         /// <summary>
@@ -144,6 +155,14 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <returns>The objectName.</returns>
         private string Collect(string objectName) => Collect(_bucketName, objectName);
+
+        /// <summary>
+        /// Add a object located in a regional bucket to delete
+        /// at the end of the test.
+        /// </summary>
+        /// <returns>The regional objectName.</returns>
+        private string CollectRegionalObject(string objectName)
+            => Collect(_bucketName1, objectName);
 
         public static void DeleteBucket(string bucketName)
         {
@@ -186,6 +205,17 @@ namespace GoogleCloudSamples
         public static string CreateRandomBucket()
         {
             var created = Run("create");
+            AssertSucceeded(created);
+            var created_regex = new Regex(@"Created\s+(.+)\.\s*", RegexOptions.IgnoreCase);
+            var match = created_regex.Match(created.Stdout);
+            Assert.True(match.Success);
+            string bucketName = match.Groups[1].Value;
+            return bucketName;
+        }
+
+        public static string CreateRandomRegionalBucket()
+        {
+            var created = Run("create-regional-bucket", s_kmsKeyLocation);
             AssertSucceeded(created);
             var created_regex = new Regex(@"Created\s+(.+)\.\s*", RegexOptions.IgnoreCase);
             var match = created_regex.Match(created.Stdout);
@@ -556,6 +586,28 @@ namespace GoogleCloudSamples
             printedIamMembers = Run("view-bucket-iam-members", _bucketName);
             AssertSucceeded(printedIamMembers);
             Assert.DoesNotContain(member, printedIamMembers.Stdout);
+        }
+
+        [Fact]
+        public void TestAddBucketDefaultKmsKey()
+        {
+            var addBucketDefaultKmsKeyResponse =
+                Run("add-bucket-default-kms-key", _bucketName1,
+                    s_kmsKeyLocation, _kmsKeyRing, _kmsKeyName);
+            AssertSucceeded(addBucketDefaultKmsKeyResponse);
+            var bucketMetadata = Run("get-bucket-metadata", _bucketName1);
+            Assert.Contains(_kmsKeyName, bucketMetadata.Stdout);
+        }
+
+        [Fact]
+        public void TestUploadWithKmsKey()
+        {
+            var uploadWithKmsKeyResponse = Run("upload-with-kms-key",
+                    _bucketName1, s_kmsKeyLocation, _kmsKeyRing,
+                    _kmsKeyName, CollectRegionalObject("Hello.txt"));
+            AssertSucceeded(uploadWithKmsKeyResponse);
+            var objectMetadata = Run("get-metadata", _bucketName1, "Hello.txt");
+            Assert.Contains(_kmsKeyName, objectMetadata.Stdout);
         }
 
         [Fact]

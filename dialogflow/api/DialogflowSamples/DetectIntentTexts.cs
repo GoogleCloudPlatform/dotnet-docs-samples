@@ -67,7 +67,10 @@ namespace GoogleCloudSamples
                 var queryResult = response.QueryResult;
 
                 Console.WriteLine($"Query text: {queryResult.QueryText}");
-                Console.WriteLine($"Intent detected: {queryResult.Intent.DisplayName}");
+                if (queryResult.Intent != null)
+                {
+                    Console.WriteLine($"Intent detected: {queryResult.Intent.DisplayName}");
+                }
                 Console.WriteLine($"Intent confidence: {queryResult.IntentDetectionConfidence}");
                 Console.WriteLine($"Fulfillment text: {queryResult.FulfillmentText}");
                 Console.WriteLine();
