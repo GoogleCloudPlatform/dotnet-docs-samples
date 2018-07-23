@@ -48,6 +48,7 @@ cloudtrace.googleapis.com
 compute.googleapis.com
 datastore.googleapis.com
 dlp.googleapis.com
+iam.googleapis.com
 jobs.googleapis.com
 language.googleapis.com
 logging.googleapis.com
@@ -79,6 +80,9 @@ roles/dlp.admin
 roles/dlp.user
 roles/errorreporting.admin
 roles/errorreporting.user
+roles/iam.securityReviewer
+roles/iam.serviceAccountAdmin
+roles/iam.serviceAccountKeyAdmin
 roles/iap.httpsResourceAccessor
 roles/logging.admin
 roles/logging.logWriter
