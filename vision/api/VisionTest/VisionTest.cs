@@ -93,7 +93,7 @@ namespace GoogleCloudSamples
             _bucketCollector.CopyToBucket(localPath, _pdfFileName);
         }
 
-        [Fact]
+        [Fact(Skip = "Test hangs")]
         public void TestDetectPdfDocument()
         {
             var outputPrefix = "outputJsonFilePrefix";
