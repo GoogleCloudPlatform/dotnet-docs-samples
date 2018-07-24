@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<parameters>
+  <parameter name="SQLProfileConnString"
+             description="The connection string to the SQL Server database"
+             tags="SqlConnectionString"
+             defaultValue="Data Source=10.138.0.3;Initial Catalog=MSPetShop4Profile;Persist Security Info=True;User ID=petshop;Password=ThisIsPetshop">
+    <parameterEntry kind="XmlFile"
+                    scope="\\web\.config$"
+                    match="/configuration/connectionStrings/add[@name='SQLProfileConnString']/@connectionString" tags="SqlConnectionString"/>
+  </parameter>
+</parameters>
