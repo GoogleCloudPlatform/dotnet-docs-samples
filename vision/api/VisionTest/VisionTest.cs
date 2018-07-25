@@ -79,8 +79,19 @@ namespace GoogleCloudSamples
     /// These require uploading a .pdf to Google Cloud Storage
     /// and then API results are saved to Google Cloud Storage
     /// </summary>
-    public class PdfDocumentTests : LocalTests, IClassFixture<RandomBucketFixture>
+    public class PdfDocumentTests : IClassFixture<RandomBucketFixture>
     {
+        readonly CommandLineRunner _detect = new CommandLineRunner()
+        {
+            VoidMain = DetectProgram.Main,
+            Command = "Detect"
+        };
+
+        private ConsoleOutput Run(params string[] args)
+        {
+            return _detect.Run(args);
+        }
+
         readonly string _bucketName;
         readonly BucketCollector _bucketCollector;
         readonly string _pdfFileName = "HodgeConj.pdf";
@@ -89,18 +100,26 @@ namespace GoogleCloudSamples
         {
             _bucketName = bucketFixture.BucketName;
             _bucketCollector = new BucketCollector(_bucketName);
-            var localPath = Path.Combine("data", _pdfFileName);
-            _bucketCollector.CopyToBucket(localPath, _pdfFileName);
         }
 
-        [Fact(Skip = "Test hangs")]
+        string Upload(string localPath)
+        {
+            string objectName = Path.GetFileName(localPath);
+            string gsPath = $"gs://{_bucketName}/{objectName}";
+            _bucketCollector.CopyToBucket(localPath, objectName);
+            return gsPath;
+        }
+
+        [Fact]
         public void TestDetectPdfDocument()
         {
-            var outputPrefix = "outputJsonFilePrefix";
-            var gcsSourceURI = $"gs://{_bucketName}/{_pdfFileName}";
+            var outputPrefix = "";
+            var localPath = Path.Combine("data", _pdfFileName);
+            var gcsSourceURI = Upload(localPath);
             var output = Run("ocr", gcsSourceURI, _bucketName, outputPrefix);
 
             var storageClient = StorageClient.Create();
+
             var bucket = storageClient.GetBucket(_bucketName);
             var blobList = storageClient.ListObjects(_bucketName, outputPrefix);
             Assert.Equal(0, output.ExitCode);
