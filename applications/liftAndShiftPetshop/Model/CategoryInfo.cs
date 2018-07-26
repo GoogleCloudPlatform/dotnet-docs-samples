@@ -1,17 +1,17 @@
 using System;
 
-namespace PetShop.Model {
-
+namespace PetShop.Model
+{
     /// <summary>
     /// Business entity used to model a product
     /// </summary>
     [Serializable]
-    public class CategoryInfo {
-
+    public class CategoryInfo
+    {
         // Internal member variables
-        private string id;
-        private string name;
-        private string description;
+        private readonly string _id;
+        private readonly string _name;
+        private readonly string _description;
 
         /// <summary>
         /// Default constructor
@@ -24,24 +24,27 @@ namespace PetShop.Model {
         /// <param name="id">Category Id</param>
         /// <param name="name">Category Name</param>
         /// <param name="description">Category Description</param>
-        public CategoryInfo(string id, string name, string description) {
-            this.id = id;
-            this.name = name;
-            this.description = description;
+        public CategoryInfo(string id, string name, string description)
+        {
+            _id = id;
+            _name = name;
+            _description = description;
         }
 
         // Properties
-        public string Id {
-            get { return id; }
+        public string Id
+        {
+            get { return _id; }
         }
 
-        public string Name {
-            get { return name; }
+        public string Name
+        {
+            get { return _name; }
         }
 
-        public string Description {
-            get { return description; }
+        public string Description
+        {
+            get { return _description; }
         }
-
     }
 }

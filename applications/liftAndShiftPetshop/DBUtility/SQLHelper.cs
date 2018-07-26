@@ -10,22 +10,22 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Collections;
 
-namespace PetShop.DBUtility {
-
+namespace PetShop.DBUtility
+{
     /// <summary>
     /// The SqlHelper class is intended to encapsulate high performance, 
     /// scalable best practices for common uses of SqlClient.
     /// </summary>
-    public abstract class SqlHelper {
-
+    public abstract class SqlHelper
+    {
         //Database connection strings
         public static readonly string ConnectionStringLocalTransaction = ConfigurationManager.ConnectionStrings["SQLConnString1"].ConnectionString;
         public static readonly string ConnectionStringInventoryDistributedTransaction = ConfigurationManager.ConnectionStrings["SQLConnString2"].ConnectionString;
         public static readonly string ConnectionStringOrderDistributedTransaction = ConfigurationManager.ConnectionStrings["SQLConnString3"].ConnectionString;
-		public static readonly string ConnectionStringProfile = ConfigurationManager.ConnectionStrings["SQLProfileConnString"].ConnectionString;		
-		
+        public static readonly string ConnectionStringProfile = ConfigurationManager.ConnectionStrings["SQLProfileConnString"].ConnectionString;
+
         // Hashtable to store cached parameters
-        private static Hashtable parmCache = Hashtable.Synchronized(new Hashtable());
+        private static readonly Hashtable s_parmCache = Hashtable.Synchronized(new Hashtable());
 
         /// <summary>
         /// Execute a SqlCommand (that returns no resultset) against the database specified in the connection string 
@@ -40,11 +40,12 @@ namespace PetShop.DBUtility {
         /// <param name="commandText">the stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">an array of SqlParamters used to execute the command</param>
         /// <returns>an int representing the number of rows affected by the command</returns>
-        public static int ExecuteNonQuery(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters) {
-
+        public static int ExecuteNonQuery(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
             SqlCommand cmd = new SqlCommand();
 
-            using (SqlConnection conn = new SqlConnection(connectionString)) {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
                 PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
                 int val = cmd.ExecuteNonQuery();
                 cmd.Parameters.Clear();
@@ -65,8 +66,8 @@ namespace PetShop.DBUtility {
         /// <param name="commandText">the stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">an array of SqlParamters used to execute the command</param>
         /// <returns>an int representing the number of rows affected by the command</returns>
-        public static int ExecuteNonQuery(SqlConnection connection, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters) {
-
+        public static int ExecuteNonQuery(SqlConnection connection, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
             SqlCommand cmd = new SqlCommand();
 
             PrepareCommand(cmd, connection, null, cmdType, cmdText, commandParameters);
@@ -88,7 +89,8 @@ namespace PetShop.DBUtility {
         /// <param name="commandText">the stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">an array of SqlParamters used to execute the command</param>
         /// <returns>an int representing the number of rows affected by the command</returns>
-        public static int ExecuteNonQuery(SqlTransaction trans, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters) {
+        public static int ExecuteNonQuery(SqlTransaction trans, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
             SqlCommand cmd = new SqlCommand();
             PrepareCommand(cmd, trans.Connection, trans, cmdType, cmdText, commandParameters);
             int val = cmd.ExecuteNonQuery();
@@ -109,20 +111,23 @@ namespace PetShop.DBUtility {
         /// <param name="commandText">the stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">an array of SqlParamters used to execute the command</param>
         /// <returns>A SqlDataReader containing the results</returns>
-        public static SqlDataReader ExecuteReader(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters) {
+        public static SqlDataReader ExecuteReader(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
             SqlCommand cmd = new SqlCommand();
             SqlConnection conn = new SqlConnection(connectionString);
 
             // we use a try/catch here because if the method throws an exception we want to 
             // close the connection throw code, because no datareader will exist, hence the 
             // commandBehaviour.CloseConnection will not work
-            try {
+            try
+            {
                 PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
                 SqlDataReader rdr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
                 cmd.Parameters.Clear();
                 return rdr;
             }
-            catch {
+            catch
+            {
                 conn.Close();
                 throw;
             }
@@ -141,10 +146,12 @@ namespace PetShop.DBUtility {
         /// <param name="commandText">the stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">an array of SqlParamters used to execute the command</param>
         /// <returns>An object that should be converted to the expected type using Convert.To{Type}</returns>
-        public static object ExecuteScalar(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters) {
+        public static object ExecuteScalar(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
             SqlCommand cmd = new SqlCommand();
 
-            using (SqlConnection connection = new SqlConnection(connectionString)) {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
                 PrepareCommand(cmd, connection, null, cmdType, cmdText, commandParameters);
                 object val = cmd.ExecuteScalar();
                 cmd.Parameters.Clear();
@@ -165,8 +172,8 @@ namespace PetShop.DBUtility {
         /// <param name="commandText">the stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">an array of SqlParamters used to execute the command</param>
         /// <returns>An object that should be converted to the expected type using Convert.To{Type}</returns>
-        public static object ExecuteScalar(SqlConnection connection, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters) {
-
+        public static object ExecuteScalar(SqlConnection connection, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
             SqlCommand cmd = new SqlCommand();
 
             PrepareCommand(cmd, connection, null, cmdType, cmdText, commandParameters);
@@ -180,8 +187,9 @@ namespace PetShop.DBUtility {
         /// </summary>
         /// <param name="cacheKey">Key to the parameter cache</param>
         /// <param name="cmdParms">an array of SqlParamters to be cached</param>
-        public static void CacheParameters(string cacheKey, params SqlParameter[] commandParameters) {
-            parmCache[cacheKey] = commandParameters;
+        public static void CacheParameters(string cacheKey, params SqlParameter[] commandParameters)
+        {
+            s_parmCache[cacheKey] = commandParameters;
         }
 
         /// <summary>
@@ -189,8 +197,9 @@ namespace PetShop.DBUtility {
         /// </summary>
         /// <param name="cacheKey">key used to lookup parameters</param>
         /// <returns>Cached SqlParamters array</returns>
-        public static SqlParameter[] GetCachedParameters(string cacheKey) {
-            SqlParameter[] cachedParms = (SqlParameter[])parmCache[cacheKey];
+        public static SqlParameter[] GetCachedParameters(string cacheKey)
+        {
+            SqlParameter[] cachedParms = (SqlParameter[])s_parmCache[cacheKey];
 
             if (cachedParms == null)
                 return null;
@@ -212,8 +221,8 @@ namespace PetShop.DBUtility {
         /// <param name="cmdType">Cmd type e.g. stored procedure or text</param>
         /// <param name="cmdText">Command text, e.g. Select * from Products</param>
         /// <param name="cmdParms">SqlParameters to use in the command</param>
-        private static void PrepareCommand(SqlCommand cmd, SqlConnection conn, SqlTransaction trans, CommandType cmdType, string cmdText, SqlParameter[] cmdParms) {
-
+        private static void PrepareCommand(SqlCommand cmd, SqlConnection conn, SqlTransaction trans, CommandType cmdType, string cmdText, SqlParameter[] cmdParms)
+        {
             if (conn.State != ConnectionState.Open)
                 conn.Open();
 
@@ -225,7 +234,8 @@ namespace PetShop.DBUtility {
 
             cmd.CommandType = cmdType;
 
-            if (cmdParms != null) {
+            if (cmdParms != null)
+            {
                 foreach (SqlParameter parm in cmdParms)
                     cmd.Parameters.Add(parm);
             }

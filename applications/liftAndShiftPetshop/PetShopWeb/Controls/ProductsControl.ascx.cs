@@ -4,14 +4,15 @@ using System.Web.UI.WebControls;
 using PetShop.BLL;
 using PetShop.CacheDependencyFactory;
 
-namespace PetShop.Web {
-
-    public partial class ProductsControl : System.Web.UI.UserControl {
-
+namespace PetShop.Web
+{
+    public partial class ProductsControl : System.Web.UI.UserControl
+    {
         /// <summary>
         /// Rebind control 
         /// </summary>
-        protected void PageChanged(object sender, DataGridPageChangedEventArgs e) {
+        protected void PageChanged(object sender, DataGridPageChangedEventArgs e)
+        {
             //reset index
             productsList.CurrentPageIndex = e.NewPageIndex;
 
@@ -22,13 +23,13 @@ namespace PetShop.Web {
             Product product = new Product();
             productsList.DataSource = product.GetProductsByCategory(categoryKey);
             productsList.DataBind();
-
         }
 
         /// <summary>
         /// Add cache dependency
         /// </summary>
-        protected void Page_Load(object sender, EventArgs e) {
+        protected void Page_Load(object sender, EventArgs e)
+        {
             this.CachePolicy.Dependency = DependencyFacade.GetProductDependency();
         }
     }

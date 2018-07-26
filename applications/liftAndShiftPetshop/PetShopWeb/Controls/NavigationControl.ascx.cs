@@ -3,26 +3,30 @@ using System.Web.UI.WebControls;
 using PetShop.BLL;
 using PetShop.CacheDependencyFactory;
 
-namespace PetShop.Web {
-    public partial class NavigationControl : System.Web.UI.UserControl {
-               
-        private string controlStyle;
+namespace PetShop.Web
+{
+    public partial class NavigationControl : System.Web.UI.UserControl
+    {
+        private string _controlStyle;
 
         // control layout property
-        protected string ControlStyle {
-            get { return controlStyle; }
+        protected string ControlStyle
+        {
+            get { return _controlStyle; }
         }
-	
-        // Get properties based on control consumer
-        protected void GetControlStyle() {
-            if (Request.ServerVariables["SCRIPT_NAME"].ToLower().IndexOf("default.aspx") > 0)
-                controlStyle = "navigationLinks";
-            else
-                controlStyle = "mainNavigation";
-        }
-       
 
-        protected void Page_Load(object sender, EventArgs e) {
+        // Get properties based on control consumer
+        protected void GetControlStyle()
+        {
+            if (Request.ServerVariables["SCRIPT_NAME"].ToLower().IndexOf("default.aspx") > 0)
+                _controlStyle = "navigationLinks";
+            else
+                _controlStyle = "mainNavigation";
+        }
+
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
             GetControlStyle();
             BindCategories();
 
@@ -36,10 +40,13 @@ namespace PetShop.Web {
         }
 
         // Select current category.
-        private void SelectCategory(string categoryId) {
-            foreach (RepeaterItem item in repCategories.Items) {
+        private void SelectCategory(string categoryId)
+        {
+            foreach (RepeaterItem item in repCategories.Items)
+            {
                 HiddenField hidCategoryId = (HiddenField)item.FindControl("hidCategoryId");
-                if(hidCategoryId.Value.ToLower() == categoryId.ToLower()) {
+                if (hidCategoryId.Value.ToLower() == categoryId.ToLower())
+                {
                     HyperLink lnkCategory = (HyperLink)item.FindControl("lnkCategory");
                     lnkCategory.ForeColor = System.Drawing.Color.FromArgb(199, 116, 3);
                     break;
@@ -48,10 +55,11 @@ namespace PetShop.Web {
         }
 
         // Bind categories
-        private void BindCategories() {
+        private void BindCategories()
+        {
             Category category = new Category();
             repCategories.DataSource = category.GetCategories();
-            repCategories.DataBind();            
+            repCategories.DataBind();
         }
     }
 }

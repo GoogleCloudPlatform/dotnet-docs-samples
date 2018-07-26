@@ -1,17 +1,17 @@
 using System;
 
-namespace PetShop.Model {
-
+namespace PetShop.Model
+{
     /// <summary>
     /// Business entity used to model credit card information.
     /// </summary>
     [Serializable]
-    public class CreditCardInfo {
-
+    public class CreditCardInfo
+    {
         // Internal member variables
-        private string cardType;
-        private string cardNumber;
-        private string cardExpiration;
+        private string _cardType;
+        private string _cardNumber;
+        private string _cardExpiration;
 
         /// <summary>
         /// Default constructor
@@ -24,26 +24,30 @@ namespace PetShop.Model {
         /// <param name="cardType">Card type, e.g. Visa, Master Card, American Express</param>
         /// <param name="cardNumber">Number on the card</param>
         /// <param name="cardExpiration">Expiry Date, form  MM/YY</param>
-        public CreditCardInfo(string cardType, string cardNumber, string cardExpiration) {
-            this.cardType = cardType;
-            this.cardNumber = cardNumber;
-            this.cardExpiration = cardExpiration;
+        public CreditCardInfo(string cardType, string cardNumber, string cardExpiration)
+        {
+            _cardType = cardType;
+            _cardNumber = cardNumber;
+            _cardExpiration = cardExpiration;
         }
 
         // Properties
-        public string CardType {
-            get { return cardType; }
-            set { cardType = value; }
+        public string CardType
+        {
+            get { return _cardType; }
+            set { _cardType = value; }
         }
 
-        public string CardNumber {
-            get { return cardNumber; }
-            set { cardNumber = value; }
+        public string CardNumber
+        {
+            get { return _cardNumber; }
+            set { _cardNumber = value; }
         }
 
-        public string CardExpiration {
-            get { return cardExpiration; }
-            set { cardExpiration = value; }
+        public string CardExpiration
+        {
+            get { return _cardExpiration; }
+            set { _cardExpiration = value; }
         }
     }
 }

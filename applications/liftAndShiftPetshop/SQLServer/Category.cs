@@ -6,10 +6,10 @@ using PetShop.IDAL;
 using System.Collections.Generic;
 using PetShop.DBUtility;
 
-namespace PetShop.SQLServerDAL {
-
-    public class Category : ICategory {
-
+namespace PetShop.SQLServerDAL
+{
+    public class Category : ICategory
+    {
         // Static constants
         private const string SQL_SELECT_CATEGORIES = "SELECT CategoryId, Name, Descn FROM Category";
         private const string SQL_SELECT_CATEGORY = "SELECT CategoryId, Name, Descn FROM Category WHERE CategoryId = @CategoryId";
@@ -19,17 +19,19 @@ namespace PetShop.SQLServerDAL {
         /// <summary>
         /// Method to get all categories
 		/// </summary>	    	 
-        public IList<CategoryInfo> GetCategories() {
-
-			IList<CategoryInfo> categories = new List<CategoryInfo>();
+        public IList<CategoryInfo> GetCategories()
+        {
+            IList<CategoryInfo> categories = new List<CategoryInfo>();
 
             //Execute a query to read the categories
-			using(SqlDataReader rdr = SqlHelper.ExecuteReader(SqlHelper.ConnectionStringLocalTransaction, CommandType.Text, SQL_SELECT_CATEGORIES, null)) {
-                while (rdr.Read()) {
+            using (SqlDataReader rdr = SqlHelper.ExecuteReader(SqlHelper.ConnectionStringLocalTransaction, CommandType.Text, SQL_SELECT_CATEGORIES, null))
+            {
+                while (rdr.Read())
+                {
                     CategoryInfo cat = new CategoryInfo(rdr.GetString(0), rdr.GetString(1), rdr.GetString(2));
                     categories.Add(cat);
                 }
-            }  
+            }
             return categories;
         }
 
@@ -38,8 +40,8 @@ namespace PetShop.SQLServerDAL {
         /// </summary>
         /// <param name="categoryId">Category id</param>
         /// <returns>Details about the Category</returns>
-        public CategoryInfo GetCategory(string categoryId) {
-
+        public CategoryInfo GetCategory(string categoryId)
+        {
             //Set up a return value
             CategoryInfo category = null;
 
@@ -49,7 +51,8 @@ namespace PetShop.SQLServerDAL {
             parm.Value = categoryId;
 
             //Execute the query	
-            using (SqlDataReader rdr = SqlHelper.ExecuteReader(SqlHelper.ConnectionStringLocalTransaction, CommandType.Text, SQL_SELECT_CATEGORY, parm)) {
+            using (SqlDataReader rdr = SqlHelper.ExecuteReader(SqlHelper.ConnectionStringLocalTransaction, CommandType.Text, SQL_SELECT_CATEGORY, parm))
+            {
                 if (rdr.Read())
 
                     category = new CategoryInfo(rdr.GetString(0), rdr.GetString(1), rdr.GetString(2));
@@ -64,8 +67,9 @@ namespace PetShop.SQLServerDAL {
         /// </summary>
         /// <param name="id">Category id</param>
         /// <returns>Sql Command object used to retrieve the data</returns>
-        public static SqlCommand GetCommand() {
-            return new SqlCommand(SQL_SELECT_CATEGORIES);               
+        public static SqlCommand GetCommand()
+        {
+            return new SqlCommand(SQL_SELECT_CATEGORIES);
         }
     }
 }

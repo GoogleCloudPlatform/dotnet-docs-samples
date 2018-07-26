@@ -1,18 +1,20 @@
 using System;
 using System.Messaging;
 
-namespace PetShop.MSMQMessaging {
+namespace PetShop.MSMQMessaging
+{
     /// <summary>
     /// This could be a base class for all PetShop MSMQ messaging implementation as 
     /// it provides a basic implementation for sending and receving messages to and from transactional queue
     /// </summary>
-    public class PetShopQueue : IDisposable {
-
+    public class PetShopQueue : IDisposable
+    {
         protected MessageQueueTransactionType transactionType = MessageQueueTransactionType.Automatic;
         protected MessageQueue queue;
         protected TimeSpan timeout;
 
-        public PetShopQueue(string queuePath, int timeoutSeconds) {
+        public PetShopQueue(string queuePath, int timeoutSeconds)
+        {
             queue = new MessageQueue(queuePath);
             timeout = TimeSpan.FromSeconds(Convert.ToDouble(timeoutSeconds));
 
@@ -28,12 +30,15 @@ namespace PetShop.MSMQMessaging {
         /// Derived classes call this from their own Receive methods but cast
         /// the return value to something meaningful.
         /// </summary>
-        public virtual object Receive() {
-            try {
+        public virtual object Receive()
+        {
+            try
+            {
                 using (Message message = queue.Receive(timeout, transactionType))
                     return message;
             }
-            catch (MessageQueueException mqex) {
+            catch (MessageQueueException mqex)
+            {
                 if (mqex.MessageQueueErrorCode == MessageQueueErrorCode.IOTimeout)
                     throw new TimeoutException();
 
@@ -45,12 +50,14 @@ namespace PetShop.MSMQMessaging {
         /// Derived classes may call this from their own Send methods that
         /// accept meaningful objects.
         /// </summary>
-        public virtual void Send(object msg) {
+        public virtual void Send(object msg)
+        {
             queue.Send(msg, transactionType);
         }
 
         #region IDisposable Members
-        public void Dispose() {
+        public void Dispose()
+        {
             queue.Dispose();
         }
         #endregion

@@ -2,13 +2,16 @@ using System.Reflection;
 using System.Configuration;
 using PetShop.ICacheDependency;
 
-namespace PetShop.CacheDependencyFactory {
-    public static class DependencyAccess {
+namespace PetShop.CacheDependencyFactory
+{
+    public static class DependencyAccess
+    {
         /// <summary>
         /// Method to create an instance of Category dependency implementation
         /// </summary>
         /// <returns>Category Dependency Implementation</returns>
-        public static IPetShopCacheDependency CreateCategoryDependency() {
+        public static IPetShopCacheDependency CreateCategoryDependency()
+        {
             return LoadInstance("Category");
         }
 
@@ -16,7 +19,8 @@ namespace PetShop.CacheDependencyFactory {
         /// Method to create an instance of Product dependency implementation
         /// </summary>
         /// <returns>Product Dependency Implementation</returns>
-        public static IPetShopCacheDependency CreateProductDependency() {
+        public static IPetShopCacheDependency CreateProductDependency()
+        {
             return LoadInstance("Product");
         }
 
@@ -24,7 +28,8 @@ namespace PetShop.CacheDependencyFactory {
         /// Method to create an instance of Item dependency implementation
         /// </summary>
         /// <returns>Item Dependency Implementation</returns>
-        public static IPetShopCacheDependency CreateItemDependency() {
+        public static IPetShopCacheDependency CreateItemDependency()
+        {
             return LoadInstance("Item");
         }
 
@@ -33,8 +38,8 @@ namespace PetShop.CacheDependencyFactory {
         /// </summary>
         /// <param name="className">Type of dependency</param>
         /// <returns>Concrete Dependency Implementation instance</returns>
-        private static IPetShopCacheDependency LoadInstance(string className) {
-
+        private static IPetShopCacheDependency LoadInstance(string className)
+        {
             string path = ConfigurationManager.AppSettings["CacheDependencyAssembly"];
             string fullyQualifiedClass = path + "." + className;
 

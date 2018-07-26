@@ -1,12 +1,13 @@
 using System.Web.Caching;
 
-namespace PetShop.ICacheDependency {
+namespace PetShop.ICacheDependency
+{
     /// <summary>
     /// This is the interface that the DependencyFactory (Factory Pattern) returns.
     /// Developers could implement this interface to add different types of Cache Dependency to Pet Shop.
     /// </summary>
-    public interface IPetShopCacheDependency {
-
+    public interface IPetShopCacheDependency
+    {
         /// <summary>
         /// Method to create the appropriate implementation of Cache Dependency
         /// </summary>

@@ -10,54 +10,58 @@ using PetShop.BLL;
 using PetShop.ProfileDALFactory;
 using PetShop.IProfileDAL;
 
-namespace PetShop.Profile {
-    public sealed class PetShopProfileProvider : ProfileProvider {
-
+namespace PetShop.Profile
+{
+    public sealed class PetShopProfileProvider : ProfileProvider
+    {
         // Get an instance of the Profile DAL using the ProfileDALFactory
-        private static readonly IPetShopProfileProvider dal = DataAccess.CreatePetShopProfileProvider();
+        private static readonly IPetShopProfileProvider s_dal = DataAccess.CreatePetShopProfileProvider();
 
         // Private members
         private const string ERR_INVALID_PARAMETER = "Invalid Profile parameter:";
         private const string PROFILE_SHOPPINGCART = "ShoppingCart";
         private const string PROFILE_WISHLIST = "WishList";
         private const string PROFILE_ACCOUNT = "AccountInfo";
-        private static string applicationName = ".NET Pet Shop 4.0"; 
+        private static string s_applicationName = ".NET Pet Shop 4.0";
 
         /// <summary>
         /// The name of the application using the custom profile provider.
         /// </summary>
-        public override string ApplicationName {
-            get {
-                return applicationName;
+        public override string ApplicationName
+        {
+            get
+            {
+                return s_applicationName;
             }
-            set {
-                applicationName = value;
+            set
+            {
+                s_applicationName = value;
             }
         }
-        
+
         /// <summary>
         /// Initializes the provider.
         /// </summary>
         /// <param name="name">The friendly name of the provider.</param>
         /// <param name="config">A collection of the name/value pairs representing the provider-specific attributes specified in the configuration for this provider.</param>
-        public override void Initialize(string name, NameValueCollection config) {
+        public override void Initialize(string name, NameValueCollection config)
+        {
+            if (config == null)
+                throw new ArgumentNullException("config");
 
-            if(config == null)
-                throw new ArgumentNullException("config"); 
-  
-            if(string.IsNullOrEmpty(config["description"])) {
+            if (string.IsNullOrEmpty(config["description"]))
+            {
                 config.Remove("description");
                 config.Add("description", "Pet Shop Custom Profile Provider");
             }
 
-            if(string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
                 name = "PetShopProfileProvider";
-                                                                            
-            if(config["applicationName"] != null && !string.IsNullOrEmpty(config["applicationName"].Trim()))					
-                applicationName = config["applicationName"];	 
+
+            if (config["applicationName"] != null && !string.IsNullOrEmpty(config["applicationName"].Trim()))
+                s_applicationName = config["applicationName"];
 
             base.Initialize(name, config);
-
         }
 
         /// <summary>
@@ -66,17 +70,19 @@ namespace PetShop.Profile {
         /// <param name="context">A System.Configuration.SettingsContext describing the current application use.</param>
         /// <param name="collection">A System.Configuration.SettingsPropertyCollection containing the settings property group whose values are to be retrieved.</param>
         /// <returns>A System.Configuration.SettingsPropertyValueCollection containing the values for the specified settings property group.</returns>
-        public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection) {
-
+        public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
+        {
             string username = (string)context["UserName"];
             bool isAuthenticated = (bool)context["IsAuthenticated"];
 
             SettingsPropertyValueCollection svc = new SettingsPropertyValueCollection();
 
-            foreach(SettingsProperty prop in collection) {
+            foreach (SettingsProperty prop in collection)
+            {
                 SettingsPropertyValue pv = new SettingsPropertyValue(prop);
 
-                switch(pv.Property.Name) {
+                switch (pv.Property.Name)
+                {
                     case PROFILE_SHOPPINGCART:
                         pv.PropertyValue = GetCartItems(username, true);
                         break;
@@ -84,7 +90,7 @@ namespace PetShop.Profile {
                         pv.PropertyValue = GetCartItems(username, false);
                         break;
                     case PROFILE_ACCOUNT:
-                        if(isAuthenticated)
+                        if (isAuthenticated)
                             pv.PropertyValue = GetAccountInfo(username);
                         break;
                     default:
@@ -101,19 +107,21 @@ namespace PetShop.Profile {
         /// </summary>
         /// <param name="context">A System.Configuration.SettingsContext describing the current application usage.</param>
         /// <param name="collection">A System.Configuration.SettingsPropertyValueCollection representing the group of property settings to set.</param>
-        public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection collection) {
-
+        public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection collection)
+        {
             string username = (string)context["UserName"];
-            CheckUserName(username);					  
+            CheckUserName(username);
             bool isAuthenticated = (bool)context["IsAuthenticated"];
-            int uniqueID = dal.GetUniqueID(username, isAuthenticated, false, ApplicationName);
-            if(uniqueID == 0)
-                uniqueID = dal.CreateProfileForUser(username, isAuthenticated, ApplicationName);
+            int uniqueID = s_dal.GetUniqueID(username, isAuthenticated, false, ApplicationName);
+            if (uniqueID == 0)
+                uniqueID = s_dal.CreateProfileForUser(username, isAuthenticated, ApplicationName);
 
-            foreach(SettingsPropertyValue pv in collection) {
-
-                if(pv.PropertyValue != null) {
-                    switch(pv.Property.Name) {
+            foreach (SettingsPropertyValue pv in collection)
+            {
+                if (pv.PropertyValue != null)
+                {
+                    switch (pv.Property.Name)
+                    {
                         case PROFILE_SHOPPINGCART:
                             SetCartItems(uniqueID, (Cart)pv.PropertyValue, true);
                             break;
@@ -121,7 +129,7 @@ namespace PetShop.Profile {
                             SetCartItems(uniqueID, (Cart)pv.PropertyValue, false);
                             break;
                         case PROFILE_ACCOUNT:
-                            if(isAuthenticated)
+                            if (isAuthenticated)
                                 SetAccountInfo(uniqueID, (AddressInfo)pv.PropertyValue);
                             break;
                         default:
@@ -135,26 +143,31 @@ namespace PetShop.Profile {
 
         // Profile gettters
         // Retrieve account info
-        private static AddressInfo GetAccountInfo(string username) {
-            return dal.GetAccountInfo(username, applicationName); 			
+        private static AddressInfo GetAccountInfo(string username)
+        {
+            return s_dal.GetAccountInfo(username, s_applicationName);
         }
         // Retrieve cart 
-        private static Cart GetCartItems(string username, bool isShoppingCart) {
+        private static Cart GetCartItems(string username, bool isShoppingCart)
+        {
             Cart cart = new Cart();
-            foreach(CartItemInfo cartItem in dal.GetCartItems(username, applicationName, isShoppingCart)) {
+            foreach (CartItemInfo cartItem in s_dal.GetCartItems(username, s_applicationName, isShoppingCart))
+            {
                 cart.Add(cartItem);
-            }  
+            }
             return cart;
         }
 
         // Profile setters
         // Update account info
-        private static void SetAccountInfo(int uniqueID, AddressInfo addressInfo) {
-            dal.SetAccountInfo(uniqueID, addressInfo);	
+        private static void SetAccountInfo(int uniqueID, AddressInfo addressInfo)
+        {
+            s_dal.SetAccountInfo(uniqueID, addressInfo);
         }
         // Update cart
-        private static void SetCartItems(int uniqueID, Cart cart, bool isShoppingCart) {
-            dal.SetCartItems(uniqueID, cart.CartItems, isShoppingCart);
+        private static void SetCartItems(int uniqueID, Cart cart, bool isShoppingCart)
+        {
+            s_dal.SetCartItems(uniqueID, cart.CartItems, isShoppingCart);
         }
 
 
@@ -164,21 +177,22 @@ namespace PetShop.Profile {
         // GetPropertyValues and SetPropertyValues methods. 
         // Passing true as the activityOnly parameter will update
         // only the LastActivityDate.
-        private static void UpdateActivityDates(string username, bool activityOnly) {
-            dal.UpdateActivityDates(username, activityOnly, applicationName);
+        private static void UpdateActivityDates(string username, bool activityOnly)
+        {
+            s_dal.UpdateActivityDates(username, activityOnly, s_applicationName);
         }
-        
+
         /// <summary>
         /// Deletes profile properties and information for the supplied list of profiles.
         /// </summary>
         /// <param name="profiles">A System.Web.Profile.ProfileInfoCollection of information about profiles that are to be deleted.</param>
         /// <returns>The number of profiles deleted from the data source.</returns>
-        public override int DeleteProfiles(ProfileInfoCollection profiles) {
-
+        public override int DeleteProfiles(ProfileInfoCollection profiles)
+        {
             int deleteCount = 0;
 
-            foreach(ProfileInfo p in profiles)
-                if(DeleteProfile(p.UserName))
+            foreach (ProfileInfo p in profiles)
+                if (DeleteProfile(p.UserName))
                     deleteCount++;
 
             return deleteCount;
@@ -189,12 +203,12 @@ namespace PetShop.Profile {
         /// </summary>
         /// <param name="usernames">A string array of user names for profiles to be deleted.</param>
         /// <returns>The number of profiles deleted from the data source.</returns>
-        public override int DeleteProfiles(string[] usernames) {
-
+        public override int DeleteProfiles(string[] usernames)
+        {
             int deleteCount = 0;
 
-            foreach(string user in usernames)
-                if(DeleteProfile(user))
+            foreach (string user in usernames)
+                if (DeleteProfile(user))
                     deleteCount++;
 
             return deleteCount;
@@ -202,14 +216,16 @@ namespace PetShop.Profile {
 
         // DeleteProfile
         // Deletes profile data from the database for the specified user name.
-        private static bool DeleteProfile(string username) {
+        private static bool DeleteProfile(string username)
+        {
             CheckUserName(username);
-            return dal.DeleteProfile(username, applicationName);			
+            return s_dal.DeleteProfile(username, s_applicationName);
         }
 
         // Verifies user name for sise and comma
-        private static void CheckUserName(string userName) {
-            if(string.IsNullOrEmpty(userName) || userName.Length > 256 || userName.IndexOf(",") > 0)
+        private static void CheckUserName(string userName)
+        {
+            if (string.IsNullOrEmpty(userName) || userName.Length > 256 || userName.IndexOf(",") > 0)
                 throw new ApplicationException(ERR_INVALID_PARAMETER + " user name.");
         }
 
@@ -219,10 +235,10 @@ namespace PetShop.Profile {
         /// <param name="authenticationOption">One of the System.Web.Profile.ProfileAuthenticationOption values, specifying whether anonymous, authenticated, or both types of profiles are deleted.</param>
         /// <param name="userInactiveSinceDate">A System.DateTime that identifies which user profiles are considered inactive. If the System.Web.Profile.ProfileInfo.LastActivityDate value of a user profile occurs on or before this date and time, the profile is considered inactive.</param>
         /// <returns>The number of profiles deleted from the data source.</returns>
-        public override int DeleteInactiveProfiles(ProfileAuthenticationOption authenticationOption, DateTime userInactiveSinceDate) {
-
+        public override int DeleteInactiveProfiles(ProfileAuthenticationOption authenticationOption, DateTime userInactiveSinceDate)
+        {
             string[] userArray = new string[0];
-            dal.GetInactiveProfiles((int)authenticationOption, userInactiveSinceDate, ApplicationName).CopyTo(userArray, 0);
+            s_dal.GetInactiveProfiles((int)authenticationOption, userInactiveSinceDate, ApplicationName).CopyTo(userArray, 0);
 
             return DeleteProfiles(userArray);
         }
@@ -237,8 +253,8 @@ namespace PetShop.Profile {
         /// <param name="totalRecords">When this method returns, contains the total number of profiles.</param>
         /// <returns>A System.Web.Profile.ProfileInfoCollection containing user-profile information
         //     for profiles where the user name matches the supplied usernameToMatch parameter.</returns>
-        public override ProfileInfoCollection FindProfilesByUserName(ProfileAuthenticationOption authenticationOption, string usernameToMatch, int pageIndex, int pageSize, out int totalRecords) {
-
+        public override ProfileInfoCollection FindProfilesByUserName(ProfileAuthenticationOption authenticationOption, string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
+        {
             CheckParameters(pageIndex, pageSize);
 
             return GetProfileInfo(authenticationOption, usernameToMatch, null, pageIndex, pageSize, out totalRecords);
@@ -254,13 +270,13 @@ namespace PetShop.Profile {
         /// <param name="pageSize">The size of the page of results to return.</param>
         /// <param name="totalRecords">When this method returns, contains the total number of profiles.</param>
         /// <returns>A System.Web.Profile.ProfileInfoCollection containing user profile information for inactive profiles where the user name matches the supplied usernameToMatch parameter.</returns>	
-        public override ProfileInfoCollection FindInactiveProfilesByUserName(ProfileAuthenticationOption authenticationOption, string usernameToMatch, DateTime userInactiveSinceDate, int pageIndex, int pageSize, out int totalRecords) {
-
+        public override ProfileInfoCollection FindInactiveProfilesByUserName(ProfileAuthenticationOption authenticationOption, string usernameToMatch, DateTime userInactiveSinceDate, int pageIndex, int pageSize, out int totalRecords)
+        {
             CheckParameters(pageIndex, pageSize);
 
             return GetProfileInfo(authenticationOption, usernameToMatch, userInactiveSinceDate, pageIndex, pageSize, out totalRecords);
         }
-        
+
         /// <summary>
         /// Retrieves user profile data for all profiles in the data source.
         /// </summary>
@@ -269,7 +285,8 @@ namespace PetShop.Profile {
         /// <param name="pageSize">The size of the page of results to return.</param>
         /// <param name="totalRecords">When this method returns, contains the total number of profiles.</param>
         /// <returns>A System.Web.Profile.ProfileInfoCollection containing user-profile information for all profiles in the data source.</returns>		
-        public override ProfileInfoCollection GetAllProfiles(ProfileAuthenticationOption authenticationOption, int pageIndex, int pageSize, out int totalRecords) {
+        public override ProfileInfoCollection GetAllProfiles(ProfileAuthenticationOption authenticationOption, int pageIndex, int pageSize, out int totalRecords)
+        {
             CheckParameters(pageIndex, pageSize);
 
             return GetProfileInfo(authenticationOption, null, null, pageIndex, pageSize, out totalRecords);
@@ -284,7 +301,8 @@ namespace PetShop.Profile {
         /// <param name="pageSize">The size of the page of results to return.</param>
         /// <param name="totalRecords">When this method returns, contains the total number of profiles.</param>
         /// <returns>A System.Web.Profile.ProfileInfoCollection containing user-profile information about the inactive profiles.</returns>
-        public override ProfileInfoCollection GetAllInactiveProfiles(ProfileAuthenticationOption authenticationOption, DateTime userInactiveSinceDate, int pageIndex, int pageSize, out int totalRecords) {
+        public override ProfileInfoCollection GetAllInactiveProfiles(ProfileAuthenticationOption authenticationOption, DateTime userInactiveSinceDate, int pageIndex, int pageSize, out int totalRecords)
+        {
             CheckParameters(pageIndex, pageSize);
 
             return GetProfileInfo(authenticationOption, null, userInactiveSinceDate, pageIndex, pageSize, out totalRecords);
@@ -296,8 +314,8 @@ namespace PetShop.Profile {
         /// <param name="authenticationOption">One of the System.Web.Profile.ProfileAuthenticationOption values, specifying whether anonymous, authenticated, or both types of profiles are returned.</param>
         /// <param name="userInactiveSinceDate">A System.DateTime that identifies which user profiles are considered inactive. If the System.Web.Profile.ProfileInfo.LastActivityDate of a user profile occurs on or before this date and time, the profile is considered inactive.</param>
         /// <returns>The number of profiles in which the last activity date occurred on or before the specified date.</returns>
-        public override int GetNumberOfInactiveProfiles(ProfileAuthenticationOption authenticationOption, DateTime userInactiveSinceDate) {
-
+        public override int GetNumberOfInactiveProfiles(ProfileAuthenticationOption authenticationOption, DateTime userInactiveSinceDate)
+        {
             int inactiveProfiles = 0;
 
             ProfileInfoCollection profiles = GetProfileInfo(authenticationOption, null, userInactiveSinceDate, 0, 0, out inactiveProfiles);
@@ -305,27 +323,28 @@ namespace PetShop.Profile {
             return inactiveProfiles;
         }
 
-         //Verifies input parameters for page size and page index.
-        private static void CheckParameters(int pageIndex, int pageSize) {
-            if(pageIndex < 1 || pageSize < 1)
+        //Verifies input parameters for page size and page index.
+        private static void CheckParameters(int pageIndex, int pageSize)
+        {
+            if (pageIndex < 1 || pageSize < 1)
                 throw new ApplicationException(ERR_INVALID_PARAMETER + " page index.");
         }
 
-         //GetProfileInfo
-         //Retrieves a count of profiles and creates a 
-         //ProfileInfoCollection from the profile data in the 
-         //database. Called by GetAllProfiles, GetAllInactiveProfiles,
-         //FindProfilesByUserName, FindInactiveProfilesByUserName, 
-         //and GetNumberOfInactiveProfiles.
-         //Specifying a pageIndex of 0 retrieves a count of the results only.
-        private static ProfileInfoCollection GetProfileInfo(ProfileAuthenticationOption authenticationOption, string usernameToMatch, object userInactiveSinceDate, int pageIndex, int pageSize, out int totalRecords) {
-            
+        //GetProfileInfo
+        //Retrieves a count of profiles and creates a 
+        //ProfileInfoCollection from the profile data in the 
+        //database. Called by GetAllProfiles, GetAllInactiveProfiles,
+        //FindProfilesByUserName, FindInactiveProfilesByUserName, 
+        //and GetNumberOfInactiveProfiles.
+        //Specifying a pageIndex of 0 retrieves a count of the results only.
+        private static ProfileInfoCollection GetProfileInfo(ProfileAuthenticationOption authenticationOption, string usernameToMatch, object userInactiveSinceDate, int pageIndex, int pageSize, out int totalRecords)
+        {
             ProfileInfoCollection profiles = new ProfileInfoCollection();
 
             totalRecords = 0;
 
             // Count profiles only.
-            if(pageSize == 0)
+            if (pageSize == 0)
                 return profiles;
 
             int counter = 0;
@@ -333,16 +352,19 @@ namespace PetShop.Profile {
             int endIndex = startIndex + pageSize - 1;
 
             DateTime dt = new DateTime(1900, 1, 1);
-            if(userInactiveSinceDate != null)
+            if (userInactiveSinceDate != null)
                 dt = (DateTime)userInactiveSinceDate;
 
-            foreach(CustomProfileInfo profile in dal.GetProfileInfo((int)authenticationOption, usernameToMatch, dt, applicationName, out totalRecords)) {
-                if(counter >= startIndex) {
+            foreach (CustomProfileInfo profile in s_dal.GetProfileInfo((int)authenticationOption, usernameToMatch, dt, s_applicationName, out totalRecords))
+            {
+                if (counter >= startIndex)
+                {
                     ProfileInfo p = new ProfileInfo(profile.UserName, profile.IsAnonymous, profile.LastActivityDate, profile.LastUpdatedDate, 0);
                     profiles.Add(p);
                 }
 
-                if(counter >= endIndex) {
+                if (counter >= endIndex)
+                {
                     break;
                 }
 

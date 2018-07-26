@@ -1,23 +1,23 @@
 using System;
 
-namespace PetShop.Model {
-
+namespace PetShop.Model
+{
     /// <summary>
     /// Business entity used to model an order
     /// </summary>
     [Serializable]
-    public class OrderInfo {
-
+    public class OrderInfo
+    {
         // Internal member variables
-        private int orderId;
-        private DateTime date;
-        private string userId;
-        private CreditCardInfo creditCard;
-        private AddressInfo billingAddress;
-        private AddressInfo shippingAddress;
-        private decimal orderTotal;
-        private LineItemInfo[] lineItems;
-        private Nullable<int> authorizationNumber;
+        private int _orderId;
+        private DateTime _date;
+        private string _userId;
+        private CreditCardInfo _creditCard;
+        private AddressInfo _billingAddress;
+        private AddressInfo _shippingAddress;
+        private decimal _orderTotal;
+        private LineItemInfo[] _lineItems;
+        private Nullable<int> _authorizationNumber;
 
         /// <summary>
         /// Default constructor
@@ -37,62 +37,72 @@ namespace PetShop.Model {
         /// <param name="total">Order total value</param>
 		/// <param name="line">Ordered items</param>
 		/// <param name="authorization">Credit card authorization number</param>
-		public OrderInfo(int orderId, DateTime date, string userId, CreditCardInfo creditCard, AddressInfo billing, AddressInfo shipping, decimal total, LineItemInfo[] line, Nullable<int> authorization) {
-            this.orderId = orderId;
-            this.date = date;
-            this.userId = userId;
-            this.creditCard = creditCard;
-            this.billingAddress = billing;
-            this.shippingAddress = shipping;
-            this.orderTotal = total;
-			this.lineItems = line;
-			this.authorizationNumber = authorization;
+		public OrderInfo(int orderId, DateTime date, string userId, CreditCardInfo creditCard, AddressInfo billing, AddressInfo shipping, decimal total, LineItemInfo[] line, Nullable<int> authorization)
+        {
+            _orderId = orderId;
+            _date = date;
+            _userId = userId;
+            _creditCard = creditCard;
+            _billingAddress = billing;
+            _shippingAddress = shipping;
+            _orderTotal = total;
+            _lineItems = line;
+            _authorizationNumber = authorization;
         }
 
         // Properties
-        public int OrderId {
-            get { return orderId; }
-            set { orderId = value; }
+        public int OrderId
+        {
+            get { return _orderId; }
+            set { _orderId = value; }
         }
 
-        public DateTime Date {
-            get { return date; }
-            set { date = value; }
+        public DateTime Date
+        {
+            get { return _date; }
+            set { _date = value; }
         }
 
-        public string UserId {
-            get { return userId; }
-            set { userId = value; }
+        public string UserId
+        {
+            get { return _userId; }
+            set { _userId = value; }
         }
 
-        public CreditCardInfo CreditCard {
-            get { return creditCard; }
-            set { creditCard = value; }
+        public CreditCardInfo CreditCard
+        {
+            get { return _creditCard; }
+            set { _creditCard = value; }
         }
 
-        public AddressInfo BillingAddress {
-            get { return billingAddress; }
-            set { billingAddress = value; }
+        public AddressInfo BillingAddress
+        {
+            get { return _billingAddress; }
+            set { _billingAddress = value; }
         }
 
-        public AddressInfo ShippingAddress {
-            get { return shippingAddress; }
-            set { shippingAddress = value; }
+        public AddressInfo ShippingAddress
+        {
+            get { return _shippingAddress; }
+            set { _shippingAddress = value; }
         }
 
-        public decimal OrderTotal {
-            get { return orderTotal; }
-            set { orderTotal = value; }
+        public decimal OrderTotal
+        {
+            get { return _orderTotal; }
+            set { _orderTotal = value; }
         }
 
-        public LineItemInfo[] LineItems {
-            get { return lineItems; }
-            set { lineItems = value; }
+        public LineItemInfo[] LineItems
+        {
+            get { return _lineItems; }
+            set { _lineItems = value; }
         }
 
-        public Nullable<int> AuthorizationNumber {
-			get {return authorizationNumber;}
-			set {authorizationNumber = value;}
+        public Nullable<int> AuthorizationNumber
+        {
+            get { return _authorizationNumber; }
+            set { _authorizationNumber = value; }
         }
     }
 }

@@ -1,21 +1,21 @@
 using System;
 
-namespace PetShop.Model {
-
+namespace PetShop.Model
+{
     /// <summary>
     /// Business entity used to model items in a shopping cart
     /// </summary>
     [Serializable]
-    public class CartItemInfo {
-
+    public class CartItemInfo
+    {
         // Internal member variables
-        private int quantity = 1;
-        private string itemId;
-        private string name;
-        private string type;
-        private decimal price;
-        private string categoryId;
-        private string productId;
+        private int _quantity = 1;
+        private readonly string _itemId;
+        private readonly string _name;
+        private readonly string _type;
+        private readonly decimal _price;
+        private readonly string _categoryId;
+        private readonly string _productId;
 
         /// <summary>
         /// Default constructor
@@ -32,51 +32,63 @@ namespace PetShop.Model {
         /// <param name="type">Item type</param>	  
         /// <param name="categoryId">Parent category id</param>
         /// <param name="productId">Parent product id</param>
-        public CartItemInfo(string itemId, string name, int qty, decimal price, string type, string categoryId, string productId) {
-            this.itemId = itemId;
-            this.name = name;
-            this.quantity = qty;
-            this.price = price;
-            this.type = type;
-            this.categoryId = categoryId;
-            this.productId = productId;
+        public CartItemInfo(string itemId, string name, int qty, decimal price, string type, string categoryId, string productId)
+        {
+            _itemId = itemId;
+            _name = name;
+            _quantity = qty;
+            _price = price;
+            _type = type;
+            _categoryId = categoryId;
+            _productId = productId;
         }
 
         // Properties
-        public int Quantity {
-            get { return quantity; }
-            set { quantity = value; }
+        public int Quantity
+        {
+            get { return _quantity; }
+            set { _quantity = value; }
         }
 
-        public decimal Subtotal {
-            get { return (decimal)(this.quantity * this.price); }
+        public decimal Subtotal
+        {
+            get { return (decimal)(_quantity * _price); }
         }
 
-        public string ItemId {
-            get { return itemId; }
+        public string ItemId
+        {
+            get { return _itemId; }
         }
 
-        public string Name {
-            get { return name; }
+        public string Name
+        {
+            get { return _name; }
         }
 
-        public string Type {
-            get {
-                return type;
+        public string Type
+        {
+            get
+            {
+                return _type;
             }
         }
-        public decimal Price {
-            get { return price; }
+        public decimal Price
+        {
+            get { return _price; }
         }
 
-        public string CategoryId {
-            get {
-                return categoryId;
+        public string CategoryId
+        {
+            get
+            {
+                return _categoryId;
             }
         }
-        public string ProductId {
-            get {
-                return productId;
+        public string ProductId
+        {
+            get
+            {
+                return _productId;
             }
         }
     }

@@ -1,24 +1,24 @@
 using System;
 
-namespace PetShop.Model {
-
+namespace PetShop.Model
+{
     /// <summary>
     /// Business entity used to model addresses
     /// </summary>
     [Serializable]
-    public class AddressInfo {
-
+    public class AddressInfo
+    {
         // Internal member variables
-        private string firstName;
-        private string lastName;
-        private string address1;
-        private string address2;
-        private string city;
-        private string state;
-        private string zip;
-        private string country;
-        private string phone;
-        private string email;
+        private string _firstName;
+        private string _lastName;
+        private string _address1;
+        private string _address2;
+        private string _city;
+        private string _state;
+        private string _zip;
+        private string _country;
+        private string _phone;
+        private string _email;
 
         /// <summary>
         /// Default constructor
@@ -38,68 +38,79 @@ namespace PetShop.Model {
         /// <param name="country">Country</param>
         /// <param name="phone">Phone number at this address</param>
         /// <param name="email">Email at this address</param>
-        public AddressInfo(string firstName, string lastName, string address1, string address2, string city, string state, string zip, string country, string phone, string email) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.address1 = address1;
-            this.address2 = address2;
-            this.city = city;
-            this.state = state;
-            this.zip = zip;
-            this.country = country;
-            this.phone = phone;
-            this.email = email;
+        public AddressInfo(string firstName, string lastName, string address1, string address2, string city, string state, string zip, string country, string phone, string email)
+        {
+            _firstName = firstName;
+            _lastName = lastName;
+            _address1 = address1;
+            _address2 = address2;
+            _city = city;
+            _state = state;
+            _zip = zip;
+            _country = country;
+            _phone = phone;
+            _email = email;
         }
 
         // Properties
-        public string FirstName {
-            get { return firstName; }
-            set { firstName = value; }
+        public string FirstName
+        {
+            get { return _firstName; }
+            set { _firstName = value; }
         }
 
-        public string LastName {
-            get { return lastName; }
-            set { lastName = value; }
+        public string LastName
+        {
+            get { return _lastName; }
+            set { _lastName = value; }
         }
 
-        public string Address1 {
-            get { return address1; }
-            set { address1 = value; }
+        public string Address1
+        {
+            get { return _address1; }
+            set { _address1 = value; }
         }
 
-        public string Address2 {
-            get { return address2; }
-            set { address2 = value; }
+        public string Address2
+        {
+            get { return _address2; }
+            set { _address2 = value; }
         }
 
-        public string City {
-            get { return city; }
-            set { city = value; }
+        public string City
+        {
+            get { return _city; }
+            set { _city = value; }
         }
 
-        public string State {
-            get { return state; }
-            set { state = value; }
+        public string State
+        {
+            get { return _state; }
+            set { _state = value; }
         }
 
-        public string Zip {
-            get { return zip; }
-            set { zip = value; }
+        public string Zip
+        {
+            get { return _zip; }
+            set { _zip = value; }
         }
 
-        public string Country {
-            get { return country; }
-            set { country = value; }
+        public string Country
+        {
+            get { return _country; }
+            set { _country = value; }
         }
 
-        public string Phone {
-            get { return phone; }
-            set { phone = value; }
+        public string Phone
+        {
+            get { return _phone; }
+            set { _phone = value; }
         }
 
-        public string Email {
-            get { return email; }
-            set { email = value; }
+        public string Email
+        {
+            get { return _email; }
+            set { _email = value; }
         }
     }
 }
