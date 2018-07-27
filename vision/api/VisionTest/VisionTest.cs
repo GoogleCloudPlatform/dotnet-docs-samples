@@ -75,62 +75,6 @@ namespace GoogleCloudSamples
     }
 
     /// <summary>
-    /// Runs tests detecting text from PDF or TIFF files
-    /// These require uploading a .pdf to Google Cloud Storage
-    /// and then API results are saved to Google Cloud Storage
-    /// </summary>
-    public class PdfDocumentTests : IClassFixture<RandomBucketFixture>
-    {
-        readonly CommandLineRunner _detect = new CommandLineRunner()
-        {
-            VoidMain = DetectProgram.Main,
-            Command = "Detect"
-        };
-
-        private ConsoleOutput Run(params string[] args)
-        {
-            return _detect.Run(args);
-        }
-
-        readonly string _bucketName;
-        readonly BucketCollector _bucketCollector;
-        readonly string _pdfFileName = "HodgeConj.pdf";
-
-        public PdfDocumentTests(RandomBucketFixture bucketFixture)
-        {
-            _bucketName = bucketFixture.BucketName;
-            _bucketCollector = new BucketCollector(_bucketName);
-        }
-
-        string Upload(string localPath)
-        {
-            string objectName = Path.GetFileName(localPath);
-            string gsPath = $"gs://{_bucketName}/{objectName}";
-            _bucketCollector.CopyToBucket(localPath, objectName);
-            return gsPath;
-        }
-
-        [Fact]
-        public void TestDetectPdfDocument()
-        {
-            var outputPrefix = "";
-            var localPath = Path.Combine("data", _pdfFileName);
-            var gcsSourceURI = Upload(localPath);
-            var output = Run("ocr", gcsSourceURI, _bucketName, outputPrefix);
-
-            var storageClient = StorageClient.Create();
-
-            var bucket = storageClient.GetBucket(_bucketName);
-            var blobList = storageClient.ListObjects(_bucketName, outputPrefix);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Full text:", output.Stdout);
-            Assert.Contains("Hodge conjecture", output.Stdout);
-        }
-
-        public void Dispose() => _bucketCollector.Dispose();
-    }
-
-    /// <summary>
     /// For every DetectYadaYada function, we need to test with a local file
     /// and with a file on Google Cloud Storage.  This class contains all
     /// the real tests and assertions.  Derived classes implement Run().
@@ -299,6 +243,32 @@ namespace GoogleCloudSamples
             {
                 collector.CopyToBucket(args[1], objectName);
                 return _detect.Run(cmdArgs);
+            }
+        }
+
+        [Fact]
+        public void TestDetectPdfDocument()
+        {
+            var _pdfFileName = "HodgeConj.pdf";
+            var outputPrefix = "";
+            var localPath = Path.Combine("data", _pdfFileName);
+            var gcsSourceURI = $"gs://{_bucketName}/{_pdfFileName}";
+            var output = new object();
+
+            string[] cmdArgs = { "ocr", gcsSourceURI, _bucketName, outputPrefix };
+
+            using (var collector = new BucketCollector(_bucketName))
+            {
+                collector.CopyToBucket(localPath, _pdfFileName);
+                output = _detect.Run(cmdArgs);
+            }
+
+            // Clean up output files.
+            var storageClient = StorageClient.Create();
+            var blobList = storageClient.ListObjects(_bucketName, "");
+            foreach (var outputFile in blobList.Where(x => x.Name.Contains(".json")).Select(x => x.Name))
+            {
+                storageClient.DeleteObject(_bucketName, outputFile);
             }
         }
     }

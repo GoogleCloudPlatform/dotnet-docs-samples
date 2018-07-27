@@ -381,7 +381,6 @@ namespace GoogleCloudSamples
             // Once the rquest has completed and the output has been
             // written to GCS, we can list all the output files.
             var storageClient = StorageClient.Create();
-            var bucket = storageClient.GetBucket(gcsDestinationBucketName);
 
             // List objects with the given prefix.
             var blobList = storageClient.ListObjects(gcsDestinationBucketName, 
