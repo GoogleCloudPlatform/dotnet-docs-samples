@@ -247,13 +247,13 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestDetectPdfDocument()
+        public void DetectPdfDocument()
         {
             var _pdfFileName = "HodgeConj.pdf";
             var outputPrefix = "";
             var localPath = Path.Combine("data", _pdfFileName);
             var gcsSourceURI = $"gs://{_bucketName}/{_pdfFileName}";
-            var output = new object();
+            ConsoleOutput output;
 
             string[] cmdArgs = { "ocr", gcsSourceURI, _bucketName, outputPrefix };
 
@@ -261,6 +261,10 @@ namespace GoogleCloudSamples
             {
                 collector.CopyToBucket(localPath, _pdfFileName);
                 output = _detect.Run(cmdArgs);
+
+                Assert.Equal(0, output.ExitCode);
+                Assert.Contains("Full text:", output.Stdout);
+                Assert.Contains("Hodge conjecture", output.Stdout);
             }
 
             // Clean up output files.
