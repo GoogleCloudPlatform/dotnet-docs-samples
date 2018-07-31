@@ -1,13 +1,13 @@
-# .NET Cloud Job Discovery Sample
+# .NET Cloud Talent Solution Sample
 
 A sample that demonstrates how to call the
-[Google Cloud Job Discovery API](https://cloud.google.com/job-discovery/docs) from C#.
+[Google Cloud Talent Solution API](https://cloud.google.com/job-discovery/docs) from C#.
 
 This sample requires [.NET Core 2.0](
     https://www.microsoft.com/net/core) or later.
 
 ## Prerequiste
-* See [Before you start](https://cloud.google.com/job-discovery/docs/before-you-begin)
+* See [Before you start](https://cloud.google.com/talent-solution/job-search/docs/before-you-begin)
 
 ## Build and Run
 
