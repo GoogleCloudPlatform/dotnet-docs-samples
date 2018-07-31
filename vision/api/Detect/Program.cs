@@ -337,7 +337,7 @@ namespace GoogleCloudSamples
         }
 
         // [START vision_async_detect_document_ocr]
-        private static object DetectDocument(string gcsSourceUri, 
+        private static object DetectDocument(string gcsSourceUri,
             string gcsDestinationBucketName, string gcsDestinationPrefixName)
         {
             var client = ImageAnnotatorClient.Create();
@@ -357,7 +357,8 @@ namespace GoogleCloudSamples
                 {
                     // How many pages should be grouped into each json output file.
                     BatchSize = 2,
-                    GcsDestination = new GcsDestination {
+                    GcsDestination = new GcsDestination
+                    {
                         Uri = $"gs://{gcsDestinationBucketName}/{gcsDestinationPrefixName}"
                     }
                 }
@@ -383,7 +384,7 @@ namespace GoogleCloudSamples
             var storageClient = StorageClient.Create();
 
             // List objects with the given prefix.
-            var blobList = storageClient.ListObjects(gcsDestinationBucketName, 
+            var blobList = storageClient.ListObjects(gcsDestinationBucketName,
                 gcsDestinationPrefixName);
             Console.WriteLine("Output files:");
             foreach (var blob in blobList)
