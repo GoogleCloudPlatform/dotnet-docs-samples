@@ -19,6 +19,7 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using System;
+// Imports the Google Cloud Job Discovery client library
 using Google.Apis.JobService.v2;
 using Google.Apis.JobService.v2.Data;
 using System.Linq;
