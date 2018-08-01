@@ -12,6 +12,5 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-$env:GOOGLE_APPLICATION_CREDENTIALS = "/path/to/credentials"
 dotnet restore
 dotnet test --test-adapter-path:. --logger:junit
