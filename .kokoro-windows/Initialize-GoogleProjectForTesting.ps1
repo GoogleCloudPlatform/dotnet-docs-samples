@@ -59,6 +59,7 @@ stackdriver.googleapis.com
 stackdriverprovisioning.googleapis.com
 storage-api.googleapis.com
 storage-component.googleapis.com
+texttospeech.googleapis.com
 translate.googleapis.com
 videointelligence.googleapis.com
 vision.googleapis.com
