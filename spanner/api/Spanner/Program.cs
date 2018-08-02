@@ -395,6 +395,7 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    // [START spanner_retry_strategy]
     public class RetryRobot
     {
         public TimeSpan FirstRetryDelay { get; set; } = TimeSpan.FromSeconds(1000);
@@ -423,12 +424,12 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
         }
-
         private bool ShouldCatch(Exception e)
         {
             return ShouldRetry != null && ShouldRetry(e);
         }
     }
+    // [END spanner_retry_strategy]
 
     public class Program
     {
