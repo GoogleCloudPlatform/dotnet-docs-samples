@@ -15,6 +15,7 @@
  */
 
 // [START tts_quickstart]
+
 using System;
 using System.IO;
 using Google.Cloud.TextToSpeech.V1;

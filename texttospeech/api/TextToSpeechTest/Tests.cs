@@ -94,7 +94,7 @@ namespace GoogleCloudSamples
             Assert.True(fileInfo.Length > 0);
 
             // Clean up
-            File.Delete("output.mp3");           
+            File.Delete("output.mp3");
         }
     }
 

@@ -21,7 +21,6 @@ using Google.Cloud.TextToSpeech.V1;
 
 namespace GoogleCloudSamples
 {
-
     [Verb("list", HelpText = "List available voices.")]
     class ListArgs
     {
@@ -38,7 +37,6 @@ namespace GoogleCloudSamples
 
         [Option('f', HelpText = "Source formatting")]
         public string SourceFormat { get; set; }
-
     }
 
     [Verb("synthesize-file", HelpText = "Synthesize a file to audio")]
@@ -59,7 +57,7 @@ namespace GoogleCloudSamples
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             Parser.Default.ParseArguments<ListArgs, SynthesizeArgs,
                 SynthesizeFileArgs>(args).MapResult(
-                (ListArgs largs) => largs.DesiredLanguage == null?
+                (ListArgs largs) => largs.DesiredLanguage == null ?
                     ListVoices() : ListVoices(largs.DesiredLanguage),
                 (SynthesizeArgs sargs) => Synthesize(sargs),
                 (SynthesizeFileArgs sfargs) => SynthesizeFile(sfargs),
