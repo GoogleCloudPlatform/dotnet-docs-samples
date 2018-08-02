@@ -3,11 +3,9 @@
 A collection of samples that demonstrate how to call the 
 [Google Cloud TextToSpeech API](https://cloud.google.com/text-to-speech/) from C#.
 
-This sample requires [.NET Core 2.0](
-    https://www.microsoft.com/net/core) or later.  That means using
-[Visual Studio 2017](
-
-    https://www.visualstudio.com/), or the command line.
+This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or
+later.  That means using
+[Visual Studio 2017](https://www.visualstudio.com/), or the command line.
 ## Build and Run
 
 1.  **Follow the instructions in the [root README](../../README.md)**.

@@ -15,21 +15,14 @@
  */
 
 // [START tts_quickstart]
-
 using System;
 using System.IO;
 using Google.Cloud.TextToSpeech.V1;
 
-
 public class QuickStart
 {
-    /// <summary>
-    /// Synthesizes speech from the input string of text
-    /// </summary>
-    /// <param name="args">The command-line arguments.</param>
     public static void Main(string[] args)
     {
-
         // Instantiate a client
         TextToSpeechClient client = TextToSpeechClient.Create();
 
@@ -70,5 +63,4 @@ public class QuickStart
         }
     }
 }
-
 // [END tts_quickstart]

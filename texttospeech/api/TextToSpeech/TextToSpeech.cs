@@ -24,12 +24,15 @@ namespace GoogleCloudSamples
 
     [Verb("list", HelpText = "List available voices.")]
     class ListArgs
-    {}
+    {
+        [Option('l', HelpText = "Desired language for the voice")]
+        public string DesiredLanguage { get; set; }
+    }
 
     [Verb("synthesize", HelpText = "Synthesize input to audio")]
     class SynthesizeArgs
     {
-        [Value(0, HelpText = "The text to translate.",
+        [Value(0, HelpText = "The text to synthesize.",
             Required = true)]
         public string Text { get; set; }
 
@@ -56,32 +59,26 @@ namespace GoogleCloudSamples
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             Parser.Default.ParseArguments<ListArgs, SynthesizeArgs,
                 SynthesizeFileArgs>(args).MapResult(
-                (ListArgs largs) => ListVoices(largs),
+                (ListArgs largs) => largs.DesiredLanguage == null?
+                    ListVoices() : ListVoices(largs.DesiredLanguage),
                 (SynthesizeArgs sargs) => Synthesize(sargs),
                 (SynthesizeFileArgs sfargs) => SynthesizeFile(sfargs),
                 errs => 1);
-        }
-
-        private static int ListVoices(ListArgs args)
-        {
-            ListVoices();
-            return 0;
         }
 
         // [START tts_list_voices]
         /// <summary>
         /// Lists all the voices available for speech synthesis.
         /// </summary>
-        public static void ListVoices()
+        /// <param name="desiredLanguageCode">Text to synthesize into audio</param>
+        public static int ListVoices(string desiredLanguageCode = "")
         {
             TextToSpeechClient client = TextToSpeechClient.Create();
 
             // Performs the list voices request
             var response = client.ListVoices(new ListVoicesRequest
             {
-                // Uncomment the following block and specify a language
-                // code to get results for that language only.
-                //LanguageCode = "[LANGUAGE_CODE]"
+                LanguageCode = desiredLanguageCode
             });
 
             foreach (Voice voice in response.Voices)
@@ -103,6 +100,7 @@ namespace GoogleCloudSamples
                 Console.WriteLine("Natural Sample Rate Hertz: " +
                     voice.NaturalSampleRateHertz);
             }
+            return 0;
         }
         // [END tts_list_voices]
 
