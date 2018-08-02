@@ -85,8 +85,6 @@ namespace GoogleCloudSamples
 
     public class UptimeCheck
     {
-        private static readonly DateTime s_unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         // [START monitoring_uptime_check_create]
         public static object CreateUptimeCheck(string projectId, string hostName,
             string displayName)

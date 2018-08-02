@@ -12,7 +12,7 @@ can use [this older sample](
 
 ## Build and Run
 
-1.  **Follow the instructions in the [root README](../../README.md)**.
+1.  **Follow the instructions in the [root README](../../../README.md)**.
 
 4.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=monitoring.googleapis.com&showconfirmation=true)
