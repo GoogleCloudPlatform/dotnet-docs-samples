@@ -12,24 +12,14 @@ can use [this older sample](
 
 ## Build and Run
 
-1.  **Follow the instructions in the [root README](../../README.md)**.
+1.  **Follow the instructions in the [root README](../../../README.md)**.
 
 4.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=monitoring.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Stackdriver Monitoring API.
 
-7. Edit [QuickStart.cs](QuickStart/QuickStart.cs), and replace YOUR-PROJECT-ID with the id of the project you created in step 1.
-
-9.  From a Powershell command line, run the QuickStart sample:
+10. Run the Monitoring sample to see a list of subcommands:
     ```
-    PS C:\...\dotnet-docs-samples\monitoring\api\Quickstart> dotnet restore
-    PS C:\...\dotnet-docs-samples\monitoring\api\Quickstart> dotnet run
-    Done writing time series data.
-    ```
-
-10. And run the Monitoring sample to see a list of subcommands:
-    ```
-    PS C:\...\dotnet-docs-samples\monitoring\api\MonitoringSample> dotnet restore
     PS C:\...\dotnet-docs-samples\monitoring\api\MonitoringSample> dotnet run
     Monitoring 1.0.0.0
     Copyright c Google Inc 2017
@@ -64,42 +54,29 @@ can use [this older sample](
       help             Display more information on a specific command.
 
       version          Display version information.
-    ```
 
-11. Or run the AlertSample:
-    ```
-    PS C:\...\dotnet-docs-samples\monitoring\api\AlertSample> dotnet run
-    AlertSample 1.0.0
-    Copyright (C) 2018 AlertSample
-
-    ERROR(S):
-    No verb selected.
-
-    list                List alert policies.
-
-    backup              Save the current list of alert policies to a .json file.
-
-    restore             Restore the list of alert policies from a .json file.
-
-    replace-channels    Set the list of channel for an alert policy.
-
-    enable              Enable alert policies.
-
-    disable             Disable alert policies.
-
-    help                Display more information on a specific command.
-
-    version             Display version information.
+    PS C:\...\dotnet-docs-samples\monitoring\api\MonitoringSample> dotnet run -- list my-project-id
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/agent/api_request_count: API Request Count
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/agent/log_entry_count: Log Entry Count
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/agent/log_entry_retry_count: Retried Log Entry Writes Count
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/agent/memory_usage: Agent Memory Usage
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/agent/request_count: API Request Count
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/agent/streamspace_size: Stream Space Used
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/agent/streamspace_size_throttling: Agent is Throttling
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/agent/uptime: Agent Uptime
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/apache/connections: Open connections
+    projects/my-project-id/metricDescriptors/agent.googleapis.com/apache/idle_workers: Idle workers
+    PS C:\...\dotnet-docs-samples\monitoring\api\MonitoringSample>
     ```
 
 ## Contributing changes
 
-* See [CONTRIBUTING.md](../../CONTRIBUTING.md)
+* See [CONTRIBUTING.md](../../../CONTRIBUTING.md)
 
 ## Licensing
 
-* See [LICENSE](../../LICENSE)
+* See [LICENSE](../../../LICENSE)
 
 ## Testing
 
-* See [TESTING.md](../../TESTING.md)
+* See [TESTING.md](../../../TESTING.md)
