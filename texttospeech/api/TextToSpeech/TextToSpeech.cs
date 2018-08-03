@@ -68,7 +68,7 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Lists all the voices available for speech synthesis.
         /// </summary>
-        /// <param name="desiredLanguageCode">Text to synthesize into audio</param>
+        /// <param name="desiredLanguageCode">Language code to filter on</param>
         public static int ListVoices(string desiredLanguageCode = "")
         {
             TextToSpeechClient client = TextToSpeechClient.Create();
