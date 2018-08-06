@@ -184,6 +184,26 @@ namespace GoogleCloudSamples
                 args.AddRange(bucket.Value);
                 AssertSucceeded(Run(args.ToArray()));
             }
+            // Wait for deleted files to be gone.
+            foreach (var bucket in _garbage)
+            {
+                TimeSpan delay = TimeSpan.FromMilliseconds(200);
+                while (true)
+                {
+                    List<string> args = new List<string>();
+                    args.Add("list");
+                    args.Add(bucket.Key);
+                    args.AddRange(bucket.Value);
+                    var output = Run(args.ToArray());
+                    if (string.IsNullOrWhiteSpace(output.Stdout))
+                    {
+                        break;  // The files are gone.
+                    }
+                    Thread.Sleep(delay);
+                    delay *= 2;
+                }
+            }
+
             _garbage.Clear();
         }
 
