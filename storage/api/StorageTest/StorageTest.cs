@@ -432,13 +432,18 @@ namespace GoogleCloudSamples
         {
             Run("upload", _bucketName, Collect("Hello.txt"));
             using (var otherBucket = new BucketFixture())
-            using (var garbageCollector = new GarbageCollector(this))
             {
                 AssertSucceeded(Run("copy", _bucketName, "Hello.txt",
                     otherBucket.BucketName, "Bye.txt"));
-                Collect(otherBucket.BucketName, "Bye.txt");
-                AssertSucceeded(Run("get-metadata", otherBucket.BucketName,
-                    "Bye.txt"));
+                try
+                {
+                    AssertSucceeded(Run("get-metadata", otherBucket.BucketName,
+                        "Bye.txt"));
+                }
+                finally
+                {
+                    Run("delete", otherBucket.BucketName, "Bye.txt");
+                }
             }
         }
 
