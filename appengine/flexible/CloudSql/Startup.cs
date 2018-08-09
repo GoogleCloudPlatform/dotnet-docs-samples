@@ -90,9 +90,9 @@ namespace CloudSql
             using (var createTableCommand = connection.CreateCommand())
             {
                 createTableCommand.CommandText = @"
-                    CREATE TABLE IF NOT EXISTS 
+                    CREATE TABLE IF NOT EXISTS
                     visits (
-                        time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+                        time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         user_ip CHAR(64)
                     )";
                 createTableCommand.ExecuteNonQuery();
@@ -102,7 +102,7 @@ namespace CloudSql
 
         DbConnection NewMysqlConnection()
         {
-            // [START mysql_connection]
+            // [START gae_flex_mysql_env]
             var connectionString = new MySqlConnectionStringBuilder(
                 Configuration["CloudSql:ConnectionString"])
             {
@@ -111,13 +111,13 @@ namespace CloudSql
             };
             DbConnection connection =
                 new MySqlConnection(connectionString.ConnectionString);
-            // [END mysql_connection]
+            // [END gae_flex_mysql_env]
             return connection;
         }
 
         DbConnection NewPostgreSqlConnection()
         {
-            // [START postgresql_connection]
+            // [START gae_flex_postgres_env]
             var connectionString = new NpgsqlConnectionStringBuilder(
                 Configuration["CloudSql:ConnectionString"])
             {
@@ -126,7 +126,7 @@ namespace CloudSql
             };
             NpgsqlConnection connection =
                 new NpgsqlConnection(connectionString.ConnectionString);
-            // [END postgresql_connection]
+            // [END gae_flex_postgres_env]
             return connection;
         }
 
