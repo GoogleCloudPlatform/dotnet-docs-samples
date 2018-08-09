@@ -49,7 +49,7 @@ namespace SendGrid.Controllers
             return View(model);
         }
 
-        // [START sendgrid]
+        // [START gae_flex_sendgrid]
         Task<HttpResponseMessage> CallSendGrid(string recipient)
         {
             // As of 2017-02-09, the sendgrid Nuget package is not compatible
@@ -82,15 +82,15 @@ namespace SendGrid.Controllers
                 }
             };
             HttpClient sendgrid3 = new HttpClient();
-            sendgrid3.DefaultRequestHeaders.Authorization = 
+            sendgrid3.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue(
                     "Bearer", _sendgridApiKey);
             string jsonRequest = JsonConvert.SerializeObject(request);
             return sendgrid3.PostAsync("https://api.sendgrid.com/v3/mail/send",
-                new StringContent(jsonRequest, System.Text.Encoding.UTF8, 
+                new StringContent(jsonRequest, System.Text.Encoding.UTF8,
                 "application/json"));
         }
-        // [END sendgrid]
+        // [END gae_flex_sendgrid]
 
         public IActionResult Error()
         {
