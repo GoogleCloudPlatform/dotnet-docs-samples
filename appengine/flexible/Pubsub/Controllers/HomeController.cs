@@ -35,7 +35,7 @@ namespace Pubsub.Controllers
         readonly PublisherClient _publisher;
         readonly SubscriberClient _subscriber;
 
-        public HomeController(IOptions<PubsubOptions> options, 
+        public HomeController(IOptions<PubsubOptions> options,
             PublisherClient publisher, SubscriberClient subscriber)
         {
             _options = options.Value;
@@ -43,27 +43,23 @@ namespace Pubsub.Controllers
             _subscriber = subscriber;
         }
 
-        // [START index]
+        // [START gae_flex_pubsub_index]
         [HttpGet]
         [HttpPost]
         public IActionResult Index(MessageForm messageForm)
         {
             var model = new MessageList();
-            // [END index]
             if (!_options.HasGoodProjectId())
             {
                 model.MissingProjectId = true;
                 return View(model);
             }
-            // [START index]
             if (!string.IsNullOrEmpty(messageForm.Message))
             {
                 // Publish the message.
-                var topicName = new TopicName(_options.ProjectId, 
+                var topicName = new TopicName(_options.ProjectId,
                     _options.TopicId);
-                // [END index]
                 lock(s_lock) CreateTopicAndSubscriptionOnce(_publisher, topicName);
-                // [START index]
                 var pubsubMessage = new PubsubMessage()
                 {
                     Data = ByteString.CopyFromUtf8(messageForm.Message)
@@ -76,18 +72,18 @@ namespace Pubsub.Controllers
             lock (s_lock) model.Messages = s_receivedMessages.ToArray();
             return View(model);
         }
-        // [END index]
+        // [END gae_flex_pubsub_index]
 
-        // [START push]
+        // [START gae_flex_pubsub_push]
         /// <summary>
         /// Handle a push request coming from pubsub.
         /// </summary>
         [HttpPost]
         [Route("/Push")]
-        public IActionResult Push([FromBody]PushBody body, 
+        public IActionResult Push([FromBody]PushBody body,
             [FromQuery]string token)
         {
-            string verificationToken = 
+            string verificationToken =
                 token ?? body.message.attributes["token"];
             if (verificationToken != _options.VerificationToken)
             {
@@ -98,7 +94,7 @@ namespace Pubsub.Controllers
             lock (s_lock) s_receivedMessages.Add(message);
             return new OkResult();
         }
-        // [END push]
+        // [END gae_flex_pubsub_push]
 
         public IActionResult Error()
         {
@@ -109,7 +105,7 @@ namespace Pubsub.Controllers
         /// Create a topic and subscription once.
         /// </summary>
         /// <param name="provider"></param>
-        void CreateTopicAndSubscriptionOnce(PublisherClient publisher, 
+        void CreateTopicAndSubscriptionOnce(PublisherClient publisher,
             TopicName topicName)
         {
             if (s_topicAndSubscriptionExist)
