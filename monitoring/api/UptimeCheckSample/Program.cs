@@ -27,6 +27,7 @@ using Newtonsoft.Json.Linq;
 using static Google.Api.MetricDescriptor.Types;
 using Google.Protobuf.WellKnownTypes;
 using System.Net;
+using Google.Api.Gax.Grpc;
 
 namespace GoogleCloudSamples
 {
@@ -110,7 +111,8 @@ namespace GoogleCloudSamples
             var client = UptimeCheckServiceClient.Create();
             string projectName = new ProjectName(projectId).ToString();
             // Create the config.
-            var newConfig = client.CreateUptimeCheckConfig(projectName, config);
+            var newConfig = client.CreateUptimeCheckConfig(projectName, config,
+                CallSettings.FromCallTiming(CallTiming.FromTimeout(TimeSpan.FromMinutes(2))));
             Console.WriteLine(newConfig.Name);
             return 0;
         }
