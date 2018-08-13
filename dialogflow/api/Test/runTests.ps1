@@ -17,5 +17,5 @@ Set-TestTimeout 1800
 
 dotnet restore
 dotnet build
-# TODO: Fix me.
+# TODO: Fix bug 110877421.
 # dotnet test --test-adapter-path:. --logger:junit --no-build --no-restore -v n
