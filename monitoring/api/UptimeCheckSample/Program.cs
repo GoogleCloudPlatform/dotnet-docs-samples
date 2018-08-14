@@ -14,20 +14,20 @@
  * the License.
  */
 
+using CommandLine;
+using Google.Api;
+using Google.Api.Gax;
+using Google.Api.Gax.Grpc;
+using Google.Cloud.Monitoring.V3;
+using Google.Protobuf.WellKnownTypes;
+using Newtonsoft.Json.Linq;
+using static Google.Api.MetricDescriptor.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Google.Cloud.Monitoring.V3;
-using CommandLine;
-using Google.Api.Gax;
-using Google.Api;
-using Newtonsoft.Json.Linq;
-using static Google.Api.MetricDescriptor.Types;
-using Google.Protobuf.WellKnownTypes;
-using System.Net;
-using Google.Api.Gax.Grpc;
 
 namespace GoogleCloudSamples
 {
