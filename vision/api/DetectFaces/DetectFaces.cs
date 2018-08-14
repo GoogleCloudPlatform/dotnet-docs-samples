@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
 {
     public class DetectFaces
     {
-        // [START vision_face_detection_run_application]
+        // [START vision_face_detection_tutorial_run_application]
         static readonly string s_usage = @"dotnet run image-file
 
         Use the Google Cloud Vision API to detect faces in the image.
@@ -40,12 +40,12 @@ namespace GoogleCloudSamples
             // [START vision_face_detection_tutorial_client]
             var client = ImageAnnotatorClient.Create();
             // [END vision_face_detection_tutorial_client]
-            // [START vision_face_detection_send_request]
+            // [START vision_face_detection_tutorial_send_request]
             var response = client.DetectFaces(Image.FromFile(args[0]));
-            // [END vision_face_detection_send_request]
+            // [END vision_face_detection_tutorial_send_request]
 
             int numberOfFacesFound = 0;
-            // [START vision_face_detection_process_response]
+            // [START vision_face_detection_tutorial_process_response]
             using (var image = System.Drawing.Image.FromFile(args[0]))
             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(image))
             {
@@ -66,12 +66,12 @@ namespace GoogleCloudSamples
                 image.Save(outFilePath);
                 // [END_EXCLUDE]
             }
-            // [END vision_face_detection_process_response]
+            // [END vision_face_detection_tutorial_process_response]
             // [START_EXCLUDE]
             Console.WriteLine($"Found {numberOfFacesFound} "
                 + $"face{(numberOfFacesFound == 1 ? string.Empty : "s")}.");
             // [END_EXCLUDE]
         }
-        // [END vision_face_detection_run_application]
+        // [END vision_face_detection_tutorial_run_application]
     }
 }
