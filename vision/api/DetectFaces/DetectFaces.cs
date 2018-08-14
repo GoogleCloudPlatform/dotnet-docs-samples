@@ -12,12 +12,11 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START vision_face_detection_tutorial_client]
+// [START vision_face_detection_tutorial_imports]
 using Google.Cloud.Vision.V1;
 using System;
 using System.Linq;
-
-// [END vision_face_detection_tutorial_client]
+// [END vision_face_detection_tutorial_imports]
 
 namespace GoogleCloudSamples
 {
