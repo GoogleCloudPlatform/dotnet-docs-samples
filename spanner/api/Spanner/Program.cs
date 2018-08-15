@@ -1194,9 +1194,9 @@ namespace GoogleCloudSamples.Spanner
             };
             List<Album> albums = new List<Album> {
                 new Album {singerId = firstSingerId, albumId = 1,
-                    albumTitle = "Go, Go, Go"},
-                new Album {singerId = firstSingerId, albumId = 2,
                     albumTitle = "Total Junk"},
+                new Album {singerId = firstSingerId, albumId = 2,
+                    albumTitle = "Go, Go, Go"},
                 new Album {singerId = secondSingerId, albumId = 1,
                     albumTitle = "Green"},
                 new Album {singerId = secondSingerId, albumId = 2,
