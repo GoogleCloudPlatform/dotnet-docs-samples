@@ -13,6 +13,7 @@
 // the License.
 
 // [START vision_face_detection_tutorial_imports]
+
 using Google.Cloud.Vision.V1;
 using System;
 using System.Linq;
