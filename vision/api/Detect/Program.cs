@@ -336,7 +336,7 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        // [START vision_async_detect_document_ocr]
+        // [START vision_text_detection_pdf_gcs]
         private static object DetectDocument(string gcsSourceUri,
             string gcsDestinationBucketName, string gcsDestinationPrefixName)
         {
@@ -418,7 +418,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-        // [END vision_async_detect_document_ocr]
+        // [END vision_text_detection_pdf_gcs]
 
         public static void Main(string[] args)
         {
