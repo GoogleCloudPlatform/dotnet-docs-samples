@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.CloudTalentSolution.v3;
 using Google.Apis.CloudTalentSolution.v3.Data;
@@ -22,12 +23,13 @@ using Google.Apis.Services;
 
 namespace GoogleCloudSamples
 {
-    public class QuickStartCompanies
+    public class HowToEmailAlerts
     {
         public static GoogleCredential credential;
         public static CloudTalentSolutionService jobServiceClient;
         public static string projectId;
         public static string parent;
+        public static Company myCompany;
 
         public static void Initialize()
         {
@@ -56,52 +58,69 @@ namespace GoogleCloudSamples
         public static void Main(string[] args)
         {
             Initialize();
+            SetupCompany();
 
-            // Test create company
-            Company myCompany = new Company()
+            SearchForAlerts(null);
+
+            DeleteCompany(myCompany.Name);
+        }
+
+        // [START search_for_alerts]
+
+        public static void SearchForAlerts(string companyName)
+        {
+            RequestMetadata requestMetadata = new RequestMetadata()
+            {
+                // Make sure to hash your userID
+                UserId = "HashedUserId",
+                // Make sure to hash the sessionID
+                SessionId = "HashedSessionId",
+                // Domain of the website where the search is conducted
+                Domain = "www.google.com"
+            };
+
+            JobQuery jobQuery = new JobQuery();
+            if (companyName != null)
+            {
+                jobQuery.CompanyNames = new List<string>
+                {
+                    companyName
+                };
+            }
+
+            SearchJobsRequest searchJobRequest = new SearchJobsRequest()
+            {
+                RequestMetadata = requestMetadata,
+                JobQuery = jobQuery,
+                SearchMode = "JOB_SEARCH"
+            };
+
+            SearchJobsResponse searchJobsResponse = jobServiceClient.Projects.Jobs.SearchForAlert(searchJobRequest, parent).Execute();
+
+            Console.WriteLine("Email alerts searched: " + ToJsonString(searchJobsResponse));
+        }
+        // [END search_for_alerts]
+
+        public static void SetupCompany()
+        {
+            myCompany = new Company()
             {
                 DisplayName = "Google",
                 HeadquartersAddress = "1600 Ampitheatre Parkway, Mountain View CA 94043",
                 ExternalId = generateRandom()
             };
             myCompany = CreateCompany(myCompany);
-
-            // Test get company
-            GetCompany(myCompany.Name);
-
-            // Test delete company
-            DeleteCompany(myCompany.Name);
-
         }
-
-        public static String generateRandom()
-        {
-            Random random = new Random();
-            int randomId = random.Next(1000000, 10000000);
-            return randomId.ToString();
-        }
-
-        // [START create_company]
 
         public static Company CreateCompany(Company companyToBeCreated)
         {
-            try
-            {
-                CreateCompanyRequest createCompanyRequest = new CreateCompanyRequest();
-                createCompanyRequest.Company = companyToBeCreated;
-                Company companyCreated = jobServiceClient.Projects.Companies.Create(createCompanyRequest, parent).Execute();
-                Console.WriteLine("Created company: " + toJsonString(companyCreated));
-                return companyCreated;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Got exception while creating company");
-                throw e;
-            }
+            // Start method
+            CreateCompanyRequest createCompanyRequest = new CreateCompanyRequest();
+            createCompanyRequest.Company = companyToBeCreated;
+            Company companyCreated = jobServiceClient.Projects.Companies.Create(createCompanyRequest, parent).Execute();
+            Console.WriteLine("Created company: " + ToJsonString(companyCreated));
+            return companyCreated;
         }
-        // [END create_company]
-
-        // [START get_company]
 
         public static Company GetCompany(string companyName)
         {
@@ -113,11 +132,10 @@ namespace GoogleCloudSamples
             }
             catch (Exception e)
             {
-                Console.WriteLine("Got exception while getting company");
+                Console.WriteLine(e.ToString());
                 throw e;
             }
         }
-        // [END get_company]
 
         public static void DeleteCompany(string companyName)
         {
@@ -125,7 +143,14 @@ namespace GoogleCloudSamples
             Console.WriteLine("Deleted company: " + companyName);
         }
 
-        private static string toJsonString(object obj)
+        public static String generateRandom()
+        {
+            Random random = new Random();
+            int randomId = random.Next(1000000, 10000000);
+            return randomId.ToString();
+        }
+
+        private static string ToJsonString(object obj)
         {
             return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
         }
