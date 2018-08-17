@@ -12,7 +12,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CloudKmsSample.csproj" />
+    <ProjectReference Include="..\CloudKmsSample\CloudKmsSample.csproj" />
+    <ProjectReference Include="..\QuickStart\QuickStart.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
 </Project>
