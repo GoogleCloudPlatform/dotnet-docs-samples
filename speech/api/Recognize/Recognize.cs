@@ -338,7 +338,7 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Stream the content of the file to the API in 32kb chunks.
         /// </summary>
-        // [START speech_streaming_recognize]
+        // [START speech_transcribe_streaming]
         static async Task<object> StreamingRecognizeAsync(string filePath)
         {
             var speech = SpeechClient.Create();
@@ -397,9 +397,9 @@ namespace GoogleCloudSamples
             await printResponses;
             return 0;
         }
-        // [END speech_streaming_recognize]
+        // [END speech_transcribe_streaming]
 
-        // [START speech_streaming_mic_recognize]
+        // [START speech_transcribe_streaming_mic]
         static async Task<object> StreamingMicRecognizeAsync(int seconds)
         {
             if (NAudio.Wave.WaveIn.DeviceCount < 1)
@@ -471,7 +471,7 @@ namespace GoogleCloudSamples
             await printResponses;
             return 0;
         }
-        // [END speech_streaming_mic_recognize]
+        // [END speech_transcribe_streaming_mic]
 
         static bool IsStorageUri(string s) => s.Substring(0, 4).ToLower() == "gs:/";
 
