@@ -12,28 +12,16 @@ can use [this older sample](
 
 ## Build and Run
 
-1.  **Follow the instructions in the [root README](../../README.md)**.
+1.  **Follow the instructions in the [root README](../../../README.md)**.
 
 4.  Enable APIs for your project.
     [Click here](https://pantheon.corp.google.com/flows/enableapi?apiid=cloudkms.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Key Management Service API.
 
-7. Edit [QuickStart.cs](QuickStart/QuickStart.cs), and replace YOUR-PROJECT-ID with the id of the project you created in step 1.
-
-9.  From a Powershell command line:
+10. Run the CloudKmsSample to see a list of subcommands like encrypt and decrypt:
     ```
-    PS C:\...\dotnet-docs-samples\kms\api\QuickStart> dotnet restore
-    PS C:\...\dotnet-docs-samples\kms\api\QuickStart> dotnet run
-    Key Rings:
-    projects/your-project-id/locations/global/keyRings/test
-    projects/your-project-id/locations/global/keyRings/testKeyRing-20170207005759502
-    projects/your-project-id/locations/global/keyRings/testKeyRing-20170207005804457
-    ```
-
-10. And run the CloudKmsSample to see a list of subcommands like encrypt and decrypt:
-    ```
-    PS C:\...\dotnet-docs-samples\kms\api> dotnet restore
-    PS C:\...\dotnet-docs-samples\kms\api> dotnet run
+    PS C:\...\dotnet-docs-samples\kms\api\CloudKmsSample> dotnet restore
+    PS C:\...\dotnet-docs-samples\kms\api\CloudKmsSample> dotnet run
     CloudKmsSample 1.0.0
     Copyright (C) 2017 CloudKmsSample
 
@@ -73,12 +61,12 @@ can use [this older sample](
 
 ## Contributing changes
 
-* See [CONTRIBUTING.md](../../CONTRIBUTING.md)
+* See [CONTRIBUTING.md](../../../CONTRIBUTING.md)
 
 ## Licensing
 
-* See [LICENSE](../../LICENSE)
+* See [LICENSE](../../../LICENSE)
 
 ## Testing
 
-* See [TESTING.md](../../TESTING.md)
+* See [TESTING.md](../../../TESTING.md)
