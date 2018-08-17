@@ -1,0 +1,135 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="PetShop.Web.MasterPage" %>
+<%@ Register Src="Controls/BreadCrumbControl.ascx" TagName="BreadCrumbControl" TagPrefix="PetShopControl" %>
+<%@ Register Src="Controls/NavigationControl.ascx" TagName="NavigationControl" TagPrefix="PetShopControl" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+    <title>The .NET Pet Shop</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="760">
+            <tr>
+                <td width="10">&nbsp;</td>
+                <td width="410"><a href="Default.aspx"><img border="0" src="Comm_Images/Logo.gif" alt=".NET Pet Shop 4.0" width="287" height="78"></a>
+                </td>                
+                <td width="320">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="signIn" width="5"></td>
+                            <td class="signIn">
+                                <asp:Panel ID="panFocus" runat="server" DefaultButton="btnSearch">
+                                    <table border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td><asp:TextBox ID="txtSearch" Width="115px" runat="server" CssClass="textboxSearch"></asp:TextBox></td>
+                                        <td align="right">
+                                            <asp:ImageButton ID="btnSearch" runat="server" AlternateText="Search" CausesValidation="false"
+                                                ImageUrl="Comm_Images/button-search.gif" OnClick="btnSearch_Click" /></td>
+                                        </tr>
+                                    </table>
+                                </asp:Panel>    
+                            </td>
+                            <td align="right" class="signIn">
+                                <table width="100%">
+                                    <tr>
+                                        <td>
+                                            <asp:LoginView ID="lgnView" runat="server">
+                                                <LoggedInTemplate>
+                                                    <div class="link"><a href="UserProfile.aspx">Profile</a></div>
+                                                </LoggedInTemplate>
+                                                <AnonymousTemplate>
+                                                    <div class="disabledLink">Profile</div>
+                                                </AnonymousTemplate>                                                
+                                            </asp:LoginView>
+                                        </td>
+                                        <td align="right"><asp:LoginStatus ID="lgnStatus" runat="server" CssClass="link" LoginText="sign in" LogoutAction="Refresh" LogoutText="sign out" /></td>
+                                        <td><img src="Comm_Images/button-checkout.gif" /></td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="signIn" width="5"></td>
+                        </tr>
+                        <tr>
+                            <td class="checkOut" width="5"></td>
+                            <td colspan="2" class="checkOut">
+                                <table width="100%">
+                                    <tr>
+                                        <td nowrap="nowrap"><a href="ShoppingCart.aspx"><img border="0" src="Comm_Images/button-cart-grey.gif"></a></td>
+                                        <td nowrap="nowrap"><a class="linkCheckOut" href="ShoppingCart.aspx">check out</a></td>
+                                        <td nowrap="nowrap" class="CartInfo" width="100%" >&nbsp;</td>                                        
+                                        <td nowrap="nowrap"><a href="WishList.aspx"><img border="0" src="Comm_Images/button-wishlist-grey.gif"></a></td>
+                                        <td nowrap="nowrap"><a class="linkCheckOut" href="WishList.aspx">wish list</a></td>
+                                    </tr>
+                                    
+                                </table>
+                            </td>
+                            <td class="checkOut" width="5"></td>
+                        </tr>
+                    </table>    
+                </td>
+                <td width="20">&nbsp;</td>
+            </tr> 
+        </table>
+    
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="760">
+            <tr>
+                <td colspan="4"><img src="Comm_Images/spacer.gif" height="5" /></td>
+            </tr>
+            <tr>
+                <td width="10">&nbsp;</td>
+                <td width="105">&nbsp;</td>
+                <td width="625">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="bgBreadcrumb"><span class="breadcrumb"><PetShopControl:BreadCrumbControl id="breadCrumb" runat="server" /></td>
+                            <td align="right"><asp:LoginName ID="lgnName" runat="server" FormatString="Welcome {0}" SkinID="LoginName" /></td>
+                        </tr>                       
+                    </table>
+                </td>
+                <td width="20">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td class="pageHeader">
+                    <asp:Literal ID="ltlHeader" runat="server"></asp:Literal>
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td class="dottedLine"></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td valign="top">&nbsp;</td>
+                <td valign="top">
+                    <PetShopControl:NavigationControl id="Categories" runat="server">
+                    </PetShopControl:NavigationControl>
+                </td>
+                <td bgcolor="#FFFFFF" valign="top">
+                    <asp:ContentPlaceHolder ID="cphPage" runat="server">
+                    </asp:ContentPlaceHolder>
+                </td>
+                <td height="250">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td class="footer">
+                    <table width="100%">
+                        <tr>
+                            <td>Version 4.0 - Powered by .NET 2.0</td><td align="right" style="padding-right: 5px">
+                                <a href="http://www.vertigosoftware.com" target="_blank"><img alt="Created by Vertigo Software, Inc." border="0" src="Comm_Images/vertigo-icon.gif"/></a></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

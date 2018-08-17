@@ -1,0 +1,626 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E21D5B1C-6249-4B76-9B6D-C52E86BBD263}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PetShopWeb</RootNamespace>
+    <AssemblyName>PetShopWeb</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="AspNet.ScriptManager.bootstrap">
+      <HintPath>..\packages\AspNet.ScriptManager.bootstrap.3.0.0\lib\net45\AspNet.ScriptManager.bootstrap.dll</HintPath>
+    </Reference>
+    <Reference Include="AspNet.ScriptManager.jQuery">
+      <HintPath>..\packages\AspNet.ScriptManager.jQuery.1.10.2\lib\net45\AspNet.ScriptManager.jQuery.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ScriptManager.MSAjax">
+      <HintPath>..\packages\Microsoft.AspNet.ScriptManager.MSAjax.5.0.0\lib\net45\Microsoft.ScriptManager.MSAjax.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ScriptManager.WebForms">
+      <HintPath>..\packages\Microsoft.AspNet.ScriptManager.WebForms.5.0.0\lib\net45\Microsoft.ScriptManager.WebForms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Web.Optimization.WebForms">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.WebForms.1.1.3\lib\net45\Microsoft.AspNet.Web.Optimization.WebForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.FriendlyUrls">
+      <HintPath>..\packages\Microsoft.AspNet.FriendlyUrls.Core.1.0.2\lib\net45\Microsoft.AspNet.FriendlyUrls.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages">
+      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages.Deployment">
+      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers">
+      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.2.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.Agent.Intercept">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.DependencyCollector">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.2.0\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.PerfCounterCollector">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.2.0\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.2.0\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.WindowsServer">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.2.2.0\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.Web">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Web.2.2.0\lib\net45\Microsoft.AI.Web.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="About.aspx" />
+    <Content Include="Comm_Images\bg-body.gif" />
+    <Content Include="Comm_Images\bg-labelLists.gif" />
+    <Content Include="Comm_Images\bg-search.gif" />
+    <Content Include="Comm_Images\bg-sign-in.gif" />
+    <Content Include="Comm_Images\button-back.gif" />
+    <Content Include="Comm_Images\button-calculate.gif" />
+    <Content Include="Comm_Images\button-cart-grey.gif" />
+    <Content Include="Comm_Images\button-cart.gif" />
+    <Content Include="Comm_Images\button-checkout.gif" />
+    <Content Include="Comm_Images\button-continue.gif" />
+    <Content Include="Comm_Images\button-delete.gif" />
+    <Content Include="Comm_Images\button-home.gif" />
+    <Content Include="Comm_Images\button-search.gif" />
+    <Content Include="Comm_Images\button-wishlist-grey.gif" />
+    <Content Include="Comm_Images\button-wishlist.gif" />
+    <Content Include="Comm_Images\dotten-line.gif" />
+    <Content Include="Comm_Images\home-bg-body.gif" />
+    <Content Include="Comm_Images\home-fish.gif" />
+    <Content Include="Comm_Images\Logo-home.gif" />
+    <Content Include="Comm_Images\Logo.gif" />
+    <Content Include="Comm_Images\seahorse.gif" />
+    <Content Include="Comm_Images\spacer.gif" />
+    <Content Include="Comm_Images\vertigo-icon.gif" />
+    <Content Include="Contact.aspx" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Controls\AddressConfirm.ascx" />
+    <Content Include="Controls\AddressForm.ascx" />
+    <Content Include="Controls\BreadCrumbControl.ascx" />
+    <Content Include="Controls\CartList.ascx" />
+    <Content Include="Controls\CreditCardForm.ascx" />
+    <Content Include="Controls\ItemsControl.ascx" />
+    <Content Include="Controls\NavigationControl.ascx" />
+    <Content Include="Controls\ProductsControl.ascx" />
+    <Content Include="Controls\SearchControl.ascx" />
+    <Content Include="Controls\ShoppingCartControl.ascx" />
+    <Content Include="Controls\WishListControl.ascx" />
+    <Content Include="Default.aspx" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WishList.aspx" />
+    <Content Include="MasterPage.master" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Items.aspx" />
+    <Content Include="NewUser.aspx" />
+    <Content Include="Products.aspx" />
+    <Content Include="Prod_Images\Backyard\icon-cat.gif" />
+    <Content Include="Prod_Images\Backyard\icon-crab.gif" />
+    <Content Include="Prod_Images\Backyard\icon-goose.gif" />
+    <Content Include="Prod_Images\Backyard\icon-raccoon.gif" />
+    <Content Include="Prod_Images\Backyard\icon-sheep.gif" />
+    <Content Include="Prod_Images\Backyard\icon-skunk.gif" />
+    <Content Include="Prod_Images\Backyard\icon-zebra.gif" />
+    <Content Include="Prod_Images\Backyard\item-cat-patterned.gif" />
+    <Content Include="Prod_Images\Backyard\item-cat-transparent.gif" />
+    <Content Include="Prod_Images\Backyard\item-cat-uncolored.gif" />
+    <Content Include="Prod_Images\Backyard\item-crab-dotted.gif" />
+    <Content Include="Prod_Images\Backyard\item-crab-orange.gif" />
+    <Content Include="Prod_Images\Backyard\item-crab-red.gif" />
+    <Content Include="Prod_Images\Backyard\item-goose-feathered.gif" />
+    <Content Include="Prod_Images\Backyard\item-goose-plucked.gif" />
+    <Content Include="Prod_Images\Backyard\item-raccoon-hairy-tongue.gif" />
+    <Content Include="Prod_Images\Backyard\item-raccoon-long-tongue.gif" />
+    <Content Include="Prod_Images\Backyard\item-raccoon-rough-tongue.gif" />
+    <Content Include="Prod_Images\Backyard\item-sheep-fuzzy.gif" />
+    <Content Include="Prod_Images\Backyard\item-sheep-ironed.gif" />
+    <Content Include="Prod_Images\Backyard\item-skunk-bad-smell.gif" />
+    <Content Include="Prod_Images\Backyard\item-skunk-really-bad-smell.gif" />
+    <Content Include="Prod_Images\Backyard\item-skunk-worst-smell.gif" />
+    <Content Include="Prod_Images\Backyard\item-zebra-large.gif" />
+    <Content Include="Prod_Images\Backyard\item-zebra-medium.gif" />
+    <Content Include="Prod_Images\Backyard\item-zebra-small.gif" />
+    <Content Include="Prod_Images\Backyard\item-zebra-tiny.gif" />
+    <Content Include="Prod_Images\Birds\icon-Duck.gif" />
+    <Content Include="Prod_Images\Birds\icon-Owl.gif" />
+    <Content Include="Prod_Images\Birds\icon-Pelican.gif" />
+    <Content Include="Prod_Images\Birds\icon-Penguin.gif" />
+    <Content Include="Prod_Images\Birds\icon-Pteranodon.gif" />
+    <Content Include="Prod_Images\Birds\item-duck-domestic.gif" />
+    <Content Include="Prod_Images\Birds\item-duck-wild.gif" />
+    <Content Include="Prod_Images\Birds\item-owl-day.gif" />
+    <Content Include="Prod_Images\Birds\item-owl-night.gif" />
+    <Content Include="Prod_Images\Birds\item-pelican-flowerloving.gif" />
+    <Content Include="Prod_Images\Birds\item-pelican-grassloving.gif" />
+    <Content Include="Prod_Images\Birds\item-penguine-adventurous.gif" />
+    <Content Include="Prod_Images\Birds\item-penguine-homey.gif" />
+    <Content Include="Prod_Images\Birds\item-pteranodon-ancient.gif" />
+    <Content Include="Prod_Images\Birds\item-pteranodon-old.gif" />
+    <Content Include="Prod_Images\Bugs\icon-ant.gif" />
+    <Content Include="Prod_Images\Bugs\icon-butterfly.gif" />
+    <Content Include="Prod_Images\Bugs\icon-dragonfly.gif" />
+    <Content Include="Prod_Images\Bugs\icon-frog.gif" />
+    <Content Include="Prod_Images\Bugs\icon-slug.gif" />
+    <Content Include="Prod_Images\Bugs\icon-spider.gif" />
+    <Content Include="Prod_Images\Bugs\item-ant-queen.gif" />
+    <Content Include="Prod_Images\Bugs\item-ant-soldier.gif" />
+    <Content Include="Prod_Images\Bugs\item-ant-worker.gif" />
+    <Content Include="Prod_Images\Bugs\item-butterfly-adult.gif" />
+    <Content Include="Prod_Images\Bugs\item-butterfly-larva.gif" />
+    <Content Include="Prod_Images\Bugs\item-butterfly-pupa.gif" />
+    <Content Include="Prod_Images\Bugs\item-dragonfly-omnivore.gif" />
+    <Content Include="Prod_Images\Bugs\item-dragonfly-vegan.gif" />
+    <Content Include="Prod_Images\Bugs\item-dragonfly-vegetarian.gif" />
+    <Content Include="Prod_Images\Bugs\item-frog-false.gif" />
+    <Content Include="Prod_Images\Bugs\item-frog-true.gif" />
+    <Content Include="Prod_Images\Bugs\item-slug-habitat.gif" />
+    <Content Include="Prod_Images\Bugs\item-slug-naked.gif" />
+    <Content Include="Prod_Images\Bugs\item-spider-Aranielladisplicata.gif" />
+    <Content Include="Prod_Images\Bugs\item-spider-Dysderacrocata.gif" />
+    <Content Include="Prod_Images\Endangered\icon-dino.gif" />
+    <Content Include="Prod_Images\Endangered\icon-fish.gif" />
+    <Content Include="Prod_Images\Endangered\icon-panda.gif" />
+    <Content Include="Prod_Images\Endangered\icon-pet.gif" />
+    <Content Include="Prod_Images\Endangered\icon-skeleton.gif" />
+    <Content Include="Prod_Images\Endangered\item-dino-pointy.gif" />
+    <Content Include="Prod_Images\Endangered\item-dino-shaved.gif" />
+    <Content Include="Prod_Images\Endangered\item-dino-spiky.gif" />
+    <Content Include="Prod_Images\Endangered\item-fish-caught.gif" />
+    <Content Include="Prod_Images\Endangered\item-fish-drunk.gif" />
+    <Content Include="Prod_Images\Endangered\item-fish-lost.gif" />
+    <Content Include="Prod_Images\Endangered\item-panda-exclusive.gif" />
+    <Content Include="Prod_Images\Endangered\item-pet-kitty.gif" />
+    <Content Include="Prod_Images\Endangered\item-pet-rover.gif" />
+    <Content Include="Prod_Images\Endangered\item-pet-thumper.gif" />
+    <Content Include="Prod_Images\Endangered\item-skeleton-aphrodite.gif" />
+    <Content Include="Prod_Images\Endangered\item-skeleton-female.gif" />
+    <Content Include="Prod_Images\Endangered\item-skeleton-hermaphrodite.gif" />
+    <Content Include="Prod_Images\Endangered\item-skeleton-male.gif" />
+    <Content Include="Prod_Images\Fish\icon-Ballonfish.gif" />
+    <Content Include="Prod_Images\Fish\icon-Blindfish.gif" />
+    <Content Include="Prod_Images\Fish\icon-crabfish.gif" />
+    <Content Include="Prod_Images\Fish\icon-eucalyptus.gif" />
+    <Content Include="Prod_Images\Fish\icon-meno.gif" />
+    <Content Include="Prod_Images\Fish\icon-misterno.gif" />
+    <Content Include="Prod_Images\Fish\icon-nosyfish.gif" />
+    <Content Include="Prod_Images\Fish\icon-toothferry.gif" />
+    <Content Include="Prod_Images\Fish\item-balloon-extra-stretch.gif" />
+    <Content Include="Prod_Images\Fish\item-balloon-flammable.gif" />
+    <Content Include="Prod_Images\Fish\item-balloon-natural.gif" />
+    <Content Include="Prod_Images\Fish\item-blindfish-blind.gif" />
+    <Content Include="Prod_Images\Fish\item-blindfish-farsighted.gif" />
+    <Content Include="Prod_Images\Fish\item-blindfish-shortsighted.gif" />
+    <Content Include="Prod_Images\Fish\item-crabfish-ballet.gif" />
+    <Content Include="Prod_Images\Fish\item-crabfish-ballroom.gif" />
+    <Content Include="Prod_Images\Fish\item-crabfish-tabdance.gif" />
+    <Content Include="Prod_Images\Fish\item-eucalyptus-longarms.gif" />
+    <Content Include="Prod_Images\Fish\item-eucalyptus-shortarms.gif" />
+    <Content Include="Prod_Images\Fish\item-meno-camouflage.gif" />
+    <Content Include="Prod_Images\Fish\item-meno-happy.gif" />
+    <Content Include="Prod_Images\Fish\item-meno-worried.gif" />
+    <Content Include="Prod_Images\Fish\item-MisterNo-black.gif" />
+    <Content Include="Prod_Images\Fish\item-MisterNo-sable.gif" />
+    <Content Include="Prod_Images\Fish\item-MisterNo-sepia.gif" />
+    <Content Include="Prod_Images\Fish\item-nosyfish-beastly.gif" />
+    <Content Include="Prod_Images\Fish\item-nosyfish-invidious.gif" />
+    <Content Include="Prod_Images\Fish\item-nosyfish-mean.gif" />
+    <Content Include="Prod_Images\Fish\item-nosyfish-sneaky.gif" />
+    <Content Include="Prod_Images\Fish\item-toothferry-toothless.gif" />
+    <Content Include="Prod_Images\Fish\item-toothferry-withteeth.gif" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\WebForms\DetailsView.js" />
+    <Content Include="Scripts\WebForms\Focus.js" />
+    <Content Include="Scripts\WebForms\GridView.js" />
+    <Content Include="Scripts\WebForms\Menu.js" />
+    <Content Include="Scripts\WebForms\MenuStandards.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjax.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxApplicationServices.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxComponentModel.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxCore.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxGlobalization.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxHistory.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxNetwork.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxSerialization.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxTimer.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxWebForms.js" />
+    <Content Include="Scripts\WebForms\MSAjax\MicrosoftAjaxWebServices.js" />
+    <Content Include="Scripts\WebForms\SmartNav.js" />
+    <Content Include="Scripts\WebForms\TreeView.js" />
+    <Content Include="Scripts\WebForms\WebForms.js" />
+    <Content Include="Scripts\WebForms\WebParts.js" />
+    <Content Include="Scripts\WebForms\WebUIValidation.js" />
+    <Content Include="Search.aspx" />
+    <Content Include="ShoppingCart.aspx" />
+    <Content Include="SignIn.aspx" />
+    <Content Include="Site.Master" />
+    <Content Include="UserProfile.aspx" />
+    <Content Include="ViewSwitcher.ascx" />
+    <Content Include="Web.config" />
+    <Content Include="Bundle.config" />
+    <Content Include="Site.Mobile.Master" />
+    <Content Include="Views\web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="About.aspx.cs">
+      <DependentUpon>About.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="About.aspx.designer.cs">
+      <DependentUpon>About.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Contact.aspx.cs">
+      <DependentUpon>Contact.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Contact.aspx.designer.cs">
+      <DependentUpon>Contact.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\AddressConfirm.ascx.cs">
+      <DependentUpon>AddressConfirm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\AddressForm.ascx.cs">
+      <DependentUpon>AddressForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\BreadCrumbControl.ascx.cs">
+      <DependentUpon>BreadCrumbControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\CartList.ascx.cs">
+      <DependentUpon>CartList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\CreditCardForm.ascx.cs">
+      <DependentUpon>CreditCardForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ItemsControl.ascx.cs">
+      <DependentUpon>ItemsControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\NavigationControl.ascx.cs">
+      <DependentUpon>NavigationControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ProductsControl.ascx.cs">
+      <DependentUpon>ProductsControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\SearchControl.ascx.cs">
+      <DependentUpon>SearchControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ShoppingCartControl.ascx.cs">
+      <DependentUpon>ShoppingCartControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\WishListControl.ascx.cs">
+      <DependentUpon>WishListControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Items.aspx.cs">
+      <DependentUpon>Items.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MasterPage.master.cs">
+      <DependentUpon>MasterPage.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Products.aspx.cs">
+      <DependentUpon>Products.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShoppingCart.aspx.cs">
+      <DependentUpon>ShoppingCart.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Site.Master.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Site.Master.designer.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+    </Compile>
+    <Compile Include="Site.Mobile.Master.cs">
+      <DependentUpon>Site.Mobile.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Site.Mobile.Master.designer.cs">
+      <DependentUpon>Site.Mobile.Master</DependentUpon>
+    </Compile>
+    <Compile Include="UserProfile.aspx.cs">
+      <DependentUpon>UserProfile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ViewSwitcher.ascx.cs">
+      <DependentUpon>ViewSwitcher.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ViewSwitcher.ascx.designer.cs">
+      <DependentUpon>ViewSwitcher.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="WishList.aspx.cs">
+      <DependentUpon>WishList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BLL\BLL.csproj">
+      <Project>{ae805124-3d88-4ae5-a1e7-5a5a595a298e}</Project>
+      <Name>BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CacheDependencyFactory\CacheDependencyFactory.csproj">
+      <Project>{8b7367d8-7d25-49b8-b4ff-016e9458d39c}</Project>
+      <Name>CacheDependencyFactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DALFactory\DALFactory.csproj">
+      <Project>{fbae3210-40a6-44d3-acef-5881d8f4a6cd}</Project>
+      <Name>DALFactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DBUtility\DBUtility.csproj">
+      <Project>{87b51a22-242c-4fd8-ab60-a12160eec06a}</Project>
+      <Name>DBUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IBllStrategy\IBLLStrategy.csproj">
+      <Project>{6b8e3d04-ccbd-45f6-9a8e-14682102a4a4}</Project>
+      <Name>IBLLStrategy</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICacheDependency\ICacheDependency.csproj">
+      <Project>{428952c8-5e61-4048-b3ff-07602c335477}</Project>
+      <Name>ICacheDependency</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IDAL\IDAL.csproj">
+      <Project>{e1445288-68f8-4556-a82e-25cfe6b30195}</Project>
+      <Name>IDAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IMessaging\IMessaging.csproj">
+      <Project>{4f9001b9-25c4-4ace-aa61-74bd98498a45}</Project>
+      <Name>IMessaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IProfileDAL\IProfileDAL.csproj">
+      <Project>{89acb430-e20e-4fa1-9fd1-3459650ab5d3}</Project>
+      <Name>IProfileDAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Membership\Membership.csproj">
+      <Project>{1e0ac510-91fe-46bf-9d4e-d4e9f55de10b}</Project>
+      <Name>Membership</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MessagingFactory\MessagingFactory.csproj">
+      <Project>{bf12e9bf-c032-4b42-9212-b4284a3494af}</Project>
+      <Name>MessagingFactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{1ff5b08d-74a0-452d-a8a2-2534d985f8be}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsmqMessaging\MSMQMessaging.csproj">
+      <Project>{e193bbf4-ed79-4228-8020-950f71c667c7}</Project>
+      <Name>MSMQMessaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OracleProfileDAL\OracleProfileDAL.csproj">
+      <Project>{276dc996-8aeb-4829-ba2b-89b6e59f0445}</Project>
+      <Name>OracleProfileDAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Oracle\OracleDAL.csproj">
+      <Project>{73cdf15e-9236-4b41-a6cb-0683b6d38a38}</Project>
+      <Name>OracleDAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProfileFactory\ProfileDALFactory.csproj">
+      <Project>{135b7b99-991e-4b99-8af9-2c7b360972b9}</Project>
+      <Name>ProfileDALFactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Profile\Profile.csproj">
+      <Project>{1170ef77-38ee-4194-bf37-da14bf0fda28}</Project>
+      <Name>Profile</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SQLProfileDAL\SQLProfileDAL.csproj">
+      <Project>{597791dd-f8b6-4e4e-8079-43f0da6ddc82}</Project>
+      <Name>SQLProfileDAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SQLServer\SQLServerDAL.csproj">
+      <Project>{9aa6b962-0628-4c0d-a4ea-54a244c32136}</Project>
+      <Name>SQLServerDAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TableCacheDependency\TableCacheDependency.csproj">
+      <Project>{f55ab6dd-e0dc-4966-8e6a-b89e161c964f}</Project>
+      <Name>TableCacheDependency</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>28536</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:28536/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

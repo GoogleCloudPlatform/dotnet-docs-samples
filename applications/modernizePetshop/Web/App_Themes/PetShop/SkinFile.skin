@@ -1,0 +1,36 @@
+<asp:HyperLink SkinID="lnkCart" runat="server" CssClass="linkCart" Text="Add to Shopping Cart"></asp:HyperLink>
+<asp:HyperLink SkinID="lnkWishlist" runat="server" CssClass="linkWishlist" Text="Add to Wish List"></asp:HyperLink>
+
+<asp:Login SkinID="Login" CreateUserText="Not registered yet?" runat="server" TitleText="Please Sign In" BorderPadding="15" LoginButtonText="Sign In" CssClass="signInContent">
+    <CheckBoxStyle Height="50px"  />
+    <LoginButtonStyle ForeColor="White" CssClass="signinButton" />
+    <TitleTextStyle Font-Bold="True" CssClass="signinHeader" />
+    <TextBoxStyle CssClass="signinTextbox" Width="155px"/>
+    <LabelStyle CssClass="signinLabel" HorizontalAlign="Left"/>
+    <HyperLinkStyle CssClass="signinNewUser" /> 
+    <FailureTextStyle CssClass="asterisk" Font-Size="Small" Height="20px" HorizontalAlign="Left" />          
+</asp:Login>
+
+<asp:CreateUserWizard runat="server" SkinID="NewUser" CssClass="signInContent">
+    <CreateUserButtonStyle ForeColor="White" CssClass="signUpButton" />
+    <TextBoxStyle CssClass="signinTextbox" Width="155px" />
+    <ErrorMessageStyle CssClass="asterisk" Font-Size="Small" Height="20px" HorizontalAlign="Left" />
+    <LabelStyle HorizontalAlign="Left"/>        
+    <TitleTextStyle Height="40px" HorizontalAlign="Left" Font-Bold="True" CssClass="signinHeader"/>
+    <HeaderStyle />
+</asp:CreateUserWizard>
+    
+<asp:Wizard SkinID="wzdCheckOut" runat="server" FinishCompleteButtonText="Submit Order" FinishCompleteButtonType="Link" FinishPreviousButtonType="Link" StartNextButtonType="Link" StepNextButtonType="Link" StepPreviousButtonType="Link">
+    
+    <%--Uncomment for using with default layout of wizard control
+    <NavigationStyle CssClass="checkoutButtonBg" />--%>
+                
+    <HeaderStyle CssClass="checkoutHeaders" />
+    <StepNextButtonStyle CssClass="continue" />
+    <StartNextButtonStyle CssClass="continue" />
+    <StepPreviousButtonStyle CssClass="back" />
+    <FinishCompleteButtonStyle CssClass="submit" />
+    <FinishPreviousButtonStyle CssClass="back" />
+</asp:Wizard>
+    
+<asp:LoginName SkinID="LoginName" CssClass="welcomeName" runat="server" />
