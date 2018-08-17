@@ -75,7 +75,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
         // [END video_analyze_shots]
 
-        // [START video_analyze_labels_local]
+        // [START video_analyze_labels]
         public static object AnalyzeLabels(string path)
         {
             var client = VideoIntelligenceServiceClient.Create();
@@ -94,7 +94,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             return 0;
         }
 
-        // [END video_analyze_labels_local]
+        // [END video_analyze_labels]
 
         // [START video_analyze_labels_gcs]
         public static object AnalyzeLabelsGcs(string uri)
@@ -115,7 +115,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             return 0;
         }
 
-        // [START video_analyze_labels_local]
+        // [START video_analyze_labels]
         static void PrintLabels(string labelName,
             IEnumerable<LabelAnnotation> labelAnnotations)
         {
@@ -136,7 +136,7 @@ namespace GoogleCloudSamples.VideoIntelligence
                 }
             }
         }
-        // [END video_analyze_labels_local]
+        // [END video_analyze_labels]
         // [END video_analyze_labels_gcs]
 
         // [START video_analyze_explicit_content]

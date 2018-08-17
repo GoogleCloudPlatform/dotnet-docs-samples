@@ -12,7 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START videointelligence_quickstart]
+// [START video_quickstart]
 
 using Google.Cloud.VideoIntelligence.V1;
 using System;
@@ -52,4 +52,4 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
     }
 }
-// [END videointelligence_quickstart]
+// [END video_quickstart]
