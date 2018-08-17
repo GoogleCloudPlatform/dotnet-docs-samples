@@ -62,9 +62,9 @@ namespace GoogleCloudSamples
         public UptimeCheckTestFixture()
         {
             // Create two uptime checks to work with.
-            var output = Cmd.Run("create", "-p", ProjectId);
+            var output = Cmd.Run("create", "-p", ProjectId, "-d", TestUtil.RandomName());
             UptimeCheckConfigNames.Add(output.Stdout.Trim());
-            output = Cmd.Run("create", "-p", ProjectId);
+            output = Cmd.Run("create", "-p", ProjectId, "-d", TestUtil.RandomName());
             UptimeCheckConfigNames.Add(output.Stdout.Trim());
         }
 
