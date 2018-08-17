@@ -257,7 +257,7 @@ namespace GoogleCloudSamples
         }
         // [END speech_transcribe_sync_gcs]
 
-        // [START speech_async_recognize]
+        // [START speech_transcribe_async]
         static object LongRunningRecognize(string filePath)
         {
             var speech = SpeechClient.Create();
@@ -278,7 +278,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_async_recognize]
+        // [END speech_transcribe_async]
 
         // [START speech_transcribe_async_gcs]
         static object AsyncRecognizeGcs(string storageUri)
