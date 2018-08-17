@@ -118,7 +118,7 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        // [START speech_sync_recognize]
+        // [START speech_transcribe_sync]
         static object SyncRecognize(string filePath)
         {
             var speech = SpeechClient.Create();
@@ -137,7 +137,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_sync_recognize]
+        // [END speech_transcribe_sync]
 
 
         // [START speech_sync_recognize_words]
@@ -236,7 +236,7 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        // [START speech_sync_recognize_gcs]
+        // [START speech_transcribe_sync_gcs]
         static object SyncRecognizeGcs(string storageUri)
         {
             var speech = SpeechClient.Create();
@@ -255,7 +255,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_sync_recognize_gcs]
+        // [END speech_transcribe_sync_gcs]
 
         // [START speech_async_recognize]
         static object LongRunningRecognize(string filePath)
