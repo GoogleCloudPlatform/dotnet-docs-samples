@@ -68,7 +68,7 @@ namespace Sudokumb
             return new VisItem()
             {
                 x = taskCount,
-                y = count,
+                y = count / 1000000,
                 group = groupNumber
             };
         }
@@ -98,7 +98,7 @@ namespace Sudokumb
             }
             cancel.Cancel();
             Task.WaitAll(tasks);
-            return count;
+            return count / 3;
         }
 
         private static string RenderResults(IEnumerable<VisItem> items,

@@ -37,7 +37,15 @@ namespace Sudokumb
         public long BoardsExaminedCount { get; set; }
     }
 
-    public class SolveStateStore
+    public interface ISolveStateStore
+    {
+        Task SetAsync(string solveRequestId, GameBoard gameBoard,
+            CancellationToken cancellationToken);
+
+        void IncreaseExaminedBoardCount(string solveRequestId, long amount);
+    }
+
+    public class SolveStateStore : ISolveStateStore
     {
         private const string SOLUTION_KIND = "Solution";
         private readonly DatastoreDb _datastore;

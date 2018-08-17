@@ -31,12 +31,19 @@
         barChart: {width:150, align:'right', sideBySide:true}, // align: left, center, right
         drawPoints: false,
         dataAxis: {
-            icons:true
+            icons:true,
+            left: {
+                title: {
+                    text: "Increments per second, millions."
+                }
+            }
         },
         orientation:'top',
         legend: {
             enabled: true,
-            position: 'top-right'
+            left: {
+                position: 'top-right'
+            }
         },
         start: 1,
         end: 17,
