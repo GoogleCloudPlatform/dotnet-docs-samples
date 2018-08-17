@@ -280,7 +280,7 @@ namespace GoogleCloudSamples
         }
         // [END speech_async_recognize]
 
-        // [START speech_async_recognize_gcs]
+        // [START speech_transcribe_async_gcs]
         static object AsyncRecognizeGcs(string storageUri)
         {
             var speech = SpeechClient.Create();
@@ -301,7 +301,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_async_recognize_gcs]
+        // [END speech_transcribe_async_gcs]
 
         // [START speech_async_recognize_gcs_words]
         static object AsyncRecognizeGcsWords(string storageUri)
@@ -375,7 +375,7 @@ namespace GoogleCloudSamples
                     }
                 }
             });
-            // Stream the file content to the API.  Write 2 32kb chunks per 
+            // Stream the file content to the API.  Write 2 32kb chunks per
             // second.
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
