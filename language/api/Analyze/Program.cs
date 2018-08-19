@@ -124,7 +124,7 @@ Where command is one of
         // [END language_sentiment_file_gcs]
         // [END language_sentiment_text]
 
-        // [START analyze_syntax_from_file]
+        // [START language_syntax_file_gcs]
         private static void AnalyzeSyntaxFromFile(string gcsUri)
         {
             var client = LanguageServiceClient.Create();
@@ -136,9 +136,9 @@ Where command is one of
             new Features() { ExtractSyntax = true });
             WriteSentences(response.Sentences, response.Tokens);
         }
-        // [END analyze_syntax_from_file]
+        // [END language_syntax_file_gcs]
 
-        // [START analyze_syntax_from_string]
+        // [START language_syntax_text]
         private static void AnalyzeSyntaxFromText(string text)
         {
             var client = LanguageServiceClient.Create();
@@ -151,7 +151,7 @@ Where command is one of
             WriteSentences(response.Sentences, response.Tokens);
         }
 
-        // [START analyze_syntax_from_file]
+        // [START language_syntax_file_gcs]
         private static void WriteSentences(IEnumerable<Sentence> sentences,
             RepeatedField<Token> tokens)
         {
@@ -167,8 +167,8 @@ Where command is one of
                     + $"{token.Text.Content}");
             }
         }
-        // [END analyze_syntax_from_file]
-        // [END analyze_syntax_from_string]
+        // [END language_syntax_file_gcs]
+        // [END language_syntax_text]
 
         // [START language_entity_sentiment_file_gcs]
         private static void AnalyzeEntitySentimentFromFile(string gcsUri)
