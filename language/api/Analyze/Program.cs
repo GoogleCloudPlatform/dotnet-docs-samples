@@ -35,7 +35,7 @@ Where command is one of
     everything
 ";
 
-        // [START analyze_entities_from_file]
+        // [START language_entities_file_gcs]
         private static void AnalyzeEntitiesFromFile(string gcsUri)
         {
             var client = LanguageServiceClient.Create();
@@ -46,9 +46,9 @@ Where command is one of
             });
             WriteEntities(response.Entities);
         }
-        // [END analyze_entities_from_file]
+        // [END language_entities_file_gcs]
 
-        // [START analyze_entities_from_string]
+        // [START language_entities_text]
         private static void AnalyzeEntitiesFromText(string text)
         {
             var client = LanguageServiceClient.Create();
@@ -60,7 +60,7 @@ Where command is one of
             WriteEntities(response.Entities);
         }
 
-        // [START analyze_entities_from_file]
+        // [START language_entities_file_gcs]
         private static void WriteEntities(IEnumerable<Entity> entities)
         {
             Console.WriteLine("Entities:");
@@ -79,8 +79,8 @@ Where command is one of
                 }
             }
         }
-        // [END analyze_entities_from_file]
-        // [END analyze_entities_from_string]
+        // [END language_entities_file_gcs]
+        // [END language_entities_text]
 
         // [START analyze_sentiment_from_file]
         private static void AnalyzeSentimentFromFile(string gcsUri)
@@ -170,7 +170,7 @@ Where command is one of
         // [END analyze_syntax_from_file]
         // [END analyze_syntax_from_string]
 
-        // [START analyze_entity_sentiment_from_file]
+        // [START language_entity_sentiment_file_gcs]
         private static void AnalyzeEntitySentimentFromFile(string gcsUri)
         {
             var client = LanguageServiceClient.Create();
@@ -181,9 +181,9 @@ Where command is one of
             });
             WriteEntitySentiment(response.Entities);
         }
-        // [END analyze_entity_sentiment_from_file]
+        // [END language_entity_sentiment_file_gcs]
 
-        // [START analyze_entity_sentiment_from_string]
+        // [START language_entity_sentiment_text]
         private static void AnalyzeEntitySentimentFromText(string text)
         {
             var client = LanguageServiceClient.Create();
@@ -195,7 +195,7 @@ Where command is one of
             WriteEntitySentiment(response.Entities);
         }
 
-        // [START analyze_entity_sentiment_from_file]
+        // [START language_entity_sentiment_file_gcs]
         private static void WriteEntitySentiment(IEnumerable<Entity> entities)
         {
             Console.WriteLine("Entity Sentiment:");
@@ -207,8 +207,8 @@ Where command is one of
                 Console.WriteLine($"\t\tMagnitude { entity.Sentiment.Magnitude}");
             }
         }
-        // [END analyze_entity_sentiment_from_file]
-        // [END analyze_entity_sentiment_from_string]
+        // [END language_entity_sentiment_file_gcs]
+        // [END language_entity_sentiment_text]
 
         // [START language_classify_file]
         private static void ClassifyTextFromFile(string gcsUri)
