@@ -210,7 +210,7 @@ Where command is one of
         // [END language_entity_sentiment_file_gcs]
         // [END language_entity_sentiment_text]
 
-        // [START language_classify_file]
+        // [START language_classify_file_gcs]
         private static void ClassifyTextFromFile(string gcsUri)
         {
             var client = LanguageServiceClient.Create();
@@ -221,9 +221,9 @@ Where command is one of
             });
             WriteCategories(response.Categories);
         }
-        // [END language_classify_file]
+        // [END language_classify_file_gcs]
 
-        // [START language_classify_string]
+        // [START language_classify_text]
         private static void ClassifyTextFromText(string text)
         {
             var client = LanguageServiceClient.Create();
@@ -235,7 +235,7 @@ Where command is one of
             WriteCategories(response.Categories);
         }
 
-        // [START language_classify_file]
+        // [START language_classify_file_gcs]
         private static void WriteCategories(IEnumerable<ClassificationCategory> categories)
         {
             Console.WriteLine("Categories:");
@@ -245,8 +245,8 @@ Where command is one of
                 Console.WriteLine($"\t\tConfidence: {category.Confidence}");
             }
         }
-        // [END language_classify_string]
-        // [END language_classify_file]
+        // [END language_classify_text]
+        // [END language_classify_file_gcs]
 
         private static void AnalyzeEverything(string text)
         {
