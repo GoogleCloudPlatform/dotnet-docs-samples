@@ -39,7 +39,7 @@ namespace CloudSql.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // [START example]
+            // [START gae_flex_mysql_app]
             // Insert a visit into the database:
             using (var insertVisitCommand = _connection.CreateCommand())
             {
@@ -62,7 +62,7 @@ namespace CloudSql.Controllers
                     ORDER BY time_stamp DESC LIMIT 10";
                 List<string> lines = new List<string>();
                 var reader = await lookupCommand.ExecuteReaderAsync();
-                HomeModel model = new HomeModel() { 
+                HomeModel model = new HomeModel() {
                     VisitorLog = new List<VisitorLogEntry>()
                 };
                 while (await reader.ReadAsync()) {
@@ -73,7 +73,7 @@ namespace CloudSql.Controllers
                 }
                 return View(model);
             }
-            // [END example]
+            // [END gae_flex_mysql_app]
         }
 
         private string FormatAddress(IPAddress address)

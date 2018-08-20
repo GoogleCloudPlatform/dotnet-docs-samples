@@ -26,7 +26,7 @@ using Google;
 
 namespace CloudStorage.Controllers
 {
-    // [START cloud_storage]
+    // [START gae_flex_storage_app]
     public class HomeController : Controller
     {
         // Contains the bucket name and object name
@@ -44,18 +44,16 @@ namespace CloudStorage.Controllers
         public async Task<IActionResult> Index()
         {
             var model = new HomeIndex();
-            // [END cloud_storage]
             if (new string[] { null, "", "your-google-bucket-name" }
                 .Contains(_options.BucketName))
             {
                 model.MissingBucketName = true;
                 return View(model);
             }
-            // [START cloud_storage]
             try
             {
                 // Get the storage object.
-                var storageObject = 
+                var storageObject =
                     await _storage.GetObjectAsync(_options.BucketName, _options.ObjectName);
                 // Get a direct link to the storage object.
                 model.MediaLink = storageObject.MediaLink;
@@ -92,14 +90,12 @@ namespace CloudStorage.Controllers
             model.MediaLink = storageObject.MediaLink;
             return View(model);
         }
-        // [END cloud_storage]
+        // [END gae_flex_storage_app]
 
 
         public IActionResult Error()
         {
             return View();
         }
-        // [START cloud_storage]
     }
-    // [END cloud_storage]
 }

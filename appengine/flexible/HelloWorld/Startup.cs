@@ -25,7 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HelloWorld
 {
-    // [START sample]
+    // [START gae_flex_quickstart]
     public class Startup
     {
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -48,5 +48,5 @@ namespace HelloWorld
             });
         }
     }
-    // [END sample]
+    // [END gae_flex_quickstart]
 }
