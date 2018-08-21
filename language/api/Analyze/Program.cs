@@ -82,7 +82,7 @@ Where command is one of
         // [END language_entities_file_gcs]
         // [END language_entities_text]
 
-        // [START language_sentiment_file_gcs]
+        // [START language_sentiment_gcs]
         private static void AnalyzeSentimentFromFile(string gcsUri)
         {
             var client = LanguageServiceClient.Create();
@@ -93,7 +93,7 @@ Where command is one of
             });
             WriteSentiment(response.DocumentSentiment, response.Sentences);
         }
-        // [END language_sentiment_file_gcs]
+        // [END language_sentiment_gcs]
 
         // [START language_sentiment_text]
         private static void AnalyzeSentimentFromText(string text)
@@ -107,7 +107,7 @@ Where command is one of
             WriteSentiment(response.DocumentSentiment, response.Sentences);
         }
 
-        // [START language_sentiment_file_gcs]
+        // [START language_sentiment_gcs]
         private static void WriteSentiment(Sentiment sentiment,
             RepeatedField<Sentence> sentences)
         {
@@ -121,7 +121,7 @@ Where command is one of
                     + $"({sentence.Sentiment.Score})");
             }
         }
-        // [END language_sentiment_file_gcs]
+        // [END language_sentiment_gcs]
         // [END language_sentiment_text]
 
         // [START language_syntax_file_gcs]
