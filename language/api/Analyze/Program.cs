@@ -35,7 +35,7 @@ Where command is one of
     everything
 ";
 
-        // [START language_entities_file_gcs]
+        // [START language_entities_gcs]
         private static void AnalyzeEntitiesFromFile(string gcsUri)
         {
             var client = LanguageServiceClient.Create();
@@ -46,7 +46,7 @@ Where command is one of
             });
             WriteEntities(response.Entities);
         }
-        // [END language_entities_file_gcs]
+        // [END language_entities_gcs]
 
         // [START language_entities_text]
         private static void AnalyzeEntitiesFromText(string text)
@@ -60,7 +60,7 @@ Where command is one of
             WriteEntities(response.Entities);
         }
 
-        // [START language_entities_file_gcs]
+        // [START language_entities_gcs]
         private static void WriteEntities(IEnumerable<Entity> entities)
         {
             Console.WriteLine("Entities:");
@@ -79,7 +79,7 @@ Where command is one of
                 }
             }
         }
-        // [END language_entities_file_gcs]
+        // [END language_entities_gcs]
         // [END language_entities_text]
 
         // [START language_sentiment_gcs]
@@ -124,7 +124,7 @@ Where command is one of
         // [END language_sentiment_gcs]
         // [END language_sentiment_text]
 
-        // [START language_syntax_file_gcs]
+        // [START language_syntax_gcs]
         private static void AnalyzeSyntaxFromFile(string gcsUri)
         {
             var client = LanguageServiceClient.Create();
@@ -136,7 +136,7 @@ Where command is one of
             new Features() { ExtractSyntax = true });
             WriteSentences(response.Sentences, response.Tokens);
         }
-        // [END language_syntax_file_gcs]
+        // [END language_syntax_gcs]
 
         // [START language_syntax_text]
         private static void AnalyzeSyntaxFromText(string text)
@@ -151,7 +151,7 @@ Where command is one of
             WriteSentences(response.Sentences, response.Tokens);
         }
 
-        // [START language_syntax_file_gcs]
+        // [START language_syntax_gcs]
         private static void WriteSentences(IEnumerable<Sentence> sentences,
             RepeatedField<Token> tokens)
         {
@@ -167,10 +167,10 @@ Where command is one of
                     + $"{token.Text.Content}");
             }
         }
-        // [END language_syntax_file_gcs]
+        // [END language_syntax_gcs]
         // [END language_syntax_text]
 
-        // [START language_entity_sentiment_file_gcs]
+        // [START language_entity_sentiment_gcs]
         private static void AnalyzeEntitySentimentFromFile(string gcsUri)
         {
             var client = LanguageServiceClient.Create();
@@ -181,7 +181,7 @@ Where command is one of
             });
             WriteEntitySentiment(response.Entities);
         }
-        // [END language_entity_sentiment_file_gcs]
+        // [END language_entity_sentiment_gcs]
 
         // [START language_entity_sentiment_text]
         private static void AnalyzeEntitySentimentFromText(string text)
@@ -195,7 +195,7 @@ Where command is one of
             WriteEntitySentiment(response.Entities);
         }
 
-        // [START language_entity_sentiment_file_gcs]
+        // [START language_entity_sentiment_gcs]
         private static void WriteEntitySentiment(IEnumerable<Entity> entities)
         {
             Console.WriteLine("Entity Sentiment:");
@@ -207,10 +207,10 @@ Where command is one of
                 Console.WriteLine($"\t\tMagnitude { entity.Sentiment.Magnitude}");
             }
         }
-        // [END language_entity_sentiment_file_gcs]
+        // [END language_entity_sentiment_gcs]
         // [END language_entity_sentiment_text]
 
-        // [START language_classify_file_gcs]
+        // [START language_classify_gcs]
         private static void ClassifyTextFromFile(string gcsUri)
         {
             var client = LanguageServiceClient.Create();
@@ -221,7 +221,7 @@ Where command is one of
             });
             WriteCategories(response.Categories);
         }
-        // [END language_classify_file_gcs]
+        // [END language_classify_gcs]
 
         // [START language_classify_text]
         private static void ClassifyTextFromText(string text)
@@ -235,7 +235,7 @@ Where command is one of
             WriteCategories(response.Categories);
         }
 
-        // [START language_classify_file_gcs]
+        // [START language_classify_gcs]
         private static void WriteCategories(IEnumerable<ClassificationCategory> categories)
         {
             Console.WriteLine("Categories:");
@@ -246,7 +246,7 @@ Where command is one of
             }
         }
         // [END language_classify_text]
-        // [END language_classify_file_gcs]
+        // [END language_classify_gcs]
 
         private static void AnalyzeEverything(string text)
         {
