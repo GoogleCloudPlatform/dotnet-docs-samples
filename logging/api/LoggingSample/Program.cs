@@ -106,7 +106,7 @@ namespace GoogleCloudSamples
         }
         // [END logging_list_log_entries]
 
-        // [START create_log_sink]
+        // [START logging_create_sink]
         private void CreateSink(string sinkId, string logId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
@@ -130,9 +130,9 @@ namespace GoogleCloudSamples
             sinkClient.CreateSink(ParentNameOneof.From(projectName), myLogSink, _retryAWhile);
             Console.WriteLine($"Created sink: {sinkId}.");
         }
-        // [END create_log_sink]
+        // [END logging_create_sink]
 
-        // [START list_log_sinks]
+        // [START logging_list_sinks]
         private void ListSinks()
         {
             var sinkClient = ConfigServiceV2Client.Create();
@@ -144,9 +144,9 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"{sink.Name} {sink.ToString()}");
             }
         }
-        // [END list_log_sinks]
+        // [END logging_list_sinks]
 
-        // [START update_log_sink]
+        // [START logging_update_sink]
         private void UpdateSinkLog(string sinkId, string logId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
@@ -157,7 +157,7 @@ namespace GoogleCloudSamples
             sinkClient.UpdateSink(SinkNameOneof.From(sinkName), sink, _retryAWhile);
             Console.WriteLine($"Updated {sinkId} to export logs from {logId}.");
         }
-        // [END update_log_sink]
+        // [END logging_update_sink]
 
         // [START logging_delete_log]
         private void DeleteLog(string logId)
@@ -169,7 +169,7 @@ namespace GoogleCloudSamples
         }
         // [END logging_delete_log]
 
-        // [START logging_delete_log_sink]
+        // [START logging_delete_sink]
         private void DeleteSink(string sinkId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
@@ -177,7 +177,7 @@ namespace GoogleCloudSamples
             sinkClient.DeleteSink(SinkNameOneof.From(sinkName), _retryAWhile);
             Console.WriteLine($"Deleted {sinkId}.");
         }
-        // [END logging_delete_log_sink]
+        // [END logging_delete_sink]
 
         public int Run(string[] args)
         {
