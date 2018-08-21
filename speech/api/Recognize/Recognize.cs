@@ -303,7 +303,7 @@ namespace GoogleCloudSamples
         }
         // [END speech_transcribe_async_gcs]
 
-        // [START speech_transcribe_async_time_offsets_gcs]
+        // [START speech_transcribe_async_word_time_offsets_gcs]
         static object AsyncRecognizeGcsWords(string storageUri)
         {
             var speech = SpeechClient.Create();
@@ -333,7 +333,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_transcribe_async_time_offsets_gcs]
+        // [END speech_transcribe_async_word_time_offsets_gcs]
 
         /// <summary>
         /// Stream the content of the file to the API in 32kb chunks.
