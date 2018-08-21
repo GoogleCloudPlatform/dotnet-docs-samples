@@ -118,7 +118,7 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        // [START speech_sync_recognize]
+        // [START speech_transcribe_sync]
         static object SyncRecognize(string filePath)
         {
             var speech = SpeechClient.Create();
@@ -137,7 +137,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_sync_recognize]
+        // [END speech_transcribe_sync]
 
 
         // [START speech_sync_recognize_words]
@@ -236,7 +236,7 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        // [START speech_sync_recognize_gcs]
+        // [START speech_transcribe_sync_gcs]
         static object SyncRecognizeGcs(string storageUri)
         {
             var speech = SpeechClient.Create();
@@ -255,9 +255,9 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_sync_recognize_gcs]
+        // [END speech_transcribe_sync_gcs]
 
-        // [START speech_async_recognize]
+        // [START speech_transcribe_async]
         static object LongRunningRecognize(string filePath)
         {
             var speech = SpeechClient.Create();
@@ -278,9 +278,9 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_async_recognize]
+        // [END speech_transcribe_async]
 
-        // [START speech_async_recognize_gcs]
+        // [START speech_transcribe_async_gcs]
         static object AsyncRecognizeGcs(string storageUri)
         {
             var speech = SpeechClient.Create();
@@ -301,9 +301,9 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_async_recognize_gcs]
+        // [END speech_transcribe_async_gcs]
 
-        // [START speech_async_recognize_gcs_words]
+        // [START speech_transcribe_async_time_offsets_gcs]
         static object AsyncRecognizeGcsWords(string storageUri)
         {
             var speech = SpeechClient.Create();
@@ -333,12 +333,12 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_async_recognize_gcs_words]
+        // [END speech_transcribe_async_time_offsets_gcs]
 
         /// <summary>
         /// Stream the content of the file to the API in 32kb chunks.
         /// </summary>
-        // [START speech_streaming_recognize]
+        // [START speech_transcribe_streaming]
         static async Task<object> StreamingRecognizeAsync(string filePath)
         {
             var speech = SpeechClient.Create();
@@ -375,7 +375,7 @@ namespace GoogleCloudSamples
                     }
                 }
             });
-            // Stream the file content to the API.  Write 2 32kb chunks per 
+            // Stream the file content to the API.  Write 2 32kb chunks per
             // second.
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
@@ -397,9 +397,9 @@ namespace GoogleCloudSamples
             await printResponses;
             return 0;
         }
-        // [END speech_streaming_recognize]
+        // [END speech_transcribe_streaming]
 
-        // [START speech_streaming_mic_recognize]
+        // [START speech_transcribe_streaming_mic]
         static async Task<object> StreamingMicRecognizeAsync(int seconds)
         {
             if (NAudio.Wave.WaveIn.DeviceCount < 1)
@@ -471,7 +471,7 @@ namespace GoogleCloudSamples
             await printResponses;
             return 0;
         }
-        // [END speech_streaming_mic_recognize]
+        // [END speech_transcribe_streaming_mic]
 
         static bool IsStorageUri(string s) => s.Substring(0, 4).ToLower() == "gs:/";
 
