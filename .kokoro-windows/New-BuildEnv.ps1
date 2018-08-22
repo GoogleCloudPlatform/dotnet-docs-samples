@@ -22,8 +22,8 @@ get-command choco -ErrorAction Stop
 choco list -li | Tee-Object -Variable chocoList
 $chocoPackages = ($chocoList) -join ' '
 
-if (-not $chocoPackages.Contains('Microsoft .NET Core SDK - 2.0.')) {
-    choco install -y --sxs dotnetcore-sdk --version 2.0.0    
+if (-not $chocoPackages.Contains('Microsoft .NET Core SDK - 2.1.')) {
+    choco install -y --sxs dotnetcore-sdk --version 2.1.401    
 }
 
 if (-not $chocoPackages.Contains('.NET Core SDK 1.1.')) {
