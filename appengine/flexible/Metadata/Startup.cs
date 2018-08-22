@@ -72,12 +72,12 @@ namespace Metadata
         {
             try
             {
-                // [START get_my_ip]
+                // [START gae_flex_metadata]
                 var metadataClient = Google.Cloud.Metadata.V1.MetadataClient.Create();
                 var result = await metadataClient.GetMetadataAsync(
                     "instance/network-interfaces/0/access-configs/0/external-ip");
                 return result.Content.ToString();
-                // [END get_my_ip]
+                // [END gae_flex_metadata]
             }
             catch (System.Net.Http.HttpRequestException e)
             {

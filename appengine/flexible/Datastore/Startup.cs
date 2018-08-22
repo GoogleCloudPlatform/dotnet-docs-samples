@@ -71,13 +71,10 @@ namespace Datastore
                 return;
             }
 
-            // [START example]
             DatastoreDb datastore = DatastoreDb.Create(projectId);
             var visitKeyFactory = datastore.CreateKeyFactory("visit");
-            // [END example]
             app.Run(async (HttpContext context) =>
             {
-                // [START example]
                 // Insert a visit into Datastore:
                 Entity newVisit = new Entity();
                 newVisit.Key = visitKeyFactory.CreateIncompleteKey();
@@ -102,7 +99,6 @@ namespace Datastore
                         visit["ip_address"].StringValue));
                 }
                 await context.Response.WriteAsync(@"</body></html>");
-                // [END example]
             });
         }
 
