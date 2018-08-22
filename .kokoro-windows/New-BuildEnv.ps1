@@ -30,6 +30,8 @@ if (-not $chocoPackages.Contains('.NET Core SDK 1.1.')) {
     choco install -y --sxs dotnetcore-sdk --version 1.1.2    
 }
 
+dotnet --info
+
 if (-not $chocoPackages.Contains('nuget.commandline 4.5.')) {
     choco install -y nuget.commandline
 }   
