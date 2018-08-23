@@ -73,7 +73,6 @@ namespace GoogleCloudSamples
 
             // Test delete company
             DeleteCompany(myCompany.Name);
-
         }
 
         public static String generateRandom()
