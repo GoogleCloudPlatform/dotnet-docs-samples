@@ -19,6 +19,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.CloudTalentSolution.v3;
 using Google.Apis.CloudTalentSolution.v3.Data;
 using Google.Apis.Services;
+using Newtonsoft.Json;
 
 namespace GoogleCloudSamples
 {
@@ -64,6 +65,7 @@ namespace GoogleCloudSamples
                 HeadquartersAddress = "1600 Ampitheatre Parkway, Mountain View CA 94043",
                 ExternalId = generateRandom()
             };
+            Console.WriteLine("Serialized Company: " + JsonConvert.SerializeObject(myCompany));
             myCompany = CreateCompany(myCompany);
 
             // Test get company

@@ -23,7 +23,7 @@ using static Google.Apis.CloudTalentSolution.v3.ProjectsResource;
 
 namespace GoogleCloudSamples
 {
-    public class HowToSearch
+    public class Search
     {
         public static GoogleCredential credential;
         public static CloudTalentSolutionService jobServiceClient;

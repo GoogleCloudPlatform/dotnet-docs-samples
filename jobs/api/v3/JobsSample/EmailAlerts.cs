@@ -23,7 +23,7 @@ using Google.Apis.Services;
 
 namespace GoogleCloudSamples
 {
-    public class HowToEmailAlerts
+    public class EmailAlerts
     {
         public static GoogleCredential credential;
         public static CloudTalentSolutionService jobServiceClient;

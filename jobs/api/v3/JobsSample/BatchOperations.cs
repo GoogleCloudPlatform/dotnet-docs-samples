@@ -24,7 +24,7 @@ using Google.Apis.Services;
 
 namespace GoogleCloudSamples
 {
-    public class HowToBatchOperations
+    public class BatchOperations
     {
         public static GoogleCredential credential;
         public static CloudTalentSolutionService jobServiceClient;

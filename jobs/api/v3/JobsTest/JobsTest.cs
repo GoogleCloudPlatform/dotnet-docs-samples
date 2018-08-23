@@ -1,4 +1,4 @@
-﻿// Copyright(c) 2017 Google Inc.
+﻿// Copyright(c) 2018 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -23,47 +23,15 @@ using System.Collections.Generic;
 
 namespace GoogleCloudSamples
 {
-
-    public class LaunchSettingsFixture : IDisposable
-    {
-        public LaunchSettingsFixture()
-        {
-            using (var file = File.OpenText("Properties\\launchSettings.json"))
-            {
-                JsonTextReader reader = new JsonTextReader(file);
-                JObject jObject = JObject.Load(reader);
-
-                List<JProperty> variables = jObject
-                    .GetValue("profiles")
-                    .SelectMany(profiles => profiles.Children())
-                    .SelectMany(profile => profile.Children<JProperty>())
-                    .Where(prop => prop.Name == "environmentVariables")
-                    .SelectMany(prop => prop.Value.Children<JProperty>())
-                    .ToList();
-
-                foreach (var variable in variables)
-                {
-                    Environment.SetEnvironmentVariable(variable.Name, variable.Value.ToString());
-                }
-            }
-        }
-
-        public void Dispose()
-        {
-        }
-    }
-
     /// <summary>
     /// Runs the QuickStart console app and test output.
     /// </summary>
-    public class QuickStartTests : IClassFixture<LaunchSettingsFixture>
+    public class QuickStartTests
     {
-        readonly LaunchSettingsFixture _fixture;
         public readonly ITestOutputHelper _testOutput;
 
-        public QuickStartTests(LaunchSettingsFixture fixture, ITestOutputHelper output)
+        public QuickStartTests(ITestOutputHelper output)
         {
-            _fixture = fixture;
             _testOutput = output;
         }
 
@@ -138,56 +106,54 @@ namespace GoogleCloudSamples
     /// <summary>
     /// Runs the HowTo console app and test output.
     /// </summary>
-    public class HowToTests : IClassFixture<LaunchSettingsFixture>
+    public class HowToTests
     {
-        readonly LaunchSettingsFixture _fixture;
         public readonly ITestOutputHelper _testOutput;
 
-        public HowToTests(LaunchSettingsFixture fixture, ITestOutputHelper output)
+        public HowToTests(ITestOutputHelper output)
         {
-            _fixture = fixture;
             _testOutput = output;
         }
 
         readonly CommandLineRunner _howToCompany = new CommandLineRunner()
         {
-            VoidMain = HowToCompanies.Main,
+            VoidMain = Companies.Main,
             Command = "HowToCompanies"
         };
 
         readonly CommandLineRunner _howToJobs = new CommandLineRunner()
         {
-            VoidMain = HowToJobs.Main,
+            VoidMain = Jobs.Main,
             Command = "HowToJobs"
         };
 
         readonly CommandLineRunner _howToBatch = new CommandLineRunner()
         {
-            VoidMain = HowToBatchOperations.Main,
+            VoidMain = BatchOperations.Main,
             Command = "HowToBatchOperations"
         };
 
         readonly CommandLineRunner _howToCustomAttributes = new CommandLineRunner()
         {
-            VoidMain = HowToCustomAttributes.Main,
+            VoidMain = CustomAttributes.Main,
             Command = "HowToCustomAttributes"
         };
 
         readonly CommandLineRunner _howToSearch = new CommandLineRunner()
         {
-            VoidMain = HowToSearch.Main,
+            VoidMain = Search.Main,
             Command = "HowToCustomAttributes"
         };
 
         readonly CommandLineRunner _howToEmailAlerts = new CommandLineRunner()
         {
-            VoidMain = HowToEmailAlerts.Main,
+            VoidMain = EmailAlerts.Main,
             Command = "HowToCustomAttributes"
         };
 
         readonly CommandLineRunner _howToFeaturedJobs = new CommandLineRunner()
         {
-            VoidMain = HowToFeaturedJobs.Main,
+            VoidMain = FeaturedJobs.Main,
             Command = "HowToCustomAttributes"
         };
 

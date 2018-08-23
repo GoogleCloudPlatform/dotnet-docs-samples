@@ -14,7 +14,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\testutil\testutil.csproj" />
-    <ProjectReference Include="..\HowTo\HowTo.csproj" />
+    <ProjectReference Include="..\JobsSample\JobsSample.csproj" />
     <ProjectReference Include="..\QuickStart\QuickStart.csproj" />
   </ItemGroup>
   <ItemGroup>

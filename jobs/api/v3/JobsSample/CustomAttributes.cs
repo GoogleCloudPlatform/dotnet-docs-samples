@@ -23,7 +23,7 @@ using Google.Apis.Services;
 
 namespace GoogleCloudSamples
 {
-    public class HowToFeaturedJobs
+    public class CustomAttributes
     {
         public static GoogleCredential credential;
         public static CloudTalentSolutionService jobServiceClient;
@@ -60,15 +60,23 @@ namespace GoogleCloudSamples
             Initialize();
             SetupCompany();
 
-            GenerateFeaturedJob(myCompany.Name);
-            SearchFeaturedJobs(myCompany.Name);
+            // Test create job
 
+            Job customJob = GenerateJobWithCustomAttribute(myCompany.Name);
+
+            customJob = CreateJob(customJob);
+
+            FiltersOnStringValueCustomAttribute();
+            FiltersOnLongValueCustomAttribute();
+            FiltersOnMultiCustomAttributes();
+
+            DeleteJob(customJob.Name);
             DeleteCompany(myCompany.Name);
         }
 
-        // [START featured_job]
+        // [START custom_attribute_job]
 
-        public static Job GenerateFeaturedJob(string companyName)
+        public static Job GenerateJobWithCustomAttribute(string companyName)
         {
             ApplicationInfo applicationInfo = new ApplicationInfo()
             {
@@ -78,59 +86,122 @@ namespace GoogleCloudSamples
                 }
             };
 
-            Job job = new Job()
+            CustomAttribute customAttribute = new CustomAttribute();
+            customAttribute.StringValues = new List<String>()
             {
-                RequisitionId = generateRandom(),
-                Title = "Software Engineer",
-                CompanyName = companyName,
-                ApplicationInfo = applicationInfo,
-                Description = "Design, develop, test, deploy, maintain and improve software.",
-                PromotionValue = (2)
+                "attribute"
             };
-            Console.WriteLine("Featured job generated: " + ToJsonString(job));
-            return job;
+
+            Dictionary<String, CustomAttribute> customAttributes = new Dictionary<string, CustomAttribute>
+            {
+                { "custom_attribute", customAttribute }
+            };
+
+            Job customJob = new Job()
+            {
+                Title = "Software Engineer",
+                RequisitionId = generateRandom(),
+                Description = "My Job Description Here",
+                CompanyName = myCompany.Name,
+                ApplicationInfo = applicationInfo,
+                CustomAttributes = customAttributes
+            };
+
+            Console.WriteLine("Created custom job: " + customJob.Title);
+            return customJob;
         }
-        // [END featured_job]
+        // [END custom_attribute_job
 
-        // [START search_featured_job]
+        // [START custom_attribute_filter_string_value]
 
-        public static void SearchFeaturedJobs(string companyName)
+        public static void FiltersOnStringValueCustomAttribute()
         {
             RequestMetadata requestMetadata = new RequestMetadata()
             {
-                // Make sure to hash your userID
                 UserId = "HashedUserId",
-                // Make sure to hash the sessionID
                 SessionId = "HashedSessionId",
-                // Domain of the website where the search is conducted
                 Domain = "www.google.com"
             };
 
+            string customAttributeFilter = "NOT EMPTY(custom_attribute)";
             JobQuery jobQuery = new JobQuery()
             {
-                Query = "Software Engineer"
+                CustomAttributeFilter = customAttributeFilter
             };
 
-            if (companyName != null)
+            SearchJobsRequest searchJobsRequest = new SearchJobsRequest()
             {
-                jobQuery.CompanyNames = new List<string>
-                {
-                    companyName
-                };
-            }
-
-            SearchJobsRequest searchJobRequest = new SearchJobsRequest()
-            {
-                RequestMetadata = requestMetadata,
                 JobQuery = jobQuery,
-                SearchMode = "FEATURED_JOB_SEARCH"
+                RequestMetadata = requestMetadata,
+                JobView = "JOB_VIEW_FULL"
             };
 
-            SearchJobsResponse searchJobsResponse = jobServiceClient.Projects.Jobs.Search(searchJobRequest, parent).Execute();
+            SearchJobsResponse response = jobServiceClient.Projects.Jobs.Search(searchJobsRequest, parent).Execute();
 
-            Console.WriteLine("Featured jobs searched: " + ToJsonString(searchJobsResponse));
+            Console.WriteLine("Searched on custom attribute: " + ToJsonString(response));
         }
-        // [END search_featured_job]
+        // [END custom_attribute_filter_string_value]
+
+        // [START custom_attribute_filter_long_value]
+
+        public static void FiltersOnLongValueCustomAttribute()
+        {
+            RequestMetadata requestMetadata = new RequestMetadata()
+            {
+                UserId = "HashedUserId",
+                SessionId = "HashedSessionId",
+                Domain = "www.google.com"
+            };
+
+            string customAttributeFilter = "(255 <= someFieldName2) AND (someFieldName2 <= 267)";
+            JobQuery jobQuery = new JobQuery()
+            {
+                CustomAttributeFilter = customAttributeFilter
+            };
+
+            SearchJobsRequest searchJobsRequest = new SearchJobsRequest()
+            {
+                JobQuery = jobQuery,
+                RequestMetadata = requestMetadata,
+                JobView = "JOB_VIEW_FULL"
+            };
+
+            SearchJobsResponse response = jobServiceClient.Projects.Jobs.Search(searchJobsRequest, parent).Execute();
+
+            Console.WriteLine("Searched on custom long attribute: " + ToJsonString(response));
+        }
+        // [END custom_attribute_filter_long_value]
+
+        // [START custom_attribute_filter_multi_attributes
+
+        public static void FiltersOnMultiCustomAttributes()
+        {
+            RequestMetadata requestMetadata = new RequestMetadata()
+            {
+                UserId = "HashedUserId",
+                SessionId = "HashedSessionId",
+                Domain = "www.google.com"
+            };
+
+            string customAttributeFilter = "(someFiledName1 = \"value1\") " +
+                "AND ((255 <= someFieldName2) OR (someFieldName2 <= 213))";
+            JobQuery jobQuery = new JobQuery()
+            {
+                CustomAttributeFilter = customAttributeFilter
+            };
+
+            SearchJobsRequest searchJobsRequest = new SearchJobsRequest()
+            {
+                JobQuery = jobQuery,
+                RequestMetadata = requestMetadata,
+                JobView = "JOB_VIEW_FULL"
+            };
+
+            SearchJobsResponse response = jobServiceClient.Projects.Jobs.Search(searchJobsRequest, parent).Execute();
+
+            Console.WriteLine("Searched on cross-field-filtering: " + ToJsonString(response));
+        }
+        // [END custom_attribute_filter_multi_attributes]
 
         public static Job UpdateJob(string jobName, Job toBeUpdated)
         {

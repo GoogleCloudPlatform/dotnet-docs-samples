@@ -3,9 +3,13 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <StartupObject>GoogleCloudSamples.HowToCompanies</StartupObject>
+    <StartupObject>GoogleCloudSamples.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.3.0" />
     <PackageReference Include="Google.Apis.CloudTalentSolution.v3" Version="1.35.1.1302" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QuickStart\QuickStart.csproj" />
   </ItemGroup>
 </Project>

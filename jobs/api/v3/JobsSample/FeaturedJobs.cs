@@ -23,7 +23,7 @@ using Google.Apis.Services;
 
 namespace GoogleCloudSamples
 {
-    public class HowToJobs
+    public class FeaturedJobs
     {
         public static GoogleCredential credential;
         public static CloudTalentSolutionService jobServiceClient;
@@ -60,164 +60,119 @@ namespace GoogleCloudSamples
             Initialize();
             SetupCompany();
 
-            // Test create job
-            ApplicationInfo info = new ApplicationInfo()
-            {
-                Instruction = "Application instructions here"
-            };
-            Job newJob = new Job()
-            {
-                Title = "Software Engineer",
-                RequisitionId = generateRandom(),
-                Description = "My Job Description Here",
-                CompanyName = myCompany.Name,
-                ApplicationInfo = info
-            };
-
-            newJob = CreateJob(newJob);
-
-            newJob.Title = "Software Engineer II";
-            newJob = UpdateJob(newJob.Name, newJob);
-
-            newJob.Title = "Software Engineer III";
-            newJob = UpdateJobWithFieldMask(newJob.Name, "Title", newJob);
-
-
-            DeleteJob(newJob.Name);
+            GenerateFeaturedJob(myCompany.Name);
+            SearchFeaturedJobs(myCompany.Name);
 
             DeleteCompany(myCompany.Name);
         }
 
-        // [START create_job]
+        // [START featured_job]
 
-        public static Job CreateJob(Job jobToBeCreated)
+        public static Job GenerateFeaturedJob(string companyName)
         {
-            try
-            {
-                CreateJobRequest createJobRequest = new CreateJobRequest();
-                createJobRequest.Job = jobToBeCreated;
-
-                Job jobCreated = jobServiceClient.Projects.Jobs.Create(createJobRequest, parent).Execute();
-                Console.WriteLine("Job created: " + jobCreated.Name);
-                return jobCreated;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Got exception while creating job");
-                throw e;
-            }
-        }
-        // [END create_job]
-
-        // [START custom_attribute_job]
-        public static Job GenerateJobWithACustomAttribute(string companyName)
-        {
-            // Requisition id should be a unique Id in your system
-            string requisitionId = "jobWithCustomAttribute:" + new Random().Next().ToString();
-
-            string jobTitle = "Software Engineer";
-            string applicationURL = "http://careers.google.com";
-            string description = "Design, develop, test, deploy, maintain and inmprove software";
-
-
-            //Construct custom attributes map
-            CustomAttribute customAttribute = new CustomAttribute();
-            customAttribute.StringValues = new List<String>()
-            {
-                "value1"
-            };
-
-            Dictionary<String, CustomAttribute> customAttributes = new Dictionary<string, CustomAttribute>
-            {
-                { "customField1", customAttribute }
-            };
-
             ApplicationInfo applicationInfo = new ApplicationInfo()
             {
-                Uris = new List<String>
+                Uris = new List<string>
                 {
-                    applicationURL
+                    "http://careers.google.com"
                 }
             };
 
-            Job customJob = new Job()
+            Job job = new Job()
             {
-                Title = jobTitle,
-                RequisitionId = requisitionId,
-                Description = description,
+                RequisitionId = generateRandom(),
+                Title = "Software Engineer",
                 CompanyName = companyName,
                 ApplicationInfo = applicationInfo,
-                CustomAttributes = customAttributes
+                Description = "Design, develop, test, deploy, maintain and improve software.",
+                PromotionValue = (2)
+            };
+            Console.WriteLine("Featured job generated: " + ToJsonString(job));
+            return job;
+        }
+        // [END featured_job]
+
+        // [START search_featured_job]
+
+        public static void SearchFeaturedJobs(string companyName)
+        {
+            RequestMetadata requestMetadata = new RequestMetadata()
+            {
+                // Make sure to hash your userID
+                UserId = "HashedUserId",
+                // Make sure to hash the sessionID
+                SessionId = "HashedSessionId",
+                // Domain of the website where the search is conducted
+                Domain = "www.google.com"
             };
 
-            Console.WriteLine("Job generated:" + customJob.Title);
-            return customJob;
-        }
-        // [END custom_attribute_job]
-
-        // [START get_job]
-
-        public static Job GetJob(String jobName)
-        {
-            try
+            JobQuery jobQuery = new JobQuery()
             {
-                Job jobExisted = jobServiceClient.Projects.Jobs.Get(jobName).Execute();
-                Console.WriteLine("Job exists: " + jobExisted.Name);
-                return jobExisted;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Got exception while getting job");
-                throw e;
-            }
-        }
-        // [END get_job]
+                Query = "Software Engineer"
+            };
 
-        // [START update_job]
+            if (companyName != null)
+            {
+                jobQuery.CompanyNames = new List<string>
+                {
+                    companyName
+                };
+            }
+
+            SearchJobsRequest searchJobRequest = new SearchJobsRequest()
+            {
+                RequestMetadata = requestMetadata,
+                JobQuery = jobQuery,
+                SearchMode = "FEATURED_JOB_SEARCH"
+            };
+
+            SearchJobsResponse searchJobsResponse = jobServiceClient.Projects.Jobs.Search(searchJobRequest, parent).Execute();
+
+            Console.WriteLine("Featured jobs searched: " + ToJsonString(searchJobsResponse));
+        }
+        // [END search_featured_job]
 
         public static Job UpdateJob(string jobName, Job toBeUpdated)
         {
-            try
+            UpdateJobRequest updateJobRequest = new UpdateJobRequest()
             {
-                UpdateJobRequest updateJobRequest = new UpdateJobRequest()
-                {
-                    Job = toBeUpdated
-                };
-                Job jobUpdated = jobServiceClient.Projects.Jobs.Patch(updateJobRequest, jobName).Execute();
-                Console.WriteLine("Job updated: " + ToJsonString(jobUpdated));
-                return jobUpdated;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Got exception while updating job");
-                throw e;
-            }
+                Job = toBeUpdated
+            };
+            Job jobUpdated = jobServiceClient.Projects.Jobs.Patch(updateJobRequest, jobName).Execute();
+            Console.WriteLine("Job updated: " + ToJsonString(jobUpdated));
+            return jobUpdated;
         }
-        // [END update_job]
-
-        // [START update_job_with_field_mask]
 
         public static Job UpdateJobWithFieldMask(string jobName, string fieldMask, Job jobToBeUpdated)
         {
-            try
+            UpdateJobRequest updateJobRequest = new UpdateJobRequest()
             {
-                UpdateJobRequest updateJobRequest = new UpdateJobRequest()
-                {
-                    Job = jobToBeUpdated,
-                    UpdateMask = fieldMask
-                };
+                Job = jobToBeUpdated,
+                UpdateMask = fieldMask
+            };
 
-                Job jobUpdated = jobServiceClient.Projects.Jobs.Patch(updateJobRequest, jobName).Execute();
-                Console.WriteLine("Job updated with fieldMask: " + ToJsonString(jobUpdated));
-                return jobUpdated;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Got exception while updating job with field mask");
-                throw e;
-            }
+            Job jobUpdated = jobServiceClient.Projects.Jobs.Patch(updateJobRequest, jobName).Execute();
+            Console.WriteLine("Job updated with fieldMask: " + ToJsonString(jobUpdated));
+            return jobUpdated;
         }
-        // [END update_job_with_field_mask
+
+        public static Job CreateJob(Job jobToBeCreated)
+        {
+            CreateJobRequest createJobRequest = new CreateJobRequest();
+            createJobRequest.Job = jobToBeCreated;
+
+            Job jobCreated = jobServiceClient.Projects.Jobs.Create(createJobRequest, parent).Execute();
+            Console.WriteLine("Job created: " + jobCreated.Name);
+            return jobCreated;
+        }
+
+
+        public static Job getJob(String jobName)
+        {
+            Job jobExisted = jobServiceClient.Projects.Jobs.Get(jobName).Execute();
+            Console.WriteLine("Job exists: " + jobExisted.Name);
+            return jobExisted;
+        }
 
         public static void DeleteJob(String jobName)
         {
