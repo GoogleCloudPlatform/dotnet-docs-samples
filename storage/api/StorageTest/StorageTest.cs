@@ -251,14 +251,14 @@ namespace GoogleCloudSamples
                 Assert.Equal("", listed.Stdout);
             });
 
-            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
+            var uploaded = Run("upload", _bucketName, "Hello.txt", Collect("HelloListObjectsTest.txt"));
             AssertSucceeded(uploaded);
 
             Eventually(() =>
             {
                 var listed = Run("list", _bucketName);
                 AssertSucceeded(listed);
-                Assert.Contains("Hello.txt", listed.Stdout);
+                Assert.Contains("HelloListObjectsTest.txt", listed.Stdout);
             });
         }
 
@@ -312,7 +312,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestDownloadObject()
         {
-            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
+            var uploaded = Run("upload", _bucketName, "Hello.txt", Collect("HelloDownloadObject.txt"));
             AssertSucceeded(uploaded);
             uploaded = Run("upload", _bucketName, "Hello.txt", Collect("Hello2.txt"));
             AssertSucceeded(uploaded);
@@ -323,14 +323,14 @@ namespace GoogleCloudSamples
             {
                 Assert.Equal(File.ReadAllText("Hello.txt"),
                     File.ReadAllText("Hello2.txt"));
-                downloaded = Run("download", _bucketName, "Hello.txt",
-                    "Hello2.txt");
+                downloaded = Run("download", _bucketName, "HelloDownloadObject.txt");
                 AssertSucceeded(downloaded);
-                Assert.Equal(File.ReadAllText("Hello.txt"),
+                Assert.Equal(File.ReadAllText("HelloDownloadObject.txt"),
                     File.ReadAllText("Hello2.txt"));
             }
             finally
             {
+                File.Delete("HelloDownloadObject.txt");
                 File.Delete("Hello2.txt");
             }
         }
@@ -338,52 +338,52 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestDownloadCompleteByteRange()
         {
-            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
+            var uploaded = Run("upload", _bucketName, "Hello.txt", Collect("HelloDownloadCompleteByteRange.txt"));
             AssertSucceeded(uploaded);
 
             var downloaded = Run("download-byte-range", _bucketName,
-                "Hello.txt", "0", "20");
+                "HelloDownloadCompleteByteRange.txt", "0", "20");
             AssertSucceeded(downloaded);
             try
             {
                 var helloBytes = File.ReadAllBytes("Hello.txt");
                 Assert.Equal(
                     helloBytes,
-                    File.ReadAllBytes("Hello.txt_0-20"));
+                    File.ReadAllBytes("HelloDownloadCompleteByteRange.txt_0-20"));
             }
             finally
             {
-                File.Delete("Hello.txt_0-20");
+                File.Delete("HelloDownloadCompleteByteRange.txt_0-20");
             }
         }
 
         [Fact]
         public void TestDownloadPartialByteRange()
         {
-            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
+            var uploaded = Run("upload", _bucketName, "Hello.txt", Collect("HelloDownloadPartialByteRange.txt"));
             AssertSucceeded(uploaded);
 
             var downloaded = Run("download-byte-range", _bucketName,
-                "Hello.txt", "1", "5");
+                "HelloDownloadPartialByteRange.txt", "1", "5");
             AssertSucceeded(downloaded);
             try
             {
                 var helloBytes = File.ReadAllBytes("Hello.txt");
                 Assert.Equal(
                     helloBytes.Skip(1).Take(5).ToArray(),
-                    File.ReadAllBytes("Hello.txt_1-5"));
+                    File.ReadAllBytes("HelloDownloadPartialByteRange.txt_1-5"));
             }
             finally
             {
-                File.Delete("Hello.txt_1-5");
+                File.Delete("HelloDownloadPartialByteRange.txt_1-5");
             }
         }
 
         [Fact]
         public void TestGetMetadata()
         {
-            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
-            var got = Run("get-metadata", _bucketName, "Hello.txt");
+            var uploaded = Run("upload", _bucketName, "Hello.txt", Collect("HelloGetMetadata.txt"));
+            var got = Run("get-metadata", _bucketName, "HelloGetMetadata.txt");
             AssertSucceeded(got);
             Assert.Contains("Generation", got.Stdout);
             Assert.Contains("Size", got.Stdout);
@@ -392,8 +392,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestMakePublic()
         {
-            var uploaded = Run("upload", _bucketName, Collect("Hello.txt"));
-            var got = Run("get-metadata", _bucketName, "Hello.txt");
+            var uploaded = Run("upload", _bucketName, "Hello.txt", Collect("HelloMakePublic.txt"));
+            var got = Run("get-metadata", _bucketName, "HelloMakePublic.txt");
             AssertSucceeded(got);
             var medialink_regex = new Regex(@"MediaLink:\s?(.+)");
             var match = medialink_regex.Match(got.Stdout);
@@ -407,7 +407,7 @@ namespace GoogleCloudSamples
                 webClient.DownloadString(medialink));
 
             // Make it public and try fetching again.
-            var madePublic = Run("make-public", _bucketName, "Hello.txt");
+            var madePublic = Run("make-public", _bucketName, "HelloMakePublic.txt");
             AssertSucceeded(madePublic);
             var text = webClient.DownloadString(medialink);
             Assert.Equal(File.ReadAllText("Hello.txt"), text);
@@ -416,33 +416,33 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestMove()
         {
-            Run("upload", _bucketName, Collect("Hello.txt"));
+            Run("upload", _bucketName, "Hello.txt", Collect("HelloMove.txt"));
             // Make sure the file doesn't exist until we move it there.
-            var got = Run("get-metadata", _bucketName, "Bye.txt");
+            var got = Run("get-metadata", _bucketName, "ByeMove.txt");
             Assert.Equal(404, got.ExitCode);
             // Now move it there.
-            AssertSucceeded(Run("move", _bucketName, "Hello.txt", Collect("Bye.txt")));
-            // If we try to clean up "Hello.txt", it will fail because it moved.
-            _garbage[_bucketName].Remove("Hello.txt");
-            AssertSucceeded(Run("get-metadata", _bucketName, "Bye.txt"));
+            AssertSucceeded(Run("move", _bucketName, "HelloMove.txt", Collect("ByeMove.txt")));
+            // If we try to clean up "HelloMove.txt", it will fail because it moved.
+            _garbage[_bucketName].Remove("HelloMove.txt");
+            AssertSucceeded(Run("get-metadata", _bucketName, "ByeMove.txt"));
         }
 
         [Fact]
         public void TestCopy()
         {
-            Run("upload", _bucketName, Collect("Hello.txt"));
+            Run("upload", _bucketName, "Hello.txt", Collect("HelloCopy.txt"));
             using (var otherBucket = new BucketFixture())
             {
-                AssertSucceeded(Run("copy", _bucketName, "Hello.txt",
-                    otherBucket.BucketName, "Bye.txt"));
+                AssertSucceeded(Run("copy", _bucketName, "HelloCopy.txt",
+                    otherBucket.BucketName, "ByeCopy.txt"));
                 try
                 {
                     AssertSucceeded(Run("get-metadata", otherBucket.BucketName,
-                        "Bye.txt"));
+                        "ByeCopy.txt"));
                 }
                 finally
                 {
-                    Run("delete", otherBucket.BucketName, "Bye.txt");
+                    Run("delete", otherBucket.BucketName, "ByeCopy.txt");
                 }
             }
         }
@@ -524,37 +524,37 @@ namespace GoogleCloudSamples
         {
             string userEmail =
                "230835935096-8io28ro0tvbbv612p5k6nstlaucmhnrq@developer.gserviceaccount.com";
-            Run("upload", _bucketName, Collect("Hello.txt"));
-            var printedAcl = Run("print-acl", _bucketName, "Hello.txt");
+            Run("upload", _bucketName, "Hello.txt", Collect("HelloAddObjectOwner.txt"));
+            var printedAcl = Run("print-acl", _bucketName, "HelloAddObjectOwner.txt");
             AssertSucceeded(printedAcl);
             Assert.DoesNotContain(userEmail, printedAcl.Stdout);
             var printedAclForUser = Run("print-acl-for-user", _bucketName,
-                "Hello.txt", userEmail);
+                "HelloAddObjectOwner.txt", userEmail);
             Assert.Equal("", printedAclForUser.Stdout);
 
             // Add the owner.
             var addedOwner = Run("add-owner", _bucketName,
-                "Hello.txt", userEmail);
+                "HelloAddObjectOwner.txt", userEmail);
             AssertSucceeded(addedOwner);
 
             // Make sure we print-acl shows us the user.
-            printedAcl = Run("print-acl", _bucketName, "Hello.txt");
+            printedAcl = Run("print-acl", _bucketName, "HelloAddObjectOwner.txt");
             AssertSucceeded(printedAcl);
             Assert.Contains(userEmail, printedAcl.Stdout);
 
             // Make sure we print-acl-for-user shows us the user, 
             // but not all the ACLs.
             printedAclForUser = Run("print-acl-for-user", _bucketName,
-                "Hello.txt", userEmail);
+                "HelloAddObjectOwner.txt", userEmail);
             Assert.Contains(userEmail, printedAclForUser.Stdout);
             Assert.True(printedAcl.Stdout.Length >
                 printedAclForUser.Stdout.Length);
 
             // Remove the owner.
-            var removedOwner = Run("remove-owner", _bucketName, "Hello.txt",
+            var removedOwner = Run("remove-owner", _bucketName, "HelloAddObjectOwner.txt",
                 userEmail);
             AssertSucceeded(removedOwner);
-            printedAcl = Run("print-acl", _bucketName, "Hello.txt");
+            printedAcl = Run("print-acl", _bucketName, "HelloAddObjectOwner.txt");
             AssertSucceeded(printedAcl);
             Assert.DoesNotContain(userEmail, printedAcl.Stdout);
         }
@@ -609,17 +609,17 @@ namespace GoogleCloudSamples
         {
             var uploadWithKmsKeyResponse = Run("upload-with-kms-key",
                     _bucketName1, s_kmsKeyLocation, _kmsKeyRing,
-                    _kmsKeyName, CollectRegionalObject("Hello.txt"));
+                    _kmsKeyName, "Hello.txt", CollectRegionalObject("HelloUploadWithKmsKey.txt"));
             AssertSucceeded(uploadWithKmsKeyResponse);
-            var objectMetadata = Run("get-metadata", _bucketName1, "Hello.txt");
+            var objectMetadata = Run("get-metadata", _bucketName1, "HelloUploadWithKmsKey.txt");
             Assert.Contains(_kmsKeyName, objectMetadata.Stdout);
         }
 
         [Fact]
         public void TestSignUrl()
         {
-            Run("upload", _bucketName, Collect("Hello.txt"));
-            var output = Run("generate-signed-url", _bucketName, "Hello.txt");
+            Run("upload", _bucketName, "Hello.txt", Collect("HelloSignUrl.txt"));
+            var output = Run("generate-signed-url", _bucketName, "HelloSignUrl.txt");
             AssertSucceeded(output);
             // Try fetching the url to make sure it works.
             var client = new HttpClient();
@@ -641,13 +641,13 @@ namespace GoogleCloudSamples
             AssertSucceeded(output);
             string key = output.Stdout.Trim();
             output = Run("upload", "-key", key, _bucketName,
-                Collect("Hello.txt"));
+                "Hello.txt", Collect("HelloEncryptUploadAndDownload.txt"));
             AssertSucceeded(output);
             // Downloading without the key should fail.
-            output = Run("download", _bucketName, "Hello.txt");
+            output = Run("download", _bucketName, "HelloEncryptUploadAndDownload.txt");
             Assert.NotEqual(0, output.ExitCode);
             // Downloading with the key should yield the original file.
-            output = Run("download", "-key", key, _bucketName, "Hello.txt",
+            output = Run("download", "-key", key, _bucketName, "HelloEncryptUploadAndDownload.txt",
                 "Hello-downloaded.txt");
             AssertSucceeded(output);
             Assert.Equal(File.ReadAllText("Hello.txt"),
@@ -686,20 +686,20 @@ namespace GoogleCloudSamples
                 AssertSucceeded(enabled);
 
                 var uploaded = Run("upload", _bucketName, "-pay",
-                    Collect("Hello.txt"));
+                    "Hello.txt", Collect("HelloDownloadObjectRequesterPays.txt"));
                 AssertSucceeded(uploaded);
 
                 var downloaded = Run("download", _bucketName, "-pay",
-                    "Hello.txt", "Hello2.txt");
+                    "HelloDownloadObjectRequesterPays.txt", "HelloDownloadObjectRequesterPays2.txt");
                 AssertSucceeded(downloaded);
                 try
                 {
                     Assert.Equal(File.ReadAllText("Hello.txt"),
-                        File.ReadAllText("Hello2.txt"));
+                        File.ReadAllText("HelloDownloadObjectRequesterPays2.txt"));
                 }
                 finally
                 {
-                    File.Delete("Hello2.txt");
+                    File.Delete("HelloDownloadObjectRequesterPays2.txt");
                 }
             }
             finally
