@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Kms.V1" Version="1.0.0-beta03" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsecrets.json.encrypted" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="appsecrets.json.keyname" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
