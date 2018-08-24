@@ -12,7 +12,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+    <ProjectReference Include="..\..\..\..\testutil\testutil.csproj" />
     <ProjectReference Include="..\QuickStart\QuickStart.csproj" />
   </ItemGroup>
 </Project>
