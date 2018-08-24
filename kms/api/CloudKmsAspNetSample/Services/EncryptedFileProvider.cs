@@ -23,11 +23,25 @@ using System.IO;
 
 namespace CloudKmsAspNetSample.Services.Kms
 {
+    /// <summary>
+    /// Decrypts encrypted files in memory, 
+    /// using Google Cloud Key Management Service
+    /// https://cloud.google.com/kms/
+    /// 
+    /// Encrypted files end with the extension .encrypted and have a
+    /// corresponding file ending with the extension .encrypted.
+    /// </summary>
     public class EncryptedFileProvider : IFileProvider
     {
         private readonly KeyManagementServiceClient kms;
         private readonly IFileProvider innerProvider;
 
+        /// <summary>
+        /// Creates an EncryptedFileProvider.
+        /// </summary>
+        /// <param name="kms">Optional.</param>
+        /// <param name="innerProvider">Optional.  An IFileProvider
+        /// containing encrypted files.</param>
         public EncryptedFileProvider(
             KeyManagementServiceClient kms = null,
             IFileProvider innerProvider = null)

@@ -36,6 +36,7 @@ namespace CloudKmsAspNetSample
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.AddJsonFile(
+                        // Decrypts the file in memory.
                         new Services.Kms.EncryptedFileProvider(), "appsecrets.json.encrypted",
                         optional: true, reloadOnChange: false);
                 })
