@@ -18,10 +18,10 @@ This sample requires [.NET Core 2.0](
     to visit Cloud Platform Console and enable the Google Cloud Key Management Service API.
 
 5.  Create a new encryption key.
-    '''
+    ```
     PS > .\New-EncryptionKey.ps1
     projects/<your-project-id>/locations/global/keyRings/webapp/cryptoKeys/appsecrets
-    '''
+    ```
 
 6.  Create a file called `appsecrets.json` and fill it with this json:
     ```
