@@ -21,7 +21,7 @@ Studio 2017 or later and build it.
 
 But no sample will work until you 
 
-1.  **Follow the set-up instructions in the [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 6.  **Download or clone this repo** with
     ```sh
