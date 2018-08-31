@@ -37,7 +37,7 @@ Most of what Sudokumb does is actually pretty smart.
 
 ## Prerequisites
 
-1.  **Follow the set-up instructions in the [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 2.  Install the [.NET Core SDK, version 2.0](https://www.microsoft.com/net/download/dotnet-core/sdk-2.0.3).
 

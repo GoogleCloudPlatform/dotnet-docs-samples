@@ -5,7 +5,7 @@ when running in Google App Engine Flexible Environment.
 
 ## Prerequisites
 
-0.  **Follow the set-up instructions in the [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+0.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
   
 1.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=sqladmin.googleapis.com&showconfirmation=true)
