@@ -33,12 +33,12 @@ Most of what Sudokumb does is actually pretty smart.
 
 [Learn how](./WebLib/PubSub.md).
 
-# Building and Running 
+# Building and Running
 
 ## Prerequisites
 
-1.  **Follow the instructions in the [root README](../../README.md).**
-  
+1.  **Follow the set-up instructions in the [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+
 2.  Install the [.NET Core SDK, version 2.0](https://www.microsoft.com/net/download/dotnet-core/sdk-2.0.3).
 
 3.  [Click here](https://console.cloud.google.com/flows/enableapi?apiid=datastore.googleapis.com&showconfirmation=true)
