@@ -39,6 +39,3 @@ For instructions regarding development environment setup, please visit [the docu
 Samples in this repository follow the [framework coding
 style](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md).
 This is enforced using [CodeFormatter](https://github.com/dotnet/codeformatter).
-
-## Canonical Sample
-The [Cloud Storage sample](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/master/storage/api/Storage/Storage.cs) is a great example of what we expect from samples. It's a great sample to copy and start from.
