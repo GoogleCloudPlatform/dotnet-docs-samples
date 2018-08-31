@@ -19,6 +19,9 @@ Follow either of the two links above to access the appropriate CLA and
 instructions for how to sign and return it. Once we receive it, we'll be able to
 accept your pull requests.
 
+## Setting Up An Environment
+For instructions regarding development environment setup, please visit [the documentation](https://cloud.google.com/dotnet/docs/setup).
+
 ## Contributing A Patch
 
 1. Submit an issue describing your proposed change to the repo in question.
@@ -36,3 +39,6 @@ accept your pull requests.
 Samples in this repository follow the [framework coding
 style](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md).
 This is enforced using [CodeFormatter](https://github.com/dotnet/codeformatter).
+
+## Canonical Sample
+The [Cloud Storage sample](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/master/storage/api/Storage/Storage.cs) is a great example of what we expect from samples. It's a great sample to copy and start from.
