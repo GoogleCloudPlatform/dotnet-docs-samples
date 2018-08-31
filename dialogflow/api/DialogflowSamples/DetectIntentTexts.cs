@@ -42,7 +42,7 @@ namespace GoogleCloudSamples
             public string LanguageCode { get; set; }
         }
 
-        // [START dialogflow_detect_intent_texts]
+        // [START dialogflow_detect_intent_text]
         public static int DetectIntentFromTexts(string projectId,
                                                 string sessionId,
                                                 string[] texts,
@@ -78,6 +78,6 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-        // [END dialogflow_detect_intent_texts]
+        // [END dialogflow_detect_intent_text]
     }
 }

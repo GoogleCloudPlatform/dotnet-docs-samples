@@ -12,9 +12,11 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Storage.V1;
 using Google.Cloud.Vision.V1;
 using System;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -241,6 +243,36 @@ namespace GoogleCloudSamples
             {
                 collector.CopyToBucket(args[1], objectName);
                 return _detect.Run(cmdArgs);
+            }
+        }
+
+        [Fact]
+        public void DetectPdfDocument()
+        {
+            var _pdfFileName = "HodgeConj.pdf";
+            var outputPrefix = "";
+            var localPath = Path.Combine("data", _pdfFileName);
+            var gcsSourceURI = $"gs://{_bucketName}/{_pdfFileName}";
+            ConsoleOutput output;
+
+            string[] cmdArgs = { "ocr", gcsSourceURI, _bucketName, outputPrefix };
+
+            using (var collector = new BucketCollector(_bucketName))
+            {
+                collector.CopyToBucket(localPath, _pdfFileName);
+                output = _detect.Run(cmdArgs);
+
+                Assert.Equal(0, output.ExitCode);
+                Assert.Contains("Full text:", output.Stdout);
+                Assert.Contains("Hodge conjecture", output.Stdout);
+            }
+
+            // Clean up output files.
+            var storageClient = StorageClient.Create();
+            var blobList = storageClient.ListObjects(_bucketName, "");
+            foreach (var outputFile in blobList.Where(x => x.Name.Contains(".json")).Select(x => x.Name))
+            {
+                storageClient.DeleteObject(_bucketName, outputFile);
             }
         }
     }

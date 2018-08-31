@@ -13,8 +13,13 @@
 // the License.
 
 using CommandLine;
+using Google.Cloud.Storage.V1;
 using Google.Cloud.Vision.V1;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using Google.Protobuf;
 
 namespace GoogleCloudSamples
 {
@@ -56,6 +61,19 @@ namespace GoogleCloudSamples
 
     [Verb("doc-text", HelpText = "Detect text in a document image.")]
     class DetectDocTextOptions : ImageOptions { }
+
+    [Verb("ocr", HelpText = "Performs document text OCR.")]
+    class DetectDocumentOptions
+    {
+        [Value(0, HelpText = "The Google Storage location of the source file")]
+        public string SourceURI { get; set; }
+
+        [Value(1, HelpText = "The destination Google Storage bucket name (no schema)")]
+        public string OutputBucket { get; set; }
+
+        [Value(1, HelpText = "The destination Google Storage prefix (no bucket name)")]
+        public string OutputPrefix { get; set; }
+    }
 
     public class DetectProgram
     {
@@ -318,6 +336,89 @@ namespace GoogleCloudSamples
             return 0;
         }
 
+        // [START vision_text_detection_pdf_gcs]
+        private static object DetectDocument(string gcsSourceUri,
+            string gcsDestinationBucketName, string gcsDestinationPrefixName)
+        {
+            var client = ImageAnnotatorClient.Create();
+
+            var asyncRequest = new AsyncAnnotateFileRequest
+            {
+                InputConfig = new InputConfig
+                {
+                    GcsSource = new GcsSource
+                    {
+                        Uri = gcsSourceUri
+                    },
+                    // Supported mime_types are: 'application/pdf' and 'image/tiff'
+                    MimeType = "application/pdf"
+                },
+                OutputConfig = new OutputConfig
+                {
+                    // How many pages should be grouped into each json output file.
+                    BatchSize = 2,
+                    GcsDestination = new GcsDestination
+                    {
+                        Uri = $"gs://{gcsDestinationBucketName}/{gcsDestinationPrefixName}"
+                    }
+                }
+            };
+
+            asyncRequest.Features.Add(new Feature
+            {
+                Type = Feature.Types.Type.DocumentTextDetection
+            });
+
+            List<AsyncAnnotateFileRequest> requests =
+                new List<AsyncAnnotateFileRequest>();
+            requests.Add(asyncRequest);
+
+            var operation = client.AsyncBatchAnnotateFiles(requests);
+
+            Console.WriteLine("Waiting for the operation to finish");
+
+            operation.PollUntilCompleted();
+
+            // Once the rquest has completed and the output has been
+            // written to GCS, we can list all the output files.
+            var storageClient = StorageClient.Create();
+
+            // List objects with the given prefix.
+            var blobList = storageClient.ListObjects(gcsDestinationBucketName,
+                gcsDestinationPrefixName);
+            Console.WriteLine("Output files:");
+            foreach (var blob in blobList)
+            {
+                Console.WriteLine(blob.Name);
+            }
+
+            // Process the first output file from GCS.
+            // Select the first JSON file from the objects in the list.
+            var output = blobList.Where(x => x.Name.Contains(".json")).First();
+
+            var jsonString = "";
+            using (var stream = new MemoryStream())
+            {
+                storageClient.DownloadObject(output, stream);
+                jsonString = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+            }
+
+            var response = JsonParser.Default
+                        .Parse<AnnotateFileResponse>(jsonString);
+
+            // The actual response for the first page of the input file.
+            var firstPageResponses = response.Responses[0];
+            var annotation = firstPageResponses.FullTextAnnotation;
+
+            // Here we print the full text from the first page.
+            // The response contains more information:
+            // annotation/pages/blocks/paragraphs/words/symbols
+            // including confidence scores and bounding boxes
+            Console.WriteLine($"Full text: \n {annotation.Text}");
+
+            return 0;
+        }
+        // [END vision_text_detection_pdf_gcs]
 
         public static void Main(string[] args)
         {
@@ -331,7 +432,8 @@ namespace GoogleCloudSamples
                 DetectLandmarksOptions,
                 DetectCropHintOptions,
                 DetectWebOptions,
-                DetectDocTextOptions
+                DetectDocTextOptions,
+                DetectDocumentOptions
                 >(args)
               .MapResult(
                 (DetectLabelsOptions opts) => DetectLabels(ImageFromArg(opts.FilePath)),
@@ -344,6 +446,7 @@ namespace GoogleCloudSamples
                 (DetectCropHintOptions opts) => DetectCropHint(ImageFromArg(opts.FilePath)),
                 (DetectWebOptions opts) => DetectWeb(ImageFromArg(opts.FilePath)),
                 (DetectDocTextOptions opts) => DetectDocText(ImageFromArg(opts.FilePath)),
+                (DetectDocumentOptions opts) => DetectDocument(opts.SourceURI, opts.OutputBucket, opts.OutputPrefix),
                 errs => 1);
         }
     }

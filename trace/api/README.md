@@ -11,7 +11,7 @@ can use [this older sample](
 
 ## Build and Run
 
-1.  **Follow the instructions in the [root README](../../README.md)**.
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 3. In [appsettings.json](appsettings.json) change the placeholder value of
 "YOUR-GOOGLE-PROJECT-ID" to be your project id.

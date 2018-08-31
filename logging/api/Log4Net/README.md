@@ -9,7 +9,7 @@ A sample demonstrating how create a custom log entry using Log4Net and Google Cl
 
 ## Build and Run
 
-1.  **Follow the instructions in the [root README](../../../README.md)**.
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 2.  Open [Log4NetSample.sln](Log4NetSample.sln) with Microsoft Visual Studio version 2015 or later.
 

@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <StartupObject>GoogleCloudSamples.QuickStart</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.CloudTalentSolution.v3" Version="1.35.1.1302" />
+  </ItemGroup>
+</Project>

@@ -39,7 +39,7 @@ namespace Stackdriver
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        // [START configure_services_logging]
+        // [START gae_flex_use_logging]
         // [START configure_services_error_reporting]
         // [START configure_services_trace]
         public void ConfigureServices(IServiceCollection services)
@@ -65,12 +65,12 @@ namespace Stackdriver
             // Add framework services.
             services.AddMvc();
         }
-        // [END configure_services_logging]
+        // [END gae_flex_use_logging]
         // [END configure_services_error_reporting]
         // [END configure_services_trace]
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        // [START configure_and_use_logging]
+        // [START gae_flex_configure_logging]
         // [START configure_error_reporting]
         // [START configure_trace]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -94,7 +94,7 @@ namespace Stackdriver
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
-        // [END configure_and_use_logging]
+        // [END gae_flex_configure_logging]
         // [END configure_error_reporting]
         // [END configure_trace]
     }

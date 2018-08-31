@@ -395,6 +395,7 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    // [START spanner_retry_strategy]
     public class RetryRobot
     {
         public TimeSpan FirstRetryDelay { get; set; } = TimeSpan.FromSeconds(1000);
@@ -423,12 +424,12 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
         }
-
         private bool ShouldCatch(Exception e)
         {
             return ShouldRetry != null && ShouldRetry(e);
         }
     }
+    // [END spanner_retry_strategy]
 
     public class Program
     {
@@ -1193,9 +1194,9 @@ namespace GoogleCloudSamples.Spanner
             };
             List<Album> albums = new List<Album> {
                 new Album {singerId = firstSingerId, albumId = 1,
-                    albumTitle = "Go, Go, Go"},
-                new Album {singerId = firstSingerId, albumId = 2,
                     albumTitle = "Total Junk"},
+                new Album {singerId = firstSingerId, albumId = 2,
+                    albumTitle = "Go, Go, Go"},
                 new Album {singerId = secondSingerId, albumId = 1,
                     albumTitle = "Green"},
                 new Album {singerId = secondSingerId, albumId = 2,
@@ -1509,20 +1510,30 @@ namespace GoogleCloudSamples.Spanner
             var response = platform == s_netCorePlatform
                 ? Task.Run(async () =>
                 {
-                    var retryRobot = new RetryRobot { MaxTryCount = 3, DelayMultiplier = 2, ShouldRetry = (e) => e.IsTransientSpannerFault() };
+                    var retryRobot = new RetryRobot
+                    {
+                        MaxTryCount = 3,
+                        DelayMultiplier = 2,
+                        ShouldRetry = (e) => e.IsTransientSpannerFault()
+                    };
 
-                    await retryRobot.Eventually(
-                        () => ReadWriteWithTransactionCoreAsync(
+                    await retryRobot.Eventually(() =>
+                        ReadWriteWithTransactionCoreAsync(
                             projectId, instanceId, databaseId));
                 })
                 : Task.Run(async () =>
                 {
                     // [START spanner_read_write_retry]
-                    var retryRobot = new RetryRobot { MaxTryCount = 3, DelayMultiplier = 2, ShouldRetry = (e) => e.IsTransientSpannerFault() };
+                    var retryRobot = new RetryRobot
+                    {
+                        MaxTryCount = 3,
+                        DelayMultiplier = 2,
+                        ShouldRetry = (e) => e.IsTransientSpannerFault()
+                    };
 
                     await retryRobot.Eventually(() =>
                         ReadWriteWithTransactionAsync(
-                                projectId, instanceId, databaseId));
+                            projectId, instanceId, databaseId));
                     // [END spanner_read_write_retry]
                 });
             response.Wait();

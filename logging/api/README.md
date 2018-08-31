@@ -15,7 +15,7 @@ can use [this older sample](
 
 ## Build and Run
 
-1.  **Follow the instructions in the [root README](../../README.md)**.
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 2.  Edit [`Program.cs`](LoggingSample/Program.cs), and replace YOUR-PROJECT-ID with id
     of the project you created in step 1.

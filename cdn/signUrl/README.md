@@ -12,7 +12,7 @@ This sample requires [.NET Core 2.0](
 
 ## Build and Run
 
-1.  **Follow the instructions in the [root README](../../README.md)**.
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 2.  Follow the instructions here
     [https://cloud.google.com/cdn/docs/signed-urls#creatingkeys](https://cloud.google.com/cdn/docs/signed-urls#creatingkeys)

@@ -72,7 +72,7 @@ namespace Analytics
                 ");
                 return;
             }
-            // [START track_event]
+            // [START gae_flex_analytics_track_event]
             HttpClient http = new HttpClient()
             {
                 BaseAddress = new Uri("http://www.google-analytics.com/")
@@ -91,7 +91,7 @@ namespace Analytics
                     { "ev" , "0" },  // Event value, must be an integer
                 });
             var post = http.PostAsync("collect", content);
-            // [END track_event]
+            // [END gae_flex_analytics_track_event]
             await context.Response.WriteAsync(string.Format(@"
                 <html>
                 <head><title>Analytics Sample</title></head>

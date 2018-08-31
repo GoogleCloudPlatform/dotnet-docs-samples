@@ -67,7 +67,7 @@ namespace GoogleCloudSamples
             return loggingSample.Run(args);
         }
 
-        // [START write_log_entry]
+        // [START logging_write_log_entry]
         private void WriteLogEntry(string logId, string message)
         {
             var client = LoggingServiceV2Client.Create();
@@ -88,9 +88,9 @@ namespace GoogleCloudSamples
                 new[] { logEntry }, _retryAWhile);
             Console.WriteLine($"Created log entry in log-id: {logId}.");
         }
-        // [END write_log_entry]
+        // [END logging_write_log_entry]
 
-        // [START list_log_entries]
+        // [START logging_list_log_entries]
         private void ListLogEntries(string logId)
         {
             var client = LoggingServiceV2Client.Create();
@@ -104,9 +104,9 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"{row.TextPayload.Trim()}");
             }
         }
-        // [END list_log_entries]
+        // [END logging_list_log_entries]
 
-        // [START create_log_sink]
+        // [START logging_create_sink]
         private void CreateSink(string sinkId, string logId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
@@ -130,9 +130,9 @@ namespace GoogleCloudSamples
             sinkClient.CreateSink(ParentNameOneof.From(projectName), myLogSink, _retryAWhile);
             Console.WriteLine($"Created sink: {sinkId}.");
         }
-        // [END create_log_sink]
+        // [END logging_create_sink]
 
-        // [START list_log_sinks]
+        // [START logging_list_sinks]
         private void ListSinks()
         {
             var sinkClient = ConfigServiceV2Client.Create();
@@ -144,9 +144,9 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"{sink.Name} {sink.ToString()}");
             }
         }
-        // [END list_log_sinks]
+        // [END logging_list_sinks]
 
-        // [START update_log_sink]
+        // [START logging_update_sink]
         private void UpdateSinkLog(string sinkId, string logId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
@@ -157,9 +157,9 @@ namespace GoogleCloudSamples
             sinkClient.UpdateSink(SinkNameOneof.From(sinkName), sink, _retryAWhile);
             Console.WriteLine($"Updated {sinkId} to export logs from {logId}.");
         }
-        // [END update_log_sink]
+        // [END logging_update_sink]
 
-        // [START delete_log]
+        // [START logging_delete_log]
         private void DeleteLog(string logId)
         {
             var client = LoggingServiceV2Client.Create();
@@ -167,9 +167,9 @@ namespace GoogleCloudSamples
             client.DeleteLog(LogNameOneof.From(logName), _retryAWhile);
             Console.WriteLine($"Deleted {logId}.");
         }
-        // [END delete_log]
+        // [END logging_delete_log]
 
-        // [START delete_log_sink]
+        // [START logging_delete_sink]
         private void DeleteSink(string sinkId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
@@ -177,7 +177,7 @@ namespace GoogleCloudSamples
             sinkClient.DeleteSink(SinkNameOneof.From(sinkName), _retryAWhile);
             Console.WriteLine($"Deleted {sinkId}.");
         }
-        // [END delete_log_sink]
+        // [END logging_delete_sink]
 
         public int Run(string[] args)
         {

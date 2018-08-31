@@ -492,7 +492,6 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
                 break
             }
         }
-        Remove-Job -Force $job
         $results[$jobState] += @($relativePath)
         # If the script left no TestResults.xml, create one.
         $parentDir = (Get-Item $script).Directory
@@ -501,9 +500,12 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
             if ($jobState -eq 'Skipped') {
                 Write-SkippedXml $script $elapsed
             } else {
+                $job.ChildJobs[0].JobStateInfo.Reason.Message | Out-File -Append -FilePath $tempOut
+                $job.ChildJobs[0].Error | Out-File -Append -FilePath $tempOut
                 Write-FailureXml $script (Get-Content $tempOut) $elapsed -timedOut:($jobState -eq 'Timed Out')
             }
         }
+        Remove-Job -Force $job
     }
 }
 

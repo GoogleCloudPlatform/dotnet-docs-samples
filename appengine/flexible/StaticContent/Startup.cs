@@ -33,10 +33,10 @@ namespace StaticContent
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
-            // [START staticfiles]
+            // [START gae_flex_dotnet_static_files]
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            // [END staticfiles]
+            // [END gae_flex_dotnet_static_files]
 
             if (env.IsDevelopment())
             {
