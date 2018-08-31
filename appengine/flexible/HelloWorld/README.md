@@ -4,7 +4,7 @@ This sample application is ready to deploy to Google App Engine Flexible Environ
 
 ## Prerequisites
 
-1.  **Follow the set-up instructions in the [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
   
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.

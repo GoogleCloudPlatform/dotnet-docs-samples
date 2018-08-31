@@ -12,7 +12,7 @@ log in.
 Yeah, there's a ton of prerequisites.  But every one of them is necessary.
 Hang in there.
 
-1.  **Follow the set-up instructions in the [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
   
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The 
 	Google Cloud SDK is required to deploy .NET applications to App Engine.

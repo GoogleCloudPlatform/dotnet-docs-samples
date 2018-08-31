@@ -21,7 +21,7 @@ If you only want to run the complete sample refer to the application in the Lead
 
 ## Build and Run
 
-1.  **Follow the set-up instructions in the [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 4.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com&showconfirmation=true)
