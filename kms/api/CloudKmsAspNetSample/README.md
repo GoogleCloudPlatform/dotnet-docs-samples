@@ -4,6 +4,8 @@ A sample that demonstrates how to integrate
 [Google Cloud Key Management Service API](https://cloud.google.com/kms/docs)
 with ASP.NET MVC's appsettings to store secrets in a simple json file.
 
+See [Keeping Secrets in ASP.NET’s appsettings.json](https://medium.com/@SurferJeff/keeping-secrets-in-asp-nets-appsettings-json-5694e533dc87) for a discussion of this code.
+
 This sample requires [.NET Core 2.0](
     https://www.microsoft.com/net/core) or later.  That means using
 [Visual Studio 2017](
