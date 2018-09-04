@@ -11,10 +11,9 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
+using Google.Cloud.Dialogflow.V2;
+using Google.Protobuf;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,6 +27,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
     /// </summary>
     public class ConvRequest
     {
+        // A Protobuf JSON parser configured to ignore unknown fields. This makes
+        // the action robust against new fields being introduced by Dialogflow.
+        private static readonly JsonParser jsonParser =
+            new JsonParser(JsonParser.Settings.Default.WithIgnoreUnknownFields(true));
+
         /// <summary>
         /// Parses an HTTP request into a Conversation request that Dialogflow expects.
         /// </summary>
@@ -35,21 +39,20 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         /// <returns>A conversation request</returns>
         public static async Task<ConvRequest> ParseAsync(HttpRequest httpRequest)
         {
-            var json = await ConvertToString(httpRequest);
- 
-            // Parse conversation parameters from JSON from DialogFlow
-            var stringReader = new StringReader(json);
-            var jsonTextReader = new JsonTextReader(stringReader) {
-                DateParseHandling = DateParseHandling.None
-            };
-            var request = JObject.Load(jsonTextReader);
-            var session = request["session"].Value<string>();
-            var queryResult = request["queryResult"];
-            var queryText = queryResult["queryText"].Value<string>();
-            var intentName = queryResult["action"].Value<string>();
-            var parameters = ((IEnumerable)queryResult["parameters"]).Cast<JProperty>()
-                .ToDictionary(x => x.Name.ToLowerInvariant(), x => x.Value.ToString().ToLowerInvariant());
-            return new ConvRequest(session, queryText, intentName, parameters);
+            WebhookRequest req;
+
+            using (var reader = new StreamReader(httpRequest.Body))
+            {
+                req = jsonParser.Parse<WebhookRequest>(reader);
+            }
+
+            var param = req.QueryResult.Parameters.Fields.ToDictionary(
+                x => x.Key.ToString().ToLowerInvariant(),
+                x =>
+                {
+                    return x.Value.ToString().ToLowerInvariant().Trim('"');
+                });
+            return new ConvRequest(req.Session, req.QueryResult.QueryText, req.QueryResult.Intent.DisplayName, param);
         }
 
         private ConvRequest(string sessionId, string queryText, string intentName, IReadOnlyDictionary<string, string> parameters)
