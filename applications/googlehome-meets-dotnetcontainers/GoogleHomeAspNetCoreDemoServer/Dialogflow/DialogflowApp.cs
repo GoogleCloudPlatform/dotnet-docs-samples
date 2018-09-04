@@ -13,12 +13,15 @@
 // the License.
 using Google.Cloud.Diagnostics.AspNetCore;
 using Google.Cloud.Diagnostics.Common;
+using Google.Cloud.Dialogflow.V2;
+using Google.Protobuf;
 using GoogleHomeAspNetCoreDemoServer.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
@@ -27,6 +30,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
     {
         // Conversations keyed by the DialogFlow conversation sessionID.
         private static readonly Dictionary<string, Conversation> conversations = new Dictionary<string, Conversation>();
+
+        // A Protobuf JSON parser configured to ignore unknown fields. This makes
+        // the action robust against new fields being introduced by Dialogflow.
+        private static readonly JsonParser jsonParser =
+            new JsonParser(JsonParser.Settings.Default.WithIgnoreUnknownFields(true));
 
         private readonly IExceptionLogger _exceptionLogger;
         private readonly ILogger<ConversationController> _logger;
@@ -52,34 +60,25 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         public static void Show(string html) => HomeController.SetPage(html);
 
         /// <summary>
-        /// Renders a spech response.
-        /// </summary>
-        /// <param name="speech">Speech to render</param>
-        /// <returns>The response sent back to the assistant</returns>
-        public static string Tell(string speech)
-        {
-            var jobject = new JObject
-            {
-                ["fulfillmentText"] = speech
-            };
-            return JsonConvert.SerializeObject(jobject);
-        }
-
-        /// <summary>
         /// Handles received HTTP request. For details of the expected request, 
         /// please see Dialogflow fulfillment doc: https://dialogflow.com/docs/fulfillment
         /// </summary>
         /// <param name="httpRequest">HTTP request</param>
-        /// <returns>A response to the request which usually includes a spoken fulfillment</returns>
-        public async Task<string> HandleRequest(HttpRequest httpRequest)
+        /// <returns>Webhook response</returns>
+        public async Task<WebhookResponse> HandleRequest(HttpRequest httpRequest)
         {
             using (_tracer.StartSpan(nameof(DialogflowApp)))
             {
-                var request = await ConvRequest.ParseAsync(httpRequest);
+                WebhookRequest request;
 
-                _logger.LogInformation($"Intent: '{request.IntentName}',  QueryText: '{request.QueryText}'");
+                using (var reader = new StreamReader(httpRequest.Body))
+                {
+                    request = jsonParser.Parse<WebhookRequest>(reader);
+                }
 
-                var conversation = GetOrCreateConversation(request);
+                _logger.LogInformation($"Intent: '{request.QueryResult.Intent.DisplayName}',  QueryText: '{request.QueryResult.QueryText}'");
+
+                var conversation = GetOrCreateConversation(request.Session);
 
                 using (_tracer.StartSpan("Conversation"))
                 {
@@ -92,14 +91,13 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         /// Given a conversation request with a session id, either get the existing
         /// conversation or create a new one.
         /// </summary>
-        /// <param name="convRequest">Conversation request</param>
+        /// <param name="sessionId">Conversation session id</param>
         /// <returns>Conversation</returns>
-        private Conversation GetOrCreateConversation(ConvRequest convRequest)
+        private Conversation GetOrCreateConversation(string sessionId)
         {
             Conversation conversation;
             lock (conversations)
             {
-                var sessionId = convRequest.SessionId;
                 if (!conversations.TryGetValue(sessionId, out conversation))
                 {
                     _logger.LogInformation($"Creating new conversation with sessionId: {sessionId}");

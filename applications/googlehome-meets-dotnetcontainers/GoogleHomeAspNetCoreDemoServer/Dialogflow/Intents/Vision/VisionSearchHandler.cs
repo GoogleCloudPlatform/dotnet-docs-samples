@@ -13,6 +13,7 @@
 // the License.
 using Google.Apis.Customsearch.v1;
 using Google.Apis.Services;
+using Google.Cloud.Dialogflow.V2;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -36,11 +37,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// <summary>
         /// Handle the intent.
         /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public override async Task<string> HandleAsync(ConvRequest req)
+        /// <param name="req">Webhook request</param>
+        /// <returns>Webhook response</returns>
+        public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
-            var searchTerm = req.Parameters["searchterm"];
+            var searchTerm = req.QueryResult.Parameters.Fields["searchterm"].StringValue;
 
             DialogflowApp.Show($"<div>Searching for pictures of: {searchTerm}</div><div>Please wait...</div>");
 
@@ -58,7 +59,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
             var imageList = images.Select(x => $"<li><img src=\"{x.Url}\" alt=\"{WebUtility.HtmlEncode(x.Title)}\" style=\"width:200px\" /></li>");
             DialogflowApp.Show($"<ol>{string.Join("", imageList)}</ol>");
 
-            return DialogflowApp.Tell($"Found some pictures of: {searchTerm}. Now, select a picture.");
+            return new WebhookResponse 
+            { 
+                FulfillmentText = $"Found some pictures of: {searchTerm}. Now, select a picture."
+            };
         }
 
         // Configure the search query with the requested subject, asking for images

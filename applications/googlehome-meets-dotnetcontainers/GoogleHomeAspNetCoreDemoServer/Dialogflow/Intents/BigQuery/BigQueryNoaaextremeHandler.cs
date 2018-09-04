@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 using Google.Cloud.BigQuery.V2;
+using Google.Cloud.Dialogflow.V2;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
@@ -37,14 +38,20 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// <summary>
         /// Handle the intent.
         /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public override async Task<string> HandleAsync(ConvRequest req)
+        /// <param name="req">Webhook request</param>
+        /// <returns>Webhook response</returns>
+        public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
             var errorMessage = ExtractAndValidateParameters(req, out string temp, out string year, out string countryCode2, 
                 out string countryName, out string fipsCountry);
 
-            if (errorMessage != null) return DialogflowApp.Tell(errorMessage);
+            if (errorMessage != null) 
+            {
+                return new WebhookResponse
+                {
+                    FulfillmentText = errorMessage
+                };
+            }
 
             var bigQueryClient = await BigQueryClient.CreateAsync(Program.AppSettings.GoogleCloudSettings.ProjectId);
 
@@ -85,7 +92,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
             var resultList = result.ToList();
             if (resultList.Count == 0)
             {
-                return DialogflowApp.Tell($"Sorry, there is no data for country '{countryName}'");
+                return new WebhookResponse
+                {
+                    FulfillmentText = $"Sorry, there is no data for country '{countryName}'"
+                };
             }
 
             // Time and data statistics
@@ -100,9 +110,12 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
 
             // Send spoken response to DialogFlow
             var top = resultList[0];
-            return DialogflowApp.Tell($"Scanned {processedMb} mega-bytes in {secs:0.0} seconds. " +
+            return new WebhookResponse
+            {
+                FulfillmentText = $"Scanned {processedMb} mega-bytes in {secs:0.0} seconds. " +
                 $"The {temp} temperature in {countryName} in the year {year} was " +
-                $"{(double)top["celcius"]:0.0} degrees celcius, at the {top["name"]} monitoring station.");
+                $"{(double)top["celcius"]:0.0} degrees celcius, at the {top["name"]} monitoring station."
+            };
         }
 
         /// <summary>
@@ -115,15 +128,19 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// <param name="countryName">Country name</param>
         /// <param name="fipsCountry"></param>
         /// <returns></returns>
-        private static string ExtractAndValidateParameters(ConvRequest req, out string temp, out string year, 
+        private static string ExtractAndValidateParameters(WebhookRequest req, out string temp, out string year, 
             out string countryCode2, out string countryName, out string fipsCountry)
         {
-            temp = req.Parameters["temp-extreme"].ToLowerInvariant();
-            var datesJson = JObject.Parse(req.Parameters["date-period"]);
-            year = new string(datesJson["startdate"].Value<string>().Take(4).ToArray());
-            var countryJson = JObject.Parse(req.Parameters["country"]);
-            countryCode2 = countryJson["alpha-2"].Value<string>();
-            countryName = countryJson["name"].Value<string>();
+            var fields = req.QueryResult.Parameters.Fields;
+            temp = fields["temp-extreme"].StringValue.ToLowerInvariant();
+
+            var datePeriod = fields["date-period"].StructValue;
+            var startDate = datePeriod.Fields["startDate"].StringValue;
+            year = new string(startDate.Take(4).ToArray());
+           
+            var country = fields["country"].StructValue;
+            countryCode2 = country.Fields["alpha-2"].StringValue;
+            countryName = country.Fields["name"].StringValue;
             fipsCountry = FipsIsoCountryMap.Map(countryCode2.ToUpperInvariant());
 
             if (year.Length != 4 || !int.TryParse(year, out int yearInt) || yearInt < 1929 || yearInt > 2017)
