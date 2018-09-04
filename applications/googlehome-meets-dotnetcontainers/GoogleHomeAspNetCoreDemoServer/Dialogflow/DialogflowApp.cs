@@ -13,12 +13,15 @@
 // the License.
 using Google.Cloud.Diagnostics.AspNetCore;
 using Google.Cloud.Diagnostics.Common;
+using Google.Cloud.Dialogflow.V2;
+using Google.Protobuf;
 using GoogleHomeAspNetCoreDemoServer.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
@@ -27,6 +30,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
     {
         // Conversations keyed by the DialogFlow conversation sessionID.
         private static readonly Dictionary<string, Conversation> conversations = new Dictionary<string, Conversation>();
+
+        // A Protobuf JSON parser configured to ignore unknown fields. This makes
+        // the action robust against new fields being introduced by Dialogflow.
+        private static readonly JsonParser jsonParser =
+            new JsonParser(JsonParser.Settings.Default.WithIgnoreUnknownFields(true));
 
         private readonly IExceptionLogger _exceptionLogger;
         private readonly ILogger<ConversationController> _logger;
@@ -75,11 +83,16 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         {
             using (_tracer.StartSpan(nameof(DialogflowApp)))
             {
-                var request = await ConvRequest.ParseAsync(httpRequest);
+                WebhookRequest request;
 
-                _logger.LogInformation($"Intent: '{request.IntentName}',  QueryText: '{request.QueryText}'");
+                using (var reader = new StreamReader(httpRequest.Body))
+                {
+                    request = jsonParser.Parse<WebhookRequest>(reader);
+                }
 
-                var conversation = GetOrCreateConversation(request);
+                _logger.LogInformation($"Intent: '{request.QueryResult.Intent.DisplayName}',  QueryText: '{request.QueryResult.QueryText}'");
+
+                var conversation = GetOrCreateConversation(request.Session);
 
                 using (_tracer.StartSpan("Conversation"))
                 {
@@ -92,14 +105,13 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         /// Given a conversation request with a session id, either get the existing
         /// conversation or create a new one.
         /// </summary>
-        /// <param name="convRequest">Conversation request</param>
+        /// <param name="sessionId">Conversation session id</param>
         /// <returns>Conversation</returns>
-        private Conversation GetOrCreateConversation(ConvRequest convRequest)
+        private Conversation GetOrCreateConversation(string sessionId)
         {
             Conversation conversation;
             lock (conversations)
             {
-                var sessionId = convRequest.SessionId;
                 if (!conversations.TryGetValue(sessionId, out conversation))
                 {
                     _logger.LogInformation($"Creating new conversation with sessionId: {sessionId}");

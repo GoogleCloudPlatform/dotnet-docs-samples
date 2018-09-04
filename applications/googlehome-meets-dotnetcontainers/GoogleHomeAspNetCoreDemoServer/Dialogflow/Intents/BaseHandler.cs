@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 using System.Threading.Tasks;
+using Google.Cloud.Dialogflow.V2;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
 {
@@ -35,10 +36,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// Base async method that simply returns a Task with null. 
         /// Subclasses can override to provide an implementation.
         /// </summary>
-        /// <param name="req">Conversation request</param>
+        /// <param name="req">Webhook request</param>
         /// <returns>Task with null</returns>
 
-        public virtual Task<string> HandleAsync(ConvRequest req)
+        public virtual Task<string> HandleAsync(WebhookRequest req)
         {
             return Task.FromResult<string>(null);
         }
@@ -47,9 +48,9 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// Base method that simply returns null.
         /// Sublasses can override to provide an implementation.
         /// </summary>
-        /// <param name="req">Conversation request</param>
+        /// <param name="req">Webhook request</param>
         /// <returns>null</returns>
-        public virtual string Handle(ConvRequest req)
+        public virtual string Handle(WebhookRequest req)
         {
             return null;
         }

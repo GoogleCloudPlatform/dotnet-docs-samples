@@ -11,6 +11,7 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
+using Google.Cloud.Dialogflow.V2;
 using Google.Cloud.Vision.V1;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,9 +35,9 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// <summary>
         /// Handle the Dialogflow intent.
         /// </summary>
-        /// <param name="req"></param>
+        /// <param name="req">Webhook request</param>
         /// <returns></returns>
-        public override async Task<string> HandleAsync(ConvRequest req)
+        public override async Task<string> HandleAsync(WebhookRequest req)
         {
             // Create the client and ask for safe-search info from Vision API ML service.
             var visionClient = ImageAnnotatorClient.Create();

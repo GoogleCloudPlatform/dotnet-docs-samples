@@ -13,6 +13,7 @@
 // the License.
 using System;
 using System.Threading.Tasks;
+using Google.Cloud.Dialogflow.V2;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
 {
@@ -33,11 +34,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// <summary>
         /// Handle the intent.
         /// </summary>
-        /// <param name="req"></param>
+        /// <param name="req">Webhook request</param>
         /// <returns></returns>
-        public override string Handle(ConvRequest req)
+        public override string Handle(WebhookRequest req)
         {
-            var exception = req.Parameters["exception"];
+            var exception = req.QueryResult.Parameters.Fields["exception"].StringValue;
 
             // Throw the requested exception type which will be picked up by Error-Reporting
             switch (exception.ToLowerInvariant())

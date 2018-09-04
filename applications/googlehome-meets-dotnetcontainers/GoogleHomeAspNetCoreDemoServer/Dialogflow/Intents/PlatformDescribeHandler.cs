@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 using Google.Api.Gax;
+using Google.Cloud.Dialogflow.V2;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,9 +35,9 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// <summary>
         /// Handle the intent.
         /// </summary>
-        /// <param name="req">Conversation request</param>
+        /// <param name="req">Webhook request</param>
         /// <returns></returns>
-        public override async Task<string> HandleAsync(ConvRequest req)
+        public override async Task<string> HandleAsync(WebhookRequest req)
         {
             var platform = await Platform.InstanceAsync();
             (var spokenDescription, string[] textDescription) = GetDetailedDescription(platform);

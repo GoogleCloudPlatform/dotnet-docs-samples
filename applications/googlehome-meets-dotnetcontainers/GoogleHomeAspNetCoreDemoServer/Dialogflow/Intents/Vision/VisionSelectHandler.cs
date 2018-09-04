@@ -13,6 +13,7 @@
 // the License.
 using System.Net;
 using System.Threading.Tasks;
+using Google.Cloud.Dialogflow.V2;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
 {
@@ -33,15 +34,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// <summary>
         /// Handle the Dialogflow intent.
         /// </summary>
-        /// <param name="req"></param>
+        /// <param name="req">Webhook request</param>
         /// <returns></returns>
-        public override string Handle(ConvRequest req)
+        public override string Handle(WebhookRequest req)
         {
-            if (!int.TryParse(req.Parameters["index"], out int index))
-            {
-                // Something went wrong with parsing, index is not a number
-                return DialogflowApp.Tell($"I don't know which picture you're talking about.");
-            }
+            int index = (int)req.QueryResult.Parameters.Fields["index"].NumberValue;
 
             if (index < 1 || index > _conversation.State.ImageList.Count)
             {

@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 using Google.Cloud.BigQuery.V2;
+using Google.Cloud.Dialogflow.V2;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -36,13 +37,13 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// <summary>
         /// Handle the intent.
         /// </summary>
-        /// <param name="req"></param>
+        /// <param name="req">Webhook request</param>
         /// <returns></returns>
-        public override async Task<string> HandleAsync(ConvRequest req)
+        public override async Task<string> HandleAsync(WebhookRequest req)
         {
             // Extract the DialogFlow date, without the time, that has been requested
             // Format is "yyyy-mm-dd"
-            var date = req.Parameters["date"];
+            var date = req.QueryResult.Parameters.Fields["date"].StringValue;
             date = date.Substring(0, Math.Min(10, date.Length));
 
             // Create the BigQuery client with default credentials

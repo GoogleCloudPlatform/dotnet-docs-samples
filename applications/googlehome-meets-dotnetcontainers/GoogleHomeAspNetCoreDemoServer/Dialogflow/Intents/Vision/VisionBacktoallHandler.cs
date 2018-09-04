@@ -14,6 +14,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Google.Cloud.Dialogflow.V2;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
 {
@@ -34,9 +35,9 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// <summary>
         /// Handle the intent.
         /// </summary>
-        /// <param name="req"></param>
+        /// <param name="req">Webhook request</param>
         /// <returns></returns>
-        public override string Handle(ConvRequest req)
+        public override string Handle(WebhookRequest req)
         {
             // Unfocus the image
             _conversation.State.FocusedImage = null;

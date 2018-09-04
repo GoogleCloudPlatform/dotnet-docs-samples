@@ -13,6 +13,7 @@
 // the License.
 using Google.Apis.Customsearch.v1;
 using Google.Apis.Services;
+using Google.Cloud.Dialogflow.V2;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -36,11 +37,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// <summary>
         /// Handle the intent.
         /// </summary>
-        /// <param name="req"></param>
+        /// <param name="req">Webhook request</param>
         /// <returns></returns>
-        public override async Task<string> HandleAsync(ConvRequest req)
+        public override async Task<string> HandleAsync(WebhookRequest req)
         {
-            var searchTerm = req.Parameters["searchterm"];
+            var searchTerm = req.QueryResult.Parameters.Fields["searchterm"].StringValue;
 
             DialogflowApp.Show($"<div>Searching for pictures of: {searchTerm}</div><div>Please wait...</div>");
 
