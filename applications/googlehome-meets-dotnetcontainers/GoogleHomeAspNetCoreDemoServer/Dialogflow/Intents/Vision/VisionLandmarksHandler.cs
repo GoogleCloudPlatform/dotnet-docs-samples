@@ -36,8 +36,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// Handle the intent.
         /// </summary>
         /// <param name="req">Webhook request</param>
-        /// <returns></returns>
-        public override async Task<string> HandleAsync(WebhookRequest req)
+        /// <returns>Webhook response</returns>
+        public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
             // Create the client and ask for landmarks from Vision API ML service.
             var visionClient = ImageAnnotatorClient.Create();
@@ -49,7 +49,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
                 .Select(x => x.Description)
                 .ToList();
 
-            return DialogflowApp.Tell(CombineList(toSay, "This picture contains: ", "This picture contains no landmarks"));
+            return new WebhookResponse 
+            {
+                FulfillmentText = CombineList(toSay, "This picture contains: ", "This picture contains no landmarks")
+            };
         }
     }
 }

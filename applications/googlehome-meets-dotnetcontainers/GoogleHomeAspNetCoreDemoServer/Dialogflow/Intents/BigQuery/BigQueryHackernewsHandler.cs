@@ -38,8 +38,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// Handle the intent.
         /// </summary>
         /// <param name="req">Webhook request</param>
-        /// <returns></returns>
-        public override async Task<string> HandleAsync(WebhookRequest req)
+        /// <returns>Webhook response</returns>
+        public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
             // Extract the DialogFlow date, without the time, that has been requested
             // Format is "yyyy-mm-dd"
@@ -82,7 +82,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
             var resultList = result.ToList();
             if (resultList.Count == 0)
             {
-                return DialogflowApp.Tell("Sorry, there is no data for that date.");
+                return new WebhookResponse 
+                {
+                    FulfillmentText = "Sorry, there is no data for that date."
+                };
             }
 
             // Time and data statistics
@@ -94,8 +97,11 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
             ShowQuery(sql, parameters, (processedMb, secs, titles));
 
             // Send spoken response to DialogFlow
-            return DialogflowApp.Tell($"Scanned {processedMb} mega-bytes in {secs:0.0} seconds. " +
-                $"The top title on hacker news was titled: {titles.First()}");
+            return new WebhookResponse 
+            {
+                FulfillmentText = $"Scanned {processedMb} mega-bytes in {secs:0.0} seconds. " +
+                $"The top title on hacker news was titled: {titles.First()}"
+            };
         }
     }
 }

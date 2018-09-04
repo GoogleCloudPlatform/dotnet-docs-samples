@@ -60,26 +60,12 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         public static void Show(string html) => HomeController.SetPage(html);
 
         /// <summary>
-        /// Renders a spech response.
-        /// </summary>
-        /// <param name="speech">Speech to render</param>
-        /// <returns>The response sent back to the assistant</returns>
-        public static string Tell(string speech)
-        {
-            var jobject = new JObject
-            {
-                ["fulfillmentText"] = speech
-            };
-            return JsonConvert.SerializeObject(jobject);
-        }
-
-        /// <summary>
         /// Handles received HTTP request. For details of the expected request, 
         /// please see Dialogflow fulfillment doc: https://dialogflow.com/docs/fulfillment
         /// </summary>
         /// <param name="httpRequest">HTTP request</param>
-        /// <returns>A response to the request which usually includes a spoken fulfillment</returns>
-        public async Task<string> HandleRequest(HttpRequest httpRequest)
+        /// <returns>Webhook response</returns>
+        public async Task<WebhookResponse> HandleRequest(HttpRequest httpRequest)
         {
             using (_tracer.StartSpan(nameof(DialogflowApp)))
             {

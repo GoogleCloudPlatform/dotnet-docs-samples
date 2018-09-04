@@ -38,8 +38,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// Handle the intent.
         /// </summary>
         /// <param name="req">Webhook request</param>
-        /// <returns></returns>
-        public override async Task<string> HandleAsync(WebhookRequest req)
+        /// <returns>Webhook response</returns>
+        public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
             var searchTerm = req.QueryResult.Parameters.Fields["searchterm"].StringValue;
 
@@ -59,7 +59,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
             var imageList = images.Select(x => $"<li><img src=\"{x.Url}\" alt=\"{WebUtility.HtmlEncode(x.Title)}\" style=\"width:200px\" /></li>");
             DialogflowApp.Show($"<ol>{string.Join("", imageList)}</ol>");
 
-            return DialogflowApp.Tell($"Found some pictures of: {searchTerm}. Now, select a picture.");
+            return new WebhookResponse 
+            { 
+                FulfillmentText = $"Found some pictures of: {searchTerm}. Now, select a picture."
+            };
         }
 
         // Configure the search query with the requested subject, asking for images

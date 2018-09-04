@@ -39,13 +39,19 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// Handle the intent.
         /// </summary>
         /// <param name="req">Webhook request</param>
-        /// <returns></returns>
-        public override async Task<string> HandleAsync(WebhookRequest req)
+        /// <returns>Webhook response</returns>
+        public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
             var errorMessage = ExtractAndValidateParameters(req, out string temp, out string year, out string countryCode2, 
                 out string countryName, out string fipsCountry);
 
-            if (errorMessage != null) return DialogflowApp.Tell(errorMessage);
+            if (errorMessage != null) 
+            {
+                return new WebhookResponse
+                {
+                    FulfillmentText = errorMessage
+                };
+            }
 
             var bigQueryClient = await BigQueryClient.CreateAsync(Program.AppSettings.GoogleCloudSettings.ProjectId);
 
@@ -86,7 +92,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
             var resultList = result.ToList();
             if (resultList.Count == 0)
             {
-                return DialogflowApp.Tell($"Sorry, there is no data for country '{countryName}'");
+                return new WebhookResponse
+                {
+                    FulfillmentText = $"Sorry, there is no data for country '{countryName}'"
+                };
             }
 
             // Time and data statistics
@@ -101,9 +110,12 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
 
             // Send spoken response to DialogFlow
             var top = resultList[0];
-            return DialogflowApp.Tell($"Scanned {processedMb} mega-bytes in {secs:0.0} seconds. " +
+            return new WebhookResponse
+            {
+                FulfillmentText = $"Scanned {processedMb} mega-bytes in {secs:0.0} seconds. " +
                 $"The {temp} temperature in {countryName} in the year {year} was " +
-                $"{(double)top["celcius"]:0.0} degrees celcius, at the {top["name"]} monitoring station.");
+                $"{(double)top["celcius"]:0.0} degrees celcius, at the {top["name"]} monitoring station."
+            };
         }
 
         /// <summary>

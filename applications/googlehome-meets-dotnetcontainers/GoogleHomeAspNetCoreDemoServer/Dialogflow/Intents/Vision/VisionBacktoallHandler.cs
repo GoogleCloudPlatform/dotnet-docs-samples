@@ -36,8 +36,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// Handle the intent.
         /// </summary>
         /// <param name="req">Webhook request</param>
-        /// <returns></returns>
-        public override string Handle(WebhookRequest req)
+        /// <returns>Webhook response</returns>
+        public override WebhookResponse Handle(WebhookRequest req)
         {
             // Unfocus the image
             _conversation.State.FocusedImage = null;
@@ -47,7 +47,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
             var imagesList = images.Select(x => $"<li><img src=\"{x.Url}\" alt=\"{WebUtility.HtmlEncode(x.Title)}\" style=\"width:200px\" /></li>");
             DialogflowApp.Show($"<ol>{string.Join("", imagesList)}</ol>");
 
-            return DialogflowApp.Tell("OK, looking at all images now.");
+            return new WebhookResponse { FulfillmentText = "OK, looking at all images now." };
         }
     }
 }

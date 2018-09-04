@@ -51,15 +51,18 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
         /// which is tracked external to this class, using the DialogFlow sessionID.
         /// </summary>
         /// <param name="req">Webhook request</param>
-        /// <returns>A JSON response which is passed back to DialogFlow</returns>
-        public async Task<string> HandleAsync(WebhookRequest req)
+        /// <returns>Webhook response</returns>
+        public async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
             // Use reflection to find the handler method for the requested DialogFlow intent
             var intentName = req.QueryResult.Intent.DisplayName;
             var handler = FindHandler(intentName);
             if (handler == null)
             {
-                return DialogflowApp.Tell($"Sorry, no handler found for intent: {intentName}");
+                return new WebhookResponse
+                {
+                    FulfillmentText = $"Sorry, no handler found for intent: {intentName}"
+                };
             }
 
             try
@@ -70,14 +73,20 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
                     // Otherwise, it's an error.
                     return handler.Handle(req) ??
                         await handler.HandleAsync(req) ??
-                        DialogflowApp.Tell("Error. Handler did not return a valid response.");
-                }
+                        new WebhookResponse
+                        {
+                            FulfillmentText = "Error. Handler did not return a valid response."
+                        }; 
+                    }
             }
             catch (Exception e) when (req.QueryResult.Intent.DisplayName != "exception.throw")
             {
                 _exceptionLogger.Log(e);
                 var msg = (e as GoogleApiException)?.Error.Message ?? e.Message;
-                return DialogflowApp.Tell($"Sorry, there's a problem: {msg}");
+                return new WebhookResponse
+                {
+                    FulfillmentText = $"Sorry, there's a problem: {msg}"
+                };
             }
         }
 

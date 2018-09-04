@@ -39,9 +39,9 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// <param name="req">Webhook request</param>
         /// <returns>Task with null</returns>
 
-        public virtual Task<string> HandleAsync(WebhookRequest req)
+        public virtual Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
-            return Task.FromResult<string>(null);
+            return Task.FromResult<WebhookResponse>(null);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// </summary>
         /// <param name="req">Webhook request</param>
         /// <returns>null</returns>
-        public virtual string Handle(WebhookRequest req)
+        public virtual WebhookResponse Handle(WebhookRequest req)
         {
             return null;
         }

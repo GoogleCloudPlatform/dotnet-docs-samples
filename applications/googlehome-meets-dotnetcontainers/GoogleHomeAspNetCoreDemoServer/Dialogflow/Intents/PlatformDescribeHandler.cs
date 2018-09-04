@@ -36,14 +36,14 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// Handle the intent.
         /// </summary>
         /// <param name="req">Webhook request</param>
-        /// <returns></returns>
-        public override async Task<string> HandleAsync(WebhookRequest req)
+        /// <returns>Webhook response</returns>
+        public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
             var platform = await Platform.InstanceAsync();
             (var spokenDescription, string[] textDescription) = GetDetailedDescription(platform);
 
             DialogflowApp.Show(string.Join("", textDescription.Select(x => $"<div>{x}</div>")));
-            return DialogflowApp.Tell(spokenDescription);
+            return new WebhookResponse { FulfillmentText = spokenDescription };
         }
 
         /// <summary>

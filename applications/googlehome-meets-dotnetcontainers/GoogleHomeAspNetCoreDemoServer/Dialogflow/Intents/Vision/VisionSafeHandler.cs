@@ -36,8 +36,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// Handle the Dialogflow intent.
         /// </summary>
         /// <param name="req">Webhook request</param>
-        /// <returns></returns>
-        public override async Task<string> HandleAsync(WebhookRequest req)
+        /// <returns>Webhook response</returns>
+        public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
             // Create the client and ask for safe-search info from Vision API ML service.
             var visionClient = ImageAnnotatorClient.Create();
@@ -67,7 +67,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
             var possible = result.Where(x => x.likelyhood == 1).Select(x => x.text).ToList();
             if (likely.Count == 0 && possible.Count == 0)
             {
-                return DialogflowApp.Tell("Let's see. This picture is fine.");
+                return new WebhookResponse { FulfillmentText = "Let's see. This picture is fine." };
             }
 
             string reply = "Let's see. ";
@@ -81,7 +81,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
                 reply += CombineList(possible, "It's possible this picture", "") + ".";
             }
 
-            return DialogflowApp.Tell(reply);
+            return new WebhookResponse { FulfillmentText = reply };
         }
     }
 }

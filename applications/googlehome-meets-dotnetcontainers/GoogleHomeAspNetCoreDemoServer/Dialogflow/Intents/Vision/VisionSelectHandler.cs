@@ -35,15 +35,15 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// Handle the Dialogflow intent.
         /// </summary>
         /// <param name="req">Webhook request</param>
-        /// <returns></returns>
-        public override string Handle(WebhookRequest req)
+        /// <returns>Webhook response</returns>
+        public override WebhookResponse Handle(WebhookRequest req)
         {
             int index = (int)req.QueryResult.Parameters.Fields["index"].NumberValue;
 
             if (index < 1 || index > _conversation.State.ImageList.Count)
             {
                 // Tried to select an out-of-range picture.
-                return DialogflowApp.Tell($"That picture doesn't exist!");
+                return new WebhookResponse { FulfillmentText = $"That picture doesn't exist!" };
             }
 
             // Store the selected image in the state
@@ -52,7 +52,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
 
             DialogflowApp.Show($"<img src=\"{image.Url}\" alt=\"{WebUtility.HtmlEncode(image.Title)}\" style=\"height:100%;width:100%\" />");
 
-            return DialogflowApp.Tell($"Picture {index} selected. You can describe, show landmarks or ask whether the image is safe.");
+            return new WebhookResponse 
+            { 
+                FulfillmentText = $"Picture {index} selected. You can describe, show landmarks or ask whether the image is safe."
+            };
         }
     }
 }
