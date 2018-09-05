@@ -85,16 +85,19 @@ The DialogFlow console has a "Try it now" tab on the right. This can be used at 
 
 Typing text here is treated exactly the same as if the text had arrived from the Google Home/Assistant.
 
-You can use the following phrases to test:
+You can use the following phrases to test.
+* Say hi to everyone
+* What platform are you running on?
 * Let's use Vision API
   * Search pictures of London
   * Describe the picture
   * Is picture safe?
-  * Are there landmarkks in the picture?
+  * Are there landmarks in the picture?
   * Go back to all pictures
 * Let's use Big Query
-  * What was the top hacker news yesterday? 
+  * What was the top hacker news on May 1 2018? 
   * In 2015, what was the hottest temperature in France?
+* Throw an exception
 
 ### Google Home/Assistant configuration
 
