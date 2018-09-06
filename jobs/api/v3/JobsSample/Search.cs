@@ -349,7 +349,7 @@ namespace GoogleCloudSamples
 
             Console.WriteLine("Jobs multi location searched: " + ToJsonString(searchJobsResponse));
         }
-        // [END multi_locations_search]
+        // [END multi_location_search]
 
         // [START broadening_location_search]
 

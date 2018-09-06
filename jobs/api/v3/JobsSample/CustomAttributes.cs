@@ -172,7 +172,7 @@ namespace GoogleCloudSamples
         }
         // [END custom_attribute_filter_long_value]
 
-        // [START custom_attribute_filter_multi_attributes
+        // [START custom_attribute_filter_multi_attributes]
 
         public static void FiltersOnMultiCustomAttributes()
         {
