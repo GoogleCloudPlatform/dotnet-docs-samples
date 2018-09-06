@@ -1,4 +1,4 @@
-# .NET Cloud Job Discovery Sample
+# .NET Cloud Talent Solution Sample
 
 A sample that demonstrates how to call the
 [Google Cloud Job Discovery API](https://cloud.google.com/job-discovery/docs) from C#.
