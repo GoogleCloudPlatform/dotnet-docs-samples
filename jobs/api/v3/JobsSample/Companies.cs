@@ -127,11 +127,8 @@ namespace GoogleCloudSamples
                 {
                     Company = companyToBeUpdated
                 };
-
                 Company companyUpdated = jobServiceClient.Projects.Companies.Patch(updateCompanyRequest, companyName).Execute();
-
                 Console.WriteLine("Company updated: " + ToJsonString(companyUpdated));
-
                 return companyUpdated;
             }
             catch (Exception e)
@@ -153,9 +150,7 @@ namespace GoogleCloudSamples
                     UpdateMask = fieldMask,
                     Company = companyToBeUpdated
                 };
-
                 Company companyUpdated = jobServiceClient.Projects.Companies.Patch(updateCompanyRequest, companyName).Execute();
-
                 Console.WriteLine("Company updated with updateMask: " + ToJsonString(companyUpdated));
                 return companyUpdated;
             }
