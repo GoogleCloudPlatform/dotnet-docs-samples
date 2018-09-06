@@ -26,7 +26,7 @@ public partial class TranslateSample
         IList<Language> response = client.ListLanguages();
         foreach (var language in response)
         {
-            Console.WriteLine("{0}", language.Code);
+            Console.WriteLine(language.Code);
         }
         return response;
     }

@@ -23,9 +23,9 @@ public partial class TranslateSample
     {
         TranslationClient client = TranslationClient.Create();
         var response = client.TranslateText(
-            "Hello World.",  // The text to translate.
-            "ru",  // The target language code.  Russian.
-            "en");  // The source language code.  English.
+            text: "Hello World.",
+            targetLanguage: "ru",  // Russian
+            sourceLanguage: "en");  // English
         Console.WriteLine(response.TranslatedText);
         return response.TranslatedText;
     }

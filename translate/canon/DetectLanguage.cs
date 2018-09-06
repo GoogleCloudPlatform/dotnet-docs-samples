@@ -22,10 +22,9 @@ public partial class TranslateSample
     public Detection DetectLanguage()
     {
         TranslationClient client = TranslationClient.Create();
-        var detection = client.DetectLanguage(
-            "Hello world.");  // The text whose language will be detected.
-        Console.WriteLine("{0}\tConfidence: {1}",
-            detection.Language, detection.Confidence);
+        var detection = client.DetectLanguage(text: "Hello world.");
+        Console.WriteLine(
+            $"{detection.Language}\tConfidence: {detection.Confidence}");
         return detection;
     }
 }

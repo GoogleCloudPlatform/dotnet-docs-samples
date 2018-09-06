@@ -23,12 +23,11 @@ public partial class TranslateSample
     {
         TranslationClient client = TranslationClient.Create();
         TranslationResult result = client.TranslateText(
-            "Hello World.",  // The text to be translated.
-            "ja",  // The target language code.
-            "en",  // The source language code.
-                   // Use the neural model of translation.
-            TranslationModel.NeuralMachineTranslation);
-        Console.WriteLine("Model: {0}", result.Model);
+            text: "Hello World.",
+            targetLanguage: "ja",  // Japanese
+            sourceLanguage: "en",  // English
+            model: TranslationModel.NeuralMachineTranslation);
+        Console.WriteLine($"Model: {result.Model}");
         Console.WriteLine(result.TranslatedText);
         return result;
     }

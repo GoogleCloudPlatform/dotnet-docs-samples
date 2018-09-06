@@ -23,11 +23,11 @@ public partial class TranslateSample
     public IList<Language> ListLanguageNames()
     {
         TranslationClient client = TranslationClient.Create();
-        IList<Language> languages = client.ListLanguages(
-            "en");  // The language to use to list the language names.
+        // List all the languages in English.
+        IList<Language> languages = client.ListLanguages(target: "en");
         foreach (var language in languages)
         {
-            Console.WriteLine("{0}\t{1}", language.Code, language.Name);
+            Console.WriteLine($"{language.Code}\t{language.Name}");
         }
         return languages;
     }
