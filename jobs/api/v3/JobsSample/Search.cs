@@ -516,7 +516,7 @@ namespace GoogleCloudSamples
 
             Console.WriteLine("Jobs employment type searched: " + ToJsonString(searchJobsResponse));
         }
-        // [END employment_types_filter
+        // [END employment_types_filter]
 
         // [START date_range_filter]
 
