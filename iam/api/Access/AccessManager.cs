@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
 {
     public class AccessManager
     {
-        private CloudResourceManagerService _service;
+        private readonly CloudResourceManagerService _service;
 
         public AccessManager()
         {
