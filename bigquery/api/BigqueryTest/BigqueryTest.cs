@@ -100,11 +100,11 @@ namespace GoogleCloudSamples
         public BigQueryTest()
         {
             // [START bigquery_client_default_credentials]
-            // By default, the Google.Bigquery.V2 library client will authenticate 
-            // using the service account file (created in the Google Developers 
-            // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS 
+            // By default, the Google.Bigquery.V2 library client will authenticate
+            // using the service account file (created in the Google Developers
+            // Console) specified by the GOOGLE_APPLICATION_CREDENTIALS
             // environment variable. If you are running on
-            // a Google Compute Engine VM, authentication is completely 
+            // a Google Compute Engine VM, authentication is completely
             // automatic.
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _client = BigQueryClient.Create(_projectId);
@@ -326,8 +326,8 @@ namespace GoogleCloudSamples
             int recordCount = 0;
             var result = client.ListRows(datasetId, tableId, null,
                 new ListRowsOptions { PageSize = pageSize });
-            // If there are more rows than were returned in the first page of results, 
-            // iterating over the rows will lazily evaluate the results each time, 
+            // If there are more rows than were returned in the first page of results,
+            // iterating over the rows will lazily evaluate the results each time,
             // making further requests as necessary.
             foreach (var row in result)
             {
@@ -358,7 +358,7 @@ namespace GoogleCloudSamples
             string datasetId = "samples";
             string tableId = "shakespeare";
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table}
                 GROUP BY title ORDER BY unique_words DESC LIMIT 42";
             BigQueryResults results = AsyncQuery(projectId, datasetId, tableId, query, _client);
             Assert.True(results.Count() > 0);
@@ -390,7 +390,7 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestImportFromCloudStorage()
+        public void TestImportFromCloudStorageCSV()
         {
             var datasetId = $"datasetForLoadCSV{DateTime.Now.Ticks}";
             var newTableID = $"tableForTestImportDataFromCSV{RandomSuffix()}";
@@ -401,6 +401,33 @@ namespace GoogleCloudSamples
 
             // Import data.
             GoogleCloudSamples.BiqQuerySnippets.LoadTableFromCSV(datasetId, newTableID, _client);
+
+            // Run query to get table data.
+            var newTable = _client.GetTable(datasetId, newTableID);
+            string query = $"SELECT name, post_abbr FROM {newTable}" +
+                $"ORDER BY name, post_abbr";
+
+            BigQueryResults results = AsyncQuery(_projectId, datasetId, newTableID,
+                query, _client);
+            var row = results.First();
+
+            // Check results.
+            Assert.Equal(expectedFirstRowName, row["name"]);
+            Assert.True(results.Count() == 50);
+        }
+
+        [Fact]
+        public void TestImportFromCloudStorageOrc()
+        {
+            var datasetId = $"datasetForLoadOrc{DateTime.Now.Ticks}";
+            var newTableID = $"tableForTestImportDataFromOrc{RandomSuffix()}";
+            _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableID));
+            _datasetsToDelete.Add(datasetId);
+            // Test parameters.
+            string expectedFirstRowName = "Alabama";
+
+            // Import data.
+            GoogleCloudSamples.BiqQuerySnippets.LoadTableFromOrc(datasetId, newTableID, _client);
 
             // Run query to get table data.
             var newTable = _client.GetTable(datasetId, newTableID);
@@ -530,7 +557,7 @@ namespace GoogleCloudSamples
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query.
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table}
                 GROUP BY title ORDER BY unique_words DESC LIMIT 42";
             // Populate Table.
             PopulateTable(query, newDatasetId, newTableId, _client);
@@ -559,7 +586,7 @@ namespace GoogleCloudSamples
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table}
                 GROUP BY title ORDER BY unique_words DESC LIMIT 42";
             // Populate Table
             PopulateTable(query, newDatasetId, newTableId, _client);
@@ -588,7 +615,7 @@ namespace GoogleCloudSamples
             CreateTable(newDatasetId, newTableId, _client);
             // Create Query.
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table}
                 GROUP BY title ORDER BY unique_words DESC LIMIT 42";
             // Populate Table.
             PopulateTable(query, newDatasetId, newTableId, _client);
@@ -613,7 +640,7 @@ namespace GoogleCloudSamples
             CreateTable(newDatasetId, sourceTableId, _client);
             // Create Query.
             var table = _client.GetTable(projectId, datasetId, tableId);
-            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table} 
+            string query = $@"SELECT corpus AS title, COUNT(*) AS unique_words FROM {table}
                 GROUP BY title ORDER BY unique_words DESC LIMIT 42";
             // Populate Table.
             PopulateTable(query, newDatasetId, sourceTableId, _client);

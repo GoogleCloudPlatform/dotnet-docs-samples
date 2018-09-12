@@ -71,5 +71,34 @@ namespace GoogleCloudSamples
 
             // [END bigquery_load_table_gcs_csv]
         }
+
+        /// <summary>
+        /// Imports data from an Orc source
+        /// </summary>
+        /// <param name="datasetId">Dataset identifier.</param>
+        /// <param name="tableId">Table identifier.</param>
+        /// <param name="client">A BigQuery client.</param>
+        public static void LoadTableFromOrc(string datasetId,
+            string tableId, BigQueryClient client)
+        {
+            // [START bigquery_load_table_gcs_orc]
+            var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.orc";
+
+            var dataset = client.CreateDataset(datasetId);
+
+            var jobOptions = new CreateLoadJobOptions()
+            {
+                SourceFormat = FileFormat.Orc
+            };
+
+            // Pass null as the schema because the schema is inferred when
+            // loading Orc data
+            var loadJob = client.CreateLoadJob(gcsURI, dataset.GetTableReference(tableId),
+                null, jobOptions);
+
+            loadJob.PollUntilCompleted();
+
+            // [END bigquery_load_table_gcs_orc]
+        }
     }
 }
