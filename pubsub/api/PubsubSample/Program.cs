@@ -72,6 +72,8 @@ namespace GoogleCloudSamples
         public bool acknowledge { get; set; }
         [Option('f', HelpText = @"Use custom flow control settings.", Default = false)]
         public bool customFlow { get; set; }
+        [Option('s', HelpText = "Use synchronous (not streaming) pull.", Default = false)]
+        public bool syncPull { get; set; }
     }
 
     [Verb("getTopic", HelpText = "Get the details of a pubsub topic in this project.")]
@@ -290,13 +292,11 @@ namespace GoogleCloudSamples
         static SubscriberClient GetSubscriber(string projectId,
             string subscriptionId)
         {
-            // [START pubsub_subscriber_sync_pull]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
             SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { subscriberClient });
-            // [END pubsub_subscriber_sync_pull]
             return subscriber;
         }
 
@@ -347,6 +347,34 @@ namespace GoogleCloudSamples
             subscriber.StopAsync(CancellationToken.None).Wait();
             // [END pubsub_subscriber_flow_settings]
             // [END pubsub_quickstart_subscriber]
+            return 0;
+        }
+
+        public static object PullMessagesSync(string projectId,
+            string subscriptionId, bool acknowledge)
+        {
+            // [START pubsub_subscriber_sync_pull]
+            SubscriptionName subscriptionName = new SubscriptionName(projectId,
+                subscriptionId);
+            SubscriberServiceApiClient subscriberClient =
+                SubscriberServiceApiClient.Create();
+            // Pull messages from server,
+            // allowing an immediate response if there are no messages.
+            PullResponse response = subscriberClient.Pull(
+                subscriptionName, returnImmediately: true, maxMessages: 20);
+            // Print out each received message.
+            foreach (ReceivedMessage msg in response.ReceivedMessages)
+            {
+                string text = Encoding.UTF8.GetString(msg.Message.Data.ToArray());
+                Console.WriteLine($"Message {msg.Message.MessageId}: {text}");
+            }
+            // If acknowledgement required, send to server.
+            if (acknowledge)
+            {
+                subscriberClient.Acknowledge(subscriptionName,
+                    response.ReceivedMessages.Select(msg => msg.AckId));
+            }
+            // [END pubsub_subscriber_sync_pull]
             return 0;
         }
 
@@ -541,9 +569,11 @@ namespace GoogleCloudSamples
                 (PublishMessageOptions opts) => PublishMessages(opts.customBatchThresholds
                     ? GetCustomPublisher(opts.projectId, opts.topicId)
                     : GetPublisher(opts.projectId, opts.topicId), opts.message),
-                (PullMessagesOptions opts) => PullMessages(opts.customFlow
-                    ? GetCustomSubscriber(opts.projectId, opts.subscriptionId)
-                    : GetSubscriber(opts.projectId, opts.subscriptionId), opts.acknowledge),
+                (PullMessagesOptions opts) => opts.syncPull ?
+                    PullMessagesSync(opts.projectId, opts.subscriptionId, opts.acknowledge) :
+                    PullMessages(opts.customFlow
+                        ? GetCustomSubscriber(opts.projectId, opts.subscriptionId)
+                        : GetSubscriber(opts.projectId, opts.subscriptionId), opts.acknowledge),
                 (GetTopicOptions opts) => GetTopic(opts.projectId, opts.topicId),
                 (GetSubscriptionOptions opts) => GetSubscription(opts.projectId,
                 opts.subscriptionId),
