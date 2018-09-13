@@ -28,6 +28,14 @@ A collection of samples that demonstrate how to call the
     Test execution time: 2.6078 Seconds    
 	```
 
+## Designed to demonstrate Google APIs
+
+These code samples are designed to demonstrate simple code that calls Google
+APIs.  They're optimized for being embedded into documentation on
+[https://cloud.google.com/docs](https://cloud.google.com/docs).
+So sometimes, they don't conform to engineering best practices like
+"don't copy and paste code."
+
 ## Contributing changes
 
 * See [CONTRIBUTING.md](../../CONTRIBUTING.md)
