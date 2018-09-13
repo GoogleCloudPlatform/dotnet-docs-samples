@@ -32,7 +32,7 @@ A collection of samples that demonstrate how to call the
 
 These code samples are designed to demonstrate simple code that calls Google
 APIs.  They're optimized for being embedded into documentation on
-[http://cloud.google.com/](http://cloud.google.com/).
+[https://cloud.google.com/docs](https://cloud.google.com/docs).
 So sometimes, they don't conform to engineering best practices like
 "don't copy and paste code."
 
