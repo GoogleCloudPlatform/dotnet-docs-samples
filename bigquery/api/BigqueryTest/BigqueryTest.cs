@@ -396,6 +396,7 @@ namespace GoogleCloudSamples
             var newTableID = $"tableForTestImportDataFromCSV{RandomSuffix()}";
             _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableID));
             _datasetsToDelete.Add(datasetId);
+            CreateDataset(datasetId, _client);
             // Test parameters.
             string expectedFirstRowName = "Alabama";
 
@@ -423,6 +424,7 @@ namespace GoogleCloudSamples
             var newTableID = $"tableForTestImportDataFromOrc{RandomSuffix()}";
             _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableID));
             _datasetsToDelete.Add(datasetId);
+            CreateDataset(datasetId, _client);
             // Test parameters.
             string expectedFirstRowName = "Alabama";
 
@@ -441,6 +443,17 @@ namespace GoogleCloudSamples
             // Check results.
             Assert.Equal(expectedFirstRowName, row["name"]);
             Assert.True(results.Count() == 50);
+
+            // Test the truncate sample
+            GoogleCloudSamples.BiqQuerySnippets.LoadTableFromOrcTruncate(datasetId, newTableID, _client);
+
+            BigQueryResults newResults = AsyncQuery(_projectId, datasetId, newTableID,
+                query, _client);
+            row = newResults.First();
+
+            // Check results.
+            Assert.Equal(expectedFirstRowName, row["name"]);
+            Assert.True(newResults.Count() == 50);
         }
 
         [Fact]
@@ -485,7 +498,7 @@ namespace GoogleCloudSamples
             var newTableID = $"tableForTestImportDataFromJSON{RandomSuffix()}";
             _tablesToDelete.Add(new Tuple<string, string>(datasetId, newTableID));
             _datasetsToDelete.Add(datasetId);
-
+            CreateDataset(datasetId, _client);
             // JSON file below has 50 items in it.
             string expectedFirstRowName = "Alabama";
 

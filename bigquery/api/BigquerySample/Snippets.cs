@@ -18,7 +18,7 @@ namespace GoogleCloudSamples
             // [START bigquery_load_table_gcs_json]
             var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.json";
 
-            var dataset = client.CreateDataset(datasetId);
+            var dataset = client.GetDataset(datasetId);
 
             var schema = new TableSchemaBuilder {
                 { "name", BigQueryDbType.String },
@@ -50,7 +50,7 @@ namespace GoogleCloudSamples
             // [START bigquery_load_table_gcs_csv]
             var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.csv";
 
-            var dataset = client.CreateDataset(datasetId);
+            var dataset = client.GetDataset(datasetId);
 
             var schema = new TableSchemaBuilder {
                 { "name", BigQueryDbType.String },
@@ -84,7 +84,7 @@ namespace GoogleCloudSamples
             // [START bigquery_load_table_gcs_orc]
             var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.orc";
 
-            var dataset = client.CreateDataset(datasetId);
+            var dataset = client.GetDataset(datasetId);
 
             var jobOptions = new CreateLoadJobOptions()
             {
@@ -99,6 +99,36 @@ namespace GoogleCloudSamples
             loadJob.PollUntilCompleted();
 
             // [END bigquery_load_table_gcs_orc]
+        }
+
+        /// <summary>
+        /// Imports data from an Orc source, truncating existing table data
+        /// </summary>
+        /// <param name="datasetId">Dataset identifier.</param>
+        /// <param name="tableId">Table identifier.</param>
+        /// <param name="client">A BigQuery client.</param>
+        public static void LoadTableFromOrcTruncate(string datasetId,
+            string tableId, BigQueryClient client)
+        {
+            // [START bigquery_load_table_gcs_orc_truncate]
+            var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.orc";
+
+            var dataset = client.GetDataset(datasetId);
+
+            var jobOptions = new CreateLoadJobOptions()
+            {
+                SourceFormat = FileFormat.Orc,
+                WriteDisposition = WriteDisposition.WriteTruncate
+            };
+
+            // Pass null as the schema because the schema is inferred when
+            // loading Orc data
+            var loadJob = client.CreateLoadJob(gcsURI, dataset.GetTableReference(tableId),
+                null, jobOptions);
+
+            loadJob.PollUntilCompleted();
+
+            // [END bigquery_load_table_gcs_orc_truncate]
         }
     }
 }
