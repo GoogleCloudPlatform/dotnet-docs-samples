@@ -130,6 +130,14 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Terrific. It's on the way.", output.Stdout);
         }
+
+        [Fact]
+        public void TestSyncEnhancedModel()
+        {
+            var output = Run("sync", "-e", _audioWavPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("regular Chromecast is fine", output.Stdout);
+        }
     }
 
     public class CloudStorageRecognizeTests : CommonRecognizeTests, IClassFixture<RandomBucketFixture>, System.IDisposable
