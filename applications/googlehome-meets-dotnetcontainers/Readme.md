@@ -13,6 +13,7 @@ You must have a GCP project with the following APIs enabled:
 * Custom Search API
 * Cloud Vision API
 * BigQuery API
+* Translation API
 * Container Builder API
 
 ### Custom Search configuration
@@ -88,15 +89,16 @@ Typing text here is treated exactly the same as if the text had arrived from the
 You can use the following phrases to test.
 * Say hi to everyone
 * What platform are you running on?
-* Let's use Vision API
+* I want to use Vision API
   * Search pictures of London
   * Describe the picture
   * Is picture safe?
   * Are there landmarks in the picture?
   * Go back to all pictures
-* Let's use Big Query
+* I want to use Big Query
   * What was the top hacker news on May 1 2018? 
   * In 2015, what was the hottest temperature in France?
+* Translate how are you to German
 * Throw an exception
 
 ### Google Home/Assistant configuration

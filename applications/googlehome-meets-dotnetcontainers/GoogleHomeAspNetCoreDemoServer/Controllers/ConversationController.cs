@@ -46,7 +46,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Controllers
         {
             var response = await _dialogFlowApp.HandleRequest(Request);
             var responseJson = response.ToString();
-            return Content(responseJson, "application/json");
+            return Content(responseJson, "application/json; charset=utf-8");
         }
     }
 }
