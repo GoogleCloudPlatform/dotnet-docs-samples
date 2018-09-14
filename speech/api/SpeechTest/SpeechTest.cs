@@ -54,6 +54,7 @@ namespace GoogleCloudSamples
 
         protected string _audioRawPath = Path.Combine("resources", "audio.raw");
         protected string _audioFlacPath = Path.Combine("resources", "audio.flac");
+        protected string _audioWavPath = Path.Combine("resources", "commercial_mono.wav");
 
         [Fact]
         public void TestSync()
@@ -120,6 +121,14 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
             Assert.Contains("WordStartTime:", output.Stdout);
+        }
+
+        [Fact]
+        public void TestSyncPunctuation()
+        {
+            var output = Run("sync", "-p", _audioWavPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Terrific. It's on the way.", output.Stdout);
         }
     }
 
