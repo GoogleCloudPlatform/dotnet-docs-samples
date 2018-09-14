@@ -52,7 +52,7 @@ namespace GoogleCloudSamples
 
             // Prepare custom metric.
             Metric metric = new Metric();
-            metric.Type = "custom.googleapis.com/stores/daily_sales";
+            metric.Type = "custom.googleapis.com/shops/daily_sales";
             metric.Labels.Add("store_id", "Pittsburgh");
 
             // Prepare monitored resource.
