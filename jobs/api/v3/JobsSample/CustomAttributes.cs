@@ -110,7 +110,7 @@ namespace GoogleCloudSamples
             Console.WriteLine("Created custom job: " + customJob.Title);
             return customJob;
         }
-        // [END custom_attribute_job
+        // [END custom_attribute_job]
 
         // [START custom_attribute_filter_string_value]
 
@@ -172,7 +172,7 @@ namespace GoogleCloudSamples
         }
         // [END custom_attribute_filter_long_value]
 
-        // [START custom_attribute_filter_multi_attributes
+        // [START custom_attribute_filter_multi_attributes]
 
         public static void FiltersOnMultiCustomAttributes()
         {

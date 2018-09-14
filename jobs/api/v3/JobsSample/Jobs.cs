@@ -217,7 +217,7 @@ namespace GoogleCloudSamples
                 throw e;
             }
         }
-        // [END update_job_with_field_mask
+        // [END update_job_with_field_mask]
 
         public static void DeleteJob(String jobName)
         {
