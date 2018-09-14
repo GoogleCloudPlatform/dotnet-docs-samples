@@ -59,6 +59,13 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
             return new WebhookResponse { FulfillmentText = response.TranslatedText };
         }
 
+        /// <summary>
+        /// Extract the parameters from the request and perform basic validation.
+        /// </summary>
+        /// <param name="req">Webhook request</param>
+        /// <param name="englishPhrase">English phrase</param>
+        /// <param name="languageCode">Language code</param>
+        /// <returns>Error if the parameters do not exist or validate. Null, if everything is OK.</returns>
         private string ExtractAndValidateParameters(WebhookRequest req, out string englishPhrase, out string languageCode)
         {
             englishPhrase = req.QueryResult.Parameters.Fields["englishphrase"].StringValue;
