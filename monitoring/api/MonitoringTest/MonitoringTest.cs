@@ -135,7 +135,6 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestReadTimeSeriesData()
         {
-            _cloudMonitoring.Run("write", _projectId);
             var output = _cloudMonitoring.Run("read", _projectId,
                 "custom.googleapis.com/stores/daily_sales");
             Assert.Equal(0, output.ExitCode);
@@ -145,7 +144,6 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestReadTimeSeriesDataFields()
         {
-            _cloudMonitoring.Run("write", _projectId);
             var output = _cloudMonitoring.Run("readFields", _projectId,
                 "custom.googleapis.com/stores/daily_sales");
             Assert.Equal(0, output.ExitCode);
