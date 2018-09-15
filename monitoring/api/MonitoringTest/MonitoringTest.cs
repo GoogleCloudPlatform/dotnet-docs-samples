@@ -31,10 +31,10 @@ namespace GoogleCloudSamples
 
         public CommandLineRunner CloudMonitoring { get; private set; }
             = new CommandLineRunner()
-        {
-            VoidMain = Monitoring.Main,
-            Command = "Monitoring"
-        };
+            {
+                VoidMain = Monitoring.Main,
+                Command = "Monitoring"
+            };
 
         public ConsoleOutput WriteOutput { get; private set; }
 
@@ -46,7 +46,7 @@ namespace GoogleCloudSamples
     /// Runs the sample app's methods and tests the outputs
     // </summary>
     public class CommonTests : IClassFixture<TestFixture>
-    {        
+    {
         private readonly string _projectId;
         readonly CommandLineRunner _cloudMonitoring;
         private readonly TestFixture _fixture;
