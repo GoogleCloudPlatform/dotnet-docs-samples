@@ -45,7 +45,6 @@ namespace GoogleCloudSamples
         {
             CustomRoles.QueryTestablePermissions(
                 "//cloudresourcemanager.googleapis.com/projects/" + _project);
-            CustomRoles.ListRoles(_project);
             CustomRoles.GetRole("roles/appengine.appViewer");
         }
 
@@ -54,7 +53,7 @@ namespace GoogleCloudSamples
         {
             var role = CustomRoles.CreateRole(_name, _project, _title,
                 _description, _permissions, _stage);
-
+            CustomRoles.ListRoles(_project);
             role = CustomRoles.EditRole(_name, _project, _title,
                 "Updated C# description.", _permissions, _stage);
             role = CustomRoles.DisableRole(_name, _project);

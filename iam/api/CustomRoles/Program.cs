@@ -57,13 +57,13 @@ namespace GoogleCloudSamples
         // [START iam_list_roles]
         public static IList<Role> ListRoles(string projectId)
         {
-            IList<Role> roles = s_service.Projects.Roles
-                .List("projects/" + projectId).Execute().Roles;
-            foreach (var role in roles)
+            ListRolesResponse response = s_service.Projects.Roles
+                .List("projects/" + projectId).Execute();
+            foreach (var role in response?.Roles)
             {
                 Console.WriteLine(role.Name);
             }
-            return roles;
+            return response.Roles;
         }
         // [END iam_list_roles]
 
