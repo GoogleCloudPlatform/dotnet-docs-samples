@@ -44,6 +44,7 @@ clouddebugger.googleapis.com
 clouderrorreporting.googleapis.com
 cloudiot.googleapis.com
 cloudkms.googleapis.com
+cloudresourcemanager.googleapis.com
 cloudtrace.googleapis.com
 compute.googleapis.com
 datastore.googleapis.com
@@ -81,6 +82,7 @@ roles/dlp.admin
 roles/dlp.user
 roles/errorreporting.admin
 roles/errorreporting.user
+roles/iam.roleAdmin
 roles/iam.securityReviewer
 roles/iam.serviceAccountAdmin
 roles/iam.serviceAccountKeyAdmin
@@ -91,6 +93,7 @@ roles/logging.privateLogViewer
 roles/logging.viewer
 roles/monitoring.admin
 roles/pubsub.admin
+roles/resourcemanager.projectIamAdmin
 roles/storage.admin
 "@
 
