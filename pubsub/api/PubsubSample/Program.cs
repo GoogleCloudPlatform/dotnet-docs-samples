@@ -248,7 +248,7 @@ namespace GoogleCloudSamples
         }
 
         /// <summary>
-        /// Create a SimplePublisher with custom batch thresholds.
+        /// Create a PublisherClient with custom batch thresholds.
         /// </summary>
         public static PublisherClient GetCustomPublisher(string projectId,
             string topicId)
@@ -274,7 +274,7 @@ namespace GoogleCloudSamples
             // [START pubsub_quickstart_publisher]
             // [START pubsub_publisher_batch_settings]
             var publishTasks = new List<Task<string>>();
-            // SimplePublisher collects messages into appropriately sized
+            // PublisherClient collects messages into appropriately sized
             // batches.
             foreach (string text in messageTexts)
             {
@@ -289,22 +289,36 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        static SubscriberClient GetSubscriber(string projectId,
-            string subscriptionId)
+        static object PullMessagesAsync(string projectId,
+            string subscriptionId, bool acknowledge)
         {
+            // [START pubsub_subscriber_async_pull]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
             SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
             SubscriberClient subscriber = SubscriberClient.Create(
                 subscriptionName, new[] { subscriberClient });
-            return subscriber;
+            // SubscriberClient runs your message handle function on multiple
+            // threads to maximize throughput.
+            subscriber.StartAsync(
+                async (PubsubMessage message, CancellationToken cancel) =>
+                {
+                    string text =
+                        Encoding.UTF8.GetString(message.Data.ToArray());
+                    await Console.Out.WriteLineAsync(
+                        $"Message {message.MessageId}: {text}");
+                    return acknowledge ? SubscriberClient.Reply.Ack
+                        : SubscriberClient.Reply.Nack;
+                });
+            // Run for 3 seconds.
+            Thread.Sleep(3000);
+            subscriber.StopAsync(CancellationToken.None).Wait();
+            // [END pubsub_subscriber_async_pull]
+            return 0;
         }
 
-        /// <summary>
-        /// Create a subscriber with custom control flow settings.
-        /// </summary>
-        static SubscriberClient GetCustomSubscriber(string projectId,
-            string subscriptionId)
+        public static object PullMessagesCustomAsync(string projectId,
+            string subscriptionId, bool acknowledge)
         {
             // [START pubsub_subscriber_flow_settings]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
@@ -323,14 +337,9 @@ namespace GoogleCloudSamples
                         maxOutstandingByteCount: 10240)
                 });
             // [END pubsub_subscriber_flow_settings]
-            return subscriber;
-        }
-
-        public static object PullMessages(SubscriberClient subscriber, bool acknowledge)
-        {
             // [START pubsub_quickstart_subscriber]
             // [START pubsub_subscriber_flow_settings]
-            // SimpleSubscriber runs your message handle function on multiple
+            // SubscriberClient runs your message handle function on multiple
             // threads to maximize throughput.
             subscriber.StartAsync(
                 async (PubsubMessage message, CancellationToken cancel) =>
@@ -570,10 +579,9 @@ namespace GoogleCloudSamples
                     ? GetCustomPublisher(opts.projectId, opts.topicId)
                     : GetPublisher(opts.projectId, opts.topicId), opts.message),
                 (PullMessagesOptions opts) => opts.syncPull ?
-                    PullMessagesSync(opts.projectId, opts.subscriptionId, opts.acknowledge) :
-                    PullMessages(opts.customFlow
-                        ? GetCustomSubscriber(opts.projectId, opts.subscriptionId)
-                        : GetSubscriber(opts.projectId, opts.subscriptionId), opts.acknowledge),
+                    PullMessagesSync(opts.projectId, opts.subscriptionId, opts.acknowledge) : opts.customFlow ?
+                    PullMessagesCustomAsync(opts.projectId, opts.subscriptionId, opts.acknowledge) :
+                    PullMessagesAsync(opts.projectId, opts.subscriptionId, opts.acknowledge),
                 (GetTopicOptions opts) => GetTopic(opts.projectId, opts.topicId),
                 (GetSubscriptionOptions opts) => GetSubscription(opts.projectId,
                 opts.subscriptionId),
