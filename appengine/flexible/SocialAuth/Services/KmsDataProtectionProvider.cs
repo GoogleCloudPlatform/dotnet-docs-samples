@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2017 Google Inc.
+ * Copyright (c) 2018 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,8 +14,7 @@
  * the License.
  */
 using Google.Apis.Auth.OAuth2;
-using Google.Apis.CloudKMS.v1;
-using Google.Apis.CloudKMS.v1.Data;
+using Google.Cloud.Kms.V1;
 using Google.Apis.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
@@ -23,15 +22,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
+using Google.Protobuf.WellKnownTypes;
+using Google.Protobuf;
+using Grpc.Core;
 
-namespace SocialAuth.Services
+namespace SocialAuthMVC.Services
 {
     public class KmsDataProtectionProviderOptions
     {
-        /// <summary>
-        /// Your Google project id.
-        /// </summary>
-        public string ProjectId { get; set; }
         /// <summary>
         /// global, us-east1, etc.
         /// </summary>
@@ -39,7 +37,7 @@ namespace SocialAuth.Services
         /// <summary>
         /// Name of the key ring to store the keys in.
         /// </summary>
-        public string KeyRing { get; set; }
+        public string KeyRing { get; set; } = "dataprotectionprovider";
     }
 
     /// <summary>
@@ -49,47 +47,36 @@ namespace SocialAuth.Services
     public class KmsDataProtectionProvider : IDataProtectionProvider
     {
         // The kms service.
-        readonly CloudKMSService _kms;
+        readonly KeyManagementServiceClient _kms;
         readonly IOptions<KmsDataProtectionProviderOptions> _options;
+        private readonly Models.GoogleProjectModel _googleProject;
+
+        private readonly KeyRingName _keyRingName;
+
         // Keep a cache of DataProtectors we create to reduce calls to the
         // _kms service.
         readonly ConcurrentDictionary<string, IDataProtector> 
             _dataProtectorCache =
             new ConcurrentDictionary<string, IDataProtector>();
-
         public KmsDataProtectionProvider(
-            IOptions<KmsDataProtectionProviderOptions> options)
+            IOptions<KmsDataProtectionProviderOptions> options,
+            Models.GoogleProjectModel googleProject)
         {
             _options = options;
-            // Create a KMS service client with credentials.
-            GoogleCredential credential =
-                GoogleCredential.GetApplicationDefaultAsync().Result;
-            // Inject the Cloud Key Management Service scope
-            if (credential.IsCreateScopedRequired)
-            {
-                credential = credential.CreateScoped(new[]
-                {
-                    CloudKMSService.Scope.CloudPlatform
-                });
-            }
-            _kms = new CloudKMSService(new BaseClientService.Initializer
-            {
-                HttpClientInitializer = credential,
-                GZipEnabled = false
-            });
-            // Create the key ring.
-            var parent = string.Format("projects/{0}/locations/{1}",
-                options.Value.ProjectId, options.Value.Location);
-            KeyRing keyRingToCreate = new KeyRing();
-            var request = new ProjectsResource.LocationsResource
-                .KeyRingsResource.CreateRequest(_kms, keyRingToCreate, parent);
-            request.KeyRingId = options.Value.KeyRing;
+            _googleProject = googleProject;
+            _kms = KeyManagementServiceClient.Create();
+            var opts = options.Value;
+            _keyRingName = new KeyRingName(_googleProject.Id,
+                opts.Location, opts.KeyRing);
             try
             {
-                request.Execute();
+                // Create the key ring.
+                _kms.CreateKeyRing(
+                    new LocationName(_googleProject.Id, opts.Location),
+                    opts.KeyRing, new KeyRing());
             }
-            catch (Google.GoogleApiException e)
-            when (e.HttpStatusCode == System.Net.HttpStatusCode.Conflict)
+            catch (Grpc.Core.RpcException e)
+            when (e.StatusCode == StatusCode.AlreadyExists)
             {
                 // Already exists.  Ok.
             }
@@ -103,34 +90,24 @@ namespace SocialAuth.Services
                 return cached;
             }
             // Create the crypto key:
-            var keyRingName = string.Format(
-                "projects/{0}/locations/{1}/keyRings/{2}",
-                _options.Value.ProjectId, _options.Value.Location,
-                _options.Value.KeyRing);
-            string rotationPeriod = string.Format("{0}s",
-                    TimeSpan.FromDays(7).TotalSeconds);
             CryptoKey cryptoKeyToCreate = new CryptoKey()
             {
-                Purpose = "ENCRYPT_DECRYPT",
-                NextRotationTime = DateTime.UtcNow.AddDays(7),
-                RotationPeriod = rotationPeriod
+                Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
+                NextRotationTime = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(7)),
+                RotationPeriod = Duration.FromTimeSpan(TimeSpan.FromDays(7))
             };
-            var request = new ProjectsResource.LocationsResource
-                .KeyRingsResource.CryptoKeysResource.CreateRequest(
-                _kms, cryptoKeyToCreate, keyRingName);
-            string keyId = EscapeKeyId(purpose);
-            request.CryptoKeyId = keyId;
-            string keyName;
+            var opts = _options.Value;
+            CryptoKeyName keyName = new CryptoKeyName(_googleProject.Id, 
+                    opts.Location, opts.KeyRing, EscapeKeyId(purpose));
             try
             {
-                keyName = request.Execute().Name;
+                _kms.CreateCryptoKey(_keyRingName, keyName.CryptoKeyId,
+                    cryptoKeyToCreate);
             }
-            catch (Google.GoogleApiException e)
-                when (e.HttpStatusCode == System.Net.HttpStatusCode.Conflict)
+            catch (Grpc.Core.RpcException e)
+            when (e.StatusCode == StatusCode.AlreadyExists)
             {
                 // Already exists.  Ok.
-                keyName = string.Format("{0}/cryptoKeys/{1}",
-                    keyRingName, keyId);
             }
             var newProtector = new KmsDataProtector(_kms, keyName, 
                 (string innerPurpose) =>
@@ -171,9 +148,11 @@ namespace SocialAuth.Services
             if (keyId.Length > 63)
             {
                 // For strings that are too long to be key ids, tag them with a
-                // hash code.
-                keyId = string.Format("{0}-{1:x8}", keyId.Substring(0, 54),
-                    QuickHash(keyId));
+                // hash code.  Insert it into the middle of the string.  Because
+                // the beginning and end of the string are more interesting to
+                // humans.
+                keyId = string.Format("{0}-{1:x8}-{2}", keyId.Substring(0, 27),
+                    QuickHash(keyId), keyId.Substring(keyId.Length - 26, 26));
             }
             return keyId;
         }
@@ -195,15 +174,19 @@ namespace SocialAuth.Services
 
     public class KmsDataProtector : IDataProtector
     {
-        readonly CloudKMSService _kms;
-        readonly string _keyName;
+        readonly KeyManagementServiceClient _kms;
+        readonly CryptoKeyName _keyName;
+        readonly CryptoKeyPathName _keyPathName;
         readonly Func<string, IDataProtector> _dataProtectorFactory;
 
-        internal KmsDataProtector(CloudKMSService kms, string keyName,
+        internal KmsDataProtector(KeyManagementServiceClient kms, 
+            CryptoKeyName keyName,
             Func<string, IDataProtector> dataProtectorFactory)
         {
             _kms = kms;
             _keyName = keyName;
+            _keyPathName = new CryptoKeyPathName(keyName.ProjectId,
+                keyName.LocationId, keyName.KeyRingId, keyName.CryptoKeyId);
             _dataProtectorFactory = dataProtectorFactory;
         }
 
@@ -214,22 +197,16 @@ namespace SocialAuth.Services
 
         byte[] IDataProtector.Protect(byte[] plaintext)
         {
-            var result = _kms.Projects.Locations.KeyRings.CryptoKeys
-                .Encrypt(new EncryptRequest()
-                {
-                    Plaintext = Convert.ToBase64String(plaintext)
-                }, _keyName).Execute();
-            return Convert.FromBase64String(result.Ciphertext);
+            var response = 
+                _kms.Encrypt(_keyPathName, ByteString.CopyFrom(plaintext));
+            return response.Ciphertext.ToByteArray();
         }
 
         byte[] IDataProtector.Unprotect(byte[] protectedData)
         {
-            var result = _kms.Projects.Locations.KeyRings.CryptoKeys
-                .Decrypt(new DecryptRequest()
-                {
-                    Ciphertext = Convert.ToBase64String(protectedData)
-                }, _keyName).Execute();
-            return Convert.FromBase64String(result.Plaintext);
+            var response = 
+                _kms.Decrypt(_keyName, ByteString.CopyFrom(protectedData));
+            return response.Plaintext.ToByteArray();
         }
     }
 }
