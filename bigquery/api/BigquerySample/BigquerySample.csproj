@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.0.0" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.3.0-beta04" />
   </ItemGroup>
 
 </Project>
