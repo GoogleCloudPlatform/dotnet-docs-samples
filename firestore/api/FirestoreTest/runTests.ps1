@@ -12,11 +12,16 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-dotnet build
-
-break  # TODO: Fix and run the test below.  It times out.
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+
+dotnet build
+if ($LASTEXITCODE) {
+	# Failed to build.  Report it.
+} else {
+	Skip-Test
+}
+break  # TODO: Fix and run the test below.  It times out.
 
 $randomString = ""
 1..10 | foreach {
