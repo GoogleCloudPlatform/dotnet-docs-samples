@@ -1,16 +1,16 @@
 # Static Content sample for Google App Engine Flexible Environment
 
-This sample application demonstrates how to serve static content with 
+This sample application demonstrates how to serve static content with
 Google App Engine Flexible Environment.
 
 ## Prerequisites
 
 1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
-  
+
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.
 
-2.  Install the [.NET Core SDK, version 1.1](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.1.4-download.md).
+2.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md).
 
 
 ## ![PowerShell](../.resources/powershell.png) Using PowerShell
@@ -27,14 +27,14 @@ PS > dotnet run
 ```psm1
 PS > dotnet restore
 PS > dotnet publish
-PS > gcloud beta app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
+PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.0\publish\app.yaml
 ```
 
 
 ## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
 
 Visual Studio is *optional*.  An old, unmaintained branch of samples that work
-with Visual Studio 2015 is 
+with Visual Studio 2015 is
 [here](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015).
 
 [Google Cloud Tools for Visual Studio](
