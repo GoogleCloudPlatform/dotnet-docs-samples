@@ -23,25 +23,13 @@ This sample requires [.NET Core 2.1](
     [Click here](https://console.cloud.google.com/appengine) to create an
     App Engine application.
 
-4.  Add permissions so the App Engine user account can encrypt and decrypt.
-    ```
-    PS > .\Add-KmsPermissionsToAppEngine.ps1
-    Waiting for async operation operations/tmo-acf.0f97d7e0-636a-4e7c-9837-a48c2b87dc8d to complete...
-    Operation finished successfully. The following command can describe the Operation details:
-    gcloud services operations describe operations/tmo-acf.0f97d7e0-636a-4e7c-9837-a48c2b87dc8d
-    Adding role roles/cloudkms.admin to <your-project-id>@appspot.gserviceaccount.com.
-    ...
-    Adding role roles/cloudkms.cryptoKeyEncrypterDecrypter to <your-project-id>@appspot.gserviceaccount.com.
-    ...
-    ```
-
-5.  Create a new encryption key.
+4.  Create a new encryption key.
     ```
     PS > .\New-EncryptionKey.ps1
     projects/<your-project-id>/locations/global/keyRings/socialauth/cryptoKeys/appsecrets
     ```
 
-6.  Create a file called `appsecrets.json` and fill it with:
+5.  Create a file called `appsecrets.json` and fill it with:
     ```json
     {
         "Secrets": {
@@ -59,12 +47,12 @@ This sample requires [.NET Core 2.1](
     }
     ```
 
-7.  Encrypt `appsecrets.json`:
+6.  Encrypt `appsecrets.json`:
     ```
     PS > .\Encrypt-AppSecrets.ps1
     ```
 
-8.  Run the app:
+7.  Run the app locally:
     ```
     PS > dotnet run
     Using launch settings from ~/gitrepos/dds2/appengine/flexible/SocialAuth/Properties/launchSettings.json...
@@ -77,7 +65,19 @@ This sample requires [.NET Core 2.1](
     Application started. Press Ctrl+C to shut down.
     ```
 
-9.  Deploy the app to app engine:
+8.  Add permissions so the App Engine user account can encrypt and decrypt.
+    ```
+    PS > .\Add-KmsPermissionsToAppEngine.ps1
+    Waiting for async operation operations/tmo-acf.0f97d7e0-636a-4e7c-9837-a48c2b87dc8d to complete...
+    Operation finished successfully. The following command can describe the Operation details:
+    gcloud services operations describe operations/tmo-acf.0f97d7e0-636a-4e7c-9837-a48c2b87dc8d
+    Adding role roles/cloudkms.admin to <your-project-id>@appspot.gserviceaccount.com.
+    ...
+    Adding role roles/cloudkms.cryptoKeyEncrypterDecrypter to <your-project-id>@appspot.gserviceaccount.com.
+    ...
+    ```
+
+9.  Deploy the app to App Engine:
     ```
     PS > dotnet publish
     Microsoft (R) Build Engine version 15.7.179.6572 for .NET Core
