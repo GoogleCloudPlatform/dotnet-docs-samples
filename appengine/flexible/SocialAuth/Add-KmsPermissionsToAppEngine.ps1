@@ -26,6 +26,8 @@
 ##############################
 gcloud services enable cloudkms.googleapis.com
 
+
+# Look up the app engine account email address and project name.
 $accounts = gcloud iam service-accounts list --format=json | ConvertFrom-Json
 $appEngineAccount = $accounts | `
     Where-Object displayName -eq 'App Engine default service account'
@@ -36,9 +38,36 @@ if (-not $appEngineAccount) {
 
 $email = $appEngineAccount.email
 $projectId = $appEngineAccount.projectId
+
+###############################################################################
+# Permissions for App Engine to decrypt appsecrets.json.
+$keyName = [string] (Get-Content ./appsecrets.json.keyname)
+# Drop the last two segments of the path to get the key ring name.
+$keyRingName = ($keyName.Split('/') | Select-Object -SkipLast 2) -join "/"
+# Give App Engine permission to decrypt using keys in this keyring.
+$role = 'roles/cloudkms.cryptoKeyDecrypter'
+Write-Host "Adding role $role to $email for $keyRingName."
+gcloud kms keyrings add-iam-policy-binding $keyRingName `
+    --member serviceAccount:$email --role $role
+
+###############################################################################    
+# Permissions for App Engine to encrypt and decrypt secrets for
+# KmsDataProtectionProvider.
+
+# Check to see if the key ring already exists.
+$keyRingId = 'dataprotectionprovider'
+# Check to see if the key ring already exists.
+$matchingKeyRing = (gcloud kms keyrings list --format json --location global --filter="name~.*/$keyRingId" | convertfrom-json).name
+if (-not $matchingKeyRing) {
+    # Create the new key ring.
+    Write-Host "Creating new key ring $keyRingId..." 
+    gcloud kms keyrings create $keyRingId --location global
+}
+    
 $roles = @('roles/cloudkms.admin', 'roles/cloudkms.cryptoKeyEncrypterDecrypter')
 foreach ($role in $roles) {
-    Write-Output "Adding role $role to $email."
-    gcloud projects add-iam-policy-binding $projectId `
+    Write-Host "Adding role $role to $email for $keyRingId."
+    gcloud kms keyrings add-iam-policy-binding $keyRingId `
+        --project $projectId --location 'global' `
         --member serviceAccount:$email --role $role
 }

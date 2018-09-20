@@ -29,24 +29,18 @@
 # .\New-EncryptionKey.ps1
 # projects/<your-project-id>/locations/global/keyRings/socialauth/cryptoKeys/appsecrets
 ##############################################################################
-Param ([string]$keyRingId = 'socialauth', [string]$keyId = 'appsecrets')
+Param ([string]$keyRingId = 'appsecrets', [string]$keyId = 'appsecrets')
 
 # Check to see if the key ring already exists.
-$globalKeyRings = (gcloud kms keyrings list --format json --location global | convertfrom-json).name
-$matchingKeyRing = foreach ($globalKeyRing in $globalKeyRings) {
-    if ($globalKeyRing.EndsWith('/' + $keyRingId)) {
-        $globalKeyRing
-        break
-    }
-}
+$matchingKeyRing = (gcloud kms keyrings list --format json --location global --filter="name~.*/$keyRingId" | convertfrom-json).name
 if (-not $matchingKeyRing) {
     # Create the new key ring.
-    Write-Information "Creating new key ring $keyRingId..." 
+    Write-Host "Creating new key ring $keyRingId..." 
     gcloud kms keyrings create $keyRingId --location global
 }
 
 # Create the new key.
-Write-Information "Creating new key $keyId..."
+Write-Host "Creating new key $keyId..."
 gcloud kms keys create $keyId --location global --keyring $keyRingId --purpose=encryption
 # Write the new key name to appsecrets.json.keyname.
 $keyName = (gcloud kms keys list --location global --keyring $keyRingId --format json | ConvertFrom-Json).name | Where-Object {$_ -like "*/$keyId" }
