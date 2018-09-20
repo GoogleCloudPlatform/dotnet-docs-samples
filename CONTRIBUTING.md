@@ -39,3 +39,8 @@ For instructions regarding development environment setup, please visit [the docu
 Samples in this repository follow the [framework coding
 style](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md).
 This is enforced using [CodeFormatter](https://github.com/dotnet/codeformatter).
+
+### Starting a new sample
+When starting a new sample, match the file and directory layout in the
+[the translate sample](translate/api).  That sample is the canonical example
+of how a new sample should be structured.
