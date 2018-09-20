@@ -13,10 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+
 using Microsoft.AspNetCore.Rewrite;
+using System.Linq;
 
 namespace SocialAuthMVC
 {

@@ -13,18 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-using Google.Apis.Auth.OAuth2;
+
 using Google.Cloud.Kms.V1;
-using Google.Apis.Services;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Text;
-using Google.Protobuf.WellKnownTypes;
-using Google.Protobuf;
-using Grpc.Core;
 
 namespace SocialAuthMVC.Services
 {
@@ -34,6 +32,7 @@ namespace SocialAuthMVC.Services
         /// global, us-east1, etc.
         /// </summary>
         public string Location { get; set; } = "global";
+
         /// <summary>
         /// Name of the key ring to store the keys in.
         /// </summary>
@@ -47,17 +46,19 @@ namespace SocialAuthMVC.Services
     public class KmsDataProtectionProvider : IDataProtectionProvider
     {
         // The kms service.
-        readonly KeyManagementServiceClient _kms;
-        readonly IOptions<KmsDataProtectionProviderOptions> _options;
+        private readonly KeyManagementServiceClient _kms;
+
+        private readonly IOptions<KmsDataProtectionProviderOptions> _options;
         private readonly Models.GoogleProjectModel _googleProject;
 
         private readonly KeyRingName _keyRingName;
 
         // Keep a cache of DataProtectors we create to reduce calls to the
         // _kms service.
-        readonly ConcurrentDictionary<string, IDataProtector> 
+        private readonly ConcurrentDictionary<string, IDataProtector>
             _dataProtectorCache =
             new ConcurrentDictionary<string, IDataProtector>();
+
         public KmsDataProtectionProvider(
             IOptions<KmsDataProtectionProviderOptions> options,
             Models.GoogleProjectModel googleProject)
@@ -97,7 +98,7 @@ namespace SocialAuthMVC.Services
                 RotationPeriod = Duration.FromTimeSpan(TimeSpan.FromDays(7))
             };
             var opts = _options.Value;
-            CryptoKeyName keyName = new CryptoKeyName(_googleProject.Id, 
+            CryptoKeyName keyName = new CryptoKeyName(_googleProject.Id,
                     opts.Location, opts.KeyRing, EscapeKeyId(purpose));
             try
             {
@@ -109,7 +110,7 @@ namespace SocialAuthMVC.Services
             {
                 // Already exists.  Ok.
             }
-            var newProtector = new KmsDataProtector(_kms, keyName, 
+            var newProtector = new KmsDataProtector(_kms, keyName,
                 (string innerPurpose) =>
                 this.CreateProtector($"{purpose}.{innerPurpose}"));
             _dataProtectorCache.TryAdd(purpose, newProtector);
@@ -122,7 +123,7 @@ namespace SocialAuthMVC.Services
         /// </summary>
         /// <param name="purpose">The purpose of the key.</param>
         /// <returns>A key id that's safe to pass to Create().</returns>
-        static string EscapeKeyId(string purpose)
+        private static string EscapeKeyId(string purpose)
         {
             StringBuilder keyIdBuilder = new StringBuilder();
             char prevC = ' ';
@@ -158,10 +159,10 @@ namespace SocialAuthMVC.Services
         }
 
         /// <summary>
-        /// A simple hash function used to avoid collisions when mapping 
+        /// A simple hash function used to avoid collisions when mapping
         /// purposes to key ids.  Must be stable across platforms.
         /// </summary>
-        static int QuickHash(string s)
+        private static int QuickHash(string s)
         {
             int hash = 17;
             foreach (char c in s)
@@ -174,12 +175,12 @@ namespace SocialAuthMVC.Services
 
     public class KmsDataProtector : IDataProtector
     {
-        readonly KeyManagementServiceClient _kms;
-        readonly CryptoKeyName _keyName;
-        readonly CryptoKeyPathName _keyPathName;
-        readonly Func<string, IDataProtector> _dataProtectorFactory;
+        private readonly KeyManagementServiceClient _kms;
+        private readonly CryptoKeyName _keyName;
+        private readonly CryptoKeyPathName _keyPathName;
+        private readonly Func<string, IDataProtector> _dataProtectorFactory;
 
-        internal KmsDataProtector(KeyManagementServiceClient kms, 
+        internal KmsDataProtector(KeyManagementServiceClient kms,
             CryptoKeyName keyName,
             Func<string, IDataProtector> dataProtectorFactory)
         {
@@ -197,14 +198,14 @@ namespace SocialAuthMVC.Services
 
         byte[] IDataProtector.Protect(byte[] plaintext)
         {
-            var response = 
+            var response =
                 _kms.Encrypt(_keyPathName, ByteString.CopyFrom(plaintext));
             return response.Ciphertext.ToByteArray();
         }
 
         byte[] IDataProtector.Unprotect(byte[] protectedData)
         {
-            var response = 
+            var response =
                 _kms.Decrypt(_keyName, ByteString.CopyFrom(protectedData));
             return response.Plaintext.ToByteArray();
         }

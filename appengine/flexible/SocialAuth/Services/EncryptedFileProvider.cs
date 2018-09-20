@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2018 Google LLC.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
 // the License at
-// 
+//
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -24,10 +24,10 @@ using System.IO;
 namespace SocialAuthMVC.Services.Kms
 {
     /// <summary>
-    /// Decrypts encrypted files in memory, 
+    /// Decrypts encrypted files in memory,
     /// using Google Cloud Key Management Service
     /// https://cloud.google.com/kms/
-    /// 
+    ///
     /// Encrypted files end with the extension .encrypted and have a
     /// corresponding file ending with the extension .encrypted.
     /// </summary>
@@ -87,8 +87,9 @@ namespace SocialAuthMVC.Services.Kms
     {
         private readonly KeyManagementServiceClient kms;
         private readonly IFileInfo keynameFileInfo;
-        private readonly Lazy<CryptoKeyName> cryptoKeyName; 
+        private readonly Lazy<CryptoKeyName> cryptoKeyName;
         private readonly IFileInfo innerFileInfo;
+
         public static IFileInfo FromFileInfo(KeyManagementServiceClient kms,
             IFileInfo fileInfo, IFileInfo keynameFileInfo)
         {
@@ -100,7 +101,7 @@ namespace SocialAuthMVC.Services.Kms
             {
                 return fileInfo;
             }
-            if (!fileInfo.Name.EndsWith(".encrypted")) 
+            if (!fileInfo.Name.EndsWith(".encrypted"))
             {
                 return null;
             }
@@ -159,10 +160,10 @@ namespace SocialAuthMVC.Services.Kms
             using (var reader = new StreamReader(keynameFileInfo.CreateReadStream()))
             {
                 string line = "";
-                while (!reader.EndOfStream) 
+                while (!reader.EndOfStream)
                 {
                     line = reader.ReadLine().Trim();
-                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#')) 
+                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
                     {
                         continue; // blank or comment;
                     }
@@ -176,7 +177,7 @@ namespace SocialAuthMVC.Services.Kms
                 throw new Exception(
                     $"Incorrectly formatted keyname file {keynameFileInfo.Name}.\n" +
                     "Expected projects/<projectId>/locations/<locationId>/keyRings/<keyringId>/cryptoKeys/<keyId>\n" +
-                    $"Instead, found {line}.");                        
+                    $"Instead, found {line}.");
             }
         }
     }
@@ -185,6 +186,7 @@ namespace SocialAuthMVC.Services.Kms
     {
         private readonly KeyManagementServiceClient kms;
         private readonly IDirectoryContents innerDirectoryContents;
+
         public EncryptedDirectoryContents(KeyManagementServiceClient kms,
             IDirectoryContents innerDirectoryContents)
         {
@@ -219,7 +221,7 @@ namespace SocialAuthMVC.Services.Kms
                     }
                 }
             }
-            foreach (IFileInfo fileInfo in encryptedFiles) 
+            foreach (IFileInfo fileInfo in encryptedFiles)
             {
                 IFileInfo keynameFile = keynameFiles.GetValueOrDefault(
                     Path.ChangeExtension(fileInfo.Name, ".keyname"));
@@ -227,7 +229,7 @@ namespace SocialAuthMVC.Services.Kms
                 {
                     yield return EncryptedFileInfo.FromFileInfo(kms, fileInfo,
                         keynameFile);
-                } 
+                }
             }
         }
 
