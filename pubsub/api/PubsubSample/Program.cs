@@ -278,6 +278,9 @@ namespace GoogleCloudSamples
             // batches.
             foreach (string text in messageTexts)
             {
+                // Record all publishing Tasks. When each Task completes
+                // without error, the message has been successfully published.
+                // In real use, don't simply store all publish Tasks forever.
                 publishTasks.Add(publisher.PublishAsync(text));
             }
             foreach (var task in publishTasks)
