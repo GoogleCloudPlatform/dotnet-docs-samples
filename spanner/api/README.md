@@ -18,8 +18,14 @@ can use [this older sample](
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Spanner API.
 
+5.  In the [Cloud Console](https://console.cloud.google.com/spanner/), create a Cloud Spanner
+    instance and then create a database on that instance.
+
 7.  Edit `QuickStart\Program.cs`, and replace YOUR-PROJECT-ID with id
-    of the project you created in step 1.
+    of the project you created in step 1. Also, update "my-instance"
+    and "my-database" with the id's of the instance and database you
+    created in step 3.
+
 
 9.  From a Powershell command line, run the QuickStart sample:
     ```
