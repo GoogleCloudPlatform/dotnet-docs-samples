@@ -63,7 +63,18 @@ namespace GoogleCloudSamples
             "  Storage enable-requester-pays bucket-name\n" +
             "  Storage disable-requester-pays bucket-name\n" +
             "  Storage get-requester-pays bucket-name\n" +
-            "  Storage generate-encryption-key";
+            "  Storage generate-encryption-key\n" +
+            "  Storage get-bucket-default-event-based-hold bucket-name\n" +
+            "  Storage enable-bucket-default-event-based-hold bucket-name\n" +
+            "  Storage disable-bucket-default-event-based-hold bucket-name\n" +
+            "  Storage lock-bucket-retention-policy bucket-name\n" +
+            "  Storage set-bucket-retention-policy bucket-name retention-period\n" +
+            "  Storage remove-bucket-retention-policy bucket-name\n" +
+            "  Storage get-bucket-retention-policy bucket-name\n" +
+            "  Storage set-object-temporary-hold bucket-name object-name\n" +
+            "  Storage release-object-temporary-hold bucket-name object-name\n" +
+            "  Storage set-object-event-based-hold bucket-name object-name\n" +
+            "  Storage release-object-event-based-hold bucket-name object-name\n";
 
         // [START storage_create_bucket]
         private void CreateBucket(string bucketName)
@@ -258,6 +269,15 @@ namespace GoogleCloudSamples
             Console.WriteLine($"StorageClass:\t{storageObject.StorageClass}");
             Console.WriteLine($"TimeCreated:\t{storageObject.TimeCreated}");
             Console.WriteLine($"Updated:\t{storageObject.Updated}");
+            bool? eventBasedHoldOrNull = storageObject?.EventBasedHold;
+            bool eventBasedHold =
+                eventBasedHoldOrNull.HasValue ? eventBasedHoldOrNull.Value : false;
+            Console.WriteLine("Event-based hold enabled? {0}", eventBasedHold);
+            bool? temporaryHoldOrNull = storageObject?.TemporaryHold;
+            bool temporaryHold =
+                temporaryHoldOrNull.HasValue ? temporaryHoldOrNull.Value : false;
+            Console.WriteLine("Temporary hold enabled? {0}", temporaryHold);
+            Console.WriteLine($"RetentionExpirationTime\t{storageObject.RetentionExpirationTime}");
         }
         // [END storage_get_metadata]
 
@@ -682,7 +702,7 @@ namespace GoogleCloudSamples
         }
         // [END storage_generate_signed_url]
 
-        // [START storage_generate_encryption_key]                
+        // [START storage_generate_encryption_key]
         void GenerateEncryptionKey()
         {
             Console.Write(EncryptionKey.Generate().Base64Key);
@@ -761,6 +781,184 @@ namespace GoogleCloudSamples
                 $"downloaded {objectName} to {localPath} paid by {s_projectId}.");
         }
         // [END storage_download_file_requester_pays]
+
+        // [START storage_set_retention_policy]
+        private void SetBucketRetentionPolicy(string bucketName,
+            long retentionPeriod)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.RetentionPolicy = new Bucket.RetentionPolicyData();
+            bucket.RetentionPolicy.RetentionPeriod = retentionPeriod;
+            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                IfMetagenerationMatch = bucket.Metageneration
+            });
+
+            Console.WriteLine($"Retention policy for {bucketName} was set to {retentionPeriod}");
+        }
+        // [END storage_set_retention_policy]
+
+        // [START storage_lock_retention_policy]
+        private void LockBucketRetentionPolicy(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            storage.LockBucketRetentionPolicy(bucketName,
+                bucket.Metageneration.Value);
+            bucket = storage.GetBucket(bucketName);
+            Console.WriteLine($"Retention policy for {bucketName} is now locked");
+            Console.WriteLine($"Retention policy effective as of {bucket.RetentionPolicy.EffectiveTime}");
+        }
+        // [END storage_lock_retention_policy]
+
+        // [START storage_remove_retention_policy]
+        private void RemoveBucketRetentionPolicy(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            if (bucket.RetentionPolicy != null)
+            {
+                bool? isLockedOrNull = bucket?.RetentionPolicy.IsLocked;
+                bool isLocked =
+                    isLockedOrNull.HasValue ? isLockedOrNull.Value : false;
+                if (isLocked)
+                {
+                    throw new Exception("Retention Policy is locked.");
+                }
+
+                bucket.RetentionPolicy.RetentionPeriod = null;
+                bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+                {
+                    IfMetagenerationMatch = bucket.Metageneration
+                });
+
+                Console.WriteLine($"Retention period for {bucketName} has been removed.");
+            }
+        }
+        // [END storage_remove_retention_policy]
+
+        // [START storage_get_retention_policy]
+        private void GetBucketRetentionPolicy(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+
+            if (bucket.RetentionPolicy != null)
+            {
+                Console.WriteLine("Retention policy:");
+                Console.WriteLine($"period: {bucket.RetentionPolicy.RetentionPeriod}");
+                Console.WriteLine($"effective time: {bucket.RetentionPolicy.EffectiveTime}");
+                bool? isLockedOrNull = bucket?.RetentionPolicy.IsLocked;
+                bool isLocked =
+                    isLockedOrNull.HasValue ? isLockedOrNull.Value : false;
+                Console.WriteLine("policy locked: {0}", isLocked);
+            }
+        }
+        // [END storage_get_retention_policy]
+
+        // [START storage_enable_default_event_based_hold]
+        private void EnableBucketDefaultEventBasedHold(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.DefaultEventBasedHold = true;
+            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration
+            });
+            Console.WriteLine($"Default event-based hold was enabled for #{bucketName}");
+        }
+        // [END storage_enable_default_event_based_hold]
+
+        // [START storage_get_default_event_based_hold]
+        private bool GetBucketDefaultEventBasedHold(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bool? defaultEventBasedHoldOrNull = bucket?.DefaultEventBasedHold;
+            bool defaultEventBasedHold =
+                defaultEventBasedHoldOrNull.HasValue ? defaultEventBasedHoldOrNull.Value : false;
+            Console.WriteLine("Default event-based hold: {0}", defaultEventBasedHold);
+            return defaultEventBasedHold;
+        }
+        // [END storage_get_default_event_based_hold]
+
+        // [START storage_disable_default_event_based_hold]
+        private void DisableBucketDefaultEventBasedHold(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.DefaultEventBasedHold = false;
+            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration
+            });
+            Console.WriteLine($"Default event-based hold was disabled for #{bucketName}");
+        }
+        // [END storage_disable_default_event_based_hold]
+
+        // [START storage_set_event_based_hold]
+        private void SetObjectEventBasedHold(string bucketName,
+            string objectName)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetObject(bucketName, objectName);
+            storageObject.EventBasedHold = true;
+            storageObject = storage.UpdateObject(storageObject, new UpdateObjectOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = storageObject.Metageneration
+            });
+        }
+        // [END storage_set_event_based_hold]
+
+        // [START storage_release_event_based_hold]
+        private void ReleaseObjectEventBasedHold(string bucketName,
+            string objectName)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetObject(bucketName, objectName);
+            storageObject.EventBasedHold = false;
+            storageObject = storage.UpdateObject(storageObject, new UpdateObjectOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = storageObject.Metageneration,
+            });
+        }
+        // [END storage_release_event_based_hold]
+
+        // [START storage_set_temporary_hold]
+        private void SetObjectTemporaryHold(string bucketName,
+            string objectName)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetObject(bucketName, objectName);
+            storageObject.TemporaryHold = true;
+            storageObject = storage.UpdateObject(storageObject, new UpdateObjectOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = storageObject.Metageneration,
+            });
+        }
+        // [END storage_set_temporary_hold]
+
+        // [START storage_release_temporary_hold]
+        private void ReleaseObjectTemporaryHold(string bucketName,
+            string objectName)
+        {
+            var storage = StorageClient.Create();
+            var storageObject = storage.GetObject(bucketName, objectName);
+            storageObject.TemporaryHold = false;
+            storageObject = storage.UpdateObject(storageObject, new UpdateObjectOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = storageObject.Metageneration,
+            });
+        }
+        // [END storage_release_temporary_hold]
 
         private void UploadFileRequesterPays(string bucketName, string localPath,
             string objectName = null)
@@ -1024,6 +1222,62 @@ namespace GoogleCloudSamples
                     case "get-requester-pays":
                         if (args.Length < 2 && PrintUsage()) return -1;
                         return GetRequesterPays(args[1]) ? 1 : 0;
+                        break;
+
+                    case "get-bucket-default-event-based-hold":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        return GetBucketDefaultEventBasedHold(args[1]) ? 1 : 0;
+                        break;
+
+                    case "enable-bucket-default-event-based-hold":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        EnableBucketDefaultEventBasedHold(args[1]);
+                        break;
+
+                    case "disable-bucket-default-event-based-hold":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        DisableBucketDefaultEventBasedHold(args[1]);
+                        break;
+
+                    case "lock-bucket-retention-policy":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        LockBucketRetentionPolicy(args[1]);
+                        break;
+
+                    case "set-bucket-retention-policy":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        SetBucketRetentionPolicy(args[1], long.Parse(args[2]));
+                        break;
+
+                    case "remove-bucket-retention-policy":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        RemoveBucketRetentionPolicy(args[1]);
+                        break;
+
+                    case "get-bucket-retention-policy":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        GetBucketRetentionPolicy(args[1]);
+                        break;
+
+                    case "set-object-temporary-hold":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        SetObjectTemporaryHold(args[1], args[2]);
+                        break;
+
+                    case "release-object-temporary-hold":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        ReleaseObjectTemporaryHold(args[1], args[2]);
+                        break;
+
+                    case "set-object-event-based-hold":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        SetObjectEventBasedHold(args[1], args[2]);
+                        break;
+
+                    case "release-object-event-based-hold":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        ReleaseObjectEventBasedHold(args[1], args[2]);
+                        break;
 
                     default:
                         PrintUsage();
