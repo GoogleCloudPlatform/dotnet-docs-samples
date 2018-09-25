@@ -41,10 +41,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// <returns>Webhook response</returns>
         public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
-            // Extract the DialogFlow date, without the time, that has been requested
-            // Format is "yyyy-mm-dd"
+            // Extract the DialogFlow date without the time
             var date = req.QueryResult.Parameters.Fields["date"].StringValue;
-            date = date.Substring(0, Math.Min(10, date.Length));
+            var dateTime = DateTime.Parse(date);
+            date = dateTime.ToString("yyyy-MM-dd");
 
             // Create the BigQuery client with default credentials
             var bigQueryClient = await BigQueryClient.CreateAsync(Program.AppSettings.GoogleCloudSettings.ProjectId);
@@ -62,38 +62,19 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
                 new BigQueryParameter("date", BigQueryDbType.String, date)
             };
 
-            // Show SQL query in browser
-            ShowQuery(sql, parameters);
+            var (resultList, processedMb, secs) = await RunQueryAsync(bigQueryClient, sql, parameters);
 
-            // Time the BigQuery execution with a StopWatch
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            // Execute BigQuery SQL query. This can take time
-            var result = await bigQueryClient.ExecuteQueryAsync(sql, parameters);
-
-            // Query finished, stop the StopWatch
-            stopwatch.Stop();
-
-            // Get a job reference, for statistics
-            var job = await bigQueryClient.GetJobAsync(result.JobReference);
-
-            // Get result list, and check that there are some results
-            var resultList = result.ToList();
+            // Check if there's data.
             if (resultList.Count == 0)
             {
-                return new WebhookResponse 
+                return new WebhookResponse
                 {
-                    FulfillmentText = "Sorry, there is no data for that date."
+                    FulfillmentText = "Sorry, there is no data."
                 };
             }
 
-            // Time and data statistics
-            long processedMb = job.Statistics.TotalBytesProcessed.Value / (1024 * 1024);
-            double secs = stopwatch.Elapsed.TotalSeconds;
-            var titles = resultList.Select(x => x["title"].ToString()).ToList();
-
             // Show SQL query and query results in browser
+            var titles = resultList.Select(x => x["title"].ToString()).ToList();
             ShowQuery(sql, parameters, (processedMb, secs, titles));
 
             // Send spoken response to DialogFlow
