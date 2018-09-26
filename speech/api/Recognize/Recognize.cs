@@ -540,7 +540,7 @@ namespace GoogleCloudSamples
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     SyncRecognizeGcs(opts.FilePath) : opts.EnableWordTimeOffsets ?
                     SyncRecognizeWords(opts.FilePath) : opts.EnableAutomaticPunctuation ?
-                    SyncRecognizePunctuation(opts.FilePath)  : opts.UseEnhancedModel ?
+                    SyncRecognizePunctuation(opts.FilePath) : opts.UseEnhancedModel ?
                     SyncRecognizeEnhancedModel(opts.FilePath) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
