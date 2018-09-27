@@ -75,6 +75,10 @@ namespace GoogleCloudSamples
         public string OutputPrefix { get; set; }
     }
 
+    [Verb("object-localization", HelpText = "Localize objects in the image")]
+    class DetectObjectLocalizationOptions : ImageOptions { }
+
+
     public class DetectProgram
     {
         static Image ImageFromArg(string arg)
@@ -336,6 +340,31 @@ namespace GoogleCloudSamples
             return 0;
         }
 
+        private static object DetectObjectLocalization(Image image)
+        {
+            // [START vision_localize_objects]
+            // [START vision_localize_objects_gcs]
+            var client = ImageAnnotatorClient.Create();
+            var response = client.DetectLocalizedObjects(image);
+
+            Console.WriteLine($"Number of objects found {response.Count}");
+            foreach(var localizedObject in response)
+            {
+                Console.Write($"\n{localizedObject.Name}");
+                Console.WriteLine($" (confidence: {localizedObject.Score})");
+                Console.WriteLine("Normalized bounding polygon vertices: ");
+
+                foreach(var vertex 
+                        in localizedObject.BoundingPoly.NormalizedVertices)
+                {
+                    Console.WriteLine($" - ({vertex.X}, {vertex.Y})");
+                }
+            }
+            // [END vision_localize_objects_gcs]
+            // [END vision_localize_objects]
+            return 0;
+        }
+
         // [START vision_text_detection_pdf_gcs]
         private static object DetectDocument(string gcsSourceUri,
             string gcsDestinationBucketName, string gcsDestinationPrefixName)
@@ -433,7 +462,8 @@ namespace GoogleCloudSamples
                 DetectCropHintOptions,
                 DetectWebOptions,
                 DetectDocTextOptions,
-                DetectDocumentOptions
+                DetectDocumentOptions,
+                DetectObjectLocalizationOptions
                 >(args)
               .MapResult(
                 (DetectLabelsOptions opts) => DetectLabels(ImageFromArg(opts.FilePath)),
@@ -447,6 +477,7 @@ namespace GoogleCloudSamples
                 (DetectWebOptions opts) => DetectWeb(ImageFromArg(opts.FilePath)),
                 (DetectDocTextOptions opts) => DetectDocText(ImageFromArg(opts.FilePath)),
                 (DetectDocumentOptions opts) => DetectDocument(opts.SourceURI, opts.OutputBucket, opts.OutputPrefix),
+                (DetectObjectLocalizationOptions opts) => DetectObjectLocalization(ImageFromArg(opts.FilePath)),
                 errs => 1);
         }
     }
