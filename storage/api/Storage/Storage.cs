@@ -1222,12 +1222,10 @@ namespace GoogleCloudSamples
                     case "get-requester-pays":
                         if (args.Length < 2 && PrintUsage()) return -1;
                         return GetRequesterPays(args[1]) ? 1 : 0;
-                        break;
 
                     case "get-bucket-default-event-based-hold":
                         if (args.Length < 2 && PrintUsage()) return -1;
                         return GetBucketDefaultEventBasedHold(args[1]) ? 1 : 0;
-                        break;
 
                     case "enable-bucket-default-event-based-hold":
                         if (args.Length < 2 && PrintUsage()) return -1;
