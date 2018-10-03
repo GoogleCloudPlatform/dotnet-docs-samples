@@ -4,9 +4,9 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.0.0" />
+    <Content Include="audio.raw" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="audio.raw" CopyToOutputDirectory="Always" />
+    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.1.0-beta02" />
   </ItemGroup>
 </Project>

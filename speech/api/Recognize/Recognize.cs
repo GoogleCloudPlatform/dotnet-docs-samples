@@ -48,6 +48,9 @@ namespace GoogleCloudSamples
     {
         [Option('w', HelpText = "Report the time offsets of individual words.")]
         public bool EnableWordTimeOffsets { get; set; }
+
+        [Option('e', HelpText = "Use an enhanced transcription model.")]
+        public bool UseEnhancedModel { get; set; }
     }
 
     [Verb("with-context", HelpText = "Detects speech in an audio file."
@@ -169,6 +172,32 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_sync_recognize_words]
+
+        // [START speech_transcribe_enhanced_model]
+        static object SyncRecognizeEnhancedModel(string filePath)
+        {
+            var speech = SpeechClient.Create();
+            var response = speech.Recognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                SampleRateHertz = 8000,
+                LanguageCode = "en-US",
+                // Enhanced models are only available for projects that
+                // opt into audio data logging.
+                UseEnhanced = true,
+                // A model must be specified to use an enhanced model.
+                Model = "phone_call",
+            }, RecognitionAudio.FromFile(filePath));
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine(alternative.Transcript);
+                }
+            }
+            return 0;
+        }
+        // [END speech_transcribe_enhanced_model]
 
 
         /// <summary>
@@ -485,7 +514,8 @@ namespace GoogleCloudSamples
                 >(args).MapResult(
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     SyncRecognizeGcs(opts.FilePath) : opts.EnableWordTimeOffsets ?
-                    SyncRecognizeWords(opts.FilePath) : SyncRecognize(opts.FilePath),
+                    SyncRecognizeWords(opts.FilePath) : opts.UseEnhancedModel ?
+                    SyncRecognizeEnhancedModel(opts.FilePath) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
                     : AsyncRecognizeGcs(opts.FilePath))
