@@ -132,11 +132,11 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestSyncEnhancedModel()
+        public void TestSyncModelSelection()
         {
-            var output = Run("sync", "-e", _audioWavPath);
+            var output = Run("sync",  "-m", "command_and_search", _audioRawPath);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("regular Chromecast is fine", output.Stdout);
+            Assert.Contains("Brooklyn", output.Stdout);
         }
     }
 

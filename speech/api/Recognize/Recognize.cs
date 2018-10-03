@@ -52,8 +52,8 @@ namespace GoogleCloudSamples
         [Option('p', HelpText = "Add punctuation to the transcription.")]
         public bool EnableAutomaticPunctuation { get; set; }
 
-        [Option('e', HelpText = "Use an enhanced transcription model.")]
-        public bool UseEnhancedModel { get; set; }
+        [Option('m', HelpText = "Select a transcription model.")]
+        public String SelectModel { get; set; }
     }
 
     [Verb("with-context", HelpText = "Detects speech in an audio file."
@@ -198,20 +198,18 @@ namespace GoogleCloudSamples
         }
         // [END speech_transcribe_auto_punctuation]
 
-        // [START speech_transcribe_enhanced_model]
-        static object SyncRecognizeEnhancedModel(string filePath)
+        // [START speech_transcribe_model_selection]
+        static object SyncRecognizeModelSelection(string filePath, string model)
         {
             var speech = SpeechClient.Create();
             var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                SampleRateHertz = 8000,
-                LanguageCode = "en-US",
-                // Enhanced models are only available for projects that
-                // opt into audio data logging.
-                UseEnhanced = true,
-                // A model must be specified to use an enhanced model.
-                Model = "phone_call",
+                SampleRateHertz = 16000,
+                LanguageCode = "en",
+                // The `model` value must be one of the following:
+                // "video", "phone_call", "command_and_search", "default"
+                Model = model 
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
             {
@@ -222,7 +220,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_transcribe_enhanced_model]
+        // [END speech_transcribe_model_selection]
 
 
         /// <summary>
@@ -540,8 +538,8 @@ namespace GoogleCloudSamples
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     SyncRecognizeGcs(opts.FilePath) : opts.EnableWordTimeOffsets ?
                     SyncRecognizeWords(opts.FilePath) : opts.EnableAutomaticPunctuation ?
-                    SyncRecognizePunctuation(opts.FilePath) : opts.UseEnhancedModel ?
-                    SyncRecognizeEnhancedModel(opts.FilePath) : SyncRecognize(opts.FilePath),
+                    SyncRecognizePunctuation(opts.FilePath) : (opts.SelectModel != null) ?
+                    SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
                     : AsyncRecognizeGcs(opts.FilePath))
