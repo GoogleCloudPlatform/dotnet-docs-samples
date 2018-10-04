@@ -166,7 +166,6 @@ namespace GoogleCloudSamples
 
         public static void DeleteBucket(string bucketName)
         {
-            // TODO: Add additional lock to clear settings from objects that may contain retention values enabled
             Eventually(() => AssertSucceeded(Run("delete", bucketName)));
         }
 

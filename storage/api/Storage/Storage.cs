@@ -868,7 +868,7 @@ namespace GoogleCloudSamples
                 // Use IfMetagenerationMatch to avoid race conditions.
                 IfMetagenerationMatch = bucket.Metageneration
             });
-            Console.WriteLine($"Default event-based hold was enabled for #{bucketName}");
+            Console.WriteLine($"Default event-based hold was enabled for {bucketName}");
         }
         // [END storage_enable_default_event_based_hold]
 
@@ -896,7 +896,7 @@ namespace GoogleCloudSamples
                 // Use IfMetagenerationMatch to avoid race conditions.
                 IfMetagenerationMatch = bucket.Metageneration
             });
-            Console.WriteLine($"Default event-based hold was disabled for #{bucketName}");
+            Console.WriteLine($"Default event-based hold was disabled for {bucketName}");
         }
         // [END storage_disable_default_event_based_hold]
 
