@@ -542,7 +542,7 @@ namespace GoogleCloudSamples
             AssertSucceeded(printedAcl);
             Assert.Contains(userEmail, printedAcl.Stdout);
 
-            // Make sure we print-acl-for-user shows us the user, 
+            // Make sure we print-acl-for-user shows us the user,
             // but not all the ACLs.
             printedAclForUser = Run("print-acl-for-user", _bucketName,
                 "HelloAddObjectOwner.txt", userEmail);
@@ -625,6 +625,86 @@ namespace GoogleCloudSamples
             var client = new HttpClient();
             var response = client.GetAsync(output.Stdout).Result;
             Assert.InRange((int)response.StatusCode, 200, 299);
+        }
+
+        [Fact]
+        public void TestBucketLockBucket()
+        {
+            using (var bucketLock = new BucketFixture())
+            {
+                var retentionPeriod = "5";
+                var setRetentionPolicy = Run("set-bucket-retention-policy", bucketLock.BucketName, retentionPeriod);
+                AssertSucceeded(setRetentionPolicy);
+                var getRetentionPolicy = Run("get-bucket-retention-policy", bucketLock.BucketName);
+                AssertSucceeded(getRetentionPolicy);
+                Assert.Contains($"period: {retentionPeriod}", getRetentionPolicy.Stdout);
+                var enableBucketDefaultEventBasedHold = Run("enable-bucket-default-event-based-hold", _bucketName);
+                AssertSucceeded(enableBucketDefaultEventBasedHold);
+                var getBucketDefaultEventBasedHold = Run("get-bucket-default-event-based-hold", _bucketName);
+                Assert.Equal(1, getBucketDefaultEventBasedHold.ExitCode);
+                Assert.Contains("Default event-based hold: True", getBucketDefaultEventBasedHold.Stdout);
+                var disableBucketDefaultEventBasedHold = Run("disable-bucket-default-event-based-hold", _bucketName);
+                AssertSucceeded(enableBucketDefaultEventBasedHold);
+                getBucketDefaultEventBasedHold = Run("get-bucket-default-event-based-hold", _bucketName);
+                Assert.Equal(0, getBucketDefaultEventBasedHold.ExitCode);
+                Assert.Contains("Default event-based hold: False", getBucketDefaultEventBasedHold.Stdout);
+                var removeRetentionPolicy = Run("remove-bucket-retention-policy", bucketLock.BucketName);
+                AssertSucceeded(setRetentionPolicy);
+                getRetentionPolicy = Run("get-bucket-retention-policy", bucketLock.BucketName);
+                AssertSucceeded(getRetentionPolicy);
+                Assert.DoesNotContain($"period:", getRetentionPolicy.Stdout);
+                setRetentionPolicy = Run("set-bucket-retention-policy", bucketLock.BucketName, retentionPeriod);
+                AssertSucceeded(setRetentionPolicy);
+                var lockRetentionPolicy = Run("lock-bucket-retention-policy", bucketLock.BucketName);
+                AssertSucceeded(lockRetentionPolicy);
+            }
+        }
+
+        [Fact]
+        public void TestBucketLockObject()
+        {
+            using (var bucketLock = new BucketFixture())
+            {
+                var objectName = "HelloBucketLock.txt";
+                try
+                {
+                    var uploaded = Run("upload", bucketLock.BucketName,
+                        "Hello.txt", objectName);
+                    AssertSucceeded(uploaded);
+                    var setTemporaryHold = Run("set-object-temporary-hold", bucketLock.BucketName, objectName);
+                    AssertSucceeded(setTemporaryHold);
+                    var getMetadata = Run("get-metadata", bucketLock.BucketName, objectName);
+                    AssertSucceeded(getMetadata);
+                    Assert.Contains("Temporary hold enabled? True", getMetadata.Stdout);
+                    var releaseTemporaryHold = Run("release-object-temporary-hold", bucketLock.BucketName, objectName);
+                    AssertSucceeded(releaseTemporaryHold);
+                    getMetadata = Run("get-metadata", bucketLock.BucketName, objectName);
+                    AssertSucceeded(getMetadata);
+                    Assert.Contains("Temporary hold enabled? False", getMetadata.Stdout);
+                    var retentionPeriod = "5";
+                    var setRetentionPolicy = Run("set-bucket-retention-policy", bucketLock.BucketName, retentionPeriod);
+                    AssertSucceeded(setRetentionPolicy);
+                    var setEventBasedHold = Run("set-object-event-based-hold", bucketLock.BucketName, objectName);
+                    AssertSucceeded(setEventBasedHold);
+                    getMetadata = Run("get-metadata", bucketLock.BucketName, objectName);
+                    AssertSucceeded(getMetadata);
+                    Assert.Contains("Event-based hold enabled? True", getMetadata.Stdout);
+                    var releaseEventBasedHold = Run("release-object-event-based-hold", bucketLock.BucketName, objectName);
+                    AssertSucceeded(releaseEventBasedHold);
+                    getMetadata = Run("get-metadata", bucketLock.BucketName, objectName);
+                    AssertSucceeded(getMetadata);
+                    Assert.Contains("Event-based hold enabled? False", getMetadata.Stdout);
+                    var removeRetentionPolicy = Run("remove-bucket-retention-policy", bucketLock.BucketName);
+                    AssertSucceeded(removeRetentionPolicy);
+                }
+                finally
+                {
+                    AssertSucceeded(Run("remove-bucket-retention-policy", bucketLock.BucketName));
+                    AssertSucceeded(Run("release-object-temporary-hold", bucketLock.BucketName, objectName));
+                    AssertSucceeded(Run("release-object-event-based-hold", bucketLock.BucketName, objectName));
+                    AssertSucceeded(Run("delete", bucketLock.BucketName, objectName));
+                }
+            }
         }
 
         [Fact]
