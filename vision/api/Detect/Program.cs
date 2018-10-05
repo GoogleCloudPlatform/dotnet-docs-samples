@@ -348,13 +348,13 @@ namespace GoogleCloudSamples
             var response = client.DetectLocalizedObjects(image);
 
             Console.WriteLine($"Number of objects found {response.Count}");
-            foreach(var localizedObject in response)
+            foreach (var localizedObject in response)
             {
                 Console.Write($"\n{localizedObject.Name}");
                 Console.WriteLine($" (confidence: {localizedObject.Score})");
                 Console.WriteLine("Normalized bounding polygon vertices: ");
 
-                foreach(var vertex 
+                foreach (var vertex 
                         in localizedObject.BoundingPoly.NormalizedVertices)
                 {
                     Console.WriteLine($" - ({vertex.X}, {vertex.Y})");
