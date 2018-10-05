@@ -32,7 +32,7 @@ namespace SocialAuthMVC
                 {
                     config.AddJsonFile(
                         // Decrypts the file in memory.
-                        new EncryptedFileProvider(), 
+                        new EncryptedFileProvider(),
                         "appsecrets.json" + EncryptedFileProvider.EncryptedFileExtension,
                         optional: true, reloadOnChange: false);
                 })
