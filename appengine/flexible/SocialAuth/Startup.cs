@@ -74,8 +74,6 @@ namespace SocialAuthMVC
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.Configure<KmsDataProtectionProviderOptions>(
-                          Configuration.GetSection("KmsDataProtection"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -94,9 +92,8 @@ namespace SocialAuthMVC
                 Configuration.GetSection("Secrets"));
 
             services.AddSingleton<IDataProtectionProvider>(serviceProvider =>
-                new KmsDataProtectionProvider(
-                    ProjectId, 
-                    serviceProvider.GetService<IOptions<KmsDataProtectionProviderOptions>>()));
+                new KmsDataProtectionProvider(ProjectId, "global", "dataprotectionprovider"));
+
             // Add google exception logging to aid debugging in production.
             services.AddGoogleExceptionLogging(options =>
             {

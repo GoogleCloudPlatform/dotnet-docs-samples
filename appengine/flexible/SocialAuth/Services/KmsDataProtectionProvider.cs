@@ -19,26 +19,12 @@ using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Text;
 
 namespace SocialAuthMVC.Services
 {
-    public class KmsDataProtectionProviderOptions
-    {
-        /// <summary>   
-        /// global, us-east1, etc.
-        /// </summary>
-        public string Location { get; set; } = "global";
-
-        /// <summary>
-        /// Name of the key ring to store the keys in.
-        /// </summary>
-        public string KeyRing { get; set; } = "dataprotectionprovider";
-    }
-
     /// <summary>
     /// Implements a DataProtectionProvider using Google's Cloud Key
     /// Management Service.  https://cloud.google.com/kms/
@@ -48,11 +34,11 @@ namespace SocialAuthMVC.Services
         // The kms service.
         private readonly KeyManagementServiceClient _kms;
 
-        private readonly IOptions<KmsDataProtectionProviderOptions> _options;
-
         private readonly KeyRingName _keyRingName;
 
         private readonly string _googleProjectId;
+        private readonly string _keyRingLocation;
+        private readonly string _keyRingId;
 
         // Keep a cache of DataProtectors we create to reduce calls to the
         // _kms service.
@@ -62,22 +48,24 @@ namespace SocialAuthMVC.Services
 
         public KmsDataProtectionProvider(
             string googleProjectId,
-            IOptions<KmsDataProtectionProviderOptions> options)
+            string keyRingLocation,
+            string keyRingId)
         {
             _googleProjectId = googleProjectId ??
                 throw new ArgumentNullException(nameof(googleProjectId));
-            _options = options ?? 
-                throw new ArgumentNullException(nameof(options));
+            _keyRingLocation = keyRingLocation ??
+                throw new ArgumentNullException(nameof(keyRingLocation));
+            _keyRingId = keyRingId ??
+                throw new ArgumentNullException(nameof(keyRingId));
             _kms = KeyManagementServiceClient.Create();
-            var opts = options.Value;
             _keyRingName = new KeyRingName(_googleProjectId,
-                opts.Location, opts.KeyRing);
+                _keyRingLocation, _keyRingId);
             try
             {
                 // Create the key ring.
                 _kms.CreateKeyRing(
-                    new LocationName(_googleProjectId, opts.Location),
-                    opts.KeyRing, new KeyRing());
+                    new LocationName(_googleProjectId, _keyRingLocation),
+                    _keyRingId, new KeyRing());
             }
             catch (Grpc.Core.RpcException e)
             when (e.StatusCode == StatusCode.AlreadyExists)
@@ -100,9 +88,8 @@ namespace SocialAuthMVC.Services
                 NextRotationTime = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(7)),
                 RotationPeriod = Duration.FromTimeSpan(TimeSpan.FromDays(7))
             };
-            var opts = _options.Value;
             CryptoKeyName keyName = new CryptoKeyName(_googleProjectId,
-                    opts.Location, opts.KeyRing, EscapeKeyId(purpose));
+                    _keyRingLocation, _keyRingId, EscapeKeyId(purpose));
             try
             {
                 _kms.CreateCryptoKey(_keyRingName, keyName.CryptoKeyId,
