@@ -79,7 +79,7 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_get_all]
             CollectionReference usersRef = db.Collection("users");
-            QuerySnapshot snapshot = await usersRef.SnapshotAsync();
+            QuerySnapshot snapshot = await usersRef.GetSnapshotAsync();
             foreach (DocumentSnapshot document in snapshot.Documents)
             {
                 Console.WriteLine("User: {0}", document.Id);
