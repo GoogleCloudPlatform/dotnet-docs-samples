@@ -63,8 +63,10 @@ namespace SocialAuthMVC.Services
             IOptions<KmsDataProtectionProviderOptions> options,
             Models.GoogleProjectModel googleProject)
         {
-            _options = options;
-            _googleProject = googleProject;
+            _options = options ?? 
+                throw new ArgumentNullException(nameof(options));
+            _googleProject = googleProject ?? 
+                throw new ArgumentNullException(nameof(googleProject));
             _kms = KeyManagementServiceClient.Create();
             var opts = options.Value;
             _keyRingName = new KeyRingName(_googleProject.Id,
@@ -173,6 +175,9 @@ namespace SocialAuthMVC.Services
         }
     }
 
+    /// <summary>
+    /// Implements IDataProtector with Google Key Management Service.
+    /// </summary>
     public class KmsDataProtector : IDataProtector
     {
         private readonly KeyManagementServiceClient _kms;

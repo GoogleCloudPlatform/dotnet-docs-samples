@@ -99,6 +99,7 @@ namespace SocialAuthMVC
                 });
             services.AddSingleton<IDataProtectionProvider,
                 KmsDataProtectionProvider>();
+            // Add google exception logging to aid debugging in production.
             services.AddGoogleExceptionLogging(options =>
             {
                 options.ProjectId = ProjectId;

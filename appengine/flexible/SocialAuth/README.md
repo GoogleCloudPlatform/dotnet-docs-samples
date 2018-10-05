@@ -2,9 +2,9 @@
 
 This is the companion sample for a [medium.com story](https://medium.com/@SurferJeff/adding-social-login-to-your-net-app-engine-application-9b7f4149eb73).
 
-This sample application demonstrates how to let users log in into your application
+This sample application demonstrates how to let users log into your application
 running in Google App Engine Flexible Environment with their Facebook or Google
-log in.  
+credentials.  
 
 This sample requires [.NET Core 2.1](
     https://www.microsoft.com/net/core) or later.  That means using

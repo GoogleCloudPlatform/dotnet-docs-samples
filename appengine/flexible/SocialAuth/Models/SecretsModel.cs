@@ -16,6 +16,11 @@ namespace SocialAuthMVC.Models
 {
     public class SecretsModel
     {
+        /// <summary>
+        /// A secret word displayed on the home page.
+        /// It's displayed in order to confirm appsecrets.json was correctly
+        /// decrypted.  It's a debugging aid.
+        /// </summary>
         public string Word { get; set; }
     }
 }

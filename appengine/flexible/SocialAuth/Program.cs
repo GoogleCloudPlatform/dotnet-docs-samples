@@ -15,6 +15,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using SocialAuthMVC.Services.Kms;
 
 namespace SocialAuthMVC
 {
@@ -31,7 +32,8 @@ namespace SocialAuthMVC
                 {
                     config.AddJsonFile(
                         // Decrypts the file in memory.
-                        new Services.Kms.EncryptedFileProvider(), "appsecrets.json.encrypted",
+                        new EncryptedFileProvider(), 
+                        "appsecrets.json" + EncryptedFileProvider.EncryptedFileExtension,
                         optional: true, reloadOnChange: false);
                 })
                 .UseStartup<Startup>();

@@ -33,6 +33,8 @@ namespace SocialAuthMVC.Services.Kms
     /// </summary>
     public class EncryptedFileProvider : IFileProvider
     {
+        public const string EncryptedFileExtension = ".encrypted";
+        public const string EncryptedFileKeyNameExtension = ".keyname";
         private readonly KeyManagementServiceClient kms;
         private readonly IFileProvider innerProvider;
 
@@ -74,7 +76,8 @@ namespace SocialAuthMVC.Services.Kms
         {
             return EncryptedFileInfo.FromFileInfo(kms,
                 innerProvider.GetFileInfo(subpath),
-                innerProvider.GetFileInfo(Path.ChangeExtension(subpath, ".keyname")));
+                innerProvider.GetFileInfo(
+                    Path.ChangeExtension(subpath, EncryptedFileKeyNameExtension)));
         }
 
         public IChangeToken Watch(string filter)
@@ -90,8 +93,10 @@ namespace SocialAuthMVC.Services.Kms
         private readonly Lazy<CryptoKeyName> cryptoKeyName;
         private readonly IFileInfo innerFileInfo;
 
-        public static IFileInfo FromFileInfo(KeyManagementServiceClient kms,
-            IFileInfo fileInfo, IFileInfo keynameFileInfo)
+        public static IFileInfo FromFileInfo(
+            KeyManagementServiceClient kms,
+            IFileInfo fileInfo, 
+            IFileInfo keynameFileInfo)
         {
             if (fileInfo == null)
             {
@@ -101,15 +106,17 @@ namespace SocialAuthMVC.Services.Kms
             {
                 return fileInfo;
             }
-            if (!fileInfo.Name.EndsWith(".encrypted"))
+            if (!fileInfo.Name.EndsWith(EncryptedFileProvider.EncryptedFileExtension))
             {
                 return null;
             }
             return new EncryptedFileInfo(kms, fileInfo, keynameFileInfo);
         }
 
-        private EncryptedFileInfo(KeyManagementServiceClient kms,
-            IFileInfo innerFileInfo, IFileInfo keynameFileInfo)
+        private EncryptedFileInfo(
+            KeyManagementServiceClient kms,
+            IFileInfo innerFileInfo, 
+            IFileInfo keynameFileInfo)
         {
             this.kms = kms;
             this.keynameFileInfo = keynameFileInfo;
@@ -117,31 +124,38 @@ namespace SocialAuthMVC.Services.Kms
             this.cryptoKeyName = new Lazy<CryptoKeyName>(() => UnpackKeyName(keynameFileInfo));
         }
 
-        public bool Exists => innerFileInfo.Exists && innerFileInfo.Name.EndsWith(".encrypted");
+        bool IFileInfo.Exists => innerFileInfo.Exists && innerFileInfo.Name.EndsWith(
+            EncryptedFileProvider.EncryptedFileExtension);
 
-        public long Length => CreateReadStream().Length;
+        long IFileInfo.Length => ((IFileInfo)this).CreateReadStream().Length;
 
-        public string PhysicalPath => null;
+        string IFileInfo.PhysicalPath => null;
 
-        public string Name => innerFileInfo.Name;
+        string IFileInfo.Name => innerFileInfo.Name;
 
-        public DateTimeOffset LastModified => innerFileInfo.LastModified;
+        DateTimeOffset IFileInfo.LastModified => innerFileInfo.LastModified;
 
-        public bool IsDirectory => innerFileInfo.IsDirectory;
+        bool IFileInfo.IsDirectory => innerFileInfo.IsDirectory;
 
-        public Stream CreateReadStream()
+        /// <summary>
+        /// Create a stream that decrypts the encrypted file.
+        /// </summary>
+        /// <returns>An unencrypted stream.</returns>
+        Stream IFileInfo.CreateReadStream()
         {
-            if (!Exists)
+            if (!((IFileInfo)this).Exists)
             {
                 throw new FileNotFoundException(innerFileInfo.Name);
             }
-
             DecryptResponse response;
+            // Read the encrypted bytes from the file.
             using (var stream = innerFileInfo.CreateReadStream())
             {
+                // Call kms to Decrypt them.
                 response = kms.Decrypt(cryptoKeyName.Value,
                     ByteString.FromStream(stream));
             }
+            // Dump the unencrypted bytes to a memory stream.
             MemoryStream memStream = new MemoryStream();
             response.Plaintext.WriteTo(memStream);
             memStream.Seek(0, SeekOrigin.Begin);
@@ -211,11 +225,11 @@ namespace SocialAuthMVC.Services.Kms
                 else
                 {
                     string extension = Path.GetExtension(fileInfo.Name);
-                    if (extension == ".encrypted")
+                    if (extension == EncryptedFileProvider.EncryptedFileExtension)
                     {
                         encryptedFiles.Add(fileInfo);
                     }
-                    else if (extension == ".keyname")
+                    else if (extension == EncryptedFileProvider.EncryptedFileKeyNameExtension)
                     {
                         keynameFiles[fileInfo.Name] = fileInfo;
                     }
@@ -224,7 +238,7 @@ namespace SocialAuthMVC.Services.Kms
             foreach (IFileInfo fileInfo in encryptedFiles)
             {
                 IFileInfo keynameFile = keynameFiles.GetValueOrDefault(
-                    Path.ChangeExtension(fileInfo.Name, ".keyname"));
+                    Path.ChangeExtension(fileInfo.Name, EncryptedFileProvider.EncryptedFileKeyNameExtension));
                 if (keynameFile != null)
                 {
                     yield return EncryptedFileInfo.FromFileInfo(kms, fileInfo,

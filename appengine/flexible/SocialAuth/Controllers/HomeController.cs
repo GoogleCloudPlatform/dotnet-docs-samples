@@ -30,6 +30,8 @@ namespace SocialAuthMVC.Controllers
 
         public IActionResult Index()
         {
+            // Display the secret word to confirm that secrets were correctly
+            // decrypted.
             return View(secrets.Value);
         }
 

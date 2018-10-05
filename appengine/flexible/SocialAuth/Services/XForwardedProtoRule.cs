@@ -20,7 +20,7 @@ using System.Linq;
 namespace SocialAuthMVC
 {
     /// <summary>
-    /// A rule that inspect the X-Forwarded-Proto header.  When the header is
+    /// A rule that inspects the X-Forwarded-Proto header.  When the header is
     /// https, modifies the request to look like https.
     /// </summary>
     public class XForwardedProtoRule : IRule

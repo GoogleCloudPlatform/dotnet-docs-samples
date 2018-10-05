@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <UserSecretsId>aspnet-SocialAuthMVC-CE29EBC3-D184-4870-B57A-B15CF8FD17E6</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
