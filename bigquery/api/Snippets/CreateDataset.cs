@@ -21,7 +21,7 @@ public partial class BigQuerySample
     public BigQueryDataset CreateDataset()
     {
         BigQueryClient client = BigQueryClient.Create("your-project-id");
-        return client.CreateDataset("your_dataset");
+        return client.CreateDataset("your_dataset_id");
     }
 }
 // [END bigquery_create_dataset]
