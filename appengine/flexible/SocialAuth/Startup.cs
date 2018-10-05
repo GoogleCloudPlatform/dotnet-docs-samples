@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using SocialAuthMVC.Data;
 using SocialAuthMVC.Services;
 using System;
@@ -92,13 +93,10 @@ namespace SocialAuthMVC
             services.Configure<Models.SecretsModel>(
                 Configuration.GetSection("Secrets"));
 
-            services.AddSingleton<Models.GoogleProjectModel>(
-                (provider) => new Models.GoogleProjectModel()
-                {
-                    Id = ProjectId
-                });
-            services.AddSingleton<IDataProtectionProvider,
-                KmsDataProtectionProvider>();
+            services.AddSingleton<IDataProtectionProvider>(serviceProvider =>
+                new KmsDataProtectionProvider(
+                    ProjectId, 
+                    serviceProvider.GetService<IOptions<KmsDataProtectionProviderOptions>>()));
             // Add google exception logging to aid debugging in production.
             services.AddGoogleExceptionLogging(options =>
             {

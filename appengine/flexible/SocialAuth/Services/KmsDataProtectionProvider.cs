@@ -28,7 +28,7 @@ namespace SocialAuthMVC.Services
 {
     public class KmsDataProtectionProviderOptions
     {
-        /// <summary>
+        /// <summary>   
         /// global, us-east1, etc.
         /// </summary>
         public string Location { get; set; } = "global";
@@ -49,9 +49,10 @@ namespace SocialAuthMVC.Services
         private readonly KeyManagementServiceClient _kms;
 
         private readonly IOptions<KmsDataProtectionProviderOptions> _options;
-        private readonly Models.GoogleProjectModel _googleProject;
 
         private readonly KeyRingName _keyRingName;
+
+        private readonly string _googleProjectId;
 
         // Keep a cache of DataProtectors we create to reduce calls to the
         // _kms service.
@@ -60,22 +61,22 @@ namespace SocialAuthMVC.Services
             new ConcurrentDictionary<string, IDataProtector>();
 
         public KmsDataProtectionProvider(
-            IOptions<KmsDataProtectionProviderOptions> options,
-            Models.GoogleProjectModel googleProject)
+            string googleProjectId,
+            IOptions<KmsDataProtectionProviderOptions> options)
         {
+            _googleProjectId = googleProjectId ??
+                throw new ArgumentNullException(nameof(googleProjectId));
             _options = options ?? 
                 throw new ArgumentNullException(nameof(options));
-            _googleProject = googleProject ?? 
-                throw new ArgumentNullException(nameof(googleProject));
             _kms = KeyManagementServiceClient.Create();
             var opts = options.Value;
-            _keyRingName = new KeyRingName(_googleProject.Id,
+            _keyRingName = new KeyRingName(_googleProjectId,
                 opts.Location, opts.KeyRing);
             try
             {
                 // Create the key ring.
                 _kms.CreateKeyRing(
-                    new LocationName(_googleProject.Id, opts.Location),
+                    new LocationName(_googleProjectId, opts.Location),
                     opts.KeyRing, new KeyRing());
             }
             catch (Grpc.Core.RpcException e)
@@ -100,7 +101,7 @@ namespace SocialAuthMVC.Services
                 RotationPeriod = Duration.FromTimeSpan(TimeSpan.FromDays(7))
             };
             var opts = _options.Value;
-            CryptoKeyName keyName = new CryptoKeyName(_googleProject.Id,
+            CryptoKeyName keyName = new CryptoKeyName(_googleProjectId,
                     opts.Location, opts.KeyRing, EscapeKeyId(purpose));
             try
             {
