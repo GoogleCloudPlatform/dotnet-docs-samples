@@ -134,7 +134,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSyncModelSelection()
         {
-            var output = Run("sync",  "-m", "command_and_search", _audioRawPath);
+            var output = Run("sync", "-m", "command_and_search", _audioRawPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
         }
