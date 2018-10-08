@@ -414,7 +414,6 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Deleted {policyName}.");
         }
 
-        // [START monitoring_alert_delete_channel]
         static void DeleteNotificationChannel(string channelNameString,
             bool force)
         {
@@ -434,6 +433,5 @@ namespace GoogleCloudSamples
             client.DeleteNotificationChannel(channelName, force);
             Console.WriteLine($"Deleted {channelName}.");
         }
-        // [END monitoring_alert_delete_channel]
     }
 }
