@@ -354,7 +354,7 @@ namespace GoogleCloudSamples
                 Console.WriteLine($" (confidence: {localizedObject.Score})");
                 Console.WriteLine("Normalized bounding polygon vertices: ");
 
-                foreach (var vertex 
+                foreach (var vertex
                         in localizedObject.BoundingPoly.NormalizedVertices)
                 {
                     Console.WriteLine($" - ({vertex.X}, {vertex.Y})");
