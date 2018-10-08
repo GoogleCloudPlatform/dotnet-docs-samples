@@ -22,7 +22,7 @@ when running in Google App Engine Flexible Environment.
 5.  Create a new database in your Google Cloud SQL instance.
     
     1.  List your database instances in [Cloud Cloud Console](
-        https://pantheon.corp.google.com/sql/instances/).
+        https://console.cloud.google.com/sql/instances/).
     
     2.  Click your Instance Id to see Instance details.
 
