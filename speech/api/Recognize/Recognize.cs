@@ -209,7 +209,7 @@ namespace GoogleCloudSamples
                 LanguageCode = "en",
                 // The `model` value must be one of the following:
                 // "video", "phone_call", "command_and_search", "default"
-                Model = model 
+                Model = model
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
             {
