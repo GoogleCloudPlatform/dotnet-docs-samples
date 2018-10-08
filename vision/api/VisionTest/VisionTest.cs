@@ -198,6 +198,16 @@ namespace GoogleCloudSamples
             Assert.Contains("\tX:", output.Stdout);
             Assert.Contains("\tY:", output.Stdout);
         }
+
+        [Fact]
+        public void DetectObjectLocalization()
+        {
+            // TODO(erschmid): Replace with 'puppies.jpg' after merge.
+            var output = Run("object-localization",
+                             Path.Combine("data", "tower.jpg"));
+            Assert.Contains("Building", output.Stdout);
+            Assert.Equal(0, output.ExitCode);
+        }
     }
 
     /// <summary>
