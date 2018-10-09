@@ -101,6 +101,8 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("addColumn",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            _spannerCmd.Run("writeUsingDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
@@ -221,25 +223,6 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
-        void TestBatchWriteAndRead()
-        {
-            // Batch insert records.
-            ConsoleOutput insertOutput = _spannerCmd.Run("batchInsertRecords",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Equal(0, insertOutput.ExitCode);
-            // Batch read records.
-            ConsoleOutput readOutput = _spannerCmd.Run("batchReadRecords",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Equal(0, readOutput.ExitCode);
-            // Confirm the output has valid numbers for row & partition count.
-            // Match "[text] [comma separated number] [text] [number] [text]"
-            var output_regex = new Regex(
-                @"Total rows read: \d+(?:,\d{3})* with \d+ partition");
-            var match = output_regex.Match(readOutput.Stdout);
-            Assert.True(match.Success);
-        }
-
-        [Fact]
         void TestCommitTimestamp()
         {
             // Add a commit timestamp column to an existing table.
@@ -311,11 +294,129 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Imagination", readOutput.Stdout);
         }
 
+        [Fact]
+        void TestDml()
+        {
+            RefillMarketingBudgetsAsync(300000, 300000).Wait();
+            // Insert record using a DML Statement.
+            ConsoleOutput readOutput = _spannerCmd.Run("insertUsingDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Query inserted record.
+            readOutput = _spannerCmd.Run("querySingersTable",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("Virginia Watson", readOutput.Stdout);
+            // Update record using a DML Statement.
+            readOutput = _spannerCmd.Run("updateUsingDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Query updated record.
+            readOutput = _spannerCmd.Run("queryAlbumsTable",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("1 1 600000", readOutput.Stdout);
+            //Assert.Contains("1 1 2000000", readOutput.Stdout);
+            // Delete record using a DML Statement.
+            readOutput = _spannerCmd.Run("deleteUsingDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Query deleted record.
+            readOutput = _spannerCmd.Run("querySingersTable",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.DoesNotContain("Alice Trentor", readOutput.Stdout);
+            // Update the timestamp of a record using a DML Statement.
+            readOutput = _spannerCmd.Run("updateUsingDmlWithTimestamp",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("2 row(s) updated...", readOutput.Stdout);
+            // Insert a record using a DML Statement and then query the inserted record.
+            readOutput = _spannerCmd.Run("writeAndReadUsingDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("Timothy Campbell", readOutput.Stdout);
+            // Update record using a DML Statement combined with a Spanner struct.
+            readOutput = _spannerCmd.Run("updateUsingDmlWithStruct",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Query updated record.
+            readOutput = _spannerCmd.Run("querySingersTable",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("Timothy Grant", readOutput.Stdout);
+            Assert.Contains("Melissa Garcia", readOutput.Stdout);
+            Assert.Contains("Russell Morales", readOutput.Stdout);
+            Assert.Contains("Jacqueline Long", readOutput.Stdout);
+            Assert.Contains("Dylan Shaw", readOutput.Stdout);
+            // Update records within a transaction using a DML Statement.
+            readOutput = _spannerCmd.Run("writeWithTransactionUsingDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Query updated records.
+            readOutput = _spannerCmd.Run("queryAlbumsTable",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("1 1 400000", readOutput.Stdout);
+            Assert.Contains("2 2 500000", readOutput.Stdout);
+            // Update records using a partitioned DML Statement.
+            readOutput = _spannerCmd.Run("updateUsingPartitionedDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Query updated records.
+            readOutput = _spannerCmd.Run("queryAlbumsTable",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("1 1 400000", readOutput.Stdout);
+            Assert.Contains("2 2 100000", readOutput.Stdout);
+            // Delete multiple records using a partitioned DML Statement.
+            readOutput = _spannerCmd.Run("deleteUsingPartitionedDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Query deleted records.
+            readOutput = _spannerCmd.Run("querySingersTable",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.DoesNotContain("Timothy Grant", readOutput.Stdout);
+            Assert.DoesNotContain("Melissa Garcia", readOutput.Stdout);
+            Assert.DoesNotContain("Russell Morales", readOutput.Stdout);
+            Assert.DoesNotContain("Jacqueline Long", readOutput.Stdout);
+            Assert.DoesNotContain("Dylan Shaw", readOutput.Stdout);
+        }
+
         [Fact(Skip = "Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]
         void TestSpannerNoArgsSucceeds()
         {
             ConsoleOutput output = _spannerCmd.Run();
             Assert.NotEqual(0, output.ExitCode);
+        }
+
+        [Fact]
+        void TestBatchWriteAndRead()
+        {
+            // Batch insert records.
+            ConsoleOutput insertOutput = _spannerCmd.Run("batchInsertRecords",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, insertOutput.ExitCode);
+            // Batch read records.
+            ConsoleOutput readOutput = _spannerCmd.Run("batchReadRecords",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm the output has valid numbers for row & partition count.
+            // Match "[text] [comma separated number] [text] [number] [text]"
+            var output_regex = new Regex(
+                @"Total rows read: \d+(?:,\d{3})* with \d+ partition");
+            var match = output_regex.Match(readOutput.Stdout);
+            Assert.True(match.Success);
         }
 
         [Fact]
