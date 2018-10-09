@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AlertSample\AlertSample.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+    <ProjectReference Include="..\AlertTestFixture\AlertTestFixture.csproj" />
   </ItemGroup>
 
 </Project>
