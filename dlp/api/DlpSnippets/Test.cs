@@ -10,7 +10,7 @@ public class DlpSnippetsTest
     [Fact]
     public void TestDeidMask()
     {
-        Assert.Equal("My SSN is *****9127", 
+        Assert.Equal("My SSN is *****9127.", 
             _snippets.DeidentiyMasking(_projectId));
     }
 }

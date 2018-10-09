@@ -37,7 +37,7 @@ partial class DlpSnippets
                     Transformations = { transformation }
                 }
             },
-            Item = new ContentItem { Value = "'My SSN is 372819127.'" }
+            Item = new ContentItem { Value = "My SSN is 372819127." }
         };
 
         DlpServiceClient dlp = DlpServiceClient.Create();
