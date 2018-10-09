@@ -86,7 +86,7 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_get_doc_as_map]
             DocumentReference docRef = db.Collection("cities").Document("SF");
-            DocumentSnapshot snapshot = await docRef.SnapshotAsync();
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
             if (snapshot.Exists)
             {
                 Console.WriteLine("Document data for {0} document:", snapshot.Id);
@@ -128,11 +128,11 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_get_doc_as_entity]
             DocumentReference docRef = db.Collection("cities").Document("BJ");
-            DocumentSnapshot snapshot = await docRef.SnapshotAsync();
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
             if (snapshot.Exists)
             {
                 Console.WriteLine("Document data for {0} document:", snapshot.Id);
-                City city = snapshot.Deserialize<City>();
+                City city = snapshot.ConvertTo<City>();
                 Console.WriteLine("Name: {0}", city.Name);
                 Console.WriteLine("State: {0}", city.State);
                 Console.WriteLine("Country: {0}", city.Country);
@@ -150,8 +150,8 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_get_multiple_docs]
-            Query capitalQuery = db.Collection("cities").Where("Capital", QueryOperator.Equal, true);
-            QuerySnapshot capitalQuerySnapshot = await capitalQuery.SnapshotAsync();
+            Query capitalQuery = db.Collection("cities").WhereEqualTo("Capital", true);
+            QuerySnapshot capitalQuerySnapshot = await capitalQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in capitalQuerySnapshot.Documents)
             {
                 if (documentSnapshot.Exists)
@@ -177,7 +177,7 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_get_all_docs]
             Query allCitiesQuery = db.Collection("cities");
-            QuerySnapshot allCitiesQuerySnapshot = await allCitiesQuery.SnapshotAsync();
+            QuerySnapshot allCitiesQuerySnapshot = await allCitiesQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents)
             {
                 if (documentSnapshot.Exists)
@@ -208,8 +208,7 @@ Where command is one of
             {
                 { "name", "Marina" },
             };
-            WriteResult writeResult = await subcollectionRef.Document("Marina").SetAsync(data);
-            Console.WriteLine(writeResult.UpdateTime);
+            await subcollectionRef.Document("Marina").SetAsync(data);
             // [END fs_add_subcollection]
             Console.WriteLine("Added data to the Marina document in the neighborhoods subcollection in the SF document in the cities collection.");
         }

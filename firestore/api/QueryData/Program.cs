@@ -48,35 +48,40 @@ Where command is one of
                 { "State", "CA" },
                 { "Country", "USA" },
                 { "Capital", false },
-                { "Population", 860000 }
+                { "Population", 860000 },
+                { "Regions", new ArrayList{"west_coast", "norcal"} }
             });
             await citiesRef.Document("LA").SetAsync(new Dictionary<string, object>(){
                 { "Name", "Los Angeles" },
                 { "State", "CA" },
                 { "Country", "USA" },
                 { "Capital", false },
-                { "Population", 3900000 }
+                { "Population", 3900000 },
+                { "Regions", new ArrayList{"west_coast", "socal"} }
             });
             await citiesRef.Document("DC").SetAsync(new Dictionary<string, object>(){
                 { "Name", "Washington D.C." },
                 { "State", null },
                 { "Country", "USA" },
                 { "Capital", true },
-                { "Population", 680000 }
+                { "Population", 680000 },
+                { "Regions", new ArrayList{"east_coast"} }
             });
             await citiesRef.Document("TOK").SetAsync(new Dictionary<string, object>(){
                 { "Name", "Tokyo" },
                 { "State", null },
                 { "Country", "Japan" },
                 { "Capital", true },
-                { "Population", 9000000 }
+                { "Population", 9000000 },
+                { "Regions", new ArrayList{"kanto", "honshu"} }
             });
             await citiesRef.Document("BJ").SetAsync(new Dictionary<string, object>(){
                 { "Name", "Beijing" },
                 { "State", null },
                 { "Country", "China" },
                 { "Capital", true },
-                { "Population", 21500000 }
+                { "Population", 21500000 },
+                { "Regions", new ArrayList{"jingjinji", "hebei"} }
             });
             Console.WriteLine("Added example cities data to the cities collection.");
             // [END fs_query_create_examples]
@@ -87,8 +92,8 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_create_query_state]
             CollectionReference citiesRef = db.Collection("cities");
-            Query query = citiesRef.Where("State", QueryOperator.Equal, "CA");
-            QuerySnapshot querySnapshot = await query.SnapshotAsync();
+            Query query = citiesRef.WhereEqualTo("State", "CA");
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by query State=CA", documentSnapshot.Id);
@@ -101,8 +106,8 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_create_query_capital]
             CollectionReference citiesRef = db.Collection("cities");
-            Query query = citiesRef.Where("Capital", QueryOperator.Equal, true);
-            QuerySnapshot querySnapshot = await query.SnapshotAsync();
+            Query query = citiesRef.WhereEqualTo("Capital", true);
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by query Capital=true", documentSnapshot.Id);
@@ -115,24 +120,38 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_simple_queries]
-            Query stateQuery = citiesRef.Where("State", QueryOperator.Equal, "CA");
-            Query populationQuery = citiesRef.Where("Population", QueryOperator.GreaterThan, 1000000);
-            Query nameQuery = citiesRef.Where("Name", QueryOperator.GreaterThanOrEqual, "San Francisco");
+            Query stateQuery = citiesRef.WhereEqualTo("State", "CA");
+            Query populationQuery = citiesRef.WhereGreaterThan("Population", 1000000);
+            Query nameQuery = citiesRef.WhereGreaterThanOrEqualTo("Name", "San Francisco");
             // [END fs_simple_queries]
-            QuerySnapshot stateQuerySnapshot = await stateQuery.SnapshotAsync();
+            QuerySnapshot stateQuerySnapshot = await stateQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in stateQuerySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by query State=CA", documentSnapshot.Id);
             }
-            QuerySnapshot populationQuerySnapshot = await populationQuery.SnapshotAsync();
+            QuerySnapshot populationQuerySnapshot = await populationQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in populationQuerySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by query Population>1000000", documentSnapshot.Id);
             }
-            QuerySnapshot nameQuerySnapshot = await nameQuery.SnapshotAsync();
+            QuerySnapshot nameQuerySnapshot = await nameQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in nameQuerySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by query Name>=San Francisco", documentSnapshot.Id);
+            }
+        }
+
+        private static async Task ArrayContainsQuery(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            CollectionReference citiesRef = db.Collection("cities");
+            // [START fs_array_contains_query]
+            Query query = citiesRef.WhereArrayContains("Regions", "west_coast");
+            // [END fs_array_contains_query]
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
+                Console.WriteLine("Document {0} returned by query 'Regions array_contains west_coast'", documentSnapshot.Id);
             }
         }
 
@@ -142,10 +161,10 @@ Where command is one of
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_chained_query]
             Query chainedQuery = citiesRef
-                .Where("State", QueryOperator.Equal, "CA")
-                .Where("Name", QueryOperator.Equal, "San Francisco");
+                .WhereEqualTo("State", "CA")
+                .WhereEqualTo("Name", "San Francisco");
             // [END fs_chained_query]
-            QuerySnapshot querySnapshot = await chainedQuery.SnapshotAsync();
+            QuerySnapshot querySnapshot = await chainedQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by query State=CA and Name=San Francisco", documentSnapshot.Id);
@@ -158,10 +177,10 @@ Where command is one of
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_composite_index_chained_query]
             Query chainedQuery = citiesRef
-                .Where("State", QueryOperator.Equal, "CA")
-                .Where("Population", QueryOperator.LessThan, 1000000);
+                .WhereEqualTo("State", "CA")
+                .WhereLessThan("Population", 1000000);
             // [END fs_composite_index_chained_query]
-            QuerySnapshot querySnapshot = await chainedQuery.SnapshotAsync();
+            QuerySnapshot querySnapshot = await chainedQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by query State=CA and Population<1000000", documentSnapshot.Id);
@@ -174,10 +193,10 @@ Where command is one of
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_range_query]
             Query rangeQuery = citiesRef
-                .Where("State", QueryOperator.GreaterThanOrEqual, "CA")
-                .Where("State", QueryOperator.LessThanOrEqual, "IN");
+                .WhereGreaterThanOrEqualTo("State", "CA")
+                .WhereLessThanOrEqualTo("State", "IN");
             // [END fs_range_query]
-            QuerySnapshot querySnapshot = await rangeQuery.SnapshotAsync();
+            QuerySnapshot querySnapshot = await rangeQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by query CA<=State<=IN", documentSnapshot.Id);
@@ -190,8 +209,8 @@ Where command is one of
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_invalid_range_query]
             Query invalidRangeQuery = citiesRef
-                .Where("State", QueryOperator.GreaterThanOrEqual, "CA")
-                .Where("Population", QueryOperator.GreaterThan, 1000000);
+                .WhereGreaterThanOrEqualTo("State", "CA")
+                .WhereGreaterThan("Population", 1000000);
             // [END fs_invalid_range_query]
         }
 
@@ -221,6 +240,10 @@ Where command is one of
 
                 case "simple-queries":
                     SimpleQueries(project).Wait();
+                    break;
+
+                case "array-contains-query":
+                    ArrayContainsQuery(project).Wait();
                     break;
 
                 case "chained-query":

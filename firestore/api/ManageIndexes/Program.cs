@@ -99,12 +99,14 @@ Where command is one of
                 .DeserializeObject(resultText);
 
             int numIndexesCreated = 0;
-            foreach (var index in result.indexes)
-            {
-                Console.WriteLine(index.name);
-                if (index.collectionId == collectionId & index.state == "READY")
+            if (result.indexes != null) {
+                foreach (var index in result.indexes)
                 {
-                    numIndexesCreated = numIndexesCreated + 1;
+                    Console.WriteLine(index.name);
+                    if (index.collectionId == collectionId & index.state == "READY")
+                    {
+                        numIndexesCreated = numIndexesCreated + 1;
+                    }
                 }
             }
             return numIndexesCreated;
@@ -146,6 +148,7 @@ Where command is one of
         // [START fs_delete_indexes]
         private static async Task DeleteIndexes(string project, string collectionId)
         {
+            
             GoogleCredential credential =
                 GoogleCredential.GetApplicationDefault();
             // Inject the Cloud Platform scope if required.
@@ -174,14 +177,17 @@ Where command is one of
 
             List<string> indexesToBeDeleted = new List<string>();
 
-            foreach (var index in result.indexes)
-            {
-                if (index.collectionId == collectionId)
+            if (result.indexes != null) {
+                foreach (var index in result.indexes)
                 {
-                    string name = index.name;
-                    indexesToBeDeleted.Add(name);
+                    if (index.collectionId == collectionId)
+                    {
+                        string name = index.name;
+                        indexesToBeDeleted.Add(name);
+                    }
                 }
             }
+            
             foreach (string indexToBeDeleted in indexesToBeDeleted)
             {
                 uriString = "https://firestore.googleapis.com/v1beta1/" + indexToBeDeleted;

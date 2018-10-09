@@ -44,7 +44,7 @@ Where command is one of
             // [START fs_order_by_name_limit_query]
             Query query = citiesRef.OrderBy("Name").Limit(3);
             // [END fs_order_by_name_limit_query]
-            QuerySnapshot querySnapshot = await query.SnapshotAsync();
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by order by name with limit query", documentSnapshot.Id);
@@ -58,7 +58,7 @@ Where command is one of
             // [START fs_order_by_name_desc_limit_query]
             Query query = citiesRef.OrderByDescending("Name").Limit(3);
             // [END fs_order_by_name_desc_limit_query]
-            QuerySnapshot querySnapshot = await query.SnapshotAsync();
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by order by name descending with limit query", documentSnapshot.Id);
@@ -72,7 +72,7 @@ Where command is one of
             // [START fs_order_by_state_and_population_query]
             Query query = citiesRef.OrderBy("State").OrderByDescending("Population");
             // [END fs_order_by_state_and_population_query]
-            QuerySnapshot querySnapshot = await query.SnapshotAsync();
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by order by state and descending population query", documentSnapshot.Id);
@@ -85,11 +85,11 @@ Where command is one of
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_where_order_by_limit_query]
             Query query = citiesRef
-                .Where("Population", QueryOperator.GreaterThan, 2500000)
+                .WhereGreaterThan("Population", 2500000)
                 .OrderBy("Population")
                 .Limit(2);
             // [END fs_where_order_by_limit_query]
-            QuerySnapshot querySnapshot = await query.SnapshotAsync();
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by where order by limit query", documentSnapshot.Id);
@@ -102,10 +102,10 @@ Where command is one of
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_range_order_by_query]
             Query query = citiesRef
-                .Where("Population", QueryOperator.GreaterThan, 2500000)
+                .WhereGreaterThan("Population", 2500000)
                 .OrderBy("Population");
             // [END fs_range_order_by_query]
-            QuerySnapshot querySnapshot = await query.SnapshotAsync();
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by range with order by query", documentSnapshot.Id);
@@ -118,7 +118,7 @@ Where command is one of
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_invalid_range_order_by_query]
             Query query = citiesRef
-                .Where("Population", QueryOperator.GreaterThan, 2500000)
+                .WhereGreaterThan("Population", 2500000)
                 .OrderBy("Country");
             // [END fs_invalid_range_order_by_query]
         }
