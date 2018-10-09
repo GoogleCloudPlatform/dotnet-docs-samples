@@ -14,6 +14,9 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
+# This test succeeds, but seems to corrupt CasperJs and later tests fail.
+Skip-Test
+
 dotnet restore
 dotnet build
 Run-KestrelTest 5601 -CasperJs11
