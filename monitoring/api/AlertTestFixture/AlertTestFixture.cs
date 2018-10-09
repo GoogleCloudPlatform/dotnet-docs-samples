@@ -21,7 +21,7 @@ using static Google.Cloud.Monitoring.V3.AlertPolicy.Types.Condition.Types;
 
 /// <summary>
 /// Creates an AlertPolicy and NotificationChannel for the duration
-/// if the tests.
+/// of the tests.
 /// </summary>
 public class AlertTestFixture : IDisposable
 {
@@ -48,7 +48,9 @@ public class AlertTestFixture : IDisposable
     public AlertTestFixture()
     {
         Channel = CreateChannel();
-
+        string filter = @"metric.label.state=""blocked"" AND 
+            metric.type=""agent.googleapis.com/processes/count_by_state""  
+            AND resource.type=""gce_instance""";
         Alert = AlertPolicyClient.CreateAlertPolicy(
             new ProjectName(ProjectId), new AlertPolicy()
             {
@@ -61,7 +63,7 @@ public class AlertTestFixture : IDisposable
                     {
                         ConditionThreshold = new MetricThreshold()
                         {
-                            Filter = "metric.label.state=\"blocked\" AND metric.type=\"agent.googleapis.com/processes/count_by_state\"  AND resource.type=\"gce_instance\"",
+                            Filter = filter,
                             Aggregations = {
                                 new Aggregation() {
                                     AlignmentPeriod = Duration.FromTimeSpan(
