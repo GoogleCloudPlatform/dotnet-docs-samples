@@ -21,8 +21,21 @@ using System.Collections.Generic;
 
 partial class DlpSnippets
 {
-    public string DeidentiyMasking(string projectId = "YOUR-PROJECT-ID")
+    /// <summary>
+    /// Replace sensitive information with masking characters using the DLP API.
+    ///</summary>
+    /// <param name="projectId">Your Google Cloud Project ID.</param>
+    /// <param name="text">The text in which sensitive data will be masked.
+    /// </param>
+    /// <returns>The text with sensitive data masked.</returns>
+    public string DeidentiyMasking(
+        string projectId = "YOUR-PROJECT-ID",
+        string text = "My SSN is 372819127.")
     {
+        // Instantiate a client.
+        DlpServiceClient dlp = DlpServiceClient.Create();
+
+        // Construct a request.
         var transformation = new InfoTypeTransformations.Types.InfoTypeTransformation
         {
             PrimitiveTransformation = new PrimitiveTransformation
@@ -52,12 +65,13 @@ partial class DlpSnippets
                     Transformations = { transformation }
                 }
             },
-            Item = new ContentItem { Value = "My SSN is 372819127." }
+            Item = new ContentItem { Value = text }
         };
 
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        // Call the API.
         var response = dlp.DeidentifyContent(request);
 
+        // Inspect the results.
         Console.WriteLine($"Deidentified content: {response.Item.Value}");
         return response.Item.Value;
     }
