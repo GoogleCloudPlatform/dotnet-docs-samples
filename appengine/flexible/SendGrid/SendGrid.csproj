@@ -6,6 +6,7 @@
     <OutputType>Exe</OutputType>
     <PackageId>SendGrid</PackageId>
     <RuntimeFrameworkVersion>1.1.0</RuntimeFrameworkVersion>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
   </PropertyGroup>
   <ItemGroup>
     <None Update="Dockerfile;app.yaml">

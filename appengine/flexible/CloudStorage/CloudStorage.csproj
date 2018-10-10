@@ -7,6 +7,7 @@
     <OutputType>Exe</OutputType>
     <PackageId>CloudStorage</PackageId>
     <RuntimeFrameworkVersion>1.1</RuntimeFrameworkVersion>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
   </PropertyGroup>
 
   <ItemGroup>
