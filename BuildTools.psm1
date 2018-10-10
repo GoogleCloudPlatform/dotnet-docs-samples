@@ -871,26 +871,31 @@ function Move-TestResults($OutDir) {
 ##############################
 function Run-CasperJs($TestJs='test.js', $Url, [switch]$v11 = $false,
     [string]$OutDir) {
-    if ($v11) {
-        $env:CASPERJS11_URL = $Url
-        # Casperjs.exe creates a new terminal window, from which we
-        # cannot capture output.  So we use python to invoke it and
-        # capture output.
-        $casperOut = python (Join-Path $env:CASPERJS11_BIN "casperjs") `
-            -- test --xunit=TestResults.xml $TestJs
-        # Casper 1.1 always returns 0, so inspect the xml output
-        # to see if a test failed.
-        [xml]$x = Get-Content TestResults.xml         
-        $LASTEXITCODE = 0      
-        foreach ($suite in $x.testsuites.testsuite) {
-            $LASTEXITCODE += [int] $suite.failures 
+    $sleepSeconds = 2
+    for ($tryCount = 0; $tryCount -lt 5; $tryCount++) {
+        Start-Sleep -Seconds $sleepSeconds  # Wait for web process to start up.
+        if ($v11) {
+            $env:CASPERJS11_URL = $Url
+            # Casperjs.exe creates a new terminal window, from which we
+            # cannot capture output.  So we use python to invoke it and
+            # capture output.
+            $casperOut = python (Join-Path $env:CASPERJS11_BIN "casperjs") `
+                -- test --xunit=TestResults.xml $TestJs
+            # Casper 1.1 always returns 0, so inspect the xml output
+            # to see if a test failed.
+            [xml]$x = Get-Content TestResults.xml         
+            $LASTEXITCODE = 0      
+            foreach ($suite in $x.testsuites.testsuite) {
+                $LASTEXITCODE += [int] $suite.failures 
+            }
+        } else {
+            $casperOut = casperjs $TestJs $Url
         }
-    } else {
-        $casperOut = casperjs $TestJs $Url
-    }
-    if ($LASTEXITCODE -eq 0) {
-        $casperOut | Write-Host
-        return
+        if ($LASTEXITCODE -eq 0) {
+            $casperOut | Write-Host
+            return
+        }
+        $sleepSeconds *= 2
     }
     $casperOut | Write-Host
     throw "Casperjs failed with error code $LASTEXITCODE"
