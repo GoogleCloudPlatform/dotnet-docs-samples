@@ -33,8 +33,7 @@ public class DlpInspectFile
     public IEnumerable<Finding> InspectFile(
         string projectId = "YOUR-PROJECT-ID",
         string filePath = "path/to/image.png",
-        BytesType fileType = BytesType.ImagePng
-    )
+        BytesType fileType = BytesType.ImagePng)
     {
         // Instantiate a client.
         DlpServiceClient dlp = DlpServiceClient.Create();
@@ -98,8 +97,6 @@ public class DlpInspectFile
         {
             Console.WriteLine("No findings.");
         }
-
-        // Return findings
         return findings;
     }
 }
