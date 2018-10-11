@@ -52,7 +52,21 @@ This sample requires [.NET Core 2.1](
     PS > .\Encrypt-AppSecrets.ps1
     ```
 
-7.  Run the app locally:
+7.  Initialize your database:
+
+    **[SQL Server](https://www.microsoft.com/en-us/sql-server/default.aspx) Users:**
+    ```
+    PS > dotnet ef database update
+    ```
+
+    **Other Database Users:**
+    ```
+    PS > dotnet ef migrations remove
+    PS > dotnet ef migrations add origin
+    PS > dotnet ef database update
+    ```
+
+8.  Run the app locally:
     ```
     PS > dotnet run
     Using launch settings from ~/gitrepos/dds2/appengine/flexible/SocialAuth/Properties/launchSettings.json...
@@ -65,7 +79,7 @@ This sample requires [.NET Core 2.1](
     Application started. Press Ctrl+C to shut down.
     ```
 
-8.  Add permissions so the App Engine user account can encrypt and decrypt.
+9.  Add permissions so the App Engine user account can encrypt and decrypt.
     ```
     PS > .\Add-KmsPermissionsToAppEngine.ps1
     Waiting for async operation operations/tmo-acf.0f97d7e0-636a-4e7c-9837-a48c2b87dc8d to complete...
@@ -77,7 +91,7 @@ This sample requires [.NET Core 2.1](
     ...
     ```
 
-9.  Deploy the app to App Engine:
+10.  Deploy the app to App Engine:
     ```
     PS > dotnet publish
     Microsoft (R) Build Engine version 15.7.179.6572 for .NET Core
