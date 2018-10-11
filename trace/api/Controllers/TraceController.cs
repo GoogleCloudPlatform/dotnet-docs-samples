@@ -20,6 +20,7 @@ using System.Web.Mvc;
 namespace Trace.Controllers
 {
     // [START trace_example]
+    // [START trace_setup_aspnet_framework_example]
     public class TraceController : Controller
     {
         // This incoming HTTP request should be captured by Trace.
@@ -51,5 +52,6 @@ namespace Trace.Controllers
             }
         }
     }
+    // [END trace_setup_aspnet_framework_example]
     // [END trace_example]
 }
