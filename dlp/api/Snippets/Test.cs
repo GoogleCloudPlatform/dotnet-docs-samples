@@ -14,6 +14,7 @@
 
 using System;
 using Xunit;
+using System.Linq;
 
 public class DlpSnippetsTest
 {
@@ -27,4 +28,14 @@ public class DlpSnippetsTest
         Assert.Equal("My SSN is *****9127.",
             snippet.DeidentiyMasking(_projectId));
     }
+
+    [Fact]
+    public void InspectFile()
+    {
+        var snippet = new DlpInspectFile();
+        var findings =
+            snippet.InspectFile(_projectId, "testdata/phonenumber.png");
+        Assert.Equal("555-1212", findings.First().Quote);
+    }
+
 }

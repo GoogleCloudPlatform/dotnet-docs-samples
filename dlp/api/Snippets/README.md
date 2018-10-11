@@ -1,6 +1,6 @@
 # .NET Cloud Translation API Samples
 
-A collection of samples that demonstrate how to call the 
+A collection of samples that demonstrate how to call the
 [Google Cloud Translation API](https://cloud.google.com/dlp/) from C#.
 
 ## Build and Run
@@ -19,7 +19,7 @@ A collection of samples that demonstrate how to call the
     ```
 
 9.  Run the test:
-    ```
+    ```ps1
     PS >  dotnet test
     Build started, please wait...
     Build completed.
@@ -34,7 +34,7 @@ A collection of samples that demonstrate how to call the
     Total tests: 1. Passed: 1. Failed: 0. Skipped: 0.
     Test Run Successful.
     Test execution time: 2.7392 Seconds
-	```
+    ```
 
 ## Designed to demonstrate Google APIs
 
