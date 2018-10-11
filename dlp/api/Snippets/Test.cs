@@ -19,12 +19,12 @@ public class DlpSnippetsTest
 {
     readonly string _projectId =
         Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    readonly DlpSnippets _snippets = new DlpSnippets();
 
     [Fact]
     public void TestDeidMask()
     {
+        var snippet = new DlpDeidentifyMasking();
         Assert.Equal("My SSN is *****9127.",
-            _snippets.DeidentiyMasking(_projectId));
+            snippet.DeidentiyMasking(_projectId));
     }
 }

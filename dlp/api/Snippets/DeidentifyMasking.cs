@@ -19,7 +19,7 @@ using Google.Cloud.Dlp.V2;
 using System;
 using System.Collections.Generic;
 
-partial class DlpSnippets
+class DlpDeidentifyMasking
 {
     /// <summary>
     /// Replace sensitive information with masking characters using the DLP API.

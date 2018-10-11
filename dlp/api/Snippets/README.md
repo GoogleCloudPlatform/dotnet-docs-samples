@@ -11,6 +11,13 @@ A collection of samples that demonstrate how to call the
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=dlp.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Translation API.
 
+5.  Set the environment variable `GOOGLE_PROJECT_ID` to your Google Cloud
+    Project Id.
+
+    ```ps1
+    PS > $env:GOOGLE_PROJECT_ID = 'YOUR-GOOGLE-PROJECT-ID'
+    ```
+
 9.  Run the test:
     ```
     PS >  dotnet test
