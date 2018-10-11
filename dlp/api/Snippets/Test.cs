@@ -13,8 +13,8 @@
 // the License.
 
 using System;
-using Xunit;
 using System.Linq;
+using Xunit;
 
 public class DlpSnippetsTest
 {
@@ -37,5 +37,4 @@ public class DlpSnippetsTest
             snippet.InspectFile(_projectId, "testdata/phonenumber.png");
         Assert.Equal("555-1212", findings.First().Quote);
     }
-
 }
