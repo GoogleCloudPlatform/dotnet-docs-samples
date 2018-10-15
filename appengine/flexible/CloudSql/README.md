@@ -64,7 +64,7 @@ when running in Google App Engine Flexible Environment.
     ```psm1
     PS > dotnet restore
     PS > dotnet publish
-    PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.0\publish\app.yaml
+    PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
     ```
 
 ## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
