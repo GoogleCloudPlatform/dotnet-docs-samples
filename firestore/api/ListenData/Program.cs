@@ -80,12 +80,13 @@ Where command is one of
             // [START fs_listen_multiple]
             CollectionReference citiesRef = db.Collection("cities");
             Query query = db.Collection("cities").WhereEqualTo("State", "CA");
-            
+
             FirestoreChangeListener listener = query.Listen(snapshot =>
             {
                 Console.WriteLine("Callback received query snapshot.");
                 Console.WriteLine("Current cities in California:");
-                foreach (DocumentSnapshot documentSnapshot in snapshot.Documents) {
+                foreach (DocumentSnapshot documentSnapshot in snapshot.Documents)
+                {
                     Console.WriteLine(documentSnapshot.Id);
                 }
             });
@@ -116,15 +117,21 @@ Where command is one of
             // [START fs_listen_for_changes]
             CollectionReference citiesRef = db.Collection("cities");
             Query query = db.Collection("cities").WhereEqualTo("State", "CA");
-            
+
             FirestoreChangeListener listener = query.Listen(snapshot =>
             {
-                foreach (DocumentChange change in snapshot.Changes) {
-                    if (change.ChangeType.ToString() == "Added") {
+                foreach (DocumentChange change in snapshot.Changes)
+                {
+                    if (change.ChangeType.ToString() == "Added")
+                    {
                         Console.WriteLine("New city: {0}", change.Document.Id);
-                    } else if (change.ChangeType.ToString() == "Modified") {
+                    }
+                    else if (change.ChangeType.ToString() == "Modified")
+                    {
                         Console.WriteLine("Modified city: {0}", change.Document.Id);
-                    } else if (change.ChangeType.ToString() == "Removed") {
+                    }
+                    else if (change.ChangeType.ToString() == "Removed")
+                    {
                         Console.WriteLine("Removed city: {0}", change.Document.Id);
                     }
                 }

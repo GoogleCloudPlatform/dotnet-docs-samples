@@ -99,7 +99,8 @@ Where command is one of
                 .DeserializeObject(resultText);
 
             int numIndexesCreated = 0;
-            if (result.indexes != null) {
+            if (result.indexes != null)
+            {
                 foreach (var index in result.indexes)
                 {
                     Console.WriteLine(index.name);
@@ -148,7 +149,6 @@ Where command is one of
         // [START fs_delete_indexes]
         private static async Task DeleteIndexes(string project, string collectionId)
         {
-            
             GoogleCredential credential =
                 GoogleCredential.GetApplicationDefault();
             // Inject the Cloud Platform scope if required.
@@ -177,7 +177,8 @@ Where command is one of
 
             List<string> indexesToBeDeleted = new List<string>();
 
-            if (result.indexes != null) {
+            if (result.indexes != null)
+            {
                 foreach (var index in result.indexes)
                 {
                     if (index.collectionId == collectionId)
@@ -187,7 +188,7 @@ Where command is one of
                     }
                 }
             }
-            
+
             foreach (string indexToBeDeleted in indexesToBeDeleted)
             {
                 uriString = "https://firestore.googleapis.com/v1beta1/" + indexToBeDeleted;
