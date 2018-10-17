@@ -91,7 +91,8 @@ This sample requires [.NET Core 2.1](
     ...
     ```
 
-10.  Deploy the app to App Engine:
+10. Deploy the app to App Engine:
+
     ```
     PS > dotnet publish
     Microsoft (R) Build Engine version 15.7.179.6572 for .NET Core
