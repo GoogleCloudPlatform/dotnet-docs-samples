@@ -1,6 +1,6 @@
-# .NET Cloud Key Management Service (KMS) ASP.NET Sample
+# ASP.NET with Social Log In Sample
 
-This is the companion sample for a [medium.com story](https://medium.com/@SurferJeff/adding-social-login-to-your-net-app-engine-application-9b7f4149eb73).
+This is the companion sample for a [medium.com story](https://medium.com/@SurferJeff/adding-social-login-to-your-asp-net-core-2-1-google-cloud-platform-application-1baae89f1dc8).
 
 This sample application demonstrates how to let users log into your application
 running in Google App Engine Flexible Environment with their Facebook or Google
