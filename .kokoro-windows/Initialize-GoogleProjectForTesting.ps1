@@ -39,6 +39,7 @@ if (-not $projectId) {
 # Keep this list sorted so it's easy to find an api and avoid duplicates.
 $services = @"
 bigquery-json.googleapis.com
+bigtable.googleapis.com
 cloudapis.googleapis.com
 clouddebugger.googleapis.com
 clouderrorreporting.googleapis.com
@@ -70,6 +71,7 @@ vision.googleapis.com
 
 $roles = @"
 roles/bigquery.admin
+roles/bigtable.admin
 roles/clouddebugger.user
 roles/cloudiot.admin
 roles/cloudkms.admin
