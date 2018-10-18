@@ -29,7 +29,9 @@ namespace Stackdriver.Controllers
             if (exception)
             {
                 // [START error_reporting_exception]
+                // [START error_reporting_setup_dotnetcore_force_error_controller]
                 throw new Exception("Generic exception for testing Stackdriver Error Reporting");
+                // [END error_reporting_setup_dotnetcore_force_error_controller]
                 // [END error_reporting_exception]
             }
             return View();

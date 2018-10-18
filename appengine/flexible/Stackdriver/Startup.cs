@@ -42,6 +42,7 @@ namespace Stackdriver
         // [START gae_flex_use_logging]
         // [START configure_services_error_reporting]
         // [START trace_setup_aspnetcore_configure_services]
+        // [START error_reporting_setup_dotnetcore_configure_services]
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
@@ -65,6 +66,7 @@ namespace Stackdriver
             // Add framework services.
             services.AddMvc();
         }
+        // [END error_reporting_setup_dotnetcore_configure_services]
         // [END gae_flex_use_logging]
         // [END configure_services_error_reporting]
         // [END trace_setup_aspnetcore_configure_services]
@@ -73,6 +75,7 @@ namespace Stackdriver
         // [START gae_flex_configure_logging]
         // [START configure_error_reporting]
         // [START trace_setup_aspnetcore_configure_trace]
+        // [START error_reporting_setup_dotnetcore_configure]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             // Configure logging service.
@@ -94,6 +97,7 @@ namespace Stackdriver
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+        // [END error_reporting_setup_dotnetcore_configure]
         // [END gae_flex_configure_logging]
         // [END configure_error_reporting]
         // [END trace_setup_aspnetcore_configure_trace]
