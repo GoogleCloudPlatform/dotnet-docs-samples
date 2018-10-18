@@ -19,7 +19,6 @@ using System.Web.Mvc;
 
 namespace Trace.Controllers
 {
-    // [START trace_example]
     // [START trace_setup_aspnet_framework_example]
     public class TraceController : Controller
     {
@@ -53,5 +52,4 @@ namespace Trace.Controllers
         }
     }
     // [END trace_setup_aspnet_framework_example]
-    // [END trace_example]
 }

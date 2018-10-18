@@ -12,13 +12,11 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START import_client_library]
 // [START trace_setup_aspnet_framework_import]
 
 using Google.Cloud.Diagnostics.AspNet;
 using Google.Cloud.Diagnostics.Common;
 // [END trace_setup_aspnet_framework_import]
-// [END import_client_library]
 using System;
 using System.Configuration;
 using System.Web.Mvc;
@@ -28,7 +26,6 @@ namespace Trace
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
-        // [START configure_services_trace]
         // [START trace_setup_aspnet_framework_init]
         public override void Init()
         {
@@ -48,7 +45,6 @@ namespace Trace
             CloudTrace.Initialize(this, projectId, traceConfig);
         }
         // [END trace_setup_aspnet_framework_init]
-        // [END configure_services_trace]
 
         public static void RegisterRoutes(RouteCollection routes)
         {
