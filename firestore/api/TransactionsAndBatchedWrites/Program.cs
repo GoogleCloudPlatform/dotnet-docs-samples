@@ -38,11 +38,11 @@ Where command is one of
             DocumentReference cityRef = db.Collection("cities").Document("SF");
             await db.RunTransactionAsync(async transaction =>
             {
-                DocumentSnapshot snapshot = await transaction.GetDocumentSnapshotAsync(cityRef);
-                long newPopulation = snapshot.GetField<long>("Population") + 1;
-                Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
+                DocumentSnapshot snapshot = await transaction.GetSnapshotAsync(cityRef);
+                long newPopulation = snapshot.GetValue<long>("Population") + 1;
+                Dictionary<string, object> updates = new Dictionary<string, object>
                 {
-                    { new FieldPath("Population"), newPopulation}
+                    { "Population", newPopulation}
                 };
                 transaction.Update(cityRef, updates);
             });
@@ -57,13 +57,13 @@ Where command is one of
             DocumentReference cityRef = db.Collection("cities").Document("SF");
             bool transactionResult = await db.RunTransactionAsync(async transaction =>
             {
-                DocumentSnapshot snapshot = await transaction.GetDocumentSnapshotAsync(cityRef);
-                long newPopulation = snapshot.GetField<long>("Population") + 1;
+                DocumentSnapshot snapshot = await transaction.GetSnapshotAsync(cityRef);
+                long newPopulation = snapshot.GetValue<long>("Population") + 1;
                 if (newPopulation <= 1000000)
                 {
-                    Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
+                    Dictionary<string, object> updates = new Dictionary<string, object>
                     {
-                        { new FieldPath("Population"), newPopulation}
+                        { "Population", newPopulation}
                     };
                     transaction.Update(cityRef, updates);
                     return true;
@@ -89,7 +89,7 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_batch_write]
-            WriteBatch batch = db.CreateWriteBatch();
+            WriteBatch batch = db.StartBatch();
 
             // Set the data for NYC
             DocumentReference nycRef = db.Collection("cities").Document("NYC");
@@ -101,9 +101,9 @@ Where command is one of
 
             // Update the population for SF
             DocumentReference sfRef = db.Collection("cities").Document("SF");
-            Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
+            Dictionary<string, object> updates = new Dictionary<string, object>
             {
-                { new FieldPath("Population"), 1000000}
+                { "Population", 1000000}
             };
             batch.Update(sfRef, updates);
 

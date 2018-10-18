@@ -37,6 +37,7 @@ Where command is one of
     update-doc
     update-nested-fields
     update-server-timestamp
+    update-document-array
 ";
         private static async Task AddDocAsMap(string project)
         {
@@ -49,8 +50,7 @@ Where command is one of
                 { "state", "CA" },
                 { "country", "USA" }
             };
-            WriteResult writeResult = await docRef.SetAsync(city);
-            Console.WriteLine(writeResult.UpdateTime);
+            await docRef.SetAsync(city);
             // [END fs_add_doc_as_map]
             Console.WriteLine("Added data to the LA document in the cities collection.");
         }
@@ -64,8 +64,7 @@ Where command is one of
             {
                 { "capital", false }
             };
-            WriteResult writeResult = await docRef.SetAsync(update, SetOptions.MergeAll);
-            Console.WriteLine(writeResult.UpdateTime);
+            await docRef.SetAsync(update, SetOptions.MergeAll);
             // [END fs_update_create_if_missing]
             Console.WriteLine("Merged data into the LA document in the cities collection.");
         }
@@ -96,8 +95,7 @@ Where command is one of
             };
             docData.Add("objectExample", objectExample);
 
-            WriteResult writeResult = await docRef.SetAsync(docData);
-            Console.WriteLine(writeResult.UpdateTime);
+            await docRef.SetAsync(docData);
             // [END fs_add_doc_data_types]
             Console.WriteLine("Set multiple data-type data for the one document in the data collection.");
         }
@@ -136,8 +134,7 @@ Where command is one of
                 Capital = false,
                 Population = 3900000L
             };
-            WriteResult writeResult = await docRef.SetAsync(city);
-            Console.WriteLine(writeResult.UpdateTime);
+            await docRef.SetAsync(city);
             // [END fs_add_simple_doc_as_entity]
             Console.WriteLine("Added custom City object to the cities collection.");
         }
@@ -179,10 +176,9 @@ Where command is one of
                 { "Country", "Russia" }
             };
             // [START fs_add_doc_data_after_auto_id]
-            DocumentReference addedDocRef = db.Collection("cities").GenerateDocument();
+            DocumentReference addedDocRef = db.Collection("cities").Document();
             Console.WriteLine("Added document with ID: {0}.", addedDocRef.Id);
-            WriteResult writeResult = await addedDocRef.SetAsync(city);
-            Console.WriteLine(writeResult.UpdateTime);
+            await addedDocRef.SetAsync(city);
             // [END fs_add_doc_data_after_auto_id]
             Console.WriteLine("Added data to the {0} document in the cities collection.", addedDocRef.Id);
         }
@@ -192,12 +188,13 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_update_doc]
             DocumentReference cityRef = db.Collection("cities").Document("new-city-id");
-            Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
+            Dictionary<string, object> updates = new Dictionary<string, object>
             {
-                { new FieldPath("Capital"), false }
+                { "Capital", false }
             };
-            WriteResult writeResult = await cityRef.UpdateAsync(updates);
-            Console.WriteLine(writeResult.UpdateTime);
+            await cityRef.UpdateAsync(updates);
+
+            // You can also update a single field with: await cityRef.UpdateAsync("Capital", false);
             // [END fs_update_doc]
             Console.WriteLine("Updated the Capital field of the new-city-id document in the cities collection.");
         }
@@ -220,18 +217,17 @@ Where command is one of
                 { "Subject", "Recess" },
             };
             initialData.Add("Favorites", favorites);
-            WriteResult initialResult = await frankDocRef.SetAsync(initialData);
+            await frankDocRef.SetAsync(initialData);
 
             // Update age and favorite color
-            Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
+            Dictionary<string, object> updates = new Dictionary<string, object>
             {
-                { new FieldPath("Age"), 13 },
-                { new FieldPath("Favorites", "Color"), "Red" },
+                { "Age", 13 },
+                { "Favorites.Color", "Red" },
             };
 
             // Asynchronously update the document
-            WriteResult updateResult = await frankDocRef.UpdateAsync(updates);
-            Console.WriteLine(updateResult.UpdateTime);
+            await frankDocRef.UpdateAsync(updates);
             // [END fs_update_nested_fields]
             Console.WriteLine("Updated the age and favorite color fields of the Frank document in the users collection.");
         }
@@ -241,14 +237,24 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_update_server_timestamp]
             DocumentReference cityRef = db.Collection("cities").Document("new-city-id");
-            Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
-            {
-                { new FieldPath("Timestamp"), Timestamp.GetCurrentTimestamp() }
-            };
-            WriteResult writeResult = await cityRef.UpdateAsync(updates);
-            Console.WriteLine(writeResult.UpdateTime);
+            await cityRef.UpdateAsync("Timestamp", Timestamp.GetCurrentTimestamp());
             // [END fs_update_server_timestamp]
             Console.WriteLine("Updated the Timestamp field of the new-city-id document in the cities collection.");
+        }
+
+        private static async Task UpdateDocumentArray(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            // [START fs_update_document_array]
+            DocumentReference washingtonRef = db.Collection("cities").Document("DC");
+
+            // Atomically add a new region to the "regions" array field.
+            await washingtonRef.UpdateAsync("Regions", FieldValue.ArrayUnion("greater_virginia"));
+
+            // Atomically remove a region from the "regions" array field.
+            await washingtonRef.UpdateAsync("Regions", FieldValue.ArrayRemove("east_coast"));
+            // [END fs_update_document_array]
+            Console.WriteLine("Updated the Regions array of the DC document in the cities collection.");
         }
 
         public static void Main(string[] args)
@@ -301,6 +307,10 @@ Where command is one of
 
                 case "update-server-timestamp":
                     UpdateServerTimestamp(project).Wait();
+                    break;
+
+                case "update-document-array":
+                    UpdateDocumentArray(project).Wait();
                     break;
 
                 default:
