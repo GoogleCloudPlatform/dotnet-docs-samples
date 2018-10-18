@@ -52,8 +52,8 @@ namespace GoogleCloudSamples
 
             ConsoleOutput RunManageIndexes(params string[] args)
             {
-                return _manageIndexes.Run(args);
-            }
+    return _manageIndexes.Run(args);
+}
 
             DeleteCollection("users").Wait();
             DeleteCollection("cities/SF/neighborhoods").Wait();
