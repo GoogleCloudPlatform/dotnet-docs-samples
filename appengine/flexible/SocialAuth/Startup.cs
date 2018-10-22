@@ -124,7 +124,7 @@ namespace SocialAuthMVC
             app.UseCookiePolicy();
 
             // So middleware knows requests arrived via https.
-            app.UseForwardedHeaders(new ForwardedHeadersOptions() 
+            app.UseForwardedHeaders(new ForwardedHeadersOptions()
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedProto
             });
