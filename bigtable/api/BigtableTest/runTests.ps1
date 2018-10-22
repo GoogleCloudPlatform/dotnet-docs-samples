@@ -12,10 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# TODO: Resurrect this test when bugs 68199801 and 117764398 are fixed.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
-Skip-Test
-break
+Require-Platform Win*
+Set-TestTimeout 600
 
 BackupAndEdit-TextFile "..\QuickStart\QuickStart.cs", "..\HelloWorld\HelloWorld.cs", "..\TableAdminExample\TableAdmin.cs",  "..\InstanceAdminExample\InstanceAdmin.cs" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID;
