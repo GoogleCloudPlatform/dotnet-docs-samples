@@ -18,23 +18,23 @@ using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace ExportAssetsSample
+namespace GoogleCloudSamples
 {
     public class ExportAssetsTest
     {
         static readonly CommandLineRunner s_runner = new CommandLineRunner
         {
-            Command = "ExportAssets.exe",
-            VoidMain = Program.Main,
+            Command = "ExportAssets",
+            VoidMain = ExportAssets.Main,
         };
-
+	private readonly ITestOutputHelper _testOutput;
         private StorageClient storageClient = StorageClient.Create();
-	public readonly ITestOutputHelper _testOutput;
 
 	public ExportAssetsTest(ITestOutputHelper output)
 	{
-	    _testOutput = output;
+	   _testOutput = output;
 	}
 
         [Fact]
@@ -45,30 +45,50 @@ namespace ExportAssetsSample
             if (CheckBucketExists(bucketName))
             {
                 EmptyBucket(bucketName);
-            } else
+            }
+            else
             {
                 CreateBucket(projectId, bucketName);
             }
 	    var output = s_runner.Run();
 	    _testOutput.WriteLine(output.Stdout);
+            string expectedOutput = String.Format("\"outputConfig\": {{ \"gcsDestination\": {{ \"uri\": \"gs://{0}/my-assets.txt\" }} }}", bucketName);
+            Assert.Contains(expectedOutput, output.Stdout);
         }
 
         bool CheckBucketExists(string bucketName)
         {
-            Bucket bucket = storageClient.GetBucket(bucketName, new GetBucketOptions());
-            return bucket != null;
+            try
+            {
+                Bucket bucket = storageClient.GetBucket(bucketName, new GetBucketOptions());
+            }
+            catch (Google.GoogleApiException e) when (e.Error.Code == 404)
+            {
+                // Bucket not found.
+                return false;
+            }
+            return true;
         }
 
         void EmptyBucket(string bucketName)
         {
-            foreach(var storageObject in storageClient.ListObjects(bucketName)) {
+            foreach(var storageObject in storageClient.ListObjects(bucketName))
+            {
                 storageClient.DeleteObject(storageObject);
             }
         }
 
         void CreateBucket(string projectId, string bucketName)
         {
-            storageClient.CreateBucket(projectId, bucketName);
+            try
+            {
+                storageClient.CreateBucket(projectId, bucketName);
+            }
+            catch (Google.GoogleApiException e) when (e.Error.Code == 409)
+            {
+                // Bucket already exists.
+                return;
+            }
         }
     }
 }

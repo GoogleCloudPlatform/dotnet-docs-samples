@@ -21,12 +21,11 @@ using System;
 
 public class ExportAssets
 {
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-	// string bucketName = String.Format("{0}-for-assets", projectId);
-        string bucketName = String.Format("cai-prober-prod-bucket", projectId);
-        string assetDumpFile = String.Format("gs://{0}/my-asset.txt", bucketName);
+	string bucketName = String.Format("{0}-for-assets", projectId);
+        string assetDumpFile = String.Format("gs://{0}/my-assets.txt", bucketName);
         AssetServiceClient client = AssetServiceClient.Create();
         ExportAssetsRequest request = new ExportAssetsRequest
         {

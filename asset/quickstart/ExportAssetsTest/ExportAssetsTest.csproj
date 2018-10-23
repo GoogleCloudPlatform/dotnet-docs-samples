@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
     <ProjectReference Include="..\ExportAssets\ExportAssets.csproj" />
   </ItemGroup>
 
