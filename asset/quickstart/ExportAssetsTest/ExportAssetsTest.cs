@@ -30,7 +30,7 @@ namespace GoogleCloudSamples
             VoidMain = ExportAssets.Main,
         };
         private readonly ITestOutputHelper _testOutput;
-        private StorageClient storageClient = StorageClient.Create();
+        private StorageClient _storageClient = StorageClient.Create();
 
         public ExportAssetsTest(ITestOutputHelper output)
         {
@@ -60,7 +60,7 @@ namespace GoogleCloudSamples
         {
             try
             {
-                Bucket bucket = storageClient.GetBucket(bucketName, new GetBucketOptions());
+                Bucket bucket = _storageClient.GetBucket(bucketName, new GetBucketOptions());
             }
             catch (Google.GoogleApiException e) when (e.Error.Code == 404)
             {
@@ -72,9 +72,9 @@ namespace GoogleCloudSamples
 
         void EmptyBucket(string bucketName)
         {
-            foreach(var storageObject in storageClient.ListObjects(bucketName))
+            foreach(var storageObject in _storageClient.ListObjects(bucketName))
             {
-                storageClient.DeleteObject(storageObject);
+                _storageClient.DeleteObject(storageObject);
             }
         }
 
@@ -82,7 +82,7 @@ namespace GoogleCloudSamples
         {
             try
             {
-                storageClient.CreateBucket(projectId, bucketName);
+                _storageClient.CreateBucket(projectId, bucketName);
             }
             catch (Google.GoogleApiException e) when (e.Error.Code == 409)
             {
