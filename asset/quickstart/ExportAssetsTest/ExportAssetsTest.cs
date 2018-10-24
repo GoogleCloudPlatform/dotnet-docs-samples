@@ -30,7 +30,7 @@ namespace GoogleCloudSamples
             VoidMain = ExportAssets.Main,
         };
         private readonly ITestOutputHelper _testOutput;
-        private StorageClient _storageClient = StorageClient.Create();
+        private readonly StorageClient _storageClient = StorageClient.Create();
 
         public ExportAssetsTest(ITestOutputHelper output)
         {
@@ -72,7 +72,7 @@ namespace GoogleCloudSamples
 
         void EmptyBucket(string bucketName)
         {
-            foreach(var storageObject in _storageClient.ListObjects(bucketName))
+            foreach (var storageObject in _storageClient.ListObjects(bucketName))
             {
                 _storageClient.DeleteObject(storageObject);
             }
