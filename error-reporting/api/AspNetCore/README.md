@@ -1,6 +1,6 @@
 # Stackdriver Error Reporting Sample
 
-A sample demonstrating how to use the Google Cloud Stackdriver Diagnostics ASP.NET Core NuGet package
+A sample demonstrating how to use the `Google.Cloud.Diagnostics.AspNetCore` package
 to log all of an ASP.NET web application's errors to the Error Reporting page in the Cloud Platform Console.
 
 This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or later.  That means using 
@@ -20,14 +20,14 @@ or the command line.  Visual Studio 2015 users can use
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=clouderrorreporting.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Stackdriver Error Reporting API.
 
-4. In [appsettings.json](appsettings.json) change the placeholder value of "YOUR-GOOGLE-PROJECT-ID" to be your project id.
+4. In [Startup.cs](./Startup.ccs) change the placeholder value of "YOUR-GOOGLE-PROJECT-ID" to be your project id.
 
 5. From a Powershell command line, run the Error Reporting sample:
 
     ```ps1
-    PS C:\...\dotnet-docs-samples\error-reporting\api\diagnostics> dotnet run
+    PS C:\...\dotnet-docs-samples\error-reporting\api\AspNetCore> dotnet run
     Hosting environment: Production
-    Content root path: C:\Users\jbsimon\updateErrorReporting\dotnet-docs-samples\error-reporting\core\diagnostics
+    Content root path: C:\Users\jbsimon\updateErrorReporting\dotnet-docs-samples\error-reporting\core\AspNetCore
     Now listening on: http://localhost:5000
     Application started. Press Ctrl+C to shut down.
     ```
