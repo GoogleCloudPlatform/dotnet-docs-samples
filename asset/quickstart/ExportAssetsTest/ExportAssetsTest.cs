@@ -29,13 +29,13 @@ namespace GoogleCloudSamples
             Command = "ExportAssets",
             VoidMain = ExportAssets.Main,
         };
-	private readonly ITestOutputHelper _testOutput;
+        private readonly ITestOutputHelper _testOutput;
         private StorageClient storageClient = StorageClient.Create();
 
-	public ExportAssetsTest(ITestOutputHelper output)
-	{
-	   _testOutput = output;
-	}
+        public ExportAssetsTest(ITestOutputHelper output)
+        {
+            _testOutput = output;
+        }
 
         [Fact]
         public void TestExportAsests()
@@ -50,8 +50,8 @@ namespace GoogleCloudSamples
             {
                 CreateBucket(projectId, bucketName);
             }
-	    var output = s_runner.Run();
-	    _testOutput.WriteLine(output.Stdout);
+            var output = s_runner.Run();
+            _testOutput.WriteLine(output.Stdout);
             string expectedOutput = String.Format("\"outputConfig\": {{ \"gcsDestination\": {{ \"uri\": \"gs://{0}/my-assets.txt\" }} }}", bucketName);
             Assert.Contains(expectedOutput, output.Stdout);
         }
