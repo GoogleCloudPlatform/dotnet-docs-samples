@@ -27,7 +27,7 @@ or the command line.  Visual Studio 2015 users can use
     ```ps1
     PS C:\...\dotnet-docs-samples\error-reporting\api\AspNetCore> dotnet run
     Hosting environment: Production
-    Content root path: C:\Users\jbsimon\updateErrorReporting\dotnet-docs-samples\error-reporting\core\AspNetCore
+    Content root path: C:\...\dotnet-docs-samples\error-reporting\api\AspNetCore
     Now listening on: http://localhost:5000
     Application started. Press Ctrl+C to shut down.
     ```
