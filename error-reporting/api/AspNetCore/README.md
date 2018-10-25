@@ -20,7 +20,7 @@ or the command line.  Visual Studio 2015 users can use
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=clouderrorreporting.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Stackdriver Error Reporting API.
 
-4. In [Startup.cs](./Startup.ccs) change the placeholder value of "YOUR-GOOGLE-PROJECT-ID" to be your project id.
+4. In [Startup.cs](./Startup.cs) change the placeholder value of "YOUR-GOOGLE-PROJECT-ID" to be your project id.
 
 5. From a Powershell command line, run the Error Reporting sample:
 
