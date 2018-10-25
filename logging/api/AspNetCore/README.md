@@ -1,4 +1,4 @@
-# Stackdriven Logging Sample
+# Stackdriver Logging Sample
 
 A sample that demonstrates how to write logs to
 [Stackdriver](https://cloud.google.com/logging/)
