@@ -41,6 +41,11 @@ which will invoke a generic System.Exception application error.
     the [Error Reporting](https://console.cloud.google.com/errors) page
     in the Cloud Platform Console.
 
+    * If this is the first time using Error Reporting in your project you'll have to click 
+      the options menu at the top right side of the Error Reporting page and
+      select "Turn on new error notifications for the project".
+    
+
 ## Contributing changes
 
 * See [CONTRIBUTING.md](../../../CONTRIBUTING.md)
