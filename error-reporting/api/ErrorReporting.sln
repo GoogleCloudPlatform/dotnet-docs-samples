@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorReportingSample", "Err
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{D093E2FB-BE8B-489B-B1FB-F75942C854E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorReporting", "diagnostics\ErrorReporting.csproj", "{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorReporting", "AspNetCore\ErrorReporting.csproj", "{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

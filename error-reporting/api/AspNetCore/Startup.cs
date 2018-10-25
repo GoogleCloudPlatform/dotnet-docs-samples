@@ -14,16 +14,14 @@
  * the License.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+// [START error_reporting_setup_aspnetcore_using_diagnostics]
+
+using Google.Cloud.Diagnostics.AspNetCore;
+// [END error_reporting_setup_aspnetcore_using_diagnostics]
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Google.Cloud.Diagnostics.AspNetCore;
-using Google.Cloud.Diagnostics.Common;
 
 namespace ErrorReporting
 {
@@ -40,13 +38,14 @@ namespace ErrorReporting
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
+            // [START error_reporting_setup_dotnetcore_configure_services]
             services.AddGoogleExceptionLogging(options =>
             {
-                options.ProjectId = Configuration["ErrorReportingSettings:ProjectId"];
-                options.ServiceName = Configuration["ErrorReportingSettings:ServiceName"];
-                options.Version = Configuration["ErrorReportingSettings:Version"];
+                options.ProjectId = "YOUR-GOOGLE-PROJECT-ID";
+                options.ServiceName = "ShoppingCartService";
+                options.Version = "0.01";
             });
+            // [END error_reporting_setup_dotnetcore_configure_services]
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,8 +58,10 @@ namespace ErrorReporting
 
             app.UseStaticFiles();
 
+            // [START error_reporting_setup_dotnetcore_configure]
             // Use before handling any requests to ensure all unhandled exceptions are reported.
             app.UseGoogleExceptionLogging();
+            // [END error_reporting_setup_dotnetcore_configure]
 
             app.UseMvc(routes =>
             {

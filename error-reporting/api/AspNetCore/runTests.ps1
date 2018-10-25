@@ -15,7 +15,7 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
-BackupAndEdit-TextFile "appsettings.json" `
+BackupAndEdit-TextFile "Startup.cs" `
     @{"YOUR-GOOGLE-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {
 	dotnet build
