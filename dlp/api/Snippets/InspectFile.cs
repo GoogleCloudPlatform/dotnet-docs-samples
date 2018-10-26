@@ -29,11 +29,9 @@ class DlpInspectFile
     ///</summary>
     /// <param name="projectId">Your Google Cloud Project ID.</param>
     /// <param name="filePath">The path to the specified file to inspect.</param>
-    /// <param name="fileType">The type of the specifed file.</param>
     public IEnumerable<Finding> InspectFile(
         string projectId = "YOUR-PROJECT-ID",
-        string filePath = "path/to/image.png",
-        BytesType fileType = BytesType.ImagePng)
+        string filePath = "path/to/image.png")
     {
         // Instantiate a client.
         DlpServiceClient dlp = DlpServiceClient.Create();
@@ -54,7 +52,7 @@ class DlpInspectFile
                 ByteItem = new ByteContentItem()
                 {
                     Data = fileBytes,
-                    Type = fileType
+                    Type = BytesType.ImagePng
                 }
             },
             InspectConfig = new InspectConfig
