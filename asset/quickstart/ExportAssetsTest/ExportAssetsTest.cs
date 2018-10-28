@@ -22,7 +22,7 @@ using Xunit.Abstractions;
 
 namespace GoogleCloudSamples
 {
-    public class ExportAssetsTest
+    public class ExportAssetsTest: IClassFixture<RandomBucketFixture>, System.IDisposable
     {
         static readonly CommandLineRunner s_runner = new CommandLineRunner
         {
@@ -31,10 +31,14 @@ namespace GoogleCloudSamples
         };
         private readonly ITestOutputHelper _testOutput;
         private readonly StorageClient _storageClient = StorageClient.Create();
+        private readonly string _bucketName;
+        readonly BucketCollector _bucketCollector;
 
-        public ExportAssetsTest(ITestOutputHelper output)
+        public ExportAssetsTest(ITestOutputHelper output, RandomBucketFixture bucketFixture)
         {
             _testOutput = output;
+            _bucketName = bucketFixture.BucketName;
+            _bucketCollector = new BucketCollector(_bucketName);
         }
 
         [Fact]
@@ -42,53 +46,15 @@ namespace GoogleCloudSamples
         {
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             string bucketName = String.Format("{0}-for-assets", projectId);
-            if (CheckBucketExists(bucketName))
-            {
-                EmptyBucket(bucketName);
-            }
-            else
-            {
-                CreateBucket(projectId, bucketName);
-            }
-            var output = s_runner.Run();
+            var output = s_runner.Run(bucketName);
             _testOutput.WriteLine(output.Stdout);
             string expectedOutput = String.Format("\"outputConfig\": {{ \"gcsDestination\": {{ \"uri\": \"gs://{0}/my-assets.txt\" }} }}", bucketName);
             Assert.Contains(expectedOutput, output.Stdout);
         }
 
-        bool CheckBucketExists(string bucketName)
+        public void Dispose()
         {
-            try
-            {
-                Bucket bucket = _storageClient.GetBucket(bucketName, new GetBucketOptions());
-            }
-            catch (Google.GoogleApiException e) when (e.Error.Code == 404)
-            {
-                // Bucket not found.
-                return false;
-            }
-            return true;
-        }
-
-        void EmptyBucket(string bucketName)
-        {
-            foreach (var storageObject in _storageClient.ListObjects(bucketName))
-            {
-                _storageClient.DeleteObject(storageObject);
-            }
-        }
-
-        void CreateBucket(string projectId, string bucketName)
-        {
-            try
-            {
-                _storageClient.CreateBucket(projectId, bucketName);
-            }
-            catch (Google.GoogleApiException e) when (e.Error.Code == 409)
-            {
-                // Bucket already exists.
-                return;
-            }
+            ((IDisposable)_bucketCollector).Dispose();
         }
     }
 }
