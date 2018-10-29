@@ -41,6 +41,7 @@ $services = @"
 bigquery-json.googleapis.com
 bigtable.googleapis.com
 cloudapis.googleapis.com
+cloudasset.googleapis.com
 clouddebugger.googleapis.com
 clouderrorreporting.googleapis.com
 cloudiot.googleapis.com
