@@ -98,6 +98,7 @@ roles/monitoring.admin
 roles/pubsub.admin
 roles/resourcemanager.projectIamAdmin
 roles/storage.admin
+roles/viewer
 "@
 
 # Enabling services takes a while, so only enable the services that are not
