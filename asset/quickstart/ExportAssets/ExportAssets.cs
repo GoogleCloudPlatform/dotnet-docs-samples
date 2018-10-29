@@ -23,13 +23,8 @@ public class ExportAssets
 {
     public static void Main(string[] args)
     {
-        if (args.Length != 1)
-        {
-            Console.WriteLine($"Required parameters: <bucket-name>");
-            return;
-        }
-        string bucketName = args[0];
-        string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        string bucketName = "YOUR-BUCKET-NAME";
+        string projectId = "YOUR-GOOGLE-PROJECT-ID";
         string assetDumpFile = String.Format("gs://{0}/my-assets.txt", bucketName);
         AssetServiceClient client = AssetServiceClient.Create();
         ExportAssetsRequest request = new ExportAssetsRequest
