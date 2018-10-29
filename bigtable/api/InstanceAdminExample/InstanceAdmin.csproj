@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.2.1" />
-    <PackageReference Include="Google.Cloud.Bigtable.Admin.V2" Version="1.0.0-alpha04" />
-    <PackageReference Include="Google.Cloud.Bigtable.V2" Version="1.0.0-alpha05" />
+    <PackageReference Include="CommandLineParser" Version="2.3.0" />
+    <PackageReference Include="Google.Cloud.Bigtable.Admin.V2" Version="1.0.0-beta04" />
+    <PackageReference Include="Google.Cloud.Bigtable.V2" Version="1.0.0-beta04" />
   </ItemGroup>
 
   <ItemGroup>
