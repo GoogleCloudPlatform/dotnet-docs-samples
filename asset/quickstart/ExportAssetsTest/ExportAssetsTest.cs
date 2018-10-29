@@ -45,7 +45,7 @@ namespace GoogleCloudSamples
         public void TestExportAsests()
         {
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-	        Environment.SetEnvironmentVariable("AssetBucketName", _bucketName);
+            Environment.SetEnvironmentVariable("AssetBucketName", _bucketName);
             var output = s_runner.Run();
             _testOutput.WriteLine(output.Stdout);
             string expectedOutput = String.Format("\"outputConfig\": {{ \"gcsDestination\": {{ \"uri\": \"gs://{0}/my-assets.txt\" }} }}", _bucketName);
