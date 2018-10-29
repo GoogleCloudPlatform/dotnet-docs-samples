@@ -22,7 +22,7 @@ using Xunit.Abstractions;
 
 namespace GoogleCloudSamples
 {
-    public class ExportAssetsTest: IClassFixture<RandomBucketFixture>, System.IDisposable
+    public class ExportAssetsTest : IClassFixture<RandomBucketFixture>, System.IDisposable
     {
         static readonly CommandLineRunner s_runner = new CommandLineRunner
         {
