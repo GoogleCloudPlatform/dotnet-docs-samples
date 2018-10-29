@@ -73,6 +73,7 @@ vision.googleapis.com
 $roles = @"
 roles/bigquery.admin
 roles/bigtable.admin
+roles/cloudasset.viewer
 roles/clouddebugger.user
 roles/cloudiot.admin
 roles/cloudkms.admin
@@ -98,7 +99,6 @@ roles/monitoring.admin
 roles/pubsub.admin
 roles/resourcemanager.projectIamAdmin
 roles/storage.admin
-roles/viewer
 "@
 
 # Enabling services takes a while, so only enable the services that are not
