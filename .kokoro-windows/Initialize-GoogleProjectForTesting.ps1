@@ -41,6 +41,7 @@ $services = @"
 bigquery-json.googleapis.com
 bigtable.googleapis.com
 cloudapis.googleapis.com
+cloudasset.googleapis.com
 clouddebugger.googleapis.com
 clouderrorreporting.googleapis.com
 cloudiot.googleapis.com
@@ -107,9 +108,11 @@ $servicesToEnable = $services.Split() | Where-Object {-not $enabledServices.Cont
 if ($alreadyEnabledServices) {
     "Some services are already enabled:", $alreadyEnabledServices | Write-Host
 }
-if ($servicesToEnable) {
-    Write-Host "Enabling $servicesToEnable..."
-    gcloud services enable $servicesToEnable
+while ($servicesToEnable) {
+    $batch = $servicesToEnable | Select-Object -First 20
+    Write-Host "Enabling $batch..."
+    gcloud services enable $batch
+    $servicesToEnable = $servicesToEnable | Select-Object -Skip 20
 }
 
 function Bind($serviceAccountEmail, $role, $projectId) {
