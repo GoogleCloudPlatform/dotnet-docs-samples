@@ -43,6 +43,10 @@ namespace GoogleCloudSamples
             };
             robot.Eventually(() =>
             {
+                foreach (var obj in _storage.ListObjects(BucketName))
+                {
+                    _storage.DeleteObject(obj);
+                }
                 _storage.DeleteBucket(BucketName);
             });
         }

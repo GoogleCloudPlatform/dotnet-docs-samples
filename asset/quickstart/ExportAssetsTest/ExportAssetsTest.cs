@@ -22,7 +22,7 @@ using Xunit.Abstractions;
 
 namespace GoogleCloudSamples
 {
-    public class ExportAssetsTest : IClassFixture<RandomBucketFixture>, System.IDisposable
+    public class ExportAssetsTest : IClassFixture<RandomBucketFixture>
     {
         static readonly CommandLineRunner s_runner = new CommandLineRunner
         {
@@ -32,13 +32,10 @@ namespace GoogleCloudSamples
         private readonly ITestOutputHelper _testOutput;
         private readonly StorageClient _storageClient = StorageClient.Create();
         private readonly string _bucketName;
-        readonly BucketCollector _bucketCollector;
-
         public ExportAssetsTest(ITestOutputHelper output, RandomBucketFixture bucketFixture)
         {
             _testOutput = output;
             _bucketName = bucketFixture.BucketName;
-            _bucketCollector = new BucketCollector(_bucketName);
         }
 
         [Fact]
@@ -50,11 +47,6 @@ namespace GoogleCloudSamples
             _testOutput.WriteLine(output.Stdout);
             string expectedOutput = String.Format("\"outputConfig\": {{ \"gcsDestination\": {{ \"uri\": \"gs://{0}/my-assets.txt\" }} }}", _bucketName);
             Assert.Contains(expectedOutput, output.Stdout);
-        }
-
-        public void Dispose()
-        {
-            ((IDisposable)_bucketCollector).Dispose();
         }
     }
 }
