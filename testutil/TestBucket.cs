@@ -16,6 +16,7 @@ using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace GoogleCloudSamples
 {
@@ -36,19 +37,47 @@ namespace GoogleCloudSamples
 
         public void Dispose()
         {
-            var robot = new RetryRobot()
+            int retryDelayMs = 0;
+            for (int errorCount = 0; errorCount < 10; ++errorCount)
             {
-                MaxTryCount = 10,
-                ShouldRetry = (e) => true,
-            };
-            robot.Eventually(() =>
-            {
-                foreach (var obj in _storage.ListObjects(BucketName))
+                Thread.Sleep(retryDelayMs);
+                retryDelayMs = (retryDelayMs + 1000) * 2;
+                try
                 {
-                    _storage.DeleteObject(obj);
+                    var objects = _storage.ListObjects(BucketName);
                 }
-                _storage.DeleteBucket(BucketName);
-            });
+                catch (Google.GoogleApiException e)
+                when (e.Error.Code == 404)
+                {
+                    return;  // Bucket does not exist.  Ok.
+                }
+
+                try
+                {
+                    foreach (var obj in _storage.ListObjects(BucketName))
+                    {
+                        _storage.DeleteObject(obj);
+                    }
+                }
+                catch (Google.GoogleApiException)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    _storage.DeleteBucket(BucketName);
+                }
+                catch (Google.GoogleApiException e)
+                when (e.Error.Code == 404)
+                {
+                    return;  // Bucket does not exist.  Ok.
+                }
+                catch (Google.GoogleApiException)
+                {
+                    continue;
+                }
+            }
         }
 
         private static string RandomBucketName()
