@@ -14,6 +14,7 @@
  * the License.
  */
 
+using System.Linq;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -27,11 +28,15 @@ namespace GoogleCloudSamples
         };
 
         [Fact]
-        public void TestRunQuickStart()
+        public void TestRunSimpleApp()
         {
             var output = _simpleApp.Run();
             Assert.Equal(0, output.ExitCode);
-            var outputParts = output.Stdout.Split(new[] { ' ' });
+            var outputLines = output.Stdout.Split(new [] { '\n' });
+            string rowPrefix = "https://stackoverflow.com/questions/";
+            int rowCount = outputLines.Where(
+                line => line.StartsWith(rowPrefix)).Count();
+            Assert.Equal(10, rowCount);
         }
     }
 }

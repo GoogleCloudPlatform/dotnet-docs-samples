@@ -3,10 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.3.0-beta04" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.3.0-beta05" />
     <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="xunit" Version="2.3.1" />

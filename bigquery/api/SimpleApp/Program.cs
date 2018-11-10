@@ -22,9 +22,9 @@ using Google.Cloud.BigQuery.V2;
 
 namespace GoogleCloudSamples
 {
-    public class BigquerySample
+    public class Program
     {
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
             string projectId = "YOUR-PROJECT-ID";
             // [START bigquery_simple_app_client]
