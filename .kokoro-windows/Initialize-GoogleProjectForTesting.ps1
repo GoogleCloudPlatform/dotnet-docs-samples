@@ -41,6 +41,7 @@ $services = @"
 bigquery-json.googleapis.com
 bigtable.googleapis.com
 cloudapis.googleapis.com
+cloudasset.googleapis.com
 clouddebugger.googleapis.com
 clouderrorreporting.googleapis.com
 cloudiot.googleapis.com
@@ -72,6 +73,7 @@ vision.googleapis.com
 $roles = @"
 roles/bigquery.admin
 roles/bigtable.admin
+roles/cloudasset.viewer
 roles/clouddebugger.user
 roles/cloudiot.admin
 roles/cloudkms.admin
@@ -101,9 +103,10 @@ roles/storage.admin
 
 # Enabling services takes a while, so only enable the services that are not
 # already enabled.
-$enabledServices = (gcloud services list --enabled --format json | convertfrom-json).serviceName
+$enabledServices = (gcloud services list --enabled --format json | convertfrom-json).config.name
 $alreadyEnabledServices = $enabledServices | Where-Object {$enabledServices.Contains($_)}
-$servicesToEnable = $services.Split() | Where-Object {-not $enabledServices.Contains($_)}
+$servicesToEnable = $services.Split() | Where-Object {-not $enabledServices.Contains($_)} `
+    | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
 if ($alreadyEnabledServices) {
     "Some services are already enabled:", $alreadyEnabledServices | Write-Host
 }

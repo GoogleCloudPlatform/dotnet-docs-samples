@@ -12,10 +12,13 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Api.Gax;
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace GoogleCloudSamples
 {
@@ -36,15 +39,50 @@ namespace GoogleCloudSamples
 
         public void Dispose()
         {
-            var robot = new RetryRobot()
+            int retryDelayMs = 0;
+            for (int errorCount = 0; errorCount < 4; ++errorCount)
             {
-                MaxTryCount = 10,
-                ShouldRetry = (e) => true,
-            };
-            robot.Eventually(() =>
-            {
-                _storage.DeleteBucket(BucketName);
-            });
+                Thread.Sleep(retryDelayMs);
+                retryDelayMs = (retryDelayMs + 1000) * 2;
+                List<Google.Apis.Storage.v1.Data.Object> objectsInBucket =
+                    new List<Google.Apis.Storage.v1.Data.Object>();
+                try
+                {
+                    objectsInBucket = _storage.ListObjects(BucketName).ToList();
+                }
+                catch (Google.GoogleApiException e)
+                when (e.Error.Code == 404)
+                {
+                    // Bucket does not exist or is empty.
+                }
+
+                // Try to delete each object in the bucket.
+                foreach (var obj in objectsInBucket)
+                {
+                    try
+                    {
+                        _storage.DeleteObject(obj);
+                    }
+                    catch (Google.GoogleApiException)
+                    {
+                        continue;
+                    }
+                }
+
+                try
+                {
+                    _storage.DeleteBucket(BucketName);
+                }
+                catch (Google.GoogleApiException e)
+                when (e.Error.Code == 404)
+                {
+                    return;  // Bucket does not exist.  Ok.
+                }
+                catch (Google.GoogleApiException)
+                {
+                    continue;
+                }
+            }
         }
 
         private static string RandomBucketName()
