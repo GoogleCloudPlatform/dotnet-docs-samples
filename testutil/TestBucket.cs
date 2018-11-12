@@ -17,6 +17,7 @@ using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace GoogleCloudSamples
@@ -39,20 +40,20 @@ namespace GoogleCloudSamples
         public void Dispose()
         {
             int retryDelayMs = 0;
-            for (int errorCount = 0; errorCount < 10; ++errorCount)
+            for (int errorCount = 0; errorCount < 4; ++errorCount)
             {
                 Thread.Sleep(retryDelayMs);
                 retryDelayMs = (retryDelayMs + 1000) * 2;
-                PagedEnumerable<Google.Apis.Storage.v1.Data.Objects,
-                    Google.Apis.Storage.v1.Data.Object> objectsInBucket;
+                List<Google.Apis.Storage.v1.Data.Object> objectsInBucket =
+                    new List<Google.Apis.Storage.v1.Data.Object>();
                 try
                 {
-                    objectsInBucket = _storage.ListObjects(BucketName);
+                    objectsInBucket = _storage.ListObjects(BucketName).ToList();
                 }
                 catch (Google.GoogleApiException e)
                 when (e.Error.Code == 404)
                 {
-                    return;  // Bucket does not exist.  Ok.
+                    // Bucket does not exist or is empty.
                 }
 
                 // Try to delete each object in the bucket.
