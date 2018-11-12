@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Api.Gax;
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
@@ -42,9 +43,11 @@ namespace GoogleCloudSamples
             {
                 Thread.Sleep(retryDelayMs);
                 retryDelayMs = (retryDelayMs + 1000) * 2;
+                PagedEnumerable<Google.Apis.Storage.v1.Data.Objects,
+                    Google.Apis.Storage.v1.Data.Object> objectsInBucket;
                 try
                 {
-                    var objects = _storage.ListObjects(BucketName);
+                    objectsInBucket = _storage.ListObjects(BucketName);
                 }
                 catch (Google.GoogleApiException e)
                 when (e.Error.Code == 404)
@@ -52,16 +55,17 @@ namespace GoogleCloudSamples
                     return;  // Bucket does not exist.  Ok.
                 }
 
-                try
+                // Try to delete each object in the bucket.
+                foreach (var obj in objectsInBucket)
                 {
-                    foreach (var obj in _storage.ListObjects(BucketName))
+                    try
                     {
                         _storage.DeleteObject(obj);
                     }
-                }
-                catch (Google.GoogleApiException)
-                {
-                    continue;
+                    catch (Google.GoogleApiException)
+                    {
+                        continue;
+                    }
                 }
 
                 try
