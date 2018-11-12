@@ -12,18 +12,27 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START bigquery_create_dataset]
+// [START bigquery_create_table]
 using Google.Cloud.BigQuery.V2;
 using System;
 
-public class BigQueryCreateDataset
+public class BigQueryCreateTable
 {
-    public BigQueryDataset CreateDataset(
-        string projectId = "your-project-id"
+    public BigQueryTable CreateTable(
+        string projectId = "your-project-id",
+        string datasetId = "your_dataset_id"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        return client.CreateDataset(datasetId: "your_new_dataset_id");
+        var dataset = client.GetDataset(datasetId);
+        // Create schema for new table.
+        var schema = new TableSchemaBuilder
+        {
+            { "title", BigQueryDbType.String },
+            { "unique_words", BigQueryDbType.Int64 }
+        }.Build();
+        // Create the table.
+        return dataset.CreateTable(tableId: "your_table_id", schema: schema);
     }
 }
-// [END bigquery_create_dataset]
+// [END bigquery_create_table]

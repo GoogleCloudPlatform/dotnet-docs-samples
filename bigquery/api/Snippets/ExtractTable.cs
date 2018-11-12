@@ -12,18 +12,26 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START bigquery_create_dataset]
+// [START bigquery_extract_table]
 using Google.Cloud.BigQuery.V2;
 using System;
 
-public class BigQueryCreateDataset
+public class BigQueryExtractTable
 {
-    public BigQueryDataset CreateDataset(
-        string projectId = "your-project-id"
-    )
+    public void ExtractTable(
+        string projectId = "your-project-id",
+        string bucketName = "your-bucket-name")
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        return client.CreateDataset(datasetId: "your_new_dataset_id");
+        string destinationUri = $"gs://{bucketName}/shakespeare.csv";
+        BigQueryJob job = client.CreateExtractJob(
+            projectId: "bigquery-public-data",
+            datasetId: "samples",
+            tableId: "shakespeare",
+            destinationUri: destinationUri
+        );
+        job.PollUntilCompleted();
+        Console.Write($"Exported table to {destinationUri}.");
     }
 }
-// [END bigquery_create_dataset]
+// [END bigquery_extract_table]

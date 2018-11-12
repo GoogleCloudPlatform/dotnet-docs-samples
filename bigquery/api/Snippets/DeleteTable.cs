@@ -12,18 +12,20 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START bigquery_create_dataset]
+// [START bigquery_delete_table]
 using Google.Cloud.BigQuery.V2;
 using System;
 
-public class BigQueryCreateDataset
+public class BigQueryDeleteTable
 {
-    public BigQueryDataset CreateDataset(
-        string projectId = "your-project-id"
+    public void DeleteTable(
+        string projectId = "your-project-id",
+        string datasetId = "your_dataset_id",
+        string tableId = "your_table_id"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        return client.CreateDataset(datasetId: "your_new_dataset_id");
+        client.DeleteTable(datasetId, tableId);
     }
 }
-// [END bigquery_create_dataset]
+// [END bigquery_delete_table]

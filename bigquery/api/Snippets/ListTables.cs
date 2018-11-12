@@ -12,18 +12,22 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START bigquery_create_dataset]
+// [START bigquery_list_tables]
 using Google.Cloud.BigQuery.V2;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
-public class BigQueryCreateDataset
+public class BigQueryListTables
 {
-    public BigQueryDataset CreateDataset(
-        string projectId = "your-project-id"
+    public List<BigQueryTable> ListTables(
+        string projectId = "your-project-id",
+        string datasetId = "your_dataset_id"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        return client.CreateDataset(datasetId: "your_new_dataset_id");
+        List<BigQueryTable> tables = client.ListTables(datasetId).ToList();
+        return tables;
     }
 }
-// [END bigquery_create_dataset]
+// [END bigquery_list_tables]

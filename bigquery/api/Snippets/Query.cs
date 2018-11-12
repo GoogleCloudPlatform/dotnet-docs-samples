@@ -12,18 +12,32 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START bigquery_create_dataset]
+// [START bigquery_query]
 using Google.Cloud.BigQuery.V2;
 using System;
 
-public class BigQueryCreateDataset
+public class BigQueryQuery
 {
-    public BigQueryDataset CreateDataset(
+    public BigQueryResults Query(
         string projectId = "your-project-id"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        return client.CreateDataset(datasetId: "your_new_dataset_id");
+        string query = @"
+            SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013`
+            WHERE state = 'TX'
+            LIMIT 100";
+        BigQueryJob job = client.CreateQueryJob(
+            sql: query,
+            parameters: null,
+            options: new QueryOptions { UseQueryCache = false });
+
+        // Wait for the job to complete.
+        job.PollUntilCompleted();
+
+        // Then we can fetch the results, either via the job or by accessing
+        // the destination table.
+        return client.GetQueryResults(job.Reference.JobId);
     }
 }
-// [END bigquery_create_dataset]
+// [END bigquery_query]
