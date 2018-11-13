@@ -420,8 +420,12 @@ namespace GoogleCloudSamples
             // Make sure the file doesn't exist until we move it there.
             var got = Run("get-metadata", _bucketName, "ByeMove.txt");
             Assert.Equal(404, got.ExitCode);
-            // Now move it there.
-            AssertSucceeded(Run("move", _bucketName, "HelloMove.txt", Collect("ByeMove.txt")));
+            Eventually(() =>
+            {
+                // Now move it there.
+                AssertSucceeded(Run("move", _bucketName, "HelloMove.txt",
+                    Collect("ByeMove.txt")));
+            });
             // If we try to clean up "HelloMove.txt", it will fail because it moved.
             _garbage[_bucketName].Remove("HelloMove.txt");
             AssertSucceeded(Run("get-metadata", _bucketName, "ByeMove.txt"));
