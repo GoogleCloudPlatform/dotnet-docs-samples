@@ -25,7 +25,8 @@ public class BigQueryCopyTable
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        TableReference sourceTable = new TableReference() {
+        TableReference sourceTable = new TableReference()
+        {
             TableId = "shakespeare",
             DatasetId = "samples",
             ProjectId = "bigquery-public-data"

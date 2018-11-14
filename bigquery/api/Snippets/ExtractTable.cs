@@ -30,7 +30,7 @@ public class BigQueryExtractTable
             tableId: "shakespeare",
             destinationUri: destinationUri
         );
-        job.PollUntilCompleted();
+        job.PollUntilCompleted();  // Waits for the job to complete.
         Console.Write($"Exported table to {destinationUri}.");
     }
 }

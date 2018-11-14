@@ -25,19 +25,19 @@ public class BigQueryTableInsertRows
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        // The insert ID is optional, but can avoid duplicate data
-        // when retrying inserts.
-        BigQueryInsertRow row1 = new BigQueryInsertRow("row1")
+        BigQueryInsertRow[] rows = new BigQueryInsertRow[]
         {
-            { "name", "Washington" },
-            { "post_abbr", "WA" }
+            // The insert ID is optional, but can avoid duplicate data
+            // when retrying inserts.
+            new BigQueryInsertRow(insertId: "row1") {
+                { "name", "Washington" },
+                { "post_abbr", "WA" }
+            },
+            new BigQueryInsertRow(insertId: "row2") {
+                { "name", "Colorado" },
+                { "post_abbr", "CO" }
+            }
         };
-        BigQueryInsertRow row2 = new BigQueryInsertRow("row2")
-        {
-            { "name", "Colorado" },
-            { "post_abbr", "CO" }
-        };
-        BigQueryInsertRow[] rows = new BigQueryInsertRow[] { row1, row2 };
         client.InsertRows(datasetId, tableId, rows);
     }
 }

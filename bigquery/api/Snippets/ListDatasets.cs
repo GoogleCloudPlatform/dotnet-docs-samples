@@ -20,13 +20,25 @@ using System.Linq;
 
 public class BigQueryListDatasets
 {
-    public List<BigQueryDataset> ListDatasets(
+    public void ListDatasets(
         string projectId = "your-project-id"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        var datasets = client.ListDatasets().ToList();
-        return datasets;
+        // Retrieve list of datasets in project
+        List<BigQueryDataset> datasets = client.ListDatasets().ToList();
+        // Display the results
+        if (datasets.Count > 0)
+        {
+            Console.WriteLine($"Datasets in project {projectId}:");
+            foreach (var dataset in datasets)
+            {
+                Console.WriteLine($"\t{dataset.Reference.DatasetId}");
+            }
+        }
+        else {
+            Console.WriteLine($"{projectId} does not contain any datasets.");
+        }
     }
 }
 // [END bigquery_list_datasets]

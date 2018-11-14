@@ -18,7 +18,7 @@ using System;
 
 public class BigQueryQueryLegacy
 {
-    public BigQueryResults QueryLegacy(
+    public void QueryLegacy(
         string projectId = "your-project-id"
     )
     {
@@ -31,13 +31,13 @@ public class BigQueryQueryLegacy
             sql: query,
             parameters: null,
             options: new QueryOptions { UseLegacySql = true });
-
         // Wait for the job to complete.
         job.PollUntilCompleted();
-
-        // Then we can fetch the results, either via the job or by accessing
-        // the destination table.
-        return client.GetQueryResults(job.Reference.JobId);
+        // Display the results
+        foreach (BigQueryRow row in client.GetQueryResults(job.Reference))
+        {
+            Console.WriteLine($"{row["name"]}");
+        }
     }
 }
 // [END bigquery_query_legacy]

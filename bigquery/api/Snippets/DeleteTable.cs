@@ -26,6 +26,7 @@ public class BigQueryDeleteTable
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
         client.DeleteTable(datasetId, tableId);
+        Console.WriteLine($"Table {tableId} deleted.");
     }
 }
 // [END bigquery_delete_table]

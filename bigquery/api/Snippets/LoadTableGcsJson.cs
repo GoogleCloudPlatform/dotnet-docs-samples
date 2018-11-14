@@ -31,16 +31,22 @@ public class BigQueryLoadTableGcsJson
             { "name", BigQueryDbType.String },
             { "post_abbr", BigQueryDbType.String }
         }.Build();
+        TableReference destinationTableRef = dataset.GetTableReference(
+            tableId: "us_states");
+        // Create job configuration
         var jobOptions = new CreateLoadJobOptions()
         {
             SourceFormat = FileFormat.NewlineDelimitedJson
         };
-        TableReference destinationTable = dataset.GetTableReference(
-            tableId: "us_states");
+        // Create and run job
         BigQueryJob loadJob = client.CreateLoadJob(
-            sourceUri: gcsURI, destination: destinationTable,
+            sourceUri: gcsURI, destination: destinationTableRef,
             schema: schema, options: jobOptions);
-        loadJob.PollUntilCompleted();
+        loadJob.PollUntilCompleted();  // Waits for the job to complete.
+        // Display the number of rows uploaded
+        BigQueryTable table = client.GetTable(destinationTableRef);
+        Console.WriteLine(
+            $"Loaded {table.Resource.NumRows} rows to {table.FullyQualifiedId}");
     }
 }
 // [END bigquery_load_table_gcs_json]

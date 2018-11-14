@@ -18,7 +18,7 @@ using System;
 
 public class BigQueryLoadTableGcsCsv
 {
-    public BigQueryTable LoadTableGcsCsv(
+    public void LoadTableGcsCsv(
         string projectId = "your-project-id",
         string datasetId = "your_dataset_id"
     )
@@ -30,19 +30,24 @@ public class BigQueryLoadTableGcsCsv
             { "name", BigQueryDbType.String },
             { "post_abbr", BigQueryDbType.String }
         }.Build();
+        var destinationTableRef = dataset.GetTableReference(
+            tableId: "us_states");
+        // Create job configuration
         var jobOptions = new CreateLoadJobOptions()
         {
             // The source format defaults to CSV; line below is optional.
             SourceFormat = FileFormat.Csv,
             SkipLeadingRows = 1
         };
-        var destinationTable = dataset.GetTableReference(
-            tableId: "us_states");
+        // Create and run job
         var loadJob = client.CreateLoadJob(
-            sourceUri: gcsURI, destination: destinationTable,
+            sourceUri: gcsURI, destination: destinationTableRef,
             schema: schema, options: jobOptions);
-        loadJob.PollUntilCompleted();
-        return client.GetTable(destinationTable);
+        loadJob.PollUntilCompleted();  // Waits for the job to complete.
+        // Display the number of rows uploaded
+        BigQueryTable table = client.GetTable(destinationTableRef);
+        Console.WriteLine(
+            $"Loaded {table.Resource.NumRows} rows to {table.FullyQualifiedId}");
     }
 }
 // [END bigquery_load_table_gcs_csv]

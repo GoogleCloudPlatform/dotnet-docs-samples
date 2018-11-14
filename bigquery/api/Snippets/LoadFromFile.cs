@@ -27,15 +27,21 @@ public class BigQueryLoadFromFile
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
+        // Create job configuration
         var uploadCsvOptions = new UploadCsvOptions(){
             SkipLeadingRows = 1,  // Skips the file headers
             Autodetect = true
         };
         using (FileStream stream = File.Open(filePath, FileMode.Open))
         {
+            // Create and run job
             BigQueryJob job = client.UploadCsv(
                 datasetId, tableId, null, stream, uploadCsvOptions);
             job.PollUntilCompleted();  // Waits for the job to complete.
+            // Display the number of rows uploaded
+            BigQueryTable table = client.GetTable(datasetId, tableId);
+            Console.WriteLine(
+                $"Loaded {table.Resource.NumRows} rows to {table.FullyQualifiedId}");
         }
     }
 }

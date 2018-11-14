@@ -20,11 +20,20 @@ public class BigQueryDeleteDataset
 {
     public void DeleteDataset(
         string projectId = "your-project-id",
-        string datasetId = "your_dataset_id"
+        string datasetId1 = "your_dataset_without_tables",
+        string datasetId2 = "your_dataset_with_tables"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        client.DeleteDataset(datasetId);
+        // Delete a dataset that does not contain any tables
+        client.DeleteDataset(datasetId: datasetId1);
+        Console.WriteLine($"Dataset {datasetId1} deleted.");
+        // Use the DeleteDatasetOptions to delete a dataset and its contents
+        client.DeleteDataset(
+            datasetId: datasetId2,
+            options: new DeleteDatasetOptions() { DeleteContents = true }
+        );
+        Console.WriteLine($"Dataset {datasetId2} deleted.");
     }
 }
 // [END bigquery_delete_dataset]

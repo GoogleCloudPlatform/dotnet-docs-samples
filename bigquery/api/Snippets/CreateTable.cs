@@ -28,10 +28,10 @@ public class BigQueryCreateTable
         // Create schema for new table.
         var schema = new TableSchemaBuilder
         {
-            { "title", BigQueryDbType.String },
-            { "unique_words", BigQueryDbType.Int64 }
+            { "full_name", BigQueryDbType.String },
+            { "age", BigQueryDbType.Int64 }
         }.Build();
-        // Create the table.
+        // Create the table
         return dataset.CreateTable(tableId: "your_table_id", schema: schema);
     }
 }

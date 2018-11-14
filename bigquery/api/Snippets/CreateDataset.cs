@@ -19,11 +19,19 @@ using System;
 public class BigQueryCreateDataset
 {
     public BigQueryDataset CreateDataset(
-        string projectId = "your-project-id"
+        string projectId = "your-project-id",
+        string location = "US"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        return client.CreateDataset(datasetId: "your_new_dataset_id");
+        var createDatasetOptions = new CreateDatasetOptions()
+        {
+            // Specify the geographic location where the dataset should reside.
+            Location = location
+        };
+        // Create the dataset
+        return client.CreateDataset(
+            datasetId: "your_new_dataset_id", options: createDatasetOptions);
     }
 }
 // [END bigquery_create_dataset]

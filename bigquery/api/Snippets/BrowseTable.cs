@@ -22,7 +22,7 @@ using System.Linq;
 
 public class BigQueryBrowseTable
 {
-    public int BrowseTable(
+    public void BrowseTable(
         string projectId = "your-project-id"
     )
     {
@@ -37,13 +37,11 @@ public class BigQueryBrowseTable
             tableReference: tableReference,
             schema: null
         );
-        List<BigQueryRow> rows = result.ToList();
-        int recordCount = rows.Count();
-        // Print row data for the first 10 rows
-        for (int i = 0; i < 10 && i < recordCount; i++){
-            Console.WriteLine($"{rows[i]["corpus"]}: {rows[i]["word_count"]}");
+        // Print the first 10 rows
+        foreach (BigQueryRow row in result.Take(10))
+        {
+            Console.WriteLine($"{row["corpus"]}: {row["word_count"]}");
         }
-        return recordCount;
     }
 }
 // [END bigquery_browse_table]

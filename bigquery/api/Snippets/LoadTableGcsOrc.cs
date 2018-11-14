@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_load_table_gcs_orc]
+using Google.Apis.Bigquery.v2.Data;
 using Google.Cloud.BigQuery.V2;
 using System;
 
@@ -26,17 +27,27 @@ public class BigQueryLoadTableGcsOrc
         BigQueryClient client = BigQueryClient.Create(projectId);
         var gcsURI = "gs://cloud-samples-data/bigquery/us-states/us-states.orc";
         var dataset = client.GetDataset(datasetId);
+        TableReference destinationTableRef = dataset.GetTableReference(
+            tableId: "us_states");
+        // Create job configuration
         var jobOptions = new CreateLoadJobOptions()
         {
             SourceFormat = FileFormat.Orc
         };
-        // Pass null as the schema because the schema is inferred when
-        // loading Orc data
+        // Create and run job
         var loadJob = client.CreateLoadJob(
             sourceUri: gcsURI,
-            destination: dataset.GetTableReference(tableId: "us_states"),
-            schema: null, options: jobOptions);
-        loadJob.PollUntilCompleted();
+            destination: destinationTableRef,
+            // Pass null as the schema because the schema is inferred when
+            // loading Orc data
+            schema: null,
+            options: jobOptions
+        );
+        loadJob.PollUntilCompleted();  // Waits for the job to complete.
+        // Display the number of rows uploaded
+        BigQueryTable table = client.GetTable(destinationTableRef);
+        Console.WriteLine(
+            $"Loaded {table.Resource.NumRows} rows to {table.FullyQualifiedId}");
     }
 }
 // [END bigquery_load_table_gcs_orc]

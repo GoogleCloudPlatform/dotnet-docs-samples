@@ -18,7 +18,7 @@ using System;
 
 public class BigQueryQuery
 {
-    public BigQueryResults Query(
+    public void Query(
         string projectId = "your-project-id"
     )
     {
@@ -31,13 +31,13 @@ public class BigQueryQuery
             sql: query,
             parameters: null,
             options: new QueryOptions { UseQueryCache = false });
-
         // Wait for the job to complete.
         job.PollUntilCompleted();
-
-        // Then we can fetch the results, either via the job or by accessing
-        // the destination table.
-        return client.GetQueryResults(job.Reference.JobId);
+        // Display the results
+        foreach (BigQueryRow row in client.GetQueryResults(job.Reference))
+        {
+            Console.WriteLine($"{row["name"]}");
+        }
     }
 }
 // [END bigquery_query]

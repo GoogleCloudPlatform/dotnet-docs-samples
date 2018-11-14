@@ -20,14 +20,26 @@ using System.Linq;
 
 public class BigQueryListTables
 {
-    public List<BigQueryTable> ListTables(
+    public void ListTables(
         string projectId = "your-project-id",
         string datasetId = "your_dataset_id"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
+        // Retrieve list of tables in the dataset
         List<BigQueryTable> tables = client.ListTables(datasetId).ToList();
-        return tables;
+        // Display the results
+        if (tables.Count > 0)
+        {
+            Console.WriteLine($"Tables in dataset {datasetId}:");
+            foreach (var table in tables)
+            {
+                Console.WriteLine($"\t{table.Reference.TableId}");
+            }
+        }
+        else {
+            Console.WriteLine($"{datasetId} does not contain any tables.");
+        }
     }
 }
 // [END bigquery_list_tables]
