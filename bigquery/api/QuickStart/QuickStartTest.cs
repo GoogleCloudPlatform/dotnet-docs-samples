@@ -30,7 +30,7 @@ namespace GoogleCloudSamples
 
         public QuickStartTest()
         {
-            _projectId = "ajhamilton-scratch";//Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _client = BigQueryClient.Create(_projectId);
         }
         readonly CommandLineRunner _quickStart = new CommandLineRunner()
