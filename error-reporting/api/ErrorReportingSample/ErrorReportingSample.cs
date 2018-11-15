@@ -32,6 +32,7 @@ using static Google.Apis.Clouderrorreporting.v1beta1.ProjectsResource.EventsReso
 namespace GoogleCloudSamples
 {
     // [START example]
+    // [START error_reporting_quickstart]
     public class ErrorReportingSample
     {
         public static void Main(string[] args)
@@ -108,5 +109,6 @@ namespace GoogleCloudSamples
             request.Execute();
         }
     }
+    // [END error_reporting_quickstart]
     // [END example]
 }
