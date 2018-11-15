@@ -32,7 +32,7 @@ namespace GoogleCloudSamples
         {
             var output = _simpleApp.Run();
             Assert.Equal(0, output.ExitCode);
-            var outputLines = output.Stdout.Split(new [] { '\n' });
+            var outputLines = output.Stdout.Split(new[] { '\n' });
             string rowPrefix = "https://stackoverflow.com/questions/";
             int rowCount = outputLines.Where(
                 line => line.StartsWith(rowPrefix)).Count();
