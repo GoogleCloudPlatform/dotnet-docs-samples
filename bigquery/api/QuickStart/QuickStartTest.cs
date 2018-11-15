@@ -26,7 +26,7 @@ namespace GoogleCloudSamples
     {
         private readonly BigQueryClient _client;
         private readonly string _projectId;
-        List<string> tempDatasetIds = new List<string>();
+        readonly List<string> _tempDatasetIds = new List<string>();
 
         public QuickStartTest()
         {
@@ -44,7 +44,7 @@ namespace GoogleCloudSamples
         {
             string expectedOutputFirstWord = "Dataset";
             string expectedOutputLastWord = "created.";
-            tempDatasetIds.Add("my_new_dataset");
+            _tempDatasetIds.Add("my_new_dataset");
             var output = _quickStart.Run();
             Assert.Equal(0, output.ExitCode);
             var outputParts = output.Stdout.Split(new[] { ' ' });
@@ -54,7 +54,8 @@ namespace GoogleCloudSamples
 
         public void Dispose()
         {
-            foreach (string datasetId in tempDatasetIds) {
+            foreach (string datasetId in _tempDatasetIds)
+            {
                 _client.DeleteDataset(
                     datasetId,
                     new DeleteDatasetOptions() { DeleteContents = true }
