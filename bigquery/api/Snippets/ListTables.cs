@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_list_tables]
+
 using Google.Cloud.BigQuery.V2;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,8 @@ public class BigQueryListTables
                 Console.WriteLine($"\t{table.Reference.TableId}");
             }
         }
-        else {
+        else
+        {
             Console.WriteLine($"{datasetId} does not contain any tables.");
         }
     }

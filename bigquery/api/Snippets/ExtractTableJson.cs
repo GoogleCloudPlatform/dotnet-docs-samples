@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_extract_table_json]
+
 using Google.Cloud.BigQuery.V2;
 using System;
 
@@ -24,7 +25,7 @@ public class BigQueryExtractTableJson
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
         string destinationUri = $"gs://{bucketName}/shakespeare.json";
-        var jobOptions = new CreateExtractJobOptions ()
+        var jobOptions = new CreateExtractJobOptions()
         {
             DestinationFormat = FileFormat.NewlineDelimitedJson
         };

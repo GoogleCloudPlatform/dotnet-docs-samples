@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_extract_table]
+
 using Google.Cloud.BigQuery.V2;
 using System;
 

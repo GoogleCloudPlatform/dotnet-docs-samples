@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_load_from_file]
+
 using Google.Cloud.BigQuery.V2;
 using System;
 using System.IO;
@@ -28,7 +29,8 @@ public class BigQueryLoadFromFile
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
         // Create job configuration
-        var uploadCsvOptions = new UploadCsvOptions(){
+        var uploadCsvOptions = new UploadCsvOptions()
+        {
             SkipLeadingRows = 1,  // Skips the file headers
             Autodetect = true
         };

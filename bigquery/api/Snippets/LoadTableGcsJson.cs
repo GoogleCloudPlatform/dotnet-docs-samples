@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_load_table_gcs_json]
+
 using Google.Apis.Bigquery.v2.Data;
 using Google.Cloud.BigQuery.V2;
 using System;

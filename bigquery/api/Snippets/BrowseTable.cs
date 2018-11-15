@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_browse_table]
+
 using Google.Api.Gax;
 using Google.Apis.Bigquery.v2.Data;
 using Google.Cloud.BigQuery.V2;
@@ -27,7 +28,8 @@ public class BigQueryBrowseTable
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        TableReference tableReference = new TableReference() {
+        TableReference tableReference = new TableReference()
+        {
             TableId = "shakespeare",
             DatasetId = "samples",
             ProjectId = "bigquery-public-data"

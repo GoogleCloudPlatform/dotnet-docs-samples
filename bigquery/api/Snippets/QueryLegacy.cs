@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_query_legacy]
+
 using Google.Cloud.BigQuery.V2;
 using System;
 

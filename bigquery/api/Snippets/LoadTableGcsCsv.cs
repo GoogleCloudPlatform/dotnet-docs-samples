@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_load_table_gcs_csv]
+
 using Google.Cloud.BigQuery.V2;
 using System;
 

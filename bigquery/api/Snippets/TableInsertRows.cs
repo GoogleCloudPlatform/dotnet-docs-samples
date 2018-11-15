@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_table_insert_rows]
+
 using Google.Cloud.BigQuery.V2;
 using System;
 

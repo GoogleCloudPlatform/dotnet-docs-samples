@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_copy_table]
+
 using Google.Apis.Bigquery.v2.Data;
 using Google.Cloud.BigQuery.V2;
 using System;

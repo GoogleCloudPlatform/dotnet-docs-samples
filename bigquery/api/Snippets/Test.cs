@@ -28,11 +28,11 @@ public class BigQueryTest : IDisposable
 {
     private readonly string _projectId;
     private readonly BigQueryClient _client;
-    List<BigQueryDataset> tempDatasets = new List<BigQueryDataset>();
+    readonly List<BigQueryDataset> _tempDatasets = new List<BigQueryDataset>();
     readonly StorageClient _storage;
     readonly string _bucketName;
-    TextWriter consoleOut = Console.Out;
-    StringWriter stringOut;
+    readonly TextWriter _consoleOut = Console.Out;
+    readonly StringWriter _stringOut;
 
     public BigQueryTest()
     {
@@ -41,8 +41,8 @@ public class BigQueryTest : IDisposable
         _storage = StorageClient.Create();
         _bucketName = TestUtil.RandomName();
         _storage.CreateBucket(_projectId, _bucketName);
-        stringOut = new StringWriter();
-        Console.SetOut(stringOut);
+        _stringOut = new StringWriter();
+        Console.SetOut(_stringOut);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class BigQueryTest : IDisposable
     {
         var snippet = new BigQueryBrowseTable();
         snippet.BrowseTable(_projectId);
-        var outputLines = stringOut.ToString().Trim().Split(new [] { '\n' });
+        var outputLines = _stringOut.ToString().Trim().Split(new[] { '\n' });
         Assert.Equal(10, outputLines.Count());
     }
 
@@ -92,7 +92,7 @@ public class BigQueryTest : IDisposable
         _client.CreateDataset(datasetId2);
         CreateTempEmptyTable(datasetId2);
         snippet.DeleteDataset(_projectId, datasetId1, datasetId2);
-        var output = stringOut.ToString();
+        var output = _stringOut.ToString();
         Assert.Contains($"{datasetId1} deleted", output);
         Assert.Contains($"{datasetId2} deleted", output);
     }
@@ -105,7 +105,7 @@ public class BigQueryTest : IDisposable
         string tableId = TestUtil.RandomName();
         _client.CreateTable(datasetId, tableId, null);
         snippet.DeleteTable(_projectId, datasetId, tableId);
-        var output = stringOut.ToString();
+        var output = _stringOut.ToString();
         Assert.Contains($"{tableId} deleted", output);
     }
 
@@ -134,7 +134,7 @@ public class BigQueryTest : IDisposable
         var datasetId1 = CreateTempDataset();
         var datasetId2 = CreateTempDataset();
         snippet.ListDatasets(_projectId);
-        var output = stringOut.ToString();
+        var output = _stringOut.ToString();
         Assert.Contains($"{datasetId1}", output);
         Assert.Contains($"{datasetId2}", output);
     }
@@ -147,7 +147,7 @@ public class BigQueryTest : IDisposable
         var tableId1 = CreateTempEmptyTable(datasetId);
         var tableId2 = CreateTempEmptyTable(datasetId);
         snippet.ListTables(_projectId, datasetId);
-        var output = stringOut.ToString();
+        var output = _stringOut.ToString();
         Assert.Contains($"{tableId1}", output);
         Assert.Contains($"{tableId2}", output);
     }
@@ -160,7 +160,7 @@ public class BigQueryTest : IDisposable
         var tableId = CreateTempEmptyTable(datasetId);
         string filePath = Path.Combine("data", "sample.csv");
         snippet.LoadFromFile(_projectId, datasetId, tableId, filePath);
-        var output = stringOut.ToString();
+        var output = _stringOut.ToString();
         long numRows = Convert.ToInt64(Regex.Match(output, @"\d+").Value);
         Assert.Equal(4, numRows);
     }
@@ -171,7 +171,7 @@ public class BigQueryTest : IDisposable
         var snippet = new BigQueryLoadTableGcsCsv();
         var datasetId = CreateTempDataset();
         snippet.LoadTableGcsCsv(_projectId, datasetId);
-        var output = stringOut.ToString();
+        var output = _stringOut.ToString();
         long numRows = Convert.ToInt64(Regex.Match(output, @"\d+").Value);
         Assert.Equal(50, numRows);
     }
@@ -182,7 +182,7 @@ public class BigQueryTest : IDisposable
         var snippet = new BigQueryLoadTableGcsJson();
         var datasetId = CreateTempDataset();
         snippet.LoadTableGcsJson(_projectId, datasetId);
-        var output = stringOut.ToString();
+        var output = _stringOut.ToString();
         long numRows = Convert.ToInt64(Regex.Match(output, @"\d+").Value);
         Assert.Equal(50, numRows);
     }
@@ -198,7 +198,7 @@ public class BigQueryTest : IDisposable
         truncateSnippet.LoadTableGcsOrcTruncate(
             _projectId, datasetId, "us_states");
 
-        var output = stringOut.ToString();
+        var output = _stringOut.ToString();
         // Snippet runs should report 50 output rows twice
         Assert.Equal(2, Regex.Matches(output, "50").Count);
     }
@@ -208,7 +208,7 @@ public class BigQueryTest : IDisposable
     {
         var snippet = new BigQueryQuery();
         snippet.Query(_projectId);
-        var outputLines = stringOut.ToString().Trim().Split(new [] { '\n' });
+        var outputLines = _stringOut.ToString().Trim().Split(new[] { '\n' });
         Assert.Equal(100, outputLines.Count());
     }
 
@@ -217,7 +217,7 @@ public class BigQueryTest : IDisposable
     {
         var snippet = new BigQueryQueryLegacy();
         snippet.QueryLegacy(_projectId);
-        var outputLines = stringOut.ToString().Trim().Split(new [] { '\n' });
+        var outputLines = _stringOut.ToString().Trim().Split(new[] { '\n' });
         Assert.Equal(100, outputLines.Count());
     }
 
@@ -235,7 +235,7 @@ public class BigQueryTest : IDisposable
         string datasetId = TestUtil.RandomName();
         BigQueryDataset tempDataset = _client.CreateDataset(
             datasetId, new CreateDatasetOptions() { Location = "US" });
-        tempDatasets.Add(tempDataset);
+        _tempDatasets.Add(tempDataset);
         return datasetId;
     }
 
@@ -254,7 +254,8 @@ public class BigQueryTest : IDisposable
     }
     public void Dispose()
     {
-        foreach (BigQueryDataset dataset in tempDatasets) {
+        foreach (BigQueryDataset dataset in _tempDatasets)
+        {
             var deleteDatasetOptions = new DeleteDatasetOptions()
             {
                 DeleteContents = true
@@ -265,6 +266,6 @@ public class BigQueryTest : IDisposable
             _bucketName,
             new DeleteBucketOptions() { DeleteObjects = true }
         );
-        Console.SetOut(consoleOut);
+        Console.SetOut(_consoleOut);
     }
 }

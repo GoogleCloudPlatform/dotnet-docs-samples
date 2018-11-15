@@ -13,6 +13,7 @@
 // the License.
 //
 // [START bigquery_list_datasets]
+
 using Google.Cloud.BigQuery.V2;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,8 @@ public class BigQueryListDatasets
                 Console.WriteLine($"\t{dataset.Reference.DatasetId}");
             }
         }
-        else {
+        else
+        {
             Console.WriteLine($"{projectId} does not contain any datasets.");
         }
     }
