@@ -637,7 +637,7 @@ namespace GoogleCloudSamples
             Assert.True(recordCount == expectedNumberOfRecords);
         }
 
-        [Fact]
+        [Fact(Skip = "https://buganizer.corp.google.com/issues/119614447")]
         public void TestCopyTable()
         {
             string projectId = "bigquery-public-data";
