@@ -1249,3 +1249,31 @@ function Add-Copyright([string[]][Parameter(ValueFromPipeline=$true)] $Files)
         "Add copyright to $path."
     }
 }
+
+<#
+.SYNOPSIS
+Generate a new random name that can be used to name GCP objects.
+
+.PARAMETER Prefix
+An optional prefix for the random name.
+
+.PARAMETER Length
+The number of random characters to be included in the name.
+
+.PARAMETER CharSet
+The set of characters from which the random name is generated.
+
+.EXAMPLE
+> New-RandomName
+hpywzrkcjuebdgsqvatx
+#>
+
+function New-RandomName([string]$Prefix = '', [int]$Length = 20, 
+    [string]$CharSet = 'abcdefghijklmnopqrstuvwxyz') 
+{
+    $randomChars = $CharSet.ToCharArray() | Get-Random -Count $Length
+    $randomString = $randomChars -join ''
+    return "$Prefix$randomString"
+}
+
+New-RandomName

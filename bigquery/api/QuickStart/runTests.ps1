@@ -14,8 +14,9 @@
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
 
-BackupAndEdit-TextFile @(".\Program.cs") `
-    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
+BackupAndEdit-TextFile @(".\Program.cs", ".\QuickStartTest.cs") `
+	@{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID; 
+	  "my_new_dataset" = New-RandomName 'test_dataset_'} `
 {
 	dotnet restore
 	dotnet test --test-adapter-path:. --logger:junit
