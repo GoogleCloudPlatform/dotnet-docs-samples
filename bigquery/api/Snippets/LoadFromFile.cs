@@ -37,6 +37,7 @@ public class BigQueryLoadFromFile
         using (FileStream stream = File.Open(filePath, FileMode.Open))
         {
             // Create and run job
+            // Note that there are methods available for formats other than CSV
             BigQueryJob job = client.UploadCsv(
                 datasetId, tableId, null, stream, uploadCsvOptions);
             job.PollUntilCompleted();  // Waits for the job to complete.
