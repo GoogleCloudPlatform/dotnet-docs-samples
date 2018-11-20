@@ -115,7 +115,7 @@ public class BigQueryTest : IDisposable
     {
         var snippet = new BigQueryExtractTable();
         snippet.ExtractTable(_projectId, _bucketName);
-        var uploadedFile = _storage.GetObject(_bucketName, "shakespeare.csv");
+        var uploadedFile = _storage.ListObjects(_bucketName, "shakespeare").First();
         Assert.True(uploadedFile.Size > 0);
     }
 

@@ -24,7 +24,9 @@ public class BigQueryExtractTable
         string bucketName = "your-bucket-name")
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        string destinationUri = $"gs://{bucketName}/shakespeare.csv";
+        // Define a destination URI. Use a single wildcard URI if you think
+        // your exported data will be larger than the 1 GB maximum value.
+        string destinationUri = $"gs://{bucketName}/shakespeare-*.csv";
         BigQueryJob job = client.CreateExtractJob(
             projectId: "bigquery-public-data",
             datasetId: "samples",
