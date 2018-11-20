@@ -12,36 +12,33 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START asset_quickstart_export_assets]
+// [START asset_quickstart_batch_get_assets_history]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Asset.V1Beta1;
+using Google.Protobuf.WellKnownTypes;
 using System;
 
 
-public class ExportAssets
+public class BatchGetAssetsHistory
 {
     public static void Main(string[] args)
     {
-        string bucketName = "YOUR-BUCKET-NAME";
+        // Asset names, e.g.: //storage.googleapis.com/[YOUR_BUCKET_NAME]
+        string[] assetNames = { "ASSET-NAME" };
         string projectId = "YOUR-GOOGLE-PROJECT-ID";
-        string assetDumpFile = String.Format("gs://{0}/my-assets.txt", bucketName);
-        AssetServiceClient client = AssetServiceClient.Create();
-        ExportAssetsRequest request = new ExportAssetsRequest
-        {
+
+        BatchGetAssetsHistoryRequest request = new BatchGetAssetsHistoryRequest {
             ParentAsProjectName = new ProjectName(projectId),
-            OutputConfig = new OutputConfig
-            {
-                GcsDestination = new GcsDestination { Uri = assetDumpFile }
+            ContentType = ContentType.Resource,
+            ReadTimeWindow = new TimeWindow {
+                StartTime = Timestamp.FromDateTime(System.DateTime.UtcNow)
             }
         };
-        // Start the long-running export operation
-        var operation = client.ExportAssets(request);
-        // Wait for it to complete (or fail)
-        operation = operation.PollUntilCompleted();
-        // Extract the result
-        ExportAssetsResponse response = operation.Result;
+        request.AssetNames.AddRange(assetNames);
+        AssetServiceClient client = AssetServiceClient.Create();
+        BatchGetAssetsHistoryResponse response = client.BatchGetAssetsHistory(request);
         Console.WriteLine(response);
     }
 }
-// [END asset_quickstart_export_assets]
+// [END asset_quickstart_batch_get_assets_history]
