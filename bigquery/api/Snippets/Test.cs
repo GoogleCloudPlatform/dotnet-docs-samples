@@ -59,9 +59,10 @@ public class BigQueryTest : IDisposable
     {
         var snippet = new BigQueryCopyTable();
         string destinationDatasetId = CreateTempDataset();
-        BigQueryTable table = snippet.CopyTable(
-            _projectId, destinationDatasetId);
-        Assert.True(table.Resource.NumRows > 0);
+        snippet.CopyTable(_projectId, destinationDatasetId);
+        var output = _stringOut.ToString();
+        var numRows = Int64.Parse(Regex.Match(output, @"\d+").Value);
+        Assert.True(numRows > 0);
     }
 
     [Fact]

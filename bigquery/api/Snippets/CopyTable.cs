@@ -20,24 +20,30 @@ using System;
 
 public class BigQueryCopyTable
 {
-    public BigQueryTable CopyTable(
+    public void CopyTable(
         string projectId = "your-project-id",
         string destinationDatasetId = "your_dataset_id"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        TableReference sourceTable = new TableReference()
+        TableReference sourceTableRef = new TableReference()
         {
             TableId = "shakespeare",
             DatasetId = "samples",
             ProjectId = "bigquery-public-data"
         };
-        TableReference destinationTable = client.GetTableReference(
+        TableReference destinationTableRef = client.GetTableReference(
             destinationDatasetId, "destination_table");
         BigQueryJob job = client.CreateCopyJob(
-            sourceTable, destinationTable)
+            sourceTableRef, destinationTableRef)
             .PollUntilCompleted();  // Wait for the job to complete.
-        return client.GetTable(destinationTable);
+        // Retrieve destination table
+        BigQueryTable destinationTable = client.GetTable(destinationTableRef);
+        Console.WriteLine(
+            $"Copied {destinationTable.Resource.NumRows} rows from table "
+            + $"{sourceTableRef.DatasetId}.{sourceTableRef.TableId} "
+            + $"to {destinationTable.FullyQualifiedId}."
+        );
     }
 }
 // [END bigquery_copy_table]
