@@ -12,22 +12,25 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START bigquery_delete_dataset]
+// [START bigquery_delete_dataset_and_contents]
 
 using Google.Cloud.BigQuery.V2;
 using System;
 
-public class BigQueryDeleteDataset
+public class BigQueryDeleteDatasetAndContents
 {
-    public void DeleteDataset(
+    public void DeleteDatasetAndContents(
         string projectId = "your-project-id",
-        string datasetId = "your_empty_dataset"
+        string datasetId = "your_dataset_with_tables"
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        // Delete a dataset that does not contain any tables
-        client.DeleteDataset(datasetId: datasetId);
-        Console.WriteLine($"Dataset {datasetId} deleted.");
+        // Use the DeleteDatasetOptions to delete a dataset and its contents
+        client.DeleteDataset(
+            datasetId: datasetId,
+            options: new DeleteDatasetOptions() { DeleteContents = true }
+        );
+        Console.WriteLine($"Dataset {datasetId} and contents deleted.");
     }
 }
-// [END bigquery_delete_dataset]
+// [END bigquery_delete_dataset_and_contents]

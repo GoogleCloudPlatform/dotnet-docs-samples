@@ -87,15 +87,23 @@ public class BigQueryTest : IDisposable
     public void TestDeleteDataset()
     {
         var snippet = new BigQueryDeleteDataset();
-        string datasetId1 = TestUtil.RandomName();
-        _client.CreateDataset(datasetId1);
-        string datasetId2 = TestUtil.RandomName();
-        _client.CreateDataset(datasetId2);
-        CreateTempEmptyTable(datasetId2);
-        snippet.DeleteDataset(_projectId, datasetId1, datasetId2);
+        string datasetId = TestUtil.RandomName();
+        _client.CreateDataset(datasetId);
+        snippet.DeleteDataset(_projectId, datasetId);
         var output = _stringOut.ToString();
-        Assert.Contains($"{datasetId1} deleted", output);
-        Assert.Contains($"{datasetId2} deleted", output);
+        Assert.Contains($"{datasetId} deleted", output);
+    }
+
+    [Fact]
+    public void TestDeleteDatasetAndContents()
+    {
+        var snippet = new BigQueryDeleteDatasetAndContents();
+        string datasetId = TestUtil.RandomName();
+        _client.CreateDataset(datasetId);
+        CreateTempEmptyTable(datasetId);
+        snippet.DeleteDatasetAndContents(_projectId, datasetId);
+        var output = _stringOut.ToString();
+        Assert.Contains($"{datasetId} and contents deleted", output);
     }
 
     [Fact]
