@@ -33,7 +33,8 @@ namespace CloudTasks
     // [START gae_flex_quickstart]
     public class Startup
     {
-        public Startup(IConfiguration configuration) {
+        public Startup(IConfiguration configuration)
+        {
             Configuration = configuration;
         }
 
@@ -85,12 +86,10 @@ namespace CloudTasks
             {
                 // Respond to GAE health-checks
                 return context.Response.WriteAsync("OK");
-            });        
+            });
 
             var routes = routeBuilder.Build();
             app.UseRouter(routes);
-
-
         }
     }
     // [END gae_flex_quickstart]
