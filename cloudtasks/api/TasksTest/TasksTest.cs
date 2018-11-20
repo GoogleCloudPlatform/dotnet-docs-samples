@@ -13,12 +13,7 @@
 // limitations under the License.
 
 using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -52,7 +47,7 @@ namespace GoogleCloudSamples
         private string QueueId { get { return _fixture.QueueId; } }
         private readonly RetryRobot _retryRobot = new RetryRobot();
 
-        readonly CommandLineRunner _tasks = new CommandLineRunner()
+        private readonly CommandLineRunner _tasks = new CommandLineRunner()
         {
             VoidMain = Tasks.Main,
             Command = "Tasks"

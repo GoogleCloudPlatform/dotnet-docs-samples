@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Google.Cloud.Tasks.V2Beta2;
-using System;
-using Google.Protobuf.WellKnownTypes;
-using System.Text;
 using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -47,8 +46,9 @@ namespace GoogleCloudSamples
                         RelativeUrl = "/log_payload",
                         Payload = ByteString.CopyFromUtf8(payload)
                     },
-                    ScheduleTime = new Timestamp {
-                        Seconds = (long) (DateTime.Now.AddSeconds(inSeconds) - UnixEpoch).TotalSeconds,
+                    ScheduleTime = new Timestamp
+                    {
+                        Seconds = (long)(DateTime.Now.AddSeconds(inSeconds) - UnixEpoch).TotalSeconds,
                         Nanos = 0
                     }
                 }
@@ -58,6 +58,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END cloud_tasks_appengine_create_task]
     }
 }

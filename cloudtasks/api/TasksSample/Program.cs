@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using CommandLine;
-using Google.Cloud.Tasks.V2Beta2;
+using System;
 
 namespace GoogleCloudSamples
 {
     [Verb("createTask", HelpText = "Creates a Cloud Task.")]
-    class CreateTaskOptions
+    internal class CreateTaskOptions
     {
         [Option('i', "projectId", HelpText = "Project ID of the queue to add the task to.", Required = true)]
         public string ProjectId { get; set; }
@@ -47,7 +46,7 @@ namespace GoogleCloudSamples
                 Console.WriteLine("Invalid number of arguments supplied");
                 Environment.Exit(-1);
             }
-            
+
             Parser.Default.ParseArguments<
             CreateTaskOptions>(args).MapResult(
             (CreateTaskOptions opts) => Samples.CreateTask(
