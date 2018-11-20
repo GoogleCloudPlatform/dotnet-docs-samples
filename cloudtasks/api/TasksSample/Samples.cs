@@ -33,7 +33,7 @@ namespace GoogleCloudSamples
 
             QueueName parent = new QueueName(projectId, location, queue);
 
-            var UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
             var response = client.CreateTask(new CreateTaskRequest
             {
@@ -48,7 +48,7 @@ namespace GoogleCloudSamples
                     },
                     ScheduleTime = new Timestamp
                     {
-                        Seconds = (long)(DateTime.Now.AddSeconds(inSeconds) - UnixEpoch).TotalSeconds,
+                        Seconds = (long)(DateTime.Now.AddSeconds(inSeconds) - unixEpoch).TotalSeconds,
                         Nanos = 0
                     }
                 }

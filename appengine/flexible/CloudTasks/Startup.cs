@@ -65,11 +65,11 @@ namespace CloudTasks
             routeBuilder.MapPost("log_payload", context =>
             {
                 // Log the request payload
-                var Reader = new StreamReader(context.Request.Body);
-                var Task = Reader.ReadToEnd();
+                var reader = new StreamReader(context.Request.Body);
+                var task = reader.ReadToEnd();
 
-                logger.LogInformation($"Received task with payload: {Task}");
-                return context.Response.WriteAsync("Printed task payload: {Task}");
+                logger.LogInformation($"Received task with payload: {task}");
+                return context.Response.WriteAsync($"Printed task payload: {task}");
             });
 
             routeBuilder.MapGet("hello", context =>
@@ -78,7 +78,7 @@ namespace CloudTasks
                 return context.Response.WriteAsync("Hello, world!");
             });
 
-            routeBuilder.MapGet("ah/health", context =>
+            routeBuilder.MapGet("_ah/health", context =>
             {
                 // Respond to GAE health-checks
                 return context.Response.WriteAsync("OK");

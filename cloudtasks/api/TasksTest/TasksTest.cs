@@ -22,8 +22,6 @@ namespace GoogleCloudSamples
     {
         public readonly string ProjectId;
         public readonly string QueueId;
-        public readonly string WrappedKey;
-        public readonly string KeyName;
 
         public readonly CommandLineRunner CommandLineRunner = new CommandLineRunner
         {
@@ -34,9 +32,6 @@ namespace GoogleCloudSamples
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             QueueId = Environment.GetEnvironmentVariable("GCP_QUEUE");
-            // Authorize the client using Application Default Credentials.
-            // See: https://developers.google.com/identity/protocols/application-default-credentials
-            GoogleCredential credential = GoogleCredential.GetApplicationDefaultAsync().Result;
         }
     }
 
@@ -45,7 +40,6 @@ namespace GoogleCloudSamples
         private readonly TasksTestFixture _fixture;
         private string ProjectId { get { return _fixture.ProjectId; } }
         private string QueueId { get { return _fixture.QueueId; } }
-        private readonly RetryRobot _retryRobot = new RetryRobot();
 
         private readonly CommandLineRunner _tasks = new CommandLineRunner()
         {
