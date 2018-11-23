@@ -15,10 +15,10 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 $getBucketNameClause = 'Environment.GetEnvironmentVariable("ASSET_NAME")'
-BackupAndEdit-TextFile @("..\ExportAssets\ExportAssets.cs") @{
+BackupAndEdit-TextFile @("..\ExportAssets\BatchGetAssetsHistory.cs") @{
     "YOUR-GOOGLE-PROJECT-ID" = $env:GOOGLE_PROJECT_ID;
     '"ASSET-NAME"' = $getBucketNameClause
 } {
     dotnet restore
-	dotnet test --test-adapter-path:. --logger:junit
+    dotnet test --test-adapter-path:. --logger:junit
 }
