@@ -15,7 +15,7 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 $getBucketNameClause = 'Environment.GetEnvironmentVariable("ASSET_NAME")'
-BackupAndEdit-TextFile @("..\ExportAssets\BatchGetAssetsHistory.cs") @{
+BackupAndEdit-TextFile @("..\BatchGetAssetsHistory/BatchGetAssetsHistory.cs") @{
     "YOUR-GOOGLE-PROJECT-ID" = $env:GOOGLE_PROJECT_ID;
     '"ASSET-NAME"' = $getBucketNameClause
 } {
