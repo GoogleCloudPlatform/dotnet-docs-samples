@@ -202,13 +202,12 @@ namespace GoogleCloudSamples
             }
             catch (Google.GoogleApiException e)
             {
-                Assert.Contains("not subscribed to the commands topic", e.Message );
+                Assert.Contains("not subscribed to the commands topic", e.Message);
             }
             finally
             {
                 Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
             }
-
         }
     }
 
