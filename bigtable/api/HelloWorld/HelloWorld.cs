@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
+using Grpc.Core;
 
 namespace GoogleCloudSamples.Bigtable
 {
@@ -191,8 +192,25 @@ namespace GoogleCloudSamples.Bigtable
 
         private static bool TableExist(BigtableTableAdminClient bigtableTableAdminClient)
         {
-            var tables = bigtableTableAdminClient.ListTables(new InstanceName(projectId, instanceId));
-            return tables.Any(x => x.TableName.TableId == tableId);
+            GetTableRequest request = new GetTableRequest
+            {
+                TableName = new Google.Cloud.Bigtable.Common.V2.TableName(projectId, instanceId, tableId),
+                View = Table.Types.View.NameOnly
+            };
+            try
+            {
+                var tables = bigtableTableAdminClient.GetTable(request);
+                return true;
+            }
+            catch (RpcException ex)
+            {
+                if (ex.StatusCode == StatusCode.NotFound)
+                {
+                    return false;
+                }
+
+                throw;
+            }
         }
 
         // Builds a <see cref="Mutation"/> for <see cref="MutateRowRequest"/> or an <see cref="MutateRowsRequest.Types.Entry"/>
