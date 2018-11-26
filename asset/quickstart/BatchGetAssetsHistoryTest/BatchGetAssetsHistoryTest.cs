@@ -46,7 +46,8 @@ namespace GoogleCloudSamples
             var output = s_runner.Run();
             _testOutput.WriteLine(output.Stdout);
             string expectedOutput = assetName;
-            if (output.Stdout.Length > 0) {
+            if (output.Stdout.Length > 0)
+            {
                 Assert.Contains(expectedOutput, output.Stdout);
             }
         }
