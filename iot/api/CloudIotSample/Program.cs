@@ -310,7 +310,6 @@ namespace GoogleCloudSamples
 
         [Value(4, HelpText = "The command sent to the device", Required = true)]
         public string command { get; set; }
-
     }
     public class CloudIotSample
     {
@@ -906,13 +905,11 @@ namespace GoogleCloudSamples
 
             Console.WriteLine("Command response: " + res.ToString());
             return 0;
-
         }
         //[END iot_send_command]
 
         public static int Main(string[] args)
         {
-
             var verbMap = new VerbMap<object>();
             verbMap
                 .Add((CreateRegistryOptions opts) => CreateRegistry(
@@ -951,7 +948,6 @@ namespace GoogleCloudSamples
                     opts.deviceId, opts.projectId, opts.regionId, opts.registryId, opts.command))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
-
         }
     }
 }
