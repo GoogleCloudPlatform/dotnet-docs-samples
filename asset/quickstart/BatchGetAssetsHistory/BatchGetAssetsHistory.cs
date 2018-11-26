@@ -28,10 +28,12 @@ public class BatchGetAssetsHistory
         string[] assetNames = { "ASSET-NAME" };
         string projectId = "YOUR-GOOGLE-PROJECT-ID";
 
-        BatchGetAssetsHistoryRequest request = new BatchGetAssetsHistoryRequest {
+        BatchGetAssetsHistoryRequest request = new BatchGetAssetsHistoryRequest
+        {
             ParentAsProjectName = new ProjectName(projectId),
             ContentType = ContentType.Resource,
-            ReadTimeWindow = new TimeWindow {
+            ReadTimeWindow = new TimeWindow
+            {
                 StartTime = Timestamp.FromDateTime(System.DateTime.UtcNow)
             }
         };
