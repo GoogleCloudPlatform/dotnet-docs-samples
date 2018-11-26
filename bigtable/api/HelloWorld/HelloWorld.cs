@@ -89,7 +89,7 @@ namespace GoogleCloudSamples.Bigtable
                 BigtableClient bigtableClient = BigtableClient.Create();
 
                 // Initialise Google.Cloud.Bigtable.V2.TableName object.
-                Google.Cloud.Bigtable.V2.TableName tableNameClient = new Google.Cloud.Bigtable.V2.TableName(projectId, instanceId, tableId);
+                Google.Cloud.Bigtable.Common.V2.TableName tableName = new Google.Cloud.Bigtable.Common.V2.TableName(projectId, instanceId, tableId);
 
                 // Write some rows
                 /* Each row has a unique row key.
@@ -110,7 +110,7 @@ namespace GoogleCloudSamples.Bigtable
                 s_greetingIndex = 0;
                 try
                 {
-                    bigtableClient.MutateRow(tableNameClient, rowKeyPrefix + s_greetingIndex, MutationBuilder(s_greetingIndex));
+                    bigtableClient.MutateRow(tableName, rowKeyPrefix + s_greetingIndex, MutationBuilder(s_greetingIndex));
                     Console.WriteLine($"\tGreeting:   -- {s_greetings[s_greetingIndex],-18}-- written successfully");
                 }
                 catch (Exception ex)
@@ -124,7 +124,7 @@ namespace GoogleCloudSamples.Bigtable
                 // Build a MutateRowsRequest (contains table name and a collection of entries).
                 MutateRowsRequest request = new MutateRowsRequest
                 {
-                    TableNameAsTableName = tableNameClient
+                    TableNameAsTableName = tableName
                 };
 
                 s_mapToOriginalGreetingIndex = new List<int>();
@@ -161,7 +161,7 @@ namespace GoogleCloudSamples.Bigtable
 
                 // Read a specific row. Apply filter to return latest only cell value accross entire row.
                 Row rowRead = bigtableClient.ReadRow(
-                    tableNameClient, rowKey: rowKeyPrefix + rowIndex, filter: RowFilters.CellsPerRowLimit(1));
+                    tableName, rowKey: rowKeyPrefix + rowIndex, filter: RowFilters.CellsPerRowLimit(1));
                 Console.WriteLine(
                     $"\tRow key: {rowRead.Key.ToStringUtf8()} " +
                     $"  -- Value: {rowRead.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
@@ -169,7 +169,7 @@ namespace GoogleCloudSamples.Bigtable
 
                 Console.WriteLine("Read all rows using streaming");
                 // stream the content of the whole table. Apply filter to return latest only cell values accross all rows.
-                ReadRowsStream responseRead = bigtableClient.ReadRows(tableNameClient, filter: RowFilters.CellsPerRowLimit(1));
+                ReadRowsStream responseRead = bigtableClient.ReadRows(tableName, filter: RowFilters.CellsPerRowLimit(1));
 
                 Task printRead = PrintReadRowsAsync(responseRead);
                 printRead.Wait();
@@ -177,7 +177,7 @@ namespace GoogleCloudSamples.Bigtable
                 // Clean up. Delete the table.
                 Console.WriteLine($"Delete table: {tableId}");
 
-                bigtableTableAdminClient.DeleteTable(name: new Google.Cloud.Bigtable.Admin.V2.TableName(projectId, instanceId, tableId));
+                bigtableTableAdminClient.DeleteTable(name: tableName);
                 if (!TableExist(bigtableTableAdminClient))
                 {
                     Console.WriteLine($"Table: {tableId} deleted succsessfully");
