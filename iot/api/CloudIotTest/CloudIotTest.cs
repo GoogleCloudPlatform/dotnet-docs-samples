@@ -168,7 +168,6 @@ namespace GoogleCloudSamples
 
             var setIamOutput = Run("setIamPolicy", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, role, member);
             Assert.DoesNotContain("RequestError", setIamOutput.Stdout);
-
             var getIamOutput = Run("getIamPolicy", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId);
             System.Diagnostics.Trace.WriteLine(getIamOutput.Stdout);
             Assert.Contains("Role: roles/viewer", getIamOutput.Stdout);
@@ -188,6 +187,28 @@ namespace GoogleCloudSamples
             var registryId = $"{_fixture.TestId}-notfoundregistry";
             var listDevicesOutput = Run("getRegistry", _fixture.ProjectId, _fixture.RegionId, registryId);
             Assert.Contains("A registry with the name", listDevicesOutput.Stdout);
+        }
+
+        [Fact]
+        public void TestSendCommand()
+        {
+            // Setup scenario
+            var deviceId = "dotnettest-unauth-rsa-" + _fixture.TestId;
+            try
+            {
+                var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
+                Assert.Contains("Device created:", createRsaOut.Stdout);
+                Run("sendCommand", deviceId, _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, "test");
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Assert.Contains("not subscribed to the commands topic", e.Message );
+            }
+            finally
+            {
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            }
+
         }
     }
 
@@ -218,7 +239,7 @@ namespace GoogleCloudSamples
 
         public void CreatePubSubTopic(TopicName topicName)
         {
-            var publisher = PublisherClient.Create();
+            var publisher = PublisherServiceApiClient.Create();
             try
             {
                 publisher.CreateTopic(topicName);
@@ -248,13 +269,13 @@ namespace GoogleCloudSamples
 
         public void DeletePubSubTopic(TopicName topicName)
         {
-            var publisher = PublisherClient.Create();
+            PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
             publisher.DeleteTopic(topicName);
         }
 
         readonly CommandLineRunner _cloudIot = new CommandLineRunner()
         {
-            VoidMain = CloudIotSample.Main,
+            Main = CloudIotSample.Main,
             Command = "CloudIotSample"
         };
 
