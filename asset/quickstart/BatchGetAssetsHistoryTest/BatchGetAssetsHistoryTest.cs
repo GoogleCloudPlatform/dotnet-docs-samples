@@ -22,30 +22,34 @@ using Xunit.Abstractions;
 
 namespace GoogleCloudSamples
 {
-    public class ExportAssetsTest : IClassFixture<RandomBucketFixture>
+    public class BatchGetAssetsHistoryTest : IClassFixture<RandomBucketFixture>
     {
         static readonly CommandLineRunner s_runner = new CommandLineRunner
         {
-            Command = "ExportAssets",
-            VoidMain = ExportAssets.Main,
+            Command = "BatchGetAssetsHistory",
+            VoidMain = BatchGetAssetsHistory.Main,
         };
         private readonly ITestOutputHelper _testOutput;
         private readonly StorageClient _storageClient = StorageClient.Create();
         private readonly string _bucketName;
-        public ExportAssetsTest(ITestOutputHelper output, RandomBucketFixture bucketFixture)
+        public BatchGetAssetsHistoryTest(ITestOutputHelper output, RandomBucketFixture bucketFixture)
         {
             _testOutput = output;
             _bucketName = bucketFixture.BucketName;
         }
 
         [Fact]
-        public void TestExportAssets()
+        public void TestBatchGetAssetsHistory()
         {
-            Environment.SetEnvironmentVariable("AssetBucketName", _bucketName);
+            string assetName = String.Format("//storage.googleapis.com/{0}", _bucketName);
+            Environment.SetEnvironmentVariable("ASSET_NAME", assetName);
             var output = s_runner.Run();
             _testOutput.WriteLine(output.Stdout);
-            string expectedOutput = String.Format("\"outputConfig\": {{ \"gcsDestination\": {{ \"uri\": \"gs://{0}/my-assets.txt\" }} }}", _bucketName);
-            Assert.Contains(expectedOutput, output.Stdout);
+            string expectedOutput = assetName;
+            if (output.Stdout.Length > 0)
+            {
+                Assert.Contains(expectedOutput, output.Stdout);
+            }
         }
     }
 }
