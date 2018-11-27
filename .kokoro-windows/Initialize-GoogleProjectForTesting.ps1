@@ -47,6 +47,7 @@ clouderrorreporting.googleapis.com
 cloudiot.googleapis.com
 cloudkms.googleapis.com
 cloudresourcemanager.googleapis.com
+cloudtasks.googleapis.com
 cloudtrace.googleapis.com
 compute.googleapis.com
 datastore.googleapis.com
@@ -131,3 +132,9 @@ foreach ($role in $roles.Split()) {
 
 # Special binding for IAP.
 Bind $serviceAccountEmail roles/iap.httpsResourceAccessor surferjeff-iap
+
+# Create task queue.  The test needs it.
+$taskQueue = gcloud beta tasks queues  list --filter=my-appengine-queue --format=json | ConvertFrom-Json
+if (-not $taskQueue) {
+    gcloud beta tasks queues create-app-engine-queue my-appengine-queue
+}
