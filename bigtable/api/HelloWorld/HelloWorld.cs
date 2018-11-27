@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START dependencies]
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ using System.Collections.Generic;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
 using Grpc.Core;
+// [END dependencies]
 
 namespace GoogleCloudSamples.Bigtable
 {
