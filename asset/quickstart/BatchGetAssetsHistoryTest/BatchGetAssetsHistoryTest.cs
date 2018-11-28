@@ -43,13 +43,16 @@ namespace GoogleCloudSamples
         {
             string assetName = String.Format("//storage.googleapis.com/{0}", _bucketName);
             Environment.SetEnvironmentVariable("ASSET_NAME", assetName);
-            var output = s_runner.Run();
-            _testOutput.WriteLine(output.Stdout);
-            string expectedOutput = assetName;
-            if (output.Stdout.Length > 0)
+            RetryRobot robot = new RetryRobot()
             {
-                Assert.Contains(expectedOutput, output.Stdout);
-            }
+                RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) }
+            };
+            robot.Eventually(() =>
+            {
+                var output = s_runner.Run();
+                _testOutput.WriteLine(output.Stdout);
+                Assert.Contains(assetName, output.Stdout);
+            });
         }
     }
 }
