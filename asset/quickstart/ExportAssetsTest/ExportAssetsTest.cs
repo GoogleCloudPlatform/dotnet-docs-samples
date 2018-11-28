@@ -41,6 +41,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestExportAssets()
         {
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             Environment.SetEnvironmentVariable("AssetBucketName", _bucketName);
             var output = s_runner.Run();
             _testOutput.WriteLine(output.Stdout);

@@ -12,7 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START asset_quickstart_export_assets]
+// [START export_assets_quickstart]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Asset.V1Beta1;
@@ -44,4 +44,4 @@ public class ExportAssets
         Console.WriteLine(response);
     }
 }
-// [END asset_quickstart_export_assets]
+// [END export_assets_quickstart]
