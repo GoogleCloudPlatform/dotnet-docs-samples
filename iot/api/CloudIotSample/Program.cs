@@ -292,7 +292,7 @@ namespace GoogleCloudSamples
         [Value(4, HelpText = "The member to set the policy to.", Required = true)]
         public string member { get; set; }
     }
-    // SendCommand("my-python-device", "just-munkhbayarg-stuff", "us-central1", "munkhbayar-registry", "hello!");
+
     [Verb("sendCommand", HelpText = "Send a command to a device.")]
     class SendCommandOptions
     {
