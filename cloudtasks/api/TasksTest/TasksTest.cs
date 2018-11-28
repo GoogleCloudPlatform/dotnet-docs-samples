@@ -31,7 +31,7 @@ namespace GoogleCloudSamples
         public TasksTestFixture()
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            QueueId = Environment.GetEnvironmentVariable("GCP_QUEUE");
+            QueueId = Environment.GetEnvironmentVariable("GCP_QUEUE") ?? "my-appengine-queue";
         }
     }
 
