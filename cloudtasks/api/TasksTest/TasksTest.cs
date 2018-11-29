@@ -34,7 +34,7 @@ namespace GoogleCloudSamples
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
             QueueId = Environment.GetEnvironmentVariable("GCP_QUEUE") ?? "my-appengine-queue";
-            LocationId = Environment.GetEnvironmentVariable("LOCATION_ID");
+            LocationId = Environment.GetEnvironmentVariable("LOCATION_ID") ?? "us-central1";
         }
     }
 
