@@ -20,5 +20,5 @@ BackupAndEdit-TextFile @("..\BatchGetAssetsHistory/BatchGetAssetsHistory.cs") @{
     '"ASSET-NAME"' = $getBucketNameClause
 } {
     dotnet restore
-    dotnet test --test-adapter-path:. --logger:junit
+    dotnet test --test-adapter-path:. --logger:junit -v n
 }
