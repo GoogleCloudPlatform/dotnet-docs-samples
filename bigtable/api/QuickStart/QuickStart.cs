@@ -1,6 +1,7 @@
 ﻿// [START bigtable_quickstart]
 
 using System;
+using Google.Cloud.Bigtable.Common.V2;
 // Imports the Google Cloud client library
 using Google.Cloud.Bigtable.V2;
 

@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START dependencies]
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
+using Grpc.Core;
+// [END dependencies]
 
 namespace GoogleCloudSamples.Bigtable
 {
@@ -47,9 +50,15 @@ namespace GoogleCloudSamples.Bigtable
         {
             try
             {
+                // [START connecting_to_bigtable]
                 // BigtableTableAdminClient API lets us create, manage and delete tables.
                 BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
 
+                // BigtableClient API lets us read and write to a table.
+                BigtableClient bigtableClient = BigtableClient.Create();
+                // [END connecting_to_bigtable]
+
+                // [START creating_a_table]
                 // Create a table with a single column family.
                 Console.WriteLine($"Create new table: {tableId} with column family: {columnFamily}, Instance: {instanceId}");
 
@@ -84,12 +93,11 @@ namespace GoogleCloudSamples.Bigtable
                 {
                     Console.WriteLine($"Table: {tableId} already exist");
                 }
+                // [END creating_a_table]
 
-                // BigtableClient API lets us read and write to a table.
-                BigtableClient bigtableClient = BigtableClient.Create();
-
+                // [START writing_rows]
                 // Initialise Google.Cloud.Bigtable.V2.TableName object.
-                Google.Cloud.Bigtable.V2.TableName tableNameClient = new Google.Cloud.Bigtable.V2.TableName(projectId, instanceId, tableId);
+                Google.Cloud.Bigtable.Common.V2.TableName tableName = new Google.Cloud.Bigtable.Common.V2.TableName(projectId, instanceId, tableId);
 
                 // Write some rows
                 /* Each row has a unique row key.
@@ -110,7 +118,7 @@ namespace GoogleCloudSamples.Bigtable
                 s_greetingIndex = 0;
                 try
                 {
-                    bigtableClient.MutateRow(tableNameClient, rowKeyPrefix + s_greetingIndex, MutationBuilder(s_greetingIndex));
+                    bigtableClient.MutateRow(tableName, rowKeyPrefix + s_greetingIndex, MutationBuilder());
                     Console.WriteLine($"\tGreeting:   -- {s_greetings[s_greetingIndex],-18}-- written successfully");
                 }
                 catch (Exception ex)
@@ -124,7 +132,7 @@ namespace GoogleCloudSamples.Bigtable
                 // Build a MutateRowsRequest (contains table name and a collection of entries).
                 MutateRowsRequest request = new MutateRowsRequest
                 {
-                    TableNameAsTableName = tableNameClient
+                    TableNameAsTableName = tableName
                 };
 
                 s_mapToOriginalGreetingIndex = new List<int>();
@@ -133,7 +141,7 @@ namespace GoogleCloudSamples.Bigtable
                     s_mapToOriginalGreetingIndex.Add(s_greetingIndex);
                     // Build an entry for every greeting (consists of rowkey and a collection of mutations).
                     string rowKey = rowKeyPrefix + s_greetingIndex;
-                    request.Entries.Add(Mutations.CreateEntry(rowKey, MutationBuilder(s_greetingIndex)));
+                    request.Entries.Add(Mutations.CreateEntry(rowKey, MutationBuilder()));
                 }
 
                 // Make the request to write multiple rows.
@@ -154,6 +162,11 @@ namespace GoogleCloudSamples.Bigtable
                     }
                 }
 
+                Mutation MutationBuilder() =>
+                    Mutations.SetCell(columnFamily, columnName, s_greetings[s_greetingIndex], new BigtableVersion(DateTime.UtcNow));
+                //[END writing_rows]
+
+                // [START getting_a_row]
                 // Read from the table.
                 Console.WriteLine("Read the first row");
 
@@ -161,27 +174,42 @@ namespace GoogleCloudSamples.Bigtable
 
                 // Read a specific row. Apply filter to return latest only cell value accross entire row.
                 Row rowRead = bigtableClient.ReadRow(
-                    tableNameClient, rowKey: rowKeyPrefix + rowIndex, filter: RowFilters.CellsPerRowLimit(1));
+                    tableName, rowKey: rowKeyPrefix + rowIndex, filter: RowFilters.CellsPerRowLimit(1));
                 Console.WriteLine(
                     $"\tRow key: {rowRead.Key.ToStringUtf8()} " +
                     $"  -- Value: {rowRead.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
                     $"  -- Time Stamp: {rowRead.Families[0].Columns[0].Cells[0].TimestampMicros}");
+                // [END getting_a_row]
 
+                // [START scanning_all_rows]
                 Console.WriteLine("Read all rows using streaming");
                 // stream the content of the whole table. Apply filter to return latest only cell values accross all rows.
-                ReadRowsStream responseRead = bigtableClient.ReadRows(tableNameClient, filter: RowFilters.CellsPerRowLimit(1));
+                ReadRowsStream responseRead = bigtableClient.ReadRows(tableName, filter: RowFilters.CellsPerRowLimit(1));
 
-                Task printRead = PrintReadRowsAsync(responseRead);
+                Task printRead = PrintReadRowsAsync();
                 printRead.Wait();
 
+                async Task PrintReadRowsAsync()
+                {
+                    await responseRead.ForEachAsync(row =>
+                    {
+                        Console.WriteLine($"\tRow key: {row.Key.ToStringUtf8()} " +
+                                          $"  -- Value: {row.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
+                                          $"  -- Time Stamp: {row.Families[0].Columns[0].Cells[0].TimestampMicros}");
+                    });
+                }
+                // [END scanning_all_rows]
+
+                // [START deleting_a_table]
                 // Clean up. Delete the table.
                 Console.WriteLine($"Delete table: {tableId}");
 
-                bigtableTableAdminClient.DeleteTable(name: new Google.Cloud.Bigtable.Admin.V2.TableName(projectId, instanceId, tableId));
+                bigtableTableAdminClient.DeleteTable(name: tableName);
                 if (!TableExist(bigtableTableAdminClient))
                 {
                     Console.WriteLine($"Table: {tableId} deleted succsessfully");
                 }
+                // [END deleting_a_table]
             }
             catch (Exception ex)
             {
@@ -191,22 +219,25 @@ namespace GoogleCloudSamples.Bigtable
 
         private static bool TableExist(BigtableTableAdminClient bigtableTableAdminClient)
         {
-            var tables = bigtableTableAdminClient.ListTables(new InstanceName(projectId, instanceId));
-            return tables.Any(x => x.TableName.TableId == tableId);
-        }
-
-        // Builds a <see cref="Mutation"/> for <see cref="MutateRowRequest"/> or an <see cref="MutateRowsRequest.Types.Entry"/>
-        private static Mutation MutationBuilder(int greetingNumber) =>
-            Mutations.SetCell(columnFamily, columnName, s_greetings[greetingNumber], new BigtableVersion(DateTime.UtcNow));
-
-        private static async Task PrintReadRowsAsync(ReadRowsStream responseRead)
-        {
-            await responseRead.ForEachAsync(row =>
+            GetTableRequest request = new GetTableRequest
             {
-                Console.WriteLine($"\tRow key: {row.Key.ToStringUtf8()} " +
-                                  $"  -- Value: {row.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
-                                  $"  -- Time Stamp: {row.Families[0].Columns[0].Cells[0].TimestampMicros}");
-            });
+                TableName = new Google.Cloud.Bigtable.Common.V2.TableName(projectId, instanceId, tableId),
+                View = Table.Types.View.NameOnly
+            };
+            try
+            {
+                var tables = bigtableTableAdminClient.GetTable(request);
+                return true;
+            }
+            catch (RpcException ex)
+            {
+                if (ex.StatusCode == StatusCode.NotFound)
+                {
+                    return false;
+                }
+
+                throw;
+            }
         }
 
         public static int Main(string[] args)
