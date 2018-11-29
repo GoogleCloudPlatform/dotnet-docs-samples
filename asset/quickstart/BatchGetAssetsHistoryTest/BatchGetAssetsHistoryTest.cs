@@ -38,7 +38,7 @@ namespace GoogleCloudSamples
             _bucketName = bucketFixture.BucketName;
         }
 
-        [Fact(Skip="https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/692")]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/692")]
         public void TestBatchGetAssetsHistory()
         {
             string assetName = String.Format("//storage.googleapis.com/{0}", _bucketName);
