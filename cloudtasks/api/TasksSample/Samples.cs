@@ -43,8 +43,8 @@ namespace GoogleCloudSamples
                     AppEngineHttpRequest = new AppEngineHttpRequest
                     {
                         HttpMethod = HttpMethod.Post,
-                        RelativeUrl = "/log_payload",
-                        Payload = ByteString.CopyFromUtf8(payload)
+                        RelativeUri = "/log_payload",
+                        Body = ByteString.CopyFromUtf8(payload)
                     },
                     ScheduleTime = new Timestamp
                     {
