@@ -22,6 +22,7 @@ namespace GoogleCloudSamples
     {
         public readonly string ProjectId;
         public readonly string QueueId;
+        public readonly string LocationId;
 
         public readonly CommandLineRunner CommandLineRunner = new CommandLineRunner
         {
@@ -31,7 +32,9 @@ namespace GoogleCloudSamples
         public TasksTestFixture()
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
             QueueId = Environment.GetEnvironmentVariable("GCP_QUEUE") ?? "my-appengine-queue";
+            LocationId = Environment.GetEnvironmentVariable("LOCATION_ID");
         }
     }
 
@@ -40,6 +43,7 @@ namespace GoogleCloudSamples
         private readonly TasksTestFixture _fixture;
         private string ProjectId { get { return _fixture.ProjectId; } }
         private string QueueId { get { return _fixture.QueueId; } }
+        private string LocationId { get { return _fixture.LocationId; }}
 
         private readonly CommandLineRunner _tasks = new CommandLineRunner()
         {
@@ -64,7 +68,7 @@ namespace GoogleCloudSamples
             ConsoleOutput output = _tasks.Run(
                 "createTask",
                 "--projectId", ProjectId,
-                "--location", "us-central1",
+                "--location", LocationId,
                 "--queue", QueueId,
                 "--payload", "Test Payload"
             );

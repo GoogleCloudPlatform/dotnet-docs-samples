@@ -1,53 +1,109 @@
-# Hello World for Google App Engine Flexible Environment
+# C# Google Cloud Tasks sample for Google App Engine
 
-This sample application is ready to deploy to Google App Engine Flexible Environment.
+This sample application shows how to use [Google Cloud Tasks](https://cloud.google.com/cloud-tasks/)
+on Google App Engine [flexible environment][appengine].
 
-## Prerequisites
+App Engine queues push tasks to an App Engine HTTP target. This directory
+contains both the App Engine app to deploy, as well as the snippets to run
+locally to push tasks to it, which could also be called on App Engine.
 
-1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+The `TasksSample` project contains a simple command-line program that creates
+tasks to be pushed to the App Engine app.
 
-2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
-    is required to deploy .NET applications to App Engine.
+`CloudTasks` is the main App Engine app. This app serves as an endpoint to
+receive App Engine task attempts.
 
-3.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md).
+`app.yaml` configures the app for the App Engine C# flexible
+environment.
+
+* [Setup](#setup)
+* [Running locally](#running-locally)
+* [Deploying to App Engine](#deploying-to-app-engine)
+* [Running the tests](#running-the-tests)
+
+## Setup
+
+Before you can run or deploy the sample, you need to do the following:
+
+1.  Refer to the [appengine/README.md][readme] file for instructions on
+    running and deploying.
+1.  Enable the Cloud Tasks API in the [Google Cloud Console](https://console.cloud.google.com/apis/api/tasks.googleapis.com).
+1.  Set up [Google Application Credentials](https://cloud.google.com/docs/authentication/getting-started).
+1.  Install dependencies:
+
+        dotnet restore
+
+## Creating a queue
+
+To create a queue using the Cloud SDK, use the following gcloud command:
+
+    gcloud beta tasks queues create-app-engine-queue my-appengine-queue
+
+Note: A newly created queue will route to the default App Engine service and
+version unless configured to do otherwise.
+
+## Deploying the app to App Engine flexible environment
+
+Deploy the App Engine app with gcloud:
+
+    ```psm1
+    PS > dotnet restore
+    PS > dotnet publish
+    PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
+    ```
+
+Verify the index page is serving:
+
+    gcloud app browse
+
+## Run the Sample Using the Command Line
+
+Set environment variables:
+
+First, your project ID:
+
+    export GOOGLE_CLOUD_PROJECT=my-project-id
+
+Then the queue ID, as specified at queue creation time. Queue IDs already
+created can be listed with `gcloud beta tasks queues list`.
+
+    export GCP_QUEUE=my-appengine-queue
+
+And finally the location ID, which can be discovered with
+`gcloud beta tasks queues describe $GCP_QUEUE`, with the location embedded in
+the "name" value (for instance, if the name is
+"projects/my-project/locations/us-central1/queues/my-appengine-queue", then the
+location is "us-central1").
+
+    export LOCATION_ID=us-central1
+
+Create a task, targeted at the `log_payload` endpoint, with a payload specified:
+
+    dotnet run createTask --project=$PROJECT_ID --queue=$GCP_QUEUE --location=$LOCATION_ID --payload=hello
+
+The App Engine app serves as a target for the push requests. It has an
+endpoint `/log_payload` that reads the payload (i.e., the request body) of the
+HTTP POST request and logs it. The log output can be viewed with:
+
+    gcloud app logs read
+
+Create a task that will be scheduled for a time in the future using the
+`--in_seconds` flag:
+
+    dotnet run createTask --project=$PROJECT_ID --queue=$GCP_QUEUE --location=$LOCATION_ID --payload=hello --in_seconds=30
 
 
-## ![PowerShell](../.resources/powershell.png) Using PowerShell
+Usage information
 
-### Run Locally
-
-```psm1
-PS > dotnet restore
-PS > dotnet run
+```
+-i, --projectId    Required. Project ID of the queue to add the task to.
+-l, --location     Required. Location of the queue to add the task to.
+-q, --queue        Required. Location of the queue to add the task to.
+-d, --payload      (Default: ) (Optional) Payload to attach to the push queue.
+-s, --inSeconds    (Default: 0) (Optional) The number of seconds from now to schedule task attempt.
+--help             Display this help screen.
+  --version          Display version information.
 ```
 
-### Deploy to App Engine
-
-```psm1
-PS > dotnet restore
-PS > dotnet publish
-PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
-```
-
-
-## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
-
-Visual Studio is *optional*.  An old, unmaintained branch of samples that work
-with Visual Studio 2015 is
-[here](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015).
-
-[Google Cloud Tools for Visual Studio](
-https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
-make it easy to deploy to App Engine.  Install them if you are running Visual Studio.
-
-### Run Locally
-
-Open **HelloWorld.csproj**, and Press **F5**.
-
-### Deploy to App Engine
-
-1.  In Solution Explorer, right-click the **HelloWorld** project and choose **Publish HelloWorld to Google Cloud**.
-
-2.  Click **App Engine Flex**.
-
-3.  Click **Publish**.
+[readme]: https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/master/appengine/flexible/README.md
+[appengine]: https://cloud.google.com/appengine/docs/flexible/dotnet
