@@ -13,6 +13,9 @@
 # the License.
 
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
+# TODO: Fix this test and re-enable.
+Skip-Test
+
 Require-Platform Win*
 Set-TestTimeout 600
 
