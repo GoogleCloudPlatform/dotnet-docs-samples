@@ -81,6 +81,7 @@ roles/cloudkms.admin
 roles/cloudkms.cryptoKeyEncrypterDecrypter
 roles/cloudsql.client
 roles/cloudsql.editor
+roles/cloudtasks.admin
 roles/cloudtrace.user
 roles/datastore.user
 roles/dlp.admin
