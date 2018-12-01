@@ -14,7 +14,6 @@
  * the License.
  */
 
-using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -56,7 +55,6 @@ namespace CloudTasks
             else
             {
                 // Configure error reporting service.
-                app.UseGoogleExceptionLogging();
                 app.UseExceptionHandler("/Home/Error");
             }
 
@@ -86,8 +84,7 @@ namespace CloudTasks
 
             var routes = routeBuilder.Build();
             app.UseRouter(routes);
-        }
+        } 
     }
-
     // [END gae_flex_quickstart]
 }

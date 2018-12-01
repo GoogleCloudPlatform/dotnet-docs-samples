@@ -14,6 +14,8 @@
  * the License.
  */
 
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
@@ -28,7 +30,26 @@ namespace CloudTasks
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseGoogleDiagnostics(GetProjectId(), "cloud-tasks-endpoint", "0.01")
                 .UseStartup<Startup>()
                 .Build();
+
+        private static string GetProjectId()
+        {
+            GoogleCredential googleCredential = Google.Apis.Auth.OAuth2
+                .GoogleCredential.GetApplicationDefault();
+            if (googleCredential != null)
+            {
+                ICredential credential = googleCredential.UnderlyingCredential;
+                ServiceAccountCredential serviceAccountCredential =
+                    credential as ServiceAccountCredential;
+                if (serviceAccountCredential != null)
+                {
+                    return serviceAccountCredential.ProjectId;
+                }
+            }
+            return Google.Api.Gax.Platform.Instance().ProjectId;
+        }
+
     }
 }
