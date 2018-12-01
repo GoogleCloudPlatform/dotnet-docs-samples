@@ -43,7 +43,7 @@ namespace GoogleCloudSamples
         private readonly TasksTestFixture _fixture;
         private string ProjectId { get { return _fixture.ProjectId; } }
         private string QueueId { get { return _fixture.QueueId; } }
-        private string LocationId { get { return _fixture.LocationId; }}
+        private string LocationId { get { return _fixture.LocationId; } }
 
         private readonly CommandLineRunner _tasks = new CommandLineRunner()
         {
