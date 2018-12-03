@@ -82,9 +82,14 @@ namespace CloudTasks
                 return context.Response.WriteAsync("OK");
             });
 
+            routeBuilder.MapGet("/", context =>
+            {
+                return context.Response.WriteAsync("Hello, world!");
+            });
+
             var routes = routeBuilder.Build();
             app.UseRouter(routes);
-        } 
+        }
     }
     // [END gae_flex_quickstart]
 }

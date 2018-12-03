@@ -17,7 +17,7 @@ var host = system.env['CASPERJS11_URL'];
 
 casper.test.begin('Cloud Tasks home page returns 200.', 1, function suite(test) {
     casper.start(host + '/', function (response) {
-        test.assertEquals(200, response.status);
+        test.assertEquals(response.status, 200);
     });
     
     casper.run(function () {
@@ -27,7 +27,7 @@ casper.test.begin('Cloud Tasks home page returns 200.', 1, function suite(test) 
 
 casper.test.begin('Health check returns OK.', 1, function suite(test) {
     casper.start(host + '/_ah/health', function (response) {
-        test.assertEquals(200, response.status);
+        test.assertEquals(response.status, 200);
     });
     
     casper.run(function () {

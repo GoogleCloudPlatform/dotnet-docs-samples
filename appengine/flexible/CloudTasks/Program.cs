@@ -50,6 +50,5 @@ namespace CloudTasks
             }
             return Google.Api.Gax.Platform.Instance().ProjectId;
         }
-
     }
 }
