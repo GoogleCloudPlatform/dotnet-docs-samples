@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="xunit" Version="2.3.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TasksSample\TasksSample.csproj" />
+    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="RedactTests.cs" />
+  </ItemGroup>
+</Project>
