@@ -25,7 +25,7 @@ environment.
 
 Before you can run or deploy the sample, you need to do the following:
 
-1.  Refer to the [appengine/README.md][readme] file for instructions on
+1.  Refer to the [../appengine/README.md][readme] file for instructions on
     running and deploying.
 1.  Enable the Cloud Tasks API in the [Google Cloud Console](https://console.cloud.google.com/apis/api/tasks.googleapis.com).
 1.  Set up [Google Application Credentials](https://cloud.google.com/docs/authentication/getting-started).
@@ -44,7 +44,11 @@ version unless configured to do otherwise.
 
 ## Deploying the app to App Engine flexible environment
 
-Deploy the App Engine app with gcloud:
+Move into the App Engine folder:
+
+  cd appengine
+
+Deploy the App Engine app with `gcloud`:
 
     ```psm1
     PS > dotnet restore
@@ -76,6 +80,10 @@ the "name" value (for instance, if the name is
 location is "us-central1").
 
     export LOCATION_ID=us-central1
+
+Move into the Tasks Sample folder:
+
+  cd ../api/TasksSample
 
 Create a task, targeted at the `log_payload` endpoint, with a payload specified:
 
