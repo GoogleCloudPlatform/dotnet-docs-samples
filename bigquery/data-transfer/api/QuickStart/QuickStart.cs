@@ -17,6 +17,7 @@
 
 using System;
 using Google.Api.Gax;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.BigQuery.DataTransfer.V1;
 
 namespace GoogleCloudSamples
