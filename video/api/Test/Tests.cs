@@ -126,6 +126,15 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Contains("Pornography", output.Stdout);
         }
 
+        [Fact]
+        void TestTranscriptionGcs()
+        {
+            ConsoleOutput output =
+                _analyze.Run("transcribe", "gs://python-docs-samples-tests/video/googlework_short.mp4");
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("France", output.Stdout);
+        }
+
         void IDisposable.Dispose()
         {
             foreach (string tempFilePath in _tempFiles)

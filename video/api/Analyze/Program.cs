@@ -21,9 +21,7 @@ using System.Collections.Generic;
 
 namespace GoogleCloudSamples.VideoIntelligence
 {
-    [Verb("labels", HelpText = "Print a list of labels found in the video.")]
-    class AnalyzeLabelsOptions
-    {
+    class VideoOptions {
         [Value(0, HelpText = "The uri of the video to examine. "
             + "Can be path to a local file or a Cloud storage uri like "
             + "gs://bucket/object.",
@@ -31,9 +29,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         public string Uri { get; set; }
     }
 
-    [Verb("shots", HelpText = "Print a list shot changes.")]
-    class AnalyzeShotsOptions
-    {
+    class StorageOnlyVideoOptions {
         [Value(0, HelpText = "The uri of the video to examine. "
             + "Must be a Cloud storage uri like "
             + "gs://bucket/object.",
@@ -41,15 +37,21 @@ namespace GoogleCloudSamples.VideoIntelligence
         public string Uri { get; set; }
     }
 
+    [Verb("labels", HelpText = "Print a list of labels found in the video.")]
+    class AnalyzeLabelsOptions : VideoOptions
+    {}
+
+    [Verb("shots", HelpText = "Print a list shot changes.")]
+    class AnalyzeShotsOptions : StorageOnlyVideoOptions
+    {}
+
     [Verb("explicit-content", HelpText = "Analyze the content of the video.")]
-    class AnalyzeExplicitContentOptions
-    {
-        [Value(0, HelpText = "The uri of the video to examine. "
-            + "Must be a Cloud storage uri like "
-            + "gs://bucket/object.",
-            Required = true)]
-        public string Uri { get; set; }
-    }
+    class AnalyzeExplicitContentOptions : StorageOnlyVideoOptions
+    {}
+
+    [Verb("transcribe", HelpText = "Print the audio track as text")]
+    class TranscribeOptions : StorageOnlyVideoOptions
+    {}
 
     public class Analyzer
     {
@@ -162,12 +164,62 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
         // [END video_analyze_explicit_content]
 
+        // [START video_speech_transcription_gcs]
+        public static object TranscribeVideo(string uri)
+        {
+            Console.WriteLine("Processing video for speech transcription.");
+
+            var client = VideoIntelligenceServiceClient.Create();
+            var request = new AnnotateVideoRequest {
+                InputUri = uri,
+                Features = {
+                    Feature.SpeechTranscription
+                },
+                VideoContext = new VideoContext {
+                    SpeechTranscriptionConfig = new SpeechTranscriptionConfig {
+                        LanguageCode = "en-US",
+                        EnableAutomaticPunctuation = true
+                    }
+                },
+            };
+            var op = client.AnnotateVideo(request).PollUntilCompleted();
+
+            // There is only one annotation result since only one video is
+            // processed.
+            var annotationResults = op.Result.AnnotationResults[0];
+            foreach (var transcription in annotationResults.SpeechTranscriptions)
+            {
+                // The number of alternatives for each transcription is limited
+                // by SpeechTranscriptionConfig.MaxAlternatives.
+                // Each alternative is a different possible transcription
+                // and has its own confidence score.
+                foreach (var alternative in transcription.Alternatives)
+                {
+                    Console.WriteLine("Alternative level information:");
+
+                    Console.WriteLine($"Transcript: {alternative.Transcript}");
+                    Console.WriteLine($"Confidence: {alternative.Confidence}");
+
+                    foreach (var wordInfo in alternative.Words)
+                    {
+                        Console.WriteLine($"\t{wordInfo.StartTime} - " +
+                                          $"{wordInfo.EndTime}:" +
+                                          $"{wordInfo.Word}");
+                    }
+                }
+            }
+
+            return 0;
+        }
+        // [END video_speech_transcription_gcs]
+
         public static void Main(string[] args)
         {
             var verbMap = new VerbMap<object>()
                 .Add((AnalyzeShotsOptions opts) => AnalyzeShotsGcs(opts.Uri))
                 .Add((AnalyzeExplicitContentOptions opts) => AnalyzeExplicitContentGcs(opts.Uri))
                 .Add((AnalyzeLabelsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeLabelsGcs(opts.Uri) : AnalyzeLabels(opts.Uri))
+                .Add((TranscribeOptions opts) => TranscribeVideo(opts.Uri))
                 .SetNotParsedFunc((errs) => 1);
             verbMap.Run(args);
         }
