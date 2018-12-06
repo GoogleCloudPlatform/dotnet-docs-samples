@@ -274,7 +274,7 @@ namespace GoogleCloudSamples
             // [START pubsub_publisher_batch_settings]
             // PublisherClient collects messages into appropriately sized
             // batches.
-            var publishTasks = 
+            var publishTasks =
                 messageTexts.Select(text => publisher.PublishAsync(text));
             foreach (Task<string> task in publishTasks)
             {
