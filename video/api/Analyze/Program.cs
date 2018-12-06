@@ -178,7 +178,8 @@ namespace GoogleCloudSamples.VideoIntelligence
                 Features = {
                     Feature.SpeechTranscription
                 },
-                VideoContext = new VideoContext {
+                VideoContext = new VideoContext
+                {
                     SpeechTranscriptionConfig = new SpeechTranscriptionConfig {
                         LanguageCode = "en-US",
                         EnableAutomaticPunctuation = true
