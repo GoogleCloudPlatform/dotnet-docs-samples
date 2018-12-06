@@ -44,34 +44,12 @@ namespace GoogleCloudSamples
             {
                 Thread.Sleep(retryDelayMs);
                 retryDelayMs = (retryDelayMs + 1000) * 2;
-                List<Google.Apis.Storage.v1.Data.Object> objectsInBucket =
-                    new List<Google.Apis.Storage.v1.Data.Object>();
                 try
                 {
-                    objectsInBucket = _storage.ListObjects(BucketName).ToList();
-                }
-                catch (Google.GoogleApiException e)
-                when (e.Error.Code == 404)
-                {
-                    // Bucket does not exist or is empty.
-                }
-
-                // Try to delete each object in the bucket.
-                foreach (var obj in objectsInBucket)
-                {
-                    try
+                    _storage.DeleteBucket(BucketName, new DeleteBucketOptions()
                     {
-                        _storage.DeleteObject(obj);
-                    }
-                    catch (Google.GoogleApiException)
-                    {
-                        continue;
-                    }
-                }
-
-                try
-                {
-                    _storage.DeleteBucket(BucketName);
+                        DeleteObjects = true
+                    });
                 }
                 catch (Google.GoogleApiException e)
                 when (e.Error.Code == 404)
@@ -80,7 +58,7 @@ namespace GoogleCloudSamples
                 }
                 catch (Google.GoogleApiException)
                 {
-                    continue;
+                    continue;  // Try again.
                 }
             }
         }
