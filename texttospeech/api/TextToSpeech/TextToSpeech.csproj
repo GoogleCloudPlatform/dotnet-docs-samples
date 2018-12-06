@@ -9,8 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="1.0.0-beta01" />
-    <PackageReference Include="CommandLineParser" Version="2.1.1-beta" />
+    <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="1.0.0-beta02" />
+    <PackageReference Include="CommandLineParser" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="output.mp3" />
