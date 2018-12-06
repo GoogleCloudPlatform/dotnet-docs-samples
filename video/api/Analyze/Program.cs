@@ -21,7 +21,8 @@ using System.Collections.Generic;
 
 namespace GoogleCloudSamples.VideoIntelligence
 {
-    class VideoOptions {
+    class VideoOptions
+    {
         [Value(0, HelpText = "The uri of the video to examine. "
             + "Can be path to a local file or a Cloud storage uri like "
             + "gs://bucket/object.",
@@ -29,7 +30,8 @@ namespace GoogleCloudSamples.VideoIntelligence
         public string Uri { get; set; }
     }
 
-    class StorageOnlyVideoOptions {
+    class StorageOnlyVideoOptions
+    {
         [Value(0, HelpText = "The uri of the video to examine. "
             + "Must be a Cloud storage uri like "
             + "gs://bucket/object.",
@@ -39,19 +41,19 @@ namespace GoogleCloudSamples.VideoIntelligence
 
     [Verb("labels", HelpText = "Print a list of labels found in the video.")]
     class AnalyzeLabelsOptions : VideoOptions
-    {}
+    { }
 
     [Verb("shots", HelpText = "Print a list shot changes.")]
     class AnalyzeShotsOptions : StorageOnlyVideoOptions
-    {}
+    { }
 
     [Verb("explicit-content", HelpText = "Analyze the content of the video.")]
     class AnalyzeExplicitContentOptions : StorageOnlyVideoOptions
-    {}
+    { }
 
     [Verb("transcribe", HelpText = "Print the audio track as text")]
     class TranscribeOptions : StorageOnlyVideoOptions
-    {}
+    { }
 
     public class Analyzer
     {
@@ -170,7 +172,8 @@ namespace GoogleCloudSamples.VideoIntelligence
             Console.WriteLine("Processing video for speech transcription.");
 
             var client = VideoIntelligenceServiceClient.Create();
-            var request = new AnnotateVideoRequest {
+            var request = new AnnotateVideoRequest
+            {
                 InputUri = uri,
                 Features = {
                     Feature.SpeechTranscription
