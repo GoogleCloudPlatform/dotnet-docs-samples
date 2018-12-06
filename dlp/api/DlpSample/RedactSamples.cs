@@ -1,4 +1,5 @@
-﻿using Google.Cloud.Dlp.V2;
+﻿using Google.Api.Gax.ResourceNames;
+using Google.Cloud.Dlp.V2;
 using Google.Protobuf;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace GoogleCloudSamples
         {
             var request = new RedactImageRequest
             {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                ParentAsProjectName = new ProjectName(projectId),
                 InspectConfig = new InspectConfig
                 {
                     MinLikelihood = Likelihood.Likely,

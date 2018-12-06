@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.BigQuery.V2;
 using Google.Cloud.Dlp.V2;
 using Google.Cloud.PubSub.V1;
@@ -51,7 +52,7 @@ namespace GoogleCloudSamples
             };
             var request = new InspectContentRequest
             {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                ParentAsProjectName = new ProjectName(projectId),
                 Item = new ContentItem
                 {
                     Value = dataValue
@@ -123,7 +124,7 @@ namespace GoogleCloudSamples
                 DlpServiceClient dlp = DlpServiceClient.Create();
                 InspectContentResponse response = dlp.InspectContent(new InspectContentRequest
                 {
-                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                    ParentAsProjectName = new ProjectName(projectId),
                     Item = new ContentItem
                     {
                         ByteItem = new ByteContentItem
@@ -241,7 +242,7 @@ namespace GoogleCloudSamples
             var request = new CreateDlpJobRequest
             {
                 InspectJob = inspectJob,
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                ParentAsProjectName = new ProjectName(projectId),
             };
 
             // We need created job name
@@ -341,7 +342,7 @@ namespace GoogleCloudSamples
             var request = new CreateDlpJobRequest
             {
                 InspectJob = inspectJob,
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                ParentAsProjectName = new ProjectName(projectId),
             };
 
             // We need created job name
@@ -424,7 +425,7 @@ namespace GoogleCloudSamples
             var request = new CreateDlpJobRequest
             {
                 InspectJob = inspectJob,
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                ParentAsProjectName = new ProjectName(projectId),
             };
 
             // We need created job name
@@ -434,8 +435,7 @@ namespace GoogleCloudSamples
             var fireEvent = new ManualResetEventSlim();
 
             var subscriptionName = new SubscriptionName(projectId, subscriptionId);
-            var subscriberClient = SubscriberServiceApiClient.Create();
-            var subscriber = SubscriberClient.Create(subscriptionName, new[] { subscriberClient });
+            var subscriber = SubscriberClient.CreateAsync(subscriptionName).Result;
             subscriber.StartAsync(
                 (pubSubMessage, cancellationToken) =>
                 {

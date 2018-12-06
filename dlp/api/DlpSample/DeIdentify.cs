@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using static Google.Cloud.Dlp.V2.CryptoReplaceFfxFpeConfig.Types;
 using System.Linq;
+using Google.Api.Gax.ResourceNames;
 
 namespace GoogleCloudSamples
 {

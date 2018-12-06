@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using CommandLine;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
 using System.Collections.Generic;
