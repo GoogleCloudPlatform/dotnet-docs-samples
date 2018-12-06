@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using CommandLine;
+using Google.Api.Gax.ResourceNames;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Iam.V1;
 using Google.Cloud.PubSub.V1;
@@ -236,13 +237,12 @@ namespace GoogleCloudSamples
             return 0;
         }
 
-        public static PublisherClient GetPublisher(string projectId,
+        public static async Task<PublisherClient> GetPublisherAsync(string projectId,
             string topicId)
         {
             // [START pubsub_publish]
-            PublisherServiceApiClient publisherClient = PublisherServiceApiClient.Create();
-            PublisherClient publisher = PublisherClient.Create(
-                new TopicName(projectId, topicId), new[] { publisherClient });
+            PublisherClient publisher = await PublisherClient.CreateAsync(
+                new TopicName(projectId, topicId));
             // [END pubsub_publish]
             return publisher;
         }
@@ -250,14 +250,13 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Create a PublisherClient with custom batch thresholds.
         /// </summary>
-        public static PublisherClient GetCustomPublisher(string projectId,
-            string topicId)
+        public static async Task<PublisherClient> GetCustomPublisherAsync(
+            string projectId, string topicId)
         {
             // [START pubsub_publisher_batch_settings]
-            PublisherServiceApiClient publisherClient = PublisherServiceApiClient.Create();
-            PublisherClient publisher = PublisherClient.Create(
-                new TopicName(projectId, topicId), new[] { publisherClient },
-                new PublisherClient.Settings
+            PublisherClient publisher = await PublisherClient.CreateAsync(
+                new TopicName(projectId, topicId),
+                settings: new PublisherClient.Settings
                 {
                     BatchingSettings = new Google.Api.Gax.BatchingSettings(
                         elementCountThreshold: 100,
@@ -268,41 +267,33 @@ namespace GoogleCloudSamples
             return publisher;
         }
 
-        public static object PublishMessages(PublisherClient publisher,
+        public static async Task<object> PublishMessagesAsync(PublisherClient publisher,
             IEnumerable<string> messageTexts)
         {
             // [START pubsub_quickstart_publisher]
             // [START pubsub_publisher_batch_settings]
-            var publishTasks = new List<Task<string>>();
             // PublisherClient collects messages into appropriately sized
             // batches.
-            foreach (string text in messageTexts)
+            var publishTasks = 
+                messageTexts.Select(text => publisher.PublishAsync(text));
+            foreach (Task<string> task in publishTasks)
             {
-                // Record all publishing Tasks. When each Task completes
-                // without error, the message has been successfully published.
-                // In real use don't simply store all publish Tasks forever;
-                // it is usually appropriate to keep a reference to the Task
-                // only until it has completed.
-                publishTasks.Add(publisher.PublishAsync(text));
-            }
-            foreach (var task in publishTasks)
-            {
-                Console.WriteLine("Published message {0}", task.Result);
+                string message = await task;
+                await Console.Out.WriteLineAsync($"Published message {message}");
             }
             // [END pubsub_publisher_batch_settings]
             // [END pubsub_quickstart_publisher]
             return 0;
         }
 
-        static object PullMessagesAsync(string projectId,
+        static async Task<object> PullMessagesAsync(string projectId,
             string subscriptionId, bool acknowledge)
         {
             // [START pubsub_subscriber_async_pull]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
-            SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
-            SubscriberClient subscriber = SubscriberClient.Create(
-                subscriptionName, new[] { subscriberClient });
+            SubscriberClient subscriber = await SubscriberClient.CreateAsync(
+                subscriptionName);
             // SubscriberClient runs your message handle function on multiple
             // threads to maximize throughput.
             subscriber.StartAsync(
@@ -316,26 +307,25 @@ namespace GoogleCloudSamples
                         : SubscriberClient.Reply.Nack;
                 });
             // Run for 3 seconds.
-            Thread.Sleep(3000);
-            subscriber.StopAsync(CancellationToken.None).Wait();
+            await Task.Delay(3000);
+            await subscriber.StopAsync(CancellationToken.None);
             // [END pubsub_subscriber_async_pull]
             return 0;
         }
 
-        public static object PullMessagesCustomAsync(string projectId,
+        public static async Task<object> PullMessagesCustomAsync(string projectId,
             string subscriptionId, bool acknowledge)
         {
             // [START pubsub_subscriber_flow_settings]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
-            SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
-            SubscriberClient subscriber = SubscriberClient.Create(
-                subscriptionName, new[] { subscriberClient },
-                new SubscriberClient.Settings()
+            SubscriberClient subscriber = await SubscriberClient.CreateAsync(
+                subscriptionName,
+                settings: new SubscriberClient.Settings()
                 {
                     AckExtensionWindow = TimeSpan.FromSeconds(4),
                     Scheduler = Google.Api.Gax.SystemScheduler.Instance,
-                    StreamAckDeadline = TimeSpan.FromSeconds(10),
+                    AckDeadline = TimeSpan.FromSeconds(10),
                     FlowControlSettings = new Google.Api.Gax
                         .FlowControlSettings(
                         maxOutstandingElementCount: 100,
@@ -357,8 +347,8 @@ namespace GoogleCloudSamples
                         : SubscriberClient.Reply.Nack;
                 });
             // Run for 3 seconds.
-            Thread.Sleep(3000);
-            subscriber.StopAsync(CancellationToken.None).Wait();
+            await Task.Delay(3000);
+            await subscriber.StopAsync(CancellationToken.None);
             // [END pubsub_subscriber_flow_settings]
             // [END pubsub_quickstart_subscriber]
             return 0;
@@ -580,13 +570,13 @@ namespace GoogleCloudSamples
                   opts.projectId, opts.topicId),
                 (CreateSubscriptionOptions opts) => CreateSubscription(opts.projectId,
                 opts.topicId, opts.subscriptionId),
-                (PublishMessageOptions opts) => PublishMessages(opts.customBatchThresholds
-                    ? GetCustomPublisher(opts.projectId, opts.topicId)
-                    : GetPublisher(opts.projectId, opts.topicId), opts.message),
+                (PublishMessageOptions opts) => PublishMessagesAsync((opts.customBatchThresholds
+                    ? GetCustomPublisherAsync(opts.projectId, opts.topicId)
+                    : GetPublisherAsync(opts.projectId, opts.topicId)).Result, opts.message).Result,
                 (PullMessagesOptions opts) => opts.syncPull ?
-                    PullMessagesSync(opts.projectId, opts.subscriptionId, opts.acknowledge) : opts.customFlow ?
+                    PullMessagesSync(opts.projectId, opts.subscriptionId, opts.acknowledge) : (opts.customFlow ?
                     PullMessagesCustomAsync(opts.projectId, opts.subscriptionId, opts.acknowledge) :
-                    PullMessagesAsync(opts.projectId, opts.subscriptionId, opts.acknowledge),
+                    PullMessagesAsync(opts.projectId, opts.subscriptionId, opts.acknowledge)).Result,
                 (GetTopicOptions opts) => GetTopic(opts.projectId, opts.topicId),
                 (GetSubscriptionOptions opts) => GetSubscription(opts.projectId,
                 opts.subscriptionId),
