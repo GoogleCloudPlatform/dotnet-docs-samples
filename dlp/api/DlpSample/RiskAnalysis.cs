@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.Dlp.V2;
+using Google.Cloud.PubSub.V1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Cloud.Dlp.V2;
-using Google.Cloud.PubSub.V1;
 using static Google.Cloud.Dlp.V2.Action.Types;
 using static Google.Cloud.Dlp.V2.PrivacyMetric.Types;
 using static Google.Cloud.Dlp.V2.PrivacyMetric.Types.KMapEstimationConfig.Types;
@@ -26,10 +27,10 @@ using static Google.Cloud.Dlp.V2.PrivacyMetric.Types.KMapEstimationConfig.Types;
 namespace GoogleCloudSamples
 {
     /// <summary>
-    /// Examples of how to calculate various deidentification risk metrics for BigQuery tables 
+    /// Examples of how to calculate various deidentification risk metrics for BigQuery tables
     /// For more information, see https://cloud.google.com/dlp/docs/concepts-risk-analysis
     /// </summary>
-    class RiskAnalysis
+    internal class RiskAnalysis
     {
         // [START dlp_numerical_stats]
         public static object NumericalStats(
@@ -74,14 +75,14 @@ namespace GoogleCloudSamples
             var submittedJob = dlp.CreateDlpJob(
                 new CreateDlpJobRequest
                 {
-                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
+                    ParentAsProjectName = new ProjectName(callingProjectId),
                     RiskJob = config
                 });
 
             // Listen to pub/sub for the job
             var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
-            SubscriberClient subscriber = SubscriberClient.Create(
-                subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+            SubscriberClient subscriber = SubscriberClient.CreateAsync(
+                subscriptionName).Result;
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
@@ -127,6 +128,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_numerical_stats]
 
         // [START dlp_categorical_stats]
@@ -170,14 +172,14 @@ namespace GoogleCloudSamples
 
             var submittedJob = dlp.CreateDlpJob(new CreateDlpJobRequest
             {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
+                ParentAsProjectName = new ProjectName(callingProjectId),
                 RiskJob = config
             });
 
             // Listen to pub/sub for the job
             var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
-            SubscriberClient subscriber = SubscriberClient.Create(
-                subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+            SubscriberClient subscriber = SubscriberClient.CreateAsync(
+                subscriptionName).Result;
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
@@ -224,6 +226,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_categorical_stats]
 
         // [START dlp_k_anonymity]
@@ -271,14 +274,14 @@ namespace GoogleCloudSamples
             var submittedJob = dlp.CreateDlpJob(
                 new CreateDlpJobRequest
                 {
-                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
+                    ParentAsProjectName = new ProjectName(callingProjectId),
                     RiskJob = config
                 });
 
             // Listen to pub/sub for the job
             var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
-            SubscriberClient subscriber = SubscriberClient.Create(
-                subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+            SubscriberClient subscriber = SubscriberClient.CreateAsync(
+                subscriptionName).Result;
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
@@ -325,6 +328,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_k_anonymity]
 
         // [START dlp_l_diversity]
@@ -373,14 +377,14 @@ namespace GoogleCloudSamples
             var submittedJob = dlp.CreateDlpJob(
                 new CreateDlpJobRequest
                 {
-                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
+                    ParentAsProjectName = new ProjectName(callingProjectId),
                     RiskJob = config
                 });
 
             // Listen to pub/sub for the job
             var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
-            SubscriberClient subscriber = SubscriberClient.Create(
-                subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+            SubscriberClient subscriber = SubscriberClient.CreateAsync(
+                subscriptionName).Result;
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
@@ -433,6 +437,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_l_diversity]
 
         // [START dlp_k_map]
@@ -493,7 +498,7 @@ namespace GoogleCloudSamples
             var submittedJob = dlp.CreateDlpJob(
                 new CreateDlpJobRequest
                 {
-                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(callingProjectId),
+                    ParentAsProjectName = new ProjectName(callingProjectId),
                     RiskJob = config
                 });
 
@@ -501,8 +506,8 @@ namespace GoogleCloudSamples
             var subscriptionName = new SubscriptionName(
                 callingProjectId,
                 subscriptionId);
-            SubscriberClient subscriber = SubscriberClient.Create(
-                subscriptionName, new[] { SubscriberServiceApiClient.Create() });
+            SubscriberClient subscriber = SubscriberClient.CreateAsync(
+                subscriptionName).Result;
 
             // SimpleSubscriber runs your message handle function on multiple
             // threads to maximize throughput.
@@ -549,6 +554,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_k_map]
     }
 }

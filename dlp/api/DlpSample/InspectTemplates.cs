@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace GoogleCloudSamples
 {
-    class InspectTemplates
+    internal class InspectTemplates
     {
         // [START dlp_create_inspect_template]
         public static string CreateInspectTemplate(
@@ -59,6 +59,7 @@ namespace GoogleCloudSamples
 
             return response.Name;
         }
+
         // [END dlp_create_inspect_template]
 
         // [START dlp_delete_inspect_template]
@@ -76,6 +77,7 @@ namespace GoogleCloudSamples
 
             return templateName;
         }
+
         // [END dlp_delete_inspect_template]
 
         // [START dlp_list_inspect_templates]
@@ -104,6 +106,7 @@ namespace GoogleCloudSamples
 
             return null;
         }
+
         // [END dlp_list_inspect_templates]
 
         // An example of ListInspectTemplates, but using paging

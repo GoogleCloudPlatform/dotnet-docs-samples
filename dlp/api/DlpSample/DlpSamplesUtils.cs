@@ -13,17 +13,17 @@
 // limitations under the License.
 
 using Google.Cloud.Dlp.V2;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace GoogleCloudSamples
 {
     /// <summary>
     /// Helper functions used by multiple Dlp Sample classes.
     /// </summary>
-    class DlpSamplesUtils
+    internal class DlpSamplesUtils
     {
         /// <summary>
         /// Split and parse a string representation of several identifying fields.
@@ -156,6 +156,7 @@ namespace GoogleCloudSamples
                 }
             }).Where(it => it != null);
         }
+
         /// <summary>
         /// Unpacks a protobuf value into a normal string
         /// </summary>
