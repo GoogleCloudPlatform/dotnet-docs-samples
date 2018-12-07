@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using static Google.Cloud.Dlp.V2.CryptoReplaceFfxFpeConfig.Types;
 using System.Linq;
-using Google.Api.Gax.ResourceNames;
+using static Google.Cloud.Dlp.V2.CryptoReplaceFfxFpeConfig.Types;
 
 namespace GoogleCloudSamples
 {
-    class DeIdentify
+    internal class DeIdentify
     {
         // [START dlp_deidentify_masking]
         public static object DeidMask(
@@ -73,6 +73,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Deidentified content: {response.Item.Value}");
             return 0;
         }
+
         // [END dlp_deidentify_masking]
 
         // [START dlp_deidentify_fpe]
@@ -132,6 +133,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Deidentified content: {response.Item.Value}");
             return 0;
         }
+
         // [END dlp_deidentify_fpe]
 
         // [START dlp_reidentify_fpe]
@@ -205,6 +207,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Reidentified content: {response.Item.Value}");
             return 0;
         }
+
         // [END dlp_reidentify_fpe]
 
         // [START dlp_deidentify_date_shift]
@@ -350,6 +353,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_deidentify_date_shift]
     }
 }

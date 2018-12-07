@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.Dlp.V2;
+using Google.Cloud.PubSub.V1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Api.Gax.ResourceNames;
-using Google.Cloud.Dlp.V2;
-using Google.Cloud.PubSub.V1;
 using static Google.Cloud.Dlp.V2.Action.Types;
 using static Google.Cloud.Dlp.V2.PrivacyMetric.Types;
 using static Google.Cloud.Dlp.V2.PrivacyMetric.Types.KMapEstimationConfig.Types;
@@ -27,10 +27,10 @@ using static Google.Cloud.Dlp.V2.PrivacyMetric.Types.KMapEstimationConfig.Types;
 namespace GoogleCloudSamples
 {
     /// <summary>
-    /// Examples of how to calculate various deidentification risk metrics for BigQuery tables 
+    /// Examples of how to calculate various deidentification risk metrics for BigQuery tables
     /// For more information, see https://cloud.google.com/dlp/docs/concepts-risk-analysis
     /// </summary>
-    class RiskAnalysis
+    internal class RiskAnalysis
     {
         // [START dlp_numerical_stats]
         public static object NumericalStats(
@@ -128,6 +128,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_numerical_stats]
 
         // [START dlp_categorical_stats]
@@ -225,6 +226,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_categorical_stats]
 
         // [START dlp_k_anonymity]
@@ -326,6 +328,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_k_anonymity]
 
         // [START dlp_l_diversity]
@@ -434,6 +437,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_l_diversity]
 
         // [START dlp_k_map]
@@ -550,6 +554,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_k_map]
     }
 }

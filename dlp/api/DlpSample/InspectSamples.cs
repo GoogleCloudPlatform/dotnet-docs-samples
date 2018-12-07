@@ -27,7 +27,7 @@ using static Google.Cloud.Dlp.V2.InspectConfig.Types;
 
 namespace GoogleCloudSamples
 {
-    class InspectSamples
+    internal class InspectSamples
     {
         // [START dlp_inspect_string]
         public static object InspectString(
@@ -84,10 +84,11 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_inspect_string]
 
         // [START dlp_inspect_file]
-        static readonly Dictionary<string, ByteContentItem.Types.BytesType> s_fileTypes =
+        private static readonly Dictionary<string, ByteContentItem.Types.BytesType> s_fileTypes =
             new Dictionary<string, ByteContentItem.Types.BytesType>()
         {
             { ".bmp", ByteContentItem.Types.BytesType.ImageBmp },
@@ -165,6 +166,7 @@ namespace GoogleCloudSamples
                 fileStream.Close();
             }
         }
+
         // [END dlp_inspect_file]
 
         // [START dlp_inspect_bigquery]
@@ -250,7 +252,7 @@ namespace GoogleCloudSamples
             string jobName = dlpJob.Name;
 
             // Make sure the job finishes before inspecting the results.
-            // Alternatively, we can inspect results opportunistically, but 
+            // Alternatively, we can inspect results opportunistically, but
             // for testing purposes, we want consistent outcome
             bool jobFinished = EnsureJobFinishes(projectId, jobName);
             if (jobFinished)
@@ -269,6 +271,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_inspect_bigquery]
 
         // [START dlp_inspect_datastore]
@@ -369,8 +372,8 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-        // [END dlp_inspect_datastore]
 
+        // [END dlp_inspect_datastore]
 
         // [START dlp_inspect_gcs]
 
@@ -449,7 +452,7 @@ namespace GoogleCloudSamples
                     return Task.FromResult(SubscriberClient.Reply.Nack);
                 });
 
-            // We block here until receiving a signal from a separate thread that is waiting on a message indicating receiving a result of Dlp job 
+            // We block here until receiving a signal from a separate thread that is waiting on a message indicating receiving a result of Dlp job
             if (fireEvent.Wait(TimeSpan.FromMinutes(1)))
             {
                 // Stop the thread that is listening to messages as a result of StartAsync call earlier
@@ -478,7 +481,7 @@ namespace GoogleCloudSamples
 
         // [END dlp_inspect_gcs]
 
-        static bool EnsureJobFinishes(string projectId, string jobName)
+        private static bool EnsureJobFinishes(string projectId, string jobName)
         {
             DlpServiceClient client = DlpServiceClient.Create();
             var request = new GetDlpJobRequest

@@ -22,7 +22,7 @@ namespace GoogleCloudSamples
     /// This class contains examples of how to list and delete DLP jobs
     /// For more information, see https://cloud-dot-devsite.googleplex.com/dlp/docs/reference/rest/v2/projects.dlpJobs
     /// </summary>
-    class Jobs
+    internal class Jobs
     {
         // [START dlp_list_jobs]
         public static object ListJobs(string projectId, string filter, string jobType)
@@ -43,6 +43,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_list_jobs]
 
         // [START dlp_delete_job]
@@ -58,6 +59,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Successfully deleted job {jobName}.");
             return 0;
         }
+
         // [END dlp_delete_job]
     }
 }

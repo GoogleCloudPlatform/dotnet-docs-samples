@@ -2,13 +2,11 @@
 using Google.Cloud.Dlp.V2;
 using Google.Protobuf;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace GoogleCloudSamples
 {
-    class RedactSamples
+    internal class RedactSamples
     {
         // [START redact_image]
         public static object RedactFromImage(string projectId, string originalImagePath, string redactedImagePath)

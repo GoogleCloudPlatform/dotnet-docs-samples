@@ -14,14 +14,9 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Apis.Auth.OAuth2;
-using Google.Apis.CloudKMS.v1;
-using Google.Apis.CloudKMS.v1.Data;
-using Google.Apis.Services;
 using Google.Cloud.Dlp.V2;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -46,7 +41,6 @@ namespace GoogleCloudSamples
             // See: https://developers.google.com/identity/protocols/application-default-credentials
             GoogleCredential credential = GoogleCredential.GetApplicationDefaultAsync().Result;
 
-
             // Fetch the test key from an environment variable
             KeyName = Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
             WrappedKey = Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
@@ -56,15 +50,18 @@ namespace GoogleCloudSamples
     // TODO reconcile these with the "simple" tests below
     public partial class DlpTest : IClassFixture<DlpTestFixture>
     {
-        const string phone = "(223) 456-7890";
-        const string email = "gary@somedomain.org";
-        const string cc = "4000-3000-2000-1000";
-        const string inspectStringValue = "hi my phone number is (223) 456-7890 and my email address is " +
+        private const string phone = "(223) 456-7890";
+        private const string email = "gary@somedomain.org";
+        private const string cc = "4000-3000-2000-1000";
+
+        private const string inspectStringValue = "hi my phone number is (223) 456-7890 and my email address is " +
             "gary@somedomain.org. You'll find my credit card number is 4000-3000-2000-1000!";
 
-        const string ident = "111223333";
+        private const string ident = "111223333";
+
         private readonly Regex _deidFpeResultRegex =
             new Regex("Please de-identify the following identifier: TOKEN\\(\\d+\\):(?<ident>.{9})");
+
         private readonly Regex _alphanumRegex = new Regex("[a-zA-Z0-9]*");
         private readonly Regex _hexRegex = new Regex("[0-9A-F]*");
         private readonly Regex _numRegex = new Regex("\\d*");
@@ -73,6 +70,7 @@ namespace GoogleCloudSamples
         private string ProjectId { get { return _kmsFixture.ProjectId; } }
 
         #region anassri_tests;
+
         private readonly string _resourcePath = Path.GetFullPath("../../../resources/");
         private string CallingProjectId { get { return _kmsFixture.ProjectId; } }
         private string TableProjectId { get { return "nodejs-docs-samples"; } } // TODO make retrieval more idiomatic
@@ -81,23 +79,26 @@ namespace GoogleCloudSamples
 
         // TODO change these
         private readonly string _bucketName = "nodejs-docs-samples";
+
         private readonly string _topicId = "dlp-nyan-2";
         private readonly string _subscriptionId = "nyan-dlp-2";
 
         // TODO keep these values, but make their retrieval more idiomatic
         private readonly string _datasetId = "integration_tests_dlp";
+
         private readonly string _tableId = "harmful";
 
         // FYI these values depend on a BQ table in nodejs-docs-samples; we should verify its publicly accessible
         private readonly string _quasiIds = "Age,Gender";
+
         private readonly string _quasiIdInfoTypes = "AGE,GENDER";
         private readonly string _sensitiveAttribute = "Name";
 
-        #endregion
+        #endregion anassri_tests;
 
         private readonly RetryRobot _retryRobot = new RetryRobot();
 
-        readonly CommandLineRunner _dlp = new CommandLineRunner()
+        private readonly CommandLineRunner _dlp = new CommandLineRunner()
         {
             VoidMain = Dlp.Main,
             Command = "Dlp"
@@ -142,7 +143,6 @@ namespace GoogleCloudSamples
             Assert.Contains("AGE", outputB.Stdout);
             Assert.DoesNotContain("AMERICAN_BANKERS_CUSIP_ID", outputB.Stdout);
         }
-
 
         [Fact]
         public void TestDeidMask()
