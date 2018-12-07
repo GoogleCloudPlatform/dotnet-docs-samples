@@ -175,12 +175,11 @@ namespace GoogleCloudSamples.VideoIntelligence
             var request = new AnnotateVideoRequest
             {
                 InputUri = uri,
-                Features = {
-                    Feature.SpeechTranscription
-                },
+                Features = { Feature.SpeechTranscription },
                 VideoContext = new VideoContext
                 {
-                    SpeechTranscriptionConfig = new SpeechTranscriptionConfig {
+                    SpeechTranscriptionConfig = new SpeechTranscriptionConfig
+                    {
                         LanguageCode = "en-US",
                         EnableAutomaticPunctuation = true
                     }
