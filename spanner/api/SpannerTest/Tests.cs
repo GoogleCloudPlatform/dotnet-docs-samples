@@ -294,7 +294,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Imagination", readOutput.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip="https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/713")]
         void TestDml()
         {
             RefillMarketingBudgetsAsync(300000, 300000).Wait();
