@@ -13,25 +13,22 @@
 // the License.
 
 using CommandLine;
-using Google.Cloud.Storage.V1;
 using Google.Cloud.Vision.V1;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using Google.Protobuf;
 
 namespace GoogleCloudSamples
 {
-    [Verb("create", HelpText = "Build a product set")]
-    class ProductOptions
-    {
+    class ProductSetsOptions {
         [Value(0, HelpText = "Your project ID")]
         public string ProjectID { get; set; }
 
         [Value(1, HelpText = "Region name")]
         public string ComputeRegion { get; set; }
+    }
 
+    [Verb("create", HelpText = "Build a product set")]
+    class CreateProductSetsOptions : ProductSetsOptions
+    {
         [Value(2, HelpText = "Product Set ID")]
         public string ProductSetId { get; set; }
 
@@ -40,121 +37,139 @@ namespace GoogleCloudSamples
     }
 
     [Verb("list", HelpText = "List all product sets")]
-    class ListProductOptions
+    class ListProductSetsOptions : ProductSetsOptions
+    { }
+
+    [Verb("get", HelpText = "Get a product set")]
+    class GetProductSetOptions : ProductSetsOptions
     { 
-        
-    
+        [Value(2, HelpText = "Product Set ID")]
+        public string ProductSetId { get; set; }
     }
 
-
-    class ImageOptions
-    {
-        [Value(0, HelpText = "The path to the image file. " +
-            "May be a local file path, a Google Cloud Storage uri, or " +
-            "a publicly accessible HTTP or HTTPS uri",
-            Required = true)]
-        public string FilePath { get; set; }
+    [Verb("delete", HelpText = "Delete a product set")]
+    class DeleteProductSetOptions : ProductSetsOptions
+    { 
+        [Value(2, HelpText = "Product Set ID")]
+        public string ProductSetId { get; set; }
     }
 
     public class ProductSearchProgram
     {
-        static Image ImageFromArg(string arg)
-        {
-            bool isFromUri = false;
-            if (arg.ToLower().StartsWith("gs:/") ||
-                arg.ToLower().StartsWith("http"))
-            {
-                isFromUri = true;
-            }
-            return isFromUri ? ImageFromUri(arg) : ImageFromFile(arg);
-        }
 
-        static Image ImageFromUri(string uri)
+        // [START vision_product_search_create_product_set]
+        private static object CreateProductSet(CreateProductSetsOptions opts)
         {
-            // [START vision_crop_hint_detection_gcs]
-            // [START vision_fulltext_detection_gcs]
-            // [START vision_web_detection_gcs]
-            // [START vision_logo_detection_gcs]
-            // [START vision_text_detection_gcs]
-            // [START vision_landmark_detection_gcs]
-            // [START vision_image_property_detection_gcs]
-            // [START vision_safe_search_detection_gcs]
-            // [START vision_label_detection_gcs]
-            // [START vision_face_detection_gcs]
-            // Specify a Google Cloud Storage uri for the image
-            // or a publicly accessible HTTP or HTTPS uri.
-            var image = Image.FromUri(uri);
-            // [END vision_face_detection_gcs]
-            // [END vision_label_detection_gcs]
-            // [END vision_safe_search_detection_gcs]
-            // [END vision_image_property_detection_gcs]
-            // [END vision_landmark_detection_gcs]
-            // [END vision_text_detection_gcs]
-            // [END vision_logo_detection_gcs]
-            // [END vision_web_detection_gcs]
-            // [END vision_fulltext_detection_gcs]
-            // [END vision_crop_hint_detection_gcs]
-            return image;
-        }
-
-        static Image ImageFromFile(string filePath)
-        {
-            // [START vision_fulltext_detection]
-            // [START vision_web_detection]
-            // [START vision_crop_hint_detection]
-            // [START vision_logo_detection]
-            // [START vision_text_detection]
-            // [START vision_landmark_detection]
-            // [START vision_image_property_detection]
-            // [START vision_safe_search_detection]
-            // [START vision_label_detection]
-            // [START vision_face_detection]
-            // Load an image from a local file.
-            var image = Image.FromFile(filePath);
-            // [END vision_face_detection]
-            // [END vision_label_detection]
-            // [END vision_safe_search_detection]
-            // [END vision_image_property_detection]
-            // [END vision_landmark_detection]
-            // [END vision_text_detection]
-            // [END vision_logo_detection]
-            // [END vision_crop_hint_detection]
-            // [END vision_web_detection]
-            // [END vision_fulltext_detection]
-            return image;
-        }
-
-        private static object CreateProductSet(ProductOptions opts)
-        {
-            Console.WriteLine("Hello! Creating a product, eh?");
-            Console.WriteLine($"Project ID: {opts.ProjectID}");
-            Console.WriteLine($"Location name: {opts.ComputeRegion}");
-            Console.WriteLine($"Product set ID: {opts.ProductSetId}");
-            Console.WriteLine($"Product display name: {opts.ProductSetDisplayName}");
+            /*
+             * dotnet run list vision-erschmid us-west1 someID someDisplayName
+            */
             var client = ProductSearchClient.Create();
 
             var productSet = new ProductSet { 
                 DisplayName = opts.ProductSetDisplayName
             };
+            // Create a product set with the product set specification in the region.
             var request = new CreateProductSetRequest {
-                ParentAsLocationName = new LocationName(opts.ProjectID, opts.ComputeRegion),
+                // A resource that represents Google Cloud Platform location
+                ParentAsLocationName = new LocationName(opts.ProjectID, 
+                                                        opts.ComputeRegion),
                 ProductSetId = opts.ProductSetId,
                 ProductSet = productSet
             };
 
+            // The response is the product set with the `name` populated
             var response = client.CreateProductSet(request);
+
             Console.WriteLine($"Product set name: {response.DisplayName}");
 
             return 0;
         }
+        // [END vision_product_search_create_product_set]
+
+        // [START vision_product_search_list_product_sets]
+        private static object ListProductsSet(ListProductSetsOptions opts)
+        {
+            var client = ProductSearchClient.Create();
+            var request = new ListProductSetsRequest {
+                // A resource that represents Google Cloud Platform location
+                ParentAsLocationName = new LocationName(opts.ProjectID, opts.ComputeRegion)
+            };
+
+            // List all the product sets available in the region.
+            var response = client.ListProductSets(request);
+
+            foreach (var productSet in response)
+            {
+                var id = productSet.Name.Split("/")[5]; // Maybe store split result as array and then get length?
+                Console.WriteLine($"Product set name: {productSet.DisplayName}");
+                Console.WriteLine($"Product set ID: {id}");
+                Console.WriteLine($"Product set index time:");
+                Console.WriteLine($"\tseconds: {productSet.IndexTime.Seconds}");
+                Console.WriteLine($"\tnanos: {productSet.IndexTime.Nanos}");
+            }
+
+            return 0;
+        }
+        // [END vision_product_search_list_product_sets]
+
+        // [START vision_product_search_get_product_set]
+        private static object GetProductSet(GetProductSetOptions opts)
+        {
+            var client = ProductSearchClient.Create();
+            var request = new GetProductSetRequest
+            {
+                // Get the full path of the product set.
+                ProductSetName = new ProductSetName(opts.ProjectID, 
+                                                    opts.ComputeRegion, 
+                                                    opts.ProductSetId)
+            };
+
+            // Get the complete detail of the product set.
+            var productSet = client.GetProductSet(request);
+
+            var id = productSet.Name.Split("/")[5]; // Maybe store split result as array and then get length?
+            Console.WriteLine($"Product set name: {productSet.DisplayName}");
+            Console.WriteLine($"Product set ID: {id}");
+            Console.WriteLine($"Product set index time:");
+            Console.WriteLine($"\tseconds: {productSet.IndexTime.Seconds}");
+            Console.WriteLine($"\tnanos: {productSet.IndexTime.Nanos}");
+
+            return 0;
+        }
+        // [END vision_product_search_get_product_set]
+
+        // [START vision_product_search_delete_product_set]
+        private static object DeleteProductSet(DeleteProductSetOptions opts)
+        {
+            var client = ProductSearchClient.Create();
+            var request = new DeleteProductSetRequest {
+                // Get the full path of the product set.
+                ProductSetName = new ProductSetName(opts.ProjectID,
+                                                    opts.ComputeRegion,
+                                                    opts.ProductSetId)
+            };
+
+            // Delete the product set.
+            client.DeleteProductSet(request);
+
+            Console.WriteLine("Product set deleted.");
+            return 0;
+        }
+        // [END vision_product_search_delete_product_set]
 
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<
-                ProductOptions
+                CreateProductSetsOptions,
+                ListProductSetsOptions,
+                GetProductSetOptions,
+                DeleteProductSetOptions
                 >(args)
               .MapResult(
-                (ProductOptions opts) => CreateProductSet(opts),
+                (CreateProductSetsOptions opts) => CreateProductSet(opts),
+                (ListProductSetsOptions opts) => ListProductsSet(opts),
+                (GetProductSetOptions opts) => GetProductSet(opts),
+                (DeleteProductSetOptions opts) => DeleteProductSet(opts),
                 errs => 1);
 
             Console.ReadKey(); // TODO(erschmid): remove before submit
