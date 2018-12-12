@@ -54,14 +54,22 @@ namespace GoogleCloudSamples
         public string ProductSetId { get; set; }
     }
 
-    public class ProductSearchProgram
+    public class ProductSetManagement
     {
+        public static void RegisterCommands(VerbMap<object> verbMap)
+        {
+            verbMap
+                .Add((CreateProductSetsOptions opts) => CreateProductSet(opts))
+                .Add((ListProductSetsOptions opts) => ListProductsSet(opts))
+                .Add((GetProductSetOptions opts) => GetProductSet(opts))
+                .Add((DeleteProductSetOptions opts) => DeleteProductSet(opts));
+        }
 
         // [START vision_product_search_create_product_set]
         private static object CreateProductSet(CreateProductSetsOptions opts)
         {
             /*
-             * dotnet run list vision-erschmid us-west1 someID someDisplayName
+             * dotnet run create vision-erschmid us-west1 someID someDisplayName
             */
             var client = ProductSearchClient.Create();
 
@@ -156,23 +164,5 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END vision_product_search_delete_product_set]
-
-        public static void Main(string[] args)
-        {
-            Parser.Default.ParseArguments<
-                CreateProductSetsOptions,
-                ListProductSetsOptions,
-                GetProductSetOptions,
-                DeleteProductSetOptions
-                >(args)
-              .MapResult(
-                (CreateProductSetsOptions opts) => CreateProductSet(opts),
-                (ListProductSetsOptions opts) => ListProductsSet(opts),
-                (GetProductSetOptions opts) => GetProductSet(opts),
-                (DeleteProductSetOptions opts) => DeleteProductSet(opts),
-                errs => 1);
-
-            Console.ReadKey(); // TODO(erschmid): remove before submit
-        }
     }
 }

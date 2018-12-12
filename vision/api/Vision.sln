@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisionTest", "VisionTest\Vi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductSearch", "ProductSearch\ProductSearch.csproj", "{6AA8037C-0666-41AF-AB80-758B1ABEF9D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineUtil", "..\..\commandlineutil\Lib\CommandLineUtil.csproj", "{068DC073-EB56-4C72-B271-C09CAA76E8E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,5 +88,17 @@ Global
 		{6AA8037C-0666-41AF-AB80-758B1ABEF9D5}.Release|x64.Build.0 = Release|Any CPU
 		{6AA8037C-0666-41AF-AB80-758B1ABEF9D5}.Release|x86.ActiveCfg = Release|Any CPU
 		{6AA8037C-0666-41AF-AB80-758B1ABEF9D5}.Release|x86.Build.0 = Release|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Debug|x64.Build.0 = Debug|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Debug|x86.Build.0 = Debug|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Release|x64.ActiveCfg = Release|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Release|x64.Build.0 = Release|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Release|x86.ActiveCfg = Release|Any CPU
+		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
