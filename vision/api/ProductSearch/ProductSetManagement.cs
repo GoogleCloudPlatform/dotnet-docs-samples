@@ -15,10 +15,12 @@
 using CommandLine;
 using Google.Cloud.Vision.V1;
 using System;
+using System.Linq;
 
 namespace GoogleCloudSamples
 {
-    class ProductSetsOptions {
+    class ProductSetOptions
+    {
         [Value(0, HelpText = "Your project ID")]
         public string ProjectID { get; set; }
 
@@ -26,33 +28,30 @@ namespace GoogleCloudSamples
         public string ComputeRegion { get; set; }
     }
 
-    [Verb("create", HelpText = "Build a product set")]
-    class CreateProductSetsOptions : ProductSetsOptions
+    class ProductSetWithIDOptions : ProductSetOptions
     {
         [Value(2, HelpText = "Product Set ID")]
         public string ProductSetId { get; set; }
+    }
 
+    [Verb("create_product_set", HelpText = "Build a product set")]
+    class CreateProductSetsOptions : ProductSetWithIDOptions
+    {
         [Value(3, HelpText = "Product Set Display Name")]
         public string ProductSetDisplayName { get; set; }
     }
 
-    [Verb("list", HelpText = "List all product sets")]
-    class ListProductSetsOptions : ProductSetsOptions
+    [Verb("list_product_sets", HelpText = "List all product sets")]
+    class ListProductSetsOptions : ProductSetOptions
     { }
 
-    [Verb("get", HelpText = "Get a product set")]
-    class GetProductSetOptions : ProductSetsOptions
-    { 
-        [Value(2, HelpText = "Product Set ID")]
-        public string ProductSetId { get; set; }
-    }
+    [Verb("get_product_set", HelpText = "Get a product set")]
+    class GetProductSetOptions : ProductSetWithIDOptions
+    { }
 
-    [Verb("delete", HelpText = "Delete a product set")]
-    class DeleteProductSetOptions : ProductSetsOptions
-    { 
-        [Value(2, HelpText = "Product Set ID")]
-        public string ProductSetId { get; set; }
-    }
+    [Verb("delete_product_set", HelpText = "Delete a product set")]
+    class DeleteProductSetOptions : ProductSetWithIDOptions
+    { }
 
     public class ProductSetManagement
     {
@@ -68,9 +67,6 @@ namespace GoogleCloudSamples
         // [START vision_product_search_create_product_set]
         private static object CreateProductSet(CreateProductSetsOptions opts)
         {
-            /*
-             * dotnet run create vision-erschmid us-west1 someID someDisplayName
-            */
             var client = ProductSearchClient.Create();
 
             var productSet = new ProductSet { 
@@ -108,7 +104,7 @@ namespace GoogleCloudSamples
 
             foreach (var productSet in response)
             {
-                var id = productSet.Name.Split("/")[5]; // Maybe store split result as array and then get length?
+                var id = productSet.Name.Split("/").Last(); // Maybe store split result as array and then get length?
                 Console.WriteLine($"Product set name: {productSet.DisplayName}");
                 Console.WriteLine($"Product set ID: {id}");
                 Console.WriteLine($"Product set index time:");
@@ -135,7 +131,7 @@ namespace GoogleCloudSamples
             // Get the complete detail of the product set.
             var productSet = client.GetProductSet(request);
 
-            var id = productSet.Name.Split("/")[5]; // Maybe store split result as array and then get length?
+            var id = productSet.Name.Split("/").Last(); // Maybe store split result as array and then get length?
             Console.WriteLine($"Product set name: {productSet.DisplayName}");
             Console.WriteLine($"Product set ID: {id}");
             Console.WriteLine($"Product set index time:");
