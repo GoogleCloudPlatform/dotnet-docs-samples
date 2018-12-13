@@ -2264,14 +2264,14 @@ namespace GoogleCloudSamples.Spanner
                 // Define create table statement for table with 
                 // commit timestamp column.
                 string createTableStatement =
-               @"CREATE TABLE Performances (
-				SingerId	INT64 NOT NULL,
-				VenueId		INT64 NOT NULL,
-				EventDate	Date,
-				Revenue   INT64,
-				LastUpdateTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)
-			    ) PRIMARY KEY (SingerId, VenueId, EventDate),
-			    INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+                @"CREATE TABLE Performances (
+                    SingerId       INT64 NOT NULL,
+                    VenueId        INT64 NOT NULL,
+                    EventDate      Date,
+                    Revenue        INT64
+                    LastUpdateTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)
+                ) PRIMARY KEY (SingerId, VenueId, EventDate),
+                    INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
                 // Make the request.
                 var cmd = connection.CreateDdlCommand(createTableStatement);
                 await cmd.ExecuteNonQueryAsync();
