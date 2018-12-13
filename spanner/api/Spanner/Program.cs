@@ -1536,6 +1536,7 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END spanner_dml_partitioned_delete]
 
+        // [START spanner_delete_data]	    
         public static async Task DeleteSampleDataAsync(
             string projectId, string instanceId, string databaseId)
         {
@@ -1561,7 +1562,7 @@ namespace GoogleCloudSamples.Spanner
             {
                 await connection.OpenAsync();
 
-                // Insert rows into the Singers table.
+                // Delete rows from the Singers table.
                 var cmd = connection.CreateDeleteCommand("Singers",
                     new SpannerParameterCollection {
                         {"SingerId", SpannerDbType.Int64}
@@ -1575,6 +1576,8 @@ namespace GoogleCloudSamples.Spanner
                 Console.WriteLine("Deleted data.");
             }
         }
+        // [END spanner_delete_data]
+
         // [START spanner_insert_data]
         public static async Task InsertSampleDataAsync(
             string projectId, string instanceId, string databaseId)
