@@ -6,7 +6,6 @@
     <AssemblyName>StaticContent</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>StaticContent</PackageId>
-    <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
