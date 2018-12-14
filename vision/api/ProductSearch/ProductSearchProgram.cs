@@ -11,6 +11,7 @@ namespace GoogleCloudSamples
             ProductSetManagement.RegisterCommands(verbMap);
             ProductManagement.RegisterCommands(verbMap);
             ProductInProductSetManagement.RegisterCommands(verbMap);
+            ReferenceImageManagement.RegisterCommands(verbMap);
             verbMap.NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
