@@ -241,7 +241,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                if (_accountOptions.Value.EnableRoles)
+                if (_accountOptions.Value.EnableRoles && 
+                    !string.IsNullOrWhiteSpace(model.Roles))
                 {
                     foreach (string role in model.Roles.Split(','))
                     {
