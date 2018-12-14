@@ -19,16 +19,7 @@ using System.Linq;
 
 namespace GoogleCloudSamples
 {
-    class ProductSetOptions
-    {
-        [Value(0, HelpText = "Your project ID")]
-        public string ProjectID { get; set; }
-
-        [Value(1, HelpText = "Region name")]
-        public string ComputeRegion { get; set; }
-    }
-
-    class ProductSetWithIDOptions : ProductSetOptions
+    class ProductSetWithIDOptions : BaseOptions
     {
         [Value(2, HelpText = "Product Set ID")]
         public string ProductSetId { get; set; }
@@ -42,7 +33,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("list_product_sets", HelpText = "List all product sets")]
-    class ListProductSetsOptions : ProductSetOptions
+    class ListProductSetsOptions : BaseOptions
     { }
 
     [Verb("get_product_set", HelpText = "Get a product set")]

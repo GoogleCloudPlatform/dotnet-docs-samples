@@ -1,5 +1,4 @@
-﻿using System;
-using CommandLine;
+﻿using CommandLine;
 
 namespace GoogleCloudSamples
 {
@@ -12,7 +11,7 @@ namespace GoogleCloudSamples
         public string ComputeRegion { get; set; }
     }
 
-    public class ProductSearch
+    public class ProductSearchProgram
     {
         public static int Main(string[] args)
         {
@@ -22,6 +21,7 @@ namespace GoogleCloudSamples
             ProductInProductSetManagement.RegisterCommands(verbMap);
             ReferenceImageManagement.RegisterCommands(verbMap);
             ImportProductSets.RegisterCommands(verbMap);
+            ProductSearch.RegisterCommands(verbMap);
             verbMap.NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
