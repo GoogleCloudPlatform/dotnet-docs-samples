@@ -6,16 +6,7 @@ using System.Linq;
 
 namespace GoogleCloudSamples
 {
-    class ProductOptions
-    {
-        [Value(0, HelpText = "Your project ID")]
-        public string ProjectID { get; set; }
-
-        [Value(1, HelpText = "Region name")]
-        public string ComputeRegion { get; set; }
-    }
-
-    class ProductWithIDOptions : ProductOptions
+    class ProductWithIDOptions : BaseOptions
     {
         [Value(2, HelpText = "Product's ID")]
         public string ProductID { get; set; }
@@ -32,7 +23,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("list_products", HelpText = "List all products in project")]
-    class ListProductsOptions : ProductOptions
+    class ListProductsOptions : BaseOptions
     { }
 
     [Verb("get_product", HelpText = "Get a product")]
