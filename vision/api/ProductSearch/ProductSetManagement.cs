@@ -60,16 +60,17 @@ namespace GoogleCloudSamples
         {
             var client = ProductSearchClient.Create();
 
-            var productSet = new ProductSet { 
-                DisplayName = opts.ProductSetDisplayName
-            };
             // Create a product set with the product set specification in the region.
-            var request = new CreateProductSetRequest {
+            var request = new CreateProductSetRequest 
+            {
                 // A resource that represents Google Cloud Platform location
                 ParentAsLocationName = new LocationName(opts.ProjectID, 
                                                         opts.ComputeRegion),
                 ProductSetId = opts.ProductSetId,
-                ProductSet = productSet
+                ProductSet = new ProductSet
+                {
+                    DisplayName = opts.ProductSetDisplayName
+                }
             };
 
             // The response is the product set with the `name` populated
@@ -85,7 +86,8 @@ namespace GoogleCloudSamples
         private static object ListProductsSet(ListProductSetsOptions opts)
         {
             var client = ProductSearchClient.Create();
-            var request = new ListProductSetsRequest {
+            var request = new ListProductSetsRequest 
+            {
                 // A resource that represents Google Cloud Platform location
                 ParentAsLocationName = new LocationName(opts.ProjectID, opts.ComputeRegion)
             };

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductSearch", "ProductSea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineUtil", "..\..\commandlineutil\Lib\CommandLineUtil.csproj", "{068DC073-EB56-4C72-B271-C09CAA76E8E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testutil", "..\..\testutil\testutil.csproj", "{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,5 +102,17 @@ Global
 		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Release|x64.Build.0 = Release|Any CPU
 		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Release|x86.ActiveCfg = Release|Any CPU
 		{068DC073-EB56-4C72-B271-C09CAA76E8E6}.Release|x86.Build.0 = Release|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Debug|x64.Build.0 = Debug|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Debug|x86.Build.0 = Debug|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Release|x64.ActiveCfg = Release|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Release|x64.Build.0 = Release|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Release|x86.ActiveCfg = Release|Any CPU
+		{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

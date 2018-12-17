@@ -64,11 +64,9 @@ namespace GoogleCloudSamples
                 Product = new Product
                 {
                     DisplayName = opts.DisplayName,
-                    ProductName = new ProductName(opts.ProjectID, 
-                                                  opts.ComputeRegion,
-                                                  opts.ProductID),
                     ProductCategory = opts.ProductCategory
-                }
+                },
+                ProductId = opts.ProductID
             };
 
             var product = client.CreateProduct(request);
