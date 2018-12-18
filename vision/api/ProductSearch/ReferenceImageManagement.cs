@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
     { }
 
     [Verb("delete_ref_image", HelpText = "Delete a reference image for product")]
-    class DeleteReferenceImageOptions: ReferenceImageOptions
+    class DeleteReferenceImageOptions : ReferenceImageOptions
     { }
 
     public class ReferenceImageManagement

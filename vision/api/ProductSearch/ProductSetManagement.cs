@@ -139,7 +139,8 @@ namespace GoogleCloudSamples
         private static object DeleteProductSet(DeleteProductSetOptions opts)
         {
             var client = ProductSearchClient.Create();
-            var request = new DeleteProductSetRequest {
+            var request = new DeleteProductSetRequest
+            {
                 // Get the full path of the product set.
                 ProductSetName = new ProductSetName(opts.ProjectID,
                                                     opts.ComputeRegion,

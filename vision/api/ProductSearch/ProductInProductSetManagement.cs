@@ -31,7 +31,6 @@ namespace GoogleCloudSamples
                 .Add((AddProductToProductSetOptions opts) => AddProductToProductSet(opts))
                 .Add((ListProductsInProductSetOptions opts) => ListProductsInProductSet(opts))
                 .Add((RemoveProductFromProductSetOptions opts) => RemoveProductFromProductSet(opts));
-
         }
 
         // [START vision_product_search_add_product_to_product_set]
@@ -79,7 +78,7 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"Product description: {product.Description}");
                 Console.WriteLine($"Product category: {product.ProductCategory}");
                 Console.WriteLine($"Product labels:");
-                foreach(var label in product.ProductLabels)
+                foreach (var label in product.ProductLabels)
                 {
                     Console.WriteLine($"Label: {label}");
                 }

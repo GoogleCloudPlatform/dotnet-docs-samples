@@ -5,7 +5,6 @@ using System;
 
 namespace GoogleCloudSamples
 {
-
     [Verb("import_product_set", HelpText = "Import a product set from GCS")]
     class ImportProductSetOptions : BaseOptions
     {
@@ -40,13 +39,12 @@ namespace GoogleCloudSamples
                     }
                 }
             };
-            Operation<ImportProductSetsResponse, BatchOperationMetadata> response = 
-                client.ImportProductSets(request);
+            Operation<ImportProductSetsResponse, BatchOperationMetadata> response = client.ImportProductSets(request);
 
             // Synchronous check of operation status
             Operation<ImportProductSetsResponse, BatchOperationMetadata> completedResponse =
                 response.PollUntilCompleted();
-            
+
             if (completedResponse.IsCompleted)
             {
                 var result = completedResponse.Result;

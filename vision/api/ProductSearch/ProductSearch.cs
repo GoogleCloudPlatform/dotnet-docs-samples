@@ -32,7 +32,6 @@ namespace GoogleCloudSamples
 
     public class ProductSearch
     {
-
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
             verbMap
@@ -90,7 +89,6 @@ namespace GoogleCloudSamples
                                                                 opts.ProductSetId),
                 ProductCategories = { opts.ProductCategory },
                 Filter = opts.Filter
-
             };
 
             // Search products similar to the image.
