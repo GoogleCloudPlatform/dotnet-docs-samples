@@ -39,11 +39,10 @@ namespace GoogleCloudSamples
                     }
                 }
             };
-            Operation<ImportProductSetsResponse, BatchOperationMetadata> response = client.ImportProductSets(request);
+            var response = client.ImportProductSets(request);
 
             // Synchronous check of operation status
-            Operation<ImportProductSetsResponse, BatchOperationMetadata> completedResponse =
-                response.PollUntilCompleted();
+            var completedResponse = response.PollUntilCompleted();
 
             if (completedResponse.IsCompleted)
             {

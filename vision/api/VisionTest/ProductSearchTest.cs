@@ -225,7 +225,7 @@ namespace GoogleCloudSamples
             Assert.Contains(PRODUCT_ID, output.Stdout);
         }
 
-        public void CleanUp()
+        public void Dispose()
         {
             var listRefImageOutput = _productSearch.Run("list_ref_images", _projectId, REGION_NAME, PRODUCT_ID);
             if (listRefImageOutput.Stdout.Contains(REF_IMAGE_ID))
@@ -249,12 +249,6 @@ namespace GoogleCloudSamples
             {
                 _productSearch.Run("delete_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
             }
-        }
-
-
-        public void Dispose()
-        {
-            CleanUp();
         }
     }
 }
