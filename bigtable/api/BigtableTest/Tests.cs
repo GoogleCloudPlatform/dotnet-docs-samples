@@ -63,7 +63,7 @@ namespace GoogleCloudSamples.Bigtable
                     Main = TableAdmin.Main,
                     Command = "TableAdmin"
                 };
-                runner.Run("DeleteTable", TableId);
+                runner.Run("deleteTable", TableId);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
         }

@@ -12,8 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# TODO: Resurrect this test when bug 68199801 is fixed.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
+
 Require-Platform Win*
 Set-TestTimeout 600
 

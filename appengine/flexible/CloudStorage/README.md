@@ -1,16 +1,16 @@
 # Google Cloud Storage and Google App Engine Flexible Environment
 
-This sample application demonstrates store data in Google Cloud Storage
+This sample application demonstrates how to store data in Google Cloud Storage
 when running in Google App Engine Flexible Environment.
 
 ## Prerequisites
 
 1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
-  
+
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.
 
-3.  Install the [.NET Core SDK, version 1.1](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.1.4-download.md).
+3.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md).
 
 4.  Create a Cloud Storage bucket and make it [publicly readable](
 	https://cloud.google.com/storage/docs/access-control/#applyacls).
@@ -19,7 +19,7 @@ when running in Google App Engine Flexible Environment.
 	gsutil mb gs://[your-bucket-name]
 	gsutil defacl set public-read gs://[your-bucket-name]
 	```
-	
+
 5.  Edit [appsettings.json](appsettings.json).  Replace `your-google-bucket-name` with your bucket name.
 
 ## ![PowerShell](../.resources/powershell.png) Using PowerShell
@@ -36,14 +36,14 @@ PS > dotnet run
 ```psm1
 PS > dotnet restore
 PS > dotnet publish
-PS > gcloud beta app deploy .\bin\Debug\netcoreapp1.0\publish\app.yaml
+PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
 ```
 
 
 ## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
 
 Visual Studio is *optional*.  An old, unmaintained branch of samples that work
-with Visual Studio 2015 is 
+with Visual Studio 2015 is
 [here](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015).
 
 [Google Cloud Tools for Visual Studio](

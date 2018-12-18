@@ -17,7 +17,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    class Metadata
+    internal class Metadata
     {
         // [START dlp_list_info_types]
         public static object ListInfoTypes(
@@ -40,6 +40,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_list_info_types]
     }
 }

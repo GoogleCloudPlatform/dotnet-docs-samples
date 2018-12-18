@@ -14,11 +14,11 @@
  * the License.
  */
 
-// [START using_google_cloud_diagnostics]
+// [START trace_setup_aspnetcore_using_diagnostics]
 
 using Google.Cloud.Diagnostics.AspNetCore;
 using Google.Cloud.Diagnostics.Common;
-// [END using_google_cloud_diagnostics]
+// [END trace_setup_aspnetcore_using_diagnostics]
 using Google.Cloud.Trace.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,7 +41,8 @@ namespace Stackdriver
         // This method gets called by the runtime. Use this method to add services to the container.
         // [START gae_flex_use_logging]
         // [START configure_services_error_reporting]
-        // [START configure_services_trace]
+        // [START trace_setup_aspnetcore_configure_services]
+        // [START error_reporting_setup_dotnetcore_configure_services]
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
@@ -65,14 +66,16 @@ namespace Stackdriver
             // Add framework services.
             services.AddMvc();
         }
+        // [END error_reporting_setup_dotnetcore_configure_services]
         // [END gae_flex_use_logging]
         // [END configure_services_error_reporting]
-        // [END configure_services_trace]
+        // [END trace_setup_aspnetcore_configure_services]
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // [START gae_flex_configure_logging]
         // [START configure_error_reporting]
-        // [START configure_trace]
+        // [START trace_setup_aspnetcore_configure_trace]
+        // [START error_reporting_setup_dotnetcore_configure]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             // Configure logging service.
@@ -94,8 +97,9 @@ namespace Stackdriver
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+        // [END error_reporting_setup_dotnetcore_configure]
         // [END gae_flex_configure_logging]
         // [END configure_error_reporting]
-        // [END configure_trace]
+        // [END trace_setup_aspnetcore_configure_trace]
     }
 }

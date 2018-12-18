@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using CommandLine;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
 using System.Collections.Generic;
@@ -24,14 +25,14 @@ using static Google.Cloud.Dlp.V2.StorageConfig.Types;
 namespace GoogleCloudSamples
 {
     [Verb("listJobTriggers", HelpText = "List Data Loss Prevention API triggers.")]
-    class ListJobTriggersOptions
+    internal class ListJobTriggersOptions
     {
         [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
     }
 
     [Verb("deleteJobTrigger", HelpText = "Delete a Data Loss Prevention API job trigger.")]
-    class DeleteJobTriggerOptions
+    internal class DeleteJobTriggerOptions
     {
         [Value(0, HelpText = "The full name of the trigger to be deleted.", Required = true)]
         public string TriggerName { get; set; }
@@ -41,7 +42,7 @@ namespace GoogleCloudSamples
     /// Examples of how to create, list, and delete DLP job triggers
     /// For more information, see https://cloud.google.com/dlp/docs/concepts-job-triggers
     /// </summary>
-    class JobTriggers
+    internal class JobTriggers
     {
         // [START dlp_create_trigger]
         public static object CreateJobTrigger(
@@ -120,6 +121,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Successfully created trigger {response.Name}");
             return 0;
         }
+
         // [END dlp_create_trigger]
 
         // [START dlp_list_triggers]
@@ -146,6 +148,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_list_triggers]
 
         // [START dlp_delete_trigger]
@@ -162,6 +165,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Successfully deleted trigger {triggerName}.");
             return 0;
         }
+
         // [END dlp_delete_trigger]
     }
 }

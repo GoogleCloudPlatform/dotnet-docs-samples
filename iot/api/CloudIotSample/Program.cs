@@ -293,6 +293,24 @@ namespace GoogleCloudSamples
         public string member { get; set; }
     }
 
+    [Verb("sendCommand", HelpText = "Send a command to a device.")]
+    class SendCommandOptions
+    {
+        [Value(0, HelpText = "The device ID.", Required = true)]
+        public string deviceId { get; set; }
+
+        [Value(1, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(2, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(3, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+
+        [Value(4, HelpText = "The command sent to the device", Required = true)]
+        public string command { get; set; }
+    }
     public class CloudIotSample
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -863,46 +881,73 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END iot_set_iam_policy]
+        //[END iot_set_iam_policy]
 
-        public static void Main(string[] args)
+        //[START iot_send_command]  
+        public static object SendCommand(string deviceId, string projectId,
+            string cloudRegion, string registryName, string data)
         {
-            Parser.Default.ParseArguments<
-                CreateRegistryOptions,
-                DeleteRegistryOptions,
-                GetRegistryOptions,
-                ListRegistryOptions,
-                CreateDeviceOptions,
-                CreateEsDeviceOptions,
-                CreateRsaDeviceOptions,
-                DeleteDeviceOptions,
-                GetDeviceOptions,
-                GetDeviceConfigsOptions,
-                GetIamPolicyOptions,
-                ListDevicesOptions,
-                PatchEsDeviceOptions,
-                PatchRsaDeviceOptions,
-                SetDeviceConfigOptions,
-                SetIamPolicyOptions
-                >(args)
-              .MapResult(
-                (CreateRegistryOptions opts) => CreateRegistry(opts.projectId, opts.regionId, opts.registryId, opts.pubsubTopic),
-                (DeleteRegistryOptions opts) => DeleteRegistry(opts.projectId, opts.regionId, opts.registryId),
-                (GetRegistryOptions opts) => GetRegistry(opts.projectId, opts.regionId, opts.registryId),
-                (ListRegistryOptions opts) => ListRegistries(opts.projectId, opts.regionId),
-                (CreateDeviceOptions opts) => CreateUnauthDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
-                (CreateEsDeviceOptions opts) => CreateEsDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath),
-                (CreateRsaDeviceOptions opts) => CreateRsaDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath),
-                (DeleteDeviceOptions opts) => DeleteDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
-                (GetDeviceOptions opts) => GetDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
-                (GetDeviceConfigsOptions opts) => GetDeviceConfigurations(opts.projectId, opts.regionId, opts.registryId, opts.deviceId),
-                (GetIamPolicyOptions opts) => GetIamPolicy(opts.projectId, opts.regionId, opts.registryId),
-                (ListDevicesOptions opts) => ListDevices(opts.projectId, opts.regionId, opts.registryId),
-                (PatchEsDeviceOptions opts) => PatchEsDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath),
-                (PatchRsaDeviceOptions opts) => PatchRsaDevice(opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath),
-                (SetDeviceConfigOptions opts) => SetDeviceConfig(opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.data),
-                (SetIamPolicyOptions opts) => SetIamPolicy(opts.projectId, opts.regionId, opts.registryId, opts.role, opts.member),
-                errs => 1);
+            var cloudIot = CreateAuthorizedClient();
+
+            var devicePath = String.Format("projects/{0}/locations/{1}/registries/{2}/devices/{3}",
+                projectId, cloudRegion, registryName, deviceId);
+            // Data sent through the wire has to be base64 encoded.
+            SendCommandToDeviceRequest req = new SendCommandToDeviceRequest()
+            {
+                BinaryData = Convert.ToBase64String(Encoding.Unicode.GetBytes(data))
+            };
+
+            Console.WriteLine("Sending command to {0}\n", devicePath);
+
+            var res =
+                cloudIot.Projects.Locations.Registries.Devices.SendCommandToDevice(req, devicePath).Execute();
+
+
+            Console.WriteLine("Command response: " + res.ToString());
+            return 0;
+        }
+        //[END iot_send_command]
+
+        public static int Main(string[] args)
+        {
+            var verbMap = new VerbMap<object>();
+            verbMap
+                .Add((CreateRegistryOptions opts) => CreateRegistry(
+                    opts.projectId, opts.regionId, opts.registryId, opts.pubsubTopic))
+                .Add((DeleteRegistryOptions opts) => DeleteRegistry(
+                    opts.projectId, opts.regionId, opts.registryId))
+                .Add((GetRegistryOptions opts) => GetRegistry(
+                    opts.projectId, opts.regionId, opts.registryId))
+                .Add((ListRegistryOptions opts) => ListRegistries(
+                    opts.projectId, opts.regionId))
+                .Add((CreateDeviceOptions opts) => CreateUnauthDevice(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId))
+                .Add((CreateEsDeviceOptions opts) => CreateEsDevice(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath))
+                .Add((CreateRsaDeviceOptions opts) => CreateRsaDevice(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath))
+                .Add((DeleteDeviceOptions opts) => DeleteDevice(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId))
+                .Add((GetDeviceOptions opts) => GetDevice(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId))
+                .Add((GetDeviceConfigsOptions opts) => GetDeviceConfigurations(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId))
+                .Add((GetIamPolicyOptions opts) => GetIamPolicy(
+                    opts.projectId, opts.regionId, opts.registryId))
+                .Add((ListDevicesOptions opts) => ListDevices(
+                    opts.projectId, opts.regionId, opts.registryId))
+                .Add((PatchEsDeviceOptions opts) => PatchEsDevice(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath))
+                .Add((PatchRsaDeviceOptions opts) => PatchRsaDevice(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.certificiatePath))
+                .Add((SetDeviceConfigOptions opts) => SetDeviceConfig(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.data))
+                .Add((SetIamPolicyOptions opts) => SetIamPolicy(
+                    opts.projectId, opts.regionId, opts.registryId, opts.role, opts.member))
+                .Add((SendCommandOptions opts) => SendCommand(
+                    opts.deviceId, opts.projectId, opts.regionId, opts.registryId, opts.command))
+                .NotParsedFunc = (err) => 1;
+            return (int)verbMap.Run(args);
         }
     }
 }

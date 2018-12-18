@@ -50,8 +50,7 @@ Where command is one of
                 { "Last", "Lovelace" },
                 { "Born", 1815 }
             };
-            WriteResult writeResult = await docRef.SetAsync(user);
-            Console.WriteLine(writeResult.UpdateTime);
+            await docRef.SetAsync(user);
             // [END fs_add_data_1]
             Console.WriteLine("Added data to the alovelace document in the users collection.");
         }
@@ -68,8 +67,7 @@ Where command is one of
                 { "Last", "Turing" },
                 { "Born", 1912 }
             };
-            WriteResult writeResult = await docRef.SetAsync(user);
-            Console.WriteLine(writeResult.UpdateTime);
+            await docRef.SetAsync(user);
             // [END fs_add_data_2]
             Console.WriteLine("Added data to the aturing document in the users collection.");
         }
@@ -79,7 +77,7 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_get_all]
             CollectionReference usersRef = db.Collection("users");
-            QuerySnapshot snapshot = await usersRef.SnapshotAsync();
+            QuerySnapshot snapshot = await usersRef.GetSnapshotAsync();
             foreach (DocumentSnapshot document in snapshot.Documents)
             {
                 Console.WriteLine("User: {0}", document.Id);

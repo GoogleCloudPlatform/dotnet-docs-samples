@@ -18,8 +18,13 @@ can use [this older sample](
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=spanner.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Spanner API.
 
+5.  In the [Cloud Console](https://console.cloud.google.com/spanner/), create a Cloud Spanner
+    instance and then create a database on that instance.
+
 7.  Edit `QuickStart\Program.cs`, and replace YOUR-PROJECT-ID with id
-    of the project you created in step 1.
+    of the project you created in step 1. Also, update "my-instance"
+    and "my-database" with the id's of the instance and database you
+    created in step 3.
 
 9.  From a Powershell command line, run the QuickStart sample:
     ```
@@ -30,8 +35,8 @@ can use [this older sample](
 10. And run the Spanner sample to see a list of subcommands:
     ```
     PS C:\...\dotnet-docs-samples\spanner\api\Spanner> dotnet run
-    Spanner 1.0.0.0
-    Copyright c  2017
+    Spanner 1.0.0
+    Copyright (C) 2018 Spanner
 
     ERROR(S):
       No verb selected.
@@ -91,6 +96,30 @@ can use [this older sample](
       writeDataWithTimestamp            Write data into table with a commit timestamp column in the sample Cloud Spanner database table.
 
       queryNewTableWithTimestamp        Query data from table with a commit timestamp column in the sample Cloud Spanner database table.
+
+      querySingersTable                 Query data from the sample 'Singers' Cloud Spanner database table.
+
+      queryAlbumsTable                  Query data from the sample 'Albums' Cloud Spanner database table.
+
+      insertUsingDml                    Insert data using a DML statement.
+
+      updateUsingDml                    Update data using a DML statement.
+
+      deleteUsingDml                    Delete data using a DML statement.
+
+      updateUsingDmlWithTimestamp       Update the timestamp value of specifc records using a DML statement.
+
+      writeAndReadUsingDml              Insert data using a DML statement and then read the inserted data.
+
+      updateUsingDmlWithStruct          Update data using a DML statement combined with a Spanner struct.
+
+      writeUsingDml                     Insert multiple records using a DML statement.
+
+      writeWithTransactionUsingDml      Update data using a DML statement within a read-write transaction.
+
+      updateUsingPartitionedDml         Update multiple records using a partitioned DML statement.
+
+      deleteUsingPartitionedDml         Delete multiple records using a partitioned DML statement.
 
       listDatabaseTables                List all the user-defined tables in the database.
 

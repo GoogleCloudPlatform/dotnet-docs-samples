@@ -5,10 +5,17 @@
     <StartupObject>GoogleCloudSamples.DetectProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <PackageReference Include="Google.Cloud.Vision.V1" Version="1.2.0" />
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
     <PackageReference Include="Google.Cloud.Storage.V1" Version="2.2.1" />
     <PackageReference Include="Google.Protobuf" Version="3.6.1" />
+=======
+    <PackageReference Include="CommandLineParser" Version="2.3.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="2.2.1" />
+    <PackageReference Include="Google.Protobuf" Version="3.6.1" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.3.0-beta04" />
+>>>>>>> master
   </ItemGroup>
   <ItemGroup>
     <None Remove="HelloWorld.exe" />

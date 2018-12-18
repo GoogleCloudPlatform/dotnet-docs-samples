@@ -63,7 +63,7 @@ can use [this older sample](
 	  Storage view-bucket-iam-members bucket-name
 	  Storage add-bucket-iam-member bucket-name member
 	  Storage remove-bucket-iam-member bucket-name role member
-	  Storage add-bucket-default-kms-key bucket-name key-ring key-name
+	  Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name
 	  Storage upload-with-kms-key bucket-name key-location
 				      key-ring key-name local-file-path [object-name]
 	  Storage print-acl bucket-name
@@ -80,7 +80,18 @@ can use [this older sample](
 	  Storage disable-requester-pays bucket-name
 	  Storage get-requester-pays bucket-name
 	  Storage generate-encryption-key
-    ```
+	  Storage get-bucket-default-event-based-hold bucket-name
+	  Storage enable-bucket-default-event-based-hold bucket-name
+	  Storage disable-bucket-default-event-based-hold bucket-name
+	  Storage lock-bucket-retention-policy bucket-name
+	  Storage set-bucket-retention-policy bucket-name retention-period
+	  Storage remove-bucket-retention-policy bucket-name
+	  Storage get-bucket-retention-policy bucket-name
+	  Storage set-object-temporary-hold bucket-name object-name
+	  Storage release-object-temporary-hold bucket-name object-name
+	  Storage set-object-event-based-hold bucket-name object-name
+	  Storage release-object-event-based-hold bucket-name object-name
+	    ```
 
 ## Contributing changes
 

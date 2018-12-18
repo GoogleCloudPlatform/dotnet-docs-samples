@@ -33,9 +33,11 @@ namespace Sudokumb
 
         public WebDriverTestFixture()
         {
+            var options = new ChromeOptions();
+            options.AddArgument("no-sandbox");
             WebDriver = new ChromeDriver(
                 ChromeDriverService.CreateDefaultService(),
-                new ChromeOptions(), TimeSpan.FromMinutes(3));
+                options, TimeSpan.FromMinutes(3));
         }
 
         public void Dispose()

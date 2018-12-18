@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using GoogleCloudSamples;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace DlpTest

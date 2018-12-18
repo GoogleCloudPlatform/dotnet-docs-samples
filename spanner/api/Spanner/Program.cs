@@ -26,6 +26,16 @@ using log4net;
 
 namespace GoogleCloudSamples.Spanner
 {
+    class DefaultOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample data resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database where the sample data resides.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
     [Verb("createDatabase", HelpText = "Create a Cloud Spanner database in your project.")]
     class CreateDatabaseOptions
     {
@@ -361,7 +371,6 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    //QueryDataWithTimestampAsync
     [Verb("queryNewTableWithTimestamp", HelpText = "Query data from table with a commit timestamp column in the sample Cloud Spanner database table.")]
     class QueryNewTableWithTimestampOptions
     {
@@ -373,15 +382,69 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("listDatabaseTables", HelpText = "List all the user-defined tables in the database.")]
-    class ListDatabaseTablesOptions
+    [Verb("querySingersTable", HelpText = "Query data from the sample 'Singers' Cloud Spanner database table.")]
+    class QuerySingersTableOptions : DefaultOptions
     {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
-        public string databaseId { get; set; }
+    }
+
+    [Verb("queryAlbumsTable", HelpText = "Query data from the sample 'Albums' Cloud Spanner database table.")]
+    class QueryAlbumsTableOptions : DefaultOptions
+    {
+    }
+
+    [Verb("insertUsingDml", HelpText = "Insert data using a DML statement.")]
+    class InsertUsingDmlOptions : DefaultOptions
+    {
+    }
+
+    [Verb("updateUsingDml", HelpText = "Update data using a DML statement.")]
+    class UpdateUsingDmlOptions : DefaultOptions
+    {
+    }
+
+    [Verb("deleteUsingDml", HelpText = "Delete data using a DML statement.")]
+    class DeleteUsingDmlOptions : DefaultOptions
+    {
+    }
+
+    [Verb("updateUsingDmlWithTimestamp", HelpText = "Update the timestamp value of specifc records using a DML statement.")]
+    class UpdateUsingDmlWithTimestampOptions : DefaultOptions
+    {
+    }
+
+    [Verb("writeAndReadUsingDml", HelpText = "Insert data using a DML statement and then read the inserted data.")]
+    class WriteAndReadUsingDmlOptions : DefaultOptions
+    {
+    }
+
+    [Verb("updateUsingDmlWithStruct", HelpText = "Update data using a DML statement combined with a Spanner struct.")]
+    class UpdateUsingDmlWithStructOptions : DefaultOptions
+    {
+    }
+
+    [Verb("writeUsingDml", HelpText = "Insert multiple records using a DML statement.")]
+    class WriteUsingDmlOptions : DefaultOptions
+    {
+    }
+
+    [Verb("writeWithTransactionUsingDml", HelpText = "Update data using a DML statement within a read-write transaction.")]
+    class WriteWithTransactionUsingDmlOptions : DefaultOptions
+    {
+    }
+
+    [Verb("updateUsingPartitionedDml", HelpText = "Update multiple records using a partitioned DML statement.")]
+    class UpdateUsingPartitionedDmlOptions : DefaultOptions
+    {
+    }
+
+    [Verb("deleteUsingPartitionedDml", HelpText = "Delete multiple records using a partitioned DML statement.")]
+    class DeleteUsingPartitionedDmlOptions : DefaultOptions
+    {
+    }
+
+    [Verb("listDatabaseTables", HelpText = "List all the user-defined tables in the database.")]
+    class ListDatabaseTablesOptions : DefaultOptions
+    {
     }
 
     [Verb("deleteDatabase", HelpText = "Delete a Spanner database.")]
@@ -424,6 +487,7 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
         }
+
         private bool ShouldCatch(Exception e)
         {
             return ShouldRetry != null && ShouldRetry(e);
@@ -1132,6 +1196,347 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END spanner_read_write_transaction]
 
+        // [START spanner_dml_standard_insert]
+        public static async Task InsertUsingDmlCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerCommand cmd = connection.CreateDmlCommand(
+                   "INSERT Singers (SingerId, FirstName, LastName) "
+                   + "VALUES (10, 'Virginia', 'Watson')");
+                int rowCount = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine($"{rowCount} row(s) inserted...");
+            }
+        }
+        // [END spanner_dml_standard_insert]
+
+        // [START spanner_dml_standard_update]
+        public static async Task UpdateUsingDmlCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerCommand cmd = connection.CreateDmlCommand(
+                   "UPDATE Albums SET MarketingBudget = MarketingBudget * 2 "
+                   + "WHERE SingerId = 1 and AlbumId = 1");
+                int rowCount = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine($"{rowCount} row(s) updated...");
+            }
+        }
+        // [END spanner_dml_standard_update]
+
+        // [START spanner_dml_standard_delete]
+        public static async Task DeleteUsingDmlCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerCommand cmd = connection.CreateDmlCommand(
+                   "DELETE Singers WHERE FirstName = 'Alice'");
+                int rowCount = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine($"{rowCount} row(s) deleted...");
+            }
+        }
+        // [END spanner_dml_standard_delete]
+
+
+        // [START spanner_dml_standard_update_with_timestamp]
+        public static async Task UpdateUsingDmlWithTimestampCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerCommand cmd = connection.CreateDmlCommand(
+                   "UPDATE Albums "
+                   + "SET LastUpdateTime = PENDING_COMMIT_TIMESTAMP() "
+                   + "WHERE SingerId = 1");
+                int rowCount = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine($"{rowCount} row(s) updated...");
+            }
+        }
+        // [END spanner_dml_standard_update_with_timestamp]
+
+        // [START spanner_dml_write_then_read]
+        public static async Task WriteAndReadUsingDmlCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerCommand cmd = connection.CreateDmlCommand(
+                   @"INSERT Singers (SingerId, FirstName, LastName)
+                      VALUES (11, 'Timothy', 'Campbell')");
+                int rowCount = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine($"{rowCount} row(s) inserted...");
+                // Read newly inserted record.
+                cmd = connection.CreateSelectCommand(
+                    @"SELECT FirstName, LastName FROM Singers
+                      WHERE SingerId = 11");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("FirstName") + " "
+                            + reader.GetFieldValue<string>("LastName"));
+                    }
+                }
+            }
+        }
+        // [END spanner_dml_write_then_read]
+
+        // [START spanner_dml_structs]
+        public static async Task UpdateUsingDmlWithStructCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            var nameStruct = new SpannerStruct
+            {
+                { "FirstName", SpannerDbType.String, "Timothy" },
+                { "LastName", SpannerDbType.String, "Campbell" },
+            };
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerCommand cmd = connection.CreateDmlCommand(
+                    "UPDATE Singers SET LastName = 'Grant' "
+                   + "WHERE STRUCT<FirstName STRING, LastName STRING>"
+                   + "(FirstName, LastName) = @name");
+                cmd.Parameters.Add("name", nameStruct.GetSpannerDbType(), nameStruct);
+                int rowCount = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine($"{rowCount} row(s) updated...");
+            }
+        }
+        // [END spanner_dml_structs]
+
+        // [START spanner_dml_getting_started_insert]
+        public static async Task WriteUsingDmlCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerCommand cmd = connection.CreateDmlCommand(
+                    "INSERT Singers (SingerId, FirstName, LastName) VALUES "
+                       + "(12, 'Melissa', 'Garcia'), "
+                       + "(13, 'Russell', 'Morales'), "
+                       + "(14, 'Jacqueline', 'Long'), "
+                       + "(15, 'Dylan', 'Shaw')");
+                int rowCount = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine($"{rowCount} row(s) inserted...");
+            }
+        }
+        // [END spanner_dml_getting_started_insert]
+
+        // [START spanner_dml_getting_started_update]
+        public static async Task WriteWithTransactionUsingDmlCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            // This sample transfers 200,000 from the MarketingBudget
+            // field of the first Album to the second Album. Make sure to run
+            // the addColumn and writeDataToNewColumn samples first,
+            // in that order.
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            decimal transferAmount = 200000;
+            decimal minimumAmountToTransfer = 300000;
+            decimal firstBudget = 0;
+            decimal secondBudget = 0;
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                // Create a readwrite transaction that we'll assign
+                // to each SpannerCommand.
+                using (var transaction =
+                        await connection.BeginTransactionAsync())
+                {
+                    // Create statement to select the first album's data.
+                    var cmdLookup = connection.CreateSelectCommand(
+                     "SELECT * FROM Albums WHERE SingerId = 1 AND AlbumId = 1");
+                    cmdLookup.Transaction = transaction;
+                    // Excecute the select query.
+                    using (var reader = await cmdLookup.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            // Read the first album's budget.
+                            firstBudget =
+                               reader.GetFieldValue<decimal>("MarketingBudget");
+                            // Confirm first Album's budget is sufficient and
+                            // if not raise an exception. Raising an exception
+                            // will automatically roll back the transaction.
+                            if (firstBudget < minimumAmountToTransfer)
+                            {
+                                throw new Exception("The first album's "
+                                        + $"budget {firstBudget} "
+                                        + "is less than the minimum required "
+                                        + "amount to transfer.");
+                            }
+                        }
+                    }
+                    // Read the second album's budget.
+                    cmdLookup = connection.CreateSelectCommand(
+                     "SELECT * FROM Albums WHERE SingerId = 2 and AlbumId = 2");
+                    cmdLookup.Transaction = transaction;
+                    using (var reader = await cmdLookup.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            secondBudget =
+                              reader.GetFieldValue<decimal>("MarketingBudget");
+                        }
+                    }
+
+                    // Update first album to remove the transfer amount.
+                    firstBudget -= transferAmount;
+                    SpannerCommand cmd = connection.CreateDmlCommand(
+                        "UPDATE Albums SET MarketingBudget = @MarketingBudget "
+                        + "WHERE SingerId = 1 and AlbumId = 1");
+                    cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, firstBudget);
+                    cmd.Transaction = transaction;
+                    await cmd.ExecuteNonQueryAsync();
+                    // Update second album to add the transfer amount.
+                    secondBudget += transferAmount;
+                    cmd = connection.CreateDmlCommand(
+                        "UPDATE Albums SET MarketingBudget = @MarketingBudget "
+                        + "WHERE SingerId = 2 and AlbumId = 2");
+                    cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, secondBudget);
+                    cmd.Transaction = transaction;
+                    await cmd.ExecuteNonQueryAsync();
+
+                    await transaction.CommitAsync();
+                }
+                Console.WriteLine("Transaction complete.");
+            }
+        }
+        // [END spanner_dml_getting_started_update]
+
+        // [START spanner_dml_partitioned_update]
+        public static async Task UpdateUsingPartitionedDmlCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerCommand cmd = connection.CreateDmlCommand(
+                    "UPDATE Albums SET MarketingBudget = 100000 WHERE SingerId > 1"
+                );
+                long rowCount = await cmd.ExecutePartitionedUpdateAsync();
+                Console.WriteLine($"{rowCount} row(s) updated...");
+            }
+        }
+        // [END spanner_dml_partitioned_update]
+
+        // [START spanner_dml_partitioned_delete]
+        public static async Task DeleteUsingPartitionedDmlCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerCommand cmd = connection.CreateDmlCommand(
+                    "DELETE Singers WHERE SingerId > 10"
+                );
+                long rowCount = await cmd.ExecutePartitionedUpdateAsync();
+                Console.WriteLine($"{rowCount} row(s) deleted...");
+            }
+        }
+        // [END spanner_dml_partitioned_delete]
+
+        // [START spanner_delete_data]	    
         public static async Task DeleteSampleDataAsync(
             string projectId, string instanceId, string databaseId)
         {
@@ -1157,7 +1562,7 @@ namespace GoogleCloudSamples.Spanner
             {
                 await connection.OpenAsync();
 
-                // Insert rows into the Singers table.
+                // Delete rows from the Singers table.
                 var cmd = connection.CreateDeleteCommand("Singers",
                     new SpannerParameterCollection {
                         {"SingerId", SpannerDbType.Int64}
@@ -1171,6 +1576,8 @@ namespace GoogleCloudSamples.Spanner
                 Console.WriteLine("Deleted data.");
             }
         }
+        // [END spanner_delete_data]
+
         // [START spanner_insert_data]
         public static async Task InsertSampleDataAsync(
             string projectId, string instanceId, string databaseId)
@@ -1972,6 +2379,86 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
+        public static object QuerySingersTable(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QuerySingersTableAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QuerySingersTableAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId, FirstName, LastName FROM Singers");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(reader.GetFieldValue<string>("SingerId")
+                            + " " + reader.GetFieldValue<string>("FirstName")
+                            + " " + reader.GetFieldValue<string>("LastName")
+                        );
+                    }
+                }
+            }
+        }
+
+        public static object QueryAlbumsTable(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryAlbumsTableAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryAlbumsTableAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // This query expects the presence of the MarketingBudgetColumn
+            // which is added to the Albums table by running
+            // the addColumn and writeDataToNewColumn commands, in that order.
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId, AlbumId, MarketingBudget FROM Albums");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        string budget = string.Empty;
+                        if (reader["MarketingBudget"] != DBNull.Value)
+                        {
+                            budget = reader.GetFieldValue<string>("MarketingBudget");
+                        }
+                        Console.WriteLine(reader.GetFieldValue<string>("SingerId")
+                            + " " + reader.GetFieldValue<string>("AlbumId")
+                            + " " + budget
+                        );
+                    }
+                }
+            }
+        }
+
         public static object InsertStructSampleData(
             string projectId, string instanceId, string databaseId)
         {
@@ -2264,6 +2751,116 @@ namespace GoogleCloudSamples.Spanner
             Console.WriteLine($"Done deleting database: {databaseId}");
         }
 
+        public static object InsertUsingDml(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = InsertUsingDmlCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object UpdateUsingDml(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = UpdateUsingDmlCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object DeleteUsingDml(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = DeleteUsingDmlCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object UpdateUsingDmlWithTimestamp(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = UpdateUsingDmlWithTimestampCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object WriteAndReadUsingDml(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = WriteAndReadUsingDmlCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object UpdateUsingDmlWithStruct(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = UpdateUsingDmlWithStructCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object WriteUsingDml(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = WriteUsingDmlCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object WriteWithTransactionUsingDml(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = WriteWithTransactionUsingDmlCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object UpdateUsingPartitionedDml(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = UpdateUsingPartitionedDmlCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static object DeleteUsingPartitionedDml(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = DeleteUsingPartitionedDmlCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
@@ -2346,6 +2943,42 @@ namespace GoogleCloudSamples.Spanner
                 .Add((QueryNewTableWithTimestampOptions opts) =>
                     QueryNewTableWithTimestampColumn(opts.projectId,
                         opts.instanceId, opts.databaseId))
+                .Add((QuerySingersTableOptions opts) =>
+                    QuerySingersTable(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryAlbumsTableOptions opts) =>
+                    QueryAlbumsTable(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((InsertUsingDmlOptions opts) =>
+                    InsertUsingDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((UpdateUsingDmlOptions opts) =>
+                    UpdateUsingDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((DeleteUsingDmlOptions opts) =>
+                    DeleteUsingDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((UpdateUsingDmlWithTimestampOptions opts) =>
+                    UpdateUsingDmlWithTimestamp(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((WriteAndReadUsingDmlOptions opts) =>
+                    WriteAndReadUsingDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((UpdateUsingDmlWithStructOptions opts) =>
+                    UpdateUsingDmlWithStruct(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((WriteUsingDmlOptions opts) =>
+                    WriteUsingDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((WriteWithTransactionUsingDmlOptions opts) =>
+                    WriteWithTransactionUsingDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((UpdateUsingPartitionedDmlOptions opts) =>
+                    UpdateUsingPartitionedDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((DeleteUsingPartitionedDmlOptions opts) =>
+                    DeleteUsingPartitionedDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
                 .Add((ListDatabaseTablesOptions opts) =>
                     ListDatabaseTables(opts.projectId, opts.instanceId,
                         opts.databaseId))

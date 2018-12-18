@@ -99,12 +99,15 @@ Where command is one of
                 .DeserializeObject(resultText);
 
             int numIndexesCreated = 0;
-            foreach (var index in result.indexes)
+            if (result.indexes != null)
             {
-                Console.WriteLine(index.name);
-                if (index.collectionId == collectionId & index.state == "READY")
+                foreach (var index in result.indexes)
                 {
-                    numIndexesCreated = numIndexesCreated + 1;
+                    Console.WriteLine(index.name);
+                    if (index.collectionId == collectionId & index.state == "READY")
+                    {
+                        numIndexesCreated = numIndexesCreated + 1;
+                    }
                 }
             }
             return numIndexesCreated;
@@ -174,14 +177,18 @@ Where command is one of
 
             List<string> indexesToBeDeleted = new List<string>();
 
-            foreach (var index in result.indexes)
+            if (result.indexes != null)
             {
-                if (index.collectionId == collectionId)
+                foreach (var index in result.indexes)
                 {
-                    string name = index.name;
-                    indexesToBeDeleted.Add(name);
+                    if (index.collectionId == collectionId)
+                    {
+                        string name = index.name;
+                        indexesToBeDeleted.Add(name);
+                    }
                 }
             }
+
             foreach (string indexToBeDeleted in indexesToBeDeleted)
             {
                 uriString = "https://firestore.googleapis.com/v1beta1/" + indexToBeDeleted;

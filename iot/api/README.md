@@ -53,6 +53,7 @@ service account JSON from the Google Cloud Console:
       patchDeviceRsa        Create device with RSA encryption type.
       setDeviceConfig       Set the configuration data for a device.
       setIamPolicy          Set the IAM policy for a device registry.
+      sendCommand           Send a command to a device.
       help                  Display more information on a specific command.
       version               Display version information.
     ```

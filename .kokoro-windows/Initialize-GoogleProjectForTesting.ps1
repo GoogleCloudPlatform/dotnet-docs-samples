@@ -39,11 +39,15 @@ if (-not $projectId) {
 # Keep this list sorted so it's easy to find an api and avoid duplicates.
 $services = @"
 bigquery-json.googleapis.com
+bigtable.googleapis.com
 cloudapis.googleapis.com
+cloudasset.googleapis.com
 clouddebugger.googleapis.com
 clouderrorreporting.googleapis.com
 cloudiot.googleapis.com
 cloudkms.googleapis.com
+cloudresourcemanager.googleapis.com
+cloudtasks.googleapis.com
 cloudtrace.googleapis.com
 compute.googleapis.com
 datastore.googleapis.com
@@ -69,18 +73,22 @@ vision.googleapis.com
 
 $roles = @"
 roles/bigquery.admin
+roles/bigtable.admin
+roles/cloudasset.viewer
 roles/clouddebugger.user
 roles/cloudiot.admin
 roles/cloudkms.admin
 roles/cloudkms.cryptoKeyEncrypterDecrypter
 roles/cloudsql.client
 roles/cloudsql.editor
+roles/cloudtasks.admin
 roles/cloudtrace.user
 roles/datastore.user
 roles/dlp.admin
 roles/dlp.user
 roles/errorreporting.admin
 roles/errorreporting.user
+roles/iam.roleAdmin
 roles/iam.securityReviewer
 roles/iam.serviceAccountAdmin
 roles/iam.serviceAccountKeyAdmin
@@ -91,14 +99,16 @@ roles/logging.privateLogViewer
 roles/logging.viewer
 roles/monitoring.admin
 roles/pubsub.admin
+roles/resourcemanager.projectIamAdmin
 roles/storage.admin
 "@
 
 # Enabling services takes a while, so only enable the services that are not
 # already enabled.
-$enabledServices = (gcloud services list --enabled --format json | convertfrom-json).serviceName
+$enabledServices = (gcloud services list --enabled --format json | convertfrom-json).config.name
 $alreadyEnabledServices = $enabledServices | Where-Object {$enabledServices.Contains($_)}
-$servicesToEnable = $services.Split() | Where-Object {-not $enabledServices.Contains($_)}
+$servicesToEnable = $services.Split() | Where-Object {-not $enabledServices.Contains($_)} `
+    | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
 if ($alreadyEnabledServices) {
     "Some services are already enabled:", $alreadyEnabledServices | Write-Host
 }
@@ -123,3 +133,9 @@ foreach ($role in $roles.Split()) {
 
 # Special binding for IAP.
 Bind $serviceAccountEmail roles/iap.httpsResourceAccessor surferjeff-iap
+
+# Create task queue.  The test needs it.
+$taskQueue = gcloud beta tasks queues  list --filter=my-appengine-queue --format=json | ConvertFrom-Json
+if (-not $taskQueue) {
+    gcloud beta tasks queues create-app-engine-queue my-appengine-queue
+}

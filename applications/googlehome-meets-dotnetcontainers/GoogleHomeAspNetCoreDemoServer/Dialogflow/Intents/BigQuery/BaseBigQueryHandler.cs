@@ -13,7 +13,9 @@
 // the License.
 using Google.Cloud.BigQuery.V2;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
 {
@@ -28,6 +30,34 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// <param name="conversation">Conversation</param>
         public BaseBigQueryHandler(Conversation conversation) : base(conversation)
         {
+        }
+
+        protected async Task<(List<BigQueryRow>, long, double)> RunQueryAsync(BigQueryClient bigQueryClient, string sql, BigQueryParameter[] parameters)
+        {
+            // Show SQL query in browser
+            ShowQuery(sql, parameters);
+
+            // Time the BigQuery execution with a StopWatch
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            // Execute BigQuery SQL query.
+            var result = await bigQueryClient.ExecuteQueryAsync(sql, parameters);
+
+            // Query finished, stop the StopWatch
+            stopwatch.Stop();
+
+           // Get a job reference, for statistics
+            var job = await bigQueryClient.GetJobAsync(result.JobReference);
+
+            // Get result list
+            var resultList = result.ToList();
+
+            // Time and data statistics
+            long processedMb = job.Statistics.TotalBytesProcessed.Value / (1024 * 1024);
+            double secs = stopwatch.Elapsed.TotalSeconds;
+
+            return (resultList, processedMb, secs);
         }
 
         protected void ShowQuery(string sql, IEnumerable<BigQueryParameter> parameters,

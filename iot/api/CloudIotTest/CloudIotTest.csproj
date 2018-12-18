@@ -5,12 +5,15 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.32.0.1098" />
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0-beta15" />
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.36.1.1426" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0" />
     <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="xunit" Version="2.3.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CloudIotSample\CloudIotSample.csproj" />
