@@ -5,12 +5,7 @@
     <StartupObject>GoogleCloudSamples.DetectFaces</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.2.0" />
-    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
-=======
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
     <PackageReference Include="Google.Cloud.Vision.V1" Version="1.3.0-beta04" />
->>>>>>> master
   </ItemGroup>
 </Project>
