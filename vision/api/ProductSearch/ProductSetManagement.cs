@@ -61,10 +61,10 @@ namespace GoogleCloudSamples
             var client = ProductSearchClient.Create();
 
             // Create a product set with the product set specification in the region.
-            var request = new CreateProductSetRequest 
+            var request = new CreateProductSetRequest
             {
                 // A resource that represents Google Cloud Platform location
-                ParentAsLocationName = new LocationName(opts.ProjectID, 
+                ParentAsLocationName = new LocationName(opts.ProjectID,
                                                         opts.ComputeRegion),
                 ProductSetId = opts.ProductSetId,
                 ProductSet = new ProductSet
@@ -86,7 +86,7 @@ namespace GoogleCloudSamples
         private static object ListProductsSet(ListProductSetsOptions opts)
         {
             var client = ProductSearchClient.Create();
-            var request = new ListProductSetsRequest 
+            var request = new ListProductSetsRequest
             {
                 // A resource that represents Google Cloud Platform location
                 ParentAsLocationName = new LocationName(opts.ProjectID, opts.ComputeRegion)
@@ -97,7 +97,7 @@ namespace GoogleCloudSamples
 
             foreach (var productSet in response)
             {
-                var id = productSet.Name.Split("/").Last(); // Maybe store split result as array and then get length?
+                var id = productSet.Name.Split("/").Last();
                 Console.WriteLine($"Product set name: {productSet.DisplayName}");
                 Console.WriteLine($"Product set ID: {id}");
                 Console.WriteLine($"Product set index time:");
@@ -116,15 +116,15 @@ namespace GoogleCloudSamples
             var request = new GetProductSetRequest
             {
                 // Get the full path of the product set.
-                ProductSetName = new ProductSetName(opts.ProjectID, 
-                                                    opts.ComputeRegion, 
+                ProductSetName = new ProductSetName(opts.ProjectID,
+                                                    opts.ComputeRegion,
                                                     opts.ProductSetId)
             };
 
             // Get the complete detail of the product set.
             var productSet = client.GetProductSet(request);
 
-            var id = productSet.Name.Split("/").Last(); // Maybe store split result as array and then get length?
+            var id = productSet.Name.Split("/").Last();
             Console.WriteLine($"Product set name: {productSet.DisplayName}");
             Console.WriteLine($"Product set ID: {id}");
             Console.WriteLine($"Product set index time:");

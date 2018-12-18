@@ -43,8 +43,11 @@ namespace GoogleCloudSamples
         // [START vision_product_search_get_similar_products]
         private static int GetSimilarProductsFile(GetSimilarProductsOptions opts)
         {
+            // Create annotate image request along with product search feature.
             Image image = Image.FromFile(opts.FilePath);
             var imageAnnotatorClient = ImageAnnotatorClient.Create();
+
+            // Product Search specific parameters
             var productSearchParams = new ProductSearchParams
             {
                 ProductSetAsProductSetName = new ProductSetName(opts.ProjectID,
@@ -52,9 +55,9 @@ namespace GoogleCloudSamples
                                                                 opts.ProductSetId),
                 ProductCategories = { opts.ProductCategory },
                 Filter = opts.Filter
-                             
             };
 
+            // Search products similar to the image.
             var results = imageAnnotatorClient.DetectSimilarProducts(image, productSearchParams);
 
             Console.WriteLine("Similar products:");
@@ -75,8 +78,11 @@ namespace GoogleCloudSamples
         // [START vision_product_search_get_similar_products_gcs]
         private static int GetSimilarProductsGcs(GetSimilarProductsGcsOptions opts)
         {
+            // Create annotate image request along with product search feature.
             Image image = Image.FromUri(opts.GcsUri);
             var imageAnnotatorClient = ImageAnnotatorClient.Create();
+
+            // Product Search specific parameters
             var productSearchParams = new ProductSearchParams
             {
                 ProductSetAsProductSetName = new ProductSetName(opts.ProjectID,
@@ -87,6 +93,7 @@ namespace GoogleCloudSamples
 
             };
 
+            // Search products similar to the image.
             var results = imageAnnotatorClient.DetectSimilarProducts(image, productSearchParams);
 
             Console.WriteLine("Similar products:");

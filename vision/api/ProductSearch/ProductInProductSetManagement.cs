@@ -7,7 +7,7 @@ namespace GoogleCloudSamples
 {
     [Verb("add_product_to_set", HelpText = "Add product to product set")]
     class AddProductToProductSetOptions : ProductWithIDOptions
-    { 
+    {
         [Value(3, HelpText = "Product Set ID")]
         public string ProductSetId { get; set; }
     }
@@ -18,7 +18,7 @@ namespace GoogleCloudSamples
 
     [Verb("remove_product_from_set", HelpText = "Remove product from product set")]
     class RemoveProductFromProductSetOptions : ProductWithIDOptions
-    { 
+    {
         [Value(3, HelpText = "Product Set ID")]
         public string ProductSetId { get; set; }
     }
@@ -39,10 +39,12 @@ namespace GoogleCloudSamples
         {
             var client = ProductSearchClient.Create();
             var request = new AddProductToProductSetRequest
-            { 
+            {
+                // Get the full path of the products
                 ProductAsProductName = new ProductName(opts.ProjectID,
                                                       opts.ComputeRegion,
                                                       opts.ProductID),
+                // Get the full path of the product set.
                 ProductSetName = new ProductSetName(opts.ProjectID,
                                                    opts.ComputeRegion,
                                                    opts.ProductSetId),
@@ -62,6 +64,7 @@ namespace GoogleCloudSamples
             var client = ProductSearchClient.Create();
             var request = new ListProductsInProductSetRequest
             {
+                // Get the full path of the product set.
                 ProductSetName = new ProductSetName(opts.ProjectID,
                                                    opts.ComputeRegion,
                                                    opts.ProductSetId)
@@ -92,9 +95,11 @@ namespace GoogleCloudSamples
             var client = ProductSearchClient.Create();
             var request = new RemoveProductFromProductSetRequest
             {
+                // Get the full path of the product.
                 ProductAsProductName = new ProductName(opts.ProjectID,
                                                       opts.ComputeRegion,
                                                       opts.ProductID),
+                // Get the full path of the product set.
                 ProductSetName = new ProductSetName(opts.ProjectID,
                                                    opts.ComputeRegion,
                                                     opts.ProductSetId)

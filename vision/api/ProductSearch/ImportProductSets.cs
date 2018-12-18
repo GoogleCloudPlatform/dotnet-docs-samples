@@ -2,7 +2,6 @@
 using Google.Cloud.Vision.V1;
 using Google.LongRunning;
 using System;
-using System.Linq;
 
 namespace GoogleCloudSamples
 {
@@ -28,8 +27,11 @@ namespace GoogleCloudSamples
             var client = ProductSearchClient.Create();
             var request = new ImportProductSetsRequest
             {
+                // A resource that represents Google Cloud Platform location.
                 ParentAsLocationName = new LocationName(opts.ProjectID,
                                                         opts.ComputeRegion),
+
+                // Set the input configuration along with Google Cloud Storage URI
                 InputConfig = new ImportProductSetsInputConfig
                 {
                     GcsSource = new ImportProductSetsGcsSource
@@ -37,11 +39,11 @@ namespace GoogleCloudSamples
                         CsvFileUri = opts.GcsUri
                     }
                 }
-
             };
             Operation<ImportProductSetsResponse, BatchOperationMetadata> response = 
                 client.ImportProductSets(request);
 
+            // Synchronous check of operation status
             Operation<ImportProductSetsResponse, BatchOperationMetadata> completedResponse =
                 response.PollUntilCompleted();
             
@@ -51,6 +53,8 @@ namespace GoogleCloudSamples
 
                 foreach (var status in result.Statuses)
                 {
+                    // Check status of reference image.
+                    // `0` is the code for OK in google.rpc.Code.
                     if (status.Code == 0)
                     {
                         Console.WriteLine(result.ReferenceImages);
@@ -62,7 +66,7 @@ namespace GoogleCloudSamples
                 }
             }
 
-            return 1;
+            return 0;
         }
         // [END vision_product_search_import_product_images]
     }

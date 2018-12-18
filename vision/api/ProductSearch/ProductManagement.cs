@@ -58,9 +58,11 @@ namespace GoogleCloudSamples
         {
             var client = ProductSearchClient.Create();
             var request = new CreateProductRequest
-            { 
+            {
+                // A resource that represents Google Cloud Platform location.
                 ParentAsLocationName = new LocationName(opts.ProjectID,
                                                         opts.ComputeRegion),
+                // Set product category and product display name
                 Product = new Product
                 {
                     DisplayName = opts.DisplayName,
@@ -69,6 +71,7 @@ namespace GoogleCloudSamples
                 ProductId = opts.ProductID
             };
 
+            // The response is the product with the `name` field populated.
             var product = client.CreateProduct(request);
 
             Console.WriteLine($"Product name: {product.Name}");
@@ -79,12 +82,10 @@ namespace GoogleCloudSamples
         // [START vision_product_search_list_products]
         private static int ListProducts(ListProductsOptions opts)
         {
-            /*
-             * dotnet run list_products vision-erschmid us-west1 someID someDisplayName category
-            */
             var client = ProductSearchClient.Create();
             var request = new ListProductsRequest
             {
+                // A resource that represents Google Cloud Platform location.
                 ParentAsLocationName = new LocationName(opts.ProjectID,
                                                         opts.ComputeRegion)
             };
@@ -113,6 +114,7 @@ namespace GoogleCloudSamples
             var client = ProductSearchClient.Create();
             var request = new GetProductRequest
             {
+                // Get the full path of the product.
                 ProductName = new ProductName(opts.ProjectID,
                                               opts.ComputeRegion,
                                               opts.ProductID)
@@ -142,9 +144,12 @@ namespace GoogleCloudSamples
             {
                 Product = new Product
                 {
+                    // Get the name of the product
                     ProductName = new ProductName(opts.ProjectID,
                                                  opts.ComputeRegion,
                                                  opts.ProductID),
+                    // Set the product name, product label, and product display
+                    // name. Multiple labels are also supported.
                     ProductLabels =
                     {
                         new Product.Types.KeyValue
@@ -154,13 +159,16 @@ namespace GoogleCloudSamples
                         }
                     }
                 },
+                // Updating only the product_labels field here.
                 UpdateMask = new FieldMask
                 {
                     Paths = { "product_labels" }
                 }
             };
 
+            // This overwrites the product_labels.
             var product = client.UpdateProduct(request);
+
             var productId = product.Name.Split("/").Last();
             Console.WriteLine($"\nProduct name: {product.Name}");
             Console.WriteLine($"Product id: {productId}");
@@ -181,6 +189,7 @@ namespace GoogleCloudSamples
             var client = ProductSearchClient.Create();
             var request = new DeleteProductRequest
             {
+                // Get the full path of the product.
                 ProductName = new ProductName(opts.ProjectID,
                                              opts.ComputeRegion,
                                              opts.ProductID)
