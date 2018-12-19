@@ -44,8 +44,6 @@ namespace GoogleCloudSamples
         // [START vision_product_search_create_reference_image]
         private static int CreateReferenceImage(CreateReferenceImageOptions opts)
         {
-            Console.WriteLine("Adding reference image!");
-
             var client = ProductSearchClient.Create();
             var request = new CreateReferenceImageRequest
             {

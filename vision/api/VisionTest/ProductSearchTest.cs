@@ -20,6 +20,10 @@ namespace GoogleCloudSamples
         private const string IMAGE_URI_2 = "shoes_2.jpg";
         private const string SEARCH_FILTER = "style=womens";
 
+        // For search tests. Product set must be indexed for search to succeed.
+        private const string INDEXED_PRODUCT_SET = "indexed_product_set_id_for_testing";
+        private const string INDEXED_PRODUCT_1 = "indexed_product_id_for_testing_1";
+
         private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         readonly CommandLineRunner _productSearch = new CommandLineRunner()
@@ -28,6 +32,18 @@ namespace GoogleCloudSamples
             Command = "Product Search"
         };
 
+        public ProductSearchTest()
+        {
+            // Create a indexed product set for TestProductSearch() and TestProductSearchGcs()
+            // tests. These tests remain in the project after the test completes.
+            var output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
+            if (!output.Stdout.Contains(INDEXED_PRODUCT_SET))
+            {
+                _productSearch.Run("create_product_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_SET_DISPLAY_NAME);
+                _productSearch.Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+                _productSearch.Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+            }
+        }
 
         [Fact]
         public void TestCreateProduct()
@@ -208,21 +224,17 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestProductSearch()
         {
-            _productSearch.Run("import_product_set", _projectId, REGION_NAME, CSV_GCS_URI);
-
-            var output = _productSearch.Run("get_similar_products", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
+            var output = _productSearch.Run("get_similar_products", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains(PRODUCT_ID, output.Stdout);
+            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
         }
 
         [Fact]
         public void TestProductSearchGcs()
         {
-            _productSearch.Run("import_product_set", _projectId, REGION_NAME, CSV_GCS_URI);
-
-            var output = _productSearch.Run("get_similar_products_gcs", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_CATEGORY, REF_IMAGE_GCS_URI, SEARCH_FILTER);
+            var output = _productSearch.Run("get_similar_products_gcs", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, REF_IMAGE_GCS_URI, SEARCH_FILTER);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains(PRODUCT_ID, output.Stdout);
+            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
         }
 
         public void Dispose()
