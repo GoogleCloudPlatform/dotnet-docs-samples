@@ -70,6 +70,7 @@ namespace GoogleCloudSamples
             };
 
             var products = client.ListProductsInProductSet(request);
+            Console.WriteLine("Products in product set:");
             foreach (var product in products)
             {
                 Console.WriteLine($"Product name: {product.Name}");
