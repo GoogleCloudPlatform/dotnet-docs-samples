@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Detect\Detect.csproj" />
     <ProjectReference Include="..\QuickStart\QuickStart.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+    <ProjectReference Include="..\ProductSearch\ProductSearch.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\bonito.gif">
@@ -76,5 +77,11 @@
       <Link>data\wakeupcat.jpg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="data\shoes_1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="data\shoes_1.jpg" />
   </ItemGroup>
 </Project>
