@@ -62,7 +62,7 @@ namespace GoogleCloudSamples
 
             output = _productSearch.Run("get_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1);
             if (!output.Stdout.Contains("style") || !output.Stdout.Contains("womens"))
-            { 
+            {
                 _productSearch.Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
             }
         }
