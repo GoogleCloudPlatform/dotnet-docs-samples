@@ -149,9 +149,9 @@ namespace GoogleCloudSamples
             {
                 // Redirect Standard Out to StringWriter for test.
                 Console.SetOut(sw);
-                var getCryptoKeyVersionEnabledTest = CloudKmsSample.GetCryptoKeyVersion(s_projectId, "global", keyRing,
-                    cryptoKey, versionToTest.ToString());
-                Eventually(() => Assert.Contains("State: DISABLED", sw.ToString()));
+                CloudKmsSample.GetCryptoKeyVersion(
+                    s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
+                Eventually(() => Assert.Contains("State: Disabled", sw.ToString()));
                 // Redirect Standard Out back to Console.Out.
                 var standardOutput = new StreamWriter(Console.OpenStandardOutput());
                 standardOutput.AutoFlush = true;
@@ -162,9 +162,9 @@ namespace GoogleCloudSamples
             {
                 // Redirect Standard Out to StringWriter for test.
                 Console.SetOut(sw);
-                var getCryptoKeyVersionEnabledTest = CloudKmsSample.GetCryptoKeyVersion(s_projectId, "global", keyRing,
-                    cryptoKey, versionToTest.ToString());
-                Eventually(() => Assert.Contains("State: ENABLED", sw.ToString()));
+                CloudKmsSample.GetCryptoKeyVersion(
+                    s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
+                Eventually(() => Assert.Contains("State: Enabled", sw.ToString()));
                 // Redirect Standard Out back to Console.Out.
                 var standardOutput = new StreamWriter(Console.OpenStandardOutput());
                 standardOutput.AutoFlush = true;
@@ -188,9 +188,9 @@ namespace GoogleCloudSamples
             {
                 // Redirect Standard Out to StringWriter for test.
                 Console.SetOut(sw);
-                var getCryptoKeyVersionDestroyedTest = CloudKmsSample.GetCryptoKeyVersion(s_projectId, "global", keyRing,
-                    cryptoKey, versionToTest.ToString());
-                Eventually(() => Assert.Contains("State: DESTROY_SCHEDULED", sw.ToString()));
+                CloudKmsSample.GetCryptoKeyVersion(
+                    s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
+                Eventually(() => Assert.Contains("State: DestroyScheduled", sw.ToString()));
                 // Redirect Standard Out back to Console.Out.
                 var standardOutput = new StreamWriter(Console.OpenStandardOutput());
                 standardOutput.AutoFlush = true;
@@ -202,9 +202,9 @@ namespace GoogleCloudSamples
             {
                 // Redirect Standard Out to StringWriter for test.
                 Console.SetOut(sw);
-                var getCryptoKeyVersionEnabledTest = CloudKmsSample.GetCryptoKeyVersion(s_projectId, "global", keyRing,
-                    cryptoKey, versionToTest.ToString());
-                Eventually(() => Assert.Contains("State: DISABLED", sw.ToString()));
+                CloudKmsSample.GetCryptoKeyVersion(
+                    s_projectId, "global", keyRing, cryptoKey, versionToTest.ToString());
+                Eventually(() => Assert.Contains("State: Disabled", sw.ToString()));
                 // Redirect Standard Out back to Console.Out.
                 var standardOutput = new StreamWriter(Console.OpenStandardOutput());
                 standardOutput.AutoFlush = true;
