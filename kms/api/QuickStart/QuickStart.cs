@@ -16,13 +16,10 @@
 
 // [START kms_quickstart]
 
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
 using System;
-// Imports the Google Cloud KMS client library
-using Google.Apis.CloudKMS.v1;
-using Google.Apis.CloudKMS.v1.Data;
 using System.Linq;
+// Imports the Google Cloud KMS client library
+using Google.Cloud.Kms.V1;
 
 namespace GoogleCloudSamples
 {
@@ -37,34 +34,16 @@ namespace GoogleCloudSamples
             string location = "global";
 
             // The resource name of the location associated with the key rings.
-            string parent = $"projects/{projectId}/locations/{location}";
+            LocationName locationName = new LocationName(projectId, location);
 
-            // Authorize the client using Application Default Credentials.
-            // See: https://developers.google.com/identity/protocols/application-default-credentials
-            GoogleCredential credential = GoogleCredential.GetApplicationDefaultAsync().Result;
-            // Specify the Cloud Key Management Service scope.
-            if (credential.IsCreateScopedRequired)
-            {
-                credential = credential.CreateScoped(new[]
-                {
-                    Google.Apis.CloudKMS.v1.CloudKMSService.Scope.CloudPlatform
-                });
-            }
-            // Instantiate the Cloud Key Management Service API.
-            CloudKMSService cloudKms = new CloudKMSService(new BaseClientService.Initializer
-            {
-                HttpClientInitializer = credential,
-                GZipEnabled = false
-            });
+            // Instantiate a Cloud KMS client.
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
             // List key rings.
-            ListKeyRingsResponse result = cloudKms.Projects.Locations.KeyRings.List(parent).Execute();
-            if (result.KeyRings != null)
+            foreach (KeyRing keyRing in client.ListKeyRings(locationName))
             {
-                Console.WriteLine("Key Rings: ");
-                result.KeyRings.ToList().ForEach(response => Console.WriteLine(response.Name));
+                Console.WriteLine(keyRing.Name);
             }
-            else { Console.WriteLine("No Key Rings found."); }
         }
     }
 }

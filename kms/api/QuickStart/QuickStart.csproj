@@ -5,6 +5,6 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.36.1.1429" />
+    <PackageReference Include="Google.Cloud.Kms.V1" Version="1.0.0-beta04" />
   </ItemGroup>
 </Project>
