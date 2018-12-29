@@ -1034,12 +1034,13 @@ namespace GoogleCloudSamples
                 .List(registryPath);
             req.FieldMask = "config,gatewayConfig";
             var devices = req.Execute().Devices;
-            if (devices != null) {
+            if (devices != null)
+            {
                 Console.WriteLine("Found {0} devices", devices.Count);
                 devices.ToList().ForEach(singleDevice =>
                 {
-                    if( (singleDevice.Id!=null && singleDevice.Id.Equals(deviceId))
-                    || (singleDevice.Name != null && singleDevice.Name.Equals(deviceId))) 
+                    if ((singleDevice.Id != null && singleDevice.Id.Equals(deviceId))
+                    || (singleDevice.Name != null && singleDevice.Name.Equals(deviceId)))
                     {
                         Console.WriteLine("Device exists, skipping. ");
                         return;
@@ -1059,7 +1060,6 @@ namespace GoogleCloudSamples
             {
                 Id = deviceId,
                 GatewayConfig = gwConfig
-
             };
 
             Device createdDevice =
@@ -1077,7 +1077,7 @@ namespace GoogleCloudSamples
         //[END iot_create_device]
 
         //[START iot_list_gateways]
-        public static object ListGateways(string projectId, string cloudRegion, string registryName) 
+        public static object ListGateways(string projectId, string cloudRegion, string registryName)
         {
             var cloudIot = CreateAuthorizedClient();
             var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
@@ -1092,32 +1092,35 @@ namespace GoogleCloudSamples
 
             var devices = req.Execute().Devices;
 
-            if(devices != null) {
+            if (devices != null)
+            {
                 Console.WriteLine("Found {0} devices", devices.Count);
                 devices.ToList().ForEach(device =>
-                   { 
-                    if(device.GatewayConfig != null
-                    && device.GatewayConfig.GatewayType != null
-                       && device.GatewayConfig.GatewayType.Equals("GATEWAY")) {
+                   {
+                       if (device.GatewayConfig != null
+                       && device.GatewayConfig.GatewayType != null
+                          && device.GatewayConfig.GatewayType.Equals("GATEWAY"))
+                       {
                            Console.WriteLine("Id :{0}", device.Id);
-                           if(device.Config!=null) {
+                           if (device.Config != null)
+                           {
                                Console.WriteLine("Config: {0}", device.Config.ToString());
                            }
-
                        }
                    }
                 );
-            } else {
+            }
+            else
+            {
                 Console.WriteLine("Registry has no gateway devices");
             }
 
             return 0;
-
         }
         //[END iot_list_gateways]
 
         //[START iot_bind_device_to_gateway]
-        public static object BindDeviceToGateway (
+        public static object BindDeviceToGateway(
             string projectId, string cloudRegion, string registryName, string deviceId, string gatewayId)
         {
             CreateDevice(projectId, cloudRegion, registryName, deviceId);
@@ -1138,7 +1141,6 @@ namespace GoogleCloudSamples
             Console.WriteLine("Device bound: {0}", res.ToString());
 
             return 0;
-
         }
         //[END iot_bind_device_to_gateway]
 
@@ -1167,7 +1169,7 @@ namespace GoogleCloudSamples
 
         //[START iot_list_devices_for_gateway]
         public static object ListDevicesForGateways(string projectId,
-         string cloudRegion, string registryName, string gatewayId) 
+         string cloudRegion, string registryName, string gatewayId)
         {
             var cloudIot = CreateAuthorizedClient();
             var gatewayPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}/devices/{gatewayId}";
@@ -1176,11 +1178,14 @@ namespace GoogleCloudSamples
             req.GatewayListOptionsAssociationsGatewayId = gatewayId;
             var devices = req.Execute().Devices;
 
-            if(devices != null) {
+            if (devices != null)
+            {
                 Console.WriteLine("Found {0} devices", devices.Count);
                 devices.ToList().ForEach(device =>
                     Console.WriteLine("ID: {0}", device.Id));
-            } else {
+            }
+            else
+            {
                 Console.WriteLine("Gateway has no bound devices.");
             }
 
