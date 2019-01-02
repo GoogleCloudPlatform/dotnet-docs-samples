@@ -212,7 +212,7 @@ namespace GoogleCloudSamples
 
         //[START iot_gateway_tests]
         [Fact]
-        public void TestCreateGateway() 
+        public void TestCreateGateway()
         {
             string gatewayName = "dotnettest-create-gateway" + _fixture.TestId;
             try
@@ -263,8 +263,6 @@ namespace GoogleCloudSamples
                 Assert.Contains("Device bound:", bindDeviceToGatewayOut.Stdout);
                 //Check if device is bound to the gateway
                 var listDevicesForGatewayOut = Run("listDevicesForGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
-                //Found 1 devices
-                //ID: new-device-for-gateway-3
                 Assert.Contains("Found", listDevicesForGatewayOut.Stdout);
                 Assert.Contains($"ID: {deviceId}", listDevicesForGatewayOut.Stdout);
             }
