@@ -7,11 +7,14 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Asset.V1Beta1" Version="1.0.0-beta01" />
-    <PackageReference Include="Google.Cloud.Storage.V1" Version="2.3.0-beta02" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="2.3.0-beta04" />
     <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
-    <PackageReference Include="xunit" Version="2.2.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0-preview-20181205-02" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

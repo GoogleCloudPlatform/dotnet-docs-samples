@@ -193,6 +193,7 @@ namespace GoogleCloudSamples
             Console.WriteLine("Spoof: {0}", response.Spoof.ToString());
             Console.WriteLine("Medical: {0}", response.Medical.ToString());
             Console.WriteLine("Violence: {0}", response.Violence.ToString());
+            Console.WriteLine("Racy: {0}", response.Racy.ToString());
             // [END vision_safe_search_detection_gcs]
             // [END vision_safe_search_detection]
             return 0;

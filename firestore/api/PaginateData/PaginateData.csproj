@@ -5,7 +5,7 @@
     <StartupObject>GoogleCloudSamples.PaginateData</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.1.1-beta" />
-    <PackageReference Include="Google.Cloud.Firestore" Version="1.0.0-beta11" />
+    <PackageReference Include="CommandLineParser" Version="2.3.0" />
+    <PackageReference Include="Google.Cloud.Firestore" Version="1.0.0-beta14" />
   </ItemGroup>
 </Project>

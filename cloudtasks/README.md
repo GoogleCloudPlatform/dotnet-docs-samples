@@ -44,7 +44,11 @@ version unless configured to do otherwise.
 
 ## Deploying the app to App Engine flexible environment
 
-Deploy the App Engine app with gcloud:
+Move into the App Engine folder:
+
+  cd appengine
+
+Deploy the App Engine app with `gcloud`:
 
     ```psm1
     PS > dotnet restore
@@ -76,6 +80,10 @@ the "name" value (for instance, if the name is
 location is "us-central1").
 
     export LOCATION_ID=us-central1
+
+Move into the Tasks Sample folder:
+
+  cd ../api/TasksSample
 
 Create a task, targeted at the `log_payload` endpoint, with a payload specified:
 

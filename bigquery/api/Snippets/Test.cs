@@ -24,7 +24,7 @@ using Xunit;
 using System.Text.RegularExpressions;
 using System.Linq;
 
-public class BigQueryTest : IDisposable
+public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
 {
     private readonly string _projectId;
     private readonly BigQueryClient _client;
@@ -34,13 +34,12 @@ public class BigQueryTest : IDisposable
     readonly TextWriter _consoleOut = Console.Out;
     readonly StringWriter _stringOut;
 
-    public BigQueryTest()
+    public BigQueryTest(RandomBucketFixture randomBucketFixture)
     {
         _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         _client = BigQueryClient.Create(_projectId);
         _storage = StorageClient.Create();
-        _bucketName = TestUtil.RandomName();
-        _storage.CreateBucket(_projectId, _bucketName);
+        _bucketName = randomBucketFixture.BucketName;
         _stringOut = new StringWriter();
         Console.SetOut(_stringOut);
     }
@@ -271,10 +270,6 @@ public class BigQueryTest : IDisposable
             };
             dataset.Delete(deleteDatasetOptions);
         }
-        _storage.DeleteBucket(
-            _bucketName,
-            new DeleteBucketOptions() { DeleteObjects = true }
-        );
         Console.SetOut(_consoleOut);
     }
 }

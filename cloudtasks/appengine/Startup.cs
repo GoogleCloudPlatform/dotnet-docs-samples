@@ -25,7 +25,7 @@ using System.IO;
 
 namespace CloudTasks
 {
-    // [START gae_flex_quickstart]
+    // [START cloud_tasks_appengine_quickstart]
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -91,5 +91,5 @@ namespace CloudTasks
             app.UseRouter(routes);
         }
     }
-    // [END gae_flex_quickstart]
+    // [END cloud_tasks_appengine_quickstart]
 }

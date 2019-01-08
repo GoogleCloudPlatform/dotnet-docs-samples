@@ -3,8 +3,8 @@
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Monitoring.V3" Version="1.1.0-beta01" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Google.Cloud.Monitoring.V3" Version="1.1.0-beta02" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.BigQuery.V2;
 using Google.Cloud.Dlp.V2;
 using Google.Cloud.PubSub.V1;
@@ -26,7 +27,7 @@ using static Google.Cloud.Dlp.V2.InspectConfig.Types;
 
 namespace GoogleCloudSamples
 {
-    class InspectSamples
+    internal class InspectSamples
     {
         // [START dlp_inspect_string]
         public static object InspectString(
@@ -51,7 +52,7 @@ namespace GoogleCloudSamples
             };
             var request = new InspectContentRequest
             {
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                ParentAsProjectName = new ProjectName(projectId),
                 Item = new ContentItem
                 {
                     Value = dataValue
@@ -83,10 +84,11 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_inspect_string]
 
         // [START dlp_inspect_file]
-        static readonly Dictionary<string, ByteContentItem.Types.BytesType> s_fileTypes =
+        private static readonly Dictionary<string, ByteContentItem.Types.BytesType> s_fileTypes =
             new Dictionary<string, ByteContentItem.Types.BytesType>()
         {
             { ".bmp", ByteContentItem.Types.BytesType.ImageBmp },
@@ -123,7 +125,7 @@ namespace GoogleCloudSamples
                 DlpServiceClient dlp = DlpServiceClient.Create();
                 InspectContentResponse response = dlp.InspectContent(new InspectContentRequest
                 {
-                    ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                    ParentAsProjectName = new ProjectName(projectId),
                     Item = new ContentItem
                     {
                         ByteItem = new ByteContentItem
@@ -164,6 +166,7 @@ namespace GoogleCloudSamples
                 fileStream.Close();
             }
         }
+
         // [END dlp_inspect_file]
 
         // [START dlp_inspect_bigquery]
@@ -241,7 +244,7 @@ namespace GoogleCloudSamples
             var request = new CreateDlpJobRequest
             {
                 InspectJob = inspectJob,
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                ParentAsProjectName = new ProjectName(projectId),
             };
 
             // We need created job name
@@ -249,7 +252,7 @@ namespace GoogleCloudSamples
             string jobName = dlpJob.Name;
 
             // Make sure the job finishes before inspecting the results.
-            // Alternatively, we can inspect results opportunistically, but 
+            // Alternatively, we can inspect results opportunistically, but
             // for testing purposes, we want consistent outcome
             bool jobFinished = EnsureJobFinishes(projectId, jobName);
             if (jobFinished)
@@ -268,6 +271,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+
         // [END dlp_inspect_bigquery]
 
         // [START dlp_inspect_datastore]
@@ -341,7 +345,7 @@ namespace GoogleCloudSamples
             var request = new CreateDlpJobRequest
             {
                 InspectJob = inspectJob,
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                ParentAsProjectName = new ProjectName(projectId),
             };
 
             // We need created job name
@@ -368,8 +372,8 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-        // [END dlp_inspect_datastore]
 
+        // [END dlp_inspect_datastore]
 
         // [START dlp_inspect_gcs]
 
@@ -424,7 +428,7 @@ namespace GoogleCloudSamples
             var request = new CreateDlpJobRequest
             {
                 InspectJob = inspectJob,
-                ParentAsProjectName = new Google.Cloud.Dlp.V2.ProjectName(projectId),
+                ParentAsProjectName = new ProjectName(projectId),
             };
 
             // We need created job name
@@ -434,8 +438,7 @@ namespace GoogleCloudSamples
             var fireEvent = new ManualResetEventSlim();
 
             var subscriptionName = new SubscriptionName(projectId, subscriptionId);
-            var subscriberClient = SubscriberServiceApiClient.Create();
-            var subscriber = SubscriberClient.Create(subscriptionName, new[] { subscriberClient });
+            var subscriber = SubscriberClient.CreateAsync(subscriptionName).Result;
             subscriber.StartAsync(
                 (pubSubMessage, cancellationToken) =>
                 {
@@ -449,7 +452,7 @@ namespace GoogleCloudSamples
                     return Task.FromResult(SubscriberClient.Reply.Nack);
                 });
 
-            // We block here until receiving a signal from a separate thread that is waiting on a message indicating receiving a result of Dlp job 
+            // We block here until receiving a signal from a separate thread that is waiting on a message indicating receiving a result of Dlp job
             if (fireEvent.Wait(TimeSpan.FromMinutes(1)))
             {
                 // Stop the thread that is listening to messages as a result of StartAsync call earlier
@@ -478,7 +481,7 @@ namespace GoogleCloudSamples
 
         // [END dlp_inspect_gcs]
 
-        static bool EnsureJobFinishes(string projectId, string jobName)
+        private static bool EnsureJobFinishes(string projectId, string jobName)
         {
             DlpServiceClient client = DlpServiceClient.Create();
             var request = new GetDlpJobRequest
