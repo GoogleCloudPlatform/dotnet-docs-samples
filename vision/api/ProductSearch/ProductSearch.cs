@@ -1,5 +1,7 @@
 ﻿using CommandLine;
+// [START vision_product_search_tutorial_import]
 using Google.Cloud.Vision.V1;
+// [END vision_product_search_tutorial_import]
 using System;
 
 namespace GoogleCloudSamples
