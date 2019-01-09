@@ -209,6 +209,71 @@ namespace GoogleCloudSamples
                 Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
             }
         }
+
+        //[START iot_gateway_tests]
+        [Fact]
+        public void TestCreateGateway()
+        {
+            string gatewayName = "dotnettest-create-gateway" + _fixture.TestId;
+            try
+            {
+                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                Assert.Contains("Creating gateway with id", createGatewayOut.Stdout);
+                Assert.Contains("Created gateway:", createGatewayOut.Stdout);
+            }
+            finally
+            {
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+            }
+        }
+
+        [Fact]
+        public void TestListGateways()
+        {
+            string gatewayName = "dotnettest-gateway-" + _fixture.TestId;
+            //Setup scenario
+            try
+            {
+                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                Assert.Contains("Creating gateway with id", createGatewayOut.Stdout);
+                var listGatewaysOut = Run("listGateways", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId);
+                Assert.Contains("Found", listGatewaysOut.Stdout);
+                Assert.Contains(string.Format("Id :{0}", gatewayName), listGatewaysOut.Stdout);
+            }
+            finally
+            {
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+            }
+        }
+
+        [Fact]
+        public void TestListDevicesForGateway()
+        {
+            //Setup scenario
+            string gatewayName = "dotnettest-gateway-" + _fixture.TestId;
+            string deviceId = "dotnettest-device-" + _fixture.TestId;
+            try
+            {
+                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                Assert.Contains("Creating gateway with id", createGatewayOut.Stdout);
+                //Bind new device to new gateway
+                var bindDeviceToGatewayOut = Run("bindDeviceToGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, gatewayName);
+                Assert.Contains($"Creating device with id: {deviceId}", bindDeviceToGatewayOut.Stdout);
+                Assert.Contains("Created device:", bindDeviceToGatewayOut.Stdout);
+                Assert.Contains("Device bound:", bindDeviceToGatewayOut.Stdout);
+                //Check if device is bound to the gateway
+                var listDevicesForGatewayOut = Run("listDevicesForGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                Assert.Contains("Found", listDevicesForGatewayOut.Stdout);
+                Assert.Contains($"ID: {deviceId}", listDevicesForGatewayOut.Stdout);
+            }
+            finally
+            {
+                Run("unbindDeviceFromGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, gatewayName);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+            }
+        }
+        //[END iot_gateway_tests]
     }
 
     public class IotTestFixture : IDisposable

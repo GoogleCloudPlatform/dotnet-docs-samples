@@ -311,6 +311,89 @@ namespace GoogleCloudSamples
         [Value(4, HelpText = "The command sent to the device", Required = true)]
         public string command { get; set; }
     }
+
+    [Verb("createGateway", HelpText = "Create a gateway to bind devices to.")]
+    class CreateGatewayOptions
+    {
+        [Value(0, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+
+        [Value(3, HelpText = "The gateway ID that will be created.", Required = true)]
+        public string gatewayId { get; set; }
+    }
+
+    [Verb("listGateways", HelpText = "List gateways in a registry.")]
+    class ListGatewaysOptions
+    {
+        [Value(0, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+    }
+
+    [Verb("listDevicesForGateway", HelpText = "List devices bound to a gateway.")]
+    class ListDevicesForGatewayOptions
+    {
+        [Value(0, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+
+        [Value(3, HelpText = "The gateway ID that contains the devices.", Required = true)]
+        public string gatewayId { get; set; }
+    }
+
+    [Verb("bindDeviceToGateway", HelpText = "Binds a device to a gateway.")]
+    class BindDeviceToGatewayOptions
+    {
+        [Value(0, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+
+        [Value(3, HelpText = "The device ID that will be bound to the gateway.", Required = true)]
+        public string deviceId { get; set; }
+
+        [Value(4, HelpText = "The gateway ID.")]
+        public string gatewayId { get; set; }
+    }
+
+    [Verb("unbindDeviceFromGateway", HelpText = "Unbinds a device to a gateway.")]
+    class UnbindDeviceFromGatewayOptions
+    {
+        [Value(0, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+
+        [Value(3, HelpText = "The device ID that will be unbound from the gateway.", Required = true)]
+        public string deviceId { get; set; }
+
+        [Value(4, HelpText = "The gateway ID.")]
+        public string gatewayId { get; set; }
+    }
     public class CloudIotSample
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -902,11 +985,214 @@ namespace GoogleCloudSamples
             var res =
                 cloudIot.Projects.Locations.Registries.Devices.SendCommandToDevice(req, devicePath).Execute();
 
-
             Console.WriteLine("Command response: " + res.ToString());
             return 0;
         }
         //[END iot_send_command]
+
+        //[START iot_create_gateway]
+        public static object CreateGateway(string projectId, string cloudRegion, string registryName,
+            string gatewayId)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+            Console.WriteLine("Creating gateway with id: {0}", gatewayId);
+
+            GatewayConfig gwConfig = new GatewayConfig();
+            gwConfig.GatewayType = "GATEWAY";
+            gwConfig.GatewayAuthMethod = "ASSOCIATION_ONLY";
+
+            Device body = new Device()
+            {
+                Id = gatewayId
+            };
+            body.GatewayConfig = gwConfig;
+            Device createdDevice =
+                cloudIot
+                    .Projects
+                    .Locations
+                    .Registries
+                    .Devices
+                    .Create(body, registryPath)
+                    .Execute();
+            Console.WriteLine("Created gateway: {0}", createdDevice.ToString());
+            return 0;
+        }
+        //[END iot_create_gateway]
+
+        //[START iot_create_device]
+        public static object CreateDevice(string projectId, string cloudRegion, string registryName, string deviceId)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+
+            var req = cloudIot
+                .Projects
+                .Locations
+                .Registries
+                .Devices
+                .List(registryPath);
+            req.FieldMask = "config,gatewayConfig";
+            var devices = req.Execute().Devices;
+            if (devices != null)
+            {
+                Console.WriteLine("Found {0} devices", devices.Count);
+                devices.ToList().ForEach(singleDevice =>
+                {
+                    if ((singleDevice.Id != null && singleDevice.Id.Equals(deviceId))
+                    || (singleDevice.Name != null && singleDevice.Name.Equals(deviceId)))
+                    {
+                        Console.WriteLine("Device exists, skipping. ");
+                        return;
+                    }
+                }
+                );
+            }
+            Console.WriteLine("Creating device with id: {0}", deviceId);
+
+            GatewayConfig gwConfig = new GatewayConfig()
+            {
+                GatewayType = "NON_GATEWAY",
+                GatewayAuthMethod = "ASSOCIATION_ONLY"
+            };
+
+            Device device = new Device()
+            {
+                Id = deviceId,
+                GatewayConfig = gwConfig
+            };
+
+            Device createdDevice =
+                cloudIot
+                    .Projects
+                    .Locations
+                    .Registries
+                    .Devices
+                    .Create(device, registryPath)
+                    .Execute();
+
+            Console.WriteLine("Created device: {0}", createdDevice.ToString());
+            return 0;
+        }
+        //[END iot_create_device]
+
+        //[START iot_list_gateways]
+        public static object ListGateways(string projectId, string cloudRegion, string registryName)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+
+            var req = cloudIot
+                .Projects
+                .Locations
+                .Registries
+                .Devices
+                .List(registryPath);
+            req.FieldMask = "config,gatewayConfig";
+
+            var devices = req.Execute().Devices;
+
+            if (devices != null)
+            {
+                Console.WriteLine("Found {0} devices", devices.Count);
+                devices.ToList().ForEach(device =>
+                   {
+                       if (device.GatewayConfig != null
+                       && device.GatewayConfig.GatewayType != null
+                          && device.GatewayConfig.GatewayType.Equals("GATEWAY"))
+                       {
+                           Console.WriteLine("Id :{0}", device.Id);
+                           if (device.Config != null)
+                           {
+                               Console.WriteLine("Config: {0}", device.Config.ToString());
+                           }
+                       }
+                   }
+                );
+            }
+            else
+            {
+                Console.WriteLine("Registry has no gateway devices");
+            }
+
+            return 0;
+        }
+        //[END iot_list_gateways]
+
+        //[START iot_bind_device_to_gateway]
+        public static object BindDeviceToGateway(
+            string projectId, string cloudRegion, string registryName, string deviceId, string gatewayId)
+        {
+            CreateDevice(projectId, cloudRegion, registryName, deviceId);
+            var cloudIot = CreateAuthorizedClient();
+            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+            BindDeviceToGatewayRequest req = new BindDeviceToGatewayRequest
+            {
+                DeviceId = deviceId,
+                GatewayId = gatewayId
+            };
+
+            var res = cloudIot
+                .Projects
+                .Locations
+                .Registries
+                .BindDeviceToGateway(req, registryPath)
+                .Execute();
+            Console.WriteLine("Device bound: {0}", res.ToString());
+
+            return 0;
+        }
+        //[END iot_bind_device_to_gateway]
+
+        //[START iot_unbind_device_from_gateway]
+        public static object UnbindDeviceFromGateway(string projectId, string cloudRegion, string registryName, string deviceId, string gatewayId)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+            UnbindDeviceFromGatewayRequest req = new UnbindDeviceFromGatewayRequest
+            {
+                DeviceId = deviceId,
+                GatewayId = gatewayId
+            };
+
+            var res = cloudIot
+                .Projects
+                .Locations
+                .Registries
+                .UnbindDeviceFromGateway(req, registryPath)
+                .Execute();
+            Console.WriteLine("Device unbound: {0}", deviceId);
+
+            return 0;
+        }
+        //[END iot_unbind_device_from_gateway]
+
+        //[START iot_list_devices_for_gateway]
+        public static object ListDevicesForGateways(string projectId,
+         string cloudRegion, string registryName, string gatewayId)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            var gatewayPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}/devices/{gatewayId}";
+            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+            var req = cloudIot.Projects.Locations.Registries.Devices.List(registryPath);
+            req.GatewayListOptionsAssociationsGatewayId = gatewayId;
+            var devices = req.Execute().Devices;
+
+            if (devices != null)
+            {
+                Console.WriteLine("Found {0} devices", devices.Count);
+                devices.ToList().ForEach(device =>
+                    Console.WriteLine("ID: {0}", device.Id));
+            }
+            else
+            {
+                Console.WriteLine("Gateway has no bound devices.");
+            }
+
+            return 0;
+        }
+        //[END iot_list_devices_for_gateway]
+
 
         public static int Main(string[] args)
         {
@@ -946,6 +1232,16 @@ namespace GoogleCloudSamples
                     opts.projectId, opts.regionId, opts.registryId, opts.role, opts.member))
                 .Add((SendCommandOptions opts) => SendCommand(
                     opts.deviceId, opts.projectId, opts.regionId, opts.registryId, opts.command))
+                .Add((CreateGatewayOptions opts) => CreateGateway(
+                    opts.projectId, opts.regionId, opts.registryId, opts.gatewayId))
+                .Add((ListGatewaysOptions opts) => ListGateways(
+                    opts.projectId, opts.regionId, opts.registryId))
+                .Add((ListDevicesForGatewayOptions opts) => ListDevicesForGateways(
+                    opts.projectId, opts.regionId, opts.registryId, opts.gatewayId))
+                .Add((BindDeviceToGatewayOptions opts) => BindDeviceToGateway(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.gatewayId))
+                .Add((UnbindDeviceFromGatewayOptions opts) => UnbindDeviceFromGateway(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.gatewayId))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
