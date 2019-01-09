@@ -17,7 +17,7 @@ spec:
           secretName: service-account
       containers:
       - name: social-auth
-        image: gcr.io/google-samples/social-auth:v1
+        image: gcr.io/dotnet-docs-samples-tests/social-auth:v1
         volumeMounts:
         - name: google-cloud-key
           mountPath: /var/secrets/google
