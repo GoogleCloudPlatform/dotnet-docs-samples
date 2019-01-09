@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: socialauth
+spec:
+  selector:
+    matchLabels:
+      app: socialauth
+  template:
+    metadata:
+      labels:
+        app: socialauth
+    spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: service-account
+      containers:
+      - name: subscriber
+        image: gcr.io/google-samples/socialauth-sample:v1
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/dotnet-docs-samples-tests-54197ffe0224.json
