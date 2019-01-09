@@ -16,6 +16,7 @@
     <None Update="appsecrets.json.keyname" CopyToOutputDirectory="PreserveNewest" />
     <Content Remove="appsecrets.json" />
     <None Update="app.yaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Dockerfile" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
