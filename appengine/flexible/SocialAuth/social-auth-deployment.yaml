@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: social-auth
+  name: social-auth2
 spec:
   selector:
     matchLabels:
-      app: social-auth
+      app: social-auth2
   template:
     metadata:
       labels:
-        app: social-auth
+        app: social-auth2
     spec:
       volumes:
       - name: google-cloud-key
         secret:
           secretName: service-account
       containers:
-      - name: social-auth
+      - name: social-auth2
         image: gcr.io/dotnet-docs-samples-tests/social-auth:v1
         volumeMounts:
         - name: google-cloud-key
