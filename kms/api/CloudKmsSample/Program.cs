@@ -14,17 +14,18 @@
  * the License.
  */
 
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
 using System;
-using CommandLine;
-using Google.Apis.CloudKMS.v1;
-using Google.Apis.CloudKMS.v1.Data;
-using System.Linq;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+
+using CommandLine;
+using Google.Cloud.Iam.V1;
+using Google.Cloud.Kms.V1;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace GoogleCloudSamples
 {
@@ -206,491 +207,385 @@ namespace GoogleCloudSamples
 
     public class CloudKmsSample
     {
-        private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
-        /// <summary>
-        /// Creates an authorized Cloud Key Management Service client using Application 
-        /// Default Credentials.
-        /// </summary>
-        /// <returns>an authorized Cloud Key Management Service client.</returns>
-        public static CloudKMSService CreateAuthorizedClient()
-        {
-            GoogleCredential credential =
-                GoogleCredential.GetApplicationDefaultAsync().Result;
-            // Inject the Cloud Key Management Service scope
-            if (credential.IsCreateScopedRequired)
-            {
-                credential = credential.CreateScoped(new[]
-                {
-                    CloudKMSService.Scope.CloudPlatform
-                });
-            }
-            return new CloudKMSService(new BaseClientService.Initializer
-            {
-                HttpClientInitializer = credential,
-                GZipEnabled = false
-            });
-        }
-
         // [START kms_list_keyrings]
-        public static object ListKeyRings(string projectId, string locationId)
+        public static void ListKeyRings(string projectId, string locationId)
         {
-            var cloudKms = CreateAuthorizedClient();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
             // The resource name of the location associated with the key rings.
-            var parent = $"projects/{projectId}/locations/{locationId}";
-            try
+            LocationName locationName = new LocationName(projectId, locationId);
+
+            // Print all key rings to the console.
+            foreach (KeyRing keyRing in client.ListKeyRings(locationName))
             {
-                var result = cloudKms.Projects.Locations.KeyRings.List(parent).Execute();
-                Console.WriteLine("KeyRings: ");
-                result.KeyRings.ToList().ForEach(response => Console.WriteLine(response.Name));
+                Console.WriteLine(keyRing.Name);
             }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Error.Code;
-            }
-            return 0;
         }
         // [END kms_list_keyrings]
 
         // [START kms_list_cryptokeys]
-        public static object ListCryptoKeys(string projectId, string locationId, string keyRingId)
+        public static void ListCryptoKeys(string projectId, string locationId, string keyRingId)
         {
-            var cloudKms = CreateAuthorizedClient();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
             // Generate the full path of the parent to use for listing crypto keys.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}";
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.List(parent).Execute();
-            Console.WriteLine("Crypto Keys: ");
-            result.CryptoKeys.ToList().ForEach(response =>
+            KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
+
+            foreach (CryptoKey result in client.ListCryptoKeys(keyRingName))
             {
-                Console.WriteLine(response.Name);
-                Console.WriteLine($"  Created: {response.CreateTime}");
-                Console.WriteLine($"  Purpose: {response.Purpose}");
-                Console.WriteLine($"  Primary: {response.Primary}");
-                Console.WriteLine($"    State: {response.Primary.State}");
-                Console.WriteLine($"    Created: {response.Primary.CreateTime}");
-            });
-            return 0;
+                Console.WriteLine(result.Name);
+                Console.WriteLine($"  Created: {result.CreateTime}");
+                Console.WriteLine($"  Purpose: {result.Purpose}");
+                Console.WriteLine($"  Primary: {result.Primary}");
+                Console.WriteLine($"    State: {result.Primary.State}");
+                Console.WriteLine($"    Created: {result.Primary.CreateTime}");
+            }
         }
         // [END kms_list_cryptokeys]
 
         // [START kms_create_keyring]
-        public static object CreateKeyRing(string projectId, string locationId, string keyRingId)
+        public static void CreateKeyRing(string projectId, string locationId, string keyRingId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for creating key rings.
-            var parent = $"projects/{projectId}/locations/{locationId}";
-            KeyRing keyRingToCreate = new KeyRing();
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CreateRequest(
-                cloudKms, keyRingToCreate, parent);
-            request.KeyRingId = keyRingId;
-            var result = request.Execute();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+            // The location in which to create the key ring.
+            LocationName locationName = new LocationName(projectId, locationId);
+
+            // Initial values for the KeyRing (currently unused).
+            KeyRing keyRing = new KeyRing();
+
+            KeyRing result = client.CreateKeyRing(locationName, keyRingId, keyRing);
             Console.Write($"Created Key Ring: {result.Name}");
-            return 0;
         }
         // [END kms_create_keyring]
 
         // [START kms_get_keyring]
-        public static object GetKeyRing(string projectId, string locationId, string keyRingId)
+        public static void GetKeyRing(string projectId, string locationId, string keyRingId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for getting the key ring.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}";
-            var result = cloudKms.Projects.Locations.KeyRings.Get(parent).Execute();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
+
+            KeyRing result = client.GetKeyRing(keyRingName);
+
             Console.WriteLine($"Found KeyRing: {result.Name}");
             Console.WriteLine($"  Created on:{result.CreateTime}");
-            return 0;
         }
         // [END kms_get_keyring]
 
         // [START kms_get_cryptokey]
-        public static object GetCryptoKey(string projectId, string locationId, string keyRingId, string cryptoKeyId)
+        public static void GetCryptoKey(string projectId, string locationId, string keyRingId, string cryptoKeyId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for getting the key ring.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}";
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Get(parent).Execute();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyName cryptoKeyName =
+                new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
+
+            CryptoKey result = client.GetCryptoKey(cryptoKeyName);
+
             Console.WriteLine($"Name: {result.Name}");
             Console.WriteLine($"Created: {result.CreateTime}");
             Console.WriteLine($"Purpose: {result.Purpose}");
             Console.WriteLine($"Primary: {result.Primary}");
             Console.WriteLine($"  State: { result.Primary.State}");
             Console.WriteLine($"  Created: { result.Primary.CreateTime}");
-            return 0;
         }
         // [END kms_get_cryptokey]
 
         // [START kms_create_cryptokey]
-        public static object CreateCryptoKey(string projectId, string locationId, string keyRingId, string cryptoKeyId)
+        public static void CreateCryptoKey(string projectId, string locationId, string keyRingId, string cryptoKeyId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for creating the crypto key.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}";
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+            // The KeyRing in which to create the CryptoKey.
+            KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
+
             CryptoKey cryptoKeyToCreate = new CryptoKey();
-            cryptoKeyToCreate.Purpose = "ENCRYPT_DECRYPT";
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource.CreateRequest(
-                cloudKms, cryptoKeyToCreate, parent);
-            request.CryptoKeyId = cryptoKeyId;
-            var result = request.Execute();
+            cryptoKeyToCreate.Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt;
+
+            CryptoKey result = client.CreateCryptoKey(keyRingName, cryptoKeyId, cryptoKeyToCreate);
             Console.Write($"Created Crypto Key: {result.Name}");
-            return 0;
         }
         // [END kms_create_cryptokey]
 
 
         // [START kms_disable_cryptokey_version]
-        public static object DisableCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
+        public static void DisableCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for disabling the crypto key Version.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}/cryptoKeyVersions/{versionId}";
-            // Get crypto key version.
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.GetRequest(cloudKms, parent);
-            var result = request.Execute();
-            result.State = "DISABLED";
-            var patchRequest = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.PatchRequest(cloudKms, result, parent);
-            patchRequest.UpdateMask = "state";
-            var patchResult = patchRequest.Execute();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+            // The CryptoKeyVersion to disable.
+            CryptoKeyVersionName versionName =
+                new CryptoKeyVersionName(projectId, locationId, keyRingId, cryptoKeyId, versionId);
+
+            CryptoKeyVersion version = client.GetCryptoKeyVersion(versionName);
+
+            version.State = CryptoKeyVersion.Types.CryptoKeyVersionState.Disabled;
+            FieldMask fieldMask = new FieldMask();
+            fieldMask.Paths.Add("state");
+
+            CryptoKeyVersion patchResult = client.UpdateCryptoKeyVersion(version, fieldMask);
+
             Console.Write($"Disabled Crypto Key Version: {patchResult.Name}");
-            return 0;
         }
         // [END kms_disable_cryptokey_version]
 
         // [START kms_enable_cryptokey_version]
-        public static object EnableCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
+        public static void EnableCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for enabling the crypto key Version.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}/cryptoKeyVersions/{versionId}";
-            // Get crypto key version.
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-            .CryptoKeyVersionsResource.GetRequest(cloudKms, parent);
-            var result = request.Execute();
-            result.State = "ENABLED";
-            var patchRequest = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.PatchRequest(cloudKms, result, parent);
-            patchRequest.UpdateMask = "state";
-            var patchResult = patchRequest.Execute();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+            // The CryptoKeyVersion to enable.
+            CryptoKeyVersionName versionName =
+                new CryptoKeyVersionName(projectId, locationId, keyRingId, cryptoKeyId, versionId);
+
+            CryptoKeyVersion version = client.GetCryptoKeyVersion(versionName);
+
+            version.State = CryptoKeyVersion.Types.CryptoKeyVersionState.Enabled;
+            FieldMask fieldMask = new FieldMask();
+            fieldMask.Paths.Add("state");
+
+            CryptoKeyVersion patchResult = client.UpdateCryptoKeyVersion(version, fieldMask);
             Console.Write($"Enabled Crypto Key Version: {patchResult.Name}");
-            return 0;
         }
         // [END kms_enable_cryptokey_version]
 
         // [START kms_get_cryptokey_version]
-        public static object GetCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
+        public static void GetCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for getting the crypto key Version.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}/cryptoKeyVersions/{versionId}";
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Get(parent).Execute();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+            // The CryptoKeyVersion to enable.
+            CryptoKeyVersionName versionName =
+                new CryptoKeyVersionName(projectId, locationId, keyRingId, cryptoKeyId, versionId);
+
+            CryptoKeyVersion result = client.GetCryptoKeyVersion(versionName);
+
             Console.WriteLine($"Name: {result.Name}");
             Console.WriteLine($"Created: {result.CreateTime}");
             Console.WriteLine($"State: {result.State}");
-            return 0;
         }
         // [END kms_get_cryptokey_version]
 
         // [START kms_destroy_cryptokey_version]
-        public static object DestroyCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
+        public static void DestroyCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for destroying the crypto key Version.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}/cryptoKeyVersions/{versionId}";
-            DestroyCryptoKeyVersionRequest destroyRequest = new DestroyCryptoKeyVersionRequest();
-            // Destroy crypto key version.
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.DestroyRequest(cloudKms, destroyRequest, parent);
-            var result = request.Execute();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+            // The CryptoKeyVersion to destroy.
+            CryptoKeyVersionName versionName =
+                new CryptoKeyVersionName(projectId, locationId, keyRingId, cryptoKeyId, versionId);
+
+            CryptoKeyVersion result = client.DestroyCryptoKeyVersion(versionName);
+
             Console.Write($"Destroyed Crypto Key Version: {result.Name}");
-            return 0;
         }
         // [END kms_destroy_cryptokey_version]
 
         // [START kms_restore_cryptokey_version]
-        public static object RestoreCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
+        public static void RestoreCryptoKeyVersion(string projectId, string locationId, string keyRingId, string cryptoKeyId, string versionId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for restoring the crypto key Version.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}/cryptoKeyVersions/{versionId}";
-            RestoreCryptoKeyVersionRequest restoreRequest = new RestoreCryptoKeyVersionRequest();
-            // Restore crypto key version.
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.RestoreRequest(cloudKms, restoreRequest, parent);
-            var result = request.Execute();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+            // The CryptoKeyVersion to restore.
+            CryptoKeyVersionName versionName =
+                new CryptoKeyVersionName(projectId, locationId, keyRingId, cryptoKeyId, versionId);
+
+            CryptoKeyVersion result = client.RestoreCryptoKeyVersion(versionName);
+
             Console.Write($"Restored Crypto Key Version: {result.Name}");
-            return 0;
         }
         // [END kms_restore_cryptokey_version]
 
         // [START kms_get_cryptokey_policy]
-        public static object GetCryptoKeyIamPolicy(string projectId, string locationId,
+        public static void GetCryptoKeyIamPolicy(string projectId, string locationId,
             string keyRingId, string cryptoKeyId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for getting the crypto key IAM policy.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}";
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-            if (result.Bindings != null)
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyName cryptoKeyName =
+                new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
+
+            Policy result = client.GetIamPolicy(KeyNameOneof.From(cryptoKeyName));
+
+            foreach (Binding binding in result.Bindings)
             {
-                result.Bindings.ToList().ForEach(response =>
+                Console.WriteLine($"Role: {binding.Role}");
+                foreach (String member in binding.Members)
                 {
-                    Console.WriteLine($"Role: {response.Role}");
-                    response.Members.ToList().ForEach(member =>
-                    {
-                        Console.WriteLine($"  Member: {member}");
-                    });
-                });
+                    Console.WriteLine($"  Member: {member}");
+                }
             }
-            else
-            {
-                Console.WriteLine($"Empty IAM policy found for CryptoKey: {parent}");
-            }
-            return 0;
         }
         // [END kms_get_cryptokey_policy]
 
         // [START kms_add_member_to_cryptokey_policy]
-        public static object AddMemberToCryptoKeyPolicy(string projectId, string locationId,
+        public static void AddMemberToCryptoKeyPolicy(string projectId, string locationId,
             string keyRingId, string cryptoKeyId, string role, string member)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for updating the crypto key IAM policy.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}";
-            SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-            if (result.Bindings != null)
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyName cryptoKeyName =
+                new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
+
+            Policy policy = client.GetIamPolicy(KeyNameOneof.From(cryptoKeyName));
+
+            Binding binding = new Binding();
+            binding.Role = role;
+            binding.Members.Add(member);
+
+            policy.Bindings.Add(binding);
+
+            Policy updateResult = client.SetIamPolicy(KeyNameOneof.From(cryptoKeyName), policy);
+
+            foreach (Binding bindingResult in updateResult.Bindings)
             {
-                // Policy already exists, so add a new Binding to it.
-                Binding bindingToAdd = new Binding();
-                bindingToAdd.Role = role;
-                string[] testMembers = { member };
-                bindingToAdd.Members = testMembers;
-                result.Bindings.Add(bindingToAdd);
-                setIamPolicyRequest.Policy = result;
-            }
-            else
-            {
-                // Policy does not yet exist, so create a new one.
-                Policy newPolicy = new Policy();
-                newPolicy.Bindings = new List<Binding>();
-                Binding bindingToAdd = new Binding();
-                bindingToAdd.Role = role;
-                string[] testMembers = { member };
-                bindingToAdd.Members = testMembers;
-                newPolicy.Bindings.Add(bindingToAdd);
-                setIamPolicyRequest.Policy = newPolicy;
-            }
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
-            var setIamPolicyResult = request.Execute();
-            var updateResult = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-            updateResult.Bindings.ToList().ForEach(response =>
-            {
-                Console.WriteLine($"Role: {response.Role}");
-                response.Members.ToList().ForEach(memberFound =>
+                Console.WriteLine($"Role: {bindingResult.Role}");
+                foreach (string memberResult in bindingResult.Members)
                 {
-                    Console.WriteLine($"  Member: {memberFound}");
-                });
-            });
-            return 0;
+                    Console.WriteLine($"  Member: {memberResult}");
+                }
+            }
         }
         // [END kms_add_member_to_cryptokey_policy]
 
         // [START kms_remove_member_from_cryptokey_policy]
-        public static object RemoveMemberFromCryptoKeyPolicy(string projectId, string locationId,
+        public static void RemoveMemberFromCryptoKeyPolicy(string projectId, string locationId,
             string keyRingId, string cryptoKeyId, string role, string member)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for updating the crypto key IAM policy.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}";
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-            if (result.Bindings != null)
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyName cryptoKeyName =
+                new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
+
+            Policy policy = client.GetIamPolicy(KeyNameOneof.From(cryptoKeyName));
+
+            foreach (Binding binding in policy.Bindings.Where(b => b.Role == role))
             {
-                result.Bindings.ToList().ForEach(response =>
+                binding.Members.Remove(member);
+            }
+
+            Policy updateResult = client.SetIamPolicy(KeyNameOneof.From(cryptoKeyName), policy);
+
+            foreach (Binding bindingResult in updateResult.Bindings)
+            {
+                Console.WriteLine($"Role: {bindingResult.Role}");
+                foreach (string memberResult in bindingResult.Members)
                 {
-                    if (response.Role == role)
-                    {
-                        // Remove the role/member combo from the crypto key IAM policy.
-                        response.Members = response.Members.Where(m => m != member).ToList();
-                    }
-                });
-                // Set the modified crypto key IAM policy to be the cryto key's current IAM policy.
-                SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
-                setIamPolicyRequest.Policy = result;
-                var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                    .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
-                var setIamPolicyResult = request.Execute();
-                // Get and display the modified crypto key IAM policy.
-                var resultAfterUpdate = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
-                if (resultAfterUpdate.Bindings != null)
-                {
-                    Console.WriteLine($"Policy Bindings: {resultAfterUpdate.Bindings}");
-                    resultAfterUpdate.Bindings.ToList().ForEach(response =>
-                    {
-                        Console.WriteLine($"Role: {response.Role}");
-                        response.Members.ToList().ForEach(memberAfterUpdate =>
-                        {
-                            Console.WriteLine($"  Member: {memberAfterUpdate}");
-                        });
-                    });
-                }
-                else
-                {
-                    Console.WriteLine($"Empty IAM policy found for CryptoKey: {parent}");
+                    Console.WriteLine($"  Member: {memberResult}");
                 }
             }
-            else
-            {
-                Console.WriteLine($"Empty IAM policy found for CryptoKey: {parent}");
-            }
-            return 0;
         }
         // [END kms_remove_member_from_cryptokey_policy]
 
         // [START kms_get_keyring_policy]
-        public static object GetKeyRingIamPolicy(string projectId, string locationId, string keyRingId)
+        public static void GetKeyRingIamPolicy(string projectId, string locationId, string keyRingId)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for getting the key ring IAM policy.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}";
-            var result = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
-            if (result.Bindings != null)
-            {
-                Console.WriteLine($"Policy Bindings: {result.Bindings}");
-                result.Bindings.ToList().ForEach(response =>
-                {
-                    Console.WriteLine($"Role: {response.Role}");
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
 
-                    response.Members.ToList().ForEach(member =>
-                    {
-                        Console.WriteLine($"  Member: {member}");
-                    });
-                });
-            }
-            else
+            Policy result = client.GetIamPolicy(KeyNameOneof.From(keyRingName));
+
+            foreach (Binding binding in result.Bindings)
             {
-                Console.WriteLine($"Empty IAM policy found for KeyRing: {parent}");
+                Console.WriteLine($"Role: {binding.Role}");
+                foreach (String member in binding.Members)
+                {
+                    Console.WriteLine($"  Member: {member}");
+                }
             }
-            return 0;
         }
         // [END kms_get_keyring_policy]
 
         // [START kms_add_member_to_keyring_policy]
-        public static object AddMemberToKeyRingPolicy(string projectId, string locationId,
+        public static void AddMemberToKeyRingPolicy(string projectId, string locationId,
             string keyRingId, string role, string member)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the parent to use for updating the key ring IAM policy.
-            var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}";
-            SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
-            var result = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
-            if (result.Bindings != null)
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
+
+            Policy policy = client.GetIamPolicy(KeyNameOneof.From(keyRingName));
+
+            Binding binding = new Binding();
+            binding.Role = role;
+            binding.Members.Add(member);
+
+            policy.Bindings.Add(binding);
+
+            Policy updateResult = client.SetIamPolicy(KeyNameOneof.From(keyRingName), policy);
+
+            foreach (Binding bindingResult in updateResult.Bindings)
             {
-                // Policy already exists, so add a new Binding to it.
-                Binding bindingToAdd = new Binding();
-                bindingToAdd.Role = role;
-                string[] testMembers = { member };
-                bindingToAdd.Members = testMembers;
-                result.Bindings.Add(bindingToAdd);
-                setIamPolicyRequest.Policy = result;
-            }
-            else
-            {
-                // Policy does not yet exist, so create a new one
-                Policy newPolicy = new Policy();
-                newPolicy.Bindings = new List<Binding>();
-                Binding bindingToAdd = new Binding();
-                bindingToAdd.Role = role;
-                string[] testMembers = { member };
-                bindingToAdd.Members = testMembers;
-                newPolicy.Bindings.Add(bindingToAdd);
-                setIamPolicyRequest.Policy = newPolicy;
-            }
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource
-                .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
-            var setIamPolicyResult = request.Execute();
-            var updateResult = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
-            updateResult.Bindings.ToList().ForEach(response =>
-            {
-                Console.WriteLine($"Role: {response.Role}");
-                response.Members.ToList().ForEach(memberFound =>
+                Console.WriteLine($"Role: {bindingResult.Role}");
+                foreach (string memberResult in bindingResult.Members)
                 {
-                    Console.WriteLine($"  Member: {memberFound}");
-                });
-            });
-            return 0;
+                    Console.WriteLine($"  Member: {memberResult}");
+                }
+            }
         }
         // [END kms_add_member_to_keyring_policy]
 
         // [START kms_encrypt]
-        public static object Encrypt(string projectId, string locationId, string keyRingId, string cryptoKeyId,
+        public static void Encrypt(string projectId, string locationId, string keyRingId, string cryptoKeyId,
 string plaintextFile, string ciphertextFile)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the crypto key to use for encryption.
-            var cryptoKey = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}";
-            EncryptRequest encryptRequest = new EncryptRequest();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyName cryptoKeyName =
+                new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
+
             byte[] plaintext = File.ReadAllBytes(plaintextFile);
-            encryptRequest.Plaintext = Convert.ToBase64String(plaintext);
-            Console.WriteLine($"dataToEncrypt.Plaintext: {encryptRequest.Plaintext}");
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Encrypt(name: cryptoKey, body: encryptRequest).Execute();
+            CryptoKeyPathName pathName = CryptoKeyPathName.Parse(cryptoKeyName.ToString());
+            EncryptResponse result = client.Encrypt(pathName, ByteString.CopyFrom(plaintext));
+
             // Output encrypted data to a file.
-            File.WriteAllBytes(ciphertextFile, Convert.FromBase64String(result.Ciphertext));
+            File.WriteAllBytes(ciphertextFile, result.Ciphertext.ToByteArray());
             Console.Write($"Encrypted file created: {ciphertextFile}");
-            return 0;
         }
         // [END kms_encrypt]
 
         // [START kms_decrypt]
-        public static object Decrypt(string projectId, string locationId, string keyRingId, string cryptoKeyId,
+        public static void Decrypt(string projectId, string locationId, string keyRingId, string cryptoKeyId,
     string ciphertextFile, string plaintextFile)
         {
-            var cloudKms = CreateAuthorizedClient();
-            // Generate the full path of the crypto key to use for encryption.
-            var cryptoKey = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}";
-            DecryptRequest decryptRequest = new DecryptRequest();
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyName cryptoKeyName =
+                new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
+
             byte[] ciphertext = File.ReadAllBytes(ciphertextFile);
-            decryptRequest.Ciphertext = Convert.ToBase64String(ciphertext);
-            Console.WriteLine($"dataToDecrypt.Ciphertext: {decryptRequest.Ciphertext}");
-            var result = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Decrypt(name: cryptoKey, body: decryptRequest).Execute();
+            DecryptResponse result = client.Decrypt(cryptoKeyName, ByteString.CopyFrom(ciphertext));
+
             // Output decrypted data to a file.
-            File.WriteAllBytes(plaintextFile, Convert.FromBase64String(result.Plaintext));
+            File.WriteAllBytes(plaintextFile, result.Plaintext.ToByteArray());
             Console.Write($"Decrypted file created: {plaintextFile}");
-            return 0;
         }
         // [END kms_decrypt]
 
         public static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<
-                CreateKeyRingOptions, GetKeyRingOptions, CreateCryptoKeyOptions, GetCryptoKeyOptions,
-                ListKeyRingsOptions, ListCryptoKeysOptions, EncryptOptions, DecryptOptions,
-                DisableCryptoKeyVersionOptions, EnableCryptoKeyVersionOptions, DestroyCryptoKeyVersionOptions,
-                RestoreCryptoKeyVersionOptions, GetCryptoKeyIamPolicyOptions,
-                 AddMemberToCryptoKeyPolicyOptions, AddMemberToKeyRingPolicyOptions, RemoveMemberFromCryptoKeyPolicyOptions
-                >(args)
-              .MapResult(
-                (CreateKeyRingOptions opts) => CreateKeyRing(opts.projectId, opts.locationId, opts.keyRingId),
-                (GetKeyRingOptions opts) => GetKeyRing(opts.projectId, opts.locationId, opts.keyRingId),
-                (CreateCryptoKeyOptions opts) => CreateCryptoKey(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId),
-                (GetCryptoKeyOptions opts) => GetCryptoKey(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId),
-                (ListKeyRingsOptions opts) => ListKeyRings(opts.projectId, opts.locationId),
-                (ListCryptoKeysOptions opts) => ListCryptoKeys(opts.projectId, opts.locationId, opts.keyRingId),
-                (EncryptOptions opts) => Encrypt(opts.projectId, opts.locationId,
-                opts.keyRingId, opts.cryptoKeyId, opts.inFile, opts.outFile),
-                (DecryptOptions opts) => Decrypt(opts.projectId, opts.locationId,
-                opts.keyRingId, opts.cryptoKeyId, opts.inFile, opts.outFile),
-                (DisableCryptoKeyVersionOptions opts) => DisableCryptoKeyVersion(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.versionId),
-                (EnableCryptoKeyVersionOptions opts) => EnableCryptoKeyVersion(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.versionId),
-                (DestroyCryptoKeyVersionOptions opts) => DestroyCryptoKeyVersion(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.versionId),
-                (RestoreCryptoKeyVersionOptions opts) => RestoreCryptoKeyVersion(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.versionId),
-                (AddMemberToCryptoKeyPolicyOptions opts) => AddMemberToCryptoKeyPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.role, opts.member),
-                (GetCryptoKeyIamPolicyOptions opts) => GetCryptoKeyIamPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId),
-                (AddMemberToKeyRingPolicyOptions opts) => AddMemberToKeyRingPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.role, opts.member),
-                (RemoveMemberFromCryptoKeyPolicyOptions opts) => RemoveMemberFromCryptoKeyPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.role, opts.member),
-                errs => 1);
+            Parser.Default.ParseArguments(args,
+                    typeof(CreateKeyRingOptions), typeof(GetKeyRingOptions), typeof(CreateCryptoKeyOptions),
+                    typeof(GetCryptoKeyOptions), typeof(ListKeyRingsOptions), typeof(ListCryptoKeysOptions),
+                    typeof(EncryptOptions), typeof(DecryptOptions), typeof(GetCryptoKeyVersionOptions),
+                    typeof(DisableCryptoKeyVersionOptions), typeof(EnableCryptoKeyVersionOptions),
+                    typeof(DestroyCryptoKeyVersionOptions), typeof(RestoreCryptoKeyVersionOptions),
+                    typeof(GetCryptoKeyIamPolicyOptions), typeof(AddMemberToCryptoKeyPolicyOptions),
+                    typeof(GetKeyRingIamPolicyOptions), typeof(AddMemberToKeyRingPolicyOptions),
+                    typeof(RemoveMemberFromCryptoKeyPolicyOptions))
+                .WithParsed<CreateKeyRingOptions>(opts => CreateKeyRing(opts.projectId, opts.locationId, opts.keyRingId))
+                .WithParsed<GetKeyRingOptions>(opts => GetKeyRing(opts.projectId, opts.locationId, opts.keyRingId))
+                .WithParsed<CreateCryptoKeyOptions>(opts => CreateCryptoKey(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId))
+                .WithParsed<GetCryptoKeyOptions>(opts => GetCryptoKey(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId))
+                .WithParsed<ListKeyRingsOptions>(opts => ListKeyRings(opts.projectId, opts.locationId))
+                .WithParsed<ListCryptoKeysOptions>(opts => ListCryptoKeys(opts.projectId, opts.locationId, opts.keyRingId))
+                .WithParsed<EncryptOptions>(opts => Encrypt(opts.projectId, opts.locationId,
+                        opts.keyRingId, opts.cryptoKeyId, opts.inFile, opts.outFile))
+                .WithParsed<DecryptOptions>(opts => Decrypt(opts.projectId, opts.locationId,
+                        opts.keyRingId, opts.cryptoKeyId, opts.inFile, opts.outFile))
+                .WithParsed<GetCryptoKeyVersionOptions>(opts => GetCryptoKeyVersion(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.versionId))
+                .WithParsed<DisableCryptoKeyVersionOptions>(opts => DisableCryptoKeyVersion(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.versionId))
+                .WithParsed<EnableCryptoKeyVersionOptions>(opts => EnableCryptoKeyVersion(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.versionId))
+                .WithParsed<DestroyCryptoKeyVersionOptions>(opts => DestroyCryptoKeyVersion(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.versionId))
+                .WithParsed<RestoreCryptoKeyVersionOptions>(opts => RestoreCryptoKeyVersion(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.versionId))
+                .WithParsed<AddMemberToCryptoKeyPolicyOptions>(opts => AddMemberToCryptoKeyPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.role, opts.member))
+                .WithParsed<GetCryptoKeyIamPolicyOptions>(opts => GetCryptoKeyIamPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId))
+                .WithParsed<AddMemberToKeyRingPolicyOptions>(opts => AddMemberToKeyRingPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.role, opts.member))
+                .WithParsed<GetKeyRingIamPolicyOptions>(opts => GetKeyRingIamPolicy(opts.projectId, opts.locationId, opts.keyRingId))
+                .WithParsed<RemoveMemberFromCryptoKeyPolicyOptions>(opts => RemoveMemberFromCryptoKeyPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.role, opts.member));
         }
     }
 }
