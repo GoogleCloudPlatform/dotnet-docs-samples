@@ -215,8 +215,7 @@ namespace GoogleCloudSamples
         /// <returns>an authorized Cloud Key Management Service client.</returns>
         public static CloudKMSService CreateAuthorizedClient()
         {
-            GoogleCredential credential =
-                GoogleCredential.GetApplicationDefaultAsync().Result;
+            GoogleCredential credential = GoogleCredential.GetApplicationDefault();
             // Inject the Cloud Key Management Service scope
             if (credential.IsCreateScopedRequired)
             {
@@ -281,8 +280,7 @@ namespace GoogleCloudSamples
             // Generate the full path of the parent to use for creating key rings.
             var parent = $"projects/{projectId}/locations/{locationId}";
             KeyRing keyRingToCreate = new KeyRing();
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CreateRequest(
-                cloudKms, keyRingToCreate, parent);
+            var request = cloudKms.Projects.Locations.KeyRings.Create(keyRingToCreate, parent);
             request.KeyRingId = keyRingId;
             var result = request.Execute();
             Console.Write($"Created Key Ring: {result.Name}");
@@ -328,8 +326,7 @@ namespace GoogleCloudSamples
             var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}";
             CryptoKey cryptoKeyToCreate = new CryptoKey();
             cryptoKeyToCreate.Purpose = "ENCRYPT_DECRYPT";
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource.CreateRequest(
-                cloudKms, cryptoKeyToCreate, parent);
+            var request = cloudKms.Projects.Locations.KeyRings.CryptoKeys.Create(cryptoKeyToCreate, parent);
             request.CryptoKeyId = cryptoKeyId;
             var result = request.Execute();
             Console.Write($"Created Crypto Key: {result.Name}");
@@ -345,12 +342,10 @@ namespace GoogleCloudSamples
             // Generate the full path of the parent to use for disabling the crypto key Version.
             var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}/cryptoKeyVersions/{versionId}";
             // Get crypto key version.
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.GetRequest(cloudKms, parent);
+            var request = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Get(parent);
             var result = request.Execute();
             result.State = "DISABLED";
-            var patchRequest = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.PatchRequest(cloudKms, result, parent);
+            var patchRequest = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Patch(result, parent);
             patchRequest.UpdateMask = "state";
             var patchResult = patchRequest.Execute();
             Console.Write($"Disabled Crypto Key Version: {patchResult.Name}");
@@ -365,12 +360,10 @@ namespace GoogleCloudSamples
             // Generate the full path of the parent to use for enabling the crypto key Version.
             var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}/cryptoKeyVersions/{versionId}";
             // Get crypto key version.
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-            .CryptoKeyVersionsResource.GetRequest(cloudKms, parent);
+            var request = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Get(parent);
             var result = request.Execute();
             result.State = "ENABLED";
-            var patchRequest = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.PatchRequest(cloudKms, result, parent);
+            var patchRequest = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Patch(result, parent);
             patchRequest.UpdateMask = "state";
             var patchResult = patchRequest.Execute();
             Console.Write($"Enabled Crypto Key Version: {patchResult.Name}");
@@ -400,8 +393,7 @@ namespace GoogleCloudSamples
             var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}/cryptoKeyVersions/{versionId}";
             DestroyCryptoKeyVersionRequest destroyRequest = new DestroyCryptoKeyVersionRequest();
             // Destroy crypto key version.
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.DestroyRequest(cloudKms, destroyRequest, parent);
+            var request = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Destroy(destroyRequest, parent);
             var result = request.Execute();
             Console.Write($"Destroyed Crypto Key Version: {result.Name}");
             return 0;
@@ -416,8 +408,7 @@ namespace GoogleCloudSamples
             var parent = $"projects/{projectId}/locations/{locationId}/keyRings/{keyRingId}/cryptoKeys/{cryptoKeyId}/cryptoKeyVersions/{versionId}";
             RestoreCryptoKeyVersionRequest restoreRequest = new RestoreCryptoKeyVersionRequest();
             // Restore crypto key version.
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .CryptoKeyVersionsResource.RestoreRequest(cloudKms, restoreRequest, parent);
+            var request = cloudKms.Projects.Locations.KeyRings.CryptoKeys.CryptoKeyVersions.Restore(restoreRequest, parent);
             var result = request.Execute();
             Console.Write($"Restored Crypto Key Version: {result.Name}");
             return 0;
@@ -482,8 +473,7 @@ namespace GoogleCloudSamples
                 newPolicy.Bindings.Add(bindingToAdd);
                 setIamPolicyRequest.Policy = newPolicy;
             }
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
+            var request = cloudKms.Projects.Locations.KeyRings.CryptoKeys.SetIamPolicy(setIamPolicyRequest, parent);
             var setIamPolicyResult = request.Execute();
             var updateResult = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
             updateResult.Bindings.ToList().ForEach(response =>
@@ -519,8 +509,7 @@ namespace GoogleCloudSamples
                 // Set the modified crypto key IAM policy to be the cryto key's current IAM policy.
                 SetIamPolicyRequest setIamPolicyRequest = new SetIamPolicyRequest();
                 setIamPolicyRequest.Policy = result;
-                var request = new ProjectsResource.LocationsResource.KeyRingsResource.CryptoKeysResource
-                    .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
+                var request = cloudKms.Projects.Locations.KeyRings.CryptoKeys.SetIamPolicy(setIamPolicyRequest, parent);
                 var setIamPolicyResult = request.Execute();
                 // Get and display the modified crypto key IAM policy.
                 var resultAfterUpdate = cloudKms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(parent).Execute();
@@ -608,8 +597,7 @@ namespace GoogleCloudSamples
                 newPolicy.Bindings.Add(bindingToAdd);
                 setIamPolicyRequest.Policy = newPolicy;
             }
-            var request = new ProjectsResource.LocationsResource.KeyRingsResource
-                .SetIamPolicyRequest(cloudKms, setIamPolicyRequest, parent);
+            var request = cloudKms.Projects.Locations.KeyRings.SetIamPolicy(setIamPolicyRequest, parent);
             var setIamPolicyResult = request.Execute();
             var updateResult = cloudKms.Projects.Locations.KeyRings.GetIamPolicy(parent).Execute();
             updateResult.Bindings.ToList().ForEach(response =>
