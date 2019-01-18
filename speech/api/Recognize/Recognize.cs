@@ -54,6 +54,9 @@ namespace GoogleCloudSamples
 
         [Option('m', HelpText = "Select a transcription model.")]
         public String SelectModel { get; set; }
+
+        [Option('c', HelpText = "Set number of channels")]
+        public int NumberOfChannels { get; set; }
     }
 
     [Verb("with-context", HelpText = "Detects speech in an audio file."
@@ -100,7 +103,6 @@ namespace GoogleCloudSamples
             HelpText = "Audio file encoding format.")]
         public RecognitionConfig.Types.AudioEncoding Encoding { get; set; }
     }
-
 
     public class Recognize
     {
@@ -222,6 +224,28 @@ namespace GoogleCloudSamples
         }
         // [END speech_transcribe_model_selection]
 
+        // [START speech_transcribe_multichannel_beta]
+        static object SyncRecognizeMultipleChannels(string filePath, int channelCount)
+        {
+            var speech = SpeechClient.Create();
+            var response = speech.Recognize(new RecognitionConfig()
+            { 
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                SampleRateHertz = 16000,
+                LanguageCode = "en",
+                EnableSeparateRecognitionPerChannel = true,
+                AudioChannelCount = channelCount
+            }, RecognitionAudio.FromFile(filePath));
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine(alternative.Transcript);
+                }
+            }
+            return 0;
+        }
+        // [END speech_transcribe_multichannel_beta]
 
         /// <summary>
         /// Reads a list of phrases from stdin.
