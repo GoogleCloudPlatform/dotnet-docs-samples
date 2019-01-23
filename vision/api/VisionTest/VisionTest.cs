@@ -110,7 +110,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("labels", Path.Combine("data", "cat.jpg"));
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("mammal", output.Stdout);
+            Assert.Contains("cat", output.Stdout);
         }
 
         [Fact]
@@ -339,7 +339,7 @@ namespace GoogleCloudSamples
         {
             var output = _quickStart.Run();
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("mammal", output.Stdout);
+            Assert.Contains("cat", output.Stdout);
         }
     }
 }
