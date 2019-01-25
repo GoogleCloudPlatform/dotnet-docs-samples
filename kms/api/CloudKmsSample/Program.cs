@@ -268,7 +268,7 @@ namespace GoogleCloudSamples
             KeyRing result = client.GetKeyRing(keyRingName);
 
             Console.WriteLine($"Found KeyRing: {result.Name}");
-            Console.WriteLine($"  Created on:{result.CreateTime}");
+            Console.WriteLine($"  Created on: {result.CreateTime}");
         }
         // [END kms_get_keyring]
 
@@ -285,8 +285,8 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Created: {result.CreateTime}");
             Console.WriteLine($"Purpose: {result.Purpose}");
             Console.WriteLine($"Primary: {result.Primary}");
-            Console.WriteLine($"  State: { result.Primary.State}");
-            Console.WriteLine($"  Created: { result.Primary.CreateTime}");
+            Console.WriteLine($"  State: {result.Primary.State}");
+            Console.WriteLine($"  Created: {result.Primary.CreateTime}");
         }
         // [END kms_get_cryptokey]
 
@@ -317,10 +317,9 @@ namespace GoogleCloudSamples
                 new CryptoKeyVersionName(projectId, locationId, keyRingId, cryptoKeyId, versionId);
 
             CryptoKeyVersion version = client.GetCryptoKeyVersion(versionName);
-
             version.State = CryptoKeyVersion.Types.CryptoKeyVersionState.Disabled;
-            FieldMask fieldMask = new FieldMask();
-            fieldMask.Paths.Add("state");
+
+            FieldMask fieldMask = new FieldMask { Paths = { "state" } };
 
             CryptoKeyVersion patchResult = client.UpdateCryptoKeyVersion(version, fieldMask);
 
@@ -338,10 +337,9 @@ namespace GoogleCloudSamples
                 new CryptoKeyVersionName(projectId, locationId, keyRingId, cryptoKeyId, versionId);
 
             CryptoKeyVersion version = client.GetCryptoKeyVersion(versionName);
-
             version.State = CryptoKeyVersion.Types.CryptoKeyVersionState.Enabled;
-            FieldMask fieldMask = new FieldMask();
-            fieldMask.Paths.Add("state");
+
+            FieldMask fieldMask = new FieldMask { Paths = { "state" } };
 
             CryptoKeyVersion patchResult = client.UpdateCryptoKeyVersion(version, fieldMask);
             Console.Write($"Enabled Crypto Key Version: {patchResult.Name}");
@@ -425,12 +423,11 @@ namespace GoogleCloudSamples
                 new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
 
             Policy policy = client.GetIamPolicy(KeyNameOneof.From(cryptoKeyName));
-
-            Binding binding = new Binding();
-            binding.Role = role;
-            binding.Members.Add(member);
-
-            policy.Bindings.Add(binding);
+            policy.Bindings.Add(new Binding
+            {
+                Role = role,
+                Members = { member }
+            });
 
             Policy updateResult = client.SetIamPolicy(KeyNameOneof.From(cryptoKeyName), policy);
 
@@ -500,12 +497,11 @@ namespace GoogleCloudSamples
             KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
 
             Policy policy = client.GetIamPolicy(KeyNameOneof.From(keyRingName));
-
-            Binding binding = new Binding();
-            binding.Role = role;
-            binding.Members.Add(member);
-
-            policy.Bindings.Add(binding);
+            policy.Bindings.Add(new Binding
+            {
+                Role = role,
+                Members = { member }
+            });
 
             Policy updateResult = client.SetIamPolicy(KeyNameOneof.From(keyRingName), policy);
 
