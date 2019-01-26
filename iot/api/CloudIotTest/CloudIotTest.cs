@@ -17,6 +17,7 @@ using Google.Cloud.PubSub.V1;
 using Grpc.Core;
 using Xunit;
 using System;
+using System.IO;
 
 namespace GoogleCloudSamples
 {
@@ -217,7 +218,7 @@ namespace GoogleCloudSamples
             string gatewayName = "dotnettest-create-gateway" + _fixture.TestId;
             try
             {
-                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName, "test/data/rsa_cert.pem", "RS256");
                 Assert.Contains("Creating gateway with id", createGatewayOut.Stdout);
                 Assert.Contains("Created gateway:", createGatewayOut.Stdout);
             }
@@ -234,7 +235,7 @@ namespace GoogleCloudSamples
             //Setup scenario
             try
             {
-                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName, "test/data/rsa_cert.pem", "RS256");
                 Assert.Contains("Creating gateway with id", createGatewayOut.Stdout);
                 var listGatewaysOut = Run("listGateways", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId);
                 Assert.Contains("Found", listGatewaysOut.Stdout);
@@ -254,7 +255,7 @@ namespace GoogleCloudSamples
             string deviceId = "dotnettest-device-" + _fixture.TestId;
             try
             {
-                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName, "test/data/rsa_cert.pem", "RS256");
                 Assert.Contains("Creating gateway with id", createGatewayOut.Stdout);
                 //Bind new device to new gateway
                 var bindDeviceToGatewayOut = Run("bindDeviceToGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, gatewayName);
@@ -287,6 +288,7 @@ namespace GoogleCloudSamples
         public string ServiceAccount { get; private set; }
 
         public string RegionId { get; private set; }
+        public string AbsolutePath { get; private set; }
 
         public IotTestFixture()
         {
@@ -296,6 +298,7 @@ namespace GoogleCloudSamples
             TestId = TestUtil.RandomName();
             TopicName = new TopicName(ProjectId, "iot-test-" + TestId);
             RegistryId = "iot-test" + TestId;
+            AbsolutePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
             CreatePubSubTopic(this.TopicName);
             Assert.Equal(0, Run("createRegistry", ProjectId, RegionId,
                 RegistryId, TopicName.TopicId).ExitCode);

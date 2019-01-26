@@ -326,6 +326,12 @@ namespace GoogleCloudSamples
 
         [Value(3, HelpText = "The gateway ID that will be created.", Required = true)]
         public string gatewayId { get; set; }
+
+        [Value(4, HelpText = "Public key file used for registering devices and gateways.", Required = true)]
+        public string publicKeyFile { get; set; }
+
+        [Value(5, HelpText = "Algorithm.", Required = true)]
+        public string algorithm { get; set; }
     }
 
     [Verb("listGateways", HelpText = "List gateways in a registry.")]
@@ -992,7 +998,7 @@ namespace GoogleCloudSamples
 
         //[START iot_create_gateway]
         public static object CreateGateway(string projectId, string cloudRegion, string registryName,
-            string gatewayId)
+            string gatewayId, string publicKeyFilePath, string algorithm)
         {
             var cloudIot = CreateAuthorizedClient();
             var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
@@ -1007,6 +1013,19 @@ namespace GoogleCloudSamples
                 Id = gatewayId
             };
             body.GatewayConfig = gwConfig;
+            string keyText = File.ReadAllText(publicKeyFilePath);
+            string keyFormat = algorithm.Equals("ES256") ? "ES256_PEM" : "RSA_X509_PEM";
+
+            body.Credentials = new List<DeviceCredential>();
+            body.Credentials.Add(new DeviceCredential()
+            {
+                PublicKey = new PublicKeyCredential()
+                {
+                    Key = keyText,
+                    Format = keyFormat
+                },
+            });
+
             Device createdDevice =
                 cloudIot
                     .Projects
@@ -1233,7 +1252,7 @@ namespace GoogleCloudSamples
                 .Add((SendCommandOptions opts) => SendCommand(
                     opts.deviceId, opts.projectId, opts.regionId, opts.registryId, opts.command))
                 .Add((CreateGatewayOptions opts) => CreateGateway(
-                    opts.projectId, opts.regionId, opts.registryId, opts.gatewayId))
+                    opts.projectId, opts.regionId, opts.registryId, opts.gatewayId, opts.publicKeyFile, opts.algorithm))
                 .Add((ListGatewaysOptions opts) => ListGateways(
                     opts.projectId, opts.regionId, opts.registryId))
                 .Add((ListDevicesForGatewayOptions opts) => ListDevicesForGateways(
