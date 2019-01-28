@@ -997,43 +997,39 @@ namespace GoogleCloudSamples
         //[END iot_send_command]
 
         //[START iot_create_gateway]
-        public static object CreateGateway(string projectId, string cloudRegion, string registryName,
-            string gatewayId, string publicKeyFilePath, string algorithm)
+        public static object CreateGateway(string projectId, string cloudRegion, 
+            string registryName, string gatewayId, string publicKeyFilePath,
+            string algorithm)
         {
             var cloudIot = CreateAuthorizedClient();
-            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+            var registryPath = $"projects/{projectId}/locations/{cloudRegion}"
+                + $"/registries/{registryName}";
             Console.WriteLine("Creating gateway with id: {0}", gatewayId);
-
-            GatewayConfig gwConfig = new GatewayConfig();
-            gwConfig.GatewayType = "GATEWAY";
-            gwConfig.GatewayAuthMethod = "ASSOCIATION_ONLY";
 
             Device body = new Device()
             {
-                Id = gatewayId
-            };
-            body.GatewayConfig = gwConfig;
-            string keyText = File.ReadAllText(publicKeyFilePath);
-            string keyFormat = algorithm.Equals("ES256") ? "ES256_PEM" : "RSA_X509_PEM";
-
-            body.Credentials = new List<DeviceCredential>();
-            body.Credentials.Add(new DeviceCredential()
-            {
-                PublicKey = new PublicKeyCredential()
+                Id = gatewayId,
+                GatewayConfig = new GatewayConfig() 
                 {
-                    Key = keyText,
-                    Format = keyFormat
+                    GatewayType = "GATEWAY",
+                    GatewayAuthMethod = "ASSOCIATION_ONLY"
                 },
-            });
+                Credentials = 
+                {
+                    new DeviceCredential()
+                    {
+                        PublicKey = new PublicKeyCredential()
+                        {
+                            Key = File.ReadAllText(publicKeyFilePath),
+                            Format = (algorithm == "ES256" ? 
+                                "ES256_PEM" : "RSA_X509_PEM")
+                        },
+                    }
+                }
+            };
 
-            Device createdDevice =
-                cloudIot
-                    .Projects
-                    .Locations
-                    .Registries
-                    .Devices
-                    .Create(body, registryPath)
-                    .Execute();
+            Device createdDevice = cloudIot.Projects.Locations.Registries
+                .Devices.Create(body, registryPath).Execute();
             Console.WriteLine("Created gateway: {0}", createdDevice.ToString());
             return 0;
         }
