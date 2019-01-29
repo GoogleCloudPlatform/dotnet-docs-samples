@@ -1015,13 +1015,14 @@ namespace GoogleCloudSamples
                     GatewayAuthMethod = "ASSOCIATION_ONLY"
                 },
                 Credentials = 
+                new List<DeviceCredential>() 
                 {
                     new DeviceCredential()
                     {
                         PublicKey = new PublicKeyCredential()
                         {
                             Key = File.ReadAllText(publicKeyFilePath),
-                            Format = (algorithm == "ES256" ? 
+                            Format = (algorithm == "ES256" ?
                                 "ES256_PEM" : "RSA_X509_PEM")
                         },
                     }
