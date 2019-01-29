@@ -997,7 +997,7 @@ namespace GoogleCloudSamples
         //[END iot_send_command]
 
         //[START iot_create_gateway]
-        public static object CreateGateway(string projectId, string cloudRegion, 
+        public static object CreateGateway(string projectId, string cloudRegion,
             string registryName, string gatewayId, string publicKeyFilePath,
             string algorithm)
         {
@@ -1009,13 +1009,13 @@ namespace GoogleCloudSamples
             Device body = new Device()
             {
                 Id = gatewayId,
-                GatewayConfig = new GatewayConfig() 
+                GatewayConfig = new GatewayConfig()
                 {
                     GatewayType = "GATEWAY",
                     GatewayAuthMethod = "ASSOCIATION_ONLY"
                 },
-                Credentials = 
-                new List<DeviceCredential>() 
+                Credentials =
+                new List<DeviceCredential>()
                 {
                     new DeviceCredential()
                     {
