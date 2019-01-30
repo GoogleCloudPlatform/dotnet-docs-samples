@@ -12,6 +12,8 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Kubernetes.Configuration.Extensions.Configmap;
+using Kubernetes.Configuration.Extensions.Secret;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +37,9 @@ namespace SocialAuthMVC
                         new EncryptedFileProvider(),
                         "appsecrets.json" + EncryptedFileProvider.EncryptedFileExtension,
                         optional: true, reloadOnChange: false);
+                    // Use app secrets installed as kubernetes secret.
+                    config.AddJsonFile("/var/appconfig/appsecrets.json",
+                        optional: true, reloadOnChange: true);
                 })
                 .UseStartup<Startup>();
     }
