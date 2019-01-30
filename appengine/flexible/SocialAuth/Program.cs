@@ -12,8 +12,6 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using Kubernetes.Configuration.Extensions.Configmap;
-using Kubernetes.Configuration.Extensions.Secret;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
