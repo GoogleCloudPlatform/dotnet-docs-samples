@@ -1059,7 +1059,7 @@ namespace GoogleCloudSamples
             // [START datastore_transactional_single_entity_group_read_only]
             Entity taskList;
             IReadOnlyList<Entity> tasks;
-            using (var transaction = _db.BeginTransaction())
+            using (var transaction = _db.BeginTransaction(TransactionOptions.CreateReadOnly()))
             {
                 taskList = transaction.Lookup(taskListKey);
                 var query = new Query("Task")
