@@ -5,12 +5,13 @@ using static Google.Cloud.Irm.V1Alpha2.Incident.Types;
 using System;
 
 class IrmCreateIncident {
-    public void CreateIncident(string projectId = "YOUR-PROJECT-ID")
+    public Signal CreateIncidentWithSignal(string projectId = "YOUR-PROJECT-ID")
     {
         // Create client
-        IncidentServiceClient incidentServiceClient = IncidentServiceClient.Create();
+        IncidentServiceClient incidentServiceClient =
+            IncidentServiceClient.Create();
         // Describe the incident.
-        Incident incident = new Incident()
+        Incident newIncident = new Incident()
         {
             Title = "Somebody pushed the red button!",
             Synopsis = new Synopsis() 
@@ -23,13 +24,28 @@ class IrmCreateIncident {
                 ContentType = "text/plain",
                 UpdateTime = DateTime.UtcNow.ToTimestamp()
             },
-            StartTime = DateTime.UtcNow.ToTimestamp(),
             Severity = Severity.Major,
             Stage = Stage.Unspecified
         };
         string parent = new ProjectName(projectId).ToString();
         // Call the API to create the incident.
-        Incident response = incidentServiceClient.CreateIncident(incident, parent);
-        Console.WriteLine("Created incident {0}.", response.Name);
+        Incident incident =
+            incidentServiceClient.CreateIncident(newIncident, parent);
+        Console.WriteLine("Created incident {0}.", incident.Name);
+
+        // Describe the signal.
+        Signal newSignal = new Signal()
+        {
+            Incident = incident.Name,
+            Title = "Red button pushed.",
+            Content = "Somebody pushed the red button!",
+            ContentType = "text/plain",
+        };
+
+        // Call the API to create the signal.
+        Signal signal = incidentServiceClient.CreateSignal(parent, newSignal);
+        Console.WriteLine("Created signal {0}.", signal.Name);
+
+        return signal;
     }
 }
