@@ -52,6 +52,7 @@ class IrmChangeStage
                     CallSettings.FromHeaderMutation(metadata => metadata.Add(
                         "If-Match", incident.Etag)));
                 Console.WriteLine("Changed stage of {0}.", incident.Name);
+                break;
             }
             // TODO: narrow down the exception type.
             catch (Exception) when (retry < 3)
