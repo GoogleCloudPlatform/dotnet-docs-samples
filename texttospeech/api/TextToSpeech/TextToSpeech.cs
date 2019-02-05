@@ -164,7 +164,7 @@ namespace GoogleCloudSamples
         /// </remarks>
         public static void SynthesizeSSML(string ssml)
         {
-            TextToSpeechClient client = TextToSpeechClient.Create();
+            var client = TextToSpeechClient.Create();
             var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
             {
                 Input = new SynthesisInput
@@ -215,7 +215,7 @@ namespace GoogleCloudSamples
         {
             string text = File.ReadAllText(textFilePath);
 
-            TextToSpeechClient client = TextToSpeechClient.Create();
+            var client = TextToSpeechClient.Create();
             var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
             {
                 Input = new SynthesisInput
@@ -255,7 +255,7 @@ namespace GoogleCloudSamples
         {
             string text = File.ReadAllText(ssmlFilePath);
 
-            TextToSpeechClient client = TextToSpeechClient.Create();
+            var client = TextToSpeechClient.Create();
             var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
             {
                 Input = new SynthesisInput
@@ -280,5 +280,36 @@ namespace GoogleCloudSamples
             }
         }
         // [START tts_synthesize_ssml_file]
+
+        // [START tts_synthesize_text_audio_profile]
+        public static void SynthesizeTextWithAudioProfile(string text,
+                                                         string outputFile,
+                                                          string effectsProfileId) {
+            
+            var client = TextToSpeechClient.Create();
+            var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
+            {
+                Input = new SynthesisInput
+                {
+                    Text = text
+                },
+                // Note: voices can also be specified by name
+                Voice = new VoiceSelectionParams
+                {
+                    LanguageCode = "en-US",
+                    SsmlGender = SsmlVoiceGender.Female
+                },
+                AudioConfig = new AudioConfig
+                {
+                    AudioEncoding = AudioEncoding.Mp3
+                }
+            });
+
+            using (Stream output = File.Create(outputFile))
+            {
+                response.AudioContent.WriteTo(output);
+            }
+        }
+        // [START tts_synthesize_text_audio_profile]
     }
 }
