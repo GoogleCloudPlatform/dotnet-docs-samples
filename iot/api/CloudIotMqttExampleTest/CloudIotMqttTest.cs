@@ -108,7 +108,7 @@ namespace GoogleCloudSamples
                 tast.Start();
 
                 //Wait for the device to connect
-                Thread.Sleep(2000);
+                Thread.Sleep(5000);
 
                 var sendCommandOutput = Run("sendCommand", deviceId, _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, "me want steak");
                 Assert.Contains("me want steak", sendCommandOutput.Stdout);
@@ -166,7 +166,6 @@ namespace GoogleCloudSamples
             }
             catch (Google.GoogleApiException e)
             {
-                _output.WriteLine("Failure on exception: {0}", e.Message);
                 Console.WriteLine("Failure on exception: {0}", e.Message);
             }
             finally

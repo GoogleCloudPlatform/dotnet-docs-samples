@@ -18,10 +18,4 @@
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
-  <ItemGroup>
-    <None Remove="roots %282%29.pem" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="old program.cs" />
-  </ItemGroup>
 </Project>
