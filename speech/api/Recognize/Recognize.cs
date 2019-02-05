@@ -16,7 +16,7 @@
 
 using CommandLine;
 using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Speech.V1;
+using Google.Cloud.Speech.V1P1Beta1;
 using Grpc.Auth;
 using System;
 using System.Collections.Generic;
@@ -229,19 +229,18 @@ namespace GoogleCloudSamples
         {
             var speech = SpeechClient.Create();
             var response = speech.Recognize(new RecognitionConfig()
-            { 
+            {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                SampleRateHertz = 16000,
                 LanguageCode = "en",
                 EnableSeparateRecognitionPerChannel = true,
                 AudioChannelCount = channelCount
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
             {
-                foreach (var alternative in result.Alternatives)
-                {
-                    Console.WriteLine(alternative.Transcript);
-                }
+                var alternative = result.Alternatives[0];
+                Console.WriteLine(new String('-', 5));
+                Console.WriteLine($"Transcript: {alternative.Transcript}");
+                Console.WriteLine($"Channel Tag: {result.ChannelTag}");
             }
             return 0;
         }
@@ -563,7 +562,8 @@ namespace GoogleCloudSamples
                     SyncRecognizeGcs(opts.FilePath) : opts.EnableWordTimeOffsets ?
                     SyncRecognizeWords(opts.FilePath) : opts.EnableAutomaticPunctuation ?
                     SyncRecognizePunctuation(opts.FilePath) : (opts.SelectModel != null) ?
-                    SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : SyncRecognize(opts.FilePath),
+                    SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : (opts.NumberOfChannels > 1) ?
+                    SyncRecognizeMultipleChannels(opts.FilePath, opts.NumberOfChannels) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
                     : AsyncRecognizeGcs(opts.FilePath))
