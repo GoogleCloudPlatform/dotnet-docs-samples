@@ -1,13 +1,23 @@
 using System;
 using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Irm.V1Alpha2;
 using Xunit;
 
 public class Test
 {
     [Fact]
-    public void TestCreateIncident()
+    public void TestCreateIncidentAndAnnotate()
     {
-        new IrmCreateIncident().CreateIncidentWithSignal(ProjectId);
+        var signal = new IrmCreateIncident().CreateIncidentWithSignal(ProjectId);
+        try 
+        {
+            var annotation = new IrmAnnotateIncident().AnnotateIncident(ProjectId,
+                IncidentName.Parse(signal.Incident).IncidentId);
+        } 
+        finally
+        {
+            // I see now way to clean up old incidents!
+        }
     }
 
     [Fact]
@@ -17,6 +27,9 @@ public class Test
     }
 
     static readonly string ProjectId = GetProjectId();
+
+    static readonly IncidentServiceClient IncidentServiceClient =
+            IncidentServiceClient.Create();
 
     static string GetProjectId()
     {
