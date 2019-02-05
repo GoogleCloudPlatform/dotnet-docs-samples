@@ -13,6 +13,8 @@ public class Test
         {
             string incidentId = IncidentName.Parse(signal.Incident).IncidentId;
             var annotation = new IrmAnnotateIncident().AnnotateIncident(s_projectId, incidentId);
+            new IrmChangeSeverity().ChangeSeverity(s_projectId, incidentId);
+            new IrmChangeStage().ChangeStageAtomically(s_projectId, incidentId);
         } 
         finally
         {
