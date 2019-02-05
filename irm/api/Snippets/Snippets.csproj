@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\google-cloud-dotnet\apis\Google.Cloud.Irm.V1Alpha2\Google.Cloud.Irm.V1Alpha2\Google.Cloud.Irm.V1Alpha2.csproj" />
+    <ProjectReference Include="/usr/local/google/home/rennie/gitrepos/google-cloud-dotnet/apis/Google.Cloud.Irm.V1Alpha2/Google.Cloud.Irm.V1Alpha2/Google.Cloud.Irm.V1Alpha2.csproj" />
   </ItemGroup>
 
 </Project>
