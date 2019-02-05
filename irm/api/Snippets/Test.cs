@@ -6,13 +6,13 @@ using Xunit;
 public class Test
 {
     [Fact]
-    public void TestCreateIncidentAndAnnotate()
+    public void TestMostEverything()
     {
-        var signal = new IrmCreateIncident().CreateIncidentWithSignal(ProjectId);
+        var signal = new IrmCreateIncident().CreateIncidentWithSignal(s_projectId);
         try 
         {
-            var annotation = new IrmAnnotateIncident().AnnotateIncident(ProjectId,
-                IncidentName.Parse(signal.Incident).IncidentId);
+            string incidentId = IncidentName.Parse(signal.Incident).IncidentId;
+            var annotation = new IrmAnnotateIncident().AnnotateIncident(s_projectId, incidentId);
         } 
         finally
         {
@@ -23,12 +23,12 @@ public class Test
     [Fact]
     public void TestCreateSignal()
     {
-        new IrmCreateSignal().CreateSignal(ProjectId);
+        new IrmCreateSignal().CreateSignal(s_projectId);
     }
 
-    static readonly string ProjectId = GetProjectId();
+    static readonly string s_projectId = GetProjectId();
 
-    static readonly IncidentServiceClient IncidentServiceClient =
+    static readonly IncidentServiceClient s_incidentServiceClient =
             IncidentServiceClient.Create();
 
     static string GetProjectId()
