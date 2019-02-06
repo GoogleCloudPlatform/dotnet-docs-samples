@@ -30,8 +30,7 @@ service account JSON from the Google Cloud Console:
 
 5.  From a Powershell command line, restore the NuGet packages and call
 `run` to see a list of subcommands like getRegistry or getDevice:
-
-```powershell
+    ```powershell
     PS C:\...\dotnet-docs-samples\iot\api\CloudIotSample> dotnet restore
     PS C:\...\dotnet-docs-samples\iot\api\CloudIotSample> dotnet run
 
@@ -64,8 +63,7 @@ service account JSON from the Google Cloud Console:
       sendCommand           Send a command to a device.
       help                  Display more information on a specific command.
       version               Display version information.
-```
-
+    ```
 # .NET Cloud IoT Core MQTT example
 
 This sample app publishes data to Cloud Pub/Sub using the MQTT bridge provided
@@ -82,7 +80,7 @@ PubSub topic for Cloud IoT Core and register a device as described in the
 2. Use the [`generate_keys.ps1`](generate_keys.ps1) script to generate your signing keys:
 
 ```powershell
-    PS C:\...\dotnet-docs-samples\iot\api> generate_keys.ps1
+    ./generate_keys.ps1
 ```
 
 3. Add a device using the file `rsa_cert.pem`, specifying RS256_X509 and using the
@@ -103,10 +101,10 @@ The following command summarizes the sample usage:
 From a Powershell command line, restore the NuGet packages and call
 `run` to see a list of subcommands like getRegistry or getDevice:
 
-```powershell
+    ```powershell
     PS C:\...\dotnet-docs-samples\iot\api\CloudIotMqttExample> dotnet restore
     PS C:\...\dotnet-docs-samples\iot\api\CloudIotMqttExample> dotnet run
-```
+    ```
 
 For example, if your project ID is `blue-jet-123`, your device registry is
 located in the `asia-east1` region, number of messages you want to publish is `100`,
@@ -114,10 +112,10 @@ expiration time on your token is `15 min`, and you have generated your
 credentials using the [`generate_keys.ps1`](./generate_keys.ps1) script
 provided in the parent folder, you can run the sample as:
 
-```powershell
+    ```powershell
     PS C:\...\dotnet-docs-samples\iot\api\CloudIotMqttExample> dotnet restore
     PS C:\...\dotnet-docs-samples\iot\api\CloudIotMqttExample> dotnet run startMqtt blue-jet-123 asia-east1 device-registry-id device-id ../rsa_private.pem RS256 ../roots.pem 100 event mqtt.googleapis.com 8883 15
-```
+    ```
 
 ## Reading the messages written by the sample client
 
