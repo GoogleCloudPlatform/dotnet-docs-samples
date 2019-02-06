@@ -22,15 +22,17 @@
 # Names of the two files containing secrets.
 $secrets = 'secrets2.ps1'
 $credentials = 'dotnet-docs-samples-tests-9715b8c501e8.json'
+$privatekeyfile = 'rsa_private.pem'
 $kokorodir = $env:KOKORO_GFILE_DIR
 if (-not $kokorodir) {
     $tempfile = [System.IO.Path]::GetTempFileName()
     remove-item $tempfile
     new-item -type directory -path $tempfile
     $kokorodir = $tempfile
-    @($secrets, $credentials) | ForEach-Object { 
+    @($secrets, $credentials, $privatekeyfile) | ForEach-Object { 
         gsutil cp gs://cloud-devrel-kokoro-resources/dotnet-docs-samples/$_  (Join-Path $kokorodir $_)
     }
 }
 & (Join-Path $kokorodir $secrets)
 $env:GOOGLE_APPLICATION_CREDENTIALS=(Join-Path $kokorodir $credentials)
+$env:IOT_PRIVATE_KEY_PATH=(Join-Path $kokorodir "rsa_private.pem")

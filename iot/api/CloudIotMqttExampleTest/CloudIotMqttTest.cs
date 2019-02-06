@@ -170,9 +170,7 @@ namespace GoogleCloudSamples
         }
         //[END iot_mqtt_tests]
     }
-
-
-
+    
     public class IotTestFixture : IDisposable
     {
         public TopicName TopicName { get; private set; }
@@ -189,15 +187,13 @@ namespace GoogleCloudSamples
         public IotTestFixture()
         {
             RegionId = "us-central1";
-            ProjectId = "dotnet-docs-samples-tests";//Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            string absolutePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-            string privateKeyPartialPath = Environment.GetEnvironmentVariable("TEST_IOT_PRIVATE_KEY_PATH");
-            string privateKeyFullPath = absolutePath.Substring(0, absolutePath.IndexOf("iot")) + privateKeyPartialPath;
-            if (privateKeyPartialPath.Length == 0 || !File.Exists(privateKeyFullPath))
+            ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            string privateKeyPath = Environment.GetEnvironmentVariable("IOT_PRIVATE_KEY_PATH");
+            if (privateKeyPath.Length == 0 || !File.Exists(privateKeyPath))
             {
                 throw new NullReferenceException("Private key path is not for unit tests.");
             }
-            PrivateKeyPath = privateKeyFullPath;
+            PrivateKeyPath = privateKeyPath;
             ServiceAccount = "serviceAccount:cloud-iot@system.gserviceaccount.com";
             TestId = TestUtil.RandomName();
             TopicName = new TopicName(ProjectId, "iot-test-" + TestId);
