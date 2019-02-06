@@ -170,7 +170,7 @@ namespace GoogleCloudSamples
         }
         //[END iot_mqtt_tests]
     }
-    
+
     public class IotTestFixture : IDisposable
     {
         public TopicName TopicName { get; private set; }
