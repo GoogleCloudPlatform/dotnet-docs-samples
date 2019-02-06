@@ -66,7 +66,7 @@ namespace GoogleCloudSamples
                    deviceId,
                _fixture.PrivateKeyPath,
                "RS256",
-               "test/data/roots.pem",
+               _fixture.CertPath,
                "1",
                "events",
                "mqtt.googleapis.com",
@@ -126,9 +126,8 @@ namespace GoogleCloudSamples
 
         private void StartMqtt(string deviceId, string privateKeyPath)
         {
-            Console.WriteLine("WHAATT {0}", privateKeyPath);
             CloudIotMqttExample.StartMqtt(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
-               deviceId, privateKeyPath, "RS256", "test/data/roots.pem", 1, "events", "mqtt.googleapis.com", 443, 1, 20);
+               deviceId, privateKeyPath, "RS256", _fixture.CertPath, 1, "events", "mqtt.googleapis.com", 443, 1, 20);
         }
 
 
@@ -147,7 +146,7 @@ namespace GoogleCloudSamples
                       deviceId,
                       _fixture.PrivateKeyPath,
                       "RS256",
-                      "test/data/roots.pem",
+                      _fixture.CertPath,
                       "1",
                       "state",
                       "mqtt.googleapis.com",
@@ -171,8 +170,6 @@ namespace GoogleCloudSamples
         //[END iot_mqtt_tests]
     }
 
-
-
     public class IotTestFixture : IDisposable
     {
         public TopicName TopicName { get; private set; }
@@ -186,18 +183,17 @@ namespace GoogleCloudSamples
         public string RegionId { get; private set; }
 
         public string PrivateKeyPath { get; private set; }
+        public string CertPath { get; private set; }
         public IotTestFixture()
         {
             RegionId = "us-central1";
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            string absolutePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-            string privateKeyPath = absolutePath.Substring(0, absolutePath.IndexOf("iot")) + Environment.GetEnvironmentVariable("TEST_IOT_PRIVATE_KEY_PATH");
-            if (!File.Exists(privateKeyPath))
+            string privateKeyPath = Environment.GetEnvironmentVariable("IOT_PRIVATE_KEY_PATH");
+            if (privateKeyPath.Length == 0 || !File.Exists(privateKeyPath))
             {
-                // Set environment variable for linux machine.
-                privateKeyPath = absolutePath.Substring(0, absolutePath.IndexOf("iot")) + Environment.GetEnvironmentVariable("TEST_IOT_PRIVATE_KEY_PATH_LINUX");
+                throw new NullReferenceException("Private key path is not for unit tests.");
             }
-            if (privateKeyPath.Length == 0) throw new NullReferenceException("Private key path is not for unit tests.");
+            CertPath = Environment.GetEnvironmentVariable("IOT_CERT_KEY_PATH");
             PrivateKeyPath = privateKeyPath;
             ServiceAccount = "serviceAccount:cloud-iot@system.gserviceaccount.com";
             TestId = TestUtil.RandomName();
