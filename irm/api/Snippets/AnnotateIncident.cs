@@ -22,7 +22,7 @@ class IrmAnnotateIncident
 {
     public string AnnotateIncident(
         string projectId = "YOUR-PROJECT-ID",
-        string incidentId = "What does this look like?")
+        string incidentId = "A.Pd45vXLghY3NDDi3jNy8")
     {
         // Create client
         IncidentServiceClient incidentServiceClient =
