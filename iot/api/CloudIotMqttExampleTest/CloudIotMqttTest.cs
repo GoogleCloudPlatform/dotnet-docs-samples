@@ -57,8 +57,6 @@ namespace GoogleCloudSamples
             //Setup scenario
             var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
             Assert.Contains("Device created:", createRsaOut.Stdout);
-            string absolutePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-            string privateKeyPath = absolutePath.Substring(0, absolutePath.IndexOf("iot")) + Environment.GetEnvironmentVariable("TEST_IOT_PRIVATE_KEY_PATH");
             try
             {
                 var mqttExampleOut = Run("startMqtt",
@@ -66,7 +64,7 @@ namespace GoogleCloudSamples
                    _fixture.RegionId,
                    _fixture.RegistryId,
                    deviceId,
-               privateKeyPath,
+               _fixture.PrivateKeyPath,
                "RS256",
                "test/data/roots.pem",
                "1",
@@ -100,11 +98,9 @@ namespace GoogleCloudSamples
             var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
             Assert.Contains("Device created:", createRsaOut.Stdout);
 
-            string absolutePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-            string privateKeyPath = absolutePath.Substring(0, absolutePath.IndexOf("iot")) + Environment.GetEnvironmentVariable("TEST_IOT_PRIVATE_KEY_PATH");
             try
             {
-                Task tast = new Task(() => StartMqtt(deviceId, privateKeyPath));
+                Task tast = new Task(() => StartMqtt(deviceId, _fixture.PrivateKeyPath));
                 tast.Start();
 
                 //Wait for the device to connect
@@ -130,8 +126,9 @@ namespace GoogleCloudSamples
 
         private void StartMqtt(string deviceId, string privateKeyPath)
         {
+            Console.WriteLine("WHAATT {0}", privateKeyPath);
             CloudIotMqttExample.StartMqtt(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
-               deviceId, privateKeyPath, "RS256", "test/data/roots.pem", 1, "events", "mqtt.googleapis.com", 443, 1, 5);
+               deviceId, privateKeyPath, "RS256", "test/data/roots.pem", 1, "events", "mqtt.googleapis.com", 443, 1, 20);
         }
 
 
@@ -139,9 +136,6 @@ namespace GoogleCloudSamples
         public void TestMqttDeviceState()
         {
             var deviceId = "rsa-device-mqtt-state-" + _fixture.TestId;
-
-            string absolutePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-            string privateKeyPath = absolutePath.Substring(0, absolutePath.IndexOf("iot")) + Environment.GetEnvironmentVariable("TEST_IOT_PRIVATE_KEY_PATH");
             try
             {
                 //Setup screnario
@@ -151,7 +145,7 @@ namespace GoogleCloudSamples
                       _fixture.RegionId,
                       _fixture.RegistryId,
                       deviceId,
-                      privateKeyPath,
+                      _fixture.PrivateKeyPath,
                       "RS256",
                       "test/data/roots.pem",
                       "1",
@@ -191,10 +185,20 @@ namespace GoogleCloudSamples
 
         public string RegionId { get; private set; }
 
+        public string PrivateKeyPath { get; private set; }
         public IotTestFixture()
         {
             RegionId = "us-central1";
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            string absolutePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+            string privateKeyPath = absolutePath.Substring(0, absolutePath.IndexOf("iot")) + Environment.GetEnvironmentVariable("TEST_IOT_PRIVATE_KEY_PATH");
+            if (!File.Exists(privateKeyPath))
+            {
+                // Set environment variable for linux machine.
+                privateKeyPath = absolutePath.Substring(0, absolutePath.IndexOf("iot")) + Environment.GetEnvironmentVariable("TEST_IOT_PRIVATE_KEY_PATH_LINUX");
+            }
+            if (privateKeyPath.Length == 0) throw new NullReferenceException("Private key path is not for unit tests.");
+            PrivateKeyPath = privateKeyPath;
             ServiceAccount = "serviceAccount:cloud-iot@system.gserviceaccount.com";
             TestId = TestUtil.RandomName();
             TopicName = new TopicName(ProjectId, "iot-test-" + TestId);

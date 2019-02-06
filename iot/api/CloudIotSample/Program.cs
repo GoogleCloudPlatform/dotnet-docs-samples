@@ -1224,8 +1224,10 @@ namespace GoogleCloudSamples
             if (devices != null)
             {
                 Console.WriteLine("Found {0} devices", devices.Count);
-                devices.ToList().ForEach(device =>
-                    Console.WriteLine("ID: {0}", device.Id));
+                foreach (var device in devices)
+                {
+                    Console.WriteLine("ID: {0}", device.Id);
+                }
             }
             else
             {
@@ -1249,14 +1251,15 @@ namespace GoogleCloudSamples
 
                 if (devices != null)
                 {
-                    devices.ToList().ForEach(response =>
+                    foreach (var response in devices)
                     {
-                        UnbindDeviceFromAllGateways(cloudIot, projectId, cloudRegion, registryId, response.Id);
-                    });
+                        UnbindDeviceFromAllGateways(cloudIot, projectId,
+                        cloudRegion, registryId, response.Id);
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Failed");
+                    Console.WriteLine("No bound device found.");
                 }
             }
             catch (Google.GoogleApiException e)
@@ -1268,7 +1271,8 @@ namespace GoogleCloudSamples
         }
         //[END iot_unbind_all_devices]
 
-        public static void UnbindDeviceFromAllGateways(CloudIotService cloudIot, string projectId, string cloudRegion, string registryId, string deviceId)
+        public static void UnbindDeviceFromAllGateways(CloudIotService cloudIot, string projectId,
+             string cloudRegion, string registryId, string deviceId)
         {
             // The resource name of the location associated with the key rings.
             var parent = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}";
@@ -1276,39 +1280,39 @@ namespace GoogleCloudSamples
             try
             {
                 var device = cloudIot.Projects.Locations.Registries.Devices.Get(fullpath).Execute();
-                Console.WriteLine("Devices -->: {0}", parent);
 
                 if (device != null)
                 {
                     bool isGateway = device.GatewayConfig.GatewayType == "GATEWAY";
                     if (!isGateway)
                     {
-                        //get list of gateways this non-gateway device bound to.
-                        //cloudIot.Projects.Locations.Registries.Devices
+                        // get list of gateways this non-gateway device bound to.
                         var req = cloudIot.Projects.Locations.Registries.Devices.List(parent);
                         req.GatewayListOptionsAssociationsDeviceId = device.Id;
                         var gateways = req.Execute().Devices;
                         if (gateways != null)
                         {
-                            gateways.ToList().ForEach(gateway =>
+                            foreach (var gateway in gateways)
+                            {
+                                UnbindDeviceFromGatewayRequest unbindReq = new UnbindDeviceFromGatewayRequest
                                 {
-                                    UnbindDeviceFromGatewayRequest unbindReq = new UnbindDeviceFromGatewayRequest
+                                    DeviceId = device.Id,
+                                    GatewayId = gateway.Id
+                                };
+                                try
+                                {
+                                    cloudIot.Projects.Locations.Registries.UnbindDeviceFromGateway(unbindReq, parent).Execute();
+                                    Console.WriteLine("Unbound device from the gateway {0}", gateway.Id);
+                                }
+                                catch (AggregateException e)
+                                {
+                                    Console.WriteLine("Could not unbind device");
+                                    foreach (var ex in e.InnerExceptions)
                                     {
-                                        DeviceId = device.Id,
-                                        GatewayId = gateway.Id
-                                    };
-                                    try
-                                    {
-                                        cloudIot.Projects.Locations.Registries.UnbindDeviceFromGateway(unbindReq, parent).Execute();
-                                        Console.WriteLine("Unbound device from the gateway {0}", gateway.Id);
-                                    }
-                                    catch (Google.GoogleApiException e)
-                                    {
-                                        Console.WriteLine("Could not unbind device");
-                                        Console.WriteLine(e);
+                                        Console.WriteLine(ex.Message);
                                     }
                                 }
-                            );
+                            }
                         }
                         else
                         {
@@ -1342,10 +1346,10 @@ namespace GoogleCloudSamples
 
                 if (devices != null)
                 {
-                    devices.ToList().ForEach(response =>
+                    foreach (var response in devices)
                     {
                         DeleteDevice(projectId, cloudRegion, registryId, response.Id);
-                    });
+                    }
                 }
             }
             catch (Google.GoogleApiException e)
@@ -1353,7 +1357,6 @@ namespace GoogleCloudSamples
                 Console.WriteLine(e.Message);
                 return e.Error.Code;
             }
-
 
             try
             {
