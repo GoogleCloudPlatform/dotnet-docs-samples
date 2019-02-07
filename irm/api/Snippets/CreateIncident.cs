@@ -26,7 +26,21 @@ class IrmCreateIncident
         var staging = new Google.Api.Gax.Grpc.ServiceEndpoint("staging-irm-cloud.sandbox.googleapis.com", 443);
         IncidentServiceClient incidentServiceClient =
             IncidentServiceClient.Create(staging);
-        // Describe the incident.
+        string parent = new ProjectName(projectId).ToString();
+
+        // Manually create a signal.
+        Signal newSignal = new Signal()
+        {
+            Title = "Red button pushed.",
+            Content = "Somebody pushed the red button!",
+            ContentType = "text/plain",
+        };
+
+        // Call the API to create the signal.
+        Signal signal = incidentServiceClient.CreateSignal(parent, newSignal);
+        Console.WriteLine("Created signal {0}.", signal.Name);
+
+        // Manually create an incident.
         Incident newIncident = new Incident()
         {
             Title = "Somebody pushed the red button!",
@@ -43,30 +57,18 @@ class IrmCreateIncident
             Severity = Severity.Major,
             Stage = Stage.Unspecified
         };
-        string parent = new ProjectName(projectId).ToString();
         // Call the API to create the incident.
         Incident incident =
             incidentServiceClient.CreateIncident(newIncident, parent);
         Console.WriteLine("Created incident {0}.", incident.Name);
 
-        // Describe the signal.
-        Signal newSignal = new Signal()
-        {
-            // Incident = incident.Name,
-            Title = "Red button pushed.",
-            Content = "Somebody pushed the red button!",
-            ContentType = "text/plain",
 
-        };
-
-        // Call the API to create the signal.
-        Signal signal = incidentServiceClient.CreateSignal(parent, newSignal);
-        Console.WriteLine("Created signal {0}.", signal.Name);
+        // signal.Incident = incident.Name.Replace("/-/", $"/{projectId}/");
+        // signal.Name = signal.Name.Replace("/-/", $"/{projectId}/");
 
         // Call the API to bind the signal to the incident.
-        signal.Incident = incident.Name.Replace("/-/", $"/{projectId}/");
-        signal.Name = signal.Name.Replace("/-/", $"/{projectId}/");
-        FieldMask mask = new FieldMask() { Paths = { "incident"} };
+        signal.Title = "Yellow button pushed!";
+        FieldMask mask = new FieldMask() { Paths = { "title" } };
         signal = incidentServiceClient.UpdateSignal(signal, mask);
 
         return signal;
