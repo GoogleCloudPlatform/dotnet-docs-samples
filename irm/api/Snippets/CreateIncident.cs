@@ -23,10 +23,8 @@ class IrmCreateIncident
     public Signal CreateIncidentWithSignal(string projectId = "YOUR-PROJECT-ID")
     {
         // Create client
-        var staging = new Google.Api.Gax.Grpc.ServiceEndpoint("staging-irm-cloud.sandbox.googleapis.com", 443);
         IncidentServiceClient incidentServiceClient =
-            IncidentServiceClient.Create(staging);
-        string parent = new ProjectName(projectId).ToString();
+            IncidentServiceClient.Create();
 
         // Manually create a signal.
         Signal newSignal = new Signal()
@@ -37,6 +35,7 @@ class IrmCreateIncident
         };
 
         // Call the API to create the signal.
+        string parent = new ProjectName(projectId).ToString();
         Signal signal = incidentServiceClient.CreateSignal(parent, newSignal);
         Console.WriteLine("Created signal {0}.", signal.Name);
 
