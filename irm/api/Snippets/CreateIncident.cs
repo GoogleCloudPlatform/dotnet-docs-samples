@@ -62,13 +62,11 @@ class IrmCreateIncident
             incidentServiceClient.CreateIncident(newIncident, parent);
         Console.WriteLine("Created incident {0}.", incident.Name);
 
-
-        // signal.Incident = incident.Name.Replace("/-/", $"/{projectId}/");
-        // signal.Name = signal.Name.Replace("/-/", $"/{projectId}/");
-
         // Call the API to bind the signal to the incident.
+        signal.Name = signal.Name.Replace("/-/", $"/{projectId}/");
+        signal.Incident = incident.Name.Replace("/-/", $"/{projectId}/");
         signal.Title = "Yellow button pushed!";
-        FieldMask mask = new FieldMask() { Paths = { "title" } };
+        FieldMask mask = new FieldMask() { Paths = { "title", "incident" } };
         signal = incidentServiceClient.UpdateSignal(signal, mask);
 
         return signal;
