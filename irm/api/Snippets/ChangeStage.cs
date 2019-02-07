@@ -51,8 +51,8 @@ class IrmChangeStage
                 Console.WriteLine("Changed stage of {0}.", incident.Name);
                 break;
             }
-            // TODO: narrow down the exception type.
-            catch (Exception) when (retry < 3)
+            catch (Grpc.Core.RpcException e)
+            when (retry < 3 && e.StatusCode == Grpc.Core.StatusCode.Aborted)
             {
                 // Somebody else must have updated the incident at the same 
                 // time!  Try again.
