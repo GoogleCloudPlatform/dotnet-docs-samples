@@ -328,7 +328,7 @@ namespace GoogleCloudSamples
                 AudioConfig = new AudioConfig
                 {
                     AudioEncoding = AudioEncoding.Mp3,
-                    // Note: you can pass in multiple effects_profile_id.
+                    // Note: you can pass in multiple audio effects profiles.
                     // They are applied in the same order as provided.
                     EffectsProfileId = { effectsProfileId }
                 }
