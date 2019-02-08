@@ -334,7 +334,7 @@ namespace GoogleCloudSamples
                 }
             });
 
-            // The response's audio_content is binary.
+            // The response's AudioContent is binary.
             using (Stream output = File.Create(outputFile))
             {
                 response.AudioContent.WriteTo(output);
