@@ -70,7 +70,7 @@ namespace GoogleCloudSamples
                 SynthesizeFileArgs, SynthesizeWithEffectsArgs>(args).MapResult(
                 (ListArgs largs) => largs.DesiredLanguage == null ?
                     ListVoices() : ListVoices(largs.DesiredLanguage),
-                (SynthesizeWithEffectsArgs sargs) => 
+                (SynthesizeWithEffectsArgs sargs) =>
                     SynthesizeTextWithAudioProfile(sargs.Text,
                                                    sargs.OutputFileName,
                                                    sargs.EffectsProfileId),
@@ -303,13 +303,14 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="text">Text to synthesize into audio</param>
         /// <param name="outputFile">Name of audio output file</param>
-        /// <param name="effectsProfileId">Audio effect profile to apply</param>
+        /// <param name="effectProfileId">Audio effect profile to apply</param>
         /// <remarks>
         /// Output file saved in project folder.
         /// </remarks>
         public static int SynthesizeTextWithAudioProfile(string text,
                                                          string outputFile,
-                                                         string effectsProfileId) {
+                                                         string effectProfileId)
+        {
 
             var client = TextToSpeechClient.Create();
             var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
@@ -330,7 +331,7 @@ namespace GoogleCloudSamples
                     AudioEncoding = AudioEncoding.Mp3,
                     // Note: you can pass in multiple audio effects profiles.
                     // They are applied in the same order as provided.
-                    EffectsProfileId = { effectsProfileId }
+                    EffectsProfileId = { effectProfileId }
                 }
             });
 
