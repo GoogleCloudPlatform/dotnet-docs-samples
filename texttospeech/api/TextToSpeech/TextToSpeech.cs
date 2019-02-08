@@ -311,7 +311,6 @@ namespace GoogleCloudSamples
                                                          string outputFile,
                                                          string effectProfileId)
         {
-
             var client = TextToSpeechClient.Create();
             var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
             {
