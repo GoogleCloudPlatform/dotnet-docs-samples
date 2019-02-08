@@ -309,7 +309,7 @@ namespace GoogleCloudSamples
         /// </remarks>
         public static int SynthesizeTextWithAudioProfile(string text,
                                                          string outputFile,
-                                                          string effectsProfileId) {
+                                                         string effectsProfileId) {
 
             var client = TextToSpeechClient.Create();
             var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
