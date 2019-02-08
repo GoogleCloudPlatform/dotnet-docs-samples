@@ -65,9 +65,8 @@ class IrmCreateIncident
         signal.Name = signal.Name.Replace("/-/", $"/{projectId}/");
         signal.Incident = incident.Name.Replace("/-/", $"/{projectId}/");
         signal.Title = "Yellow button pushed!";
-        FieldMask mask = new FieldMask() { Paths = { "title" } };
-        incidentServiceClient.UpdateSignal(signal, mask);
-
+        FieldMask mask = new FieldMask() { Paths = { "title", "incident" } };
+        signal = incidentServiceClient.UpdateSignal(signal, mask);
         return signal;
     }
 }
