@@ -96,6 +96,25 @@ namespace GoogleCloudSamples
             // Clean up
             File.Delete("output.mp3");
         }
+
+        [Fact]
+        public void TestSynthesizeTextWithEffectsProfile()
+        {
+            ConsoleOutput output = _runner.Run("synthesize-with-profile",
+                                               "Hello World",
+                                               "-o",
+                                               "output.mp3",
+                                               "-e",
+                                               "headphone-class-device");
+            Assert.Equal(0, output.ExitCode);
+            Assert.True(File.Exists("output.mp3"));
+
+            FileInfo fileInfo = new FileInfo("output.mp3");
+            Assert.True(fileInfo.Length > 0);
+
+            // Clean up
+            File.Delete("output.mp3");
+        }
     }
 
     public class QuickStartTests
