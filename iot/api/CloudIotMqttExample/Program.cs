@@ -30,7 +30,6 @@ using NodaTime;
 using Google.Apis.CloudIot.v1;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
-using Google.Apis.CloudIot.v1.Data;
 
 namespace GoogleCloudSamples
 {
@@ -169,6 +168,11 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <returns>an authorized Cloud IoT Core Service client.</returns>
         // [START iot_create_auth_client]
+        // [START iot_create_rsa_device]
+        // [START iot_delete_registry]
+        // [START iot_delete_device]
+        // [START iot_send_command]
+        // [START iot_create_registry]
         public static CloudIotService CreateAuthorizedClient()
         {
             GoogleCredential credential =
@@ -188,6 +192,11 @@ namespace GoogleCloudSamples
                 GZipEnabled = false
             });
         }
+        // [END iot_create_registry]
+        // [END iot_send_command]
+        // [END iot_delete_device]
+        // [END iot_delete_registry]
+        // [END iot_create_rsa_device]
         // [END iot_create_auth_client]
 
         // [START iot_create_rsa_device]
@@ -303,7 +312,7 @@ namespace GoogleCloudSamples
         // [END iot_delete_device]
 
 
-        //[START iot_send_command]  
+        // [START iot_send_command]  
         public static object SendCommand(string deviceId, string projectId,
             string cloudRegion, string registryName, string data)
         {
@@ -335,7 +344,7 @@ namespace GoogleCloudSamples
             Console.WriteLine("Command response: " + res.ToString());
             return 0;
         }
-        //[END iot_send_command]
+        // [END iot_send_command]
 
         // [START iot_create_registry]
         public static object CreateRegistry(string projectId, string cloudRegion,
