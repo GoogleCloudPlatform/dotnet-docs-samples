@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.37.0.1460" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0" />
+    <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CloudIotMqttExample\CloudIotMqttExample.csproj" />
+    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test\data\ec_public.pem">
+      <Link>test\data\ec_public.pem</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="test\data\rsa_cert.pem">
+      <Link>test\data\rsa_cert.pem</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
