@@ -36,10 +36,15 @@ namespace GoogleCloudSamples
             _description = "This is a C# test custom role.";
             _permissions = new List<string> { "iam.roles.get" };
             _stage = "GA";
-
-            CustomRoles.Init();
         }
 
+        [Fact]
+        public void TestGrantableRoles()
+        {
+            CustomRoles.ViewGrantableRoles(
+                "//cloudresourcemanager.googleapis.com/projects/" + _project);
+        }
+        
         [Fact]
         public void TestRoleInfo()
         {
@@ -56,7 +61,6 @@ namespace GoogleCloudSamples
             CustomRoles.ListRoles(_project);
             role = CustomRoles.EditRole(_name, _project, _title,
                 "Updated C# description.", _permissions, _stage);
-            role = CustomRoles.DisableRole(_name, _project);
             CustomRoles.DeleteRole(_name, _project);
             role = CustomRoles.UndeleteRole(_name, _project);
 
