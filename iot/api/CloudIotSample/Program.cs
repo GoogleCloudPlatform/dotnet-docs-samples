@@ -431,7 +431,7 @@ namespace GoogleCloudSamples
         public string registryId { get; set; }
     }
 
-    [Verb("listenForConfigMessages", HelpText = "")]
+    [Verb("listenForConfigMessages", HelpText = "Listens for configuration messages on the gateway and bound devices.")]
     class ListenForConfigMessagesOptions
     {
         [Value(0, HelpText = "The project containing the device registry.", Required = true)]
@@ -468,7 +468,7 @@ namespace GoogleCloudSamples
         public int listenTime { get; set; }
     }
 
-    [Verb("sendDataFromBoundDevice", HelpText = "")]
+    [Verb("sendDataFromBoundDevice", HelpText = "Sends data from a gateway on behalf of a device that is bound to it.")]
     class SendDataFromBoundDeviceOptions
     {
         [Value(0, HelpText = "The project containing the device registry.", Required = true)]
