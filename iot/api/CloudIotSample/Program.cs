@@ -1493,6 +1493,8 @@ namespace GoogleCloudSamples
 
 
         //[START iot_attach_device]
+        //[START iot_listen_for_config_messages]
+        //[START iot_send_data_from_bound_device]
         public static object AttachDevice(MqttClient client, string deviceId)
         {
             var attachTopic = $"/devices/{deviceId}/attach";
@@ -1502,21 +1504,25 @@ namespace GoogleCloudSamples
             client.Publish(attachTopic, BinaryData, MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
 
             Console.WriteLine("Waiting for device to attach.");
-            System.Threading.Thread.Sleep(2000);
             return 0;
         }
+        //[END iot_send_data_from_bound_device]
+        //[END iot_listen_for_config_messages]
         //[END iot_attach_device]
 
         //[START iot_detach_device]
+        //[START iot_listen_for_config_messages]
+        //[START iot_send_data_from_bound_device]
         public static object DetachDevice(MqttClient client, string deviceId)
         {
             var detachTopic = $"/devices/{deviceId}/detach";
             Console.WriteLine("Detaching: {0}", detachTopic);
             var BinaryData = Encoding.UTF8.GetBytes("{}");
             client.Publish(detachTopic, BinaryData, MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
-            System.Threading.Thread.Sleep(2000);
             return 0;
         }
+        //[END iot_send_data_from_bound_device]
+        //[END iot_listen_for_config_messages]
         //[END iot_detach_device]
 
         //[START iot_listen_for_config_messages]
@@ -1534,7 +1540,16 @@ namespace GoogleCloudSamples
             // Create a duration
             Duration durationExp = Duration.FromMinutes(jwtExpiresMinutes);
             var jwtExpTime = SystemClock.Instance.GetCurrentInstant().Plus(durationExp);
-            var pass = CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile);
+            var pass = "";
+            if (algorithm == "RS256")
+            {
+                pass = CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile);
+            }
+            else if (algorithm == "ES256")
+            {
+                Console.WriteLine("Currently, we do not support this algorithm.");
+                return 0;
+            }
 
             // Use gateway to connect server
             var mqttClient = StartMqtt(mqttBridgeHostname,
@@ -1549,6 +1564,7 @@ namespace GoogleCloudSamples
                 pass);
 
             AttachDevice(mqttClient, deviceId);
+            System.Threading.Thread.Sleep(2000);
             // The topic devices receive configuration updates on.
             string deviceConfigTopic = $"/devices/{deviceId}/config";
 
@@ -1567,16 +1583,18 @@ namespace GoogleCloudSamples
                 {
                     Console.WriteLine("Refreshing token after {0}s", secSinceIssue);
                     jwtIatTime = SystemClock.Instance.GetCurrentInstant();
-                    mqttClient = CloudIotMqttExample.GetClient(projectId, cloudRegion,
-                        registryId, deviceId, privateKeyFile, algorithm,
-           caCerts, mqttBridgeHostname, mqttBridgePort);
-                    mqttClient.Connect(clientId, "unused",
-                        CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile));
+                    // refresh token and reconnect.
+                    pass = CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile);
+                    mqttClient = StartMqtt(mqttBridgeHostname, mqttBridgePort, projectId,
+                        cloudRegion, registryId, gatewayId, privateKeyFile,
+                        caCerts, algorithm, pass);
                 }
                 System.Threading.Thread.Sleep(1000);
             }
 
             DetachDevice(mqttClient, deviceId);
+            // wait for the device get detached.
+            System.Threading.Thread.Sleep(2000);
             mqttClient.Disconnect();
             Console.WriteLine("Finished.");
             return 0;
@@ -1598,13 +1616,12 @@ namespace GoogleCloudSamples
             var jwtExpTime = SystemClock.Instance.GetCurrentInstant().Plus(durationExp);
 
             // Use gateway to connect to server.
-            var mqttClient = CloudIotMqttExample.GetClient(projectId, cloudRegion, registryId,
-                deviceId, privateKeyFile, algorithm, caCerts, mqttBridgeHostname, mqttBridgePort);
+            var password = CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile);
+            var mqttClient = StartMqtt(mqttBridgeHostname, mqttBridgePort, projectId, cloudRegion,
+                registryId, gatewayId, privateKeyFile, caCerts, algorithm, password);
 
             var clientId = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}" +
                 $"/devices/{gatewayId}";
-            var password = CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile);
-            mqttClient.Connect(clientId, "unused", password);
 
             AttachDevice(mqttClient, deviceId);
             System.Threading.Thread.Sleep(2000);
@@ -1617,6 +1634,9 @@ namespace GoogleCloudSamples
         }
         //[END iot_send_data_from_bound_device]
 
+        //[START iot_start_mqtt_client]
+        //[START iot_listen_for_config_messages]
+        //[START iot_send_data_from_bound_device]
         public static MqttClient StartMqtt(string mqttBridgeHostname, int mqttBridgePort,
             string projectId, string cloudRegion, string registryId, string gatewayId,
             string privateKeyFile, string caCert, string algorithm, string pass)
@@ -1626,7 +1646,7 @@ namespace GoogleCloudSamples
             string mqttClientId = $"projects/{projectId}/locations/{cloudRegion}" +
                 $"/registries/{registryId}/devices/{gatewayId}";
             MqttClient mqttClient = CloudIotMqttExample.GetClient(projectId, cloudRegion,
-                registryId, gatewayId, privateKeyFile, algorithm, caCert, mqttBridgeHostname,
+                registryId, gatewayId, caCert, mqttBridgeHostname,
                 mqttBridgePort);
 
             double initialConnectIntervalMillis = 0.5;
@@ -1673,8 +1693,12 @@ namespace GoogleCloudSamples
             CloudIotMqttExample.SetupMqttTopics(mqttClient, gatewayId);
             return mqttClient;
         }
+        //[END iot_send_data_from_bound_device]
+        //[END iot_listen_for_config_messages]
+        //[END iot_start_mqtt_client]
 
         //[START iot_send_data_from_device]
+        //[START iot_send_data_from_bound_device]
         public static object SendDataFromDevice(MqttClient client, string deviceId,
             string messageType, string data)
         {
@@ -1692,6 +1716,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+        //[END iot_send_data_from_bound_device]
         //[END iot_send_data_from_device]
 
         public static int Main(string[] args)

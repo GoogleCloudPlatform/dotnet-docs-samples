@@ -320,29 +320,33 @@ namespace GoogleCloudSamples
             var gatewayId = string.Format("test-gateway-{0}", "RS256");
             var deviceId = string.Format("test-device-{0}", TestUtil.RandomName());
 
-            //Setup
-            Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
-                gatewayId, "test/data/rsa_cert.pem", "RS256");
-            Run("bindDeviceToGateway", _fixture.ProjectId, _fixture.RegionId,
-                _fixture.RegistryId, deviceId, gatewayId);
+            try
+            {
+                //Setup
+                Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    gatewayId, "test/data/rsa_cert.pem", "RS256");
+                Run("bindDeviceToGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayId);
 
-            //Connect the gateway
-            var sendDataBoundDeviceOut = Run("sendDataFromBoundDevice", _fixture.ProjectId,
-                _fixture.RegionId, _fixture.RegistryId,
-            deviceId, gatewayId, _fixture.PrivateKeyPath, "RS256", _fixture.CertPath,
-            "state", "test-message");
-            Assert.Contains("Data sent", sendDataBoundDeviceOut.Stdout);
-            Assert.Contains("On Publish", sendDataBoundDeviceOut.Stdout);
-
-            Assert.DoesNotContain("An error occured", sendDataBoundDeviceOut.Stdout);
-
-            //Clean up
-            Run("unbindDeviceFromGateway", _fixture.ProjectId, _fixture.RegionId,
-                _fixture.RegistryId, deviceId, gatewayId);
-            Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
-                _fixture.RegistryId, deviceId);
-            Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
-                _fixture.RegistryId, gatewayId);
+                //Connect the gateway
+                var sendDataBoundDeviceOut = Run("sendDataFromBoundDevice", _fixture.ProjectId,
+                    _fixture.RegionId, _fixture.RegistryId,
+                deviceId, gatewayId, _fixture.PrivateKeyPath, "RS256", _fixture.CertPath,
+                "state", "test-message");
+                Assert.Contains("Data sent", sendDataBoundDeviceOut.Stdout);
+                Assert.Contains("On Publish", sendDataBoundDeviceOut.Stdout);
+                Assert.DoesNotContain("An error occured", sendDataBoundDeviceOut.Stdout);
+            }
+            finally
+            {
+                //Clean up
+                Run("unbindDeviceFromGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayId);
+            }
         }
 
         [Fact]
@@ -351,27 +355,32 @@ namespace GoogleCloudSamples
             var gatewayId = "rsa-listen-gateway";
             var deviceId = "rsa-listen-device";
 
-            //Setup
-            Run("createGateway", _fixture.ProjectId, _fixture.RegionId,
-                _fixture.RegistryId, gatewayId, "test/data/rsa_cert.pem", "RS256");
-            Run("bindDeviceToGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
-                deviceId, gatewayId);
+            try
+            {
+                //Setup
+                Run("createGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayId, "test/data/rsa_cert.pem", "RS256");
+                Run("bindDeviceToGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    deviceId, gatewayId);
 
-            //Connect 
-            var listenConfigMsgOut = Run("listenForConfigMessages", _fixture.ProjectId,
-                _fixture.RegionId, _fixture.RegistryId, gatewayId, deviceId, _fixture.CertPath,
-                _fixture.PrivateKeyPath, "RS256", "--listentime", "10");
+                //Connect 
+                var listenConfigMsgOut = Run("listenForConfigMessages", _fixture.ProjectId,
+                    _fixture.RegionId, _fixture.RegistryId, gatewayId, deviceId, _fixture.CertPath,
+                    _fixture.PrivateKeyPath, "RS256", "--listentime", "10");
 
-            //Assertions
-            Assert.DoesNotContain("error occurred", listenConfigMsgOut.Stdout);
-            Assert.Contains("On Subscribe", listenConfigMsgOut.Stdout);
-            Assert.Contains("On Publish", listenConfigMsgOut.Stdout);
-
-            //Clean up
-            Run("unbindDeviceFromGateway", _fixture.ProjectId, _fixture.RegionId,
-                _fixture.RegistryId, deviceId, gatewayId);
-            Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
-            Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayId);
+                //Assertions
+                Assert.DoesNotContain("error occurred", listenConfigMsgOut.Stdout);
+                Assert.Contains("On Subscribe", listenConfigMsgOut.Stdout);
+                Assert.Contains("On Publish", listenConfigMsgOut.Stdout);
+            }
+            finally
+            {
+                //Clean up
+                Run("unbindDeviceFromGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayId);
+            }
         }
         //[END iot_gateway_mqtt_tests]
     }
