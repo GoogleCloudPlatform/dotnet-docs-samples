@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+// [START monitoring_irm_change_stage]
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Irm.V1Alpha2;
 using Google.Protobuf.WellKnownTypes;
@@ -60,3 +61,4 @@ class IrmChangeStage
         }
     }
 }
+// [END monitoring_irm_change_stage]
