@@ -30,18 +30,21 @@ class IrmChangeSeverity
         // Create client
         IncidentServiceClient incidentServiceClient =
             IncidentServiceClient.Create();
+
         // Update the severity.
         Incident incidentChange = new Incident()
         {
             Name = new IncidentName(projectId, incidentId).ToString(),
             Severity = Severity.Minor,
         };
+
         // Tell the API which fields to update.
         FieldMask mask = new FieldMask() { Paths = { "severity" } };
+
         // Call the API to update the incident.
         var incident =
             incidentServiceClient.UpdateIncident(incidentChange, mask);
-        // How can the caller prevent race conditions updating the incident?
+
         Console.WriteLine("Changed severity of {0}.", incident.Name);
     }
 }
