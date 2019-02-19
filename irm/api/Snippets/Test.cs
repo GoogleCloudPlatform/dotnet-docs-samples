@@ -19,6 +19,28 @@ using Xunit;
 
 public class Test
 {
+    static readonly string s_projectId = GetProjectId();
+
+    static readonly IncidentServiceClient s_incidentServiceClient =
+            IncidentServiceClient.Create();
+
+    static string GetProjectId()
+    {
+        GoogleCredential googleCredential = Google.Apis.Auth.OAuth2
+            .GoogleCredential.GetApplicationDefault();
+        if (googleCredential != null)
+        {
+            ICredential credential = googleCredential.UnderlyingCredential;
+            ServiceAccountCredential serviceAccountCredential =
+                credential as ServiceAccountCredential;
+            if (serviceAccountCredential != null)
+            {
+                return serviceAccountCredential.ProjectId;
+            }
+        }
+        return Google.Api.Gax.Platform.Instance().ProjectId;
+    }
+
     [Fact]
     public void TestMostEverything()
     {
@@ -40,27 +62,5 @@ public class Test
     public void TestCreateSignal()
     {
         new IrmCreateSignal().CreateSignal(s_projectId);
-    }
-
-    static readonly string s_projectId = GetProjectId();
-
-    static readonly IncidentServiceClient s_incidentServiceClient =
-            IncidentServiceClient.Create();
-
-    static string GetProjectId()
-    {
-        GoogleCredential googleCredential = Google.Apis.Auth.OAuth2
-            .GoogleCredential.GetApplicationDefault();
-        if (googleCredential != null)
-        {
-            ICredential credential = googleCredential.UnderlyingCredential;
-            ServiceAccountCredential serviceAccountCredential =
-                credential as ServiceAccountCredential;
-            if (serviceAccountCredential != null)
-            {
-                return serviceAccountCredential.ProjectId;
-            }
-        }
-        return Google.Api.Gax.Platform.Instance().ProjectId;
     }
 }

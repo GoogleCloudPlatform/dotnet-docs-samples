@@ -24,17 +24,19 @@ class IrmAnnotateIncident
 {
     public string AnnotateIncident(
         string projectId = "YOUR-PROJECT-ID",
-        string incidentId = "A.Pd45vXLghY3NDDi3jNy8")
+        string incidentId = "an.opaque.random.id")
     {
         // Create client
         IncidentServiceClient incidentServiceClient =
             IncidentServiceClient.Create();
+
         // Describe the annotation.
         Annotation newAnnotation = new Annotation()
         {
             Content = "The red button was found in a depressed state."
         };
         string parent = new IncidentName(projectId, incidentId).ToString();
+
         // Call the API to create the annotation.
         Annotation annotation =
             incidentServiceClient.CreateAnnotation(parent, newAnnotation);
