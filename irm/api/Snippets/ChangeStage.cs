@@ -39,8 +39,7 @@ class IrmChangeStage
                     new IncidentName(projectId, incidentId).ToString());
                 Incident incidentChange = new Incident()
                 {
-                    // TODO: Remove the name hack.
-                    Name = incident.Name.Replace("/-/", $"/{projectId}/"),
+                    Name = incident.Name,
                     // Use the ETag to prevent race conditions.  Only update the
                     // incident if it hasn't changed since we observed it.
                     Etag = incident.Etag,
