@@ -64,9 +64,7 @@ class IrmCreateIncident
         Console.WriteLine("Created incident {0}.", incident.Name);
 
         // Call the API to bind the signal to the incident.
-        // TODO: Remove the name hack.
-        signal.Name = signal.Name.Replace("/-/", $"/{projectId}/");
-        signal.Incident = incident.Name.Replace("/-/", $"/{projectId}/");
+        signal.Incident = incident.Name;
         signal.Title = "Yellow button pushed!";
         FieldMask mask = new FieldMask() { Paths = { "title", "incident" } };
         signal = incidentServiceClient.UpdateSignal(signal, mask);
