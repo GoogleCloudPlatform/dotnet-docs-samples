@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START iam_rename_service_account]
+
 using System;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Iam.v1;
@@ -29,7 +30,7 @@ public partial class ServiceAccounts
         {
             HttpClientInitializer = credential
         });
-        
+
         // First, get a ServiceAccount using List() or Get().
         string resource = "projects/-/serviceAccounts/" + email;
         var serviceAccount = service.Projects.ServiceAccounts.Get(resource)

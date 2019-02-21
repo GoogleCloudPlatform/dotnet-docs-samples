@@ -44,7 +44,7 @@ namespace GoogleCloudSamples
             CustomRoles.ViewGrantableRoles(
                 "//cloudresourcemanager.googleapis.com/projects/" + _project);
         }
-        
+
         [Fact]
         public void TestRoleInfo()
         {

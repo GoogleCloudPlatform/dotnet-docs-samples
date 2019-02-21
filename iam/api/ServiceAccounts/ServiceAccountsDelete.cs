@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START iam_delete_service_account]
+
 using System;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Iam.v1;
@@ -27,7 +28,7 @@ public partial class ServiceAccounts
         {
             HttpClientInitializer = credential
         });
-        
+
         string resource = "projects/-/serviceAccounts/" + email;
         service.Projects.ServiceAccounts.Delete(resource).Execute();
         Console.WriteLine("Deleted service account: " + email);

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START iam_delete_key]
+
 using System;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Iam.v1;
@@ -28,7 +29,7 @@ public partial class ServiceAccountKeys
         {
             HttpClientInitializer = credential
         });
-        
+
         service.Projects.ServiceAccounts.Keys.Delete(fullKeyName).Execute();
         Console.WriteLine("Deleted key: " + fullKeyName);
     }

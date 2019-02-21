@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START iam_list_keys]
+
 using System;
 using System.Collections.Generic;
 using Google.Apis.Auth.OAuth2;
@@ -29,7 +30,7 @@ public partial class ServiceAccountKeys
         {
             HttpClientInitializer = credential
         });
-        
+
         var response = service.Projects.ServiceAccounts.Keys
             .List($"projects/-/serviceAccounts/{serviceAccountEmail}")
             .Execute();
