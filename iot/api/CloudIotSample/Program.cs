@@ -1491,16 +1491,15 @@ namespace GoogleCloudSamples
         }
         //[END iot_clear_registry]
 
-
         //[START iot_attach_device]
+
         //[START iot_listen_for_config_messages]
         //[START iot_send_data_from_bound_device]
-        public static object AttachDevice(MqttClient client, string deviceId)
+        public static object AttachDevice(MqttClient client, string deviceId, string auth)
         {
             var attachTopic = $"/devices/{deviceId}/attach";
             Console.WriteLine("Attaching: {0}", attachTopic);
-            var attachPayLoad = "{}";
-            var BinaryData = Encoding.UTF8.GetBytes(attachPayLoad);
+            var BinaryData = Encoding.UTF8.GetBytes(auth);
             client.Publish(attachTopic, BinaryData, MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
 
             Console.WriteLine("Waiting for device to attach.");
@@ -1563,8 +1562,7 @@ namespace GoogleCloudSamples
                 algorithm,
                 pass);
 
-            AttachDevice(mqttClient, deviceId);
-            System.Threading.Thread.Sleep(2000);
+            AttachDevice(mqttClient, deviceId, "{}");
             // The topic devices receive configuration updates on.
             string deviceConfigTopic = $"/devices/{deviceId}/config";
 
@@ -1623,7 +1621,7 @@ namespace GoogleCloudSamples
             var clientId = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}" +
                 $"/devices/{gatewayId}";
 
-            AttachDevice(mqttClient, deviceId);
+            AttachDevice(mqttClient, deviceId, "{}");
             System.Threading.Thread.Sleep(2000);
             // Publish numMsgs messages to the MQTT bridge.
             SendDataFromDevice(mqttClient, deviceId, messageType, payload);

@@ -71,7 +71,7 @@ as part of Google Cloud IoT Core.
 
 Note that before you can run the sample, you must configure a Google Cloud
 PubSub topic for Cloud IoT Core and register a device as described in the
-[parent README](../README.md).
+the following setup.
 
 ## MQTT Example Setup
 
@@ -80,19 +80,19 @@ PubSub topic for Cloud IoT Core and register a device as described in the
 2. Use the [`generate_keys.ps1`](generate_keys.ps1) script to generate your signing keys:
 
 ```powershell
-    ./generate_keys.ps1
+   PS > ./generate_keys.ps1
 ```
 
 3. Add a device using the file `rsa_cert.pem`, specifying RS256_X509 and using the
   text copy of the public key starting with the ----START---- block of the certificate.
 
 ```powershell
-    cat rsa_cert.pem
+   PS > cat rsa_cert.pem
 ```
 
-4. Connect a device using the HTTP or MQTT device samples in the [CloudMqttExample](./CloudMqttExample) folder.
+4. Connect a device using the HTTP or MQTT device samples in the [CloudIotMqttExample](./CloudIotMqttExample) folder.
 
-5. Programmattically control device configuration and using the device manager sample in the [CloudMqttExample](./CloudMqttExample) folder.
+5. Programmattically control device configuration and using the device manager sample in the [CloudIotMqttExample](./CloudIotMqttExample) folder.
 
 ## Running the sample
 
