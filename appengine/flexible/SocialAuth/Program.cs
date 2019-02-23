@@ -35,6 +35,9 @@ namespace SocialAuthMVC
                         new EncryptedFileProvider(),
                         "appsecrets.json" + EncryptedFileProvider.EncryptedFileExtension,
                         optional: true, reloadOnChange: false);
+                    // Use app secrets installed as kubernetes secret.
+                    config.AddJsonFile("/var/appconfig/appsecrets.json",
+                        optional: true, reloadOnChange: true);
                 })
                 .UseStartup<Startup>();
     }

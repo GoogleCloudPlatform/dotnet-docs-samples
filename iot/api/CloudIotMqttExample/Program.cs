@@ -458,8 +458,7 @@ namespace GoogleCloudSamples
 
         // [START iot_mqtt_client]
         public static MqttClient GetClient(string projectId, string cloudRegion,
-            string registryId, string deviceId, string privateKeyFile,
-            string algorithm, string caCert, string mqttBridgeHostname,
+            string registryId, string deviceId, string caCert, string mqttBridgeHostname,
             int mqttBridgePort)
         {
             // Enable SSL/TLS support.
@@ -567,8 +566,6 @@ namespace GoogleCloudSamples
                 cloudRegion,
                 registryId,
                 deviceId,
-                privateKeyFile,
-                algorithm,
                 caCert,
                 mqttBridgeHostName,
                 mqttBridgePort);
