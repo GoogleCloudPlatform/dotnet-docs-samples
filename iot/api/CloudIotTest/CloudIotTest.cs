@@ -51,7 +51,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetRegistry()
         {
-            var getRegistryOutput = Run("getRegistry", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId);
+            var getRegistryOutput = Run("getRegistry", _fixture.ProjectId, _fixture.RegionId,
+                _fixture.RegistryId);
             Assert.Contains("Registry:", getRegistryOutput.Stdout);
         }
 
@@ -60,10 +61,12 @@ namespace GoogleCloudSamples
         {
             var deviceId = "dotnettest-unauth-" + _fixture.TestId;
 
-            var createUnauthOut = Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            var createUnauthOut = Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId,
+                _fixture.RegistryId, deviceId);
             Assert.Contains("Device created:", createUnauthOut.Stdout);
 
-            var deleteUnauthOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            var deleteUnauthOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                _fixture.RegistryId, deviceId);
             Assert.Contains("Removed device:", deleteUnauthOut.Stdout);
         }
 
@@ -72,16 +75,19 @@ namespace GoogleCloudSamples
         {
             var deviceId = "dotnettest-unauth-" + _fixture.TestId;
 
-            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                deviceId);
             try
             {
-                var getConfigsOut = Run("getDeviceConfigs", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                var getConfigsOut = Run("getDeviceConfigs", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId);
                 Assert.Contains("Configurations:", getConfigsOut.Stdout);
             }
             finally
             {
                 // Tear down Device, Registry, and IoT PubSub topic
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    deviceId);
             }
         }
 
@@ -90,10 +96,12 @@ namespace GoogleCloudSamples
         {
             var deviceId = "dotnettest-createES-" + _fixture.TestId;
 
-            var createEsOut = Run("createDeviceEs", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/ec_public.pem");
+            var createEsOut = Run("createDeviceEs", _fixture.ProjectId, _fixture.RegionId,
+                _fixture.RegistryId, deviceId, "test/data/ec_public.pem");
             Assert.Contains("Device created:", createEsOut.Stdout);
 
-            var deleteEsOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            var deleteEsOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                _fixture.RegistryId, deviceId);
             Assert.Contains("Removed device:", deleteEsOut.Stdout);
         }
 
@@ -102,10 +110,12 @@ namespace GoogleCloudSamples
         {
             var deviceId = "dotnettest-createRSA-" + _fixture.TestId;
 
-            var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
+            var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId,
+                _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
             Assert.Contains("Device created:", createRsaOut.Stdout);
 
-            var deleteRsaOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            var deleteRsaOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                _fixture.RegistryId, deviceId);
             Assert.Contains("Removed device:", deleteRsaOut.Stdout);
         }
 
@@ -114,15 +124,18 @@ namespace GoogleCloudSamples
         {
             var deviceId = "dotnettest-unauth-es-" + _fixture.TestId;
 
-            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                deviceId);
             try
             {
-                var patchUnauthOut = Run("patchDeviceEs", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/ec_public.pem");
+                var patchUnauthOut = Run("patchDeviceEs", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, "test/data/ec_public.pem");
                 Assert.Contains("Device patched:", patchUnauthOut.Stdout);
             }
             finally
             {
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    deviceId);
             }
         }
 
@@ -131,15 +144,18 @@ namespace GoogleCloudSamples
         {
             var deviceId = "dotnettest-unauth-rsa-" + _fixture.TestId;
 
-            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                deviceId);
             try
             {
-                var patchUnauthOut = Run("patchDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
+                var patchUnauthOut = Run("patchDeviceRsa", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
                 Assert.Contains("Device patched:", patchUnauthOut.Stdout);
             }
             finally
             {
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    deviceId);
             }
         }
 
@@ -148,10 +164,12 @@ namespace GoogleCloudSamples
         {
             var deviceId = "dotnettest-config-" + _fixture.TestId;
 
-            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+            Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                deviceId);
             try
             {
-                var setDeviceOut = Run("setDeviceConfig", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test");
+                var setDeviceOut = Run("setDeviceConfig", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, "test");
                 Assert.Contains("Configuration updated to: 2", setDeviceOut.Stdout);
             }
             finally
@@ -167,9 +185,11 @@ namespace GoogleCloudSamples
             var member = "group:dpebot@google.com";
             var role = "roles/viewer";
 
-            var setIamOutput = Run("setIamPolicy", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, role, member);
+            var setIamOutput = Run("setIamPolicy", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                role, member);
             Assert.DoesNotContain("RequestError", setIamOutput.Stdout);
-            var getIamOutput = Run("getIamPolicy", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId);
+            var getIamOutput = Run("getIamPolicy", _fixture.ProjectId, _fixture.RegionId,
+                _fixture.RegistryId);
             System.Diagnostics.Trace.WriteLine(getIamOutput.Stdout);
             Assert.Contains("Role: roles/viewer", getIamOutput.Stdout);
         }
@@ -178,7 +198,8 @@ namespace GoogleCloudSamples
         public void TestListDevicesNoRegistry()
         {
             var registryId = $"{_fixture.TestId}-notfounddevicereg";
-            var listDevicesOutput = Run("listDevices", _fixture.ProjectId, _fixture.RegionId, registryId);
+            var listDevicesOutput = Run("listDevices", _fixture.ProjectId, _fixture.RegionId,
+                registryId);
             Assert.Contains("A registry with the name", listDevicesOutput.Stdout);
         }
 
@@ -186,7 +207,8 @@ namespace GoogleCloudSamples
         public void TestGetDeviceRegistryNotFound()
         {
             var registryId = $"{_fixture.TestId}-notfoundregistry";
-            var listDevicesOutput = Run("getRegistry", _fixture.ProjectId, _fixture.RegionId, registryId);
+            var listDevicesOutput = Run("getRegistry", _fixture.ProjectId, _fixture.RegionId,
+                registryId);
             Assert.Contains("A registry with the name", listDevicesOutput.Stdout);
         }
 
@@ -197,9 +219,11 @@ namespace GoogleCloudSamples
             var deviceId = "dotnettest-unauth-rsa-" + _fixture.TestId;
             try
             {
-                var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
+                var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
                 Assert.Contains("Device created:", createRsaOut.Stdout);
-                Run("sendCommand", deviceId, _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, "test");
+                Run("sendCommand", deviceId, _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, "test");
             }
             catch (Google.GoogleApiException e)
             {
@@ -207,7 +231,8 @@ namespace GoogleCloudSamples
             }
             finally
             {
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    deviceId);
             }
         }
 
@@ -218,13 +243,15 @@ namespace GoogleCloudSamples
             string gatewayName = "dotnettest-create-gateway" + _fixture.TestId;
             try
             {
-                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName, "test/data/rsa_cert.pem", "RS256");
+                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayName, "test/data/rsa_cert.pem", "RS256");
                 Assert.Contains("Creating gateway with id", createGatewayOut.Stdout);
                 Assert.Contains("Created gateway:", createGatewayOut.Stdout);
             }
             finally
             {
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    gatewayName);
             }
         }
 
@@ -235,15 +262,18 @@ namespace GoogleCloudSamples
             //Setup scenario
             try
             {
-                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName, "test/data/rsa_cert.pem", "RS256");
+                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayName, "test/data/rsa_cert.pem", "RS256");
                 Assert.Contains("Creating gateway with id", createGatewayOut.Stdout);
-                var listGatewaysOut = Run("listGateways", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId);
+                var listGatewaysOut = Run("listGateways", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId);
                 Assert.Contains("Found", listGatewaysOut.Stdout);
                 Assert.Contains(string.Format("Id :{0}", gatewayName), listGatewaysOut.Stdout);
             }
             finally
             {
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayName);
             }
         }
 
@@ -251,30 +281,108 @@ namespace GoogleCloudSamples
         public void TestListDevicesForGateway()
         {
             //Setup scenario
-            string gatewayName = "dotnettest-gateway-" + _fixture.TestId;
-            string deviceId = "dotnettest-device-" + _fixture.TestId;
+            string gatewayName = "dotnet-test-gateway-" + _fixture.TestId;
+            string deviceId = "dotnet-test-device-" + _fixture.TestId;
             try
             {
-                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName, "test/data/rsa_cert.pem", "RS256");
+                var createGatewayOut = Run("createGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayName, "test/data/rsa_cert.pem", "RS256");
                 Assert.Contains("Creating gateway with id", createGatewayOut.Stdout);
                 //Bind new device to new gateway
-                var bindDeviceToGatewayOut = Run("bindDeviceToGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, gatewayName);
-                Assert.Contains($"Creating device with id: {deviceId}", bindDeviceToGatewayOut.Stdout);
+                var bindDeviceToGatewayOut = Run("bindDeviceToGateway", _fixture.ProjectId,
+                    _fixture.RegionId, _fixture.RegistryId, deviceId, gatewayName);
+                Assert.Contains($"Creating device with id: {deviceId}",
+                    bindDeviceToGatewayOut.Stdout);
                 Assert.Contains("Created device:", bindDeviceToGatewayOut.Stdout);
                 Assert.Contains("Device bound:", bindDeviceToGatewayOut.Stdout);
                 //Check if device is bound to the gateway
-                var listDevicesForGatewayOut = Run("listDevicesForGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                var listDevicesForGatewayOut = Run("listDevicesForGateway", _fixture.ProjectId,
+                    _fixture.RegionId, _fixture.RegistryId, gatewayName);
                 Assert.Contains("Found", listDevicesForGatewayOut.Stdout);
                 Assert.Contains($"ID: {deviceId}", listDevicesForGatewayOut.Stdout);
             }
             finally
             {
-                Run("unbindDeviceFromGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, gatewayName);
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayName);
+                Run("unbindDeviceFromGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayName);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayName);
             }
         }
         //[END iot_gateway_tests]
+
+        //[START iot_gateway_mqtt_tests]
+        [Fact]
+        public void TestSendDataForBoundDevice()
+        {
+            var gatewayId = string.Format("test-gateway-{0}", "RS256");
+            var deviceId = string.Format("test-device-{0}", TestUtil.RandomName());
+
+            try
+            {
+                //Setup
+                Run("createGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    gatewayId, "test/data/rsa_cert.pem", "RS256");
+                Run("bindDeviceToGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayId);
+
+                //Connect the gateway
+                var sendDataBoundDeviceOut = Run("sendDataFromBoundDevice", _fixture.ProjectId,
+                    _fixture.RegionId, _fixture.RegistryId,
+                deviceId, gatewayId, _fixture.PrivateKeyPath, "RS256", _fixture.CertPath,
+                "state", "test-message");
+                Assert.Contains("Data sent", sendDataBoundDeviceOut.Stdout);
+                Assert.Contains("On Publish", sendDataBoundDeviceOut.Stdout);
+                Assert.DoesNotContain("An error occured", sendDataBoundDeviceOut.Stdout);
+            }
+            finally
+            {
+                //Clean up
+                Run("unbindDeviceFromGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayId);
+            }
+        }
+
+        [Fact]
+        public void TestGatewayListenForDevice()
+        {
+            var gatewayId = "rsa-listen-gateway";
+            var deviceId = "rsa-listen-device";
+
+            try
+            {
+                //Setup
+                Run("createGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayId, "test/data/rsa_cert.pem", "RS256");
+                Run("bindDeviceToGateway", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    deviceId, gatewayId);
+
+                //Connect 
+                var listenConfigMsgOut = Run("listenForConfigMessages", _fixture.ProjectId,
+                    _fixture.RegionId, _fixture.RegistryId, gatewayId, deviceId, _fixture.CertPath,
+                    _fixture.PrivateKeyPath, "RS256", "--listentime", "10");
+
+                //Assertions
+                Assert.DoesNotContain("error occurred", listenConfigMsgOut.Stdout);
+                Assert.Contains("On Subscribe", listenConfigMsgOut.Stdout);
+                Assert.Contains("On Publish", listenConfigMsgOut.Stdout);
+            }
+            finally
+            {
+                //Clean up
+                Run("unbindDeviceFromGateway", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayId);
+            }
+        }
+        //[END iot_gateway_mqtt_tests]
     }
 
     public class IotTestFixture : IDisposable
@@ -288,7 +396,8 @@ namespace GoogleCloudSamples
         public string ServiceAccount { get; private set; }
 
         public string RegionId { get; private set; }
-        public string AbsolutePath { get; private set; }
+        public string CertPath { get; private set; }
+        public string PrivateKeyPath { get; private set; }
 
         public IotTestFixture()
         {
@@ -297,8 +406,14 @@ namespace GoogleCloudSamples
             ServiceAccount = "serviceAccount:cloud-iot@system.gserviceaccount.com";
             TestId = TestUtil.RandomName();
             TopicName = new TopicName(ProjectId, "iot-test-" + TestId);
-            RegistryId = "iot-test" + TestId;
-            AbsolutePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+            RegistryId = "iot-test-" + TestId;
+            string privateKeyPath = Environment.GetEnvironmentVariable("IOT_PRIVATE_KEY_PATH");
+            if (privateKeyPath.Length == 0 || !File.Exists(privateKeyPath))
+            {
+                throw new NullReferenceException("Private key path is not for unit tests.");
+            }
+            CertPath = Environment.GetEnvironmentVariable("IOT_CERT_KEY_PATH");
+            PrivateKeyPath = privateKeyPath;
             CreatePubSubTopic(this.TopicName);
             Assert.Equal(0, Run("createRegistry", ProjectId, RegionId,
                 RegistryId, TopicName.TopicId).ExitCode);
