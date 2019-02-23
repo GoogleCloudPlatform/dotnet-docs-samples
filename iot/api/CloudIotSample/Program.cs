@@ -1491,14 +1491,12 @@ namespace GoogleCloudSamples
         }
         //[END iot_clear_registry]
 
-
         //[START iot_attach_device]
-        public static object AttachDevice(MqttClient client, string deviceId)
+        public static object AttachDevice(MqttClient client, string deviceId, string auth)
         {
             var attachTopic = $"/devices/{deviceId}/attach";
             Console.WriteLine("Attaching: {0}", attachTopic);
-            var attachPayLoad = "{}";
-            var BinaryData = Encoding.UTF8.GetBytes(attachPayLoad);
+            var BinaryData = Encoding.UTF8.GetBytes(auth);
             client.Publish(attachTopic, BinaryData, MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
 
             Console.WriteLine("Waiting for device to attach.");
@@ -1548,7 +1546,7 @@ namespace GoogleCloudSamples
                 algorithm,
                 pass);
 
-            AttachDevice(mqttClient, deviceId);
+            AttachDevice(mqttClient, deviceId, "{}");
             // The topic devices receive configuration updates on.
             string deviceConfigTopic = $"/devices/{deviceId}/config";
 
@@ -1569,7 +1567,7 @@ namespace GoogleCloudSamples
                     jwtIatTime = SystemClock.Instance.GetCurrentInstant();
                     mqttClient = CloudIotMqttExample.GetClient(projectId, cloudRegion,
                         registryId, deviceId, privateKeyFile, algorithm,
-           caCerts, mqttBridgeHostname, mqttBridgePort);
+                        caCerts, mqttBridgeHostname, mqttBridgePort);
                     mqttClient.Connect(clientId, "unused",
                         CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile));
                 }
@@ -1606,7 +1604,7 @@ namespace GoogleCloudSamples
             var password = CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile);
             mqttClient.Connect(clientId, "unused", password);
 
-            AttachDevice(mqttClient, deviceId);
+            AttachDevice(mqttClient, deviceId, "{}");
             System.Threading.Thread.Sleep(2000);
             // Publish numMsgs messages to the MQTT bridge.
             SendDataFromDevice(mqttClient, deviceId, messageType, payload);
