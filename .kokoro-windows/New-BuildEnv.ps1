@@ -30,6 +30,12 @@ if (-not $chocoPackages.Contains('.NET Core SDK 1.1.')) {
     choco install -y --sxs dotnetcore-sdk --version 1.1.2    
 }
 
+$dotnetTools = dotnet tool list -g
+if (-not $dotnetTools.Contains('dotnet-format')) {
+    dotnet tool install -g dotnet-format --version 3.0.0-beta4-19105-10
+    $env:PATH="$env:PATH;$HOMEDRIVE$HOMEPATH\.dotnet\tools"
+}
+
 dotnet --info
 
 if (-not $chocoPackages.Contains('nuget.commandline 4.5.')) {
