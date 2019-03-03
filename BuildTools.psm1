@@ -570,17 +570,11 @@ function Run-TestScripts($TimeoutSeconds=300) {
 filter Format-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
-        Backup-File -Files $project -ScriptBlock {
-            Convert-2003ProjectToCore $project
-            "codeformatter.exe $project" | Write-Host
-            codeformatter.exe /rule:BraceNewLine /rule:ExplicitThis `
-                /rule-:ExplicitVisibility /rule:FieldNames `
-                /rule:FormatDocument /rule:ReadonlyFields /rule:UsingLocation `
-                /nocopyright $project
-            if ($LASTEXITCODE) {
-                $project.FullName
-                throw "codeformatter failed with exit code $LASTEXITCODE."
-            }
+        "dotnet format $project" | Write-Host
+        dotnet format $project
+        if ($LASTEXITCODE) {
+            $project.FullName
+            throw "dotnet format failed with exit code $LASTEXITCODE."
         }
     }
 }

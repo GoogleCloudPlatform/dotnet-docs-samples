@@ -30,10 +30,9 @@ if (-not $chocoPackages.Contains('.NET Core SDK 1.1.')) {
     choco install -y --sxs dotnetcore-sdk --version 1.1.2    
 }
 
-$dotnetTools = dotnet tool list -g
+$dotnetTools = (dotnet tool list -g) -join ' '
 if (-not $dotnetTools.Contains('dotnet-format')) {
     dotnet tool install -g dotnet-format --version 3.0.0-beta4-19105-10
-    $env:PATH="$env:PATH;$HOMEDRIVE$HOMEPATH\.dotnet\tools"
 }
 
 dotnet --info
@@ -77,8 +76,6 @@ function Unzip([string]$zipfile, [string]$outpath)
 }
 
 Set-PsDebug -Trace 1
-# Install codeformatter
-Unzip $env:KOKORO_GFILE_DIR\codeformatter.zip $installDir\codeformatter
 # Install phantomjs
 Unzip $env:KOKORO_GFILE_DIR\phantomjs-2.1.1-windows.zip $installDir
 # Install casperjs
