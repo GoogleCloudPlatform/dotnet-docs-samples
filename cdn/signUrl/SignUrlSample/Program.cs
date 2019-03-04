@@ -69,7 +69,7 @@ namespace SignUrlSample
         /// <summary>
         /// Creates signed URL for Google Cloud SDN
         /// More details about order of operations is here: 
-        /// <see cref="https://cloud-dot-devsite.googleplex.com/cdn/docs/signed-urls#creatingkeys"/>
+        /// <see cref="https://cloud.google.com/cdn/docs/using-signed-urls#programmatically_creating_signed_urls"/>
         /// </summary>
         /// <param name="url">The Url to sign. This URL can't include Expires and KeyName query parameters in it</param>
         /// <param name="keyName">The name of the key used to sign the URL</param>
