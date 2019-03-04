@@ -15,7 +15,7 @@ can use [this older sample](
 1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 4.  Enable APIs for your project.
-    [Click here](https://pantheon.corp.google.com/flows/enableapi?apiid=cloudkms.googleapis.com&showconfirmation=true)
+    [Click here](https://console.cloud.google.com/flows/enableapi?apiid=cloudkms.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Key Management Service API.
 
 10. Run the CloudKmsSample to see a list of subcommands like encrypt and decrypt:

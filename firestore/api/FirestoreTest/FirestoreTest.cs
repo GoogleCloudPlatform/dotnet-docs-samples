@@ -33,7 +33,7 @@ namespace GoogleCloudSamples
         {
             FirestoreDb db = FirestoreDb.Create(Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             CollectionReference collectionReference = db.Collection(collection);
-            QuerySnapshot snapshot = await collectionReference.SnapshotAsync();
+            QuerySnapshot snapshot = await collectionReference.GetSnapshotAsync();
             IReadOnlyList<DocumentSnapshot> documents = snapshot.Documents;
             foreach (DocumentSnapshot document in documents)
             {
@@ -108,6 +108,17 @@ namespace GoogleCloudSamples
         protected ConsoleOutput RunGetData(params string[] args)
         {
             return _getData.Run(args);
+        }
+
+        readonly CommandLineRunner _listenData = new CommandLineRunner()
+        {
+            VoidMain = ListenData.Main,
+            Command = "dotnet run"
+        };
+
+        protected ConsoleOutput RunListenData(params string[] args)
+        {
+            return _listenData.Run(args);
         }
 
         readonly CommandLineRunner _queryData = new CommandLineRunner()
@@ -290,6 +301,15 @@ namespace GoogleCloudSamples
             Assert.Contains("Updated the Timestamp field of the new-city-id document in the cities collection.", output.Stdout);
         }
 
+        [Fact]
+        public void UpdateDocumentArrayTest()
+        {
+            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunAddData("update-document-array", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Updated the Regions array of the DC document in the cities collection.", output.Stdout);
+        }
+
+
         // DELETE DATA TESTS
         [Fact]
         public void DeleteDocTest()
@@ -360,6 +380,8 @@ namespace GoogleCloudSamples
             Assert.Contains("Document data for DC document:", output.Stdout);
             Assert.Contains("Document data for TOK document:", output.Stdout);
             Assert.Contains("Document data for BJ document:", output.Stdout);
+            Assert.DoesNotContain("Document data for SF document:", output.Stdout);
+            Assert.DoesNotContain("Document data for LA document:", output.Stdout);
             Assert.Contains("Name: Tokyo", output.Stdout);
             Assert.Contains("State:", output.Stdout);
             Assert.Contains("Country: Japan", output.Stdout);
@@ -394,6 +416,49 @@ namespace GoogleCloudSamples
             Assert.Contains("Found subcollection with ID: neighborhoods", getCollectionsOutput.Stdout);
         }
 
+        // LISTEN DATA TESTS
+        [Fact]
+        public void ListenDocumentTest()
+        {
+            RunDeleteData("delete-collection", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var listenDocumentOutput = RunListenData("listen-document", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Callback received document snapshot.", listenDocumentOutput.Stdout);
+            Assert.Contains("Document exists? True", listenDocumentOutput.Stdout);
+            Assert.Contains("Document data for SF document:", listenDocumentOutput.Stdout);
+            Assert.Contains("Name: San Francisco", listenDocumentOutput.Stdout);
+            Assert.Contains("State: CA", listenDocumentOutput.Stdout);
+            Assert.Contains("Country: USA", listenDocumentOutput.Stdout);
+            Assert.Contains("Capital: False", listenDocumentOutput.Stdout);
+            Assert.Contains("Population: 860000", listenDocumentOutput.Stdout);
+            Assert.Contains("Stopping the listener", listenDocumentOutput.Stdout);
+        }
+
+        [Fact]
+        public void ListenMultipleTest()
+        {
+            RunDeleteData("delete-collection", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var listenMultipleOutput = RunListenData("listen-multiple", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Creating document", listenMultipleOutput.Stdout);
+            Assert.Contains("Callback received query snapshot.", listenMultipleOutput.Stdout);
+            Assert.Contains("Current cities in California:", listenMultipleOutput.Stdout);
+            Assert.Contains("LA", listenMultipleOutput.Stdout);
+            Assert.Contains("Stopping the listener", listenMultipleOutput.Stdout);
+        }
+
+        [Fact]
+        public void ListenForChangesTest()
+        {
+            RunDeleteData("delete-collection", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var listenForChangesOutput = RunListenData("listen-for-changes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Creating document", listenForChangesOutput.Stdout);
+            Assert.Contains("New city: MTV", listenForChangesOutput.Stdout);
+            Assert.Contains("Modifying document", listenForChangesOutput.Stdout);
+            Assert.Contains("Modified city: MTV", listenForChangesOutput.Stdout);
+            Assert.Contains("Deleting document", listenForChangesOutput.Stdout);
+            Assert.Contains("Removed city: MTV", listenForChangesOutput.Stdout);
+            Assert.Contains("Stopping the listener", listenForChangesOutput.Stdout);
+        }
+
         // QUERY DATA TESTS
         [Fact]
         public void QueryCreateExamplesTest()
@@ -409,6 +474,9 @@ namespace GoogleCloudSamples
             var output = RunQueryData("create-query-state", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document LA returned by query State=CA", output.Stdout);
             Assert.Contains("Document SF returned by query State=CA", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by query State=CA", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by query State=CA", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query State=CA", output.Stdout);
         }
 
         [Fact]
@@ -419,6 +487,8 @@ namespace GoogleCloudSamples
             Assert.Contains("Document DC returned by query Capital=true", output.Stdout);
             Assert.Contains("Document TOK returned by query Capital=true", output.Stdout);
             Assert.Contains("Document BJ returned by query Capital=true", output.Stdout);
+            Assert.DoesNotContain("Document SF returned by query Capital=true", output.Stdout);
+            Assert.DoesNotContain("Document LA returned by query Capital=true", output.Stdout);
         }
 
         [Fact]
@@ -428,12 +498,31 @@ namespace GoogleCloudSamples
             var output = RunQueryData("simple-queries", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document LA returned by query State=CA", output.Stdout);
             Assert.Contains("Document SF returned by query State=CA", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by query State=CA", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by query State=CA", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query State=CA", output.Stdout);
             Assert.Contains("Document LA returned by query Population>1000000", output.Stdout);
             Assert.Contains("Document TOK returned by query Population>1000000", output.Stdout);
             Assert.Contains("Document BJ returned by query Population>1000000", output.Stdout);
+            Assert.DoesNotContain("Document SF returned by query Population>1000000", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by query Population>1000000", output.Stdout);
             Assert.Contains("Document SF returned by query Name>=San Francisco", output.Stdout);
             Assert.Contains("Document TOK returned by query Name>=San Francisco", output.Stdout);
             Assert.Contains("Document DC returned by query Name>=San Francisco", output.Stdout);
+            Assert.DoesNotContain("Document LA returned by query Name>=San Francisco", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query Name>=San Francisco", output.Stdout);
+        }
+
+        [Fact]
+        public void ArrayContainsQueryTest()
+        {
+            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunQueryData("array-contains-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Document LA returned by query 'Regions array_contains west_coast'", output.Stdout);
+            Assert.Contains("Document SF returned by query 'Regions array_contains west_coast'", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by query 'Regions array_contains west_coast'", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by query 'Regions array_contains west_coast'", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query 'Regions array_contains west_coast'", output.Stdout);
         }
 
         [Fact]
@@ -442,6 +531,10 @@ namespace GoogleCloudSamples
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunQueryData("chained-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document SF returned by query State=CA and Name=San Francisco", output.Stdout);
+            Assert.DoesNotContain("Document LA returned by query State=CA and Name=San Francisco", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by query State=CA and Name=San Francisco", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by query State=CA and Name=San Francisco", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query State=CA and Name=San Francisco", output.Stdout);
         }
 
         [Fact]
@@ -452,6 +545,10 @@ namespace GoogleCloudSamples
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunQueryData("composite-index-chained-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document SF returned by query State=CA and Population<1000000", output.Stdout);
+            Assert.DoesNotContain("Document LA returned by query State=CA and Population<1000000", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by query State=CA and Population<1000000", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by query State=CA and Population<1000000", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query State=CA and Population<1000000", output.Stdout);
         }
 
         [Fact]
@@ -461,6 +558,9 @@ namespace GoogleCloudSamples
             var output = RunQueryData("range-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document LA returned by query CA<=State<=IN", output.Stdout);
             Assert.Contains("Document SF returned by query CA<=State<=IN", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by query CA<=State<=IN", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by query CA<=State<=IN", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query CA<=State<=IN", output.Stdout);
         }
 
         [Fact]
@@ -479,6 +579,8 @@ namespace GoogleCloudSamples
             Assert.Contains("Document BJ returned by order by name with limit query", output.Stdout);
             Assert.Contains("Document LA returned by order by name with limit query", output.Stdout);
             Assert.Contains("Document SF returned by order by name with limit query", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by order by name with limit query", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by order by name with limit query", output.Stdout);
         }
 
         [Fact]
@@ -489,6 +591,8 @@ namespace GoogleCloudSamples
             Assert.Contains("Document DC returned by order by name descending with limit query", output.Stdout);
             Assert.Contains("Document TOK returned by order by name descending with limit query", output.Stdout);
             Assert.Contains("Document SF returned by order by name descending with limit query", output.Stdout);
+            Assert.DoesNotContain("Document LA returned by order by name descending with limit query", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by order by name descending with limit query", output.Stdout);
         }
 
         [Fact]
@@ -512,6 +616,9 @@ namespace GoogleCloudSamples
             var output = RunOrderLimitData("where-order-by-limit-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document LA returned by where order by limit query", output.Stdout);
             Assert.Contains("Document TOK returned by where order by limit query", output.Stdout);
+            Assert.DoesNotContain("Document SF returned by where order by limit query", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by where order by limit query", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by where order by limit query", output.Stdout);
         }
 
         [Fact]
@@ -522,6 +629,8 @@ namespace GoogleCloudSamples
             Assert.Contains("Document LA returned by range with order by query", output.Stdout);
             Assert.Contains("Document TOK returned by range with order by query", output.Stdout);
             Assert.Contains("Document BJ returned by range with order by query", output.Stdout);
+            Assert.DoesNotContain("Document SF returned by range with order by query", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by range with order by query", output.Stdout);
         }
 
         [Fact]
@@ -590,6 +699,8 @@ namespace GoogleCloudSamples
             Assert.Contains("Document LA returned by start at population 1000000 field query cursor", output.Stdout);
             Assert.Contains("Document TOK returned by start at population 1000000 field query cursor", output.Stdout);
             Assert.Contains("Document BJ returned by start at population 1000000 field query cursor", output.Stdout);
+            Assert.DoesNotContain("Document SF returned by start at population 1000000 field query cursor", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by start at population 1000000 field query cursor", output.Stdout);
         }
 
         [Fact]
@@ -599,6 +710,21 @@ namespace GoogleCloudSamples
             var output = RunPaginateData("end-at-field-query-cursor", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document DC returned by end at population 1000000 field query cursor", output.Stdout);
             Assert.Contains("Document SF returned by end at population 1000000 field query cursor", output.Stdout);
+            Assert.DoesNotContain("Document LA returned by end at population 1000000 field query cursor", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by end at population 1000000 field query cursor", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by end at population 1000000 field query cursor", output.Stdout);
+        }
+
+        [Fact]
+        public void DocumentSnapshotCursorTest()
+        {
+            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunPaginateData("document-snapshot-cursor", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.DoesNotContain("Document DC returned by query for cities with population greater than or equal to SF.", output.Stdout);
+            Assert.Contains("Document SF returned by query for cities with population greater than or equal to SF.", output.Stdout);
+            Assert.Contains("Document LA returned by query for cities with population greater than or equal to SF.", output.Stdout);
+            Assert.Contains("Document TOK returned by query for cities with population greater than or equal to SF.", output.Stdout);
+            Assert.Contains("Document BJ returned by query for cities with population greater than or equal to SF.", output.Stdout);
         }
 
         [Fact]
@@ -608,6 +734,9 @@ namespace GoogleCloudSamples
             var output = RunPaginateData("paginated-query-cursor", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Document TOK returned by paginated query cursor.", output.Stdout);
             Assert.Contains("Document BJ returned by paginated query cursor.", output.Stdout);
+            Assert.DoesNotContain("Document SF returned by paginated query cursor.", output.Stdout);
+            Assert.DoesNotContain("Document LA returned by paginated query cursor.", output.Stdout);
+            Assert.DoesNotContain("Document DC returned by paginated query cursor.", output.Stdout);
         }
 
         [Fact]

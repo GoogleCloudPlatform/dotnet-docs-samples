@@ -36,8 +36,7 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_delete_doc]
             DocumentReference cityRef = db.Collection("cities").Document("DC");
-            WriteResult writeResult = await cityRef.DeleteAsync();
-            Console.WriteLine(writeResult.UpdateTime);
+            await cityRef.DeleteAsync();
             // [END fs_delete_doc]
             Console.WriteLine("Deleted the DC document in the cities collection.");
         }
@@ -47,12 +46,11 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_delete_field]
             DocumentReference cityRef = db.Collection("cities").Document("BJ");
-            Dictionary<FieldPath, object> updates = new Dictionary<FieldPath, object>
+            Dictionary<string, object> updates = new Dictionary<string, object>
             {
-                { new FieldPath("Capital"), SentinelValue.Delete }
+                { "Capital", FieldValue.Delete }
             };
-            WriteResult writeResult = await cityRef.UpdateAsync(updates);
-            Console.WriteLine(writeResult.UpdateTime);
+            await cityRef.UpdateAsync(updates);
             // [END fs_delete_field]
             Console.WriteLine("Deleted the Capital field from the BJ document in the cities collection.");
         }
@@ -60,7 +58,7 @@ Where command is one of
         // [START fs_delete_collection]
         private static async Task DeleteCollection(CollectionReference collectionReference, int batchSize)
         {
-            QuerySnapshot snapshot = await collectionReference.Limit(batchSize).SnapshotAsync();
+            QuerySnapshot snapshot = await collectionReference.Limit(batchSize).GetSnapshotAsync();
             IReadOnlyList<DocumentSnapshot> documents = snapshot.Documents;
             while (documents.Count > 0)
             {
@@ -69,7 +67,7 @@ Where command is one of
                     Console.WriteLine("Deleting document {0}", document.Id);
                     await document.Reference.DeleteAsync();
                 }
-                snapshot = await collectionReference.Limit(batchSize).SnapshotAsync();
+                snapshot = await collectionReference.Limit(batchSize).GetSnapshotAsync();
                 documents = snapshot.Documents;
             }
             Console.WriteLine("Finished deleting all documents from the collection.");

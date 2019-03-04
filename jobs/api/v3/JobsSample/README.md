@@ -13,7 +13,7 @@ This sample requires [.NET Core 2.0](
 2. Ensure that your environment variables are set for both `GOOGLE_APPLICATION_CREDENTIALS` and `GOOGLE_PROJECT_ID`.
 
 3. Enable APIs for your project.
-   [Click here](https://pantheon.corp.google.com/flows/enableapi?apiid=jobs.googleapis.com&showconfirmation=true)
+   [Click here](https://console.cloud.google.com/flows/enableapi?apiid=jobs.googleapis.com&showconfirmation=true)
    to visit Cloud Platform Console and enable the Google Cloud Key Management Service API.
 
 4. From a Powershell command line:

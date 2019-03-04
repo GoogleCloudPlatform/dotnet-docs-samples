@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using CommandLine;
 using Google.Cloud.Dlp.V2;
+using System;
 
 namespace GoogleCloudSamples
 {
-    abstract class InspectLocalOptions
+    internal abstract class InspectLocalOptions
     {
         [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
@@ -46,21 +46,21 @@ namespace GoogleCloudSamples
     }
 
     [Verb("inspectString", HelpText = "Inspects a content string.")]
-    class InspectStringOptions : InspectLocalOptions
+    internal class InspectStringOptions : InspectLocalOptions
     {
         [Value(1, HelpText = "The item to inspect.", Required = true)]
         public string Value { get; set; }
     }
 
     [Verb("inspectFile", HelpText = "Inspects a content file.")]
-    class InspectFileOptions : InspectLocalOptions
+    internal class InspectFileOptions : InspectLocalOptions
     {
         [Value(1, HelpText = "The path to the local file to inspect. Can be a text, JPG, or PNG.", Required = true)]
         public string File { get; set; }
     }
 
     [Verb("inspectBigQuery", HelpText = "Inspects a content in BigQuery")]
-    class InspectBigQueryOptions : InspectLocalOptions
+    internal class InspectBigQueryOptions : InspectLocalOptions
     {
         [Option("identifyingFields", HelpText = "Identifying fields.")]
         public string IdentifyingFields { get; set; }
@@ -73,7 +73,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("inspectDataStore", HelpText = "Inspects a content in Datastore")]
-    class InspectDatastoreOptions : InspectLocalOptions
+    internal class InspectDatastoreOptions : InspectLocalOptions
     {
         [Option("kindName", HelpText = "Datastore Kind name")]
         public string KindName { get; set; }
@@ -89,7 +89,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("inspectGcs", HelpText = "Inspects a content in GCS")]
-    class InspectGcsOptions : InspectLocalOptions
+    internal class InspectGcsOptions : InspectLocalOptions
     {
         [Option("bucketName", HelpText = "Storage bucket name")]
         public string BucketName { get; set; }
@@ -102,7 +102,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("createInspectTemplate", HelpText = "Creates a template for inspecting operations.")]
-    class CreateTemplateOptions : InspectLocalOptions
+    internal class CreateTemplateOptions : InspectLocalOptions
     {
         [Value(1, HelpText = "The name of the template to be created.", Required = true)]
         public string TemplateId { get; set; }
@@ -115,7 +115,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("redactImage", HelpText = "Redacts an image and saves the outcome into provided file path.")]
-    class RedactFromImageOptions
+    internal class RedactFromImageOptions
     {
         [Option("projectId", HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
@@ -128,14 +128,14 @@ namespace GoogleCloudSamples
     }
 
     [Verb("listTemplates", HelpText = "Lists all created inspection templates.")]
-    class ListTemplatesOptions
+    internal class ListTemplatesOptions
     {
         [Value(1, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
     }
 
     [Verb("deleteTemplate", HelpText = "Deletes given template by name.")]
-    class DeleteTemplatesOptions
+    internal class DeleteTemplatesOptions
     {
         [Value(1, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
@@ -144,7 +144,7 @@ namespace GoogleCloudSamples
         public string TemplateName { get; set; }
     }
 
-    abstract class DeidOptions
+    internal abstract class DeidOptions
     {
         [Value(0, HelpText = "The project ID to run dthe API call under.", Required = true)]
         public string ProjectId { get; set; }
@@ -154,7 +154,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("deidDateShift", HelpText = "Deidentify dates in a CSV file by pseudorandomly shifting them.")]
-    class DeidDateShiftOptions
+    internal class DeidDateShiftOptions
     {
         [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
@@ -185,7 +185,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("deidMask", HelpText = "DeIdentify content via an input mask.")]
-    class DeidMaskOptions : DeidOptions
+    internal class DeidMaskOptions : DeidOptions
     {
         [Option('i', "info-types", HelpText = "Comma-separated infoTypes of information to match.",
             Default = "PHONE_NUMBER,EMAIL_ADDRESS,CREDIT_CARD_NUMBER,US_SOCIAL_SECURITY_NUMBER")]
@@ -201,7 +201,7 @@ namespace GoogleCloudSamples
         public bool Reverse { get; set; }
     }
 
-    abstract class FpeOptions : DeidOptions
+    internal abstract class FpeOptions : DeidOptions
     {
         [Value(2, HelpText = "CryptoKey resource name to use in format projects/PROJECT_ID/locations/LOCATION/keyRings" +
             "/KEYRING/cryptoKeys/KEY_NAME", Required = true)]
@@ -216,7 +216,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("deidFpe", HelpText = "DeIdentify content via a Cloud KMS encryption key.")]
-    class DeidFpeOptions : FpeOptions
+    internal class DeidFpeOptions : FpeOptions
     {
         [Option('i', "info-types", HelpText = "Comma-separated infoTypes of information to match.",
             Default = "PHONE_NUMBER,EMAIL_ADDRESS,CREDIT_CARD_NUMBER,US_SOCIAL_SECURITY_NUMBER")]
@@ -224,10 +224,11 @@ namespace GoogleCloudSamples
     }
 
     [Verb("reidFpe", HelpText = "ReIdentify content removed by a previous call to deidFpe.")]
-    class ReidFpeOptions : FpeOptions { }
+    internal class ReidFpeOptions : FpeOptions
+    { }
 
     [Verb("listJobs", HelpText = "List Data Loss Prevention API jobs corresponding to a given filter.")]
-    class ListJobsOptions
+    internal class ListJobsOptions
     {
         [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
         public string ProjectId { get; set; }
@@ -240,14 +241,14 @@ namespace GoogleCloudSamples
     }
 
     [Verb("deleteJob", HelpText = "Delete results of a Data Loss Prevention API job.")]
-    class DeleteJobOptions
+    internal class DeleteJobOptions
     {
         [Value(0, HelpText = "The full name of the job whose results should be deleted.", Required = true)]
         public string JobName { get; set; }
     }
 
     [Verb("createJobTrigger", HelpText = "Create a Data Loss Prevention API job trigger.")]
-    class CreateJobTriggerOptions : InspectLocalOptions
+    internal class CreateJobTriggerOptions : InspectLocalOptions
     {
         [Value(1, HelpText = "The name of the bucket to scan.", Required = true)]
         public string BucketName { get; set; }
@@ -268,7 +269,7 @@ namespace GoogleCloudSamples
         public string Description { get; set; }
     }
 
-    abstract class RiskAnalysisOptions
+    internal abstract class RiskAnalysisOptions
     {
         [Value(0, HelpText = "The project ID to run the API call under.", Required = true)]
         public string CallingProjectId { get; set; }
@@ -289,36 +290,39 @@ namespace GoogleCloudSamples
         public string SubscriptionId { get; set; }
     }
 
-    abstract class StatsOptions : RiskAnalysisOptions
+    internal abstract class StatsOptions : RiskAnalysisOptions
     {
         [Value(6, HelpText = "The name of the column to compute risk metrics for. (e.g. 'age')", Default = 0)]
         public string ColumnName { get; set; }
     }
 
-    abstract class QuasiIdOptions : RiskAnalysisOptions
+    internal abstract class QuasiIdOptions : RiskAnalysisOptions
     {
         [Value(6, HelpText = "A set of columns that form a composite key, delimited by commas. (e.g. 'name,city')", Required = true)]
         public string QuasiIdColumns { get; set; }
     }
 
     [Verb("numericalStats", HelpText = "Computes risk metrics of a column of numbers in a Google BigQuery table.")]
-    class NumericalStatsOptions : StatsOptions { }
+    internal class NumericalStatsOptions : StatsOptions
+    { }
 
     [Verb("categoricalStats", HelpText = "Computes risk metrics of a column of data in a Google BigQuery table.")]
-    class CategoricalStatsOptions : StatsOptions { }
+    internal class CategoricalStatsOptions : StatsOptions
+    { }
 
     [Verb("kAnonymity", HelpText = "Computes the k-anonymity of a column set in a Google BigQuery table.")]
-    class KAnonymityOptions : QuasiIdOptions { }
+    internal class KAnonymityOptions : QuasiIdOptions
+    { }
 
     [Verb("lDiversity", HelpText = "Computes the k-anonymity of a column set in a Google BigQuery table.")]
-    class LDiversityOptions : QuasiIdOptions
+    internal class LDiversityOptions : QuasiIdOptions
     {
         [Value(7, HelpText = "The column to measure l-diversity relative to. (e.g. 'age')", Required = true)]
         public string SensitiveAttribute { get; set; }
     }
 
     [Verb("kMap", HelpText = "Computes the k-map risk estimation of a column set in a Google BigQuery table.")]
-    class KMapOptions : QuasiIdOptions
+    internal class KMapOptions : QuasiIdOptions
     {
         [Value(7, HelpText = "A list of the infoTypes for each quasi-id, delimited by commas.", Required = true)]
         public string InfoTypes { get; set; }
@@ -328,7 +332,7 @@ namespace GoogleCloudSamples
     }
 
     [Verb("listInfoTypes", HelpText = "List the types of sensitive information the DLP API supports.")]
-    class ListInfoTypesOptions
+    internal class ListInfoTypesOptions
     {
         [Value(0, HelpText = "The BCP-47 language code to use. (e.g. 'en-US')", Default = "en-US")]
         public string LanguageCode { get; set; }
@@ -359,6 +363,7 @@ namespace GoogleCloudSamples
                             options.ImageToPath),
                         errs => 1);
                     break;
+
                 case "kAnonymity":
                 case "lDiversity":
                 case "deidDateShift":
@@ -449,6 +454,7 @@ namespace GoogleCloudSamples
                         opts.SubscriptionId),
                     errs => 1);
                     break;
+
                 default:
                     Parser.Default.ParseArguments<
                         InspectStringOptions,

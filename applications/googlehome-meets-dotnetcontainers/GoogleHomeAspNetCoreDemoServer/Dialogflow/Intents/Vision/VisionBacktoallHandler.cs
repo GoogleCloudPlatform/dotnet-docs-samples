@@ -14,6 +14,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Google.Cloud.Dialogflow.V2;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
 {
@@ -34,9 +35,9 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// <summary>
         /// Handle the intent.
         /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public override string Handle(ConvRequest req)
+        /// <param name="req">Webhook request</param>
+        /// <returns>Webhook response</returns>
+        public override WebhookResponse Handle(WebhookRequest req)
         {
             // Unfocus the image
             _conversation.State.FocusedImage = null;
@@ -46,7 +47,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
             var imagesList = images.Select(x => $"<li><img src=\"{x.Url}\" alt=\"{WebUtility.HtmlEncode(x.Title)}\" style=\"width:200px\" /></li>");
             DialogflowApp.Show($"<ol>{string.Join("", imagesList)}</ol>");
 
-            return DialogflowApp.Tell("OK, looking at all images now.");
+            return new WebhookResponse { FulfillmentText = "OK, looking at all images now." };
         }
     }
 }

@@ -20,18 +20,43 @@ using System.Net;
 
 namespace GoogleCloudSamples
 {
+    public class TestFixture : IDisposable
+    {
+        public string ProjectId { get; private set; }
+            = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public TestFixture()
+        {
+            WriteOutput = CloudMonitoring.Run("write", ProjectId);
+        }
+
+        public CommandLineRunner CloudMonitoring { get; private set; }
+            = new CommandLineRunner()
+            {
+                VoidMain = Monitoring.Main,
+                Command = "Monitoring"
+            };
+
+        public ConsoleOutput WriteOutput { get; private set; }
+
+        public void Dispose()
+        {
+        }
+    }
     // <summary>
     /// Runs the sample app's methods and tests the outputs
     // </summary>
-    public class CommonTests
+    public class CommonTests : IClassFixture<TestFixture>
     {
-        private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly string _projectId;
+        readonly CommandLineRunner _cloudMonitoring;
+        private readonly TestFixture _fixture;
 
-        readonly CommandLineRunner _cloudMonitoring = new CommandLineRunner()
+        public CommonTests(TestFixture fixture)
         {
-            VoidMain = Monitoring.Main,
-            Command = "Monitoring"
-        };
+            _projectId = fixture.ProjectId;
+            _cloudMonitoring = fixture.CloudMonitoring;
+            _fixture = fixture;
+        }
 
         protected ConsoleOutput Run(params string[] args)
         {
@@ -46,6 +71,7 @@ namespace GoogleCloudSamples
             }
         };
 
+
         /// <summary>
         /// Retry action.
         /// For tests that create an entity and then query it afterward, 
@@ -58,7 +84,7 @@ namespace GoogleCloudSamples
         public void TestListMetricDescriptors()
         {
             string testMetricName = "compute.googleapis.com/instance/cpu/utilization";
-            var output = _cloudMonitoring.Run("list", s_projectId);
+            var output = _cloudMonitoring.Run("list", _projectId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains(testMetricName, output.Stdout);
         }
@@ -66,7 +92,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestCreateCustomMetric()
         {
-            var output = _cloudMonitoring.Run("create", s_projectId);
+            var output = _cloudMonitoring.Run("create", _projectId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("metricKind", output.Stdout);
         }
@@ -74,8 +100,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetMetricDescriptor()
         {
-            _cloudMonitoring.Run("create", s_projectId);
-            var output = _cloudMonitoring.Run("get", s_projectId,
+            _cloudMonitoring.Run("create", _projectId);
+            var output = _cloudMonitoring.Run("get", _projectId,
                 "custom.googleapis.com/stores/daily_sales");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("metricKind", output.Stdout);
@@ -84,16 +110,15 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestWriteTimeSeriesData()
         {
-            var output = _cloudMonitoring.Run("write", s_projectId);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Pittsburgh", output.Stdout);
+            Assert.Equal(0, _fixture.WriteOutput.ExitCode);
+            Assert.Contains("Pittsburgh", _fixture.WriteOutput.Stdout);
         }
 
         [Fact]
         public void TestListMonitoredResourceDescriptors()
         {
             string testResourceName = "monitoredResourceDescriptors/api";
-            var output = _cloudMonitoring.Run("listResources", s_projectId);
+            var output = _cloudMonitoring.Run("listResources", _projectId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains(testResourceName, output.Stdout);
         }
@@ -102,7 +127,7 @@ namespace GoogleCloudSamples
         public void TestGetMonitoredResourceDescriptor()
         {
             string testResourceDisplayName = "Produced API";
-            var output = _cloudMonitoring.Run("getResource", s_projectId, "api");
+            var output = _cloudMonitoring.Run("getResource", _projectId, "api");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains(testResourceDisplayName, output.Stdout);
         }
@@ -110,8 +135,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestReadTimeSeriesData()
         {
-            _cloudMonitoring.Run("write", s_projectId);
-            var output = _cloudMonitoring.Run("read", s_projectId,
+            var output = _cloudMonitoring.Run("read", _projectId,
                 "custom.googleapis.com/stores/daily_sales");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("123.45", output.Stdout);
@@ -120,8 +144,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestReadTimeSeriesDataFields()
         {
-            _cloudMonitoring.Run("write", s_projectId);
-            var output = _cloudMonitoring.Run("readFields", s_projectId,
+            var output = _cloudMonitoring.Run("readFields", _projectId,
                 "custom.googleapis.com/stores/daily_sales");
             Assert.Equal(0, output.ExitCode);
             Assert.DoesNotContain("123.45", output.Stdout);
@@ -131,7 +154,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestReadTimeSeriesDataAggregated()
         {
-            var output = _cloudMonitoring.Run("readAggregate", s_projectId);
+            var output = _cloudMonitoring.Run("readAggregate", _projectId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Now:", output.Stdout);
             Assert.Contains("10 min ago:", output.Stdout);
@@ -140,7 +163,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestReadTimeSeriesDataReduced()
         {
-            var output = _cloudMonitoring.Run("readReduce", s_projectId);
+            var output = _cloudMonitoring.Run("readReduce", _projectId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Last 10 min:", output.Stdout);
             Assert.Contains("Last 10-20 min ago:", output.Stdout);
@@ -152,20 +175,20 @@ namespace GoogleCloudSamples
             string randomNameSuffix = TestUtil.RandomName();
             string metricType = "custom.googleapis.com/stores/daily_sales" + randomNameSuffix;
             // Create Metric Descriptor.
-            var output = _cloudMonitoring.Run("create", s_projectId, metricType);
+            var output = _cloudMonitoring.Run("create", _projectId, metricType);
             // Confirm Metric Descriptor is created.
             Eventually(() =>
             {
                 Assert.Equal(0, output.ExitCode);
             });
             // Get Metric Descriptor.
-            var outputFromGet = _cloudMonitoring.Run("get", s_projectId, metricType);
+            var outputFromGet = _cloudMonitoring.Run("get", _projectId, metricType);
             Eventually(() =>
             {
                 Assert.Equal(0, output.ExitCode);
             });
             // Delete Metric Descriptor.
-            var outputFromDelete = _cloudMonitoring.Run("delete", s_projectId, metricType);
+            var outputFromDelete = _cloudMonitoring.Run("delete", _projectId, metricType);
             Assert.Equal(0, outputFromDelete.ExitCode);
         }
     }

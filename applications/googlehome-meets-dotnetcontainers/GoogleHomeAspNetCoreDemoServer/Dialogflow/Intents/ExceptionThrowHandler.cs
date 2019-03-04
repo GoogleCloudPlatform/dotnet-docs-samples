@@ -13,6 +13,7 @@
 // the License.
 using System;
 using System.Threading.Tasks;
+using Google.Cloud.Dialogflow.V2;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
 {
@@ -33,16 +34,16 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         /// <summary>
         /// Handle the intent.
         /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public override string Handle(ConvRequest req)
+        /// <param name="req">Webhook request</param>
+        /// <returns>Webhook response</returns>
+        public override WebhookResponse Handle(WebhookRequest req)
         {
-            var exception = req.Parameters["exception"];
+            var exception = req.QueryResult.Parameters.Fields["exception"].StringValue;
 
             // Throw the requested exception type which will be picked up by Error-Reporting
             switch (exception.ToLowerInvariant())
             {
-                case null: return DialogflowApp.Tell("Oops, not sure what to throw.");
+                case null: return new WebhookResponse { FulfillmentText = "Oops, not sure what to throw." };
                 case "exception": throw new Exception();
                 case "argumentexception": throw new ArgumentException();
                 case "invalidoperationexception": throw new InvalidOperationException();
@@ -54,7 +55,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
                 case "timeoutexception": throw new TimeoutException();
                 case "stackoverflowexception": throw new StackOverflowException();
                 case "formatexception": throw new FormatException();
-                default: return DialogflowApp.Tell($"Sorry, I don't know the exception type: '{exception}'");
+                default: return new WebhookResponse { FulfillmentText = $"Sorry, I don't know the exception type: '{exception}'" };
             }
         }
     }

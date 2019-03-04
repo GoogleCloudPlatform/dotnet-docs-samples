@@ -5,13 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Kms.V1" Version="1.0.0-beta03" />
+    <PackageReference Include="Google.Cloud.Kms.V1" Version="1.0.0-beta04" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="appsecrets.json.encrypted" CopyToOutputDirectory="PreserveNewest" />
     <None Update="appsecrets.json.keyname" CopyToOutputDirectory="PreserveNewest" />
+    <Content Remove="appsecrets.json" />
   </ItemGroup>
 
 </Project>

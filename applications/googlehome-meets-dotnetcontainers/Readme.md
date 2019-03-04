@@ -13,6 +13,7 @@ You must have a GCP project with the following APIs enabled:
 * Custom Search API
 * Cloud Vision API
 * BigQuery API
+* Translation API
 * Container Builder API
 
 ### Custom Search configuration
@@ -85,16 +86,20 @@ The DialogFlow console has a "Try it now" tab on the right. This can be used at 
 
 Typing text here is treated exactly the same as if the text had arrived from the Google Home/Assistant.
 
-You can use the following phrases to test:
-* Let's use Vision API
+You can use the following phrases to test.
+* Say hi to everyone
+* What platform are you running on?
+* I want to use Vision API
   * Search pictures of London
   * Describe the picture
   * Is picture safe?
-  * Are there landmarkks in the picture?
+  * Are there landmarks in the picture?
   * Go back to all pictures
-* Let's use Big Query
-  * What was the top hacker news yesterday? 
+* I want to use Big Query
+  * What was the top hacker news on May 1 2018? 
   * In 2015, what was the hottest temperature in France?
+* Translate how are you to German
+* Throw an exception
 
 ### Google Home/Assistant configuration
 

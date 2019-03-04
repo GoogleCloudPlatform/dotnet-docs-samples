@@ -126,7 +126,7 @@ namespace GoogleCloudSamples
         }
         // [END basic_keyword_search]
 
-        // [START histogram_search}
+        // [START histogram_search]
 
         public static void HistogramSearch(String companyName)
         {

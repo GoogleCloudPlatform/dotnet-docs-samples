@@ -5,16 +5,20 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Firestore" Version="1.0.0-beta02" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="xunit" Version="2.3.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
+    <PackageReference Include="Google.Cloud.Firestore" Version="1.0.0-beta14" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Quickstart\Quickstart.csproj" />
     <ProjectReference Include="..\AddData\AddData.csproj" />
     <ProjectReference Include="..\DeleteData\DeleteData.csproj" />
     <ProjectReference Include="..\GetData\GetData.csproj" />
+    <ProjectReference Include="..\ListenData\ListenData.csproj" />
     <ProjectReference Include="..\QueryData\QueryData.csproj" />
     <ProjectReference Include="..\OrderLimitData\OrderLimitData.csproj" />
     <ProjectReference Include="..\DataModel\DataModel.csproj" />

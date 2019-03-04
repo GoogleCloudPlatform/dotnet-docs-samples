@@ -110,7 +110,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("labels", Path.Combine("data", "cat.jpg"));
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("mammal", output.Stdout);
+            Assert.Contains("cat", output.Stdout);
         }
 
         [Fact]
@@ -197,6 +197,16 @@ namespace GoogleCloudSamples
             Assert.Contains("Bounding Polygon:", output.Stdout);
             Assert.Contains("\tX:", output.Stdout);
             Assert.Contains("\tY:", output.Stdout);
+        }
+
+        [Fact]
+        public void DetectObjectLocalization()
+        {
+            // TODO(erschmid): Replace with 'puppies.jpg' after merge.
+            var output = Run("object-localization",
+                             Path.Combine("data", "tower.jpg"));
+            Assert.Contains("Building", output.Stdout);
+            Assert.Equal(0, output.ExitCode);
         }
     }
 
@@ -329,7 +339,7 @@ namespace GoogleCloudSamples
         {
             var output = _quickStart.Run();
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("mammal", output.Stdout);
+            Assert.Contains("cat", output.Stdout);
         }
     }
 }

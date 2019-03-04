@@ -1,0 +1,21 @@
+*           @SurferJeffAtGoogle
+
+bigquery/   @jsimonweb
+bigtable/   @jsimonweb
+datastore/  @jsimonweb
+firestore/  @jsimonweb
+spanner/    @jsimonweb
+storage/    @jsimonweb
+applications/leaderboard/   @jsimonweb
+
+dialogflow/ @beccasaurus
+language/   @beccasaurus
+pubsub/     @beccasaurus
+speech/     @beccasaurus
+translate/  @beccasaurus
+video/      @beccasaurus
+vision/     @beccasaurus
+
+applications/liftAndShiftPetshop/   @simonz130
+
+applications/googlehome-meets-dotnetcontainers/ @meteatamel

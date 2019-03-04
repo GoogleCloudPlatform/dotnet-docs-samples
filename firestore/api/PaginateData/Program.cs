@@ -29,6 +29,7 @@ C:\> dotnet run command YOUR_PROJECT_ID
 Where command is one of
     start-at-field-query-cursor
     end-at-field-query-cursor
+    document-snapshot-cursor
     paginated-query-cursor
     multiple-cursor-conditions
 ";
@@ -39,7 +40,7 @@ Where command is one of
             // [START fs_start_at_field_query_cursor]
             Query query = citiesRef.OrderBy("Population").StartAt(1000000);
             // [END fs_start_at_field_query_cursor]
-            QuerySnapshot querySnapshot = await query.SnapshotAsync();
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by start at population 1000000 field query cursor", documentSnapshot.Id);
@@ -53,10 +54,26 @@ Where command is one of
             // [START fs_end_at_field_query_cursor]
             Query query = citiesRef.OrderBy("Population").EndAt(1000000);
             // [END fs_end_at_field_query_cursor]
-            QuerySnapshot querySnapshot = await query.SnapshotAsync();
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
                 Console.WriteLine("Document {0} returned by end at population 1000000 field query cursor", documentSnapshot.Id);
+            }
+        }
+
+        private static async Task DocumentSnapshotCursor(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            // [START fs_document_snapshot_cursor]
+            CollectionReference citiesRef = db.Collection("cities");
+            DocumentReference docRef = citiesRef.Document("SF");
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+            Query query = citiesRef.OrderBy("Population").StartAt(snapshot);
+            // [END fs_document_snapshot_cursor]
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
+                Console.WriteLine("Document {0} returned by query for cities with population greater than or equal to SF.", documentSnapshot.Id);
             }
         }
 
@@ -68,17 +85,17 @@ Where command is one of
             Query firstQuery = citiesRef.OrderBy("Population").Limit(3);
 
             // Get the last document from the results
-            QuerySnapshot querySnapshot = await firstQuery.SnapshotAsync();
+            QuerySnapshot querySnapshot = await firstQuery.GetSnapshotAsync();
             long lastPopulation = 0;
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
-                lastPopulation = documentSnapshot.GetField<long>("Population");
+                lastPopulation = documentSnapshot.GetValue<long>("Population");
             }
 
             // Construct a new query starting at this document.
             // Note: this will not have the desired effect if multiple cities have the exact same population value
             Query secondQuery = citiesRef.OrderBy("Population").StartAfter(lastPopulation);
-            QuerySnapshot secondQuerySnapshot = await secondQuery.SnapshotAsync();
+            QuerySnapshot secondQuerySnapshot = await secondQuery.GetSnapshotAsync();
             // [END fs_paginated_query_cursor]
             foreach (DocumentSnapshot documentSnapshot in secondQuerySnapshot.Documents)
             {
@@ -93,12 +110,12 @@ Where command is one of
             Query query1 = db.Collection("cities").OrderBy("Name").OrderBy("State").StartAt("Springfield");
             Query query2 = db.Collection("cities").OrderBy("Name").OrderBy("State").StartAt("Springfield", "Missouri");
             // [END fs_multiple_cursor_conditions]
-            QuerySnapshot snapshot1 = await query1.SnapshotAsync();
+            QuerySnapshot snapshot1 = await query1.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in snapshot1.Documents)
             {
                 Console.WriteLine("Document {0} returned by start at Springfield query.", documentSnapshot.Id);
             }
-            QuerySnapshot snapshot2 = await query2.SnapshotAsync();
+            QuerySnapshot snapshot2 = await query2.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in snapshot2.Documents)
             {
                 Console.WriteLine("Document {0} returned by start at Springfield, Missouri query.", documentSnapshot.Id);
@@ -123,6 +140,10 @@ Where command is one of
 
                 case "end-at-field-query-cursor":
                     EndAtFieldQueryCursor(project).Wait();
+                    break;
+
+                case "document-snapshot-cursor":
+                    DocumentSnapshotCursor(project).Wait();
                     break;
 
                 case "paginated-query-cursor":

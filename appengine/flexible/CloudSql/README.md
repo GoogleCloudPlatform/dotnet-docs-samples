@@ -14,7 +14,8 @@ when running in Google App Engine Flexible Environment.
 2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.
 
-3.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md).
+3.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md)
+    or newer.
 
 4.  [Create a second generation Google Cloud SQL instance.](
     https://cloud.google.com/sql/docs/mysql/create-instance).
@@ -22,7 +23,7 @@ when running in Google App Engine Flexible Environment.
 5.  Create a new database in your Google Cloud SQL instance.
     
     1.  List your database instances in [Cloud Cloud Console](
-        https://pantheon.corp.google.com/sql/instances/).
+        https://console.cloud.google.com/sql/instances/).
     
     2.  Click your Instance Id to see Instance details.
 
@@ -64,7 +65,7 @@ when running in Google App Engine Flexible Environment.
     ```psm1
     PS > dotnet restore
     PS > dotnet publish
-    PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.0\publish\app.yaml
+    PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
     ```
 
 ## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017

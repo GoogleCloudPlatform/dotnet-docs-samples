@@ -9,9 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="1.0.0-beta01" />
+    <None Remove="sample.mp3" />
+    <None Remove="sample.mp3" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="sample.mp3" />
+    <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="1.0.0-beta03" />
   </ItemGroup>
 </Project>

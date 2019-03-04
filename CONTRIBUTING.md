@@ -19,6 +19,9 @@ Follow either of the two links above to access the appropriate CLA and
 instructions for how to sign and return it. Once we receive it, we'll be able to
 accept your pull requests.
 
+## Setting Up An Environment
+For instructions regarding development environment setup, please visit [the documentation](https://cloud.google.com/dotnet/docs/setup).
+
 ## Contributing A Patch
 
 1. Submit an issue describing your proposed change to the repo in question.
@@ -36,3 +39,8 @@ accept your pull requests.
 Samples in this repository follow the [framework coding
 style](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md).
 This is enforced using [CodeFormatter](https://github.com/dotnet/codeformatter).
+
+### Starting a new sample
+When starting a new sample, match the file and directory layout in the
+[the translate sample](translate/api).  That sample is the canonical example
+of how a new sample should be structured.

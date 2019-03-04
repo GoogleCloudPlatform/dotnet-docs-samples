@@ -13,6 +13,7 @@
 // the License.
 using System.Net;
 using System.Threading.Tasks;
+using Google.Cloud.Dialogflow.V2;
 
 namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
 {
@@ -33,20 +34,16 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
         /// <summary>
         /// Handle the Dialogflow intent.
         /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        public override string Handle(ConvRequest req)
+        /// <param name="req">Webhook request</param>
+        /// <returns>Webhook response</returns>
+        public override WebhookResponse Handle(WebhookRequest req)
         {
-            if (!int.TryParse(req.Parameters["index"], out int index))
-            {
-                // Something went wrong with parsing, index is not a number
-                return DialogflowApp.Tell($"I don't know which picture you're talking about.");
-            }
+            int index = (int)req.QueryResult.Parameters.Fields["index"].NumberValue;
 
             if (index < 1 || index > _conversation.State.ImageList.Count)
             {
                 // Tried to select an out-of-range picture.
-                return DialogflowApp.Tell($"That picture doesn't exist!");
+                return new WebhookResponse { FulfillmentText = $"That picture doesn't exist!" };
             }
 
             // Store the selected image in the state
@@ -55,7 +52,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
 
             DialogflowApp.Show($"<img src=\"{image.Url}\" alt=\"{WebUtility.HtmlEncode(image.Title)}\" style=\"height:100%;width:100%\" />");
 
-            return DialogflowApp.Tell($"Picture {index} selected. You can describe, show landmarks or ask whether the image is safe.");
+            return new WebhookResponse 
+            { 
+                FulfillmentText = $"Picture {index} selected. You can describe, show landmarks or ask whether the image is safe."
+            };
         }
     }
 }

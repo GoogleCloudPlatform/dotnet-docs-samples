@@ -1,7 +1,7 @@
-# .NET Cloud Job Discovery Sample
+# .NET Cloud Talent Solution Sample
 
 A sample that demonstrates how to call the
-[Google Cloud Job Discovery API](https://cloud.google.com/job-discovery/docs) from C#.
+[Google Cloud Talent Solution API](https://cloud.google.com/talent-solution/docs) from C#.
 
 This sample requires [.NET Core 2.0](
     https://www.microsoft.com/net/core) or later.
@@ -11,7 +11,7 @@ This sample requires [.NET Core 2.0](
 1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 2.  Enable APIs for your project.
-    [Click here](https://pantheon.corp.google.com/flows/enableapi?apiid=jobs.googleapis.com&showconfirmation=true)
+    [Click here](https://console.cloud.google.com/flows/enableapi?apiid=jobs.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Key Management Service API.
 
 3.  Enable data logging. 

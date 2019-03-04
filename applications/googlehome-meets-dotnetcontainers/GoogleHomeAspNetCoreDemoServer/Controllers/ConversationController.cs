@@ -45,7 +45,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Controllers
         public async Task<IActionResult> Conversation()
         {
             var response = await _dialogFlowApp.HandleRequest(Request);
-            return Content(response, "application/json");
+            var responseJson = response.ToString();
+            return Content(responseJson, "application/json; charset=utf-8");
         }
     }
 }
