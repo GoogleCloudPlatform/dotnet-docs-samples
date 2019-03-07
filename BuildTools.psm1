@@ -570,8 +570,7 @@ function Run-TestScripts($TimeoutSeconds=300) {
 filter Format-Code {
     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
-        "dotnet format $project" | Write-Host
-        dotnet format $project
+        dotnet format -w $project
         if ($LASTEXITCODE) {
             $project.FullName
             throw "dotnet format failed with exit code $LASTEXITCODE."
