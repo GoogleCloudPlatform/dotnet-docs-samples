@@ -22,7 +22,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
     /// </summary>
     public class ConvState
     {
-        public class Image {
+        public class Image
+        {
             public string Title { get; set; }
             public string Url { get; set; }
         }

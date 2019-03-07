@@ -19,7 +19,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Settings
     public class AppSettings
     {
         public GoogleCloudSettings GoogleCloudSettings { get; set; }
- 
+
         public CustomSearchSettings CustomSearchSettings { get; set; }
     }
 }

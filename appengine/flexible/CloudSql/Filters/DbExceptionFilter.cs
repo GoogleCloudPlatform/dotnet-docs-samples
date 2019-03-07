@@ -41,8 +41,8 @@ public class DbExceptionFilterAttribute : ExceptionFilterAttribute
             // do nothing
             return;
         }
-        var result = new ViewResult {ViewName = "DbException"};
-        result.ViewData = new ViewDataDictionary(_modelMetadataProvider,context.ModelState);
+        var result = new ViewResult { ViewName = "DbException" };
+        result.ViewData = new ViewDataDictionary(_modelMetadataProvider, context.ModelState);
         result.ViewData.Add("Exception", dbException);
         // TODO: Pass additional detailed data via ViewData
         context.Result = result;

@@ -60,12 +60,12 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
                     return ($"Running on Google App Engine. Project ID is '{platform.ProjectId}'",
                         new[] { "Google App Engine", $"ProjectID: '{platform.ProjectId}'" });
                 case PlatformType.Gce:
-                    return ($"Running on Google Compute Engine. Project ID is '{platform.ProjectId}'", 
+                    return ($"Running on Google Compute Engine. Project ID is '{platform.ProjectId}'",
                         new[] { "Google Compute Engine", $"ProjectID: '{platform.ProjectId}'" });
                 case PlatformType.Gke:
                     var gke = platform.GkeDetails;
                     return ($"Running on Google Kubernetes Engine, at location {gke.Location}, on cluster named {gke.ClusterName}",
-                        new[] {"Google Kubernetes Engine", $"ProjectID: '{gke.ProjectId}'", $"Location: '{gke.Location}'", $"Cluster name: '{gke.ClusterName}'", $"Kubernetes pod ID: {gke.PodId}",});
+                        new[] { "Google Kubernetes Engine", $"ProjectID: '{gke.ProjectId}'", $"Location: '{gke.Location}'", $"Cluster name: '{gke.ClusterName}'", $"Kubernetes pod ID: {gke.PodId}", });
                 default:
                     return ("Oops, I don't know where I'm running. Possibly a local dev machine.",
                         new[] { "Oops, I don't know where I'm running. Possibly a local dev machine." });

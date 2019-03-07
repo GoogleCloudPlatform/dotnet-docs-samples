@@ -59,7 +59,7 @@ namespace Pubsub.Controllers
                 // Publish the message.
                 var topicName = new TopicName(_options.ProjectId,
                     _options.TopicId);
-                lock(s_lock) CreateTopicAndSubscriptionOnce(_publisher, topicName);
+                lock (s_lock) CreateTopicAndSubscriptionOnce(_publisher, topicName);
                 var pubsubMessage = new PubsubMessage()
                 {
                     Data = ByteString.CopyFromUtf8(messageForm.Message)

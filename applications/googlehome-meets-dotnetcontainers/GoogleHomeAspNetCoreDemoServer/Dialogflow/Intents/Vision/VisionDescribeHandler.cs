@@ -50,9 +50,9 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
                 .Select(x => x.Description)
                 .ToList();
 
-            return new WebhookResponse 
-            { 
-                FulfillmentText =  CombineList(toSay, "This picture is labelled", "Nothing at all, apparently. Which is odd.")
+            return new WebhookResponse
+            {
+                FulfillmentText = CombineList(toSay, "This picture is labelled", "Nothing at all, apparently. Which is odd.")
             };
         }
     }

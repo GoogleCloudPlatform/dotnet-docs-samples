@@ -47,7 +47,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
             // Query finished, stop the StopWatch
             stopwatch.Stop();
 
-           // Get a job reference, for statistics
+            // Get a job reference, for statistics
             var job = await bigQueryClient.GetJobAsync(result.JobReference);
 
             // Get result list

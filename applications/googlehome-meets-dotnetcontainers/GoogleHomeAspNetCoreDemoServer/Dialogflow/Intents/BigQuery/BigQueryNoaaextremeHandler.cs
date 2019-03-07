@@ -42,10 +42,10 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// <returns>Webhook response</returns>
         public override async Task<WebhookResponse> HandleAsync(WebhookRequest req)
         {
-            var errorMessage = ExtractAndValidateParameters(req, out string hottestOrColdest, out string year, 
+            var errorMessage = ExtractAndValidateParameters(req, out string hottestOrColdest, out string year,
                 out string countryName, out string fipsCountry);
 
-            if (errorMessage != null) 
+            if (errorMessage != null)
             {
                 return new WebhookResponse
                 {
@@ -109,7 +109,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
         /// <param name="countryName">Country name</param>
         /// <param name="fipsCountry"></param>
         /// <returns></returns>
-        private static string ExtractAndValidateParameters(WebhookRequest req, out string hottestOrColdest, out string year, 
+        private static string ExtractAndValidateParameters(WebhookRequest req, out string hottestOrColdest, out string year,
             out string countryName, out string fipsCountry)
         {
             var fields = req.QueryResult.Parameters.Fields;
@@ -120,7 +120,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
             var startDate = datePeriod.Fields["startDate"].StringValue;
             var dateTime = DateTime.Parse(startDate);
             year = dateTime.ToString("yyyy");
-          
+
             var country = fields["country"].StructValue;
             var countryCode = country.Fields["alpha-2"].StringValue;
             countryName = country.Fields["name"].StringValue;

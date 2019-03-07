@@ -87,7 +87,7 @@ namespace CloudKmsAspNetSample.Services.Kms
     {
         private readonly KeyManagementServiceClient kms;
         private readonly IFileInfo keynameFileInfo;
-        private readonly Lazy<CryptoKeyName> cryptoKeyName; 
+        private readonly Lazy<CryptoKeyName> cryptoKeyName;
         private readonly IFileInfo innerFileInfo;
         public static IFileInfo FromFileInfo(KeyManagementServiceClient kms,
             IFileInfo fileInfo, IFileInfo keynameFileInfo)
@@ -100,7 +100,7 @@ namespace CloudKmsAspNetSample.Services.Kms
             {
                 return fileInfo;
             }
-            if (!fileInfo.Name.EndsWith(".encrypted")) 
+            if (!fileInfo.Name.EndsWith(".encrypted"))
             {
                 return null;
             }
@@ -159,10 +159,10 @@ namespace CloudKmsAspNetSample.Services.Kms
             using (var reader = new StreamReader(keynameFileInfo.CreateReadStream()))
             {
                 string line = "";
-                while (!reader.EndOfStream) 
+                while (!reader.EndOfStream)
                 {
                     line = reader.ReadLine().Trim();
-                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#')) 
+                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
                     {
                         continue; // blank or comment;
                     }
@@ -176,7 +176,7 @@ namespace CloudKmsAspNetSample.Services.Kms
                 throw new Exception(
                     $"Incorrectly formatted keyname file {keynameFileInfo.Name}.\n" +
                     "Expected projects/<projectId>/locations/<locationId>/keyRings/<keyringId>/cryptoKeys/<keyId>\n" +
-                    $"Instead, found {line}.");                        
+                    $"Instead, found {line}.");
             }
         }
     }
@@ -219,7 +219,7 @@ namespace CloudKmsAspNetSample.Services.Kms
                     }
                 }
             }
-            foreach (IFileInfo fileInfo in encryptedFiles) 
+            foreach (IFileInfo fileInfo in encryptedFiles)
             {
                 IFileInfo keynameFile = keynameFiles.GetValueOrDefault(
                     Path.ChangeExtension(fileInfo.Name, ".keyname"));
@@ -227,7 +227,7 @@ namespace CloudKmsAspNetSample.Services.Kms
                 {
                     yield return EncryptedFileInfo.FromFileInfo(kms, fileInfo,
                         keynameFile);
-                } 
+                }
             }
         }
 

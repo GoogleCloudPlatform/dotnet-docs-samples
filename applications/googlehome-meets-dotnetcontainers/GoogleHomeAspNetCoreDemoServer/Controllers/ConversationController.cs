@@ -26,7 +26,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Controllers
     public class ConversationController : Controller
     {
         private readonly DialogflowApp _dialogFlowApp;
-  
+
         /// <summary>
         /// Consructor for Conversation controller.
         /// </summary>

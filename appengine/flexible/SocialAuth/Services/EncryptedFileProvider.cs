@@ -95,7 +95,7 @@ namespace SocialAuthMVC.Services.Kms
 
         public static IFileInfo FromFileInfo(
             KeyManagementServiceClient kms,
-            IFileInfo fileInfo, 
+            IFileInfo fileInfo,
             IFileInfo keynameFileInfo)
         {
             if (fileInfo == null)
@@ -115,7 +115,7 @@ namespace SocialAuthMVC.Services.Kms
 
         private EncryptedFileInfo(
             KeyManagementServiceClient kms,
-            IFileInfo innerFileInfo, 
+            IFileInfo innerFileInfo,
             IFileInfo keynameFileInfo)
         {
             this.kms = kms;

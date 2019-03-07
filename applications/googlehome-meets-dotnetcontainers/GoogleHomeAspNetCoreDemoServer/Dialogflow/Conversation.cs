@@ -29,16 +29,16 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
     public class Conversation
     {
         public ConvState State { get; private set; }
- 
+
         private readonly IExceptionLogger _exceptionLogger;
         private readonly IManagedTracer _tracer;
- 
+
         /// <summary>
         /// Initialize a conversation.
         /// </summary>
         /// <param name="exceptionLogger">Exception logger</param>
         /// <param name="tracer">Tracer</param>
-        public Conversation(IExceptionLogger exceptionLogger,IManagedTracer tracer)
+        public Conversation(IExceptionLogger exceptionLogger, IManagedTracer tracer)
         {
             _exceptionLogger = exceptionLogger;
             _tracer = tracer;
@@ -76,8 +76,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
                         new WebhookResponse
                         {
                             FulfillmentText = "Error. Handler did not return a valid response."
-                        }; 
-                    }
+                        };
+                }
             }
             catch (Exception e) when (req.QueryResult.Intent.DisplayName != "exception.throw")
             {
@@ -101,9 +101,9 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow
                 .Where(t => t.IsClass && t.IsSubclassOf(typeof(BaseHandler)));
 
             var typeList = from baseHandlerType in baseHandlerTypes
-                          from attribute in baseHandlerType.GetCustomAttributes(typeof(IntentAttribute), true)
-                          where ((IntentAttribute)attribute).Name == intentName
-                          select baseHandlerType;
+                           from attribute in baseHandlerType.GetCustomAttributes(typeof(IntentAttribute), true)
+                           where ((IntentAttribute)attribute).Name == intentName
+                           select baseHandlerType;
 
             var type = typeList.FirstOrDefault();
             if (type == null) return null;

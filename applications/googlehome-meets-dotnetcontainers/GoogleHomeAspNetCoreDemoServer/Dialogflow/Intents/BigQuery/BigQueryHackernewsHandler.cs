@@ -78,7 +78,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.BigQuery
             ShowQuery(sql, parameters, (processedMb, secs, titles));
 
             // Send spoken response to DialogFlow
-            return new WebhookResponse 
+            return new WebhookResponse
             {
                 FulfillmentText = $"Scanned {processedMb} mega-bytes in {secs:0.0} seconds. " +
                 $"The top title on hacker news was titled: {titles.First()}"

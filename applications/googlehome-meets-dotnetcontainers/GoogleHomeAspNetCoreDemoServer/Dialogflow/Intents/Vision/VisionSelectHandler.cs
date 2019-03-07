@@ -52,8 +52,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
 
             DialogflowApp.Show($"<img src=\"{image.Url}\" alt=\"{WebUtility.HtmlEncode(image.Title)}\" style=\"height:100%;width:100%\" />");
 
-            return new WebhookResponse 
-            { 
+            return new WebhookResponse
+            {
                 FulfillmentText = $"Picture {index} selected. You can describe, show landmarks or ask whether the image is safe."
             };
         }

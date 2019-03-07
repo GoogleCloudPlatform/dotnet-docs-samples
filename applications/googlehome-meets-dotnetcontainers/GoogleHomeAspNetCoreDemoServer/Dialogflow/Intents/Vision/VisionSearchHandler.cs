@@ -59,8 +59,8 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
             var imageList = images.Select(x => $"<li><img src=\"{x.Url}\" alt=\"{WebUtility.HtmlEncode(x.Title)}\" style=\"width:200px\" /></li>");
             DialogflowApp.Show($"<ol>{string.Join("", imageList)}</ol>");
 
-            return new WebhookResponse 
-            { 
+            return new WebhookResponse
+            {
                 FulfillmentText = $"Found some pictures of: {searchTerm}. Now, select a picture."
             };
         }

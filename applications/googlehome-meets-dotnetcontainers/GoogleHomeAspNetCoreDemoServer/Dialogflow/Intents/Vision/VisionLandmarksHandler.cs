@@ -49,7 +49,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents.Vision
                 .Select(x => x.Description)
                 .ToList();
 
-            return new WebhookResponse 
+            return new WebhookResponse
             {
                 FulfillmentText = CombineList(toSay, "This picture contains: ", "This picture contains no landmarks")
             };

@@ -18,13 +18,16 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 
-namespace CloudSql.ViewModels {
-    public class VisitorLogEntry {
+namespace CloudSql.ViewModels
+{
+    public class VisitorLogEntry
+    {
         public string IpAddress { get; set; }
         public DateTime TimeStamp { get; set; }
     }
 
-    public class HomeModel {
+    public class HomeModel
+    {
         public List<VisitorLogEntry> VisitorLog { get; set; }
-    }    
+    }
 }

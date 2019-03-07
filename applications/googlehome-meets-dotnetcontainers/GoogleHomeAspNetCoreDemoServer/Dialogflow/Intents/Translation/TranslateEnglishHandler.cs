@@ -46,7 +46,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
             {
                 DialogflowApp.Show($"<div>{errorMessage}</div>");
 
-                return new WebhookResponse 
+                return new WebhookResponse
                 {
                     FulfillmentText = errorMessage
                 };
@@ -70,7 +70,7 @@ namespace GoogleHomeAspNetCoreDemoServer.Dialogflow.Intents
         {
             englishPhrase = req.QueryResult.Parameters.Fields["englishphrase"].StringValue;
             var language = req.QueryResult.Parameters.Fields["language"].StringValue;
-           
+
             var fields = typeof(LanguageCodes).GetFields(BindingFlags.Public | BindingFlags.Static);
             var fieldInfo = fields.SingleOrDefault(x => x.Name == language);
 

@@ -62,11 +62,14 @@ namespace CloudSql.Controllers
                     ORDER BY time_stamp DESC LIMIT 10";
                 List<string> lines = new List<string>();
                 var reader = await lookupCommand.ExecuteReaderAsync();
-                HomeModel model = new HomeModel() {
+                HomeModel model = new HomeModel()
+                {
                     VisitorLog = new List<VisitorLogEntry>()
                 };
-                while (await reader.ReadAsync()) {
-                    model.VisitorLog.Add(new VisitorLogEntry() {
+                while (await reader.ReadAsync())
+                {
+                    model.VisitorLog.Add(new VisitorLogEntry()
+                    {
                         IpAddress = reader.GetString(1),
                         TimeStamp = reader.GetDateTime(0)
                     });
