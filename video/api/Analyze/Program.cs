@@ -55,6 +55,10 @@ namespace GoogleCloudSamples.VideoIntelligence
     class TranscribeOptions : StorageOnlyVideoOptions
     { }
 
+    [Verb("text", HelpText = "Detect text in a video")]
+    class DetectTextOptions : VideoOptions
+    { }
+
     public class Analyzer
     {
         // [START video_analyze_shots]
@@ -216,6 +220,98 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
         // [END video_speech_transcription_gcs]
 
+        // [START video_detect_text_gcs]
+        public static object DetectTextGCS(string gcsUri)
+        {
+            var client = VideoIntelligenceServiceClient.Create();
+            var request = new AnnotateVideoRequest
+            {
+                InputUri = gcsUri,
+                Features = { Feature.TextDetection },
+            };
+
+            Console.WriteLine("\nProcessing video for text detection.");
+            var op = client.AnnotateVideo(request).PollUntilCompleted();
+
+            // Retrieve the first result because only one video was processed.
+            var annotationResults = op.Result.AnnotationResults[0];
+
+            // Get only the first result.
+            var textAnnotation = annotationResults.TextAnnotations[0];
+            Console.WriteLine($"\nText: {textAnnotation.Text}");
+
+            // Get the first text segment.
+            var textSegment = textAnnotation.Segments[0];
+            var startTime = textSegment.Segment.StartTimeOffset;
+            var endTime = textSegment.Segment.EndTimeOffset;
+            Console.Write(
+                $"Start time: {startTime.Seconds + startTime.Nanos * 1e9 },");
+            Console.WriteLine(
+                $"End time: {endTime.Seconds + endTime.Nanos * 1e9 }");
+
+            Console.WriteLine($"Confidence: {textSegment.Confidence}");
+
+            // Show the result for the first frame in this segment.
+            var frame = textSegment.Frames[0];
+            var timeOffset = frame.TimeOffset;
+            Console.Write("Time offset for the first frame: ");
+            Console.WriteLine(timeOffset.Seconds + timeOffset.Nanos * 1e9);
+            Console.WriteLine("Rotated Bounding Box Vertices:");
+            foreach (var vertex in frame.RotatedBoundingBox.Vertices)
+            {
+                Console.WriteLine(
+                    $"\tVertex x: {vertex.X}, Vertex.y: {vertex.Y}");
+            }
+            return 0;
+        }
+        // [END video_detect_text_gcs]
+
+        // [START video_detect_text]
+        public static object DetectText(string filePath)
+        {
+            var client = VideoIntelligenceServiceClient.Create();
+            var request = new AnnotateVideoRequest
+            {
+                InputContent = Google.Protobuf.ByteString.CopyFrom(File.ReadAllBytes(filePath)),
+                Features = { Feature.TextDetection },
+            };
+
+            Console.WriteLine("\nProcessing video for text detection.");
+            var op = client.AnnotateVideo(request).PollUntilCompleted();
+
+            // Retrieve the first result because only one video was processed.
+            var annotationResults = op.Result.AnnotationResults[0];
+
+            // Get only the first result.
+            var textAnnotation = annotationResults.TextAnnotations[0];
+            Console.WriteLine($"\nText: {textAnnotation.Text}");
+
+            // Get the first text segment.
+            var textSegment = textAnnotation.Segments[0];
+            var startTime = textSegment.Segment.StartTimeOffset;
+            var endTime = textSegment.Segment.EndTimeOffset;
+            Console.Write(
+                $"Start time: {startTime.Seconds + startTime.Nanos * 1e9 },");
+            Console.WriteLine(
+                $"End time: {endTime.Seconds + endTime.Nanos * 1e9 }");
+
+            Console.WriteLine($"Confidence: {textSegment.Confidence}");
+
+            // Show the result for the first frame in this segment.
+            var frame = textSegment.Frames[0];
+            var timeOffset = frame.TimeOffset;
+            Console.Write("Time offset for the first frame: ");
+            Console.WriteLine(timeOffset.Seconds + timeOffset.Nanos * 1e9);
+            Console.WriteLine("Rotated Bounding Box Vertices:");
+            foreach (var vertex in frame.RotatedBoundingBox.Vertices)
+            {
+                Console.WriteLine(
+                    $"\tVertex x: {vertex.X}, Vertex.y: {vertex.Y}");
+            }
+            return 0;
+        }
+        // [END video_detect_text]
+
         public static void Main(string[] args)
         {
             var verbMap = new VerbMap<object>()
@@ -223,6 +319,7 @@ namespace GoogleCloudSamples.VideoIntelligence
                 .Add((AnalyzeExplicitContentOptions opts) => AnalyzeExplicitContentGcs(opts.Uri))
                 .Add((AnalyzeLabelsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeLabelsGcs(opts.Uri) : AnalyzeLabels(opts.Uri))
                 .Add((TranscribeOptions opts) => TranscribeVideo(opts.Uri))
+                .Add((DetectTextOptions opts) => IsStorageUri(opts.Uri) ? DetectTextGCS(opts.Uri) : DetectText(opts.Uri))
                 .SetNotParsedFunc((errs) => 1);
             verbMap.Run(args);
         }
