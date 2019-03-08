@@ -245,7 +245,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             var startTime = textSegment.Segment.StartTimeOffset;
             var endTime = textSegment.Segment.EndTimeOffset;
             Console.Write(
-                $"Start time: {startTime.Seconds + startTime.Nanos * 1e9 },");
+                $"Start time: {startTime.Seconds + startTime.Nanos * 1e9 }, ");
             Console.WriteLine(
                 $"End time: {endTime.Seconds + endTime.Nanos * 1e9 }");
 
@@ -291,7 +291,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             var startTime = textSegment.Segment.StartTimeOffset;
             var endTime = textSegment.Segment.EndTimeOffset;
             Console.Write(
-                $"Start time: {startTime.Seconds + startTime.Nanos * 1e9 },");
+                $"Start time: {startTime.Seconds + startTime.Nanos * 1e9 }, ");
             Console.WriteLine(
                 $"End time: {endTime.Seconds + endTime.Nanos * 1e9 }");
 

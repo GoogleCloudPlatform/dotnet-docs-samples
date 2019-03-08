@@ -135,6 +135,24 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Contains("France", output.Stdout);
         }
 
+        [Fact]
+        void TestTextDetection()
+        {
+            ConsoleOutput output =
+                _analyze.Run("text", DownloadGcsObject("gs://cloud-videointelligence-demo/assistant.mp4"));
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Hair", output.Stdout);
+        }
+
+        [Fact]
+        void TestTextDetectionGcs()
+        {
+            ConsoleOutput output =
+                _analyze.Run("text", "gs://cloud-videointelligence-demo/assistant.mp4");
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Hair", output.Stdout);
+        }
+
         void IDisposable.Dispose()
         {
             foreach (string tempFilePath in _tempFiles)
