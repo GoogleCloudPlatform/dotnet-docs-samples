@@ -59,6 +59,10 @@ namespace GoogleCloudSamples.VideoIntelligence
     class DetectTextOptions : VideoOptions
     { }
 
+    [Verb("track-object", HelpText = "Track objects in a video")]
+    class TrackObjectOptions : VideoOptions
+    { }
+
     public class Analyzer
     {
         // [START video_analyze_shots]
@@ -221,7 +225,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         // [END video_speech_transcription_gcs]
 
         // [START video_detect_text_gcs]
-        public static object DetectTextGCS(string gcsUri)
+        public static object DetectTextGcs(string gcsUri)
         {
             var client = VideoIntelligenceServiceClient.Create();
             var request = new AnnotateVideoRequest
@@ -245,9 +249,9 @@ namespace GoogleCloudSamples.VideoIntelligence
             var startTime = textSegment.Segment.StartTimeOffset;
             var endTime = textSegment.Segment.EndTimeOffset;
             Console.Write(
-                $"Start time: {startTime.Seconds + startTime.Nanos * 1e9 }, ");
+                $"Start time: {startTime.Seconds + startTime.Nanos / 1e9 }, ");
             Console.WriteLine(
-                $"End time: {endTime.Seconds + endTime.Nanos * 1e9 }");
+                $"End time: {endTime.Seconds + endTime.Nanos / 1e9 }");
 
             Console.WriteLine($"Confidence: {textSegment.Confidence}");
 
@@ -291,9 +295,9 @@ namespace GoogleCloudSamples.VideoIntelligence
             var startTime = textSegment.Segment.StartTimeOffset;
             var endTime = textSegment.Segment.EndTimeOffset;
             Console.Write(
-                $"Start time: {startTime.Seconds + startTime.Nanos * 1e9 }, ");
+                $"Start time: {startTime.Seconds + startTime.Nanos / 1e9 }, ");
             Console.WriteLine(
-                $"End time: {endTime.Seconds + endTime.Nanos * 1e9 }");
+                $"End time: {endTime.Seconds + endTime.Nanos / 1e9 }");
 
             Console.WriteLine($"Confidence: {textSegment.Confidence}");
 
@@ -312,6 +316,124 @@ namespace GoogleCloudSamples.VideoIntelligence
         }
         // [END video_detect_text]
 
+        // [START video_object_tracking_gcs]
+        public static object TrackObjectGcs(string gcsUri)
+        {
+            var client = VideoIntelligenceServiceClient.Create();
+            var request = new AnnotateVideoRequest
+            {
+                InputUri = gcsUri,
+                Features = { Feature.ObjectTracking },
+                LocationId = "us-east1"
+            };
+
+            Console.WriteLine("\nProcessing video for object annotations.");
+            var op = client.AnnotateVideo(request).PollUntilCompleted();
+
+            Console.WriteLine("\nFinished processing.\n");
+
+            // Retrieve first result because a single video was processed.
+            var objectAnnotations = op.Result.AnnotationResults[0]
+                                      .ObjectAnnotations;
+
+            // Get only the first annotation for demo purposes
+            var objAnnotation = objectAnnotations[0];
+
+            Console.WriteLine(
+                $"Entity description: {objAnnotation.Entity.Description}");
+
+            if (objAnnotation.Entity.EntityId != null)
+            {
+                Console.WriteLine(
+                    $"Entity id: {objAnnotation.Entity.EntityId}");
+            }
+
+            Console.Write($"Segment: ");
+            Console.WriteLine(
+                String.Format("{0}s to {1}s",
+                              objAnnotation.Segment.StartTimeOffset.Seconds +
+                              objAnnotation.Segment.StartTimeOffset.Nanos / 1e9,
+                              objAnnotation.Segment.EndTimeOffset.Seconds +
+                              objAnnotation.Segment.EndTimeOffset.Nanos / 1e9));
+
+            Console.WriteLine($"Confidence: {objAnnotation.Confidence}");
+
+            // Here we print only the bounding box of the first frame in this segment
+            var frame = objAnnotation.Frames[0];
+            var box = frame.NormalizedBoundingBox;
+            Console.WriteLine(
+                String.Format("Time offset of the first frame: {0}s",
+                              frame.TimeOffset.Seconds +
+                              frame.TimeOffset.Nanos / 1e9));
+            Console.WriteLine("Bounding box positions:");
+            Console.WriteLine($"\tleft   : {box.Left}");
+            Console.WriteLine($"\ttop    : {box.Top}");
+            Console.WriteLine($"\tright  : {box.Right}");
+            Console.WriteLine($"\tbottom : {box.Bottom}");
+
+            return 0;
+        }
+        // [END video_object_tracking_gcs]
+
+        // [START video_object_tracking]
+        public static object TrackObject(string filePath)
+        {
+            var client = VideoIntelligenceServiceClient.Create();
+            var request = new AnnotateVideoRequest
+            {
+                InputContent = Google.Protobuf.ByteString.CopyFrom(File.ReadAllBytes(filePath)),
+                Features = { Feature.ObjectTracking },
+                LocationId = "us-east1"
+            };
+
+            Console.WriteLine("\nProcessing video for object annotations.");
+            var op = client.AnnotateVideo(request).PollUntilCompleted();
+
+            Console.WriteLine("\nFinished processing.\n");
+
+            // Retrieve first result because a single video was processed.
+            var objectAnnotations = op.Result.AnnotationResults[0]
+                                      .ObjectAnnotations;
+
+            // Get only the first annotation for demo purposes
+            var objAnnotation = objectAnnotations[0];
+
+            Console.WriteLine(
+                $"Entity description: {objAnnotation.Entity.Description}");
+
+            if (objAnnotation.Entity.EntityId != null)
+            {
+                Console.WriteLine(
+                    $"Entity id: {objAnnotation.Entity.EntityId}");
+            }
+
+            Console.Write($"Segment: ");
+            Console.WriteLine(
+                String.Format("{0}s to {1}s",
+                              objAnnotation.Segment.StartTimeOffset.Seconds +
+                              objAnnotation.Segment.StartTimeOffset.Nanos / 1e9,
+                              objAnnotation.Segment.EndTimeOffset.Seconds +
+                              objAnnotation.Segment.EndTimeOffset.Nanos / 1e9));
+
+            Console.WriteLine($"Confidence: {objAnnotation.Confidence}");
+
+            // Here we print only the bounding box of the first frame in this segment
+            var frame = objAnnotation.Frames[0];
+            var box = frame.NormalizedBoundingBox;
+            Console.WriteLine(
+                String.Format("Time offset of the first frame: {0}s",
+                              frame.TimeOffset.Seconds +
+                              frame.TimeOffset.Nanos / 1e9));
+            Console.WriteLine("Bounding box positions:");
+            Console.WriteLine($"\tleft   : {box.Left}");
+            Console.WriteLine($"\ttop    : {box.Top}");
+            Console.WriteLine($"\tright  : {box.Right}");
+            Console.WriteLine($"\tbottom : {box.Bottom}");
+
+            return 0;
+        }
+        // [END video_object_tracking]
+
         public static void Main(string[] args)
         {
             var verbMap = new VerbMap<object>()
@@ -319,7 +441,8 @@ namespace GoogleCloudSamples.VideoIntelligence
                 .Add((AnalyzeExplicitContentOptions opts) => AnalyzeExplicitContentGcs(opts.Uri))
                 .Add((AnalyzeLabelsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeLabelsGcs(opts.Uri) : AnalyzeLabels(opts.Uri))
                 .Add((TranscribeOptions opts) => TranscribeVideo(opts.Uri))
-                .Add((DetectTextOptions opts) => IsStorageUri(opts.Uri) ? DetectTextGCS(opts.Uri) : DetectText(opts.Uri))
+                .Add((DetectTextOptions opts) => IsStorageUri(opts.Uri) ? DetectTextGcs(opts.Uri) : DetectText(opts.Uri))
+                .Add((TrackObjectOptions opts) => IsStorageUri(opts.Uri) ? TrackObjectGcs(opts.Uri) : TrackObject(opts.Uri))
                 .SetNotParsedFunc((errs) => 1);
             verbMap.Run(args);
         }
