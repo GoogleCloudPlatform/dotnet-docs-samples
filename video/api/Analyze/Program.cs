@@ -324,6 +324,9 @@ namespace GoogleCloudSamples.VideoIntelligence
             {
                 InputUri = gcsUri,
                 Features = { Feature.ObjectTracking },
+                // It is recommended to use location_id as 'us-east1' for the
+                // best latency due to different types of processors used in
+                // this region and others.
                 LocationId = "us-east1"
             };
 
@@ -383,6 +386,9 @@ namespace GoogleCloudSamples.VideoIntelligence
             {
                 InputContent = Google.Protobuf.ByteString.CopyFrom(File.ReadAllBytes(filePath)),
                 Features = { Feature.ObjectTracking },
+                // It is recommended to use location_id as 'us-east1' for the
+                // best latency due to different types of processors used in
+                // this region and others.
                 LocationId = "us-east1"
             };
 
