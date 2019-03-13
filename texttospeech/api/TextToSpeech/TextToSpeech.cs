@@ -342,6 +342,6 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-        // [START tts_synthesize_text_audio_profile]
+        // [END tts_synthesize_text_audio_profile]
     }
 }
