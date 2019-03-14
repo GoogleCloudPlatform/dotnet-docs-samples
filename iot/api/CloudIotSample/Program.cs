@@ -660,13 +660,12 @@ namespace GoogleCloudSamples
             var cloudIot = CreateAuthorizedClient();
             // The resource name of the location associated with the key rings.
             var parent = $"projects/{projectId}/locations/{cloudRegion}";
-            var listOfRegistries = new List<DeviceRegistry>(); 
+            var listOfRegistries = new List<DeviceRegistry>();
             try
             {
                 var result = cloudIot.Projects.Locations.Registries.List(parent).Execute();
                 listOfRegistries = result.DeviceRegistries.ToList();
                 Console.WriteLine($"Number of registries: {listOfRegistries.Count}");
-                
             }
             catch (Google.GoogleApiException e)
             {

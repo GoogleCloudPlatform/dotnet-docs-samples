@@ -429,7 +429,7 @@ namespace GoogleCloudSamples
             Assert.Equal(0, Run("createRegistry", ProjectId, RegionId,
                 RegistryId, TopicName.TopicId).ExitCode);
         }
-        
+
         public void CheckRegistriesLimit(string projectId, string regionId)
         {
             List<DeviceRegistry> listRegistries = (List<DeviceRegistry>)CloudIotSample.GetRegistries(projectId, regionId);
@@ -440,9 +440,9 @@ namespace GoogleCloudSamples
                 Console.WriteLine("Deleting the oldest 20 registries with IoT Test prefix");
                 var count = 20;
                 var index = 0;
-                while (count > 0) 
+                while (count > 0)
                 {
-                    if(listRegistries[index].Id.Contains("iot-test-"))
+                    if (listRegistries[index].Id.Contains("iot-test-"))
                     {
                         CloudIotSample.UnbindAllDevices(projectId, regionId, listRegistries[index].Id);
                         CloudIotSample.ClearRegistry(projectId, regionId, listRegistries[index].Id);
@@ -450,7 +450,6 @@ namespace GoogleCloudSamples
                     }
                     index++;
                 }
-
             }
         }
         public void CreatePubSubTopic(TopicName topicName)

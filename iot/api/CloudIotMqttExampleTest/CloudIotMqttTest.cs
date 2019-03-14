@@ -220,9 +220,9 @@ namespace GoogleCloudSamples
                 Console.WriteLine("Deleting the oldest 20 registries with IoT Test prefix");
                 var count = 20;
                 var index = 0;
-                while (count > 0) 
+                while (count > 0)
                 {
-                    if(listRegistries[index].Id.Contains("iot-test-"))
+                    if (listRegistries[index].Id.Contains("iot-test-"))
                     {
                         CloudIotMqttExample.UnbindAllDevices(projectId, regionId, listRegistries[index].Id);
                         CloudIotMqttExample.ClearRegistry(projectId, regionId, listRegistries[index].Id);
@@ -230,7 +230,6 @@ namespace GoogleCloudSamples
                     }
                     index++;
                 }
-
             }
         }
         public void CreatePubSubTopic(TopicName topicName)

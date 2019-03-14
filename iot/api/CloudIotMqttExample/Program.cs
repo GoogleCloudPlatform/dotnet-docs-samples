@@ -554,18 +554,17 @@ namespace GoogleCloudSamples
         }
         // [END iot_mqtt_event_handlers]
 
-       public static object GetRegistries(string projectId, string cloudRegion)
+        public static object GetRegistries(string projectId, string cloudRegion)
         {
             var cloudIot = CreateAuthorizedClient();
             // The resource name of the location associated with the key rings.
             var parent = $"projects/{projectId}/locations/{cloudRegion}";
-            var listOfRegistries = new List<DeviceRegistry>(); 
+            var listOfRegistries = new List<DeviceRegistry>();
             try
             {
                 var result = cloudIot.Projects.Locations.Registries.List(parent).Execute();
                 listOfRegistries = result.DeviceRegistries.ToList();
                 Console.WriteLine($"Number of registries: {listOfRegistries.Count}");
-                
             }
             catch (Google.GoogleApiException e)
             {
@@ -576,7 +575,7 @@ namespace GoogleCloudSamples
             return listOfRegistries;
         }
 
-                //[START iot_unbind_all_devices]
+        //[START iot_unbind_all_devices]
         public static object UnbindAllDevices(
             string projectId, string cloudRegion, string registryId)
         {
@@ -742,7 +741,7 @@ namespace GoogleCloudSamples
             return 0;
         }
         //[END iot_clear_registry]
-        
+
 
         // [START iot_mqtt_example]
         public static object StartMqtt(string projectId, string cloudRegion,
