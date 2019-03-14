@@ -31,6 +31,7 @@ using Google.Apis.CloudIot.v1;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.CloudIot.v1.Data;
+using System.Linq;
 
 namespace GoogleCloudSamples
 {
@@ -552,6 +553,196 @@ namespace GoogleCloudSamples
             Console.WriteLine(output);
         }
         // [END iot_mqtt_event_handlers]
+
+       public static object GetRegistries(string projectId, string cloudRegion)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            // The resource name of the location associated with the key rings.
+            var parent = $"projects/{projectId}/locations/{cloudRegion}";
+            var listOfRegistries = new List<DeviceRegistry>(); 
+            try
+            {
+                var result = cloudIot.Projects.Locations.Registries.List(parent).Execute();
+                listOfRegistries = result.DeviceRegistries.ToList();
+                Console.WriteLine($"Number of registries: {listOfRegistries.Count}");
+                
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+                if (e.Error != null) return null;
+                return null;
+            }
+            return listOfRegistries;
+        }
+
+                //[START iot_unbind_all_devices]
+        public static object UnbindAllDevices(
+            string projectId, string cloudRegion, string registryId)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            // The resource name of the location associated with the key rings.
+            var parent = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}";
+            try
+            {
+                var devices = cloudIot
+                    .Projects
+                    .Locations
+                    .Registries
+                    .Devices
+                    .List(parent)
+                    .Execute()
+                    .Devices;
+                Console.WriteLine("Devices: {0}", parent);
+
+                if (devices != null)
+                {
+                    foreach (var response in devices)
+                    {
+                        UnbindDeviceFromAllGateways(cloudIot, projectId,
+                        cloudRegion, registryId, response.Id);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No bound device found.");
+                }
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Error.Code;
+            }
+            return 0;
+        }
+        //[END iot_unbind_all_devices]
+
+        public static void UnbindDeviceFromAllGateways(CloudIotService cloudIot, string projectId,
+             string cloudRegion, string registryId, string deviceId)
+        {
+            // The resource name of the location associated with the key rings.
+            var parent = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}";
+            var fullpath = $"projects/{projectId}/locations/{cloudRegion}" +
+                $"/registries/{registryId}/devices/{deviceId}";
+            try
+            {
+                var device = cloudIot
+                    .Projects
+                    .Locations
+                    .Registries
+                    .Devices
+                    .Get(fullpath)
+                    .Execute();
+
+                if (device != null)
+                {
+                    bool isGateway = device.GatewayConfig.GatewayType == "GATEWAY";
+                    if (!isGateway)
+                    {
+                        // get list of gateways this non-gateway device bound to.
+                        var req = cloudIot.Projects.Locations.Registries.Devices.List(parent);
+                        req.GatewayListOptionsAssociationsDeviceId = device.Id;
+                        var gateways = req.Execute().Devices;
+                        if (gateways != null)
+                        {
+                            foreach (var gateway in gateways)
+                            {
+                                UnbindDeviceFromGatewayRequest unbindReq
+                                    = new UnbindDeviceFromGatewayRequest
+                                    {
+                                        DeviceId = device.Id,
+                                        GatewayId = gateway.Id
+                                    };
+                                try
+                                {
+                                    cloudIot
+                                        .Projects
+                                        .Locations
+                                        .Registries
+                                        .UnbindDeviceFromGateway(unbindReq, parent).Execute();
+                                    Console.WriteLine("Unbound device from the gateway {0}",
+                                        gateway.Id);
+                                }
+                                catch (AggregateException e)
+                                {
+                                    Console.WriteLine("Could not unbind device");
+                                    foreach (var ex in e.InnerExceptions)
+                                    {
+                                        Console.WriteLine(ex.Message);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Could not list the gateways for device {0}",
+                                device.Id);
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        //[START iot_clear_registry]
+        public static object ClearRegistry(string projectId, string cloudRegion, string registryId)
+        {
+            var parentName = $"projects/{projectId}/locations/{cloudRegion}";
+            var registryName = $"{parentName}/registries/{registryId}";
+            var cloudIot = CreateAuthorizedClient();
+            string responseRegistry = "";
+
+
+            // The resource name of the location associated with the key rings.
+            var parent = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}";
+            try
+            {
+                var devices = cloudIot
+                    .Projects
+                    .Locations
+                    .Registries
+                    .Devices
+                    .List(parent)
+                    .Execute()
+                    .Devices;
+                Console.WriteLine("Devices: {0}", parent);
+
+                if (devices != null)
+                {
+                    foreach (var response in devices)
+                    {
+                        DeleteDevice(projectId, cloudRegion, registryId, response.Id);
+                    }
+                }
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Error.Code;
+            }
+
+            try
+            {
+                DeleteRegistry(projectId, cloudRegion, registryId);
+                Console.WriteLine($"Successfully deleted registry {registryName}");
+                Console.WriteLine(responseRegistry);
+            }
+            catch
+            (Google.GoogleApiException e)
+            {
+                Console.WriteLine("Could not delete registry");
+                Console.WriteLine(e.Message);
+            }
+
+
+            return 0;
+        }
+        //[END iot_clear_registry]
+        
 
         // [START iot_mqtt_example]
         public static object StartMqtt(string projectId, string cloudRegion,

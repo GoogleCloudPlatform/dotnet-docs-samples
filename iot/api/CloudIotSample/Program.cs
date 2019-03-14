@@ -655,6 +655,28 @@ namespace GoogleCloudSamples
         }
         // [END iot_list_registries]
 
+        public static object GetRegistries(string projectId, string cloudRegion)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            // The resource name of the location associated with the key rings.
+            var parent = $"projects/{projectId}/locations/{cloudRegion}";
+            var listOfRegistries = new List<DeviceRegistry>(); 
+            try
+            {
+                var result = cloudIot.Projects.Locations.Registries.List(parent).Execute();
+                listOfRegistries = result.DeviceRegistries.ToList();
+                Console.WriteLine($"Number of registries: {listOfRegistries.Count}");
+                
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+                if (e.Error != null) return null;
+                return null;
+            }
+            return listOfRegistries;
+        }
+
         // [START iot_create_unauth_device]
         public static object CreateUnauthDevice(string projectId, string cloudRegion, string registryId, string deviceId)
         {
