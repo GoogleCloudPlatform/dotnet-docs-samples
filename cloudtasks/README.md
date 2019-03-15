@@ -71,7 +71,7 @@ First, your project ID:
 Then the queue ID, as specified at queue creation time. Queue IDs already
 created can be listed with `gcloud beta tasks queues list`.
 
-    export GCP_QUEUE=my-appengine-queue
+    export GCP_QUEUE=my-queue
 
 And finally the location ID, which can be discovered with
 `gcloud beta tasks queues describe $GCP_QUEUE`, with the location embedded in
