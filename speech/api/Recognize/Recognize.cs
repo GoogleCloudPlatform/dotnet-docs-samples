@@ -16,7 +16,7 @@
 
 using CommandLine;
 using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Speech.V1P1Beta1;
+using Google.Cloud.Speech.V1;
 using Grpc.Auth;
 using System;
 using System.Collections.Generic;
@@ -227,6 +227,7 @@ namespace GoogleCloudSamples
         // [START speech_transcribe_multichannel_beta]
         static object SyncRecognizeMultipleChannels(string filePath, int channelCount)
         {
+            Console.WriteLine("Starting multi-channel");
             var speech = SpeechClient.Create();
 
             // Create transcription request
