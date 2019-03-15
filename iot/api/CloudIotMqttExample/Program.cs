@@ -575,7 +575,7 @@ namespace GoogleCloudSamples
             return listOfRegistries;
         }
 
-        //[START iot_unbind_all_devices]
+        // [START iot_unbind_all_devices]
         public static object UnbindAllDevices(
             string projectId, string cloudRegion, string registryId)
         {
@@ -584,13 +584,7 @@ namespace GoogleCloudSamples
             var parent = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}";
             try
             {
-                var devices = cloudIot
-                    .Projects
-                    .Locations
-                    .Registries
-                    .Devices
-                    .List(parent)
-                    .Execute()
+                var devices = cloudIot.Projects.Locations.Registries.Devices.List(parent).Execute()
                     .Devices;
                 Console.WriteLine("Devices: {0}", parent);
 
@@ -625,12 +619,7 @@ namespace GoogleCloudSamples
                 $"/registries/{registryId}/devices/{deviceId}";
             try
             {
-                var device = cloudIot
-                    .Projects
-                    .Locations
-                    .Registries
-                    .Devices
-                    .Get(fullpath)
+                var device = cloudIot.Projects.Locations.Registries.Devices.Get(fullpath)
                     .Execute();
 
                 if (device != null)
@@ -654,10 +643,7 @@ namespace GoogleCloudSamples
                                     };
                                 try
                                 {
-                                    cloudIot
-                                        .Projects
-                                        .Locations
-                                        .Registries
+                                    cloudIot.Projects.Locations.Registries
                                         .UnbindDeviceFromGateway(unbindReq, parent).Execute();
                                     Console.WriteLine("Unbound device from the gateway {0}",
                                         gateway.Id);
@@ -687,7 +673,6 @@ namespace GoogleCloudSamples
             }
         }
 
-        //[START iot_clear_registry]
         public static object ClearRegistry(string projectId, string cloudRegion, string registryId)
         {
             var parentName = $"projects/{projectId}/locations/{cloudRegion}";
@@ -740,8 +725,6 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-        //[END iot_clear_registry]
-
 
         // [START iot_mqtt_example]
         public static object StartMqtt(string projectId, string cloudRegion,

@@ -425,6 +425,7 @@ namespace GoogleCloudSamples
             PrivateKeyPath = privateKeyPath;
             CreatePubSubTopic(this.TopicName);
             // Check if the number of registries does not exceed 90.
+
             CheckRegistriesLimit(ProjectId, RegionId);
             Assert.Equal(0, Run("createRegistry", ProjectId, RegionId,
                 RegistryId, TopicName.TopicId).ExitCode);
@@ -436,6 +437,7 @@ namespace GoogleCloudSamples
             if (listRegistries != null && listRegistries.Count > 90)
             {
                 //Clean 20 oldest registries with testing prefix in the project.
+
                 Console.WriteLine("The maximum number of registries is about to exceed.");
                 Console.WriteLine("Deleting the oldest 20 registries with IoT Test prefix");
                 var count = 20;
