@@ -17,7 +17,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("createTask", HelpText = "Creates a Cloud Task.")]
+    [Verb("createHttpTask", HelpText = "Creates a Cloud Task with a HTTP target.")]
     internal class CreateTaskOptions
     {
         [Option('i', "projectId", HelpText = "Project ID of the queue to add the task to.", Required = true)]
@@ -28,6 +28,10 @@ namespace GoogleCloudSamples
 
         [Option('q', "queue", HelpText = "Location of the queue to add the task to.", Required = true)]
         public string Queue { get; set; }
+
+        [Option('u', "url",
+            HelpText = "The full url path that the request will be sent to.", Required = true)]
+        public string Url { get; set; }
 
         [Option('d', "payload", HelpText = "(Optional) Payload to attach to the push queue.", Default = "")]
         public string Payload { get; set; }
@@ -53,6 +57,7 @@ namespace GoogleCloudSamples
                 opts.ProjectId,
                 opts.Location,
                 opts.Queue,
+                opts.Url,
                 opts.Payload,
                 opts.InSeconds),
             errs => 1);

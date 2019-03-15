@@ -32,9 +32,9 @@ namespace GoogleCloudSamples
         public TasksTestFixture()
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
             QueueId = Environment.GetEnvironmentVariable("GCP_QUEUE") ?? "my-appengine-queue";
             LocationId = Environment.GetEnvironmentVariable("LOCATION_ID") ?? "us-central1";
+            Url = $"https://{ProjectId}.appspot.com/log_payload";
         }
     }
 
@@ -44,6 +44,7 @@ namespace GoogleCloudSamples
         private string ProjectId { get { return _fixture.ProjectId; } }
         private string QueueId { get { return _fixture.QueueId; } }
         private string LocationId { get { return _fixture.LocationId; } }
+        private string Url { get { return _fixture.Url; } }
 
         private readonly CommandLineRunner _tasks = new CommandLineRunner()
         {
@@ -70,6 +71,20 @@ namespace GoogleCloudSamples
                 "--projectId", ProjectId,
                 "--location", LocationId,
                 "--queue", QueueId,
+                "--payload", "Test Payload"
+            );
+            Assert.Contains("Created Task", output.Stdout);
+        }
+
+        [Fact]
+        public void TestCreateHttpTask()
+        {
+            ConsoleOutput output = _tasks.Run(
+                "createHttpTask",
+                "--projectId", ProjectId,
+                "--location", LocationId,
+                "--queue", QueueId,
+                "--url", Url,
                 "--payload", "Test Payload"
             );
             Assert.Contains("Created Task", output.Stdout);

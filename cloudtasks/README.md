@@ -81,13 +81,14 @@ location is "us-central1").
 
     export LOCATION_ID=us-central1
 
+### Using App Engine Push Queues
 Move into the Tasks Sample folder:
 
   cd ../api/TasksSample
 
 Create a task, targeted at the `log_payload` endpoint, with a payload specified:
 
-    dotnet run createTask --project=$PROJECT_ID --queue=$GCP_QUEUE --location=$LOCATION_ID --payload=hello
+    dotnet run createTask --project=$GOOGLE_CLOUD_PROJECT --queue=$GCP_QUEUE --location=$LOCATION_ID --payload=hello
 
 The App Engine app serves as a target for the push requests. It has an
 endpoint `/log_payload` that reads the payload (i.e., the request body) of the
@@ -98,8 +99,18 @@ HTTP POST request and logs it. The log output can be viewed with:
 Create a task that will be scheduled for a time in the future using the
 `--in_seconds` flag:
 
-    dotnet run createTask --project=$PROJECT_ID --queue=$GCP_QUEUE --location=$LOCATION_ID --payload=hello --in_seconds=30
+    dotnet run createTask --project=$GOOGLE_CLOUD_PROJECT --queue=$GCP_QUEUE --location=$LOCATION_ID --payload=hello --in_seconds=30
 
+### Using HTTP Push Queues
+Set an environment variable for the endpoint to your task handler. This is an
+example url to send requests to the App Engine task handler:
+
+    export URL=https://${PROJECT_ID}.appspot.com/log_payload
+
+Running the sample will create a task and send the task to the specific URL
+endpoint, with a payload specified:
+
+    dotnet run createHttpTask --project=$GOOGLE_CLOUD_PROJECT --queue=$GCP_QUEUE --location=$LOCATION_ID --url=$URL --payload=hello
 
 Usage information
 
@@ -107,6 +118,7 @@ Usage information
 -i, --projectId    Required. Project ID of the queue to add the task to.
 -l, --location     Required. Location of the queue to add the task to.
 -q, --queue        Required. Location of the queue to add the task to.
+-u, --url          Required. The full url path that the request will be sent to.
 -d, --payload      (Default: ) (Optional) Payload to attach to the push queue.
 -s, --inSeconds    (Default: 0) (Optional) The number of seconds from now to schedule task attempt.
 --help             Display this help screen.
