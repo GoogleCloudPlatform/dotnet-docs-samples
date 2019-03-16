@@ -74,7 +74,10 @@ namespace GoogleCloudSamples
             "  Storage set-object-temporary-hold bucket-name object-name\n" +
             "  Storage release-object-temporary-hold bucket-name object-name\n" +
             "  Storage set-object-event-based-hold bucket-name object-name\n" +
-            "  Storage release-object-event-based-hold bucket-name object-name\n";
+            "  Storage release-object-event-based-hold bucket-name object-name\n" +
+            "  Storage enable-bucket-policy-only bucket-name\n" +
+            "  Storage disable-bucket-policy-only bucket-name\n" +
+            "  Storage get-bucket-policy-only bucket-name\n";
 
         // [START storage_create_bucket]
         private void CreateBucket(string bucketName)
@@ -284,33 +287,33 @@ namespace GoogleCloudSamples
         private void GetBucketMetadata(string bucketName)
         {
             var storage = StorageClient.Create();
-            var storageObject = storage.GetBucket(bucketName);
-            Console.WriteLine($"Bucket:\t{storageObject.Name}");
-            Console.WriteLine($"Acl:\t{storageObject.Acl}");
-            Console.WriteLine($"Billing:\t{storageObject.Billing}");
-            Console.WriteLine($"Cors:\t{storageObject.Cors}");
-            Console.WriteLine($"DefaultEventBasedHold:\t{storageObject.DefaultEventBasedHold}");
-            Console.WriteLine($"DefaultObjectAcl:\t{storageObject.DefaultObjectAcl}");
-            Console.WriteLine($"Encryption:\t{storageObject.Encryption}");
-            if (storageObject.Encryption != null)
+            var bucket = storage.GetBucket(bucketName);
+            Console.WriteLine($"Bucket:\t{bucket.Name}");
+            Console.WriteLine($"Acl:\t{bucket.Acl}");
+            Console.WriteLine($"Billing:\t{bucket.Billing}");
+            Console.WriteLine($"Cors:\t{bucket.Cors}");
+            Console.WriteLine($"DefaultEventBasedHold:\t{bucket.DefaultEventBasedHold}");
+            Console.WriteLine($"DefaultObjectAcl:\t{bucket.DefaultObjectAcl}");
+            Console.WriteLine($"Encryption:\t{bucket.Encryption}");
+            if (bucket.Encryption != null)
             {
-                Console.WriteLine($"KmsKeyName:\t{storageObject.Encryption.DefaultKmsKeyName}");
+                Console.WriteLine($"KmsKeyName:\t{bucket.Encryption.DefaultKmsKeyName}");
             }
-            Console.WriteLine($"Id:\t{storageObject.Id}");
-            Console.WriteLine($"Kind:\t{storageObject.Kind}");
-            Console.WriteLine($"Lifecycle:\t{storageObject.Lifecycle}");
-            Console.WriteLine($"Location:\t{storageObject.Location}");
-            Console.WriteLine($"Logging:\t{storageObject.Logging}");
-            Console.WriteLine($"Metageneration:\t{storageObject.Metageneration}");
-            Console.WriteLine($"Owner:\t{storageObject.Owner}");
-            Console.WriteLine($"ProjectNumber:\t{storageObject.ProjectNumber}");
-            Console.WriteLine($"RetentionPolicy:\t{storageObject.RetentionPolicy}");
-            Console.WriteLine($"SelfLink:\t{storageObject.SelfLink}");
-            Console.WriteLine($"StorageClass:\t{storageObject.StorageClass}");
-            Console.WriteLine($"TimeCreated:\t{storageObject.TimeCreated}");
-            Console.WriteLine($"Updated:\t{storageObject.Updated}");
-            Console.WriteLine($"Versioning:\t{storageObject.Versioning}");
-            Console.WriteLine($"Website:\t{storageObject.Website}");
+            Console.WriteLine($"Id:\t{bucket.Id}");
+            Console.WriteLine($"Kind:\t{bucket.Kind}");
+            Console.WriteLine($"Lifecycle:\t{bucket.Lifecycle}");
+            Console.WriteLine($"Location:\t{bucket.Location}");
+            Console.WriteLine($"Logging:\t{bucket.Logging}");
+            Console.WriteLine($"Metageneration:\t{bucket.Metageneration}");
+            Console.WriteLine($"Owner:\t{bucket.Owner}");
+            Console.WriteLine($"ProjectNumber:\t{bucket.ProjectNumber}");
+            Console.WriteLine($"RetentionPolicy:\t{bucket.RetentionPolicy}");
+            Console.WriteLine($"SelfLink:\t{bucket.SelfLink}");
+            Console.WriteLine($"StorageClass:\t{bucket.StorageClass}");
+            Console.WriteLine($"TimeCreated:\t{bucket.TimeCreated}");
+            Console.WriteLine($"Updated:\t{bucket.Updated}");
+            Console.WriteLine($"Versioning:\t{bucket.Versioning}");
+            Console.WriteLine($"Website:\t{bucket.Website}");
         }
 
         // [START storage_make_public]
@@ -960,6 +963,58 @@ namespace GoogleCloudSamples
         }
         // [END storage_release_temporary_hold]
 
+        // [START storage_enable_bucket_policy_only]
+        private void EnableBucketPolicyOnly(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.IamConfiguration.BucketPolicyOnly.Enabled = true;
+            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration,
+            });
+
+            Console.WriteLine($"Bucket Policy Only was enabled for {bucketName}.");
+        }
+        // [END storage_enable_bucket_policy_only]
+
+        // [START storage_disable_bucket_policy_only]
+        private void DisableBucketPolicyOnly(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.IamConfiguration.BucketPolicyOnly.Enabled = false;
+            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            {
+                // Use IfMetagenerationMatch to avoid race conditions.
+                IfMetagenerationMatch = bucket.Metageneration,
+            });
+
+            Console.WriteLine($"Bucket Policy Only was disabled for {bucketName}.");
+        }
+        // [END storage_disable_bucket_policy_only]
+
+        // [START storage_get_bucket_policy_only]
+        private void GetBucketPolicyOnly(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            var bucketPolicyOnly = bucket.IamConfiguration.BucketPolicyOnly;
+
+            bool? enabledOrNull = bucketPolicyOnly?.Enabled;
+            bool bucketPolicyEnabled =
+                enabledOrNull.HasValue ? enabledOrNull.Value : false;
+            if (bucketPolicyEnabled) {
+                Console.WriteLine($"Bucket Policy Only is enabled for {bucketName}.");
+                Console.WriteLine(
+                    $"Bucket Policy Only will be locked on {bucketPolicyOnly.LockedTime}.");
+            } else {
+                Console.WriteLine($"Bucket Policy Only is not enabled for {bucketName}.");
+            }
+        }
+        // [END storage_get_bucket_policy_only]
+
         private void UploadFileRequesterPays(string bucketName, string localPath,
             string objectName = null)
         {
@@ -1275,6 +1330,21 @@ namespace GoogleCloudSamples
                     case "release-object-event-based-hold":
                         if (args.Length < 3 && PrintUsage()) return -1;
                         ReleaseObjectEventBasedHold(args[1], args[2]);
+                        break;
+
+                    case "enable-bucket-policy-only":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        EnableBucketPolicyOnly(args[1]);
+                        break;
+
+                    case "disable-bucket-policy-only":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        DisableBucketPolicyOnly(args[1]);
+                        break;
+
+                    case "get-bucket-policy-only":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        GetBucketPolicyOnly(args[1]);
                         break;
 
                     default:
