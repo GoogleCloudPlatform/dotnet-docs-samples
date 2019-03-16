@@ -722,7 +722,7 @@ namespace GoogleCloudSamples
                 AssertSucceeded(getBucketPolicyOnly);
                 var disableBucketPolicyOnly = Run("disable-bucket-policy-only", bucketPolicyOnly.BucketName);
                 AssertSucceeded(disableBucketPolicyOnly);
-                var getBucketPolicyOnly = Run("get-bucket-policy-only", bucketPolicyOnly.BucketName);
+                getBucketPolicyOnly = Run("get-bucket-policy-only", bucketPolicyOnly.BucketName);
                 AssertSucceeded(getBucketPolicyOnly);
             }
         }
