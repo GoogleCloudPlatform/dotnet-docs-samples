@@ -1005,11 +1005,14 @@ namespace GoogleCloudSamples
             bool? enabledOrNull = bucketPolicyOnly?.Enabled;
             bool bucketPolicyEnabled =
                 enabledOrNull.HasValue ? enabledOrNull.Value : false;
-            if (bucketPolicyEnabled) {
+            if (bucketPolicyEnabled)
+            {
                 Console.WriteLine($"Bucket Policy Only is enabled for {bucketName}.");
                 Console.WriteLine(
                     $"Bucket Policy Only will be locked on {bucketPolicyOnly.LockedTime}.");
-            } else {
+            }
+            else
+            {
                 Console.WriteLine($"Bucket Policy Only is not enabled for {bucketName}.");
             }
         }
