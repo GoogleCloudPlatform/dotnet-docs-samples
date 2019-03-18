@@ -12,12 +12,16 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using Google.Cloud.Iam.V1;
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
 using Xunit;
 using System;
 using System.IO;
+using Google.Apis.CloudIot.v1.Data;
+using System.Collections.Generic;
+using Policy = Google.Cloud.Iam.V1.Policy;
+using Binding = Google.Cloud.Iam.V1.Binding;
+using SetIamPolicyRequest = Google.Cloud.Iam.V1.SetIamPolicyRequest;
 
 namespace GoogleCloudSamples
 {
@@ -60,14 +64,18 @@ namespace GoogleCloudSamples
         public void TestCreateUnauthDevice()
         {
             var deviceId = "dotnettest-unauth-" + _fixture.TestId;
-
-            var createUnauthOut = Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId,
-                _fixture.RegistryId, deviceId);
-            Assert.Contains("Device created:", createUnauthOut.Stdout);
-
-            var deleteUnauthOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
-                _fixture.RegistryId, deviceId);
-            Assert.Contains("Removed device:", deleteUnauthOut.Stdout);
+            try
+            {
+                var createUnauthOut = Run("createDeviceNoAuth", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId);
+                Assert.Contains("Device created:", createUnauthOut.Stdout);
+            }
+            finally
+            {
+                var deleteUnauthOut = Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId);
+                Assert.Contains("Removed device:", deleteUnauthOut.Stdout);
+            }
         }
 
         [Fact]
@@ -404,7 +412,8 @@ namespace GoogleCloudSamples
             RegionId = "us-central1";
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             ServiceAccount = "serviceAccount:cloud-iot@system.gserviceaccount.com";
-            TestId = TestUtil.RandomName();
+            TestId = ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString();
+            Console.WriteLine(TestId);
             TopicName = new TopicName(ProjectId, "iot-test-" + TestId);
             RegistryId = "iot-test-" + TestId;
             string privateKeyPath = Environment.GetEnvironmentVariable("IOT_PRIVATE_KEY_PATH");
@@ -415,10 +424,36 @@ namespace GoogleCloudSamples
             CertPath = Environment.GetEnvironmentVariable("IOT_CERT_KEY_PATH");
             PrivateKeyPath = privateKeyPath;
             CreatePubSubTopic(this.TopicName);
+            // Check if the number of registries does not exceed 90.
+
+            CheckRegistriesLimit(ProjectId, RegionId);
             Assert.Equal(0, Run("createRegistry", ProjectId, RegionId,
                 RegistryId, TopicName.TopicId).ExitCode);
         }
 
+        public void CheckRegistriesLimit(string projectId, string regionId)
+        {
+            List<DeviceRegistry> listRegistries = (List<DeviceRegistry>)CloudIotSample.GetRegistries(projectId, regionId);
+            if (listRegistries != null && listRegistries.Count > 90)
+            {
+                //Clean 20 oldest registries with testing prefix in the project.
+
+                Console.WriteLine("The maximum number of registries is about to exceed.");
+                Console.WriteLine("Deleting the oldest 20 registries with IoT Test prefix");
+                var count = 20;
+                var index = 0;
+                while (count > 0)
+                {
+                    if (listRegistries[index].Id.Contains("iot-test-"))
+                    {
+                        CloudIotSample.UnbindAllDevices(projectId, regionId, listRegistries[index].Id);
+                        CloudIotSample.ClearRegistry(projectId, regionId, listRegistries[index].Id);
+                        count--;
+                    }
+                    index++;
+                }
+            }
+        }
         public void CreatePubSubTopic(TopicName topicName)
         {
             var publisher = PublisherServiceApiClient.Create();
