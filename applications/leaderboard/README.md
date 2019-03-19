@@ -6,15 +6,15 @@ from C#.
 
 This sample requires [.NET Core 2.0](
     https://www.microsoft.com/net/core) or later.  That means using
-[Visual Studio 2017](
+[Visual Studio](
     https://www.visualstudio.com/), or the command line.
 
-This sample includes extra directories step5, step6, and step7 that contain partial versions of this sample app. These directories are intended to provide guidance as part of a separate Codelab walk-through where the application is built in the following stages
+This sample includes extra directories step4, step5, and step6 that contain partial versions of this sample app. These directories are intended to provide guidance as part of a separate Codelab walk-through where the application is built in the following stages
 that correspond to the steps in Codelab:
 
-* step5 - Create the sample database along with the tables Players and Scores.
-* step6 - Populate the Players and Scores tables with sample data.
-* step7 - Run sample queries including sorting the results by timestamp.
+* step4 - Create the sample database along with the tables Players and Scores.
+* step5 - Populate the Players and Scores tables with sample data.
+* step6 - Run sample queries including sorting the results by timestamp.
 
 If you only want to run the complete sample refer to the application in the Leaderboard directory.
 
@@ -31,26 +31,21 @@ If you only want to run the complete sample refer to the application in the Lead
     ```
     PS C:\...\dotnet-docs-samples\applications\leaderboard\Leaderboard> dotnet run
     Leaderboard 1.0.0
-    Copyright (C) 2018 Leaderboard
-
+    Copyright (C) 2019 Leaderboard
     ERROR(S):
     No verb selected.
 
-    createSampleDatabase       Create a sample Cloud Spanner database along with sample tables in your project.
+    create     Create a sample Cloud Spanner database along with sample 'Players' and 'Scores' tables in your project.
 
-    insertPlayers              Insert 100 sample Player records into the database.
+    insert     Insert sample 'players' records or 'scores' records into the database.
 
-    insertScores               Insert sample score data into Scores sample Cloud Spanner database table.
+    query      Query players with 'Top Ten' scores within a specific timespan from sample Cloud Spanner database table.
 
-    queryTopTenAllTime         Query players with top ten scores of all time from sample Cloud Spanner database table.
+    delete     Delete a Spanner database.
 
-    queryTopTenWithTimespan    Query players with top ten scores within a specific timespan from sample Cloud Spanner database table.
+    help       Display more information on a specific command.
 
-    deleteDatabase             Delete a Spanner database.
-
-    help                       Display more information on a specific command.
-
-    version                    Display version information.
+    version    Display version information.
 
     ```
 

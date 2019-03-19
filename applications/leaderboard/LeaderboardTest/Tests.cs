@@ -1,4 +1,4 @@
-﻿// Copyright(c) 2017 Google Inc.
+﻿// Copyright(c) 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -91,6 +91,18 @@ namespace GoogleCloudSamples.Leaderboard
             Assert.Equal(0, insertOutput.ExitCode);
             // Insert Scores records.
             ConsoleOutput insertScoresOutput = _spannerCmd.Run("insert",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "scores");
+            Assert.Equal(0, insertScoresOutput.ExitCode);
+            insertScoresOutput = _spannerCmd.Run("insert",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "scores");
+            Assert.Equal(0, insertScoresOutput.ExitCode);
+            insertScoresOutput = _spannerCmd.Run("insert",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "scores");
+            Assert.Equal(0, insertScoresOutput.ExitCode);
+            insertScoresOutput = _spannerCmd.Run("insert",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "scores");
+            Assert.Equal(0, insertScoresOutput.ExitCode);
+            insertScoresOutput = _spannerCmd.Run("insert",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "scores");
             Assert.Equal(0, insertScoresOutput.ExitCode);
             // Query Top Ten Players of all time.

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2017 Google Inc.
+ * Copyright (c) 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +16,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Transactions;
 using Google.Cloud.Spanner.Data;
 using CommandLine;
 
@@ -180,17 +181,19 @@ namespace GoogleCloudSamples.Leaderboard
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
-            Int64 numberOfPlayers = 0;
-            using (var connection = new SpannerConnection(connectionString))
+
+            using (TransactionScope scope = new TransactionScope(
+               TransactionScopeAsyncFlowOption.Enabled))
             {
-                await connection.OpenAsync();
-                using (var tx = await connection.BeginTransactionAsync())
+                Int64 numberOfPlayers = 0;
+                using (var connection = new SpannerConnection(connectionString))
                 {
+                    await connection.OpenAsync();
                     // Execute a SQL statement to get current number of records
-                    // in the Players table.
+                    // in the Players table to use as an incrementing value 
+                    // for each PlayerName to be inserted.
                     var cmd = connection.CreateSelectCommand(
                         @"SELECT Count(PlayerId) as PlayerCount FROM Players");
-                    cmd.Transaction = tx;
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
@@ -209,25 +212,25 @@ namespace GoogleCloudSamples.Leaderboard
                         }
                     }
                     // Insert 100 player records into the Players table.
-                    using (cmd = connection.CreateInsertCommand(
-                        "Players", new SpannerParameterCollection
+                    SpannerBatchCommand cmdBatch = connection.CreateBatchDmlCommand();
+                    for (var x = 1; x <= 100; x++)
                     {
-                        { "PlayerId", SpannerDbType.String },
-                        { "PlayerName", SpannerDbType.String }
-                    }))
-                    {
-                        cmd.Transaction = tx;
-                        for (var x = 1; x <= 100; x++)
-                        {
-                            numberOfPlayers++;
-                            cmd.Parameters["PlayerId"].Value =
-                                Math.Abs(Guid.NewGuid().GetHashCode());
-                            cmd.Parameters["PlayerName"].Value =
-                                $"Player {numberOfPlayers}";
-                            cmd.ExecuteNonQuery();
-                        }
+                        numberOfPlayers++;
+                        SpannerCommand cmdInsert = connection.CreateDmlCommand(
+                            "INSERT INTO Players "
+                            + "(PlayerId, PlayerName) "
+                            + "VALUES (@PlayerId, @PlayerName)",
+                                new SpannerParameterCollection {
+                                    {"PlayerId", SpannerDbType.Int64},
+                                    {"PlayerName", SpannerDbType.String}});
+                        cmdInsert.Parameters["PlayerId"].Value =
+                            Math.Abs(Guid.NewGuid().GetHashCode());
+                        cmdInsert.Parameters["PlayerName"].Value =
+                            $"Player {numberOfPlayers}";
+                        cmdBatch.Add(cmdInsert);
                     }
-                    await tx.CommitAsync();
+                    await cmdBatch.ExecuteNonQueryAsync();
+                    scope.Complete();
                 }
             }
             Console.WriteLine("Done inserting player records...");
@@ -240,62 +243,70 @@ namespace GoogleCloudSamples.Leaderboard
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
 
-            // Insert 4 score records into the Scores table for each player in the Players table.
-            using (var connection = new SpannerConnection(connectionString))
+            using (TransactionScope scope = new TransactionScope(
+               TransactionScopeAsyncFlowOption.Enabled))
             {
-                await connection.OpenAsync();
-                Random r = new Random();
-                bool playerRecordsFound = false;
-                var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Players");
-                using (var reader = await cmdLookup.ExecuteReaderAsync())
+                // Insert 4 score records into the Scores table for each player
+                // in the Players table.
+                using (var connection = new SpannerConnection(connectionString))
                 {
-                    while (await reader.ReadAsync())
+                    await connection.OpenAsync();
+                    Random r = new Random();
+                    bool playerRecordsFound = false;
+                    SpannerBatchCommand cmdBatch =
+                                connection.CreateBatchDmlCommand();
+                    var cmdLookup =
+                    connection.CreateSelectCommand("SELECT * FROM Players");
+                    using (var reader = await cmdLookup.ExecuteReaderAsync())
                     {
-                        if (!playerRecordsFound)
+                        while (await reader.ReadAsync())
                         {
-                            playerRecordsFound = true;
-                        }
-                        using (var tx = await connection.BeginTransactionAsync())
-                        using (var cmd = connection.CreateInsertCommand(
-                            "Scores", new SpannerParameterCollection
-                        {
-                            { "PlayerId", SpannerDbType.String },
-                            { "Score", SpannerDbType.Int64 },
-                            { "Timestamp", SpannerDbType.Timestamp }
-                        }))
-                        {
-                            cmd.Transaction = tx;
+                            if (!playerRecordsFound)
+                            {
+                                playerRecordsFound = true;
+                            }
                             for (var x = 1; x <= 4; x++)
                             {
                                 DateTime randomTimestamp = DateTime.Now
-                                    .AddYears(r.Next(-2, 1))
-                                    .AddMonths(r.Next(-12, 1))
-                                    .AddDays(r.Next(-10, 1))
-                                    .AddSeconds(r.Next(-60, 0))
-                                    .AddMilliseconds(r.Next(-100000, 0));
-                                cmd.Parameters["PlayerId"].Value =
+                                        .AddYears(r.Next(-2, 1))
+                                        .AddMonths(r.Next(-12, 1))
+                                        .AddDays(r.Next(-10, 1))
+                                        .AddSeconds(r.Next(-60, 0))
+                                        .AddMilliseconds(r.Next(-100000, 0));
+                                SpannerCommand cmdInsert =
+                                connection.CreateDmlCommand(
+                                    "INSERT INTO Scores "
+                                    + "(PlayerId, Score, Timestamp) "
+                                    + "VALUES (@PlayerId, @Score, @Timestamp)",
+                                    new SpannerParameterCollection {
+                                        {"PlayerId", SpannerDbType.Int64},
+                                        {"Score", SpannerDbType.Int64},
+                                        {"Timestamp",
+                                            SpannerDbType.Timestamp}});
+                                cmdInsert.Parameters["PlayerId"].Value =
                                     reader.GetFieldValue<int>("PlayerId");
-                                // Insert random score value between 10000 and 1000000.
-                                cmd.Parameters["Score"].Value = r.Next(1000, 1000001);
-                                // Insert random past timestamp
-                                // value into Timestamp column.
-                                cmd.Parameters["Timestamp"].Value =
+                                cmdInsert.Parameters["Score"].Value =
+                                    r.Next(1000, 1000001);
+                                cmdInsert.Parameters["Timestamp"].Value =
                                     randomTimestamp.ToString("o");
-                                cmd.ExecuteNonQuery();
+                                cmdBatch.Add(cmdInsert);
                             }
-                            await tx.CommitAsync();
                         }
-                    }
-                    if (!playerRecordsFound)
-                    {
-                        Console.WriteLine("Parameter 'scores' is invalid since "
-                        + "no player records currently exist. First insert players "
-                        + "then insert scores.");
-                        Environment.Exit((int)ExitCode.InvalidParameter);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Done inserting score records...");
+                        if (!playerRecordsFound)
+                        {
+                            Console.WriteLine("Parameter 'scores' is invalid "
+                            + "since no player records currently exist. First "
+                            + "insert players then insert scores.");
+                            Environment.Exit((int)ExitCode.InvalidParameter);
+                        }
+                        else
+                        {
+                            await cmdBatch.ExecuteNonQueryAsync();
+                            scope.Complete();
+                            Console.WriteLine(
+                                "Done inserting score records..."
+                            );
+                        }
                     }
                 }
             }
