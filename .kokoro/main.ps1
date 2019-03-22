@@ -28,7 +28,7 @@ try {
     $allDirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
 
     # There are too many tests to run in a single Kokoro job.  So, we split
-    # the tests into groups.
+    # the tests into groups.  Each Kokoro job runs one group.
 
     # Groups of subdirectories.
     $groups = @(
