@@ -13,7 +13,7 @@
 # the License.
 import-module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-Set-TestTimeout 1500
+Set-TestTimeout 1800
 
 dotnet restore
 dotnet build
