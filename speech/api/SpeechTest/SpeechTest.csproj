@@ -11,7 +11,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.1.0-beta02" />
+    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Recognize\Recognize.csproj" />

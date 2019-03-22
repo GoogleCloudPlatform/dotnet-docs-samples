@@ -7,6 +7,6 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
     <PackageReference Include="NAudio" Version="1.8.5" />
-    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.1.0-beta02" />
+    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.1.0" />
   </ItemGroup>
 </Project>
