@@ -2,4 +2,4 @@
 set -ex
 pwd
 cd github/dotnet-docs-samples/.kokoro
-pwsh main.ps1 1
+pwsh main.ps1 2

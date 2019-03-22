@@ -12,7 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Load secrets from the files downloaded from google cloud storage.
+param([int]$GroupNumber = 0)
+
 Push-Location
 try {
     # Import BuildTools.psm1
@@ -24,7 +25,23 @@ try {
     .\.kokoro-windows\Import-Secrets.ps1
         
     # The list of all subdirectories.
-    $dirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
+    $allDirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
+
+    # There are too many tests to run in a single Kokoro job.  So, we split
+    # the tests into groups.
+
+    # Groups of subdirectories.
+    $groups = @(
+        $false,  # 0: Everything.
+        $false,  # 1: Everything not in another group.
+        @('video')  # 2
+    )
+
+    $union = $groups[2..($groups.Length-1)] | Select-Object
+    $groups[0] = $allDirs
+    $groups[1] = $allDirs | Where-Object { -not $union.Contains($_) }
+
+    $dirs = $groups[$GroupNumber]
 
     # Find all the runTest scripts.
     $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
