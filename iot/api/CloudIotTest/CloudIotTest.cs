@@ -235,7 +235,7 @@ namespace GoogleCloudSamples
             }
             catch (Google.GoogleApiException e)
             {
-                Assert.Contains("not subscribed to the commands topic", e.Message);
+                Assert.Contains("not connected", e.Message);
             }
             finally
             {
