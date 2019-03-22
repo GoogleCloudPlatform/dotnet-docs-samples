@@ -235,7 +235,7 @@ namespace GoogleCloudSamples
                 LanguageCode = "en-US",
                 UseEnhanced = true,
                 // A model must be specified to use an enhanced model.
-                // Currently, on 'phone_call' is supported as an enhanced model.
+                // Currently, only 'phone_call' is supported.
                 Model = "phone_call",
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)

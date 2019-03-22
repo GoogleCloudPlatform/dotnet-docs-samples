@@ -144,7 +144,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("sync", "-e", _audioWavPath);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("regular Chromecast is fine", output.Stdout);
+            Assert.Contains("Chromecast", output.Stdout);
         }
     }
 
