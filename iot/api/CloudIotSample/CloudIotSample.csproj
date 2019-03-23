@@ -6,14 +6,16 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.36.1.1433" />
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.37.0.1460" />
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
+    <PackageReference Include="NodaTime" Version="2.4.4" />
+    <PackageReference Include="M2Mqtt" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="MqttExample.cs" />
+    <ProjectReference Include="..\CloudIotMqttExample\CloudIotMqttExample.csproj" />
   </ItemGroup>
 </Project>

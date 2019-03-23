@@ -44,6 +44,10 @@ namespace GoogleCloudSamples.VideoIntelligence
             Command = "Analyze"
         };
 
+        readonly List<string> _POSSIBLE_TEXTS = new List<string>
+        { "Google", "SUR", "ROTO", "Vice President", "58oo9",
+          "LONDRES", "OMAR", "PARIS", "METRO", "RUE", "CARLO"};
+
         [Fact(Skip = "Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]
         void TestAnalyzeNoArgsSucceeds()
         {
@@ -133,6 +137,60 @@ namespace GoogleCloudSamples.VideoIntelligence
                 _analyze.Run("transcribe", "gs://python-docs-samples-tests/video/googlework_short.mp4");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("France", output.Stdout);
+        }
+
+        [Fact]
+        void TestTextDetection()
+        {
+            ConsoleOutput output =
+                _analyze.Run("text", DownloadGcsObject("gs://python-docs-samples-tests/video/googlework_short.mp4"));
+            Assert.Equal(0, output.ExitCode);
+
+            var textExists = false;
+            foreach (string word in _POSSIBLE_TEXTS)
+            {
+                if (output.Stdout.Contains(word))
+                {
+                    textExists = true;
+                }
+            }
+            Assert.True(textExists);
+        }
+
+        [Fact]
+        void TestTextDetectionGcs()
+        {
+            ConsoleOutput output =
+                _analyze.Run("text", "gs://python-docs-samples-tests/video/googlework_short.mp4");
+            Assert.Equal(0, output.ExitCode);
+
+            var textExists = false;
+            foreach (string word in _POSSIBLE_TEXTS)
+            {
+                if (output.Stdout.Contains(word))
+                {
+                    textExists = true;
+                }
+            }
+            Assert.True(textExists);
+        }
+
+        [Fact]
+        void TestObjectTracking()
+        {
+            ConsoleOutput output =
+                _analyze.Run("track-object", DownloadGcsObject("gs://demomaker/cat.mp4"));
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("cat", output.Stdout);
+        }
+
+        [Fact]
+        void TestObjectTrackingGcs()
+        {
+            ConsoleOutput output =
+                _analyze.Run("track-object", "gs://demomaker/cat.mp4");
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("cat", output.Stdout);
         }
 
         void IDisposable.Dispose()

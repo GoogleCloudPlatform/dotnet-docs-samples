@@ -26,6 +26,10 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text;
+using NodaTime;
+using uPLibrary.Networking.M2Mqtt;
+using uPLibrary.Networking.M2Mqtt.Messages;
+using uPLibrary.Networking.M2Mqtt.Exceptions;
 
 namespace GoogleCloudSamples
 {
@@ -326,6 +330,12 @@ namespace GoogleCloudSamples
 
         [Value(3, HelpText = "The gateway ID that will be created.", Required = true)]
         public string gatewayId { get; set; }
+
+        [Value(4, HelpText = "Public key file used for registering devices and gateways.", Required = true)]
+        public string publicKeyFile { get; set; }
+
+        [Value(5, HelpText = "Algorithm.", Required = true)]
+        public string algorithm { get; set; }
     }
 
     [Verb("listGateways", HelpText = "List gateways in a registry.")]
@@ -394,6 +404,108 @@ namespace GoogleCloudSamples
         [Value(4, HelpText = "The gateway ID.")]
         public string gatewayId { get; set; }
     }
+
+    [Verb("clearRegistry", HelpText = "Be careful! Removes all devices and then deletes a device Registry!!")]
+    class ClearRegistryOptions
+    {
+        [Value(0, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+    }
+
+    [Verb("unbindAllDevices", HelpText = "Unbinds all devices in a given registry. Mainly for clearing registries.")]
+    class UnbindAllDevicesOptions
+    {
+        [Value(0, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+    }
+
+    [Verb("listenForConfigMessages", HelpText = "Listens for configuration messages on the gateway and bound devices.")]
+    class ListenForConfigMessagesOptions
+    {
+        [Value(0, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+
+        [Value(3, HelpText = "The gateway ID.")]
+        public string gatewayId { get; set; }
+
+        [Value(4, HelpText = "The device ID.", Required = true)]
+        public string deviceId { get; set; }
+
+        [Value(5, HelpText = "CA root from https://pki.google.com/roots.pem", Required = true, Default = "roots.pem")]
+        public string ca_certs { get; set; }
+
+        [Value(6, HelpText = "The private key file path.", Required = true)]
+        public string privateKeyPath { get; set; }
+
+        [Value(7, HelpText = "Which encryption algorithm to use to generate the JWT. (RS256 or ES256)", Required = true)]
+        public string algorithm { get; set; }
+
+        [Option(HelpText = "The number of messages wish to publish.", Default = 10)]
+        public int numMsgs { get; set; }
+
+        [Option(HelpText = "Expiration time (in minutes) for JWT tokens.", Default = 60)]
+        public int jwtExpTime { get; set; }
+
+        [Option(HelpText = "Duration(seconds) to listen for configuration messages.", Default = 60)]
+        public int listenTime { get; set; }
+    }
+
+    [Verb("sendDataFromBoundDevice", HelpText = "Sends data from a gateway on behalf of a device that is bound to it.")]
+    class SendDataFromBoundDeviceOptions
+    {
+        [Value(0, HelpText = "The project containing the device registry.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The region (e.g. us-central1) the registry is located in.", Required = true)]
+        public string regionId { get; set; }
+
+        [Value(2, HelpText = "The registry containing the device.", Required = true)]
+        public string registryId { get; set; }
+
+        [Value(3, HelpText = "The device ID.", Required = true)]
+        public string deviceId { get; set; }
+
+        [Value(4, HelpText = "The gateway ID.", Required = true)]
+        public string gatewayId { get; set; }
+
+        [Value(5, HelpText = "The private key file path.", Required = true)]
+        public string privateKeyPath { get; set; }
+
+        [Value(6, HelpText = "Which encryption algorithm to use to generate the JWT. (RS256 or ES256)", Required = true)]
+        public string algorithm { get; set; }
+
+        [Value(7, HelpText = "CA root from https://pki.google.com/roots.pem", Required = true)]
+        public string ca_certs { get; set; }
+
+        [Value(8, HelpText = "Message type (events or state)", Required = true)]
+        public string messageType { get; set; }
+
+        [Value(9, HelpText = "The telemetry data sent on behalf of a device.", Required = true)]
+        public string data { get; set; }
+
+        [Option(HelpText = "Expiration time (in minutes) for JWT tokens.", Default = 60)]
+        public int jwtExpTime { get; set; }
+    }
+
+
     public class CloudIotSample
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -542,6 +654,27 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END iot_list_registries]
+
+        public static object GetRegistries(string projectId, string cloudRegion)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            // The resource name of the location associated with the key rings.
+            var parent = $"projects/{projectId}/locations/{cloudRegion}";
+            var listOfRegistries = new List<DeviceRegistry>();
+            try
+            {
+                var result = cloudIot.Projects.Locations.Registries.List(parent).Execute();
+                listOfRegistries = result.DeviceRegistries.ToList();
+                Console.WriteLine($"Number of registries: {listOfRegistries.Count}");
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+                if (e.Error != null) return null;
+                return null;
+            }
+            return listOfRegistries;
+        }
 
         // [START iot_create_unauth_device]
         public static object CreateUnauthDevice(string projectId, string cloudRegion, string registryId, string deviceId)
@@ -977,7 +1110,7 @@ namespace GoogleCloudSamples
             // Data sent through the wire has to be base64 encoded.
             SendCommandToDeviceRequest req = new SendCommandToDeviceRequest()
             {
-                BinaryData = Convert.ToBase64String(Encoding.Unicode.GetBytes(data))
+                BinaryData = Convert.ToBase64String(Encoding.UTF8.GetBytes(data))
             };
 
             Console.WriteLine("Sending command to {0}\n", devicePath);
@@ -991,30 +1124,40 @@ namespace GoogleCloudSamples
         //[END iot_send_command]
 
         //[START iot_create_gateway]
-        public static object CreateGateway(string projectId, string cloudRegion, string registryName,
-            string gatewayId)
+        public static object CreateGateway(string projectId, string cloudRegion,
+            string registryName, string gatewayId, string publicKeyFilePath,
+            string algorithm)
         {
             var cloudIot = CreateAuthorizedClient();
-            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+            var registryPath = $"projects/{projectId}/locations/{cloudRegion}"
+                + $"/registries/{registryName}";
             Console.WriteLine("Creating gateway with id: {0}", gatewayId);
-
-            GatewayConfig gwConfig = new GatewayConfig();
-            gwConfig.GatewayType = "GATEWAY";
-            gwConfig.GatewayAuthMethod = "ASSOCIATION_ONLY";
 
             Device body = new Device()
             {
-                Id = gatewayId
+                Id = gatewayId,
+                GatewayConfig = new GatewayConfig()
+                {
+                    GatewayType = "GATEWAY",
+                    GatewayAuthMethod = "ASSOCIATION_ONLY"
+                },
+                Credentials =
+                new List<DeviceCredential>()
+                {
+                    new DeviceCredential()
+                    {
+                        PublicKey = new PublicKeyCredential()
+                        {
+                            Key = File.ReadAllText(publicKeyFilePath),
+                            Format = (algorithm == "ES256" ?
+                                "ES256_PEM" : "RSA_X509_PEM")
+                        },
+                    }
+                }
             };
-            body.GatewayConfig = gwConfig;
-            Device createdDevice =
-                cloudIot
-                    .Projects
-                    .Locations
-                    .Registries
-                    .Devices
-                    .Create(body, registryPath)
-                    .Execute();
+
+            Device createdDevice = cloudIot.Projects.Locations.Registries
+                .Devices.Create(body, registryPath).Execute();
             Console.WriteLine("Created gateway: {0}", createdDevice.ToString());
             return 0;
         }
@@ -1120,12 +1263,14 @@ namespace GoogleCloudSamples
         //[END iot_list_gateways]
 
         //[START iot_bind_device_to_gateway]
-        public static object BindDeviceToGateway(
-            string projectId, string cloudRegion, string registryName, string deviceId, string gatewayId)
+        public static object BindDeviceToGateway(string projectId, string cloudRegion,
+            string registryName, string deviceId, string gatewayId)
         {
             CreateDevice(projectId, cloudRegion, registryName, deviceId);
             var cloudIot = CreateAuthorizedClient();
-            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+            var registryPath = $"projects/{projectId}" +
+                $"/locations/{cloudRegion}" +
+                $"/registries/{registryName}";
             BindDeviceToGatewayRequest req = new BindDeviceToGatewayRequest
             {
                 DeviceId = deviceId,
@@ -1145,10 +1290,13 @@ namespace GoogleCloudSamples
         //[END iot_bind_device_to_gateway]
 
         //[START iot_unbind_device_from_gateway]
-        public static object UnbindDeviceFromGateway(string projectId, string cloudRegion, string registryName, string deviceId, string gatewayId)
+        public static object UnbindDeviceFromGateway(string projectId, string cloudRegion,
+            string registryName, string deviceId, string gatewayId)
         {
             var cloudIot = CreateAuthorizedClient();
-            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+            var registryPath = $"projects/{projectId}" +
+                $"/locations/{cloudRegion}" +
+                $"/registries/{registryName}";
             UnbindDeviceFromGatewayRequest req = new UnbindDeviceFromGatewayRequest
             {
                 DeviceId = deviceId,
@@ -1172,8 +1320,10 @@ namespace GoogleCloudSamples
          string cloudRegion, string registryName, string gatewayId)
         {
             var cloudIot = CreateAuthorizedClient();
-            var gatewayPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}/devices/{gatewayId}";
-            var registryPath = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryName}";
+            var gatewayPath = $"projects/{projectId}/locations/{cloudRegion}" +
+                $"/registries/{registryName}/devices/{gatewayId}";
+            var registryPath = $"projects/{projectId}/locations/{cloudRegion}" +
+                $"/registries/{registryName}";
             var req = cloudIot.Projects.Locations.Registries.Devices.List(registryPath);
             req.GatewayListOptionsAssociationsGatewayId = gatewayId;
             var devices = req.Execute().Devices;
@@ -1181,8 +1331,10 @@ namespace GoogleCloudSamples
             if (devices != null)
             {
                 Console.WriteLine("Found {0} devices", devices.Count);
-                devices.ToList().ForEach(device =>
-                    Console.WriteLine("ID: {0}", device.Id));
+                foreach (var device in devices)
+                {
+                    Console.WriteLine("ID: {0}", device.Id);
+                }
             }
             else
             {
@@ -1193,6 +1345,398 @@ namespace GoogleCloudSamples
         }
         //[END iot_list_devices_for_gateway]
 
+        //[START iot_unbind_all_devices]
+        public static object UnbindAllDevices(
+            string projectId, string cloudRegion, string registryId)
+        {
+            var cloudIot = CreateAuthorizedClient();
+            // The resource name of the location associated with the key rings.
+            var parent = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}";
+            try
+            {
+                var devices = cloudIot
+                    .Projects
+                    .Locations
+                    .Registries
+                    .Devices
+                    .List(parent)
+                    .Execute()
+                    .Devices;
+                Console.WriteLine("Devices: {0}", parent);
+
+                if (devices != null)
+                {
+                    foreach (var response in devices)
+                    {
+                        UnbindDeviceFromAllGateways(cloudIot, projectId,
+                        cloudRegion, registryId, response.Id);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No bound device found.");
+                }
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Error.Code;
+            }
+            return 0;
+        }
+        //[END iot_unbind_all_devices]
+
+        public static void UnbindDeviceFromAllGateways(CloudIotService cloudIot, string projectId,
+             string cloudRegion, string registryId, string deviceId)
+        {
+            // The resource name of the location associated with the key rings.
+            var parent = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}";
+            var fullpath = $"projects/{projectId}/locations/{cloudRegion}" +
+                $"/registries/{registryId}/devices/{deviceId}";
+            try
+            {
+                var device = cloudIot
+                    .Projects
+                    .Locations
+                    .Registries
+                    .Devices
+                    .Get(fullpath)
+                    .Execute();
+
+                if (device != null)
+                {
+                    bool isGateway = device.GatewayConfig.GatewayType == "GATEWAY";
+                    if (!isGateway)
+                    {
+                        // get list of gateways this non-gateway device bound to.
+                        var req = cloudIot.Projects.Locations.Registries.Devices.List(parent);
+                        req.GatewayListOptionsAssociationsDeviceId = device.Id;
+                        var gateways = req.Execute().Devices;
+                        if (gateways != null)
+                        {
+                            foreach (var gateway in gateways)
+                            {
+                                UnbindDeviceFromGatewayRequest unbindReq
+                                    = new UnbindDeviceFromGatewayRequest
+                                    {
+                                        DeviceId = device.Id,
+                                        GatewayId = gateway.Id
+                                    };
+                                try
+                                {
+                                    cloudIot
+                                        .Projects
+                                        .Locations
+                                        .Registries
+                                        .UnbindDeviceFromGateway(unbindReq, parent).Execute();
+                                    Console.WriteLine("Unbound device from the gateway {0}",
+                                        gateway.Id);
+                                }
+                                catch (AggregateException e)
+                                {
+                                    Console.WriteLine("Could not unbind device");
+                                    foreach (var ex in e.InnerExceptions)
+                                    {
+                                        Console.WriteLine(ex.Message);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Could not list the gateways for device {0}",
+                                device.Id);
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        //[START iot_clear_registry]
+        public static object ClearRegistry(string projectId, string cloudRegion, string registryId)
+        {
+            var parentName = $"projects/{projectId}/locations/{cloudRegion}";
+            var registryName = $"{parentName}/registries/{registryId}";
+            var cloudIot = CreateAuthorizedClient();
+            string responseRegistry = "";
+
+
+            // The resource name of the location associated with the key rings.
+            var parent = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}";
+            try
+            {
+                var devices = cloudIot
+                    .Projects
+                    .Locations
+                    .Registries
+                    .Devices
+                    .List(parent)
+                    .Execute()
+                    .Devices;
+                Console.WriteLine("Devices: {0}", parent);
+
+                if (devices != null)
+                {
+                    foreach (var response in devices)
+                    {
+                        DeleteDevice(projectId, cloudRegion, registryId, response.Id);
+                    }
+                }
+            }
+            catch (Google.GoogleApiException e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Error.Code;
+            }
+
+            try
+            {
+                DeleteRegistry(projectId, cloudRegion, registryId);
+                Console.WriteLine($"Successfully deleted registry {registryName}");
+                Console.WriteLine(responseRegistry);
+            }
+            catch
+            (Google.GoogleApiException e)
+            {
+                Console.WriteLine("Could not delete registry");
+                Console.WriteLine(e.Message);
+            }
+
+
+            return 0;
+        }
+        //[END iot_clear_registry]
+
+        //[START iot_attach_device]
+
+        //[START iot_listen_for_config_messages]
+        //[START iot_send_data_from_bound_device]
+        public static object AttachDevice(MqttClient client, string deviceId, string auth)
+        {
+            var attachTopic = $"/devices/{deviceId}/attach";
+            Console.WriteLine("Attaching: {0}", attachTopic);
+            var BinaryData = Encoding.UTF8.GetBytes(auth);
+            client.Publish(attachTopic, BinaryData, MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
+
+            Console.WriteLine("Waiting for device to attach.");
+            return 0;
+        }
+        //[END iot_send_data_from_bound_device]
+        //[END iot_listen_for_config_messages]
+        //[END iot_attach_device]
+
+        //[START iot_detach_device]
+        //[START iot_listen_for_config_messages]
+        //[START iot_send_data_from_bound_device]
+        public static object DetachDevice(MqttClient client, string deviceId)
+        {
+            var detachTopic = $"/devices/{deviceId}/detach";
+            Console.WriteLine("Detaching: {0}", detachTopic);
+            var BinaryData = Encoding.UTF8.GetBytes("{}");
+            client.Publish(detachTopic, BinaryData, MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
+            return 0;
+        }
+        //[END iot_send_data_from_bound_device]
+        //[END iot_listen_for_config_messages]
+        //[END iot_detach_device]
+
+        //[START iot_listen_for_config_messages]
+        public static object ListenForConfigMessages(string projectId, string cloudRegion,
+            string registryId, string deviceId, string gatewayId, int numMessages,
+            string privateKeyFile, string algorithm, string caCerts, string mqttBridgeHostname,
+            int mqttBridgePort, int jwtExpiresMinutes, int duration)
+        {
+            var clientId = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}" +
+                $"/devices/{gatewayId}";
+            // Listens for configuration and system error messages on the gateway and
+            // bound devices.
+
+            var jwtIatTime = SystemClock.Instance.GetCurrentInstant();
+            // Create a duration
+            Duration durationExp = Duration.FromMinutes(jwtExpiresMinutes);
+            var jwtExpTime = SystemClock.Instance.GetCurrentInstant().Plus(durationExp);
+            var pass = "";
+            if (algorithm == "RS256")
+            {
+                pass = CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile);
+            }
+            else if (algorithm == "ES256")
+            {
+                Console.WriteLine("Currently, we do not support this algorithm.");
+                return 0;
+            }
+
+            // Use gateway to connect server
+            var mqttClient = StartMqtt(mqttBridgeHostname,
+                mqttBridgePort,
+                projectId,
+                cloudRegion,
+                registryId,
+                gatewayId,
+                privateKeyFile,
+                caCerts,
+                algorithm,
+                pass);
+
+            AttachDevice(mqttClient, deviceId, "{}");
+            // The topic devices receive configuration updates on.
+            string deviceConfigTopic = $"/devices/{deviceId}/config";
+
+            mqttClient.Subscribe(
+                new string[] { deviceConfigTopic },
+                new byte[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE }
+            );
+
+            // Wait for about a minute for config messages.
+            for (int i = 0; i < duration; ++i)
+            {
+                Console.WriteLine("Listening...");
+                var secSinceIssue = SystemClock.Instance.GetCurrentInstant().Minus(jwtIatTime);
+                if (secSinceIssue.TotalSeconds > (60 * jwtExpiresMinutes)
+                    || !mqttClient.IsConnected)
+                {
+                    Console.WriteLine("Refreshing token after {0}s", secSinceIssue);
+                    jwtIatTime = SystemClock.Instance.GetCurrentInstant();
+                    // refresh token and reconnect.
+                    pass = CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile);
+                    mqttClient = StartMqtt(mqttBridgeHostname, mqttBridgePort, projectId,
+                        cloudRegion, registryId, gatewayId, privateKeyFile,
+                        caCerts, algorithm, pass);
+                }
+                System.Threading.Thread.Sleep(1000);
+            }
+
+            DetachDevice(mqttClient, deviceId);
+            // wait for the device get detached.
+            System.Threading.Thread.Sleep(2000);
+            mqttClient.Disconnect();
+            Console.WriteLine("Finished.");
+            return 0;
+        }
+        //[END iot_listen_for_config_messages]
+
+        //[START iot_send_data_from_bound_device]
+        public static object SendDataFromBoundDevice(string projectId, string cloudRegion,
+            string registryId, string deviceId, string gatewayId, string privateKeyFile,
+            string algorithm, string caCerts, string mqttBridgeHostname, int mqttBridgePort,
+            int jwtExpiresMinutes, string messageType, string payload)
+        {
+            // Publish device events and gateway state.
+            string device_topic = $"/devices/{deviceId}/state";
+            string gateway_topic = $"/devices/{gatewayId}/state";
+
+            var jwtIatTime = SystemClock.Instance.GetCurrentInstant();
+            Duration durationExp = Duration.FromMinutes(jwtExpiresMinutes);
+            var jwtExpTime = SystemClock.Instance.GetCurrentInstant().Plus(durationExp);
+
+            // Use gateway to connect to server.
+            var password = CloudIotMqttExample.CreateJwtRsa(projectId, privateKeyFile);
+            var mqttClient = StartMqtt(mqttBridgeHostname, mqttBridgePort, projectId, cloudRegion,
+                registryId, gatewayId, privateKeyFile, caCerts, algorithm, password);
+
+            var clientId = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}" +
+                $"/devices/{gatewayId}";
+
+            AttachDevice(mqttClient, deviceId, "{}");
+            System.Threading.Thread.Sleep(2000);
+            // Publish numMsgs messages to the MQTT bridge.
+            SendDataFromDevice(mqttClient, deviceId, messageType, payload);
+
+            DetachDevice(mqttClient, deviceId);
+            mqttClient.Disconnect();
+            return 0;
+        }
+        //[END iot_send_data_from_bound_device]
+
+        //[START iot_start_mqtt_client]
+        //[START iot_listen_for_config_messages]
+        //[START iot_send_data_from_bound_device]
+        public static MqttClient StartMqtt(string mqttBridgeHostname, int mqttBridgePort,
+            string projectId, string cloudRegion, string registryId, string gatewayId,
+            string privateKeyFile, string caCert, string algorithm, string pass)
+        {
+            // Create our MQTT client. The mqttClientId is a unique string that identifies this 
+            // device. For Google Cloud IoT Core, it must be in the format below.
+            string mqttClientId = $"projects/{projectId}/locations/{cloudRegion}" +
+                $"/registries/{registryId}/devices/{gatewayId}";
+            MqttClient mqttClient = CloudIotMqttExample.GetClient(projectId, cloudRegion,
+                registryId, gatewayId, caCert, mqttBridgeHostname,
+                mqttBridgePort);
+
+            double initialConnectIntervalMillis = 0.5;
+            double maxConnectIntervalMillis = 6;
+            double maxConnectRetryTimeElapsedMillis = 900;
+            double intervalMultiplier = 1.5;
+
+            double retryIntervalMs = initialConnectIntervalMillis;
+            double totalRetryTimeMs = 0;
+
+            while (!mqttClient.IsConnected && totalRetryTimeMs < maxConnectRetryTimeElapsedMillis)
+            {
+                try
+                {
+                    // Connect to the Google MQTT bridge.
+                    mqttClient.Connect(mqttClientId, "unused", pass);
+                }
+                catch (MqttCommunicationException ex)
+                {
+                    Console.WriteLine("An error occured {0}", ex.InnerException.Message);
+                    Console.WriteLine("Retrying in " + retryIntervalMs + " seconds.");
+
+                    System.Threading.Thread.Sleep((int)retryIntervalMs);
+                    totalRetryTimeMs += retryIntervalMs;
+                    retryIntervalMs *= 1.5;
+                    if (retryIntervalMs > maxConnectIntervalMillis)
+                    {
+                        retryIntervalMs = maxConnectIntervalMillis;
+                    }
+                }
+                catch (MqttClientException ex)
+                {
+                    Console.WriteLine("Client Exception" + ex.InnerException.Message);
+
+                    System.Threading.Thread.Sleep((int)retryIntervalMs);
+                    totalRetryTimeMs += retryIntervalMs;
+                    retryIntervalMs *= intervalMultiplier;
+                    if (retryIntervalMs > maxConnectIntervalMillis)
+                    {
+                        retryIntervalMs = maxConnectIntervalMillis;
+                    }
+                }
+            }
+            CloudIotMqttExample.SetupMqttTopics(mqttClient, gatewayId);
+            return mqttClient;
+        }
+        //[END iot_send_data_from_bound_device]
+        //[END iot_listen_for_config_messages]
+        //[END iot_start_mqtt_client]
+
+        //[START iot_send_data_from_device]
+        //[START iot_send_data_from_bound_device]
+        public static object SendDataFromDevice(MqttClient client, string deviceId,
+            string messageType, string data)
+        {
+            if (!messageType.Equals("events") && !messageType.Equals("state"))
+            {
+                Console.WriteLine("Invalid message type, must ether be 'state' or events'");
+                return 0;
+            }
+            string dataTopic = $"/devices/{deviceId}/{messageType}";
+
+            // Publish state to gateway topic.
+            client.Publish(dataTopic, Encoding.UTF8.GetBytes(data),
+                MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
+            Console.WriteLine("Data sent: {0}", data);
+
+            return 0;
+        }
+        //[END iot_send_data_from_bound_device]
+        //[END iot_send_data_from_device]
 
         public static int Main(string[] args)
         {
@@ -1233,7 +1777,8 @@ namespace GoogleCloudSamples
                 .Add((SendCommandOptions opts) => SendCommand(
                     opts.deviceId, opts.projectId, opts.regionId, opts.registryId, opts.command))
                 .Add((CreateGatewayOptions opts) => CreateGateway(
-                    opts.projectId, opts.regionId, opts.registryId, opts.gatewayId))
+                    opts.projectId, opts.regionId, opts.registryId, opts.gatewayId,
+                    opts.publicKeyFile, opts.algorithm))
                 .Add((ListGatewaysOptions opts) => ListGateways(
                     opts.projectId, opts.regionId, opts.registryId))
                 .Add((ListDevicesForGatewayOptions opts) => ListDevicesForGateways(
@@ -1242,6 +1787,18 @@ namespace GoogleCloudSamples
                     opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.gatewayId))
                 .Add((UnbindDeviceFromGatewayOptions opts) => UnbindDeviceFromGateway(
                     opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.gatewayId))
+                .Add((ClearRegistryOptions opts) => ClearRegistry(opts.projectId, opts.regionId,
+                    opts.registryId))
+                .Add((UnbindAllDevicesOptions opts) => UnbindAllDevices(opts.projectId,
+                    opts.regionId, opts.registryId))
+                .Add((ListenForConfigMessagesOptions opts) => ListenForConfigMessages(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.gatewayId,
+                    opts.numMsgs, opts.privateKeyPath, opts.algorithm, opts.ca_certs,
+                    "mqtt.googleapis.com", 8883, opts.jwtExpTime, opts.listenTime))
+                .Add((SendDataFromBoundDeviceOptions opts) => SendDataFromBoundDevice(
+                    opts.projectId, opts.regionId, opts.registryId, opts.deviceId, opts.gatewayId,
+                    opts.privateKeyPath, opts.algorithm, opts.ca_certs, "mqtt.googleapis.com",
+                    8883, opts.jwtExpTime, opts.messageType, opts.data))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
