@@ -246,7 +246,6 @@ namespace GoogleCloudSamples
                 // There can be several transcripts for a chunk of audio.
                 // Print out the first (most likely) one here.
                 var alternative = result.Alternatives[0];
-                Console.WriteLine(new String('-', 5));
                 Console.WriteLine($"Transcript: {alternative.Transcript}");
                 Console.WriteLine($"Channel Tag: {result.ChannelTag}");
             }
