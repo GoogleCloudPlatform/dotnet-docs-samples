@@ -8,6 +8,6 @@
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
     <PackageReference Include="Google.Api.Gax.Grpc" Version="2.6.0" />
     <PackageReference Include="Grpc.Core" Version="1.19.0" PrivateAssets="None" />
-    <PackageReference Include="Google.Cloud.Tasks.V2Beta3" Version="1.0.0-beta02" />
+    <PackageReference Include="Google.Cloud.Tasks.V2" Version="1.0.0-beta01" />
   </ItemGroup>
 </Project>
