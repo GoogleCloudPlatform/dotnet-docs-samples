@@ -154,7 +154,9 @@ namespace GoogleCloudSamples.VideoIntelligence
                     textExists = true;
                 }
             }
-            Assert.True(textExists);
+            Assert.True(textExists, 
+                "Failed to find any of " + string.Join(", ", _POSSIBLE_TEXTS)
+                + " in output\n" + output.Stdout);
         }
 
         [Fact]
@@ -172,7 +174,9 @@ namespace GoogleCloudSamples.VideoIntelligence
                     textExists = true;
                 }
             }
-            Assert.True(textExists);
+            Assert.True(textExists, 
+                "Failed to find any of " + string.Join(", ", _POSSIBLE_TEXTS)
+                + " in output\n" + output.Stdout);
         }
 
         [Fact]
