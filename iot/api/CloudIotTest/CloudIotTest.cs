@@ -235,7 +235,7 @@ namespace GoogleCloudSamples
             }
             catch (Google.GoogleApiException e)
             {
-                Assert.Contains("not connected", e.Message);
+                Assert.True(e.Error.Code == 400);
             }
             finally
             {
