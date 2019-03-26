@@ -41,5 +41,9 @@
     <None Update="resources\commercial_mono.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="resources\commercial_stereo.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <LogicalName>SpeechTest.resources.commercial_stereo.wav</LogicalName>
+    </None>
   </ItemGroup>
 </Project>
