@@ -4,10 +4,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.2.0" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.3.0" />
     <Content Include="wakeupcat.jpg" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.3.0-beta04" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.3.0" />
   </ItemGroup>
 </Project>

@@ -57,6 +57,10 @@ namespace GoogleCloudSamples
 
         [Option('e', HelpText = "Use an enhanced transcription model.")]
         public bool UseEnhancedModel { get; set; }
+
+        [Option('c', HelpText = "Set number of channels")]
+        public int NumberOfChannels { get; set; }
+
     }
 
     [Verb("with-context", HelpText = "Detects speech in an audio file."
@@ -103,7 +107,6 @@ namespace GoogleCloudSamples
             HelpText = "Audio file encoding format.")]
         public RecognitionConfig.Types.AudioEncoding Encoding { get; set; }
     }
-
 
     public class Recognize
     {
@@ -248,6 +251,35 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_transcribe_enhanced_model]
+
+        // [START speech_transcribe_multichannel_beta]
+        static object SyncRecognizeMultipleChannels(string filePath, int channelCount)
+        {
+            Console.WriteLine("Starting multi-channel");
+            var speech = SpeechClient.Create();
+
+            // Create transcription request
+            var response = speech.Recognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                LanguageCode = "en",
+                // Configure request to enable multiple channels
+                EnableSeparateRecognitionPerChannel = true,
+                AudioChannelCount = channelCount
+            }, RecognitionAudio.FromFile(filePath));
+
+            // Print out the results.
+            foreach (var result in response.Results)
+            {
+                // There can be several transcripts for a chunk of audio.
+                // Print out the first (most likely) one here.
+                var alternative = result.Alternatives[0];
+                Console.WriteLine($"Transcript: {alternative.Transcript}");
+                Console.WriteLine($"Channel Tag: {result.ChannelTag}");
+            }
+            return 0;
+        }
+        // [END speech_transcribe_multichannel_beta]
 
         /// <summary>
         /// Reads a list of phrases from stdin.
@@ -566,7 +598,8 @@ namespace GoogleCloudSamples
                     SyncRecognizeWords(opts.FilePath) : opts.EnableAutomaticPunctuation ?
                     SyncRecognizePunctuation(opts.FilePath) : (opts.SelectModel != null) ?
                     SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : opts.UseEnhancedModel ?
-                    SyncRecognizeEnhancedModel(opts.FilePath) : SyncRecognize(opts.FilePath),
+                    SyncRecognizeEnhancedModel(opts.FilePath) : (opts.NumberOfChannels > 1) ?
+                    SyncRecognizeMultipleChannels(opts.FilePath, opts.NumberOfChannels) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
                     : AsyncRecognizeGcs(opts.FilePath))

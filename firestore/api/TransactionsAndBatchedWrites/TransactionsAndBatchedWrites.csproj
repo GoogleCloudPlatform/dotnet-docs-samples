@@ -6,6 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="Google.Cloud.Firestore" Version="1.0.0-beta14" />
+    <PackageReference Include="Google.Cloud.Firestore" Version="1.0.0-beta19" />
   </ItemGroup>
 </Project>

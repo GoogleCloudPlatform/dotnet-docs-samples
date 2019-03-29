@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+param([int]$GroupNumber = 0)
+
 github\dotnet-docs-samples\.kokoro-windows\New-BuildEnv env -SkipDownloadKokoroDir
 env\Activate.ps1
 
@@ -24,4 +26,4 @@ try {
 }
 
 # Run the tests.
-github\dotnet-docs-samples\.kokoro\main.ps1
+github\dotnet-docs-samples\.kokoro\main.ps1 $GroupNumber

@@ -442,6 +442,11 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
+    [Verb("updateUsingBatchDml", HelpText = "Updates sample data in the database using Batch DML.")]
+    class UpdateUsingBatchDmlOptions : DefaultOptions
+    {
+    }
+
     [Verb("listDatabaseTables", HelpText = "List all the user-defined tables in the database.")]
     class ListDatabaseTablesOptions : DefaultOptions
     {
@@ -1536,6 +1541,41 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END spanner_dml_partitioned_delete]
 
+        // [START spanner_dml_batch_update]
+        public static async Task UpdateUsingBatchDmlCoreAsync(
+            string projectId,
+            string instanceId,
+            string databaseId)
+        {
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+
+            // Create connection to Cloud Spanner.
+            using (var connection =
+                new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SpannerBatchCommand cmd = connection.CreateBatchDmlCommand();
+                //var cmd = new SpannerBatchCommand(connection);
+
+                cmd.Add("INSERT INTO Albums "
+                    + "(SingerId, AlbumId, AlbumTitle, MarketingBudget) "
+                    + "VALUES (1, 3, 'Test Album Title', 10000)");
+
+                cmd.Add("UPDATE Albums "
+                    + "SET MarketingBudget = MarketingBudget * 2 "
+                    + "WHERE SingerId = 1 and AlbumId = 3");
+
+                IEnumerable<long> affectedRows = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine(
+                    $"Executed {affectedRows.Count()} "
+                    + "SQL statements using Batch DML.");
+            }
+        }
+        // [END spanner_dml_batch_update]
+
         // [START spanner_delete_data]	    
         public static async Task DeleteSampleDataAsync(
             string projectId, string instanceId, string databaseId)
@@ -1968,8 +2008,8 @@ namespace GoogleCloudSamples.Spanner
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
 
-            // Get current max SingerId.
-            Int64 maxSingerId = 0;
+            // Get current max SingerId, start at a minimum SingerId of 20.
+            Int64 maxSingerId = 20;
             using (var connection = new SpannerConnection(connectionString))
             {
                 // Execute a SQL statement to get current MAX() of SingerId.
@@ -1984,7 +2024,7 @@ namespace GoogleCloudSamples.Spanner
                             reader.GetFieldValue<string>("SingerId"), out parsedValue);
                         if (result)
                         {
-                            maxSingerId = parsedValue;
+                            maxSingerId += parsedValue;
                         }
                     }
                 }
@@ -2861,6 +2901,17 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
+        public static object UpdateUsingBatchDml(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = UpdateUsingBatchDmlCoreAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
@@ -2978,6 +3029,9 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((DeleteUsingPartitionedDmlOptions opts) =>
                     DeleteUsingPartitionedDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((UpdateUsingBatchDmlOptions opts) =>
+                    UpdateUsingBatchDml(opts.projectId, opts.instanceId,
                     opts.databaseId))
                 .Add((ListDatabaseTablesOptions opts) =>
                     ListDatabaseTables(opts.projectId, opts.instanceId,

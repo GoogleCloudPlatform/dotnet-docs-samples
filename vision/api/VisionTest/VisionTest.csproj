@@ -11,7 +11,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.3.0-beta04" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DetectFaces\DetectFaces.csproj" />
