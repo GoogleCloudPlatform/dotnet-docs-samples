@@ -14,12 +14,10 @@ namespace GoogleCloudSamples
             string name = "dotnet-test-" + rand;
             string email = $"{name}@{projectId}.iam.gserviceaccount.com";
 
-            ServiceAccounts.Init();
             ServiceAccounts.CreateServiceAccount(projectId, name, "C# Test Account");
             ServiceAccounts.ListServiceAccounts(projectId);
             ServiceAccounts.RenameServiceAccount(email, "Updated C# Test Account");
 
-            ServiceAccountKeys.Init();
             var key = ServiceAccountKeys.CreateKey(email);
             ServiceAccountKeys.ListKeys(email);
             ServiceAccountKeys.DeleteKey(key.Name);

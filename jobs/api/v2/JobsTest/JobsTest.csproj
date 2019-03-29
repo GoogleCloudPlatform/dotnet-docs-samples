@@ -5,11 +5,14 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.JobService.v2" Version="1.34.0.1247" />
+    <PackageReference Include="Google.Apis.JobService.v2" Version="1.37.0.1439" />
     <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="xunit" Version="2.3.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\testutil\testutil.csproj" />

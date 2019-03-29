@@ -16,101 +16,95 @@ using System;
 using System.Collections.Generic;
 using CommandLine;
 
-namespace GoogleCloudSamples
+[Verb("permissions", HelpText = "Lists valid permissions for a resource.")]
+internal class ViewPermissionsOptions
 {
-    [Verb("permissions", HelpText = "Lists valid permissions for a resource.")]
-    internal class ViewPermissionsOptions
-    {
-        [Option("resource", HelpText = "", Required = true)]
-        public string Resource { get; set; }
-    }
+    [Option("resource", HelpText = "", Required = true)]
+    public string Resource { get; set; }
+}
 
-    [Verb("get", HelpText = "Gets an existing roles.")]
-    internal class GetRoleOptions
-    {
-        [Option("name", HelpText = "The name of the role.", Required = true)]
-        public string Name { get; set; }
-    }
+[Verb("grantable", HelpText = "Lists grantable roles for a resource.")]
+internal class ViewGrantableRolesOptions
+{
+    [Option("resource", HelpText = "", Required = true)]
+    public string Resource { get; set; }
+}
 
-    [Verb("list", HelpText = "Lists existing roles.")]
-    internal class ListRolesOptions
-    {
-        [Option("project", HelpText = "The project to list roles for.")]
-        public string Project { get; set; }
-    }
+[Verb("get", HelpText = "Gets an existing roles.")]
+internal class GetRoleOptions
+{
+    [Option("name", HelpText = "The name of the role.", Required = true)]
+    public string Name { get; set; }
+}
 
-    [Verb("create", HelpText = "Creates a custom role.")]
-    internal class CreateRoleOptions
-    {
-        [Option("name", HelpText = "Name of the role.", Required = true)]
-        public string Name { get; set; }
+[Verb("list", HelpText = "Lists existing roles.")]
+internal class ListRolesOptions
+{
+    [Option("project", HelpText = "The project to list roles for.")]
+    public string Project { get; set; }
+}
 
-        [Option("project", HelpText = "Project for the role.", Required = true)]
-        public string Project { get; set; }
+[Verb("create", HelpText = "Creates a custom role.")]
+internal class CreateRoleOptions
+{
+    [Option("name", HelpText = "Name of the role.", Required = true)]
+    public string Name { get; set; }
 
-        [Option("title", HelpText = "Title of the role.", Required = true)]
-        public string Title { get; set; }
+    [Option("project", HelpText = "Project for the role.", Required = true)]
+    public string Project { get; set; }
 
-        [Option("description", HelpText = "Description of the role.",
-            Required = true)]
-        public string Description { get; set; }
+    [Option("title", HelpText = "Title of the role.", Required = true)]
+    public string Title { get; set; }
 
-        [Option("permissions", HelpText = "Permissions the role grants.",
-            Required = true)]
-        public List<String> Permissions { get; set; }
+    [Option("description", HelpText = "Description of the role.",
+        Required = true)]
+    public string Description { get; set; }
 
-        [Option("stage", HelpText = "Stage of the role.", Required = true)]
-        public string Stage { get; set; }
-    }
-    [Verb("edit", HelpText = "Modifies a custom role.")]
-    internal class EditRoleOptions
-    {
-        [Option("name", HelpText = "Name of the role.")]
-        public string Name { get; set; }
+    [Option("permissions", HelpText = "Permissions the role grants.",
+        Required = true)]
+    public List<String> Permissions { get; set; }
 
-        [Option("project", HelpText = "Project for the role.")]
-        public string Project { get; set; }
+    [Option("stage", HelpText = "Stage of the role.", Required = true)]
+    public string Stage { get; set; }
+}
+[Verb("edit", HelpText = "Modifies a custom role.")]
+internal class EditRoleOptions
+{
+    [Option("name", HelpText = "Name of the role.")]
+    public string Name { get; set; }
 
-        [Option("title", HelpText = "Title of the role.")]
-        public string Title { get; set; }
+    [Option("project", HelpText = "Project for the role.")]
+    public string Project { get; set; }
 
-        [Option("description", HelpText = "Description of the role.")]
-        public string Description { get; set; }
+    [Option("title", HelpText = "Title of the role.")]
+    public string Title { get; set; }
 
-        [Option("permissions", HelpText = "Permissions the role grants.")]
-        public List<String> Permissions { get; set; }
+    [Option("description", HelpText = "Description of the role.")]
+    public string Description { get; set; }
 
-        [Option("stage", HelpText = "Stage of the role.")]
-        public string Stage { get; set; }
-    }
+    [Option("permissions", HelpText = "Permissions the role grants.")]
+    public List<String> Permissions { get; set; }
 
-    [Verb("disable", HelpText = "Disables a custom role.")]
-    internal class DisableRoleOptions
-    {
-        [Option("name", HelpText = "Name of the role.")]
-        public string Name { get; set; }
+    [Option("stage", HelpText = "Stage of the role.")]
+    public string Stage { get; set; }
+}
 
-        [Option("project", HelpText = "Project for the role.")]
-        public string Project { get; set; }
-    }
+[Verb("delete", HelpText = "Deletes a custom role.")]
+internal class DeleteRoleOptions
+{
+    [Option("name", HelpText = "Name of the role.")]
+    public string Name { get; set; }
 
-    [Verb("delete", HelpText = "Deletes a custom role.")]
-    internal class DeleteRoleOptions
-    {
-        [Option("name", HelpText = "Name of the role.")]
-        public string Name { get; set; }
+    [Option("project", HelpText = "Project for the role.")]
+    public string Project { get; set; }
+}
 
-        [Option("project", HelpText = "Project for the role.")]
-        public string Project { get; set; }
-    }
+[Verb("undelete", HelpText = "Undeletes a custom role.")]
+internal class UndeleteRoleOptions
+{
+    [Option("name", HelpText = "Name of the role.")]
+    public string Name { get; set; }
 
-    [Verb("undelete", HelpText = "Undeletes a custom role.")]
-    internal class UndeleteRoleOptions
-    {
-        [Option("name", HelpText = "Name of the role.")]
-        public string Name { get; set; }
-
-        [Option("project", HelpText = "Project for the role.")]
-        public string Project { get; set; }
-    }
+    [Option("project", HelpText = "Project for the role.")]
+    public string Project { get; set; }
 }

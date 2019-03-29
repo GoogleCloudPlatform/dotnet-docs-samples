@@ -22,66 +22,24 @@ can use [this older sample](
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=bigquery&showconfirmation=true)
     to visit Cloud Platform Console and enable the BigQuery API.
 
-5. Edit [QuickStart.cs](QuickStart/Program.cs), and replace YOUR-PROJECT-ID with the id of the project you created in step 1.
+5. Edit [SimpleApp/Program.cs](SimpleApp/Program.cs), and replace YOUR-PROJECT-ID with the id of the project you created in step 1.
 
-6.  From a Powershell command line, run the QuickStart sample:
+6.  From a Powershell command line, run the SimpleApp sample:
 
-    ```ps1
-    PS C:\...\dotnet-docs-samples\bigquery\api\QuickStart> dotnet run
-    Dataset my_new_dataset created.
     ```
-
-8.  And run the Bigquery sample with your project id to perform a sample query:
-
-    ```ps1
-    PS C:\...\dotnet-docs-samples\bigquery\api\BigquerySample> dotnet run YOUR-PROJECT-ID
-    
+    PS C:\...\dotnet-docs-samples\bigquery\api\SimpleApp> dotnet run
     Query Results:
     ------------
-    hamlet: 5318
-    kinghenryv: 5104
-    cymbeline: 4875
-    troilusandcressida: 4795
-    kinglear: 4784
-    kingrichardiii: 4713
-    2kinghenryvi: 4683
-    coriolanus: 4653
-    2kinghenryiv: 4605
-    antonyandcleopatra: 4582
-    1kinghenryvi: 4441
-    winterstale: 4404
-    1kinghenryiv: 4317
-    othello: 4284
-    kinghenryviii: 4236
-    loveslabourslost: 4236
-    romeoandjuliet: 4230
-    kingrichardii: 4200
-    3kinghenryvi: 4076
-    kingjohn: 4024
-    rapeoflucrece: 3960
-    allswellthatendswell: 3949
-    titusandronicus: 3869
-    macbeth: 3833
-    timonofathens: 3795
-    measureforemeasure: 3786
-    periclesprinceoftyre: 3754
-    tamingoftheshrew: 3699
-    sonnets: 3677
-    merchantofvenice: 3677
-    asyoulikeit: 3676
-    merrywivesofwindsor: 3653
-    tempest: 3636
-    twelfthnight: 3534
-    midsummersnightsdream: 3406
-    muchadoaboutnothing: 3369
-    juliuscaesar: 3361
-    twogentlemenofverona: 3122
-    venusandadonis: 2926
-    comedyoferrors: 2870
-    various: 1349
-    loverscomplaint: 1195
-
-    Press any key...    
+    https://stackoverflow.com/questions/13530967: 44672 views
+    https://stackoverflow.com/questions/22879669: 34745 views
+    https://stackoverflow.com/questions/13221978: 31584 views
+    https://stackoverflow.com/questions/6607552: 27736 views
+    https://stackoverflow.com/questions/16609219: 26271 views
+    https://stackoverflow.com/questions/35159967: 26258 views
+    https://stackoverflow.com/questions/10604135: 25860 views
+    https://stackoverflow.com/questions/22004216: 23496 views
+    https://stackoverflow.com/questions/10644993: 22356 views
+    https://stackoverflow.com/questions/11647201: 18547 views
     ```
 
 ## Contributing changes

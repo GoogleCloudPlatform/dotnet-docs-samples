@@ -7,7 +7,7 @@ running in Google App Engine Flexible Environment with their Facebook or Google
 credentials.  
 
 This sample requires [.NET Core 2.1](
-    https://www.microsoft.com/net/core) or later.  That means using
+    https://www.microsoft.com/net/core) or newer.  That means using
 [Visual Studio 2017](
     https://www.visualstudio.com/), or the dotnet core command line.
 

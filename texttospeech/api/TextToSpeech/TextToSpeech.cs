@@ -28,26 +28,37 @@ namespace GoogleCloudSamples
         public string DesiredLanguage { get; set; }
     }
 
-    [Verb("synthesize", HelpText = "Synthesize input to audio")]
-    class SynthesizeArgs
+    class BaseTextToSpeechOptions
     {
-        [Value(0, HelpText = "The text to synthesize.",
-            Required = true)]
-        public string Text { get; set; }
-
         [Option('f', HelpText = "Source formatting")]
         public string SourceFormat { get; set; }
     }
 
+    [Verb("synthesize", HelpText = "Synthesize input to audio")]
+    class SynthesizeArgs : BaseTextToSpeechOptions
+    {
+        [Value(0, HelpText = "The text to synthesize.",
+            Required = true)]
+        public string Text { get; set; }
+    }
+
     [Verb("synthesize-file", HelpText = "Synthesize a file to audio")]
-    class SynthesizeFileArgs
+    class SynthesizeFileArgs : BaseTextToSpeechOptions
     {
         [Value(0, HelpText = "The file to synthesize",
             Required = true)]
         public string Text { get; set; }
+    }
 
-        [Option('f', HelpText = "Source formatting")]
-        public string SourceFormat { get; set; }
+    [Verb("synthesize-with-profile",
+          HelpText = "Synthesize text and optimize output for a device profile")]
+    class SynthesizeWithEffectsArgs : SynthesizeFileArgs
+    {
+        [Option('o', HelpText = "Output file name", Required = true)]
+        public string OutputFileName { get; set; }
+
+        [Option('e', HelpText = "Effects profile to use", Required = true)]
+        public string EffectsProfileId { get; set; }
     }
 
     public class TextToSpeech
@@ -56,9 +67,13 @@ namespace GoogleCloudSamples
         {
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             Parser.Default.ParseArguments<ListArgs, SynthesizeArgs,
-                SynthesizeFileArgs>(args).MapResult(
+                SynthesizeFileArgs, SynthesizeWithEffectsArgs>(args).MapResult(
                 (ListArgs largs) => largs.DesiredLanguage == null ?
                     ListVoices() : ListVoices(largs.DesiredLanguage),
+                (SynthesizeWithEffectsArgs sargs) =>
+                    SynthesizeTextWithAudioProfile(sargs.Text,
+                                                   sargs.OutputFileName,
+                                                   sargs.EffectsProfileId),
                 (SynthesizeArgs sargs) => Synthesize(sargs),
                 (SynthesizeFileArgs sfargs) => SynthesizeFile(sfargs),
                 errs => 1);
@@ -164,7 +179,7 @@ namespace GoogleCloudSamples
         /// </remarks>
         public static void SynthesizeSSML(string ssml)
         {
-            TextToSpeechClient client = TextToSpeechClient.Create();
+            var client = TextToSpeechClient.Create();
             var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
             {
                 Input = new SynthesisInput
@@ -215,7 +230,7 @@ namespace GoogleCloudSamples
         {
             string text = File.ReadAllText(textFilePath);
 
-            TextToSpeechClient client = TextToSpeechClient.Create();
+            var client = TextToSpeechClient.Create();
             var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
             {
                 Input = new SynthesisInput
@@ -255,7 +270,7 @@ namespace GoogleCloudSamples
         {
             string text = File.ReadAllText(ssmlFilePath);
 
-            TextToSpeechClient client = TextToSpeechClient.Create();
+            var client = TextToSpeechClient.Create();
             var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
             {
                 Input = new SynthesisInput
@@ -280,5 +295,53 @@ namespace GoogleCloudSamples
             }
         }
         // [START tts_synthesize_ssml_file]
+
+        // [START tts_synthesize_text_audio_profile]
+        /// <summary>
+        /// Creates an audio file from the text input, applying the specifed
+        /// device profile to the output.
+        /// </summary>
+        /// <param name="text">Text to synthesize into audio</param>
+        /// <param name="outputFile">Name of audio output file</param>
+        /// <param name="effectProfileId">Audio effect profile to apply</param>
+        /// <remarks>
+        /// Output file saved in project folder.
+        /// </remarks>
+        public static int SynthesizeTextWithAudioProfile(string text,
+                                                         string outputFile,
+                                                         string effectProfileId)
+        {
+            var client = TextToSpeechClient.Create();
+            var response = client.SynthesizeSpeech(new SynthesizeSpeechRequest
+            {
+                Input = new SynthesisInput
+                {
+                    Text = text
+                },
+                // Note: voices can also be specified by name
+                // Names of voices can be retrieved with client.ListVoices().
+                Voice = new VoiceSelectionParams
+                {
+                    LanguageCode = "en-US",
+                    SsmlGender = SsmlVoiceGender.Female
+                },
+                AudioConfig = new AudioConfig
+                {
+                    AudioEncoding = AudioEncoding.Mp3,
+                    // Note: you can pass in multiple audio effects profiles.
+                    // They are applied in the same order as provided.
+                    EffectsProfileId = { effectProfileId }
+                }
+            });
+
+            // The response's AudioContent is binary.
+            using (Stream output = File.Create(outputFile))
+            {
+                response.AudioContent.WriteTo(output);
+            }
+
+            return 0;
+        }
+        // [END tts_synthesize_text_audio_profile]
     }
 }

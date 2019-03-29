@@ -5,10 +5,13 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.1.0-beta02" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Recognize\Recognize.csproj" />
@@ -37,6 +40,10 @@
   <ItemGroup>
     <None Update="resources\commercial_mono.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\commercial_stereo.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <LogicalName>SpeechTest.resources.commercial_stereo.wav</LogicalName>
     </None>
   </ItemGroup>
 </Project>

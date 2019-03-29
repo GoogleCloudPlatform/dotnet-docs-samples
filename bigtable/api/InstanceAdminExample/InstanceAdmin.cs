@@ -18,6 +18,7 @@ using CommandLine;
 using Google.LongRunning;
 using Google.Cloud.Bigtable.Admin.V2;
 using System.Text.RegularExpressions;
+using Google.Api.Gax.ResourceNames;
 
 namespace GoogleCloudSamples.Bigtable
 {

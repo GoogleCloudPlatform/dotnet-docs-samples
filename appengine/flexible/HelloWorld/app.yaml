@@ -11,3 +11,7 @@ resources:
   cpu: 1
   memory_gb: 0.5
   disk_size_gb: 10
+
+env_variables:
+  # The __ in My__Greeting will be translated to a : by ASP.NET.
+  My__Greeting: Hello AppEngine!

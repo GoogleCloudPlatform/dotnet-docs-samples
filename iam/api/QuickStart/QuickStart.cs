@@ -25,7 +25,7 @@ public class QuickStart
     public static void Main(string[] args)
     {
         // Get credentials
-        GoogleCredential credential = GoogleCredential.GetApplicationDefault()
+        var credential = GoogleCredential.GetApplicationDefault()
             .CreateScoped(IamService.Scope.CloudPlatform);
 
         // Create the Cloud IAM service object

@@ -101,7 +101,7 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("addColumn",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            _spannerCmd.Run("writeUsingDml",
+            _spannerCmd.Run("addCommitTimestamp",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
         }
 
@@ -225,10 +225,6 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestCommitTimestamp()
         {
-            // Add a commit timestamp column to an existing table.
-            ConsoleOutput insertOutput = _spannerCmd.Run("addCommitTimestamp",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Equal(0, insertOutput.ExitCode);
             // Update records with added commit timestamp column.
             ConsoleOutput updateOutput = _spannerCmd.Run("updateDataWithTimestamp",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
@@ -318,7 +314,6 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("1 1 600000", readOutput.Stdout);
-            //Assert.Contains("1 1 2000000", readOutput.Stdout);
             // Delete record using a DML Statement.
             readOutput = _spannerCmd.Run("deleteUsingDml",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
@@ -351,6 +346,15 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("Timothy Grant", readOutput.Stdout);
+            // Insert multiple records using a DML Statement.
+            readOutput = _spannerCmd.Run("writeUsingDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Query inserted record.
+            readOutput = _spannerCmd.Run("querySingersTable",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.            
             Assert.Contains("Melissa Garcia", readOutput.Stdout);
             Assert.Contains("Russell Morales", readOutput.Stdout);
             Assert.Contains("Jacqueline Long", readOutput.Stdout);
@@ -391,6 +395,16 @@ namespace GoogleCloudSamples.Spanner
             Assert.DoesNotContain("Russell Morales", readOutput.Stdout);
             Assert.DoesNotContain("Jacqueline Long", readOutput.Stdout);
             Assert.DoesNotContain("Dylan Shaw", readOutput.Stdout);
+            // Insert and update a record using Batch DML.
+            readOutput = _spannerCmd.Run("updateUsingBatchDml",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Query updated record.
+            readOutput = _spannerCmd.Run("queryAlbumsTable",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("1 3 20000", readOutput.Stdout);
         }
 
         [Fact(Skip = "Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]

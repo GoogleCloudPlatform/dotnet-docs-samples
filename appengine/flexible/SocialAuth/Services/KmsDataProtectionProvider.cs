@@ -72,6 +72,11 @@ namespace SocialAuthMVC.Services
             {
                 // Already exists.  Ok.
             }
+            catch (Grpc.Core.RpcException e)
+            when (e.StatusCode == StatusCode.PermissionDenied)
+            {
+                // We don't need to create it as long as it exists.
+            }
         }
 
         IDataProtector IDataProtectionProvider.CreateProtector(string purpose)
