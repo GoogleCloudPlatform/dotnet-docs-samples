@@ -87,13 +87,12 @@ namespace Sudokumb
             _logger = logger;
             _publisherApi = PublisherServiceApiClient.Create();
             var subscriberApi = SubscriberServiceApiClient.Create();
-            _publisherClient = PublisherClient.Create(MyTopic,
-                new[] { _publisherApi });
-            _subscriberClient = SubscriberClient.Create(MySubscription,
-                new[] { subscriberApi }, new SubscriberClient.Settings()
+            _publisherClient = PublisherClient.CreateAsync(MyTopic).Result;
+            _subscriberClient = SubscriberClient.CreateAsync(MySubscription,
+                settings: new SubscriberClient.Settings()
                 {
-                    StreamAckDeadline = TimeSpan.FromMinutes(1)
-                });
+                    AckDeadline = TimeSpan.FromMinutes(1)
+                }).Result;
 
             // Create the Topic and Subscription.
             try
