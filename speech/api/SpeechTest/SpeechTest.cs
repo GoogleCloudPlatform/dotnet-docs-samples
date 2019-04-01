@@ -141,6 +141,15 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+
+        public void TestSyncEnhancedModel()
+        {
+            var output = Run("sync", "-e", _audioWavPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Chromecast", output.Stdout);
+        }
+
+        [Fact]
         public void TestSyncMultiChannel()
         {
             var output = Run("sync", "-c", "2", _audioSteroPath);

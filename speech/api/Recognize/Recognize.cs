@@ -55,6 +55,9 @@ namespace GoogleCloudSamples
         [Option('m', HelpText = "Select a transcription model.")]
         public String SelectModel { get; set; }
 
+        [Option('e', HelpText = "Use an enhanced transcription model.")]
+        public bool UseEnhancedModel { get; set; }
+
         [Option('c', HelpText = "Set number of channels")]
         public int NumberOfChannels { get; set; }
     }
@@ -147,7 +150,6 @@ namespace GoogleCloudSamples
         }
         // [END speech_transcribe_sync]
 
-
         // [START speech_sync_recognize_words]
         static object SyncRecognizeWords(string filePath)
         {
@@ -223,6 +225,31 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_transcribe_model_selection]
+
+        // [START speech_transcribe_enhanced_model]
+        static object SyncRecognizeEnhancedModel(string filePath)
+        {
+            var speech = SpeechClient.Create();
+            var response = speech.Recognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                SampleRateHertz = 8000,
+                LanguageCode = "en-US",
+                UseEnhanced = true,
+                // A model must be specified to use an enhanced model.
+                // Currently, only 'phone_call' is supported.
+                Model = "phone_call",
+            }, RecognitionAudio.FromFile(filePath));
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine(alternative.Transcript);
+                }
+            }
+            return 0;
+        }
+        // [END speech_transcribe_enhanced_model]
 
         // [START speech_transcribe_multichannel_beta]
         static object SyncRecognizeMultipleChannels(string filePath, int channelCount)
@@ -569,7 +596,8 @@ namespace GoogleCloudSamples
                     SyncRecognizeGcs(opts.FilePath) : opts.EnableWordTimeOffsets ?
                     SyncRecognizeWords(opts.FilePath) : opts.EnableAutomaticPunctuation ?
                     SyncRecognizePunctuation(opts.FilePath) : (opts.SelectModel != null) ?
-                    SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : (opts.NumberOfChannels > 1) ?
+                    SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : opts.UseEnhancedModel ?
+                    SyncRecognizeEnhancedModel(opts.FilePath) : (opts.NumberOfChannels > 1) ?
                     SyncRecognizeMultipleChannels(opts.FilePath, opts.NumberOfChannels) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
