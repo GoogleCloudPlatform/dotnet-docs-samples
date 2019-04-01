@@ -60,7 +60,6 @@ namespace GoogleCloudSamples
 
         [Option('c', HelpText = "Set number of channels")]
         public int NumberOfChannels { get; set; }
-
     }
 
     [Verb("with-context", HelpText = "Detects speech in an audio file."
