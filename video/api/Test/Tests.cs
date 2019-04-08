@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GoogleCloudSamples.VideoIntelligence
 {
@@ -36,13 +37,19 @@ namespace GoogleCloudSamples.VideoIntelligence
 
     public class AnalyzeTests : IDisposable
     {
+        public AnalyzeTests(ITestOutputHelper outputHelper)
+        {
+            _analyze = new CommandLineRunner()
+            {
+                VoidMain = Analyzer.Main,
+                Command = "Analyze",
+                TestOutputHelper = outputHelper
+            };
+        }
+
         readonly List<string> _tempFiles = new List<string>();
 
-        readonly CommandLineRunner _analyze = new CommandLineRunner()
-        {
-            VoidMain = Analyzer.Main,
-            Command = "Analyze"
-        };
+        readonly CommandLineRunner _analyze;
 
         readonly List<string> _POSSIBLE_TEXTS = new List<string>
         { "Google", "SUR", "ROTO", "Vice President", "58oo9",

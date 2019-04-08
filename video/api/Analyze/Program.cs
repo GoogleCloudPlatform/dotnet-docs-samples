@@ -235,7 +235,9 @@ namespace GoogleCloudSamples.VideoIntelligence
             };
 
             Console.WriteLine("\nProcessing video for text detection.");
-            var op = client.AnnotateVideo(request).PollUntilCompleted();
+            var op = client.AnnotateVideo(request);
+            Console.WriteLine($"\nOp name: {op.Name}.");
+            op = op.PollUntilCompleted();
 
             // Retrieve the first result because only one video was processed.
             var annotationResults = op.Result.AnnotationResults[0];

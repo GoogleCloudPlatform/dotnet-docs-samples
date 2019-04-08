@@ -21,6 +21,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GoogleCloudSamples
 {
@@ -116,6 +117,8 @@ namespace GoogleCloudSamples
         public Action<string[]> VoidMain { get; set; }
         public string Command { get; set; }
 
+        public ITestOutputHelper TestOutputHelper { get; set; }
+
         /// <summary>Runs executable with the provided arguments</summary>
         /// <returns>The console output of this program</returns>
         public ConsoleOutput Run(params string[] arguments)
@@ -142,6 +145,11 @@ namespace GoogleCloudSamples
                     };
                     Console.Write(consoleOutput.Stdout);
                     return consoleOutput;
+                }
+                catch (Exception) when (TestOutputHelper != null)
+                {
+                    TestOutputHelper.WriteLine(stringOut.ToString());
+                    throw;
                 }
                 finally
                 {
