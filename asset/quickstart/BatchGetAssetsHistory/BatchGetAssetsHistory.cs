@@ -15,7 +15,7 @@
 // [START asset_quickstart_batch_get_assets_history]
 
 using Google.Api.Gax.ResourceNames;
-using Google.Cloud.Asset.V1Beta1;
+using Google.Cloud.Asset.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 

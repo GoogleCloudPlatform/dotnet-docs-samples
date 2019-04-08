@@ -12,30 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using CommandLine;
 
-namespace GoogleCloudSamples
+[Verb("create", HelpText = "Creates a service account key.")]
+internal class CreateKeyOptions
 {
-    [Verb("create", HelpText = "Creates a service account key.")]
-    internal class CreateKeyOptions
-    {
-        [Option("service-account-email", HelpText = "The service account's email.", Required = true)]
-        public string ServiceAccountEmail { get; set; }
-    }
+    [Option("service-account-email", HelpText = "The service account's email.", Required = true)]
+    public string ServiceAccountEmail { get; set; }
+}
 
-    [Verb("list", HelpText = "Lists the keys for a service account.")]
-    internal class ListKeyOptions
-    {
-        [Option("service-account-email", HelpText = "The service account's email.", Required = true)]
-        public string ServiceAccountEmail { get; set; }
-    }
+[Verb("list", HelpText = "Lists the keys for a service account.")]
+internal class ListKeyOptions
+{
+    [Option("service-account-email", HelpText = "The service account's email.", Required = true)]
+    public string ServiceAccountEmail { get; set; }
+}
 
-    [Verb("delete", HelpText = "Deletes a service account key.")]
-    internal class DeleteKeyOptions
-    {
-        [Option("full-key-name", HelpText = "The full resource name of the key.", Required = true)]
-        public string FullKeyName { get; set; }
-    }
+[Verb("delete", HelpText = "Deletes a service account key.")]
+internal class DeleteKeyOptions
+{
+    [Option("full-key-name", HelpText = "The full resource name of the key.", Required = true)]
+    public string FullKeyName { get; set; }
 }

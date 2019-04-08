@@ -712,6 +712,22 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void TestBucketPolicyOnly()
+        {
+            using (var bucketPolicyOnly = new BucketFixture())
+            {
+                var enableBucketPolicyOnly = Run("enable-bucket-policy-only", bucketPolicyOnly.BucketName);
+                AssertSucceeded(enableBucketPolicyOnly);
+                var getBucketPolicyOnly = Run("get-bucket-policy-only", bucketPolicyOnly.BucketName);
+                AssertSucceeded(getBucketPolicyOnly);
+                var disableBucketPolicyOnly = Run("disable-bucket-policy-only", bucketPolicyOnly.BucketName);
+                AssertSucceeded(disableBucketPolicyOnly);
+                getBucketPolicyOnly = Run("get-bucket-policy-only", bucketPolicyOnly.BucketName);
+                AssertSucceeded(getBucketPolicyOnly);
+            }
+        }
+
+        [Fact]
         public void TestGenerateEncryptionKey()
         {
             var output = Run("generate-encryption-key");

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Clouderrorreporting.v1beta1" Version="1.36.1.1393" />
+    <PackageReference Include="Google.Apis.Clouderrorreporting.v1beta1" Version="1.38.0.1525" />
   </ItemGroup>
 
 </Project>

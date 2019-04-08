@@ -55,6 +55,7 @@ namespace GoogleCloudSamples
         protected string _audioRawPath = Path.Combine("resources", "audio.raw");
         protected string _audioFlacPath = Path.Combine("resources", "audio.flac");
         protected string _audioWavPath = Path.Combine("resources", "commercial_mono.wav");
+        protected string _audioSteroPath = Path.Combine("resources", "commercial_stereo.wav");
 
         [Fact]
         public void TestSync()
@@ -137,6 +138,23 @@ namespace GoogleCloudSamples
             var output = Run("sync", "-m", "command_and_search", _audioRawPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
+        }
+
+        [Fact]
+
+        public void TestSyncEnhancedModel()
+        {
+            var output = Run("sync", "-e", _audioWavPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Chromecast", output.Stdout);
+        }
+
+        [Fact]
+        public void TestSyncMultiChannel()
+        {
+            var output = Run("sync", "-c", "2", _audioSteroPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Channel Tag: 2", output.Stdout);
         }
     }
 

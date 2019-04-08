@@ -23,9 +23,8 @@ namespace GoogleCloudSamples
         public void TestAccess()
         {
             string project = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            var manager = new AccessManager();
-            var policy = manager.GetPolicy(project);
-            policy = manager.SetPolicy(project, policy);
+            var policy = AccessManager.GetPolicy(project);
+            policy = AccessManager.SetPolicy(project, policy);
         }
     }
 }

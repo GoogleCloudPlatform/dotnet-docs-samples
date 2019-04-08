@@ -1,39 +1,35 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaticContent", "StaticContent\StaticContent.csproj", "{AA79AC27-079E-4145-96E8-449A219B9527}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StaticContent", "StaticContent\StaticContent.csproj", "{AA79AC27-079E-4145-96E8-449A219B9527}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analytics", "Analytics\Analytics.csproj", "{8782139D-68A2-485D-89DE-4CB7DAE17A1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Analytics", "Analytics\Analytics.csproj", "{8782139D-68A2-485D-89DE-4CB7DAE17A1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisCache", "RedisCache\RedisCache.csproj", "{6E430843-E06E-47C5-ADC2-475C8EDE81DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisCache", "RedisCache\RedisCache.csproj", "{6E430843-E06E-47C5-ADC2-475C8EDE81DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendGrid", "SendGrid\SendGrid.csproj", "{0C33CDB9-DC3C-4832-AA81-83FE5CAFEF57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SendGrid", "SendGrid\SendGrid.csproj", "{0C33CDB9-DC3C-4832-AA81-83FE5CAFEF57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudSql", "CloudSql\CloudSql.csproj", "{8C5AFE04-4497-451B-892B-B3C378C803B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudSql", "CloudSql\CloudSql.csproj", "{8C5AFE04-4497-451B-892B-B3C378C803B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudStorage", "CloudStorage\CloudStorage.csproj", "{826B9A99-F8D8-4105-ACD6-D1562984684B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudStorage", "CloudStorage\CloudStorage.csproj", "{826B9A99-F8D8-4105-ACD6-D1562984684B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{908A2679-B7CF-4E8B-89A7-D2865C00C8F6}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metadata", "Metadata\Metadata.csproj", "{B4BA0EA1-6809-4B9B-939E-2B90A438BC34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Metadata", "Metadata\Metadata.csproj", "{B4BA0EA1-6809-4B9B-939E-2B90A438BC34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Datastore", "Datastore\Datastore.csproj", "{DA8C823E-9166-491F-8567-528131A9000A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Datastore", "Datastore\Datastore.csproj", "{DA8C823E-9166-491F-8567-528131A9000A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pubsub", "Pubsub\Pubsub.csproj", "{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pubsub", "Pubsub\Pubsub.csproj", "{BC1F61B5-AAAB-4E87-A8DE-638EC381E65C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stackdriver", "Stackdriver\Stackdriver.csproj", "{A1C2BF5B-155F-495B-8C91-09D601861744}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stackdriver", "Stackdriver\Stackdriver.csproj", "{A1C2BF5B-155F-495B-8C91-09D601861744}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialAuth", "SocialAuth\SocialAuth.csproj", "{9F39AD2D-594A-4905-A834-74C7F5C48640}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialAuth", "SocialAuth\SocialAuth.csproj", "{9F39AD2D-594A-4905-A834-74C7F5C48640}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "HelloWorld\HelloWorld.csproj", "{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}"
-EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "CloudSql-PostgreSql", "CloudSql-PostgreSql\CloudSql-PostgreSql.csproj", "{D536F111-1658-4810-AA1D-4CDE5FC17D87}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudTasks", "CloudTasks\CloudTasks.csproj", "{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld", "HelloWorld\HelloWorld.csproj", "{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -189,32 +185,11 @@ Global
 		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x64.Build.0 = Release|Any CPU
 		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x86.ActiveCfg = Release|Any CPU
 		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x86.Build.0 = Release|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Debug|x64.Build.0 = Debug|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Debug|x86.Build.0 = Debug|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Release|x64.ActiveCfg = Release|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Release|x64.Build.0 = Release|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Release|x86.ActiveCfg = Release|Any CPU
-		{D536F111-1658-4810-AA1D-4CDE5FC17D87}.Release|x86.Build.0 = Release|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Debug|x64.Build.0 = Debug|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Debug|x86.Build.0 = Debug|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Release|x64.ActiveCfg = Release|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Release|x64.Build.0 = Release|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Release|x86.ActiveCfg = Release|Any CPU
-		{5A3EB21E-C8E2-450C-A06D-44A845AF69B5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A5EA6044-ACD5-4AB3-BD16-B96EA7FF53C0}
 	EndGlobalSection
 EndGlobal
