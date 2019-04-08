@@ -82,7 +82,7 @@ Copy-Item -Force $PSScriptRoot\..\.kokoro\docker\bootstrap.js `
 Unzip $env:KOKORO_GFILE_DIR\casperjs-1.1.4-1.zip $installDir
 Set-PsDebug -Off
 # Install dotnet format (linting & formatting tool.)
-dotnet tool install --tool-path $installDir\dotnet-tools dotnet-format --version 3.0.2
+dotnet tool install --tool-path $installDir\dotnet-tools dotnet-format --version 3.0.4
 
 
 
