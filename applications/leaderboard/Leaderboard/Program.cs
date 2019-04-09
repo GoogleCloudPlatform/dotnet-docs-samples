@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Google.Cloud.Spanner.Data;
 using CommandLine;
+using System.Threading;
 
 namespace GoogleCloudSamples.Leaderboard
 {
@@ -145,34 +146,63 @@ namespace GoogleCloudSamples.Leaderboard
             }
         }
 
+        static bool WasTransactionAborted(AggregateException exception)
+        {
+            foreach (Exception innerException in exception.InnerExceptions)
+            {
+                var spannerException =
+                    innerException as SpannerBatchNonQueryException;
+                if (spannerException != null
+                    && spannerException.ErrorCode == ErrorCode.Aborted)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static object Insert(string projectId,
             string instanceId, string databaseId, string insertType)
         {
-            if (insertType.ToLower() == "players")
+            int tryCount = 0;
+            while (true)  // Loop breaks via return statement or exception.
             {
-                var responseTask =
-                    InsertPlayersAsync(projectId, instanceId, databaseId);
-                Console.WriteLine("Waiting for insert players operation to complete...");
-                responseTask.Wait();
-                Console.WriteLine($"Operation status: {responseTask.Status}");
+                tryCount += 1;
+                try
+                {
+                    if (insertType.ToLower() == "players")
+                    {
+                        var responseTask =
+                            InsertPlayersAsync(projectId, instanceId, databaseId);
+                        Console.WriteLine("Waiting for insert players operation to complete...");
+                        responseTask.Wait();
+                        Console.WriteLine($"Operation status: {responseTask.Status}");
+                    }
+                    else if (insertType.ToLower() == "scores")
+                    {
+                        var responseTask =
+                            InsertScoresAsync(projectId, instanceId, databaseId);
+                        Console.WriteLine("Waiting for insert scores operation to complete...");
+                        responseTask.Wait();
+                        Console.WriteLine($"Operation status: {responseTask.Status}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid value for 'type of insert'. "
+                            + "Specify 'players' or 'scores'.");
+                        return ExitCode.InvalidParameter;
+                    }
+                    Console.WriteLine($"Inserted {insertType} into sample database "
+                        + $"{databaseId} on instance {instanceId}");
+                    return ExitCode.Success;
+                }
+                catch (AggregateException exception)
+                when (tryCount < 5 && WasTransactionAborted(exception))
+                {
+                    // Sleep a few seconds and try again.
+                    Thread.Sleep(1024 << tryCount);
+                }
             }
-            else if (insertType.ToLower() == "scores")
-            {
-                var responseTask =
-                    InsertScoresAsync(projectId, instanceId, databaseId);
-                Console.WriteLine("Waiting for insert scores operation to complete...");
-                responseTask.Wait();
-                Console.WriteLine($"Operation status: {responseTask.Status}");
-            }
-            else
-            {
-                Console.WriteLine("Invalid value for 'type of insert'. "
-                    + "Specify 'players' or 'scores'.");
-                return ExitCode.InvalidParameter;
-            }
-            Console.WriteLine($"Inserted {insertType} into sample database "
-                + $"{databaseId} on instance {instanceId}");
-            return ExitCode.Success;
         }
 
         public static async Task InsertPlayersAsync(string projectId,
