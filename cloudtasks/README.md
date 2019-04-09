@@ -66,7 +66,7 @@ Set environment variables:
 
 First, your project ID:
 
-    export GOOGLE_CLOUD_PROJECT=my-project-id
+    export GOOGLE_PROJECT_ID=my-project-id
 
 Then the queue ID, as specified at queue creation time. Queue IDs already
 created can be listed with `gcloud beta tasks queues list`.
@@ -83,35 +83,11 @@ location is "us-central1").
 
 Move into the Tasks Sample folder:
 
-  cd ../api/TasksSample
+    cd ../api/TasksSample
 
-Create a task, targeted at the `log_payload` endpoint, with a payload specified:
+Run the tests:
 
-    dotnet run createTask --project=$PROJECT_ID --queue=$GCP_QUEUE --location=$LOCATION_ID --payload=hello
-
-The App Engine app serves as a target for the push requests. It has an
-endpoint `/log_payload` that reads the payload (i.e., the request body) of the
-HTTP POST request and logs it. The log output can be viewed with:
-
-    gcloud app logs read
-
-Create a task that will be scheduled for a time in the future using the
-`--in_seconds` flag:
-
-    dotnet run createTask --project=$PROJECT_ID --queue=$GCP_QUEUE --location=$LOCATION_ID --payload=hello --in_seconds=30
-
-
-Usage information
-
-```
--i, --projectId    Required. Project ID of the queue to add the task to.
--l, --location     Required. Location of the queue to add the task to.
--q, --queue        Required. Location of the queue to add the task to.
--d, --payload      (Default: ) (Optional) Payload to attach to the push queue.
--s, --inSeconds    (Default: 0) (Optional) The number of seconds from now to schedule task attempt.
---help             Display this help screen.
-  --version          Display version information.
-```
+    dotnet test
 
 [readme]: https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/master/appengine/flexible/README.md
 [appengine]: https://cloud.google.com/appengine/docs/flexible/dotnet
