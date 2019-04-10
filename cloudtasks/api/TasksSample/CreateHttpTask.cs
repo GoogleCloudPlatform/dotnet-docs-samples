@@ -33,8 +33,6 @@ class CreateHttpTask
 
         QueueName parent = new QueueName(projectId, location, queue);
 
-        var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         var response = client.CreateTask(new CreateTaskRequest
         {
             Parent = parent.ToString(),
@@ -46,11 +44,8 @@ class CreateHttpTask
                     Url = url,
                     Body = ByteString.CopyFromUtf8(payload)
                 },
-                ScheduleTime = new Timestamp
-                {
-                    Seconds = (long)(DateTime.Now.AddSeconds(inSeconds) - unixEpoch).TotalSeconds,
-                    Nanos = 0
-                }
+                ScheduleTime = Timestamp.FromDateTime(
+                    DateTime.Now.AddSeconds(inSeconds))
             }
         });
 
