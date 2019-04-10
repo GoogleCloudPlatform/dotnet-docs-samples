@@ -44,7 +44,7 @@ class CreateAppEngineTask
                     Body = ByteString.CopyFromUtf8(payload)
                 },
                 ScheduleTime = Timestamp.FromDateTime(
-                    DateTime.Now.AddSeconds(inSeconds))
+                    DateTime.UtcNow.AddSeconds(inSeconds))
             }
         });
 
