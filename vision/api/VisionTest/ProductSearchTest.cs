@@ -277,6 +277,42 @@ namespace GoogleCloudSamples
         }
 
 
+        void Setup(string INDEXED_PRODUCT_SET, string INDEXED_PRODUCT_1, string REF_IMAGE_ID) 
+        {
+            // Create a indexed product set for TestProductSearch() and TestProductSearchGcs()
+            // tests. These tests remain in the project after the test completes.
+            var output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
+            if (!output.Stdout.Contains(INDEXED_PRODUCT_SET))
+            {
+                _productSearch.Run("create_product_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_SET_DISPLAY_NAME);
+            }
+
+            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
+            if (!output.Stdout.Contains(INDEXED_PRODUCT_1))
+            {
+                _productSearch.Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            }
+
+            output = _productSearch.Run("list_ref_images", _projectId, REGION_NAME, INDEXED_PRODUCT_1);
+            if (!output.Stdout.Contains(REF_IMAGE_ID))
+            {
+                _productSearch.Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+            }
+
+            output = _productSearch.Run("list_products_in_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET);
+            if (!output.Stdout.Contains(INDEXED_PRODUCT_1))
+            {
+                _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, INDEXED_PRODUCT_1, INDEXED_PRODUCT_SET);
+            }
+
+            output = _productSearch.Run("get_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1);
+            if (!output.Stdout.Contains("style") || !output.Stdout.Contains("womens"))
+            {
+                _productSearch.Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
+            }
+
+        }
+
         [Fact]
         public void TestProductSearch()
         {
@@ -284,11 +320,7 @@ namespace GoogleCloudSamples
             string INDEXED_PRODUCT_1 = NewProductId();
             string REF_IMAGE_ID = NewRefImageId(INDEXED_PRODUCT_1);
 
-            _productSearch.Run("create_product_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_SET_DISPLAY_NAME);
-            _productSearch.Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
-            _productSearch.Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
-            _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, INDEXED_PRODUCT_1, INDEXED_PRODUCT_SET);
-            _productSearch.Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
+            Setup(INDEXED_PRODUCT_SET, INDEXED_PRODUCT_1, REF_IMAGE_ID);
 
             var output = _productSearch.Run("get_similar_products", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
             Assert.Equal(0, output.ExitCode);
