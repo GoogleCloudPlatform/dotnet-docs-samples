@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -22,7 +23,7 @@ namespace GoogleCloudSamples
         // A list of all the clean up operations we have to run when the test completes.
         internal readonly Stack<string[]> _cleanupOperations = new Stack<string[]>();
 
-        internal readonly CommandLineRunner _productSearch = new CommandLineRunner()
+        readonly CommandLineRunner _productSearch = new CommandLineRunner()
         {
             Main = ProductSearchProgram.Main,
             Command = "Product Search"
@@ -31,7 +32,7 @@ namespace GoogleCloudSamples
         // Create a new product id that is automatically deleted at the end
         // of the test.
         internal string NewProductId() => ScopedProductId(
-            "fake_productId_" + TestUtil.RandomName());
+            "fake_product_id_" + TestUtil.RandomName());
 
         internal string ScopedProductId(string productId) 
         {
@@ -41,7 +42,7 @@ namespace GoogleCloudSamples
 
         // Create a new product set id that is automatically deleted at the end
         // of the test.
-        internal string NewProductSetId() => ScopedProductSetId("fake_productSetId_" + TestUtil.RandomName());
+        internal string NewProductSetId() => ScopedProductSetId("fake_product_set_id_" + TestUtil.RandomName());
 
         internal string ScopedProductSetId(string productSetId)
         {
@@ -274,51 +275,24 @@ namespace GoogleCloudSamples
             output = _productSearch.Run("list_products_in_set", _projectId, REGION_NAME, productSetId);
             Assert.DoesNotContain(productId, output.Stdout);
         }
-    }
 
-    public class SearchFixture : IDisposable 
-    {
-        public ProductSearchTest Constants {get; private set; }= new ProductSearchTest();
-
-        public string IndexedProductSet { get; private set; }
-        public string IndexedProduct { get; private set; }
-        public string RefImageId { get; private set; }
-
-        public SearchFixture()
-        {
-            IndexedProduct = Constants.NewProductId();
-            IndexedProductSet = Constants.NewProductSetId();
-            RefImageId = Constants.NewRefImageId(IndexedProduct);
-
-            _productSearch.Run("create_product_set", Constants._projectId, REGION_NAME, IndexedProductSet, PRODUCT_SET_DISPLAY_NAME);
-                _productSearch.Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
-               _productSearch.Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
-              _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, INDEXED_PRODUCT_1, INDEXED_PRODUCT_SET);
-               _productSearch.Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
-   
-        }
-
-        public void Dispose()
-        {
-            Constants.Dispose();
-        }
-    }
-
-    public class ProductSearchTestSearch :  ProductSearchTest, IClassFixture<SearchFixture>
-    {
-        private readonly SearchFixture x;
-
-        public ProductSearchTestSearch(SearchFixture x)
-        {
-            this.x = x;
-        }
 
         [Fact]
         public void TestProductSearch()
         {
-            var output = _productSearch.Run("get_similar_products", _projectId, REGION_NAME, x.IndexedProductSet, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
+            string INDEXED_PRODUCT_SET = NewProductSetId();
+            string INDEXED_PRODUCT_1 = NewProductId();
+            string REF_IMAGE_ID = NewRefImageId(INDEXED_PRODUCT_1);
+
+            _productSearch.Run("create_product_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_SET_DISPLAY_NAME);
+            _productSearch.Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            _productSearch.Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+            _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, INDEXED_PRODUCT_1, INDEXED_PRODUCT_SET);
+            _productSearch.Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
+
+            var output = _productSearch.Run("get_similar_products", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains(x.IndexedProduct, output.Stdout);
+            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
         }
 
         [Fact]
@@ -326,6 +300,14 @@ namespace GoogleCloudSamples
         {
             string INDEXED_PRODUCT_SET = NewProductSetId();
             string INDEXED_PRODUCT_1 = NewProductId();
+            string REF_IMAGE_ID = NewRefImageId(INDEXED_PRODUCT_1);
+
+            _productSearch.Run("create_product_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_SET_DISPLAY_NAME);
+            _productSearch.Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            _productSearch.Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+            _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, INDEXED_PRODUCT_1, INDEXED_PRODUCT_SET);
+            _productSearch.Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
+
             var output = _productSearch.Run("get_similar_products_gcs", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, REF_IMAGE_GCS_URI, SEARCH_FILTER);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
