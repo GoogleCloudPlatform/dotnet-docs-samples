@@ -7,22 +7,22 @@ namespace GoogleCloudSamples
 {
     public class ProductSearchTest : IDisposable
     {
-        private const string REGION_NAME = "us-west1";
-        private const string PRODUCT_DISPLAY_NAME = "fake_product_display_name_for_testing";
-        private const string PRODUCT_CATEGORY = "apparel";
-        private const string PRODUCT_SET_DISPLAY_NAME = "fake_product_set_display_name_for_testing";
-        private const string REF_IMAGE_GCS_URI = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
-        private const string CSV_GCS_URI = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
-        private const string IMAGE_URI_1 = "shoes_1.jpg";
-        private const string IMAGE_URI_2 = "shoes_2.jpg";
-        private const string SEARCH_FILTER = "style=womens";
+        internal const string REGION_NAME = "us-west1";
+        internal const string PRODUCT_DISPLAY_NAME = "fake_product_display_name_for_testing";
+        internal const string PRODUCT_CATEGORY = "apparel";
+        internal const string PRODUCT_SET_DISPLAY_NAME = "fake_product_set_display_name_for_testing";
+        internal const string REF_IMAGE_GCS_URI = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
+        internal const string CSV_GCS_URI = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
+        internal const string IMAGE_URI_1 = "shoes_1.jpg";
+        internal const string IMAGE_URI_2 = "shoes_2.jpg";
+        internal const string SEARCH_FILTER = "style=womens";
 
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        internal readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         // A list of all the clean up operations we have to run when the test completes.
-        private readonly Stack<string[]> _cleanupOperations = new Stack<string[]>();
+        internal readonly Stack<string[]> _cleanupOperations = new Stack<string[]>();
 
-        readonly CommandLineRunner _productSearch = new CommandLineRunner()
+        internal readonly CommandLineRunner _productSearch = new CommandLineRunner()
         {
             Main = ProductSearchProgram.Main,
             Command = "Product Search"
@@ -30,10 +30,10 @@ namespace GoogleCloudSamples
 
         // Create a new product id that is automatically deleted at the end
         // of the test.
-        string NewProductId() => ScopedProductId(
+        internal string NewProductId() => ScopedProductId(
             "fake_productId_" + TestUtil.RandomName());
 
-        string ScopedProductId(string productId) 
+        internal string ScopedProductId(string productId) 
         {
             _cleanupOperations.Push(new []{"delete_product", _projectId, REGION_NAME, productId});
             return productId;
@@ -41,9 +41,9 @@ namespace GoogleCloudSamples
 
         // Create a new product set id that is automatically deleted at the end
         // of the test.
-        string NewProductSetId() => ScopedProductSetId("fake_productSetId_" + TestUtil.RandomName());
+        internal string NewProductSetId() => ScopedProductSetId("fake_productSetId_" + TestUtil.RandomName());
 
-        string ScopedProductSetId(string productSetId)
+        internal string ScopedProductSetId(string productSetId)
         {
             _cleanupOperations.Push(new []{"delete_product_set", _projectId, REGION_NAME, productSetId});
             return productSetId;
@@ -51,7 +51,7 @@ namespace GoogleCloudSamples
 
         // Create a ref image id that is automatically deleted at the end
         // of the test.
-        string NewRefImageId(string productId) 
+        internal string NewRefImageId(string productId) 
         {
             string refImageId = "fake_ref_image_id_" + TestUtil.RandomName();
             _cleanupOperations.Push(new []{"delete_ref_image", _projectId, REGION_NAME, productId, refImageId});
@@ -274,15 +274,51 @@ namespace GoogleCloudSamples
             output = _productSearch.Run("list_products_in_set", _projectId, REGION_NAME, productSetId);
             Assert.DoesNotContain(productId, output.Stdout);
         }
+    }
+
+    public class SearchFixture : IDisposable 
+    {
+        public ProductSearchTest Constants {get; private set; }= new ProductSearchTest();
+
+        public string IndexedProductSet { get; private set; }
+        public string IndexedProduct { get; private set; }
+        public string RefImageId { get; private set; }
+
+        public SearchFixture()
+        {
+            IndexedProduct = Constants.NewProductId();
+            IndexedProductSet = Constants.NewProductSetId();
+            RefImageId = Constants.NewRefImageId(IndexedProduct);
+
+            _productSearch.Run("create_product_set", Constants._projectId, REGION_NAME, IndexedProductSet, PRODUCT_SET_DISPLAY_NAME);
+                _productSearch.Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+               _productSearch.Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+              _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, INDEXED_PRODUCT_1, INDEXED_PRODUCT_SET);
+               _productSearch.Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
+   
+        }
+
+        public void Dispose()
+        {
+            Constants.Dispose();
+        }
+    }
+
+    public class ProductSearchTestSearch :  ProductSearchTest, IClassFixture<SearchFixture>
+    {
+        private readonly SearchFixture x;
+
+        public ProductSearchTestSearch(SearchFixture x)
+        {
+            this.x = x;
+        }
 
         [Fact]
         public void TestProductSearch()
         {
-            string INDEXED_PRODUCT_SET = NewProductSetId();
-            string INDEXED_PRODUCT_1 = NewProductId();
-            var output = _productSearch.Run("get_similar_products", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
+            var output = _productSearch.Run("get_similar_products", _projectId, REGION_NAME, x.IndexedProductSet, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
+            Assert.Contains(x.IndexedProduct, output.Stdout);
         }
 
         [Fact]
