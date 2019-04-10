@@ -23,14 +23,13 @@ class CreateHttpTask
 {
     public string CreateTask(
         string projectId = "YOUR-PROJECT-ID",
-        string location = "YOUR-LOCATION-ID",
-        string queue = "YOUR-QUEUE-ID",
+        string location = "us-central1",
+        string queue = "my-queue",
         string url = "http://example.com",
         string payload = "Hello World!",
         int inSeconds = 0)
     {
         CloudTasksClient client = CloudTasksClient.Create();
-
         QueueName parent = new QueueName(projectId, location, queue);
 
         var response = client.CreateTask(new CreateTaskRequest
@@ -50,7 +49,6 @@ class CreateHttpTask
         });
 
         Console.WriteLine($"Created Task {response.Name}");
-
         return response.Name;
     }
 }
