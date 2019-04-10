@@ -19,6 +19,7 @@ namespace GoogleCloudSamples
 
         private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
+        // A list of all the clean up operations we have to run when the test completes.
         private readonly Stack<string[]> _cleanupOperations = new Stack<string[]>();
 
         readonly CommandLineRunner _productSearch = new CommandLineRunner()
@@ -27,6 +28,8 @@ namespace GoogleCloudSamples
             Command = "Product Search"
         };
 
+        // Create a new product id that is automatically deleted at the end
+        // of the test.
         string NewProductId() => ScopedProductId(
             "fake_productId_" + TestUtil.RandomName());
 
@@ -36,6 +39,8 @@ namespace GoogleCloudSamples
             return productId;
         }
 
+        // Create a new product set id that is automatically deleted at the end
+        // of the test.
         string NewProductSetId() => ScopedProductSetId("fake_productSetId_" + TestUtil.RandomName());
 
         string ScopedProductSetId(string productSetId)
@@ -44,6 +49,8 @@ namespace GoogleCloudSamples
             return productSetId;
         }
 
+        // Create a ref image id that is automatically deleted at the end
+        // of the test.
         string NewRefImageId(string productId) 
         {
             string refImageId = "fake_ref_image_id_" + TestUtil.RandomName();
@@ -53,6 +60,7 @@ namespace GoogleCloudSamples
 
         public void Dispose()
         {
+            // Clean up all the resources created during the test.
             string[] cleanupOperation;
             while (_cleanupOperations.TryPop(out cleanupOperation)) 
             {
@@ -197,12 +205,24 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestImportProductSets()
         {
-            string productSetId = ScopedProductSetId("fake_productSetId_for_testing");
+            // Because this test uses ids hard-coded in the csv, two tests
+            // running simultaneously can still clobber each other and fail.
+            const string PRODUCT_SET_ID_IN_CSV = "fake_product_set_id_for_testing";
+            const string PRODUCT_ID_IN_CSV = "fake_product_id_for_testing_1";
+            const string PRODUCT2_ID_IN_CSV = "fake_product_id_for_testing_2";
+            // TODO: Remove this pre-cleanup code after code is merged and all
+            //       tests are cleaning up after.
+            _productSearch.Run("delete_product", _projectId, REGION_NAME, PRODUCT_ID_IN_CSV);
+            _productSearch.Run("delete_product", _projectId, REGION_NAME, PRODUCT2_ID_IN_CSV);
+            _productSearch.Run("delete_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID_IN_CSV);
+
+
+            string productSetId = ScopedProductSetId(PRODUCT_SET_ID_IN_CSV);
             var output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
             Assert.DoesNotContain(productSetId, output.Stdout);
 
-            string productId = ScopedProductId("fake_productId_for_testing_1");
-            string productId2 = ScopedProductId("fake_productId_for_testing_2");
+            string productId = ScopedProductId(PRODUCT_ID_IN_CSV);
+            string productId2 = ScopedProductId(PRODUCT2_ID_IN_CSV);
             output = _productSearch.Run("list_products", _projectId, REGION_NAME);
             Assert.DoesNotContain(productId, output.Stdout);
             Assert.DoesNotContain(productId2, output.Stdout);
