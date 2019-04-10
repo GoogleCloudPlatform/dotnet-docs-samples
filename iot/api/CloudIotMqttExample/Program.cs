@@ -143,10 +143,10 @@ namespace GoogleCloudSamples
         [Value(6, HelpText = "CA root from https://pki.google.com/roots.pem.", Required = true)]
         public string caCert { get; set; }
 
-        [Value(7, HelpText = "Number of messages to publish.")]
+        [Value(7, HelpText = "Number of messages to publish.", Required = true)]
         public int numMessages { get; set; }
 
-        [Value(8, HelpText = "Indicates whether the message to be published is a telemetry event or a device state message.")]
+        [Value(8, HelpText = "Indicates whether the message to be published is a telemetry event or a device state message.", Required = true)]
         public string messageType { get; set; }
 
         [Value(9, HelpText = "MQTT bridge hostname.", Default = "mqtt.googleapis.com")]
@@ -415,6 +415,10 @@ namespace GoogleCloudSamples
             string privateKey = File.ReadAllText(privateKeyFile);
 
             RSAParameters rsaParams;
+            if (privateKey.IndexOf("-----BEGIN PRIVATE KEY-----") < 0)
+            {
+                throw new NotSupportedException("Invalid private key was used.");
+            }
 
             // Read the private key file.
             using (var tr = new StringReader(privateKey))
