@@ -8,20 +8,20 @@ namespace GoogleCloudSamples
 {
     public class ProductSearchTest : IDisposable
     {
-        internal const string REGION_NAME = "us-west1";
-        internal const string PRODUCT_DISPLAY_NAME = "fake_product_display_name_for_testing";
-        internal const string PRODUCT_CATEGORY = "apparel";
-        internal const string PRODUCT_SET_DISPLAY_NAME = "fake_product_set_display_name_for_testing";
-        internal const string REF_IMAGE_GCS_URI = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
-        internal const string CSV_GCS_URI = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
-        internal const string IMAGE_URI_1 = "shoes_1.jpg";
-        internal const string IMAGE_URI_2 = "shoes_2.jpg";
-        internal const string SEARCH_FILTER = "style=womens";
+        private const string REGION_NAME = "us-west1";
+        private const string PRODUCT_DISPLAY_NAME = "fake_product_display_name_for_testing";
+        private const string PRODUCT_CATEGORY = "apparel";
+        private const string PRODUCT_SET_DISPLAY_NAME = "fake_product_set_display_name_for_testing";
+        private const string REF_IMAGE_GCS_URI = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
+        private const string CSV_GCS_URI = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
+        private const string IMAGE_URI_1 = "shoes_1.jpg";
+        private const string IMAGE_URI_2 = "shoes_2.jpg";
+        private const string SEARCH_FILTER = "style=womens";
 
-        internal readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         // A list of all the clean up operations we have to run when the test completes.
-        internal readonly Stack<string[]> _cleanupOperations = new Stack<string[]>();
+        private readonly Stack<string[]> _cleanupOperations = new Stack<string[]>();
 
         readonly CommandLineRunner _productSearch = new CommandLineRunner()
         {
@@ -31,10 +31,10 @@ namespace GoogleCloudSamples
 
         // Create a new product id that is automatically deleted at the end
         // of the test.
-        internal string NewProductId() => ScopedProductId(
+        private string NewProductId() => ScopedProductId(
             "fake_product_id_" + TestUtil.RandomName());
 
-        internal string ScopedProductId(string productId) 
+        private string ScopedProductId(string productId) 
         {
             _cleanupOperations.Push(new []{"delete_product", _projectId, REGION_NAME, productId});
             return productId;
@@ -42,9 +42,9 @@ namespace GoogleCloudSamples
 
         // Create a new product set id that is automatically deleted at the end
         // of the test.
-        internal string NewProductSetId() => ScopedProductSetId("fake_product_set_id_" + TestUtil.RandomName());
+        private string NewProductSetId() => ScopedProductSetId("fake_product_set_id_" + TestUtil.RandomName());
 
-        internal string ScopedProductSetId(string productSetId)
+        private string ScopedProductSetId(string productSetId)
         {
             _cleanupOperations.Push(new []{"delete_product_set", _projectId, REGION_NAME, productSetId});
             return productSetId;
@@ -52,7 +52,7 @@ namespace GoogleCloudSamples
 
         // Create a ref image id that is automatically deleted at the end
         // of the test.
-        internal string NewRefImageId(string productId) 
+        private string NewRefImageId(string productId) 
         {
             string refImageId = "fake_ref_image_id_" + TestUtil.RandomName();
             _cleanupOperations.Push(new []{"delete_ref_image", _projectId, REGION_NAME, productId, refImageId});
