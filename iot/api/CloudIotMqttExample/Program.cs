@@ -221,6 +221,10 @@ namespace GoogleCloudSamples
             string privateKey = File.ReadAllText(privateKeyFile);
 
             RSAParameters rsaParams;
+            if (privateKey.IndexOf("-----BEGIN PRIVATE KEY-----") < 0)
+            {
+                throw new NotSupportedException("Invalid private key was used.");
+            }
 
             // Read the private key file.
             using (var tr = new StringReader(privateKey))
