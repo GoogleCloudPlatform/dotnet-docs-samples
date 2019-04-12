@@ -225,7 +225,7 @@ namespace GoogleCloudSamples
             CertPath = Environment.GetEnvironmentVariable("IOT_CERT_KEY_PATH");
             PrivateKeyPath = privateKeyPath;
             ServiceAccount = "serviceAccount:cloud-iot@system.gserviceaccount.com";
-            TestId = TestUtil.RandomName();
+            TestId = ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString();
             TopicName = new TopicName(ProjectId, "iot-test-" + TestId);
             RegistryId = "iot-test-" + TestId;
             CreatePubSubTopic(this.TopicName);
