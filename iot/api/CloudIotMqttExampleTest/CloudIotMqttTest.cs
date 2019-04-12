@@ -306,7 +306,7 @@ namespace GoogleCloudSamples
 
         public void Dispose()
         {
-            var deleteRegOutput = Run("deleteRegistry", ProjectId, RegionId, RegistryId);
+            var deleteRegOutput = CloudIotSample.DeleteRegistry(ProjectId, RegionId, RegistryId);
             DeletePubSubTopic(this.TopicName);
         }
     }
