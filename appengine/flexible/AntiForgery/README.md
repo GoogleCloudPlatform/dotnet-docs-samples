@@ -1,4 +1,4 @@
-# AntiForgery World for Google App Engine Flexible Environment
+# AntiForgery Sample for Google App Engine Flexible Environment
 
 This sample application is ready to deploy to Google App Engine Flexible Environment.
 
@@ -43,7 +43,7 @@ make it easy to deploy to App Engine.  Install them if you are running Visual St
 
 ### Run Locally
 
-Open **AntiForgeryWorld.csproj**, and Press **F5**.
+Open **AntiForgery.csproj**, and Press **F5**.
 
 ### Deploy to App Engine
 
