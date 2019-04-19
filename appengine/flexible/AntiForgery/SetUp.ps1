@@ -85,7 +85,7 @@ if ($matchingKey) {
 
 # Write the new key name to appsettings.json
 $keyName = (gcloud kms keys list --location global --keyring $keyRingId --format json | ConvertFrom-Json).name | Where-Object {$_ -like "*/$keyId" }
-$appsettings = Get-Content appsettings.json | ConvertFrom-Json
+$appsettings = Get-Content -Raw appsettings.json | ConvertFrom-Json
 $appsettings.DataProtection.KmsKeyName = $keyName
 $keyName
 

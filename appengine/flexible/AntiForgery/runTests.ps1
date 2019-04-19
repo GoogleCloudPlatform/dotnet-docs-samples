@@ -15,7 +15,7 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 Backup-File appsettings.json {
-    $email = (Get-Content $env:GOOGLE_APPLICATION_CREDENTIALS | ConvertFrom-Json).client_email
+    $email = (Get-Content -Raw $env:GOOGLE_APPLICATION_CREDENTIALS | ConvertFrom-Json).client_email
     .\SetUp.ps1 -serviceAccountEmail $email
     Run-KestrelTest 5512 -CasperJs11
 }
