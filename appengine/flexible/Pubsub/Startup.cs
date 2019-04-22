@@ -49,8 +49,16 @@ namespace Pubsub
             services.Configure<PubsubOptions>(
                 Configuration.GetSection("Pubsub"));
             services.AddMvc();
-            services.AddSingleton((provider) => PublisherClient.Create());
-            services.AddSingleton((provider) => SubscriberClient.Create());
+            // Add Pubsub publisher.
+            services.AddSingleton((provider) =>
+            {
+                var options = provider.GetService<IOptions<PubsubOptions>>()
+                    .Value;
+                var logger = provider.GetService<ILogger<Startup>>();
+                CreateTopicAndSubscription(options, logger);
+                return PublisherClient.CreateAsync(
+                    new TopicName(options.ProjectId, options.TopicId)).Result;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,6 +85,56 @@ namespace Pubsub
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        /// <summary>
+        /// Create a topic and subscription if they don't already exist.
+        /// </summary>
+        static void CreateTopicAndSubscription(PubsubOptions options,
+            ILogger logger)
+        {
+            var topicName = new TopicName(options.ProjectId, options.TopicId);
+            var publisher = PublisherServiceApiClient.Create();
+            try
+            {
+                publisher.CreateTopic(topicName);
+            }
+            catch (Grpc.Core.RpcException e)
+            when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists ||
+                e.Status.StatusCode == Grpc.Core.StatusCode.PermissionDenied)
+            {
+                logger.LogWarning(0, e, "Could not create topic {0}", topicName);
+            }
+            var subscriptionName = new SubscriptionName(
+                    options.ProjectId, options.SubscriptionId);
+            var pushConfig = new PushConfig()
+            {
+                PushEndpoint = $"https://{options.ProjectId}.appspot.com/Push"
+            };
+            var subscriber = SubscriberServiceApiClient.Create();
+            try
+            {
+                subscriber.CreateSubscription(subscriptionName, topicName,
+                    pushConfig, 20);
+                return;
+            }
+            catch (Grpc.Core.RpcException e)
+            when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists ||
+                e.Status.StatusCode == Grpc.Core.StatusCode.PermissionDenied)
+            {
+                logger.LogWarning(1, e, "Could not create subscription {0}",
+                    subscriptionName);
+            }
+            try
+            {
+                subscriber.ModifyPushConfig(subscriptionName, pushConfig);
+            }
+            catch (Grpc.Core.RpcException e)
+            when (e.Status.StatusCode == Grpc.Core.StatusCode.PermissionDenied)
+            {
+                logger.LogWarning(2, e, "Could not modify subscription {0}",
+                    subscriptionName);
+            }
         }
     }
 }
