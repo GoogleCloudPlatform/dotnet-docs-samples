@@ -1,4 +1,4 @@
-﻿# Copyright (c) 2018 Google LLC.
+﻿# Copyright (c) 2019 Google LLC.
 # 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -39,12 +39,16 @@
 # Log of success and failure. 
 #
 #.EXAMPLE
-# .\SetUp.ps1
+# .\Set-Up.ps1
 ##############################################################################
 Param ([string]$keyRingId = 'dataprotectionprovider', [string]$keyId = 'key',
-    [string]$bucketName, [string]$serviceAccountEmail)
+    [string]$bucketName, [string]$serviceAccountEmail, [string]$projectId)
 
-if ($serviceAccountEmail) {
+Import-Module .\SetUp.psm1
+
+if ($projectId) {
+    # Good.
+} elseif ($serviceAccountEmail) {
     $email = $serviceAccountEmail
     $email -match '[^@]+@([^\.]+).*' | Out-Null
     $projectId = $matches[1]    
@@ -63,7 +67,7 @@ if ($serviceAccountEmail) {
 
 # Check to see if the key ring already exists.
 $matchingKeyRing = (gcloud kms keyrings list --format json --location global `
-    --filter="name=projects/$projectId/locations/global/keyRings/$keyRingId" | convertfrom-json).name
+    --filter="projects/$projectId/locations/global/keyRings/$keyRingId" | convertfrom-json).name
 if ($matchingKeyRing) {
     Write-Host "The key ring $matchingKeyRing already exists."
 } else { 
@@ -73,8 +77,9 @@ if ($matchingKeyRing) {
 }
 
 # Check to see if the key already exists
+$keyName = "projects/$projectId/locations/global/keyRings/$keyRingId/cryptoKeys/$keyId"
 $matchingKey = (gcloud kms keys list --format json --location global `
-    --keyring $keyRingId --filter="name=projects/$projectId/locations/global/keyRings/$keyRingId/cryptoKeys/$keyId" | convertfrom-json).name
+    --keyring $keyRingId --filter="$keyName" | convertfrom-json).name
 if ($matchingKey) {
     Write-Host "The key $matchingKey already exists."
 } else { 
@@ -82,13 +87,6 @@ if ($matchingKey) {
     Write-Host "Creating new key $keyId..."
     gcloud kms keys create $keyId --location global --keyring $keyRingId --purpose=encryption
 }
-
-# Write the new key name to appsettings.json
-$keyName = (gcloud kms keys list --location global --keyring $keyRingId --format json | ConvertFrom-Json).name | Where-Object {$_ -like "*/$keyId" }
-$appsettings = Get-Content -Raw appsettings.json | ConvertFrom-Json
-$appsettings.DataProtection.KmsKeyName = $keyName
-$keyName
-
 
 # Add Permissions for App Engine to encrypt and decrypt secrets for
 # Kms DataProtectionProvider.
@@ -113,6 +111,5 @@ if ($matchingBucket) {
     gsutil mb -p $projectId gs://$bucketName
 }
 
-$appsettings.DataProtection.Bucket = $bucketName
-ConvertTo-Json $appsettings | Out-File -Encoding utf8 -FilePath appsettings.json
+Update-Appsettings $keyName $bucketName
 

@@ -12,10 +12,25 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+Param ([switch]$SetUp)
+
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+Import-Module .\SetUp.psm1
+
+$creds = Get-Content -Raw $env:GOOGLE_APPLICATION_CREDENTIALS | ConvertFrom-Json
+$projectId = $creds.project_id
+$email = $creds.client_email
+$keyRingId = 'test-dataprotectionprovider'
+$keyId = 'test-key'
+$keyName = "projects/$projectId/locations/global/keyRings/$keyRingId/cryptoKeys/$keyId"
+$bucketName = "$projectId-test-bucket"
 
 Backup-File appsettings.json {
-    $email = (Get-Content -Raw $env:GOOGLE_APPLICATION_CREDENTIALS | ConvertFrom-Json).client_email
-    .\SetUp.ps1 -serviceAccountEmail $email
+    if ($SetUp) {
+        .\Set-Up.ps1 -keyRingId $keyRingId -keyId $keyId -bucketName $bucketName `
+            -serviceAccountEmail $email -projectId $projectId
+    } else {
+        Update-Appsettings $keyName $bucketName
+    }
     Run-KestrelTest 5512 -CasperJs11
 }
