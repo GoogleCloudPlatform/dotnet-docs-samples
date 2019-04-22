@@ -1,13 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-    <StartupObject>GoogleCloudSamples.Tasks</StartupObject>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
   </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.3.0" />
+    <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
     <PackageReference Include="Google.Api.Gax.Grpc" Version="2.6.0" />
     <PackageReference Include="Grpc.Core" Version="1.19.0" PrivateAssets="None" />
     <PackageReference Include="Google.Cloud.Tasks.V2" Version="1.0.0-beta01" />
+    <PackageReference Include="Google.Cloud.Tasks.V2Beta3" Version="1.0.0-beta02" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
 </Project>

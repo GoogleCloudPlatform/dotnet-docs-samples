@@ -62,7 +62,7 @@ namespace CloudKmsAspNetSample.Services.Kms
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            var innerContents = GetDirectoryContents(subpath);
+            var innerContents = innerProvider.GetDirectoryContents(subpath);
             if (innerContents == null)
             {
                 return null;

@@ -60,8 +60,7 @@ namespace GoogleCloudSamples
             var deviceId = "rsa-device-mqttconfig-" + _fixture.TestId;
 
             //Setup scenario
-            var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
-            Assert.Contains("Device created:", createRsaOut.Stdout);
+            CloudIotSample.CreateRsaDevice(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
             try
             {
                 var mqttExampleOut = Run("startMqtt",
@@ -72,13 +71,11 @@ namespace GoogleCloudSamples
                _fixture.PrivateKeyPath,
                "RS256",
                _fixture.CertPath,
-               "1",
                "events",
-               "mqtt.googleapis.com",
-               "443",
-               "1",
                "--waittime",
-               "5");
+               "5",
+               "--nummessages",
+               "1");
                 Assert.Contains("Publishing events message", mqttExampleOut.Stdout);
                 Assert.Contains("On Publish", mqttExampleOut.Stdout);
             }
@@ -90,51 +87,9 @@ namespace GoogleCloudSamples
             finally
             {
                 //Clean up
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                CloudIotSample.DeleteDevice(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
             }
         }
-
-        [Fact]
-        public void TestMqttDeviceCommand()
-        {
-            var deviceId = "rsa-device-mqtt-commands-" + _fixture.TestId;
-
-            //Setup screnario
-            var createRsaOut = Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
-            Assert.Contains("Device created:", createRsaOut.Stdout);
-
-            try
-            {
-                Task tast = new Task(() => StartMqtt(deviceId, _fixture.PrivateKeyPath));
-                tast.Start();
-
-                //Wait for the device to connect
-                Thread.Sleep(5000);
-
-                var sendCommandOutput = Run("sendCommand", deviceId, _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, "me want steak");
-                Assert.Contains("me want steak", sendCommandOutput.Stdout);
-                Assert.DoesNotContain("Failure", sendCommandOutput.Stdout);
-            }
-            catch
-            (Google.GoogleApiException e)
-            {
-                _output.WriteLine(e.Message);
-                Console.WriteLine(e.Message);
-                throw new Google.GoogleApiException(e.ServiceName, e.Message);
-            }
-            finally
-            {
-                //Clean up
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
-            }
-        }
-
-        private void StartMqtt(string deviceId, string privateKeyPath)
-        {
-            CloudIotMqttExample.StartMqtt(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
-               deviceId, privateKeyPath, "RS256", _fixture.CertPath, 1, "events", "mqtt.googleapis.com", 443, 1, 20);
-        }
-
 
         [Fact]
         public void TestMqttDeviceState()
@@ -143,7 +98,7 @@ namespace GoogleCloudSamples
             try
             {
                 //Setup screnario
-                Run("createDeviceRsa", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
+                CloudIotSample.CreateRsaDevice(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId, "test/data/rsa_cert.pem");
                 var mqttExampleOut = Run("startMqtt",
                       _fixture.ProjectId,
                       _fixture.RegionId,
@@ -152,13 +107,11 @@ namespace GoogleCloudSamples
                       _fixture.PrivateKeyPath,
                       "RS256",
                       _fixture.CertPath,
-                      "1",
                       "state",
-                      "mqtt.googleapis.com",
-                      "443",
-                      "1",
                       "--waittime",
-                      "5");
+                      "5",
+                      "--nummessages",
+                      "1");
                 Assert.Contains("Publishing state message", mqttExampleOut.Stdout);
                 Assert.Contains("On Publish", mqttExampleOut.Stdout);
             }
@@ -169,10 +122,81 @@ namespace GoogleCloudSamples
             finally
             {
                 //Clean up
-                Run("deleteDevice", _fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                CloudIotSample.DeleteDevice(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
             }
         }
         //[END iot_mqtt_tests]
+
+        //[START iot_gateway_mqtt_tests]
+        [Fact]
+        public void TestSendDataForBoundDevice()
+        {
+            var gatewayId = string.Format("test-gateway-{0}", "RS256");
+            var deviceId = string.Format("test-device-{0}", TestUtil.RandomName());
+
+            try
+            {
+                //Setup
+                CloudIotSample.CreateGateway(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    gatewayId, "test/data/rsa_cert.pem", "RS256");
+                CloudIotSample.BindDeviceToGateway(_fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayId);
+
+                //Connect the gateway
+                var sendDataBoundDeviceOut = Run("sendDataFromBoundDevice", _fixture.ProjectId,
+                    _fixture.RegionId, _fixture.RegistryId,
+                deviceId, gatewayId, _fixture.PrivateKeyPath, "RS256", _fixture.CertPath,
+                "state", "test-message");
+                Assert.Contains("Data sent", sendDataBoundDeviceOut.Stdout);
+                Assert.Contains("On Publish", sendDataBoundDeviceOut.Stdout);
+                Assert.DoesNotContain("An error occured", sendDataBoundDeviceOut.Stdout);
+            }
+            finally
+            {
+                //Clean up
+                CloudIotSample.UnbindDeviceFromGateway(_fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayId);
+                CloudIotSample.DeleteDevice(_fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId);
+                CloudIotSample.DeleteDevice(_fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayId);
+            }
+        }
+
+        [Fact]
+        public void TestGatewayListenForDevice()
+        {
+            var gatewayId = "rsa-listen-gateway";
+            var deviceId = "rsa-listen-device";
+
+            try
+            {
+                //Setup
+                CloudIotSample.CreateGateway(_fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, gatewayId, "test/data/rsa_cert.pem", "RS256");
+                CloudIotSample.BindDeviceToGateway(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId,
+                    deviceId, gatewayId);
+
+                //Connect 
+                var listenConfigMsgOut = Run("listenForConfigMessages", _fixture.ProjectId,
+                    _fixture.RegionId, _fixture.RegistryId, gatewayId, deviceId, _fixture.CertPath,
+                    _fixture.PrivateKeyPath, "RS256", "--listentime", "10");
+
+                //Assertions
+                Assert.DoesNotContain("error occurred", listenConfigMsgOut.Stdout);
+                Assert.Contains("On Subscribe", listenConfigMsgOut.Stdout);
+                Assert.Contains("On Publish", listenConfigMsgOut.Stdout);
+            }
+            finally
+            {
+                //Clean up
+                CloudIotSample.UnbindDeviceFromGateway(_fixture.ProjectId, _fixture.RegionId,
+                    _fixture.RegistryId, deviceId, gatewayId);
+                CloudIotSample.DeleteDevice(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, deviceId);
+                CloudIotSample.DeleteDevice(_fixture.ProjectId, _fixture.RegionId, _fixture.RegistryId, gatewayId);
+            }
+        }
+        //[END iot_gateway_mqtt_tests]
     }
 
     public class IotTestFixture : IDisposable
@@ -207,8 +231,8 @@ namespace GoogleCloudSamples
             CreatePubSubTopic(this.TopicName);
             // Check if the number of registries does not exceed 90.
             CheckRegistriesLimit(ProjectId, RegionId);
-            Assert.Equal(0, Run("createRegistry", ProjectId, RegionId,
-                RegistryId, TopicName.TopicId).ExitCode);
+            Assert.Equal(0, CloudIotSample.CreateRegistry(ProjectId, RegionId,
+                RegistryId, TopicName.TopicId));
         }
         public void CheckRegistriesLimit(string projectId, string regionId)
         {
@@ -224,8 +248,8 @@ namespace GoogleCloudSamples
                 {
                     if (listRegistries[index].Id.Contains("iot-test-"))
                     {
-                        CloudIotMqttExample.UnbindAllDevices(projectId, regionId, listRegistries[index].Id);
-                        CloudIotMqttExample.ClearRegistry(projectId, regionId, listRegistries[index].Id);
+                        CloudIotSample.UnbindAllDevices(projectId, regionId, listRegistries[index].Id);
+                        CloudIotSample.ClearRegistry(projectId, regionId, listRegistries[index].Id);
                         count--;
                     }
                     index++;
@@ -282,7 +306,7 @@ namespace GoogleCloudSamples
 
         public void Dispose()
         {
-            var deleteRegOutput = Run("deleteRegistry", ProjectId, RegionId, RegistryId);
+            var deleteRegOutput = CloudIotSample.DeleteRegistry(ProjectId, RegionId, RegistryId);
             DeletePubSubTopic(this.TopicName);
         }
     }

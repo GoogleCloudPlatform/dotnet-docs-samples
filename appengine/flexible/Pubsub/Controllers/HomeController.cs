@@ -31,16 +31,13 @@ namespace Pubsub.Controllers
         static object s_lock = new object();
         // Keep the received messages in a list.
         static List<string> s_receivedMessages = new List<string>();
-        static bool s_topicAndSubscriptionExist = false;
         readonly PublisherClient _publisher;
-        readonly SubscriberClient _subscriber;
 
         public HomeController(IOptions<PubsubOptions> options,
-            PublisherClient publisher, SubscriberClient subscriber)
+            PublisherClient publisher)
         {
             _options = options.Value;
             _publisher = publisher;
-            _subscriber = subscriber;
         }
 
         // [START gae_flex_pubsub_index]
@@ -57,15 +54,12 @@ namespace Pubsub.Controllers
             if (!string.IsNullOrEmpty(messageForm.Message))
             {
                 // Publish the message.
-                var topicName = new TopicName(_options.ProjectId,
-                    _options.TopicId);
-                lock (s_lock) CreateTopicAndSubscriptionOnce(_publisher, topicName);
                 var pubsubMessage = new PubsubMessage()
                 {
                     Data = ByteString.CopyFromUtf8(messageForm.Message)
                 };
                 pubsubMessage.Attributes["token"] = _options.VerificationToken;
-                _publisher.Publish(topicName, new[] { pubsubMessage });
+                _publisher.PublishAsync(pubsubMessage);
                 model.PublishedMessage = messageForm.Message;
             }
             // Render the current list of messages.
@@ -99,42 +93,6 @@ namespace Pubsub.Controllers
         public IActionResult Error()
         {
             return View();
-        }
-
-        /// <summary>
-        /// Create a topic and subscription once.
-        /// </summary>
-        /// <param name="provider"></param>
-        void CreateTopicAndSubscriptionOnce(PublisherClient publisher,
-            TopicName topicName)
-        {
-            if (s_topicAndSubscriptionExist)
-                return;
-            try
-            {
-                publisher.CreateTopic(topicName);
-            }
-            catch (Grpc.Core.RpcException e)
-            when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists)
-            {
-            }
-            var subscriptionName = new SubscriptionName(
-                    _options.ProjectId, _options.SubscriptionId);
-            var pushConfig = new PushConfig()
-            {
-                PushEndpoint = $"https://{_options.ProjectId}.appspot.com/Push"
-            };
-            try
-            {
-                _subscriber.CreateSubscription(subscriptionName, topicName,
-                    pushConfig, 20);
-            }
-            catch (Grpc.Core.RpcException e)
-            when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists)
-            {
-                _subscriber.ModifyPushConfig(subscriptionName, pushConfig);
-            }
-            s_topicAndSubscriptionExist = true;
         }
     }
 
