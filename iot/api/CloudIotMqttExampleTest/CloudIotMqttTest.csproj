@@ -18,6 +18,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CloudIotMqttExample\CloudIotMqttExample.csproj" />
+<ProjectReference Include="..\CloudIotSample\CloudIotSample.csproj" />
+
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
   <ItemGroup>
