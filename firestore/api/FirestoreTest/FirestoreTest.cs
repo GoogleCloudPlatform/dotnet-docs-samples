@@ -60,7 +60,6 @@ namespace GoogleCloudSamples
             DeleteCollection("cities").Wait();
             DeleteCollection("data").Wait();
             var manageIndexesOutput = RunManageIndexes("delete-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            Assert.Contains("Index deletion completed!", manageIndexesOutput.Stdout);
         }
     }
 
@@ -541,6 +540,17 @@ namespace GoogleCloudSamples
         public void CompositeIndexChainedQueryTest()
         {
             var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            if (!manageIndexesOutput.Stdout.Contains("completed"))
+            {
+                var numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                int numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                while (numIndexesCreated < 3)
+                {
+                    System.Threading.Thread.Sleep(500);
+                    numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                    numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                }
+            }
             Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunQueryData("composite-index-chained-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -599,6 +609,17 @@ namespace GoogleCloudSamples
         public void OrderByStateAndPopulationQueryTest()
         {
             var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            if (!manageIndexesOutput.Stdout.Contains("completed"))
+            {
+                var numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                int numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                while (numIndexesCreated < 3)
+                {
+                    System.Threading.Thread.Sleep(500);
+                    numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                    numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                }
+            }
             Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunOrderLimitData("order-by-state-and-population-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -743,6 +764,17 @@ namespace GoogleCloudSamples
         public void MultipleCursorConditionsTest()
         {
             var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            if (!manageIndexesOutput.Stdout.Contains("completed"))
+            {
+                var numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                int numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                while (numIndexesCreated < 3)
+                {
+                    System.Threading.Thread.Sleep(500);
+                    numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                    numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                }
+            }
             Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             RunPaginateData("multiple-cursor-conditions", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
