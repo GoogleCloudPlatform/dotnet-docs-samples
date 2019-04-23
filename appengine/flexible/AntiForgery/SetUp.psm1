@@ -12,7 +12,11 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# Common functions called by Set-Up.ps1, runTests.ps1, and Clean-Up.ps1.
 
+
+# Called by Set-Up.ps1 and runTests.ps1 to modify appsettings.json to
+# insert the key name and bucket name.
 function Update-Appsettings([Parameter(Mandatory=$true)][string]$keyName, 
     [Parameter(Mandatory=$true)][string]$bucketName)
 {
@@ -22,6 +26,9 @@ function Update-Appsettings([Parameter(Mandatory=$true)][string]$keyName,
     ConvertTo-Json $appsettings | Out-File -Encoding utf8 -FilePath appsettings.json    
 }
 
+# Splits a kms key name, which looks like
+# projects/YOUR-PROJECT-ID/locations/global/keyRings/dataprotectionprovider/cryptoKeys/key
+# into its constituent chunks.
 function Split-KmsKey([Parameter(Mandatory=$true)][string]$keyName) {
     $keyName -match "projects/([^/]+)/locations/([^/]+)/keyRings/([^/]+)/cryptoKeys/([^/]+)"
     return New-Object -TypeName PSObject -Property @{

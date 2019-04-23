@@ -35,6 +35,10 @@
 # Instead of using the App Engine default service account, use this service
 # acccount.
 #
+#.PARAMETER projectId
+# The Google Cloud Project Id.  Usually not needed because it can be determined
+# from the service account.
+#
 #.OUTPUTS
 # Log of success and failure. 
 #
@@ -67,7 +71,7 @@ if ($projectId) {
 
 # Check to see if the key ring already exists.
 $matchingKeyRing = (gcloud kms keyrings list --format json --location global `
-    --filter="projects/$projectId/locations/global/keyRings/$keyRingId" | convertfrom-json).name
+    --filter="projects/$projectId/locations/global/keyRings/$keyRingId" | ConvertFrom-Json).name
 if ($matchingKeyRing) {
     Write-Host "The key ring $matchingKeyRing already exists."
 } else { 
@@ -79,7 +83,7 @@ if ($matchingKeyRing) {
 # Check to see if the key already exists
 $keyName = "projects/$projectId/locations/global/keyRings/$keyRingId/cryptoKeys/$keyId"
 $matchingKey = (gcloud kms keys list --format json --location global `
-    --keyring $keyRingId --filter="$keyName" | convertfrom-json).name
+    --keyring $keyRingId --filter="$keyName" | ConvertFrom-Json).name
 if ($matchingKey) {
     Write-Host "The key $matchingKey already exists."
 } else { 

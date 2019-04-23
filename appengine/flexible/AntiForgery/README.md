@@ -12,8 +12,20 @@ This sample application is ready to deploy to Google App Engine Flexible Environ
 3.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md)
     or newer.
 
+4.  Initialize your App Engine app with your project and choose its region:
+
+    ```psm1
+    PS > gcloud app create
+    ```
+
+5.  Run `Set-Up.ps1` with PowerShell to
+
+    1.  Create a Google Cloud Storage bucket.
+    2.  Create a KMS key ring and key.
+    3.  Set permissions on the KMS key ring.
 
 ## ![PowerShell](../.resources/powershell.png) Using PowerShell
+
 
 ### Run Locally
 
@@ -54,7 +66,7 @@ Open **AntiForgery.csproj**, and Press **F5**.
 ## Cleaning Up
 
 Your App Engine application, data stored in Cloud Storage, and KMS keys will
-cost money if they are not cleaned up.
+cost money if they are not cleaned up and you have exceeded your free quota.
 
 Run the `Clean-Up.ps1` script from PowerShell to destroy KMS keys and 
 Cloud Storage bucket.
