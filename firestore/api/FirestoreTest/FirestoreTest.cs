@@ -546,7 +546,6 @@ namespace GoogleCloudSamples
                 int numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
                 while (numIndexesCreated < 3)
                 {
-                    System.Threading.Thread.Sleep(500);
                     numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
                     numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
                 }
@@ -615,7 +614,6 @@ namespace GoogleCloudSamples
                 int numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
                 while (numIndexesCreated < 3)
                 {
-                    System.Threading.Thread.Sleep(500);
                     numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
                     numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
                 }
@@ -770,7 +768,6 @@ namespace GoogleCloudSamples
                 int numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
                 while (numIndexesCreated < 3)
                 {
-                    System.Threading.Thread.Sleep(500);
                     numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
                     numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
                 }
