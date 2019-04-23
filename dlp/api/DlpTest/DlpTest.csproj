@@ -11,8 +11,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.38.0.1530" />
-    <PackageReference Include="Google.Cloud.Dlp.V2" Version="1.0.0-beta09" />
+    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.38.2.1547" />
+    <PackageReference Include="Google.Cloud.Dlp.V2" Version="1.0.0-beta10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DlpSample\DlpSample.csproj" />
