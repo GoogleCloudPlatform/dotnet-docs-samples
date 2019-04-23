@@ -21,3 +21,14 @@ function Update-Appsettings([Parameter(Mandatory=$true)][string]$keyName,
     $appsettings.DataProtection.Bucket = $bucketName
     ConvertTo-Json $appsettings | Out-File -Encoding utf8 -FilePath appsettings.json    
 }
+
+function Split-KmsKey([Parameter(Mandatory=$true)][string]$keyName) {
+    $keyName -match "projects/([^/]+)/locations/([^/]+)/keyRings/([^/]+)/cryptoKeys/([^/]+)"
+    return New-Object -TypeName PSObject -Property @{
+        'projectId' = $Matches[1];
+        'locationId' = $Matches[2];
+        'keyRingId' = $Matches[3];
+        'keyId' = $matches[4]
+    }
+}
+

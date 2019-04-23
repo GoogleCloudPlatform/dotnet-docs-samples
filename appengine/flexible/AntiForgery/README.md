@@ -33,9 +33,7 @@ PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
 
 ## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
 
-Visual Studio is *optional*.  An old, unmaintained branch of samples that work
-with Visual Studio 2015 is
-[here](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015).
+Visual Studio is *optional*.
 
 [Google Cloud Tools for Visual Studio](
 https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
@@ -52,3 +50,14 @@ Open **AntiForgery.csproj**, and Press **F5**.
 2.  Click **App Engine Flex**.
 
 3.  Click **Publish**.
+
+## Cleaning Up
+
+Your App Engine application, data stored in Cloud Storage, and KMS keys will
+cost money if they are not cleaned up.
+
+Run the `Clean-Up.ps1` script from PowerShell to destroy KMS keys and 
+Cloud Storage bucket.
+
+See the [App Engine Quickstart](https://cloud.google.com/appengine/docs/flexible/dotnet/quickstart#clean-up) for instructions on cleaning up your app engine
+application.
