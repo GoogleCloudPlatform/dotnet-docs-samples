@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dependencies]
+// [START bigtable_hw_imports]
 
 using System;
 using System.Linq;
@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
 using Grpc.Core;
-// [END dependencies]
+// [END bigtable_hw_imports]
 
 namespace GoogleCloudSamples.Bigtable
 {
@@ -51,15 +51,15 @@ namespace GoogleCloudSamples.Bigtable
         {
             try
             {
-                // [START connecting_to_bigtable]
+                // [START bigtable_hw_connect]
                 // BigtableTableAdminClient API lets us create, manage and delete tables.
                 BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
 
                 // BigtableClient API lets us read and write to a table.
                 BigtableClient bigtableClient = BigtableClient.Create();
-                // [END connecting_to_bigtable]
+                // [END bigtable_hw_connect]
 
-                // [START creating_a_table]
+                // [START bigtable_hw_create_table]
                 // Create a table with a single column family.
                 Console.WriteLine($"Create new table: {tableId} with column family: {columnFamily}, Instance: {instanceId}");
 
@@ -94,9 +94,9 @@ namespace GoogleCloudSamples.Bigtable
                 {
                     Console.WriteLine($"Table: {tableId} already exist");
                 }
-                // [END creating_a_table]
+                // [END bigtable_hw_create_table]
 
-                // [START writing_rows]
+                // [START bigtable_hw_write_rows]
                 // Initialise Google.Cloud.Bigtable.V2.TableName object.
                 Google.Cloud.Bigtable.Common.V2.TableName tableName = new Google.Cloud.Bigtable.Common.V2.TableName(projectId, instanceId, tableId);
 
@@ -165,13 +165,13 @@ namespace GoogleCloudSamples.Bigtable
 
                 Mutation MutationBuilder() =>
                     Mutations.SetCell(columnFamily, columnName, s_greetings[s_greetingIndex], new BigtableVersion(DateTime.UtcNow));
-                //[END writing_rows]
+                //[END bigtable_hw_write_rows]
 
-                // [START creating_a_filter]
+                // [START bigtable_hw_create_filter]
                 RowFilter filter = RowFilters.CellsPerRowLimit(1);
-                // [END creating_a_filter]
+                // [END bigtable_hw_create_filter]
 
-                // [START getting_a_row]
+                // [START bigtable_hw_get_with_filter]
                 // Read from the table.
                 Console.WriteLine("Read the first row");
 
@@ -184,9 +184,9 @@ namespace GoogleCloudSamples.Bigtable
                     $"\tRow key: {rowRead.Key.ToStringUtf8()} " +
                     $"  -- Value: {rowRead.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
                     $"  -- Time Stamp: {rowRead.Families[0].Columns[0].Cells[0].TimestampMicros}");
-                // [END getting_a_row]
+                // [END bigtable_hw_get_with_filter]
 
-                // [START scanning_all_rows]
+                // [START bigtable_hw_scan_with_filter]
                 Console.WriteLine("Read all rows using streaming");
                 // stream the content of the whole table. Apply filter to return latest only cell values accross all rows.
                 ReadRowsStream responseRead = bigtableClient.ReadRows(tableName, filter: filter);
@@ -203,9 +203,9 @@ namespace GoogleCloudSamples.Bigtable
                                           $"  -- Time Stamp: {row.Families[0].Columns[0].Cells[0].TimestampMicros}");
                     });
                 }
-                // [END scanning_all_rows]
+                // [END bigtable_hw_scan_with_filter]
 
-                // [START deleting_a_table]
+                // [START bigtable_hw_delete_table]
                 // Clean up. Delete the table.
                 Console.WriteLine($"Delete table: {tableId}");
 
@@ -214,7 +214,7 @@ namespace GoogleCloudSamples.Bigtable
                 {
                     Console.WriteLine($"Table: {tableId} deleted succsessfully");
                 }
-                // [END deleting_a_table]
+                // [END bigtable_hw_delete_table]
             }
             catch (Exception ex)
             {
