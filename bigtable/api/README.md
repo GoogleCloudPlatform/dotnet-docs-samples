@@ -3,42 +3,42 @@
 A collection of samples that demonstrate how to call the
 [Google Cloud Bigtable API](https://cloud.google.com/bigtable/docs/) from C#.
 
-This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or later.  That means using [Visual Studio 2017](https://www.visualstudio.com/), or the command line.
+This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or later.  That means using [Visual Studio 2017](https://www.visualstudio.com/) or the command line.
 
 ## Build and Run
 
-1. **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+1. **Follow the setup instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
 2.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=bigtable&showconfirmation=true)
-    to visit Cloud Platform Console and enable the Google Cloud Bigtable API.
+    to visit the Cloud Platform Console and enable the Google Cloud Bigtable API.
 
-## Quick Start
+## Quickstart
 
-3.  Provisioning an instance 
+3.  Provision an instance: 
     Follow the instructions in the [user
     documentation](https://cloud.google.com/bigtable/docs/creating-instance) to
     create a Cloud Bigtable instance if necessary.
 
-4.  Follow the [cbt tutorial](https://cloud.google.com/bigtable/docs/quickstart-cbt) to install the cbt       command line tool. Here are the cbt commands to create a table, column       family and add some data:
+4.  Follow the [cbt tutorial](https://cloud.google.com/bigtable/docs/quickstart-cbt) to install the `cbt` command line tool. Here are the `cbt` commands to create a table and column family and add some data:
     ```
     cbt -project <YOUR-PROJECT-ID> -instance <YOUR-INSTANCE-ID> createtable my-table
     cbt -project <YOUR-PROJECT-ID> -instance <YOUR-INSTANCE-ID> createfamily my-table cf1
     cbt -project <YOUR-PROJECT-ID> -instance <YOUR-INSTANCE-ID> set my-table r1 cf1:c1=test-value
     ```
-5.  Edit `QuickStart\QuickStart.cs`, and replace YOUR-PROJECT-ID with id
-    of the project you created in step 1. Also replace YOUR-INSTANCE-ID with id of your instance you created in step 3.
+5.  Edit `QuickStart\QuickStart.cs`, and replace YOUR-PROJECT-ID with the ID
+    of the project you created in Step 1. Also replace YOUR-INSTANCE-ID with the ID of the instance you created in Step 3.
 
-6.  From a Powershell command line, execute the following command to run the QuickStart sample to read the row you just wrote using `cbt`:
+6.  From a Powershell command line, execute the following command to run the quickstart sample to read the row you just wrote using `cbt`:
     ```
     PS <YOUR-PROJECT-DIRECTORY>\dotnet-docs-samples\bigtable\api\QuickStart\donet run
     ```
 ## Hello World
 
-7.  Edit `HelloWorld\HelloWorld.cs`, and replace YOUR-PROJECT-ID with id
-    of the project you created in step 1. Also replace YOUR-INSTANCE-ID with id of your instance you created in step 3.
+7.  Edit `HelloWorld\HelloWorld.cs`, and replace YOUR-PROJECT-ID with the ID
+    of the project you created in Step 1. Also replace YOUR-INSTANCE-ID with the ID of the instance you created in Step 3.
 
-8.  From a Powershell command line, execute the following command to run the HelloWorld sample:
+8.  From a Powershell command line, execute the following command to run the Hello World sample:
     
     PS <YOUR-PROJECT-DIRECTORY>\dotnet-docs-samples\bigtable\api\HelloWorld> dotnet run
     
@@ -50,22 +50,22 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
 
     Write some greetings to the table Hello-Bigtable
         Greeting:   -- Hello World!      -- written successfully
-        Greeting:   -- Hellow Bigtable!  -- written successfully
-        Greeting:   -- Hellow C#!        -- written successfully
+        Greeting:   -- Hello Bigtable!  -- written successfully
+        Greeting:   -- Hello C#!        -- written successfully
     Read the first row
         Row key: greeting0   -- Value: Hello World!       -- Time Stamp: 1529295849363000
     Read all rows using streaming
         Row key: greeting0   -- Value: Hello World!       -- Time Stamp: 1529295849363000
-        Row key: greeting1   -- Value: Hellow Bigtable!   -- Time Stamp: 1529295850220000
-        Row key: greeting2   -- Value: Hellow C#!         -- Time Stamp: 1529295850223000
+        Row key: greeting1   -- Value: Hello Bigtable!   -- Time Stamp: 1529295850220000
+        Row key: greeting2   -- Value: Hello C#!         -- Time Stamp: 1529295850223000
     Delete table: Hello-Bigtable
-    Table: Hello-Bigtable deleted succsessfully
+    Table: Hello-Bigtable deleted successfully
     ```
 
 ## Instance Example
 
-9.  Edit `InstanceAdminExample\InstanceAdmin.cs`, and replace YOUR-PROJECT-ID with id
-    of the project you created in step 1.
+9.  Edit `InstanceAdminExample\InstanceAdmin.cs`, and replace YOUR-PROJECT-ID with the ID
+    of the project you created in Step 1.
 
 10. From a Powershell command line, execute the following command to run the InstanceAdmin sample to see a list of subcommands:
     ```
@@ -76,9 +76,9 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
     ERROR(S):
     No verb selected.
 
-    createProdInstance    Create a `PRODUCTION` type Instance with SSD storage type in this project.
+    createProdInstance    Create a `PRODUCTION` type instance with SSD storage type in this project.
 
-    createDevInstance     Create a `DEVELOPMENT` type Instance with HDD storage type in this project.
+    createDevInstance     Create a `DEVELOPMENT` type instance with HDD storage type in this project.
 
     listInstances         Lists instances in a project.
 
@@ -126,8 +126,8 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
 
 ## Table Example
 
-11. Edit `TableAdminExample\TableAdmin.cs`, and replace YOUR-PROJECT-ID with id
-    of the project you created in step 1. Also replace YOUR-INSTANCE-ID with id of your instance you created in step 3.
+11. Edit `TableAdminExample\TableAdmin.cs`, and replace YOUR-PROJECT-ID with the ID
+    of the project you created in Step 1. Also replace YOUR-INSTANCE-ID with the ID of the instance you created in Step 3.
 
 12. From a Powershell command line, execute the following command to run the InstanceAdmin sample to see a list of subcommands:
     ```
@@ -138,9 +138,9 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
     ERROR(S):
     No verb selected.
 
-    createTable                 Creates a table in the Instance.
+    createTable                 Creates a table in the instance.
 
-    listTables                  Lists tables in the Instance.
+    listTables                  Lists tables in the instance.
 
     getTable                    Gets information about a table.
 
@@ -156,9 +156,9 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
 
     updateFamily                Update the column family metadata to update the GC rule.
 
-    deleteFamily                Deletes a columnFamily.
+    deleteFamily                Deletes a column family.
 
-    deleteTable                 Deletes a table from the Instance.
+    deleteTable                 Deletes a table from the instance.
 
     help                        Display more information on a specific command.
 
@@ -180,11 +180,11 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
     To avoid incurring extra charges to your Google Cloud Platform account, remove
     the resources created for this sample.
  
-    *  Go to the [Instances page][Instances page] in the Cloud Cloud Platform
+    *  Go to the [Instances page][Instances page] in the Cloud Cloud Platform console.
  
      [Instances page]:https://console.cloud.google.com/project/_/bigtable/instances
  
-    *  Click the isntance name.
+    *  Click the instance name.
  
     *  Click **Delete**.
  
