@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Google.Cloud.AspNetCore.DataProtection.Kms" Version="1.0.0-alpha02" />
     <PackageReference Include="Google.Cloud.AspNetCore.DataProtection.Storage" Version="1.0.0-alpha02" />
-    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="3.0.0-beta11" />
+    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="3.0.0-beta12" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
