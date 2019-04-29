@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.38.2.1559" />
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.38.2.1566" />
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0" />
     <PackageReference Include="M2Mqtt" Version="4.3.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
