@@ -12,8 +12,11 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+// [START dotnet_data_protection]
+
 using Google.Cloud.AspNetCore.DataProtection.Kms;
 using Google.Cloud.AspNetCore.DataProtection.Storage;
+// [END dotnet_data_protection]
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -29,8 +32,10 @@ using System.Threading.Tasks;
 
 namespace AntiForgery
 {
+    // [START dotnet_data_protection]
     public class Startup
     {
+        // [END dotnet_data_protection]
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -39,6 +44,7 @@ namespace AntiForgery
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // [START dotnet_data_protection]
         public void ConfigureServices(IServiceCollection services)
         {
             // Antiforgery tokens require data protection.
@@ -52,6 +58,7 @@ namespace AntiForgery
                 // grained access control.
                 .ProtectKeysWithGoogleKms(
                     Configuration["DataProtection:KmsKeyName"]);
+            // [END dotnet_data_protection]
             services.AddMvc().SetCompatibilityVersion(
                 CompatibilityVersion.Version_2_1);
         }
