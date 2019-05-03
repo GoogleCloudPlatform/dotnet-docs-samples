@@ -96,7 +96,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestLabels()
         {
             ConsoleOutput output = _analyze.Run("labels",
-                DownloadGcsObject(@"gs://demomaker/cat.mp4"));
+                DownloadGcsObject(@"gs://cloud-samples-data/video/cat.mp4"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Cat", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
         }
@@ -105,7 +105,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestLabelsGcs()
         {
             ConsoleOutput output = _analyze.Run("labels",
-                @"gs://demomaker/cat.mp4");
+                @"gs://cloud-samples-data/video/cat.mp4");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Cat", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
         }
@@ -113,7 +113,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestFaces()
         {
             ConsoleOutput output =
-                _analyze.Run("faces", DownloadGcsObject("gs://demomaker/gbike.mp4"));
+                _analyze.Run("faces", DownloadGcsObject("gs://cloud-samples-data/video/gbikes_dinosaur.mp4"));
             Assert.Equal(0, output.ExitCode);
         }
 
@@ -121,7 +121,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestExplicitContentGcs()
         {
             ConsoleOutput output =
-                _analyze.Run("explicit-content", "gs://demomaker/gbike.mp4");
+                _analyze.Run("explicit-content", "gs://cloud-samples-data/video/gbikes_dinosaur.mp4");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Pornography", output.Stdout);
         }
@@ -160,7 +160,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestObjectTracking()
         {
             ConsoleOutput output =
-                _analyze.Run("track-object", DownloadGcsObject("gs://demomaker/cat.mp4"));
+                _analyze.Run("track-object", DownloadGcsObject("gs://cloud-samples-data/video/cat.mp4"));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("cat", output.Stdout);
         }
@@ -169,7 +169,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestObjectTrackingGcs()
         {
             ConsoleOutput output =
-                _analyze.Run("track-object", "gs://demomaker/cat.mp4");
+                _analyze.Run("track-object", "gs://cloud-samples-data/video/cat.mp4");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("cat", output.Stdout);
         }
