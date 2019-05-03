@@ -92,8 +92,17 @@ namespace SocialAuthMVC
             services.Configure<Models.SecretsModel>(
                 Configuration.GetSection("Secrets"));
 
-            services.AddSingleton<IDataProtectionProvider>(serviceProvider =>
-                new KmsDataProtectionProvider(ProjectId, "global", "dataprotectionprovider"));
+            // Add Google libraries for data protection.
+            services.AddDataProtection()
+                // Store keys in Cloud Storage so that multiple instances
+                // of the web application see the same keys.
+                .PersistKeysToGoogleCloudStorage(
+                    Configuration["DataProtection:Bucket"],
+                    Configuration["DataProtection:Object"])
+                // Protect the keys with Google KMS for encryption and fine-
+                // grained access control.
+                .ProtectKeysWithGoogleKms(
+                    Configuration["DataProtection:KmsKeyName"]);
 
             // Add google exception logging to aid debugging in production.
             services.AddGoogleExceptionLogging(options =>
