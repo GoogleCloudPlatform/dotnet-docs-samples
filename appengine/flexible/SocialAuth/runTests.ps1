@@ -14,4 +14,8 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-Run-KestrelTest 5601 -CasperJs11
+Backup-File appsettings.json {
+    $creds = Get-Content -Raw $env:GOOGLE_APPLICATION_CREDENTIALS | ConvertFrom-Json
+    .\Set-Up.ps1 $creds.client_email
+    Run-KestrelTest 5601 -CasperJs11
+}
