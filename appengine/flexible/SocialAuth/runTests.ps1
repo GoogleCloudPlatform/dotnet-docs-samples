@@ -14,8 +14,11 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-Backup-File appsettings.json {
-    $creds = Get-Content -Raw $env:GOOGLE_APPLICATION_CREDENTIALS | ConvertFrom-Json
-    .\Set-Up.ps1 $creds.client_email
+$envars = $env:DataProtection:Bucket, $env:DataProtection:KmsKeyName
+try {
+    $env:DataProtection:Bucket = $env:GOOGLE_BUCKET
+    $env:DataProtection:KmsKeyName = "projects/$env:GOOGLE_PROJECT_ID/locations/global/keyRings/dataprotection/cryptoKeys/masterkey"
     Run-KestrelTest 5601 -CasperJs11
+} finally {
+    $env:DataProtection:Bucket, $env:DataProtection:KmsKeyName = $envars
 }
