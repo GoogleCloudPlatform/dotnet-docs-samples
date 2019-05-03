@@ -57,13 +57,11 @@ $appsecretsKey = New-Key appsecrets appkey
 #>
 function New-Key([string]$keyRingId, [string]$keyId) {
     # Check to see if the key ring already exists.
-    $matchingKeyRing = (gcloud kms keyrings list --format json --location global `
-        --filter="projects/$projectId/locations/global/keyRings/$keyRingId" `
-        | ConvertFrom-Json).name
-    if ($matchingKeyRing) {
-        Write-Host "The key ring $matchingKeyRing already exists."
+    gcloud kms keyrings describe --location global $keyRingId | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "The key ring $keyRingId already exists."
     } else { 
-        # Create the new key ring.
+        # Not found.  Create the new key ring.
         Write-Host "Creating new key ring $keyRingId..." 
         gcloud kms keyrings create $keyRingId --location global | Write-Host
         Try-Again
@@ -71,10 +69,10 @@ function New-Key([string]$keyRingId, [string]$keyId) {
 
     # Check to see if the key already exists
     $keyName = "projects/$projectId/locations/global/keyRings/$keyRingId/cryptoKeys/$keyId"
-    $matchingKey = (gcloud kms keys list --format json --location global `
-        --keyring $keyRingId --filter="$keyName" | ConvertFrom-Json).name
-    if ($matchingKey) {
-        Write-Host "The key $matchingKey already exists."
+    gcloud kms keys describe --location global `
+        --keyring $keyRingId $keyId | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "The key $keyId already exists."
     } else { 
         # Create the new key.
         Write-Host "Creating new key $keyId..."
