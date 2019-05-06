@@ -32,9 +32,6 @@ PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
 
 ## Using the Sample
 
-The sample app listens for WebSocket connections at http://localhost:5000/ws
-(when running locally) or https://YOUR-PROJECT-ID.appspot.com/ws
+The sample app listens for WebSocket connections at http://localhost:5000/chat
+(when running locally) or https://YOUR-PROJECT-ID.appspot.com/chat
 (when deployed to App Engine). It echos every incoming WebSocket message.
-You may [send a WebSocket message](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
-using the built-in WebSocket API in your browser to test the app; many
-packages can help you set up a WebSocket client as well.

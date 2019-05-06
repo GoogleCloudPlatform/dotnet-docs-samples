@@ -42,10 +42,13 @@ namespace WebSocketApp {
                 app.UseDeveloperExceptionPage();
             }
 
+            // [START gae_flex_dotnet_websocket]
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseWebSockets();
             
             app.Use(async (context, next) => {
-                if (context.Request.Path == "/ws")
+                if (context.Request.Path == "/chat")
                 {
                     if (context.WebSockets.IsWebSocketRequest)
                     {
@@ -62,11 +65,7 @@ namespace WebSocketApp {
                     await next();
                 }
             });
-
-            app.Run(async (context) => {
-                string greeting = "Listening for WebSocket connections as /ws.";
-                await context.Response.WriteAsync(greeting);
-            });
+            // [END gae_flex_dotnet_websocket]
         }
 
         private async Task Echo(HttpContext context, WebSocket webSocket)
