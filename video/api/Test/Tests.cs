@@ -37,6 +37,11 @@ namespace GoogleCloudSamples.VideoIntelligence
     public class AnalyzeTests : IDisposable
     {
         readonly List<string> _tempFiles = new List<string>();
+        
+        const string FoxSnatchedMp4 = "gs://cloudmleap/video/next/fox-snatched.mp4";
+        const string GbikesDinosaurMp4 = "gs://cloud-samples-data/video/gbikes_dinosaur.mp4";
+        const string GoogleWorkShortMp4 = "gs://python-docs-samples-tests/video/googlework_short.mp4";
+        const string CatMp4 = "gs://cloud-samples-data/video/cat.mp4";
 
         readonly CommandLineRunner _analyze = new CommandLineRunner()
         {
@@ -62,7 +67,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestSplitGcsUri()
         {
             string bucket;
-            string objectName = SplitGcsUri("gs://cloudmleap/video/next/fox-snatched.mp4",
+            string objectName = SplitGcsUri(FoxSnatchedMp4,
                 out bucket);
             Assert.Equal("cloudmleap", bucket);
             Assert.Equal("video/next/fox-snatched.mp4", objectName);
@@ -86,7 +91,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestShotsGcs()
         {
             ConsoleOutput output = _analyze.Run("shots",
-                "gs://cloudmleap/video/next/fox-snatched.mp4");
+                FoxSnatchedMp4);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Start Time Offset", output.Stdout);
             Assert.Contains("End Time Offset", output.Stdout);
@@ -96,7 +101,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestLabels()
         {
             ConsoleOutput output = _analyze.Run("labels",
-                DownloadGcsObject(@"gs://cloud-samples-data/video/cat.mp4"));
+                DownloadGcsObject(@CatMp4));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Cat", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
         }
@@ -105,7 +110,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestLabelsGcs()
         {
             ConsoleOutput output = _analyze.Run("labels",
-                @"gs://cloud-samples-data/video/cat.mp4");
+                @CatMp4);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Cat", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
         }
@@ -113,7 +118,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestFaces()
         {
             ConsoleOutput output =
-                _analyze.Run("faces", DownloadGcsObject("gs://cloud-samples-data/video/gbikes_dinosaur.mp4"));
+                _analyze.Run("faces", DownloadGcsObject(GbikesDinosaurMp4));
             Assert.Equal(0, output.ExitCode);
         }
 
@@ -121,7 +126,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestExplicitContentGcs()
         {
             ConsoleOutput output =
-                _analyze.Run("explicit-content", "gs://cloud-samples-data/video/gbikes_dinosaur.mp4");
+                _analyze.Run("explicit-content", GbikesDinosaurMp4);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Pornography", output.Stdout);
         }
@@ -130,7 +135,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestTranscriptionGcs()
         {
             ConsoleOutput output =
-                _analyze.Run("transcribe", "gs://python-docs-samples-tests/video/googlework_short.mp4");
+                _analyze.Run("transcribe", GoogleWorkShortMp4);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("France", output.Stdout);
         }
@@ -139,7 +144,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestTextDetection()
         {
             ConsoleOutput output =
-                _analyze.Run("text", DownloadGcsObject("gs://python-docs-samples-tests/video/googlework_short.mp4"));
+                _analyze.Run("text", DownloadGcsObject(GoogleWorkShortMp4));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Start time:", output.Stdout);
             Assert.Contains("Confidence:", output.Stdout);
@@ -149,7 +154,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestTextDetectionGcs()
         {
             ConsoleOutput output =
-                _analyze.Run("text", "gs://python-docs-samples-tests/video/googlework_short.mp4");
+                _analyze.Run("text", GoogleWorkShortMp4);
             Assert.Equal(0, output.ExitCode);
 
             Assert.Contains("Start time:", output.Stdout);
@@ -160,7 +165,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestObjectTracking()
         {
             ConsoleOutput output =
-                _analyze.Run("track-object", DownloadGcsObject("gs://cloud-samples-data/video/cat.mp4"));
+                _analyze.Run("track-object", DownloadGcsObject(CatMp4));
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("cat", output.Stdout);
         }
@@ -169,7 +174,7 @@ namespace GoogleCloudSamples.VideoIntelligence
         void TestObjectTrackingGcs()
         {
             ConsoleOutput output =
-                _analyze.Run("track-object", "gs://cloud-samples-data/video/cat.mp4");
+                _analyze.Run("track-object", CatMp4);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("cat", output.Stdout);
         }
