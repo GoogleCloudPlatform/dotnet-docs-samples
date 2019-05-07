@@ -26,7 +26,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             var client = VideoIntelligenceServiceClient.Create();
             var request = new AnnotateVideoRequest()
             {
-                InputUri = @"gs://demomaker/cat.mp4",
+                InputUri = @"gs://cloud-samples-data/video/cat.mp4",
                 Features = { Feature.LabelDetection }
             };
             var op = client.AnnotateVideo(request).PollUntilCompleted();
