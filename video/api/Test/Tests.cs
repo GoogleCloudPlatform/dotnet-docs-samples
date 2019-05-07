@@ -37,7 +37,7 @@ namespace GoogleCloudSamples.VideoIntelligence
     public class AnalyzeTests : IDisposable
     {
         readonly List<string> _tempFiles = new List<string>();
-        
+
         const string FoxSnatchedMp4 = "gs://cloudmleap/video/next/fox-snatched.mp4";
         const string GbikesDinosaurMp4 = "gs://cloud-samples-data/video/gbikes_dinosaur.mp4";
         const string GoogleWorkShortMp4 = "gs://python-docs-samples-tests/video/googlework_short.mp4";
