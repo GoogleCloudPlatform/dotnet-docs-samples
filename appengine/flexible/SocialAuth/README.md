@@ -23,10 +23,19 @@ This sample requires [.NET Core 2.1](
     [Click here](https://console.cloud.google.com/appengine) to create an
     App Engine application.
 
-4.  Create a new encryption key.
+4.  Run the `Set-Up.ps1` script to create keys and buckets.
     ```
-    PS > .\New-EncryptionKey.ps1
-    projects/<your-project-id>/locations/global/keyRings/socialauth/cryptoKeys/appsecrets
+    PS > .\Set-Up.ps1
+    The key ring appsecrets already exists.
+    The key appkey already exists.
+    Adding role roles/cloudkms.cryptoKeyDecrypter to tests@appspot.gserviceaccount.com for projects/tests/locations/global/keyRings/appsecrets.
+    Updated IAM policy for keyring [appsecrets].
+    bindings:
+    - members:
+    - serviceAccount:tests@appspot.gserviceaccount.com
+    role: roles/cloudkms.cryptoKeyDecrypter
+    etag: BwWIAIUIOlo=
+    ...
     ```
 
 5.  Create a file called `appsecrets.json` and fill it with:

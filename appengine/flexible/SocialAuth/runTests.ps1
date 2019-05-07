@@ -14,6 +14,11 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-dotnet restore
-dotnet build
-Run-KestrelTest 5601 -CasperJs11
+$envars = $env:DataProtection:Bucket, $env:DataProtection:KmsKeyName
+try {
+    $env:DataProtection:Bucket = $env:GOOGLE_BUCKET
+    $env:DataProtection:KmsKeyName = "projects/$env:GOOGLE_PROJECT_ID/locations/global/keyRings/dataprotection/cryptoKeys/masterkey"
+    Run-KestrelTest 5601 -CasperJs11
+} finally {
+    $env:DataProtection:Bucket, $env:DataProtection:KmsKeyName = $envars
+}
