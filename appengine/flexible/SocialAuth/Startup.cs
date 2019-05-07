@@ -99,8 +99,8 @@ namespace SocialAuthMVC
                 .PersistKeysToGoogleCloudStorage(
                     Configuration["DataProtection:Bucket"],
                     Configuration["DataProtection:Object"])
-                // Protect the keys with Google KMS for encryption and fine-
-                // grained access control.
+                // Protect the keys with Google KMS for encryption and 
+                // fine-grained access control.
                 .ProtectKeysWithGoogleKms(
                     Configuration["DataProtection:KmsKeyName"]);
 

@@ -88,7 +88,7 @@ function New-Key([string]$keyRingId, [string]$keyId) {
 Grants a role to the App Engine default service account for a given key ring.
 
 .PARAMETER keyRingId
-The key ring to grant the role.
+The key ring that the new role should grant access to.
 
 .PARAMETER role
 The role to grant.
