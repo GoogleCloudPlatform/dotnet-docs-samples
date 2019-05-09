@@ -19,12 +19,15 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace WebSocketSignalRApp
 {
-    public class Program {
-        public static void Main(string[] args) {
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             BuildWebHost(args).Build().Run();
         }
 
-        public static IWebHostBuilder BuildWebHost(string[] args) {
+        public static IWebHostBuilder BuildWebHost(string[] args)
+        {
             return WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
         }
     }
