@@ -17,7 +17,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace WebSocketSignaIRApp
+namespace WebSocketSignalRApp
 {
     public class Program {
         public static void Main(string[] args) {

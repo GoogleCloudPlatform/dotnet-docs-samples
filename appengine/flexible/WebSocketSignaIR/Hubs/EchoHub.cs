@@ -16,7 +16,7 @@
 
 using Microsoft.AspNetCore.SignalR;
 
-namespace WebSocketSignaIRApp.Hubs
+namespace WebSocketSignalRApp.Hubs
 {
     public class EchoHub : Hub
     {
