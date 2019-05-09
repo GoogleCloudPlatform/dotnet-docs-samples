@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
 {
     public class Storage
     {
-        private static readonly string s_projectId = "YOUR-PROJECT-ID";
+        private static readonly string s_projectId = "YOUR-PROJECT";
 
         private static readonly string s_usage =
             "Usage: \n" +
@@ -44,6 +44,8 @@ namespace GoogleCloudSamples
             "  Storage download [-key encryption-key] bucket-name object-name [local-file-path]\n" +
             "  Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]\n" +
             "  Storage generate-signed-url bucket-name object-name\n" +
+            "  Storage generate-signed-get-url-v4 bucket-name object-name\n" +
+            "  Storage generate-signed-put-url-v4 bucket-name object-name\n" +
             "  Storage view-bucket-iam-members bucket-name\n" +
             "  Storage add-bucket-iam-member bucket-name member\n" +
             "  Storage remove-bucket-iam-member bucket-name role member\n" +
@@ -705,6 +707,43 @@ namespace GoogleCloudSamples
         }
         // [END storage_generate_signed_url]
 
+        // [START storage_generate_signed_url_v4]
+        private void GenerateV4SignedGetUrl(string bucketName, string objectName)
+        {
+            UrlSigner urlSigner = UrlSigner
+            .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
+            .WithSigningVersion(SigningVersion.V4);
+            string url =
+                urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
+            Console.WriteLine("Generated GET signed URL:");
+            Console.WriteLine(url);
+            Console.WriteLine("You can use this URL with any user agent, for example:");
+            Console.WriteLine("curl '" + url + "'");
+        }
+        // [END storage_generate_signed_url_v4]
+
+        // [START storage_generate_upload_signed_url_v4]
+        private void GenerateV4SignedPutUrl(string bucketName, string objectName)
+        {
+            UrlSigner urlSigner = UrlSigner
+            .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
+            .WithSigningVersion(SigningVersion.V4);
+
+            Dictionary<string, IEnumerable<string>> contentHeaders =
+                new Dictionary<string, IEnumerable<string>> {
+                    { "Content-Type", new[] { "text/plain" } }
+                };
+
+            string url =
+                urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Put, contentHeaders);
+            Console.WriteLine("Generated PUT signed URL:");
+            Console.WriteLine(url);
+            Console.WriteLine("You can use this URL with any user agent, for example:");
+            Console.WriteLine("curl -X PUT -H 'Content-Type: text/plain' --upload-file my-file '" +
+                url + "'");
+        }
+        // [END storage_generate_upload_signed_url_v4]
+
         // [START storage_generate_encryption_key]
         void GenerateEncryptionKey()
         {
@@ -1261,6 +1300,16 @@ namespace GoogleCloudSamples
                     case "generate-signed-url":
                         if (args.Length < 3 && PrintUsage()) return -1;
                         GenerateSignedUrl(args[1], args[2]);
+                        break;
+
+                    case "generate-signed-get-url-v4":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        GenerateV4SignedGetUrl(args[1], args[2]);
+                        break;
+
+                    case "generate-signed-put-url-v4":
+                        if (args.Length < 3 && PrintUsage()) return -1;
+                        GenerateV4SignedPutUrl(args[1], args[2]);
                         break;
 
                     case "generate-encryption-key":
