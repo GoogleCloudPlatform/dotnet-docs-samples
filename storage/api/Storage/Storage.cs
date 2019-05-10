@@ -711,14 +711,13 @@ namespace GoogleCloudSamples
         private void GenerateV4SignedGetUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
-            .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-            .WithSigningVersion(SigningVersion.V4);
-            string url =
-                urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
+                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
+                .WithSigningVersion(SigningVersion.V4);
+            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
             Console.WriteLine("Generated GET signed URL:");
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
-            Console.WriteLine("curl '" + url + "'");
+            Console.WriteLine($"curl '{url}'");
         }
         // [END storage_generate_signed_url_v4]
 
@@ -726,21 +725,19 @@ namespace GoogleCloudSamples
         private void GenerateV4SignedPutUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
-            .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-            .WithSigningVersion(SigningVersion.V4);
+                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
+                .WithSigningVersion(SigningVersion.V4);
 
-            Dictionary<string, IEnumerable<string>> contentHeaders =
-                new Dictionary<string, IEnumerable<string>> {
-                    { "Content-Type", new[] { "text/plain" } }
-                };
+            var contentHeaders = new Dictionary<string, IEnumerable<string>>
+            {
+                { "Content-Type", new[] { "text/plain" } }
+            };
 
-            string url =
-                urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Put, contentHeaders);
+            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Put, contentHeaders);
             Console.WriteLine("Generated PUT signed URL:");
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
-            Console.WriteLine("curl -X PUT -H 'Content-Type: text/plain' --upload-file my-file '" +
-                url + "'");
+            Console.WriteLine($"curl -X PUT -H 'Content-Type: text/plain' --upload-file my-file '{url}'");
         }
         // [END storage_generate_upload_signed_url_v4]
 
