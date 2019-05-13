@@ -474,7 +474,7 @@ namespace GoogleCloudSamples
         /// Listens for configuration and system error messages on the gateway and
         /// bound devices.
         /// </summary>
-        // [START listen_for_config_messages]
+        // [START iot_listen_for_config_messages]
         public static object ListenForConfigMessages(string projectId, string cloudRegion,
             string registryId, string deviceId, string gatewayId, int numMessages,
             string privateKeyFile, string algorithm, string caCerts, string mqttBridgeHostname,
@@ -575,7 +575,7 @@ namespace GoogleCloudSamples
             Console.WriteLine("Finished.");
             return 0;
         }
-        // [END listen_for_config_messages]
+        // [END iot_listen_for_config_messages]
 
         // [START iot_send_data_from_bound_device]
         public static object SendDataFromBoundDevice(string projectId, string cloudRegion,
@@ -611,7 +611,7 @@ namespace GoogleCloudSamples
             mqttClient.Disconnect();
             return 0;
         }
-        // [END send_data_from_bound_device]
+        // [END iot_send_data_from_bound_device]
 
         public static object SendDataFromDevice(MqttClient client, string deviceId,
             string messageType, string data)
