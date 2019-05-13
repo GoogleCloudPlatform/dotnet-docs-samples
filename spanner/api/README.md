@@ -115,6 +115,8 @@ can use [this older sample](
 
       writeUsingDml                     Insert multiple records using a DML statement.
 
+      queryWithParameter                Query record inserted using DML with a query parameter.
+
       writeWithTransactionUsingDml      Update data using a DML statement within a read-write transaction.
 
       updateUsingPartitionedDml         Update multiple records using a partitioned DML statement.
