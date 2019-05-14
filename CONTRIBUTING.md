@@ -42,5 +42,5 @@ This is enforced using [CodeFormatter](https://github.com/dotnet/codeformatter).
 
 ### Starting a new sample
 When starting a new sample, match the file and directory layout in the
-[the translate sample](translate/api).  That sample is the canonical example
+[DLP Snippets](dlp/api/Snippets).  That sample is the canonical example
 of how a new sample should be structured.
