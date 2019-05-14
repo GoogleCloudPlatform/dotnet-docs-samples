@@ -247,9 +247,6 @@ namespace GoogleCloudSamples.Bigtable
 
         public static int Main(string[] args)
         {
-            // Instantiates a BigtableTableAdminclient used to create a table.
-            BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-
             if (projectId == "YOUR-PROJECT" + "-ID")
             {
                 Console.WriteLine("Edit HelloWorld.cs and replace YOUR-PROJECT-ID with your project id.");
