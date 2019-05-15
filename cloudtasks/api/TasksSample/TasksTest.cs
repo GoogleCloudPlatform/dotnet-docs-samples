@@ -19,7 +19,7 @@ using Xunit;
 public class TasksTest
 {
     public readonly string ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    public readonly string QueueId = Environment.GetEnvironmentVariable("GCP_QUEUE") ?? "my-appengine-queue";
+    public readonly string QueueId = Environment.GetEnvironmentVariable("GCP_QUEUE") ?? "my-queue";
     public readonly string LocationId = Environment.GetEnvironmentVariable("LOCATION_ID") ?? "us-central1";
 
     [Fact]
