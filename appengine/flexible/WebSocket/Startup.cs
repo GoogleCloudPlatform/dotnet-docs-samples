@@ -26,8 +26,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace WebSocketApp {
-    public class Startup {
+namespace WebSocketApp
+{
+    public class Startup
+    {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -47,7 +49,8 @@ namespace WebSocketApp {
             app.UseStaticFiles();
             app.UseWebSockets();
             
-            app.Use(async (context, next) => {
+            app.Use(async (context, next) =>
+            {
                 if (context.Request.Path == "/chat")
                 {
                     if (context.WebSockets.IsWebSocketRequest)
