@@ -18,12 +18,12 @@ namespace GoogleCloudSamples.Bigtable
             // [END bigtable_quickstart]
             if (projectId == "YOUR-PROJECT" + "-ID")
             {
-                Console.WriteLine("Edit QuickStart.cs and replace YOUR-PROJECT-ID with your project id.");
+                Console.WriteLine("Edit QuickStart.cs and replace YOUR-PROJECT-ID with your project ID.");
                 return -1;
             }
             if (instanceId == "YOUR-INSTANCE" + "-ID")
             {
-                Console.WriteLine("Edit QuickStart.cs and replace YOUR-INSTANCE-ID with your instance id.");
+                Console.WriteLine("Edit QuickStart.cs and replace YOUR-INSTANCE-ID with your instance ID.");
                 return -1;
             }
             // [START bigtable_quickstart]
