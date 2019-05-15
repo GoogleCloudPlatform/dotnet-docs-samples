@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Firestore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,14 +26,8 @@ namespace TranslatorUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
-
+            services.AddSingleton<FirestoreDb>(
+                provider => FirestoreDb.Create(GetFirestoreProjectId()));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -62,6 +57,7 @@ namespace TranslatorUI
             });
         }
 
+
         public static string GetProjectId()
         {
             GoogleCredential googleCredential = Google.Apis.Auth.OAuth2
@@ -79,5 +75,9 @@ namespace TranslatorUI
             return Google.Api.Gax.Platform.Instance().ProjectId;
         }
 
+        // Would normally be the same as the regular project id.  But in
+        // our test environment, we need a different one.
+        public string GetFirestoreProjectId() =>
+            Configuration["FIRESTORE_PROJECT_ID"] ?? GetProjectId();
     }
 }
