@@ -3,10 +3,6 @@
 This sample demonstrates how to use the [Google Cloud Tasks](https://cloud.google.com/cloud-tasks/)
 client library.
 
-App Engine queues push tasks to an App Engine HTTP target. This directory
-contains both the App Engine app to deploy, as well as the snippets to run
-locally to push tasks to it, which could also be called on App Engine.
-
 The `api/TasksSample` project contains simple programs:
 - `CreateHttpTask.cs` constructs a task with an HTTP target and pushes it
 to your queue.
