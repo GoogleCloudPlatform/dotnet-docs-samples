@@ -142,3 +142,4 @@ if (-not $taskQueue) {
 
 # Create topic and subscription for getting-started\background-processing.
 gcloud pubsub topics create translate-requests
+gcloud pubsub subscriptions create translate-requests --topic=translate-requests
