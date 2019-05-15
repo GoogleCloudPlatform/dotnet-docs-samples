@@ -4,7 +4,7 @@
 }
 
 <div>
-    <form id="translate-form" method="post" enctype="multipart/form-data"> 
+    <p><form id="translate-form" method="post" enctype="multipart/form-data"> 
         <div asp-validation-summary="All" class="text-danger"></div>
 
         <div class="form-group">
@@ -13,7 +13,7 @@
             <span asp-validation-for="SourceText" class="text-danger"></span>
         </div>
         <button type="submit" class="btn btn-success" id="submit-button">Submit</button>
-    </form>
+    </form></p>
 
     @if (Model.SourceText != null) 
     {
@@ -22,5 +22,17 @@
 
     @if (Model.Translations == null || Model.Translations.Count < 1) {
         <p>No translations found yet.</p>
+    } else {
+        <p>Recent translations:</p>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr><th>Source</th><th>Translation</th></tr>
+            </thead>
+            <tbody>
+                @foreach (Translation tx in Model.Translations) {
+                    <tr><td>@tx.SourceText</td><td>@tx.TranslatedText</td></tr>
+                }
+            </tbody>
+        </table>
     }
 </div>
