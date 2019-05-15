@@ -7,6 +7,9 @@
 
 
   <ItemGroup>
+    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="3.0.0-beta13" />
+    <PackageReference Include="Google.Cloud.Firestore.V1" Version="1.0.0-beta20" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.1.0-beta02" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
   </ItemGroup>

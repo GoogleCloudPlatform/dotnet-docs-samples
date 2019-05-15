@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -60,5 +61,23 @@ namespace BackgroundTranslator
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
+        public static string GetProjectId()
+        {
+            GoogleCredential googleCredential = Google.Apis.Auth.OAuth2
+                .GoogleCredential.GetApplicationDefault();
+            if (googleCredential != null)
+            {
+                ICredential credential = googleCredential.UnderlyingCredential;
+                ServiceAccountCredential serviceAccountCredential =
+                    credential as ServiceAccountCredential;
+                if (serviceAccountCredential != null)
+                {
+                    return serviceAccountCredential.ProjectId;
+                }
+            }
+            return Google.Api.Gax.Platform.Instance().ProjectId;
+        }
+
     }
 }
