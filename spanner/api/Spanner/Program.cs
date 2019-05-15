@@ -427,6 +427,11 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
+    [Verb("queryWithParameter", HelpText = "Query record inserted using DML with a query parameter.")]
+    class QueryWithParameterOptions : DefaultOptions
+    {
+    }
+
     [Verb("writeWithTransactionUsingDml", HelpText = "Update data using a DML statement within a read-write transaction.")]
     class WriteWithTransactionUsingDmlOptions : DefaultOptions
     {
@@ -1399,6 +1404,38 @@ namespace GoogleCloudSamples.Spanner
             }
         }
         // [END spanner_dml_getting_started_insert]
+
+        public static async Task QueryWithParameterAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_parameter]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId, FirstName, LastName FROM Singers "
+                    + $"WHERE LastName = @lastName",
+                    new SpannerParameterCollection {
+                        {"lastName", SpannerDbType.String}});
+                cmd.Parameters["lastName"].Value = "Garcia";
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine("SingerId : "
+                        + reader.GetFieldValue<string>("SingerId")
+                        + " FirstName : "
+                        + reader.GetFieldValue<string>("FirstName")
+                        + " LastName : "
+                        + reader.GetFieldValue<string>("LastName"));
+                    }
+                }
+            }
+            // [END spanner_query_with_parameter]
+        }
 
         // [START spanner_dml_getting_started_update]
         public static async Task WriteWithTransactionUsingDmlCoreAsync(
@@ -2868,6 +2905,17 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
+        public static object QueryWithParameter(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryWithParameterAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
         public static object WriteWithTransactionUsingDml(string projectId,
             string instanceId, string databaseId)
         {
@@ -3020,6 +3068,9 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteUsingDmlOptions opts) =>
                     WriteUsingDml(opts.projectId, opts.instanceId,
+                    opts.databaseId))
+                .Add((QueryWithParameterOptions opts) =>
+                    QueryWithParameter(opts.projectId, opts.instanceId,
                     opts.databaseId))
                 .Add((WriteWithTransactionUsingDmlOptions opts) =>
                     WriteWithTransactionUsingDml(opts.projectId, opts.instanceId,

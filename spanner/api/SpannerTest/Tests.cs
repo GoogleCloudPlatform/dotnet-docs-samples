@@ -359,6 +359,12 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Russell Morales", readOutput.Stdout);
             Assert.Contains("Jacqueline Long", readOutput.Stdout);
             Assert.Contains("Dylan Shaw", readOutput.Stdout);
+            // Query inserted record with a parameter.
+            readOutput = _spannerCmd.Run("queryWithParameter",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.            
+            Assert.Contains("SingerId : 12 FirstName : Melissa LastName : Garcia", readOutput.Stdout);
             // Update records within a transaction using a DML Statement.
             readOutput = _spannerCmd.Run("writeWithTransactionUsingDml",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
