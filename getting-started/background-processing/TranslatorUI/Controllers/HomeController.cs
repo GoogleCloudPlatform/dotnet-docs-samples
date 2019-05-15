@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using BackgroundTranslator.Models;
+using TranslatorUI.Models;
 
-namespace BackgroundTranslator.Controllers
+namespace TranslatorUI.Controllers
 {
     public class HomeController : Controller
     {

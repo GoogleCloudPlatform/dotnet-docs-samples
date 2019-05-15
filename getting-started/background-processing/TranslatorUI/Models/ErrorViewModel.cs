@@ -1,6 +1,6 @@
 using System;
 
-namespace BackgroundTranslator.Models
+namespace TranslatorUI.Models
 {
     public class ErrorViewModel
     {
