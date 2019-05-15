@@ -3,8 +3,24 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+<div>
+    <form id="translate-form" method="post" enctype="multipart/form-data"> 
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="SourceText"></label>
+            <input asp-for="SourceText" class="form-control" />
+            <span asp-validation-for="SourceText" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success" id="submit-button">Submit</button>
+    </form>
+
+    @if (Model.SourceText != null) 
+    {
+        <p>Your request to translate @Model.SourceText was submitted.</p>
+    }
+
     @if (Model.Translations == null || Model.Translations.Count < 1) {
-        <span>No translations found yet.</span>
+        <p>No translations found yet.</p>
     }
 </div>

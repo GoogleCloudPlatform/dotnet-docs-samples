@@ -20,7 +20,9 @@ namespace TranslatorUI.Controllers
             _translations = _firestore.Collection("Translations");
         }
 
-        public async Task<IActionResult> Index()
+        [HttpPost]
+        [HttpGet]
+        public async Task<IActionResult> Index(string SourceText)
         {
             var query = _translations.OrderByDescending("TimeStamp")
                 .Limit(20);
@@ -28,11 +30,11 @@ namespace TranslatorUI.Controllers
             var model = new HomeViewModel() 
             {
                 Translations = snapshot.Documents.Select(
-                    doc => doc.ConvertTo<Translation>()).ToList()
+                    doc => doc.ConvertTo<Translation>()).ToList(),
+                SourceText = SourceText
             };
             return View(model);
         }
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
