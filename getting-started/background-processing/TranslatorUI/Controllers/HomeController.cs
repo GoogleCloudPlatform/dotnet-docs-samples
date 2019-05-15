@@ -6,17 +6,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TranslatorUI.Models;
+using Google.Cloud.PubSub.V1;
+using Google.Protobuf;
 
 namespace TranslatorUI.Controllers
 {
     public class HomeController : Controller
     {
         private readonly FirestoreDb _firestore;
+        private readonly PublisherClient _publisher;
         private CollectionReference _translations;
 
-        public HomeController(FirestoreDb firestore)
+        public HomeController(FirestoreDb firestore, PublisherClient publisher)
         {
             _firestore = firestore;
+            _publisher = publisher;
             _translations = _firestore.Collection("Translations");
         }
 
@@ -24,12 +28,24 @@ namespace TranslatorUI.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string SourceText)
         {
+            // Look up the most recent 20 translations.
             var query = _translations.OrderByDescending("TimeStamp")
                 .Limit(20);
-            var snapshot = await query.GetSnapshotAsync();
+            var snapshotTask = query.GetSnapshotAsync();
+
+            if (!string.IsNullOrWhiteSpace(SourceText)) 
+            {
+                // Submit a new translation request.
+                await _publisher.PublishAsync(new PubsubMessage()
+                {
+                    Data = ByteString.CopyFromUtf8(SourceText)
+                });
+            }
+
+            // Render the page.
             var model = new HomeViewModel() 
             {
-                Translations = snapshot.Documents.Select(
+                Translations = (await snapshotTask).Documents.Select(
                     doc => doc.ConvertTo<Translation>()).ToList(),
                 SourceText = SourceText
             };

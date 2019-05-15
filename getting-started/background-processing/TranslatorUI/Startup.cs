@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
+using Google.Cloud.PubSub.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +29,9 @@ namespace TranslatorUI
         {
             services.AddSingleton<FirestoreDb>(
                 provider => FirestoreDb.Create(GetFirestoreProjectId()));
+            services.AddSingleton<PublisherClient>(
+                provider => PublisherClient.CreateAsync(new TopicName(
+                    GetProjectId(), GetTopicName())).Result);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -79,5 +83,9 @@ namespace TranslatorUI
         // our test environment, we need a different one.
         public string GetFirestoreProjectId() =>
             Configuration["FIRESTORE_PROJECT_ID"] ?? GetProjectId();
+
+        public string GetTopicName() =>
+            Configuration["TranslateRequestsTopicName"] ?? "translate-requests";
+
     }
 }

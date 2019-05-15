@@ -139,3 +139,6 @@ $taskQueue = gcloud beta tasks queues  list --filter=my-appengine-queue --format
 if (-not $taskQueue) {
     gcloud beta tasks queues create-app-engine-queue my-appengine-queue
 }
+
+# Create topic and subscription for getting-started\background-processing.
+gcloud pubsub topics create translate-requests
