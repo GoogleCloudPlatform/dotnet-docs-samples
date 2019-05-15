@@ -34,7 +34,7 @@ public class TasksTest
     [Fact]
     public void TestCreateHttpTask()
     {
-        var Url = $"https://{ProjectId}.appspot.com/log_payload";
+        var Url = $"https://example.com/taskhandler";
         var snippet = new CreateHttpTask();
         Assert.Contains(
             $"projects/{ProjectId}/locations/{LocationId}/queues/{QueueId}/tasks/",

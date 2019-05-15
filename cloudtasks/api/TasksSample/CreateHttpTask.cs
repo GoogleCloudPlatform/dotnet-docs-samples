@@ -25,7 +25,7 @@ class CreateHttpTask
         string projectId = "YOUR-PROJECT-ID",
         string location = "us-central1",
         string queue = "my-queue",
-        string url = "http://example.com",
+        string url = "http://example.com/taskhandler",
         string payload = "Hello World!",
         int inSeconds = 0)
     {
