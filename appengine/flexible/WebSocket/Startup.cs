@@ -48,7 +48,7 @@ namespace WebSocketApp
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseWebSockets();
-            
+
             app.Use(async (context, next) =>
             {
                 if (context.Request.Path == "/chat")
