@@ -23,7 +23,7 @@ choco list -li | Tee-Object -Variable chocoList
 $chocoPackages = ($chocoList) -join ' '
 
 if (-not $chocoPackages.Contains('Microsoft .NET Core SDK - 2.1.4')) {
-    choco install -y --sxs dotnetcore-sdk --version 2.1.401    
+    choco install -y --sxs dotnetcore-sdk --version 2.2.203
 }
 
 if (-not $chocoPackages.Contains('.NET Core SDK 1.1.')) {
