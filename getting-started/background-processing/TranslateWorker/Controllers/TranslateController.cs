@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Google.Cloud.Firestore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace TranslateWorker.Controllers
 {
-    class PubsubMessage {
+    public class PubsubMessage {
         public string data { get; set; }
         public string messageId { get; set; }
         public Dictionary<string, string> attributes { get; set; }
@@ -22,38 +26,54 @@ namespace TranslateWorker.Controllers
     [ApiController]
     public class TranslateController : ControllerBase
     {
-        // GET api/values
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        private readonly ILogger<TranslateController> _logger;
+        private readonly FirestoreDb _firestore;
+        private readonly Google.Cloud.Translation.V2.TranslationClient _translator;
+        private readonly CollectionReference _translations;
+
+        public TranslateController(ILogger<TranslateController> logger,
+            FirestoreDb firestore,
+            Google.Cloud.Translation.V2.TranslationClient translator)
         {
-            return new string[] { "value1", "value2" };
+            this._logger = logger;
+            this._firestore = firestore;
+            this._translator = translator;
+            _translations = _firestore.Collection("Translations");
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
+        // POST api/translate
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] string value)
         {
-            JsonConvert.
-
+            // Unpack the message from Pubsub.
+            string sourceText;
+            try {
+                PostMessage request = JsonConvert
+                    .DeserializeObject<PostMessage>(value);
+                byte[] data = Convert.FromBase64String(request.message.data);
+                sourceText = Encoding.UTF8.GetString(data);
+            } catch (Exception e) {
+                _logger.LogError(1, e, "Bad request");
+                return BadRequest();
+            }
+            // Translate the source text.
+            var result = await _translator.TranslateTextAsync(sourceText, "es");
+            // Store the result in Firestore.
+            Translation translation = new Translation() 
+            {
+                TimeStamp = DateTime.UtcNow,
+                SourceText = sourceText,
+                TranslatedText = result.TranslatedText                
+            };
+            await _translations.AddAsync(translation);
+            // Return a success code.
+            return NoContent();
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [Route("/")]
+        public IActionResult Index()
         {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return Content("Serving translate requests...");
         }
     }
 }
