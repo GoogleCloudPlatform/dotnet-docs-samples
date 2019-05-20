@@ -6,6 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TranslateWorker.Controllers
 {
+    class PubsubMessage {
+        public string data { get; set; }
+        public string messageId { get; set; }
+        public Dictionary<string, string> attributes { get; set; }
+    }
+
+    public class PostMessage {
+        public PubsubMessage message { get; set; }
+        public string subscription { get; set; }        
+    }
+
+
     [Route("api/[controller]")]
     [ApiController]
     public class TranslateController : ControllerBase
@@ -28,6 +40,8 @@ namespace TranslateWorker.Controllers
         [HttpPost]
         public void Post([FromBody] string value)
         {
+            JsonConvert.
+
         }
 
         // PUT api/values/5
