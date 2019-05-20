@@ -14,7 +14,7 @@ gcloud beta run deploy translate-worker --region $region `
 $url = gcloud beta run services describe translate-worker `
     --region $region --format="get(status.address.hostname)"
 
-# Create a pub/sub topic and subscription, if they don't already exist.
+# Create a pubsub topic and subscription, if they don't already exist.
 $topicExists = gcloud pubsub topics describe translate-requests 2> $null 
 if (-not $topicExists) {
     gcloud pubsub topics create translate-requests
