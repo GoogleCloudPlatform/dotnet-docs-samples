@@ -5,7 +5,4 @@ dotnet publish -c Release
 Copy-Item Dockerfile bin/Release/netcoreapp2.2/publish
 $projectId = gcloud config get-value project
 gcloud builds submit --tag gcr.io/$projectId/translator-worker bin/Release/netcoreapp2.2/publish
-@"
-Deploy to your Kubernetes cluster with the following commmand:
-kubectl run translator-worker --image=gcr.io/$projectId/translator-worker --replicas=2
-"@ | Write-Host
+gcloud beta run deploy translator-worker --image gcr.io/$projectId/translator-worker --no-allow-unauthenticated
