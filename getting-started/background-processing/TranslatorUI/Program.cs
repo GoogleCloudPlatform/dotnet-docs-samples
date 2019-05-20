@@ -19,6 +19,19 @@ namespace TranslatorUI
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>().UsePortEnvironmentVariable();
+    }
+
+    static class ProgramExtensions
+    {
+        public static IWebHostBuilder UsePortEnvironmentVariable(
+            this IWebHostBuilder builder)
+        {
+            string port = Environment.GetEnvironmentVariable("PORT");
+            if (!string.IsNullOrEmpty(port)) {
+                builder.UseUrls($"http://0.0.0.0:{port}");
+            }
+            return builder;
+        }
     }
 }

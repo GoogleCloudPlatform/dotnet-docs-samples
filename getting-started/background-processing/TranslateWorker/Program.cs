@@ -34,5 +34,4 @@ namespace TranslateWorker
             return builder;
         }
     }
-
 }
