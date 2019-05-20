@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace TranslateWorker
 {
@@ -50,6 +51,12 @@ namespace TranslateWorker
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+           // So middleware knows requests arrived via https.
+            app.UseForwardedHeaders(new ForwardedHeadersOptions()
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedProto
+            });
         }
 
         public static string GetProjectId()
