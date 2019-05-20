@@ -18,6 +18,7 @@ dotnet publish -c Release
 # Collect some details about the project that we'll need later.
 $projectId = gcloud config get-value project
 $projectNumber = gcloud projects describe $projectId --format="get(projectNumber)"
+$region = "us-central1"
 
 # Use Google Cloud Build to build the worker's container and publish to Google
 # Container Registry. 
@@ -25,7 +26,6 @@ gcloud builds submit --tag gcr.io/$projectId/translate-worker `
     TranslateWorker/bin/Release/netcoreapp2.2/publish
 
 # Run the container with Google Cloud Run.
-$region = "us-central1"
 gcloud beta run deploy translate-worker --region $region `
     --image gcr.io/$projectId/translate-worker --no-allow-unauthenticated
 $url = gcloud beta run services describe translate-worker `
