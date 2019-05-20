@@ -51,12 +51,6 @@ namespace TranslateWorker
 
             app.UseHttpsRedirection();
             app.UseMvc();
-
-           // So middleware knows requests arrived via https.
-            app.UseForwardedHeaders(new ForwardedHeadersOptions()
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedProto
-            });
         }
 
         public static string GetProjectId()

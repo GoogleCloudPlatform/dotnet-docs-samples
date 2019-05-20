@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Google.Cloud.Firestore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace TranslateWorker.Controllers
 {
@@ -43,13 +42,11 @@ namespace TranslateWorker.Controllers
 
         // POST api/translate
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] PostMessage request)
         {
             // Unpack the message from Pubsub.
             string sourceText;
             try {
-                PostMessage request = JsonConvert
-                    .DeserializeObject<PostMessage>(value);
                 byte[] data = Convert.FromBase64String(request.message.data);
                 sourceText = Encoding.UTF8.GetString(data);
             } catch (Exception e) {
