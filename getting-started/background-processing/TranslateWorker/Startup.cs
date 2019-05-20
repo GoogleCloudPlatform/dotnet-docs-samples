@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net.Http;
 
 namespace TranslateWorker
 {
@@ -53,6 +54,7 @@ namespace TranslateWorker
 
         public static string GetProjectId()
         {
+            // Use the service account credentials, if present.
             GoogleCredential googleCredential = Google.Apis.Auth.OAuth2
                 .GoogleCredential.GetApplicationDefault();
             if (googleCredential != null)
@@ -64,15 +66,16 @@ namespace TranslateWorker
                 {
                     return serviceAccountCredential.ProjectId;
                 }
-            }
-            return Google.Api.Gax.Platform.Instance().ProjectId;
+            }            
+            // Query the metadata server.
+            HttpResponseMessage response = new HttpClient().GetAsync(
+                @"http://metadata.google.internal/computeMetadata/v1/project/project-id").Result;
+            return response.Content.ReadAsStringAsync().Result;
         }
 
         // Would normally be the same as the regular project id.  But in
         // our test environment, we need a different one.
         public string GetFirestoreProjectId() =>
-            System.Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID") ??
-            GetProjectId();
-
+            Configuration["FIRESTORE_PROJECT_ID"] ?? GetProjectId();
     }
 }

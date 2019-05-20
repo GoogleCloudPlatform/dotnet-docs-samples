@@ -35,9 +35,9 @@ namespace TranslateWorker.Controllers
             FirestoreDb firestore,
             Google.Cloud.Translation.V2.TranslationClient translator)
         {
-            this._logger = logger;
-            this._firestore = firestore;
-            this._translator = translator;
+            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this._firestore = firestore ?? throw new ArgumentNullException(nameof(firestore));
+            this._translator = translator ?? throw new ArgumentNullException(nameof(translator));
             _translations = _firestore.Collection("Translations");
         }
 
