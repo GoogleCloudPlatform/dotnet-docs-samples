@@ -83,9 +83,11 @@ namespace TranslateWorker
                 }
             }
             // Query the metadata server.
-            HttpResponseMessage response = new HttpClient().GetAsync(
-                @"http://metadata.google.internal/computeMetadata/v1/project/project-id").Result;
-            return response.Content.ReadAsStringAsync().Result;
+            HttpClient http = new HttpClient();
+            http.DefaultRequestHeaders.Add("Metadata-Flavor", "Google");
+            http.BaseAddress = new Uri(
+                @"http://metadata.google.internal/computeMetadata/v1/project/");
+            return http.GetStringAsync("project-id").Result;
         }
 
         // Would normally be the same as the regular project id.  But in
