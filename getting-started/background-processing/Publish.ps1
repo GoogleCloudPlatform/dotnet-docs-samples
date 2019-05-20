@@ -65,3 +65,12 @@ if ($subscriptionExists) {
         --topic translate-requests --push-endpoint $url/api/translate `
         --push-auth-service-account cloud-run-pubsub-invoker@$projectId.iam.gserviceaccount.com
 }
+
+# Use Google Cloud Build to build the UI's container and publish to Google
+# Container Registry. 
+gcloud builds submit --tag gcr.io/$projectId/translate-ui `
+    TranslatorUI/bin/Release/netcoreapp2.2/publish
+
+# Run the container with Google Cloud Run.
+gcloud beta run deploy translate-ui --region $region `
+    --image gcr.io/$projectId/translate-ui --allow-unauthenticated

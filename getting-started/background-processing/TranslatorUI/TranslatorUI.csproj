@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Translation\Translation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Dockerfile" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

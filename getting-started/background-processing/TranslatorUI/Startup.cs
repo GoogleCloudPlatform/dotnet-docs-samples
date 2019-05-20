@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
@@ -90,7 +91,12 @@ namespace TranslatorUI
                     return serviceAccountCredential.ProjectId;
                 }
             }
-            return Google.Api.Gax.Platform.Instance().ProjectId;
+            // Query the metadata server.
+            HttpClient http = new HttpClient();
+            http.DefaultRequestHeaders.Add("Metadata-Flavor", "Google");
+            http.BaseAddress = new Uri(
+                @"http://metadata.google.internal/computeMetadata/v1/project/");
+            return http.GetStringAsync("project-id").Result;
         }
 
         // Would normally be the same as the regular project id.  But in
