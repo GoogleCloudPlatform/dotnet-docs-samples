@@ -54,6 +54,7 @@ namespace TranslateWorker.Controllers
                 return BadRequest();
             }
             // Translate the source text.
+            _logger.LogDebug(2, "Translating {0} to Spanish.", sourceText);
             var result = await _translator.TranslateTextAsync(sourceText, "es");
             // Store the result in Firestore.
             Translation translation = new Translation() 
