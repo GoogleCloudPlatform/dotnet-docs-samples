@@ -1026,15 +1026,15 @@ namespace GoogleCloudSamples.Spanner
             string instanceId,
             string databaseId)
         {
-            // This sample transfers 200,000 from the MarketingBudget
-            // field of the second Album to the first Album. Make sure to run
+            // This sample transfers 100,000 from the MarketingBudget
+            // field of the first Album to the second Album. Make sure to run
             // the addColumn and writeDataToNewColumn samples first,
             // in that order.
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
 
-            decimal transferAmount = 200000;
+            decimal transferAmount = 100000;
             decimal minimumAmountToTransfer = 300000;
             decimal secondBudget = 0;
             decimal firstBudget = 0;
@@ -1064,15 +1064,17 @@ namespace GoogleCloudSamples.Spanner
                             // Read the second album's budget.
                             secondBudget =
                                reader.GetFieldValue<decimal>("MarketingBudget");
-                            // Confirm second Album's budget is sufficient and
-                            // if not raise an exception. Raising an exception
-                            // will automatically roll back the transaction.
+                            // Confirm second Album's budget is at least the
+                            // expected amount, and if not, raise an exception.
+                            // Raising an exception automatically rolls back the
+                            // transaction.
                             if (secondBudget < minimumAmountToTransfer)
                             {
                                 throw new Exception("The second album's "
-                                        + $"budget {secondBudget} "
+                                        + $"budget ({secondBudget}) "
                                         + "is less than the minimum required "
-                                        + "amount to transfer.");
+                                        + "amount "
+                                        + $"({minimumAmountToTransfer}).");
                             }
                         }
                     }
@@ -1086,6 +1088,17 @@ namespace GoogleCloudSamples.Spanner
                         {
                             firstBudget =
                               reader.GetFieldValue<decimal>("MarketingBudget");
+                            // Confirm first Album's budget has enough money to
+                            // transfer, and if not, raise an exception. Raising
+                            // an exception automatically rolls back the
+                            // transaction.
+                            if (firstBudget < transferAmount)
+                            {
+                                throw new Exception("The first album's "
+                                            + $"budget ({firstBudget}) "
+                                            + "is less than the amount to "
+                                            + $"transfer ({transferAmount}).");
+                            }
                         }
                     }
 
@@ -1098,17 +1111,17 @@ namespace GoogleCloudSamples.Spanner
                             {"MarketingBudget", SpannerDbType.Int64},
                         });
                     cmd.Transaction = transaction;
-                    // Update second album to remove the transfer amount.
-                    secondBudget -= transferAmount;
-                    cmd.Parameters["SingerId"].Value = 2;
-                    cmd.Parameters["AlbumId"].Value = 2;
-                    cmd.Parameters["MarketingBudget"].Value = secondBudget;
-                    await cmd.ExecuteNonQueryAsync();
-                    // Update first album to add the transfer amount.
-                    firstBudget += transferAmount;
+                    // Update first album to remove the transfer amount.
+                    firstBudget -= transferAmount;
                     cmd.Parameters["SingerId"].Value = 1;
                     cmd.Parameters["AlbumId"].Value = 1;
                     cmd.Parameters["MarketingBudget"].Value = firstBudget;
+                    await cmd.ExecuteNonQueryAsync();
+                    // Update second album to add the transfer amount.
+                    secondBudget += transferAmount;
+                    cmd.Parameters["SingerId"].Value = 2;
+                    cmd.Parameters["AlbumId"].Value = 2;
+                    cmd.Parameters["MarketingBudget"].Value = secondBudget;
                     await cmd.ExecuteNonQueryAsync();
 
                     await transaction.CommitAsync();
@@ -1443,7 +1456,7 @@ namespace GoogleCloudSamples.Spanner
             string instanceId,
             string databaseId)
         {
-            // This sample transfers 200,000 from the MarketingBudget
+            // This sample transfers 100,000 from the MarketingBudget
             // field of the first Album to the second Album. Make sure to run
             // the addColumn and writeDataToNewColumn samples first,
             // in that order.
@@ -1451,8 +1464,7 @@ namespace GoogleCloudSamples.Spanner
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
 
-            decimal transferAmount = 200000;
-            decimal minimumAmountToTransfer = 300000;
+            decimal transferAmount = 100000;
             decimal firstBudget = 0;
             decimal secondBudget = 0;
 
@@ -1471,7 +1483,7 @@ namespace GoogleCloudSamples.Spanner
                     var cmdLookup = connection.CreateSelectCommand(
                      "SELECT * FROM Albums WHERE SingerId = 1 AND AlbumId = 1");
                     cmdLookup.Transaction = transaction;
-                    // Excecute the select query.
+                    // Execute the select query.
                     using (var reader = await cmdLookup.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
@@ -1479,15 +1491,16 @@ namespace GoogleCloudSamples.Spanner
                             // Read the first album's budget.
                             firstBudget =
                                reader.GetFieldValue<decimal>("MarketingBudget");
-                            // Confirm first Album's budget is sufficient and
-                            // if not raise an exception. Raising an exception
-                            // will automatically roll back the transaction.
-                            if (firstBudget < minimumAmountToTransfer)
+                            // Confirm first Album's budget has enough money to
+                            // transfer, and if not, raise an exception. Raising
+                            // an exception automatically rolls back the
+                            // transaction.
+                            if (firstBudget < transferAmount)
                             {
                                 throw new Exception("The first album's "
-                                        + $"budget {firstBudget} "
-                                        + "is less than the minimum required "
-                                        + "amount to transfer.");
+                                        + $"budget ({firstBudget}) "
+                                        + "is less than the amount to "
+                                        + $"transfer ({transferAmount}).");
                             }
                         }
                     }
@@ -1613,7 +1626,7 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END spanner_dml_batch_update]
 
-        // [START spanner_delete_data]	    
+        // [START spanner_delete_data]
         public static async Task DeleteSampleDataAsync(
             string projectId, string instanceId, string databaseId)
         {
@@ -2341,7 +2354,7 @@ namespace GoogleCloudSamples.Spanner
                 + $"/databases/{databaseId}";
             using (var connection = new SpannerConnection(connectionString))
             {
-                // Define create table statement for table with 
+                // Define create table statement for table with
                 // commit timestamp column.
                 string createTableStatement =
                 @"CREATE TABLE Performances (

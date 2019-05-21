@@ -354,7 +354,7 @@ namespace GoogleCloudSamples.Spanner
             readOutput = _spannerCmd.Run("querySingersTable",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
-            // Confirm expected result in output.            
+            // Confirm expected result in output.
             Assert.Contains("Melissa Garcia", readOutput.Stdout);
             Assert.Contains("Russell Morales", readOutput.Stdout);
             Assert.Contains("Jacqueline Long", readOutput.Stdout);
@@ -363,7 +363,7 @@ namespace GoogleCloudSamples.Spanner
             readOutput = _spannerCmd.Run("queryWithParameter",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
-            // Confirm expected result in output.            
+            // Confirm expected result in output.
             Assert.Contains("SingerId : 12 FirstName : Melissa LastName : Garcia", readOutput.Stdout);
             // Update records within a transaction using a DML Statement.
             readOutput = _spannerCmd.Run("writeWithTransactionUsingDml",
@@ -374,8 +374,8 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
-            Assert.Contains("1 1 400000", readOutput.Stdout);
-            Assert.Contains("2 2 500000", readOutput.Stdout);
+            Assert.Contains("1 1 500000", readOutput.Stdout);
+            Assert.Contains("2 2 400000", readOutput.Stdout);
             // Update records using a partitioned DML Statement.
             readOutput = _spannerCmd.Run("updateUsingPartitionedDml",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
@@ -385,7 +385,7 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
-            Assert.Contains("1 1 400000", readOutput.Stdout);
+            Assert.Contains("1 1 500000", readOutput.Stdout);
             Assert.Contains("2 2 100000", readOutput.Stdout);
             // Delete multiple records using a partitioned DML Statement.
             readOutput = _spannerCmd.Run("deleteUsingPartitionedDml",
