@@ -12,14 +12,13 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Google.Cloud.Firestore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace TranslateWorker.Controllers
 {

@@ -12,21 +12,16 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 using Google.Cloud.PubSub.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net.Http;
 
 namespace TranslateUI
 {

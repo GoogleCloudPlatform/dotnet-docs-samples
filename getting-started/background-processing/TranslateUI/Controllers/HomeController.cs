@@ -13,15 +13,13 @@
 // the License.
 
 using Google.Cloud.Firestore;
-using System;
-using System.Collections.Generic;
+using Google.Cloud.PubSub.V1;
+using Google.Protobuf;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using TranslateUI.Models;
-using Google.Cloud.PubSub.V1;
-using Google.Protobuf;
 
 namespace TranslateUI.Controllers
 {
