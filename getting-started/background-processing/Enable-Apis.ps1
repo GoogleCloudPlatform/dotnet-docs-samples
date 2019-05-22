@@ -12,10 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-$servicesToEnable = @"
-translate.googleapis.com
-pubsub.googleapis.com
-firestore.googleapis.com
-cloudrun.googleapis.com
-"@
-gcloud services enable $servicesToEnable
+gcloud services enable $servicesToEnable translate.googleapis.com `
+    pubsub.googleapis.com firestore.googleapis.com run.googleapis.com `
+    run.googleapis.com
+
