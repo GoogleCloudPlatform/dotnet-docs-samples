@@ -1,4 +1,4 @@
 FROM microsoft/dotnet:aspnetcore-runtime
 COPY . /app
 WORKDIR /app
-ENTRYPOINT ["dotnet", "TranslatorUI.dll"]
+ENTRYPOINT ["dotnet", "TranslateUI.dll"]

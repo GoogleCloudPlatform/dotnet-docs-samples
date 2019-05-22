@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace TranslatorUI
+namespace TranslateUI
 {
     public class Program
     {

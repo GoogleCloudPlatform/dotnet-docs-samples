@@ -19,11 +19,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TranslatorUI.Models;
+using TranslateUI.Models;
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 
-namespace TranslatorUI.Controllers
+namespace TranslateUI.Controllers
 {
     public class HomeController : Controller
     {

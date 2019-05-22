@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translation", "Translation\Translation.csproj", "{AA568AC9-8003-4972-A53C-67FA55DBB502}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslatorUI", "TranslatorUI\TranslatorUI.csproj", "{00412272-6D5D-4461-8176-64980CBB67CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslateUI", "TranslateUI\TranslateUI.csproj", "{00412272-6D5D-4461-8176-64980CBB67CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslateWorker", "TranslateWorker\TranslateWorker.csproj", "{1CEB0EC3-7900-460D-80E4-AAB1599F8AC3}"
 EndProject

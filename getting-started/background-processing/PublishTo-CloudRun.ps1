@@ -69,7 +69,7 @@ if ($subscriptionExists) {
 # Use Google Cloud Build to build the UI's container and publish to Google
 # Container Registry. 
 gcloud builds submit --tag gcr.io/$projectId/translate-ui `
-    TranslatorUI/bin/Release/netcoreapp2.2/publish
+    TranslateUI/bin/Release/netcoreapp2.2/publish
 
 # Run the container with Google Cloud Run.
 gcloud beta run deploy translate-ui --region $region `
