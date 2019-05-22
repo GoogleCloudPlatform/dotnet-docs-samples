@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.40.0.1587" />
+    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.40.0.1593" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
   </ItemGroup>
 
