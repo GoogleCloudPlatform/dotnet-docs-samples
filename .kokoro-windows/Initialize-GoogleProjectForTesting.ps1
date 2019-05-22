@@ -137,10 +137,9 @@ Bind $serviceAccountEmail roles/iap.httpsResourceAccessor surferjeff-iap
 # Create task queue.  The test needs it.
 $taskQueue = gcloud beta tasks queues  list --filter=my-queue --format=json | ConvertFrom-Json
 if (-not $taskQueue) {
-    gcloud beta tasks queues create-app-engine-queue my-appengine-queue
+    gcloud beta tasks queues create my-queue
 }
 
 # Create topic and subscription for getting-started\background-processing.
 gcloud pubsub topics create translate-requests
 gcloud pubsub subscriptions create translate-requests --topic=translate-requests
-    gcloud beta tasks queues create my-queue
