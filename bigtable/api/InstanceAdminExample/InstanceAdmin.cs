@@ -83,10 +83,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object CreateProdInstance(string displayName)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Creating a PRODUCTION instance");
             // [START bigtable_create_prod_instance]
             // Creates a production instance with "<intanceId>-prod" instance ID,
@@ -163,10 +160,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object CreateDevInstance(string displayName)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Creating a DEVELOPMENT instance");
             // [START bigtable_create_dev_instance]
             // Creates a DEVELOPMENT Instance with "<intanceId>-dev" instance ID,
@@ -238,11 +232,9 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object ListInstances()
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
+            Console.WriteLine($"Listing Instances in the project {projectId}");
 
-            Console.WriteLine($"Listing instances in the project {projectId}");
             // [START bigtable_list_instances]
             // Lists instances in the project.
             // Initialize request argument(s).
@@ -277,10 +269,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object GetInstance(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Getting information about an instance");
             // [START bigtable_get_instance]
             // Initialize request argument(s).
@@ -308,10 +297,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object ListClusters(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine($"Listing clusters on instance {instanceId}");
             // [START bigtable_list_clusters]
             // Lists clusters in the instance.
@@ -346,10 +332,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object CreateCluster(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Print current instance information");
             GetInstance(instanceId);
 
@@ -404,10 +387,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object DeleteCluster(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Print current instance information");
             GetInstance(instanceId);
 
@@ -442,10 +422,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object DeleteInstance(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Print list of instances in the project");
             ListInstances();
 

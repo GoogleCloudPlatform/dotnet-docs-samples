@@ -1,4 +1,4 @@
-# Copyright(c) 2018 Google Inc.
+# Copyright(c) 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -11,4 +11,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-dotnet test --test-adapter-path:. --logger:junit
+
+Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+
+dotnet restore
+dotnet publish
+Deploy-CasperJsTest
