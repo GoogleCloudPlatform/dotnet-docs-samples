@@ -38,6 +38,8 @@ namespace TranslateWorker
 
     static class ProgramExtensions
     {
+        // Google Cloud Run sets the PORT environment variable to tell this
+        // process which port to listen to.
         public static IWebHostBuilder UsePortEnvironmentVariable(
             this IWebHostBuilder builder)
         {

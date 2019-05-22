@@ -23,15 +23,21 @@ using Microsoft.Extensions.Logging;
 
 namespace TranslateWorker.Controllers
 {
+    /// <summary>
+    /// The message Pubsub posts to our controller.
+    /// </summary>
+    public class PostMessage {
+        public PubsubMessage message { get; set; }
+        public string subscription { get; set; }        
+    }
+
+    /// <summary>
+    /// Pubsub's inner message.
+    /// </summary>
     public class PubsubMessage {
         public string data { get; set; }
         public string messageId { get; set; }
         public Dictionary<string, string> attributes { get; set; }
-    }
-
-    public class PostMessage {
-        public PubsubMessage message { get; set; }
-        public string subscription { get; set; }        
     }
 
 
@@ -42,6 +48,7 @@ namespace TranslateWorker.Controllers
         private readonly ILogger<TranslateController> _logger;
         private readonly FirestoreDb _firestore;
         private readonly Google.Cloud.Translation.V2.TranslationClient _translator;
+        // The Firestore collection where we store translations.
         private readonly CollectionReference _translations;
 
         public TranslateController(ILogger<TranslateController> logger,
@@ -54,7 +61,11 @@ namespace TranslateWorker.Controllers
             _translations = _firestore.Collection("Translations");
         }
 
-        // POST api/translate
+        /// <summary>
+        /// Handle a posted message from Pubsub.
+        /// </summary>
+        /// <param name="request">The message Pubsub posts to this process.</param>
+        /// <returns>NoContent on success.</returns>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] PostMessage request)
         {
@@ -84,6 +95,9 @@ namespace TranslateWorker.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Serve a root page so Cloud Run knows this process is healthy.
+        /// </summary>
         [Route("/")]
         public IActionResult Index()
         {
