@@ -25,15 +25,17 @@ namespace TranslateWorker.Controllers
     /// <summary>
     /// The message Pubsub posts to our controller.
     /// </summary>
-    public class PostMessage {
+    public class PostMessage
+    {
         public PubsubMessage message { get; set; }
-        public string subscription { get; set; }        
+        public string subscription { get; set; }
     }
 
     /// <summary>
     /// Pubsub's inner message.
     /// </summary>
-    public class PubsubMessage {
+    public class PubsubMessage
+    {
         public string data { get; set; }
         public string messageId { get; set; }
         public Dictionary<string, string> attributes { get; set; }
@@ -70,10 +72,13 @@ namespace TranslateWorker.Controllers
         {
             // Unpack the message from Pubsub.
             string sourceText;
-            try {
+            try
+            {
                 byte[] data = Convert.FromBase64String(request.message.data);
                 sourceText = Encoding.UTF8.GetString(data);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 _logger.LogError(1, e, "Bad request");
                 return BadRequest();
             }
@@ -81,13 +86,13 @@ namespace TranslateWorker.Controllers
             _logger.LogDebug(2, "Translating {0} to Spanish.", sourceText);
             var result = await _translator.TranslateTextAsync(sourceText, "es");
             // Store the result in Firestore.
-            Translation translation = new Translation() 
+            Translation translation = new Translation()
             {
                 TimeStamp = DateTime.UtcNow,
                 SourceText = sourceText,
-                TranslatedText = result.TranslatedText                
+                TranslatedText = result.TranslatedText
             };
-            _logger.LogDebug(3, "Saving translation {0} to {1}.", 
+            _logger.LogDebug(3, "Saving translation {0} to {1}.",
                 translation.TranslatedText, _translations.Path);
             await _translations.AddAsync(translation);
             // Return a success code.

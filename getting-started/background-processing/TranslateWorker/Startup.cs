@@ -80,12 +80,24 @@ namespace TranslateWorker
                     return serviceAccountCredential.ProjectId;
                 }
             }
-            // Query the metadata server.
-            HttpClient http = new HttpClient();
-            http.DefaultRequestHeaders.Add("Metadata-Flavor", "Google");
-            http.BaseAddress = new Uri(
-                @"http://metadata.google.internal/computeMetadata/v1/project/");
-            return http.GetStringAsync("project-id").Result;
+            try
+            {
+                // Query the metadata server.
+                HttpClient http = new HttpClient();
+                http.DefaultRequestHeaders.Add("Metadata-Flavor", "Google");
+                http.BaseAddress = new Uri(
+                    @"http://metadata.google.internal/computeMetadata/v1/project/");
+                return http.GetStringAsync("project-id").Result;
+            }
+            catch (AggregateException e)
+            when (e.InnerException is HttpRequestException)
+            {
+                throw new Exception("Could not find Google project id.  " +
+                    "Run this application in Google Cloud or follow these " +
+                    "instructions to run locally: " +
+                    "https://cloud.google.com/docs/authentication/getting-started",
+                    e.InnerException);
+            }
         }
 
         // Would normally be the same as the regular project id.  But in

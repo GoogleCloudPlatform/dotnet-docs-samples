@@ -17,8 +17,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TranslateUI.Models
 {
-    public class HomeViewModel 
-    { 
+    public class HomeViewModel
+    {
         public List<Translation> Translations { get; set; } = new List<Translation>();
 
         [Required]

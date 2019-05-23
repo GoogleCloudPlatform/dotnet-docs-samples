@@ -45,7 +45,7 @@ namespace TranslateUI.Controllers
                 .Limit(20);
             var snapshotTask = query.GetSnapshotAsync();
 
-            if (!string.IsNullOrWhiteSpace(SourceText)) 
+            if (!string.IsNullOrWhiteSpace(SourceText))
             {
                 // Submit a new translation request.
                 await _publisher.PublishAsync(new PubsubMessage()
@@ -55,7 +55,7 @@ namespace TranslateUI.Controllers
             }
 
             // Render the page.
-            var model = new HomeViewModel() 
+            var model = new HomeViewModel()
             {
                 Translations = (await snapshotTask).Documents.Select(
                     doc => doc.ConvertTo<Translation>()).ToList(),
