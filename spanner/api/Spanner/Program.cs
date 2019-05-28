@@ -1035,7 +1035,6 @@ namespace GoogleCloudSamples.Spanner
                 + $"/databases/{databaseId}";
 
             decimal transferAmount = 200000;
-            decimal minimumAmountToTransfer = 300000;
             decimal secondBudget = 0;
             decimal firstBudget = 0;
 
@@ -1067,11 +1066,11 @@ namespace GoogleCloudSamples.Spanner
                             // Confirm second Album's budget is sufficient and
                             // if not raise an exception. Raising an exception
                             // will automatically roll back the transaction.
-                            if (secondBudget < minimumAmountToTransfer)
+                            if (secondBudget < transferAmount)
                             {
                                 throw new Exception("The second album's "
                                         + $"budget {secondBudget} "
-                                        + "is less than the minimum required "
+                                        + "contains less than the "
                                         + "amount to transfer.");
                             }
                         }
@@ -1137,7 +1136,6 @@ namespace GoogleCloudSamples.Spanner
                 TransactionScopeAsyncFlowOption.Enabled))
             {
                 decimal transferAmount = 200000;
-                decimal minimumAmountToTransfer = 300000;
                 decimal secondBudget = 0;
                 decimal firstBudget = 0;
 
@@ -1159,11 +1157,11 @@ namespace GoogleCloudSamples.Spanner
                             // Confirm second Album's budget is sufficient and
                             // if not raise an exception. Raising an exception
                             // will automatically roll back the transaction.
-                            if (secondBudget < minimumAmountToTransfer)
+                            if (secondBudget < transferAmount)
                             {
                                 throw new Exception("The second album's "
                                     + $"budget {secondBudget} "
-                                    + "is less than the minimum required "
+                                    + "is less than the "
                                     + "amount to transfer.");
                             }
                         }
@@ -1444,7 +1442,7 @@ namespace GoogleCloudSamples.Spanner
             string databaseId)
         {
             // This sample transfers 200,000 from the MarketingBudget
-            // field of the first Album to the second Album. Make sure to run
+            // field of the second Album to the first Album. Make sure to run
             // the addColumn and writeDataToNewColumn samples first,
             // in that order.
             string connectionString =
@@ -1452,9 +1450,8 @@ namespace GoogleCloudSamples.Spanner
                 + $"/databases/{databaseId}";
 
             decimal transferAmount = 200000;
-            decimal minimumAmountToTransfer = 300000;
-            decimal firstBudget = 0;
             decimal secondBudget = 0;
+            decimal firstBudget = 0;
 
             // Create connection to Cloud Spanner.
             using (var connection =
@@ -1467,57 +1464,57 @@ namespace GoogleCloudSamples.Spanner
                 using (var transaction =
                         await connection.BeginTransactionAsync())
                 {
-                    // Create statement to select the first album's data.
+                    // Create statement to select the second album's data.
                     var cmdLookup = connection.CreateSelectCommand(
-                     "SELECT * FROM Albums WHERE SingerId = 1 AND AlbumId = 1");
+                     "SELECT * FROM Albums WHERE SingerId = 2 AND AlbumId = 2");
                     cmdLookup.Transaction = transaction;
                     // Excecute the select query.
                     using (var reader = await cmdLookup.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
                         {
-                            // Read the first album's budget.
-                            firstBudget =
+                            // Read the second album's budget.
+                            secondBudget =
                                reader.GetFieldValue<decimal>("MarketingBudget");
-                            // Confirm first Album's budget is sufficient and
+                            // Confirm second Album's budget is sufficient and
                             // if not raise an exception. Raising an exception
                             // will automatically roll back the transaction.
-                            if (firstBudget < minimumAmountToTransfer)
+                            if (secondBudget < transferAmount)
                             {
                                 throw new Exception("The first album's "
-                                        + $"budget {firstBudget} "
-                                        + "is less than the minimum required "
+                                        + $"budget {secondBudget} "
+                                        + "is less than the "
                                         + "amount to transfer.");
                             }
                         }
                     }
-                    // Read the second album's budget.
+                    // Read the first album's budget.
                     cmdLookup = connection.CreateSelectCommand(
-                     "SELECT * FROM Albums WHERE SingerId = 2 and AlbumId = 2");
+                     "SELECT * FROM Albums WHERE SingerId = 1 and AlbumId = 1");
                     cmdLookup.Transaction = transaction;
                     using (var reader = await cmdLookup.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
                         {
-                            secondBudget =
+                            firstBudget =
                               reader.GetFieldValue<decimal>("MarketingBudget");
                         }
                     }
 
-                    // Update first album to remove the transfer amount.
-                    firstBudget -= transferAmount;
+                    // Update second album to remove the transfer amount.
+                    secondBudget -= transferAmount;
                     SpannerCommand cmd = connection.CreateDmlCommand(
-                        "UPDATE Albums SET MarketingBudget = @MarketingBudget "
-                        + "WHERE SingerId = 1 and AlbumId = 1");
-                    cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, firstBudget);
-                    cmd.Transaction = transaction;
-                    await cmd.ExecuteNonQueryAsync();
-                    // Update second album to add the transfer amount.
-                    secondBudget += transferAmount;
-                    cmd = connection.CreateDmlCommand(
                         "UPDATE Albums SET MarketingBudget = @MarketingBudget "
                         + "WHERE SingerId = 2 and AlbumId = 2");
                     cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, secondBudget);
+                    cmd.Transaction = transaction;
+                    await cmd.ExecuteNonQueryAsync();
+                    // Update first album to add the transfer amount.
+                    firstBudget += transferAmount;
+                    cmd = connection.CreateDmlCommand(
+                        "UPDATE Albums SET MarketingBudget = @MarketingBudget "
+                        + "WHERE SingerId = 1 and AlbumId = 1");
+                    cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, firstBudget);
                     cmd.Transaction = transaction;
                     await cmd.ExecuteNonQueryAsync();
 

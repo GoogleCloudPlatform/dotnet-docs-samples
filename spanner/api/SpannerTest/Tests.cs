@@ -374,8 +374,8 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
-            Assert.Contains("1 1 400000", readOutput.Stdout);
-            Assert.Contains("2 2 500000", readOutput.Stdout);
+            Assert.Contains("1 1 800000", readOutput.Stdout);
+            Assert.Contains("2 2 100000", readOutput.Stdout);
             // Update records using a partitioned DML Statement.
             readOutput = _spannerCmd.Run("updateUsingPartitionedDml",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
@@ -385,8 +385,9 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
-            Assert.Contains("1 1 400000", readOutput.Stdout);
+            Assert.Contains("1 1 800000", readOutput.Stdout);
             Assert.Contains("2 2 100000", readOutput.Stdout);
+            Assert.Contains("2 3 100000", readOutput.Stdout);
             // Delete multiple records using a partitioned DML Statement.
             readOutput = _spannerCmd.Run("deleteUsingPartitionedDml",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
