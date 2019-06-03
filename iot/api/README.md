@@ -83,7 +83,7 @@ the following setup.
    $ > ./generate_keys.ps1
 ```
 
-3. Add a device using the file `rsa_cert.pem`, specifying RS256_X509 and using thexw
+3. Add a device using the file `rsa_cert.pem`, specifying RS256_X509 and using the
   text copy of the public key starting with the ----START---- block of the certificate.
 
 ```git bash
