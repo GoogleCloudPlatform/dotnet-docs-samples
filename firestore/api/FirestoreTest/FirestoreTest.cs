@@ -50,16 +50,11 @@ namespace GoogleCloudSamples
                 Command = "dotnet run"
             };
 
-            ConsoleOutput RunManageIndexes(params string[] args)
-            {
-    return _manageIndexes.Run(args);
-}
-
             DeleteCollection("users").Wait();
             DeleteCollection("cities/SF/neighborhoods").Wait();
             DeleteCollection("cities").Wait();
             DeleteCollection("data").Wait();
-            var manageIndexesOutput = RunManageIndexes("delete-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            _manageIndexes.Run("delete-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
         }
     }
 
