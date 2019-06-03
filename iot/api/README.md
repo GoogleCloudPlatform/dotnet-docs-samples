@@ -77,17 +77,17 @@ the following setup.
 
 1. From the [Google Cloud IoT Core section](https://console.cloud.google.com/iot/)
    of the Google Cloud console, create a device registry.
-2. Use the [`generate_keys.ps1`](generate_keys.ps1) script to generate your signing keys:
+2. Use the [`generate_keys.sh`](generate_keys.sh) script to generate your signing keys:
 
-```powershell
-   PS > ./generate_keys.ps1
+```git bash
+   $ > ./generate_keys.ps1
 ```
 
 3. Add a device using the file `rsa_cert.pem`, specifying RS256_X509 and using the
   text copy of the public key starting with the ----START---- block of the certificate.
 
-```powershell
-   PS > cat rsa_cert.pem
+```git bash
+   $ > cat rsa_cert.pem
 ```
 
 4. Connect a device using the HTTP or MQTT device samples in the [CloudIotMqttExample](./CloudIotMqttExample) folder.
