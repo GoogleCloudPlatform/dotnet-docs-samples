@@ -68,24 +68,41 @@ namespace GoogleCloudSamples
         {
             public void Dispose()
             {
-                try
+                var exceptions = new List<Exception>();
+                // Delete all logs created from running the tests.
+                foreach (string log in _logsToDelete)
                 {
-                    // Delete all logs created from running the tests.
-                    foreach (string log in _logsToDelete)
+                    try
                     {
                         Run("delete-log", log);
                     }
+                    catch (RpcException ex)
+                    when (ex.Status.StatusCode == StatusCode.NotFound)
+                    { }
+                    catch (Exception e)
+                    {
+                        exceptions.Add(e);
+                    }
                 }
-                catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
-                try
+                // Delete all the log sinks created from running the tests.
+                foreach (string sink in _sinksToDelete)
                 {
-                    // Delete all the log sinks created from running the tests.
-                    foreach (string sink in _sinksToDelete)
+                    try
                     {
                         Run("delete-sink", sink);
                     }
+                    catch (RpcException ex)
+                    when (ex.Status.StatusCode == StatusCode.NotFound)
+                    { }
+                    catch (Exception e)
+                    {
+                        exceptions.Add(e);
+                    }
                 }
-                catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
+                if (exceptions.Count > 0)
+                {
+                    throw new AggregateException(exceptions);
+                }
             }
 
             [Fact]
