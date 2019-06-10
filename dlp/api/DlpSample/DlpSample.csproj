@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
     <PackageReference Include="Google.Api.Gax.Grpc" Version="2.7.0" />
-    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.40.0.1609" />
+    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.40.1.1609" />
     <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.3.0" />
     <PackageReference Include="Grpc.Core" Version="1.21.0" PrivateAssets="None" />
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0" />

@@ -5,7 +5,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.40.0.1601" />
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.40.1.1601" />
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0" />
     <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
