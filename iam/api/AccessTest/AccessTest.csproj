@@ -14,7 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-    <PackageReference Include="Google.Apis.Cloudresourcemanager.v1" Version="1.40.0.1614" />
+    <PackageReference Include="Google.Apis.Cloudresourcemanager.v1" Version="1.40.1.1614" />
   </ItemGroup>
 
   <ItemGroup>
