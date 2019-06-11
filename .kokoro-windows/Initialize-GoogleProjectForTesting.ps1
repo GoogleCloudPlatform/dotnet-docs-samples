@@ -135,9 +135,9 @@ foreach ($role in $roles.Split()) {
 Bind $serviceAccountEmail roles/iap.httpsResourceAccessor surferjeff-iap
 
 # Create task queue.  The test needs it.
-$taskQueue = gcloud beta tasks queues  list --filter=my-queue --format=json | ConvertFrom-Json
+$taskQueue = gcloud tasks queues  list --filter=my-queue --format=json | ConvertFrom-Json
 if (-not $taskQueue) {
-    gcloud beta tasks queues create my-queue
+    gcloud tasks queues create my-queue
 }
 
 # Create topic and subscription for getting-started\background-processing.
