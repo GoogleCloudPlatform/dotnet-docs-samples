@@ -511,11 +511,6 @@ namespace GoogleCloudSamples
         // [START speech_transcribe_streaming_mic]
         static async Task<object> StreamingMicRecognizeAsync(int seconds)
         {
-            if (NAudio.Wave.WaveIn.DeviceCount < 1)
-            {
-                Console.WriteLine("No microphone!");
-                return -1;
-            }
             var speech = SpeechClient.Create();
             var streamingCall = speech.StreamingRecognize();
             // Write the initial request with the config.
