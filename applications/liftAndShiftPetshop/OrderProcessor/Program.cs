@@ -34,7 +34,7 @@ namespace PetShop.OrderProcessor
         private static readonly int s_batchSize = int.Parse(ConfigurationManager.AppSettings["BatchSize"]);
         private static readonly int s_threadCount = int.Parse(ConfigurationManager.AppSettings["ThreadCount"]);
 
-        private static readonly int s_totalOrdersProcessed = 0;
+        private static int s_totalOrdersProcessed = 0;
 
         static void Main()
         {
