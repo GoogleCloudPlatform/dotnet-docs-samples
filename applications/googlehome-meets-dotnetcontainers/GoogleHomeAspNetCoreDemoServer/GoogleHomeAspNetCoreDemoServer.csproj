@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Auth" Version="1.40.1" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.40.2" />
   
     <PackageReference Include="Google.Cloud.Dialogflow.V2" Version="1.0.0-beta02" />
   
