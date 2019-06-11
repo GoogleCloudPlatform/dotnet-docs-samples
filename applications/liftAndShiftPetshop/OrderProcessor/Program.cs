@@ -34,23 +34,27 @@ namespace PetShop.OrderProcessor
         private static readonly int s_batchSize = int.Parse(ConfigurationManager.AppSettings["BatchSize"]);
         private static readonly int s_threadCount = int.Parse(ConfigurationManager.AppSettings["ThreadCount"]);
 
-        private static int s_totalOrdersProcessed = 0;
+        private class OrdersCounter
+        {
+            public int TotalOrdersProcessed { get; set; }
+        }
 
         static void Main()
         {
             Thread workTicketThread;
             Thread[] workerThreads = new Thread[s_threadCount];
+            OrdersCounter ordersCounter = new OrdersCounter();
 
             for (int i = 0; i < s_threadCount; i++)
             {
-                workTicketThread = new Thread(new ThreadStart(ProcessOrders));
+                workTicketThread = new Thread(new ParameterizedThreadStart(ProcessOrders));
 
                 // Make this a background thread, so it will terminate when the main thread/process is de-activated
                 workTicketThread.IsBackground = true;
                 workTicketThread.SetApartmentState(ApartmentState.STA);
 
                 // Start the Work
-                workTicketThread.Start();
+                workTicketThread.Start(ordersCounter);
                 workerThreads[i] = workTicketThread;
             }
 
@@ -65,7 +69,7 @@ namespace PetShop.OrderProcessor
             }
 
             Console.WriteLine();
-            Console.WriteLine(s_totalOrdersProcessed + " Orders processed.");
+            Console.WriteLine(ordersCounter.TotalOrdersProcessed + " Orders processed.");
             Console.WriteLine("Processing stopped. Press Enter to exit.");
             Console.ReadLine();
         }
@@ -73,11 +77,11 @@ namespace PetShop.OrderProcessor
         /// <summary>
         /// Process a batch of asynchronous orders from the queue and submit them to the database within a transaction
         /// </summary>
-        private static void ProcessOrders()
+        private static void ProcessOrders(object objTotalOrdersProcessed)
         {
             // the transaction timeout should be long enough to handle all of orders in the batch
             TimeSpan tsTimeout = TimeSpan.FromSeconds(Convert.ToDouble(s_transactionTimeout * s_batchSize));
-
+            OrdersCounter ordersCounter = (OrdersCounter)objTotalOrdersProcessed;
             Order order = new Order();
             while (true)
             {
@@ -122,7 +126,7 @@ namespace PetShop.OrderProcessor
                     {
                         order.Insert((OrderInfo)queueOrders[k]);
                         processedItems++;
-                        s_totalOrdersProcessed++;
+                        ordersCounter.TotalOrdersProcessed++;
                     }
 
                     //batch complete or MSMQ receive timed out
