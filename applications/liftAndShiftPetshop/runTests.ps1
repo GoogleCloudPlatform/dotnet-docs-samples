@@ -12,7 +12,7 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
+Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
 Require-Platform Win*
 
