@@ -22,11 +22,10 @@
 */
 
 // [START error_reporting_quickstart]
-using Google.Apis.Auth.OAuth2;
+
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ErrorReporting.V1Beta1;
-using Google.Apis.Services;
 using System;
-using System.Threading.Tasks;
 
 public class ErrorReportingSample
 {
