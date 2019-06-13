@@ -25,3 +25,4 @@ google_application_credentials.json
 /dlp/tmp6849.tmp
 env/
 applications/liftAndShiftPetshop/PrecompiledWeb/
+applications/liftAndShiftPetshop/Web/

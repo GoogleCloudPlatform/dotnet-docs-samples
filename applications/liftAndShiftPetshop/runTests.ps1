@@ -16,4 +16,5 @@ Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
 Require-Platform Win*
 
-Build-Solution
+# Building the legacy app and precompiling ASP.NET 2.0 into /web
+msbuild /p:OutputPath=bin
