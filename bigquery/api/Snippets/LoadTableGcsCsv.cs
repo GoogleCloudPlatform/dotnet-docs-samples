@@ -44,7 +44,8 @@ public class BigQueryLoadTableGcsCsv
         var loadJob = client.CreateLoadJob(
             sourceUri: gcsURI, destination: destinationTableRef,
             schema: schema, options: jobOptions);
-        loadJob.PollUntilCompleted();  // Waits for the job to complete.
+        loadJob = loadJob.PollUntilCompleted().ThrowOnAnyError();  // Waits for the job to complete.
+
         // Display the number of rows uploaded
         BigQueryTable table = client.GetTable(destinationTableRef);
         Console.WriteLine(
