@@ -589,19 +589,19 @@ namespace GoogleCloudSamples.Spanner
             public int singerId { get; set; }
             public int venueId { get; set; }
             public DateTime eventDate { get; set; }
-            public long revenue { get; set; }     
+            public long revenue { get; set; }
         }
 
         public class Venue
         {
             public int venueId { get; set; }
-            public string venueName  { get; set; }
+            public string venueName { get; set; }
             public byte[] venueInfo { get; set; }
             public int capacity { get; set; }
             public List<DateTime> availableDates { get; set; }
             public DateTime lastContactDate { get; set; }
             public bool outdoorVenue { get; set; }
-            public float popularityScore  { get; set; }
+            public float popularityScore { get; set; }
         }
 
         public static async Task CreateSampleDatabaseAsync(
@@ -2676,15 +2676,15 @@ namespace GoogleCloudSamples.Spanner
                 DateTime.Parse("2020-10-01"),
                 DateTime.Parse("2020-10-07")});
             List<Venue> venues = new List<Venue> {
-                new Venue {venueId = 4, venueName = "Venue 4", venueInfo = exampleBytes1, 
+                new Venue {venueId = 4, venueName = "Venue 4", venueInfo = exampleBytes1,
                     capacity = 1800, availableDates = availableDates1,
                     lastContactDate = DateTime.Parse("2018-09-02"),
                     outdoorVenue = false, popularityScore = 0.85543f},
-                new Venue {venueId = 19, venueName = "Venue 19", venueInfo = exampleBytes2, 
+                new Venue {venueId = 19, venueName = "Venue 19", venueInfo = exampleBytes2,
                     capacity = 6300, availableDates = availableDates2,
                     lastContactDate = DateTime.Parse("2019-01-15"),
                     outdoorVenue = true, popularityScore = 0.98716f},
-                new Venue {venueId = 42, venueName = "Venue 42", venueInfo = exampleBytes3, 
+                new Venue {venueId = 42, venueName = "Venue 42", venueInfo = exampleBytes3,
                     capacity = 3000, availableDates = availableDates3,
                     lastContactDate = DateTime.Parse("2018-10-01"),
                     outdoorVenue = false, popularityScore = 0.72598f},
@@ -2712,15 +2712,15 @@ namespace GoogleCloudSamples.Spanner
                     cmd.Parameters["VenueName"].Value = venue.venueName;
                     cmd.Parameters["VenueInfo"].Value = venue.venueInfo;
                     cmd.Parameters["Capacity"].Value = venue.capacity;
-                    cmd.Parameters["AvailableDates"].Value = 
+                    cmd.Parameters["AvailableDates"].Value =
                         venue.availableDates;
-                    cmd.Parameters["LastContactDate"].Value = 
+                    cmd.Parameters["LastContactDate"].Value =
                         venue.lastContactDate;
-                    cmd.Parameters["OutdoorVenue"].Value = 
+                    cmd.Parameters["OutdoorVenue"].Value =
                         venue.outdoorVenue;
-                    cmd.Parameters["PopularityScore"].Value = 
+                    cmd.Parameters["PopularityScore"].Value =
                         venue.popularityScore;
-                    cmd.Parameters["LastUpdateTime"].Value = 
+                    cmd.Parameters["LastUpdateTime"].Value =
                         SpannerParameter.CommitTimestamp;
                     return cmd.ExecuteNonQueryAsync();
                 }));
@@ -2804,7 +2804,7 @@ namespace GoogleCloudSamples.Spanner
                 var cmd = connection.CreateSelectCommand(
                     "SELECT VenueId, VenueName, OutdoorVenue FROM Venues "
                     + "WHERE OutdoorVenue = @ExampleBool");
-                cmd.Parameters.Add("ExampleBool", 
+                cmd.Parameters.Add("ExampleBool",
                     SpannerDbType.Bool, exampleBool);
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
@@ -2931,7 +2931,7 @@ namespace GoogleCloudSamples.Spanner
             {
                 var cmd = connection.CreateSelectCommand(
                     "SELECT VenueId, VenueName, PopularityScore FROM Venues "
-                    + "WHERE PopularityScore > @ExampleFloat");                    
+                    + "WHERE PopularityScore > @ExampleFloat");
                 cmd.Parameters.Add("ExampleFloat",
                     SpannerDbType.Float64, exampleFloat);
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -3073,7 +3073,7 @@ namespace GoogleCloudSamples.Spanner
                         + reader.GetFieldValue<string>("VenueId")
                         + " VenueName : "
                         + reader.GetFieldValue<string>("VenueName")
-                        + $" LastUpdateTime : {timestamp}");    
+                        + $" LastUpdateTime : {timestamp}");
                     }
                 }
             }
