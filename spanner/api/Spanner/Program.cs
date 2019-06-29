@@ -571,37 +571,37 @@ namespace GoogleCloudSamples.Spanner
         // [START spanner_insert_data]
         public class Singer
         {
-            public int singerId { get; set; }
-            public string firstName { get; set; }
-            public string lastName { get; set; }
+            public int SingerId { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
         }
 
         public class Album
         {
-            public int singerId { get; set; }
-            public int albumId { get; set; }
-            public string albumTitle { get; set; }
+            public int SingerId { get; set; }
+            public int AlbumId { get; set; }
+            public string AlbumTitle { get; set; }
         }
         // [END spanner_insert_data]
 
         public class Performance
         {
-            public int singerId { get; set; }
-            public int venueId { get; set; }
-            public DateTime eventDate { get; set; }
-            public long revenue { get; set; }
+            public int SingerId { get; set; }
+            public int VenueId { get; set; }
+            public DateTime EventDate { get; set; }
+            public long Revenue { get; set; }
         }
 
         public class Venue
         {
-            public int venueId { get; set; }
-            public string venueName { get; set; }
-            public byte[] venueInfo { get; set; }
-            public int capacity { get; set; }
-            public List<DateTime> availableDates { get; set; }
-            public DateTime lastContactDate { get; set; }
-            public bool outdoorVenue { get; set; }
-            public float popularityScore { get; set; }
+            public int VenueId { get; set; }
+            public string VenueName { get; set; }
+            public byte[] VenueInfo { get; set; }
+            public int Capacity { get; set; }
+            public List<DateTime> AvailableDates { get; set; }
+            public DateTime LastContactDate { get; set; }
+            public bool OutdoorVenue { get; set; }
+            public float PopularityScore { get; set; }
         }
 
         public static async Task CreateSampleDatabaseAsync(
@@ -1684,16 +1684,16 @@ namespace GoogleCloudSamples.Spanner
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
             List<Singer> singers = new List<Singer> {
-                new Singer {singerId = firstSingerId, firstName = "Marc",
-                    lastName = "Richards"},
-                new Singer {singerId = secondSingerId, firstName = "Catalina",
-                    lastName = "Smith"},
-                new Singer {singerId = 3, firstName = "Alice",
-                    lastName = "Trentor"},
-                new Singer {singerId = 4, firstName = "Lea",
-                    lastName = "Martin"},
-                new Singer {singerId = 5, firstName = "David",
-                    lastName = "Lomond"},
+                new Singer {SingerId = firstSingerId, FirstName = "Marc",
+                    LastName = "Richards"},
+                new Singer {SingerId = secondSingerId, FirstName = "Catalina",
+                    LastName = "Smith"},
+                new Singer {SingerId = 3, FirstName = "Alice",
+                    LastName = "Trentor"},
+                new Singer {SingerId = 4, FirstName = "Lea",
+                    LastName = "Martin"},
+                new Singer {SingerId = 5, FirstName = "David",
+                    LastName = "Lomond"},
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -1707,7 +1707,7 @@ namespace GoogleCloudSamples.Spanner
                     });
                 await Task.WhenAll(singers.Select(singer =>
                 {
-                    cmd.Parameters["SingerId"].Value = singer.singerId;
+                    cmd.Parameters["SingerId"].Value = singer.SingerId;
                     return cmd.ExecuteNonQueryAsync();
                 }));
 
@@ -1726,28 +1726,28 @@ namespace GoogleCloudSamples.Spanner
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
             List<Singer> singers = new List<Singer> {
-                new Singer {singerId = firstSingerId, firstName = "Marc",
-                    lastName = "Richards"},
-                new Singer {singerId = secondSingerId, firstName = "Catalina",
-                    lastName = "Smith"},
-                new Singer {singerId = 3, firstName = "Alice",
-                    lastName = "Trentor"},
-                new Singer {singerId = 4, firstName = "Lea",
-                    lastName = "Martin"},
-                new Singer {singerId = 5, firstName = "David",
-                    lastName = "Lomond"},
+                new Singer {SingerId = firstSingerId, FirstName = "Marc",
+                    LastName = "Richards"},
+                new Singer {SingerId = secondSingerId, FirstName = "Catalina",
+                    LastName = "Smith"},
+                new Singer {SingerId = 3, FirstName = "Alice",
+                    LastName = "Trentor"},
+                new Singer {SingerId = 4, FirstName = "Lea",
+                    LastName = "Martin"},
+                new Singer {SingerId = 5, FirstName = "David",
+                    LastName = "Lomond"},
             };
             List<Album> albums = new List<Album> {
-                new Album {singerId = firstSingerId, albumId = 1,
-                    albumTitle = "Total Junk"},
-                new Album {singerId = firstSingerId, albumId = 2,
-                    albumTitle = "Go, Go, Go"},
-                new Album {singerId = secondSingerId, albumId = 1,
-                    albumTitle = "Green"},
-                new Album {singerId = secondSingerId, albumId = 2,
-                    albumTitle = "Forever Hold your Peace"},
-                new Album {singerId = secondSingerId, albumId = 3,
-                    albumTitle = "Terrified"},
+                new Album {SingerId = firstSingerId, AlbumId = 1,
+                    AlbumTitle = "Total Junk"},
+                new Album {SingerId = firstSingerId, AlbumId = 2,
+                    AlbumTitle = "Go, Go, Go"},
+                new Album {SingerId = secondSingerId, AlbumId = 1,
+                    AlbumTitle = "Green"},
+                new Album {SingerId = secondSingerId, AlbumId = 2,
+                    AlbumTitle = "Forever Hold your Peace"},
+                new Album {SingerId = secondSingerId, AlbumId = 3,
+                    AlbumTitle = "Terrified"},
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -1763,9 +1763,9 @@ namespace GoogleCloudSamples.Spanner
                 });
                 await Task.WhenAll(singers.Select(singer =>
                 {
-                    cmd.Parameters["SingerId"].Value = singer.singerId;
-                    cmd.Parameters["FirstName"].Value = singer.firstName;
-                    cmd.Parameters["LastName"].Value = singer.lastName;
+                    cmd.Parameters["SingerId"].Value = singer.SingerId;
+                    cmd.Parameters["FirstName"].Value = singer.FirstName;
+                    cmd.Parameters["LastName"].Value = singer.LastName;
                     return cmd.ExecuteNonQueryAsync();
                 }));
 
@@ -1778,9 +1778,9 @@ namespace GoogleCloudSamples.Spanner
                 });
                 await Task.WhenAll(albums.Select(album =>
                 {
-                    cmd.Parameters["SingerId"].Value = album.singerId;
-                    cmd.Parameters["AlbumId"].Value = album.albumId;
-                    cmd.Parameters["AlbumTitle"].Value = album.albumTitle;
+                    cmd.Parameters["SingerId"].Value = album.SingerId;
+                    cmd.Parameters["AlbumId"].Value = album.AlbumId;
+                    cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;
                     return cmd.ExecuteNonQueryAsync();
                 }));
                 Console.WriteLine("Inserted data.");
@@ -2439,12 +2439,12 @@ namespace GoogleCloudSamples.Spanner
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
             List<Performance> performances = new List<Performance> {
-                new Performance {singerId = 1, venueId = 4, eventDate = DateTime.Parse("2017-10-05"),
-                    revenue = 11000},
-                new Performance {singerId = 1, venueId = 19, eventDate = DateTime.Parse("2017-11-02"),
-                    revenue = 15000},
-                new Performance {singerId = 2, venueId = 42, eventDate = DateTime.Parse("2017-12-23"),
-                    revenue = 7000},
+                new Performance {SingerId = 1, VenueId = 4, EventDate = DateTime.Parse("2017-10-05"),
+                    Revenue = 11000},
+                new Performance {SingerId = 1, VenueId = 19, EventDate = DateTime.Parse("2017-11-02"),
+                    Revenue = 15000},
+                new Performance {SingerId = 2, VenueId = 42, EventDate = DateTime.Parse("2017-12-23"),
+                    Revenue = 7000},
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -2461,10 +2461,10 @@ namespace GoogleCloudSamples.Spanner
                 });
                 await Task.WhenAll(performances.Select(performance =>
                 {
-                    cmd.Parameters["SingerId"].Value = performance.singerId;
-                    cmd.Parameters["VenueId"].Value = performance.venueId;
-                    cmd.Parameters["EventDate"].Value = performance.eventDate;
-                    cmd.Parameters["Revenue"].Value = performance.revenue;
+                    cmd.Parameters["SingerId"].Value = performance.SingerId;
+                    cmd.Parameters["VenueId"].Value = performance.VenueId;
+                    cmd.Parameters["EventDate"].Value = performance.EventDate;
+                    cmd.Parameters["Revenue"].Value = performance.Revenue;
                     cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
                     return cmd.ExecuteNonQueryAsync();
                 }));
@@ -2676,18 +2676,18 @@ namespace GoogleCloudSamples.Spanner
                 DateTime.Parse("2020-10-01"),
                 DateTime.Parse("2020-10-07")});
             List<Venue> venues = new List<Venue> {
-                new Venue {venueId = 4, venueName = "Venue 4", venueInfo = exampleBytes1,
-                    capacity = 1800, availableDates = availableDates1,
-                    lastContactDate = DateTime.Parse("2018-09-02"),
-                    outdoorVenue = false, popularityScore = 0.85543f},
-                new Venue {venueId = 19, venueName = "Venue 19", venueInfo = exampleBytes2,
-                    capacity = 6300, availableDates = availableDates2,
-                    lastContactDate = DateTime.Parse("2019-01-15"),
-                    outdoorVenue = true, popularityScore = 0.98716f},
-                new Venue {venueId = 42, venueName = "Venue 42", venueInfo = exampleBytes3,
-                    capacity = 3000, availableDates = availableDates3,
-                    lastContactDate = DateTime.Parse("2018-10-01"),
-                    outdoorVenue = false, popularityScore = 0.72598f},
+                new Venue {VenueId = 4, VenueName = "Venue 4", VenueInfo = exampleBytes1,
+                    Capacity = 1800, AvailableDates = availableDates1,
+                    LastContactDate = DateTime.Parse("2018-09-02"),
+                    OutdoorVenue = false, PopularityScore = 0.85543f},
+                new Venue {VenueId = 19, VenueName = "Venue 19", VenueInfo = exampleBytes2,
+                    Capacity = 6300, AvailableDates = availableDates2,
+                    LastContactDate = DateTime.Parse("2019-01-15"),
+                    OutdoorVenue = true, PopularityScore = 0.98716f},
+                new Venue {VenueId = 42, VenueName = "Venue 42", VenueInfo = exampleBytes3,
+                    Capacity = 3000, AvailableDates = availableDates3,
+                    LastContactDate = DateTime.Parse("2018-10-01"),
+                    OutdoorVenue = false, PopularityScore = 0.72598f},
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -2708,18 +2708,18 @@ namespace GoogleCloudSamples.Spanner
                 });
                 await Task.WhenAll(venues.Select(venue =>
                 {
-                    cmd.Parameters["VenueId"].Value = venue.venueId;
-                    cmd.Parameters["VenueName"].Value = venue.venueName;
-                    cmd.Parameters["VenueInfo"].Value = venue.venueInfo;
-                    cmd.Parameters["Capacity"].Value = venue.capacity;
+                    cmd.Parameters["VenueId"].Value = venue.VenueId;
+                    cmd.Parameters["VenueName"].Value = venue.VenueName;
+                    cmd.Parameters["VenueInfo"].Value = venue.VenueInfo;
+                    cmd.Parameters["Capacity"].Value = venue.Capacity;
                     cmd.Parameters["AvailableDates"].Value =
-                        venue.availableDates;
+                        venue.AvailableDates;
                     cmd.Parameters["LastContactDate"].Value =
-                        venue.lastContactDate;
+                        venue.LastContactDate;
                     cmd.Parameters["OutdoorVenue"].Value =
-                        venue.outdoorVenue;
+                        venue.OutdoorVenue;
                     cmd.Parameters["PopularityScore"].Value =
-                        venue.popularityScore;
+                        venue.PopularityScore;
                     cmd.Parameters["LastUpdateTime"].Value =
                         SpannerParameter.CommitTimestamp;
                     return cmd.ExecuteNonQueryAsync();
@@ -3099,14 +3099,14 @@ namespace GoogleCloudSamples.Spanner
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
             List<Singer> singers = new List<Singer> {
-                new Singer {singerId = 6, firstName = "Elena",
-                    lastName = "Campbell"},
-                new Singer {singerId = 7, firstName = "Gabriel",
-                    lastName = "Wright"},
-                new Singer {singerId = 8, firstName = "Benjamin",
-                    lastName = "Martinez"},
-                new Singer {singerId = 9, firstName = "Hannah",
-                    lastName = "Harris"},
+                new Singer {SingerId = 6, FirstName = "Elena",
+                    LastName = "Campbell"},
+                new Singer {SingerId = 7, FirstName = "Gabriel",
+                    LastName = "Wright"},
+                new Singer {SingerId = 8, FirstName = "Benjamin",
+                    LastName = "Martinez"},
+                new Singer {SingerId = 9, FirstName = "Hannah",
+                    LastName = "Harris"},
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -3122,9 +3122,9 @@ namespace GoogleCloudSamples.Spanner
                 });
                 await Task.WhenAll(singers.Select(singer =>
                 {
-                    cmd.Parameters["SingerId"].Value = singer.singerId;
-                    cmd.Parameters["FirstName"].Value = singer.firstName;
-                    cmd.Parameters["LastName"].Value = singer.lastName;
+                    cmd.Parameters["SingerId"].Value = singer.SingerId;
+                    cmd.Parameters["FirstName"].Value = singer.FirstName;
+                    cmd.Parameters["LastName"].Value = singer.LastName;
                     return cmd.ExecuteNonQueryAsync();
                 }));
                 Console.WriteLine("Inserted struct data.");
