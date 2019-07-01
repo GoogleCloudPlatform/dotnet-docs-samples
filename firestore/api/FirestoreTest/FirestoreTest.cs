@@ -67,8 +67,8 @@ namespace GoogleCloudSamples
                     GZipEnabled = true,
                     Initializers = { credential },
                 });
-            string uriString = "https://firestore.googleapis.com/v1beta1/projects/" 
-            + Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID") 
+            string uriString = "https://firestore.googleapis.com/v1beta1/projects/"
+            + Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID")
             + "/databases/(default)/indexes";
             UriBuilder uri = new UriBuilder(uriString);
             var resultText = http.GetAsync(uri.Uri).Result.Content
