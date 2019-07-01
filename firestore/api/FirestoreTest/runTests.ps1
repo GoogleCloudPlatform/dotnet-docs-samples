@@ -40,6 +40,7 @@ BackupAndEdit-TextFile "FirestoreTest.cs", "..\Quickstart\Program.cs", "..\AddDa
 	  'DeleteCollection("cities")' = 'DeleteCollection("'+$citiesCollection+'")';
 	  'DeleteCollection("data")' = 'DeleteCollection("'+$dataCollection+'")';
 	  'DeleteCollection("cities/SF/neighborhoods")' = 'DeleteCollection("'+$citiesCollection+'/SF/neighborhoods")';
+	  'DeleteIndexes("cities")' = 'DeleteIndexes("'+$citiesCollection+'")';
 	  'YOUR_COLLECTION_NAME' = $citiesCollection;
 	  } `
 {
