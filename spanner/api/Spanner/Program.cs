@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -452,6 +453,57 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
+    [Verb("createTableWithDatatypes", HelpText = "Create 'Venues' table containing supported datatype columns.")]
+    class CreateTableWithDatatypesOptions : DefaultOptions
+    {
+    }
+
+    [Verb("writeDatatypesData", HelpText = "Write data into 'Venues' table.")]
+    class WriteDatatypesDataOptions : DefaultOptions
+    {
+    }
+
+    [Verb("queryWithArray", HelpText = "Query ARRAY datatype from the 'Venues' table.")]
+    class QueryWithArrayOptions : DefaultOptions
+    {
+    }
+
+    [Verb("queryWithBool", HelpText = "Query BOOL datatype from the 'Venues' table.")]
+    class QueryWithBoolOptions : DefaultOptions
+    {
+    }
+
+    [Verb("queryWithBytes", HelpText = "Query BYTES datatype from the Venues' table.")]
+    class QueryWithBytesOptions : DefaultOptions
+    {
+    }
+
+    [Verb("queryWithDate", HelpText = "Query DATE datatype from the 'Venues' table.")]
+    class QueryWithDateOptions : DefaultOptions
+    {
+    }
+
+    [Verb("queryWithFloat", HelpText = "Query FLOAT64 datatype from the 'Venues' table.")]
+    class QueryWithFloatOptions : DefaultOptions
+    {
+    }
+
+    [Verb("queryWithInt", HelpText = "Query INT64 datatype from the 'Venues' table.")]
+    class QueryWithIntOptions : DefaultOptions
+    {
+    }
+
+    [Verb("queryWithString", HelpText = "Query STRING datatype from the 'Venues' table.")]
+    class QueryWithStringOptions : DefaultOptions
+    {
+    }
+
+    [Verb("queryWithTimestamp", HelpText = "Query TIMESTAMP datatype from the 'Venues' table.")]
+    class QueryWithTimestampOptions : DefaultOptions
+    {
+    }
+
+
     [Verb("listDatabaseTables", HelpText = "List all the user-defined tables in the database.")]
     class ListDatabaseTablesOptions : DefaultOptions
     {
@@ -519,25 +571,37 @@ namespace GoogleCloudSamples.Spanner
         // [START spanner_insert_data]
         public class Singer
         {
-            public int singerId { get; set; }
-            public string firstName { get; set; }
-            public string lastName { get; set; }
+            public int SingerId { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
         }
 
         public class Album
         {
-            public int singerId { get; set; }
-            public int albumId { get; set; }
-            public string albumTitle { get; set; }
+            public int SingerId { get; set; }
+            public int AlbumId { get; set; }
+            public string AlbumTitle { get; set; }
         }
         // [END spanner_insert_data]
 
         public class Performance
         {
-            public int singerId { get; set; }
-            public int venueId { get; set; }
-            public DateTime eventDate { get; set; }
-            public long revenue { get; set; }
+            public int SingerId { get; set; }
+            public int VenueId { get; set; }
+            public DateTime EventDate { get; set; }
+            public long Revenue { get; set; }
+        }
+
+        public class Venue
+        {
+            public int VenueId { get; set; }
+            public string VenueName { get; set; }
+            public byte[] VenueInfo { get; set; }
+            public int Capacity { get; set; }
+            public List<DateTime> AvailableDates { get; set; }
+            public DateTime LastContactDate { get; set; }
+            public bool OutdoorVenue { get; set; }
+            public float PopularityScore { get; set; }
         }
 
         public static async Task CreateSampleDatabaseAsync(
@@ -1620,16 +1684,16 @@ namespace GoogleCloudSamples.Spanner
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
             List<Singer> singers = new List<Singer> {
-                new Singer {singerId = firstSingerId, firstName = "Marc",
-                    lastName = "Richards"},
-                new Singer {singerId = secondSingerId, firstName = "Catalina",
-                    lastName = "Smith"},
-                new Singer {singerId = 3, firstName = "Alice",
-                    lastName = "Trentor"},
-                new Singer {singerId = 4, firstName = "Lea",
-                    lastName = "Martin"},
-                new Singer {singerId = 5, firstName = "David",
-                    lastName = "Lomond"},
+                new Singer {SingerId = firstSingerId, FirstName = "Marc",
+                    LastName = "Richards"},
+                new Singer {SingerId = secondSingerId, FirstName = "Catalina",
+                    LastName = "Smith"},
+                new Singer {SingerId = 3, FirstName = "Alice",
+                    LastName = "Trentor"},
+                new Singer {SingerId = 4, FirstName = "Lea",
+                    LastName = "Martin"},
+                new Singer {SingerId = 5, FirstName = "David",
+                    LastName = "Lomond"},
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -1643,7 +1707,7 @@ namespace GoogleCloudSamples.Spanner
                     });
                 await Task.WhenAll(singers.Select(singer =>
                 {
-                    cmd.Parameters["SingerId"].Value = singer.singerId;
+                    cmd.Parameters["SingerId"].Value = singer.SingerId;
                     return cmd.ExecuteNonQueryAsync();
                 }));
 
@@ -1662,28 +1726,28 @@ namespace GoogleCloudSamples.Spanner
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
             List<Singer> singers = new List<Singer> {
-                new Singer {singerId = firstSingerId, firstName = "Marc",
-                    lastName = "Richards"},
-                new Singer {singerId = secondSingerId, firstName = "Catalina",
-                    lastName = "Smith"},
-                new Singer {singerId = 3, firstName = "Alice",
-                    lastName = "Trentor"},
-                new Singer {singerId = 4, firstName = "Lea",
-                    lastName = "Martin"},
-                new Singer {singerId = 5, firstName = "David",
-                    lastName = "Lomond"},
+                new Singer {SingerId = firstSingerId, FirstName = "Marc",
+                    LastName = "Richards"},
+                new Singer {SingerId = secondSingerId, FirstName = "Catalina",
+                    LastName = "Smith"},
+                new Singer {SingerId = 3, FirstName = "Alice",
+                    LastName = "Trentor"},
+                new Singer {SingerId = 4, FirstName = "Lea",
+                    LastName = "Martin"},
+                new Singer {SingerId = 5, FirstName = "David",
+                    LastName = "Lomond"},
             };
             List<Album> albums = new List<Album> {
-                new Album {singerId = firstSingerId, albumId = 1,
-                    albumTitle = "Total Junk"},
-                new Album {singerId = firstSingerId, albumId = 2,
-                    albumTitle = "Go, Go, Go"},
-                new Album {singerId = secondSingerId, albumId = 1,
-                    albumTitle = "Green"},
-                new Album {singerId = secondSingerId, albumId = 2,
-                    albumTitle = "Forever Hold your Peace"},
-                new Album {singerId = secondSingerId, albumId = 3,
-                    albumTitle = "Terrified"},
+                new Album {SingerId = firstSingerId, AlbumId = 1,
+                    AlbumTitle = "Total Junk"},
+                new Album {SingerId = firstSingerId, AlbumId = 2,
+                    AlbumTitle = "Go, Go, Go"},
+                new Album {SingerId = secondSingerId, AlbumId = 1,
+                    AlbumTitle = "Green"},
+                new Album {SingerId = secondSingerId, AlbumId = 2,
+                    AlbumTitle = "Forever Hold your Peace"},
+                new Album {SingerId = secondSingerId, AlbumId = 3,
+                    AlbumTitle = "Terrified"},
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -1699,9 +1763,9 @@ namespace GoogleCloudSamples.Spanner
                 });
                 await Task.WhenAll(singers.Select(singer =>
                 {
-                    cmd.Parameters["SingerId"].Value = singer.singerId;
-                    cmd.Parameters["FirstName"].Value = singer.firstName;
-                    cmd.Parameters["LastName"].Value = singer.lastName;
+                    cmd.Parameters["SingerId"].Value = singer.SingerId;
+                    cmd.Parameters["FirstName"].Value = singer.FirstName;
+                    cmd.Parameters["LastName"].Value = singer.LastName;
                     return cmd.ExecuteNonQueryAsync();
                 }));
 
@@ -1714,9 +1778,9 @@ namespace GoogleCloudSamples.Spanner
                 });
                 await Task.WhenAll(albums.Select(album =>
                 {
-                    cmd.Parameters["SingerId"].Value = album.singerId;
-                    cmd.Parameters["AlbumId"].Value = album.albumId;
-                    cmd.Parameters["AlbumTitle"].Value = album.albumTitle;
+                    cmd.Parameters["SingerId"].Value = album.SingerId;
+                    cmd.Parameters["AlbumId"].Value = album.AlbumId;
+                    cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;
                     return cmd.ExecuteNonQueryAsync();
                 }));
                 Console.WriteLine("Inserted data.");
@@ -2375,12 +2439,12 @@ namespace GoogleCloudSamples.Spanner
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
             List<Performance> performances = new List<Performance> {
-                new Performance {singerId = 1, venueId = 4, eventDate = DateTime.Parse("2017-10-05"),
-                    revenue = 11000},
-                new Performance {singerId = 1, venueId = 19, eventDate = DateTime.Parse("2017-11-02"),
-                    revenue = 15000},
-                new Performance {singerId = 2, venueId = 42, eventDate = DateTime.Parse("2017-12-23"),
-                    revenue = 7000},
+                new Performance {SingerId = 1, VenueId = 4, EventDate = DateTime.Parse("2017-10-05"),
+                    Revenue = 11000},
+                new Performance {SingerId = 1, VenueId = 19, EventDate = DateTime.Parse("2017-11-02"),
+                    Revenue = 15000},
+                new Performance {SingerId = 2, VenueId = 42, EventDate = DateTime.Parse("2017-12-23"),
+                    Revenue = 7000},
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -2397,10 +2461,10 @@ namespace GoogleCloudSamples.Spanner
                 });
                 await Task.WhenAll(performances.Select(performance =>
                 {
-                    cmd.Parameters["SingerId"].Value = performance.singerId;
-                    cmd.Parameters["VenueId"].Value = performance.venueId;
-                    cmd.Parameters["EventDate"].Value = performance.eventDate;
-                    cmd.Parameters["Revenue"].Value = performance.revenue;
+                    cmd.Parameters["SingerId"].Value = performance.SingerId;
+                    cmd.Parameters["VenueId"].Value = performance.VenueId;
+                    cmd.Parameters["EventDate"].Value = performance.EventDate;
+                    cmd.Parameters["Revenue"].Value = performance.Revenue;
                     cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
                     return cmd.ExecuteNonQueryAsync();
                 }));
@@ -2533,6 +2597,489 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
+        public static object CreateTableWithDatatypes(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = CreateTableWithDatatypesAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task CreateTableWithDatatypesAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_create_table_with_datatypes]
+            // Initialize request connection string for database creation.
+            string connectionString =
+                $"Data Source=projects/{projectId}/instances/{instanceId}"
+                + $"/databases/{databaseId}";
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                // Define create table statement for table with 
+                // supported datatypes columns.
+                string createTableStatement =
+                @"CREATE TABLE Venues (
+                    VenueId INT64 NOT NULL,
+                    VenueName STRING(100),
+                    VenueInfo BYTES(MAX),
+                    Capacity INT64,                    
+                    AvailableDates ARRAY<DATE>,
+                    LastContactDate DATE,
+                    OutdoorVenue BOOL,
+                    PopularityScore FLOAT64,
+                    LastUpdateTime TIMESTAMP NOT NULL 
+                        OPTIONS (allow_commit_timestamp=true)
+                ) PRIMARY KEY (VenueId)";
+                // Make the request.
+                var cmd = connection.CreateDdlCommand(createTableStatement);
+                await cmd.ExecuteNonQueryAsync();
+            }
+            // [END spanner_create_table_with_datatypes]
+        }
+
+        public static object WriteDatatypesData(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = WriteDatatypesDataAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task WriteDatatypesDataAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_insert_datatypes_data]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
+            byte[] exampleBytes1 = Encoding.UTF8.GetBytes("Hello World 1");
+            byte[] exampleBytes2 = Encoding.UTF8.GetBytes("Hello World 2");
+            byte[] exampleBytes3 = Encoding.UTF8.GetBytes("Hello World 3");
+            var availableDates1 = new List<DateTime>();
+            availableDates1.InsertRange(0, new DateTime[] {
+                DateTime.Parse("2020-12-01"),
+                DateTime.Parse("2020-12-02"),
+                DateTime.Parse("2020-12-03")});
+            var availableDates2 = new List<DateTime>();
+            availableDates2.InsertRange(0, new DateTime[] {
+                DateTime.Parse("2020-11-01"),
+                DateTime.Parse("2020-11-05"),
+                DateTime.Parse("2020-11-15")});
+            var availableDates3 = new List<DateTime>();
+            availableDates3.InsertRange(0, new DateTime[] {
+                DateTime.Parse("2020-10-01"),
+                DateTime.Parse("2020-10-07")});
+            List<Venue> venues = new List<Venue> {
+                new Venue {VenueId = 4, VenueName = "Venue 4", VenueInfo = exampleBytes1,
+                    Capacity = 1800, AvailableDates = availableDates1,
+                    LastContactDate = DateTime.Parse("2018-09-02"),
+                    OutdoorVenue = false, PopularityScore = 0.85543f},
+                new Venue {VenueId = 19, VenueName = "Venue 19", VenueInfo = exampleBytes2,
+                    Capacity = 6300, AvailableDates = availableDates2,
+                    LastContactDate = DateTime.Parse("2019-01-15"),
+                    OutdoorVenue = true, PopularityScore = 0.98716f},
+                new Venue {VenueId = 42, VenueName = "Venue 42", VenueInfo = exampleBytes3,
+                    Capacity = 3000, AvailableDates = availableDates3,
+                    LastContactDate = DateTime.Parse("2018-10-01"),
+                    OutdoorVenue = false, PopularityScore = 0.72598f},
+            };
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                // Insert rows into the Venues table.
+                var cmd = connection.CreateInsertCommand("Venues",
+                    new SpannerParameterCollection {
+                        {"VenueId", SpannerDbType.Int64},
+                        {"VenueName", SpannerDbType.String},
+                        {"VenueInfo", SpannerDbType.Bytes},
+                        {"Capacity", SpannerDbType.Int64},
+                        {"AvailableDates", SpannerDbType.ArrayOf(SpannerDbType.Date)},
+                        {"LastContactDate", SpannerDbType.Date},
+                        {"OutdoorVenue", SpannerDbType.Bool},
+                        {"PopularityScore", SpannerDbType.Float64},
+                        {"LastUpdateTime", SpannerDbType.Timestamp},
+                });
+                await Task.WhenAll(venues.Select(venue =>
+                {
+                    cmd.Parameters["VenueId"].Value = venue.VenueId;
+                    cmd.Parameters["VenueName"].Value = venue.VenueName;
+                    cmd.Parameters["VenueInfo"].Value = venue.VenueInfo;
+                    cmd.Parameters["Capacity"].Value = venue.Capacity;
+                    cmd.Parameters["AvailableDates"].Value =
+                        venue.AvailableDates;
+                    cmd.Parameters["LastContactDate"].Value =
+                        venue.LastContactDate;
+                    cmd.Parameters["OutdoorVenue"].Value =
+                        venue.OutdoorVenue;
+                    cmd.Parameters["PopularityScore"].Value =
+                        venue.PopularityScore;
+                    cmd.Parameters["LastUpdateTime"].Value =
+                        SpannerParameter.CommitTimestamp;
+                    return cmd.ExecuteNonQueryAsync();
+                }));
+                Console.WriteLine("Inserted data.");
+            }
+            // [END spanner_insert_datatypes_data]
+        }
+
+        public static object QueryWithArray(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryWithArrayAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryWithArrayAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_array_parameter]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            // Create a list array of dates to use for querying.
+            var exampleArray = new List<DateTime>();
+            exampleArray.InsertRange(0, new DateTime[] {
+                DateTime.Parse("2020-10-01"),
+                DateTime.Parse("2020-11-01")
+                });
+
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName, AvailableDate FROM Venues v, "
+                    + "UNNEST(v.AvailableDates) as AvailableDate "
+                    + "WHERE AvailableDate in UNNEST(@ExampleArray)");
+                cmd.Parameters.Add("ExampleArray",
+                    SpannerDbType.ArrayOf(SpannerDbType.Date), exampleArray);
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("VenueId")
+                            + " " + reader.GetFieldValue<string>("VenueName")
+                            + " " +
+                            reader.GetFieldValue<string>("AvailableDate"));
+                    }
+                }
+            }
+            // [END spanner_query_with_array_parameter]
+        }
+
+        public static object QueryWithBool(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryWithBoolAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryWithBoolAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_bool_parameter]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            // Create a Boolean to use for querying.
+            Boolean exampleBool = true;
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName, OutdoorVenue FROM Venues "
+                    + "WHERE OutdoorVenue = @ExampleBool");
+                cmd.Parameters.Add("ExampleBool",
+                    SpannerDbType.Bool, exampleBool);
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("VenueId")
+                            + " " + reader.GetFieldValue<string>("VenueName")
+                            + " " + reader.
+                                GetFieldValue<string>("OutdoorVenue"));
+                    }
+                }
+            }
+            // [END spanner_query_with_bool_parameter]
+        }
+
+        public static object QueryWithBytes(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryWithBytesAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryWithBytesAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_bytes_parameter]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            // Create a Bytes array to use for querying.
+            string sampleText = "Hello World 1";
+            byte[] exampleBytes = Encoding.UTF8.GetBytes(sampleText);
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName FROM Venues "
+                    + "WHERE VenueInfo = @ExampleBytes");
+                cmd.Parameters.Add("ExampleBytes",
+                    SpannerDbType.Bytes, exampleBytes);
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("VenueId")
+                            + " " + reader.GetFieldValue<string>("VenueName"));
+                    }
+                }
+            }
+            // [END spanner_query_with_bytes_parameter]
+        }
+
+        public static object QueryWithDate(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryWithDateAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryWithDateAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_date_parameter]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            // Create a Date object to use for querying.
+            DateTime exampleDate = new DateTime(2019, 01, 01);
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName, LastContactDate FROM Venues "
+                    + "WHERE LastContactDate < @ExampleDate");
+                cmd.Parameters.Add("ExampleDate",
+                    SpannerDbType.Date, exampleDate);
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("VenueId")
+                            + " " + reader.GetFieldValue<string>("VenueName")
+                            + " " + reader.
+                                GetFieldValue<string>("LastContactDate"));
+                    }
+                }
+            }
+            // [END spanner_query_with_date_parameter]
+        }
+
+        public static object QueryWithFloat(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryWithFloatAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryWithFloatAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_float_parameter]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            // Create a Float object to use for querying.
+            float exampleFloat = 0.8f;
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName, PopularityScore FROM Venues "
+                    + "WHERE PopularityScore > @ExampleFloat");
+                cmd.Parameters.Add("ExampleFloat",
+                    SpannerDbType.Float64, exampleFloat);
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("VenueId")
+                            + " " + reader.GetFieldValue<string>("VenueName")
+                            + " " + reader.
+                                GetFieldValue<string>("PopularityScore"));
+                    }
+                }
+            }
+            // [END spanner_query_with_float_parameter]
+        }
+
+        public static object QueryWithInt(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryWithIntAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryWithIntAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_int_parameter]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            // Create a Int64 object to use for querying.
+            Int64 exampleInt = 3000;
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName, Capacity FROM Venues "
+                    + "WHERE Capacity >= @ExampleInt");
+                cmd.Parameters.Add("ExampleInt",
+                    SpannerDbType.Int64, exampleInt);
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("VenueId")
+                            + " " + reader.GetFieldValue<string>("VenueName")
+                            + " " + reader.GetFieldValue<string>("Capacity"));
+                    }
+                }
+            }
+            // [END spanner_query_with_int_parameter]
+        }
+
+        public static object QueryWithString(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryWithStringAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryWithStringAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_string_parameter]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            // Create a String object to use for querying.
+            String exampleString = "Venue 42";
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName FROM Venues "
+                    + "WHERE VenueName = @ExampleString");
+                cmd.Parameters.Add("ExampleString",
+                    SpannerDbType.String, exampleString);
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine(
+                            reader.GetFieldValue<string>("VenueId")
+                            + " " + reader.GetFieldValue<string>("VenueName"));
+                    }
+                }
+            }
+            // [END spanner_query_with_string_parameter]
+        }
+
+        public static object QueryWithTimestamp(string projectId,
+            string instanceId, string databaseId)
+        {
+            var response = QueryWithTimestampAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Operation status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        public static async Task QueryWithTimestampAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_timestamp_parameter]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/"
+            + $"{instanceId}/databases/{databaseId}";
+            // Create a DateTime timestamp object to use for querying.
+            DateTime exampleTimestamp = DateTime.Now;
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName, LastUpdateTime FROM Venues "
+                    + "WHERE LastUpdateTime < @ExampleTimestamp");
+                cmd.Parameters.Add("ExampleTimestamp",
+                    SpannerDbType.Timestamp, exampleTimestamp);
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        string timestamp = string.Empty;
+                        if (reader["LastUpdateTime"] != DBNull.Value)
+                        {
+                            timestamp = reader.GetFieldValue<string>("LastUpdateTime");
+                        }
+                        Console.WriteLine("VenueId : "
+                        + reader.GetFieldValue<string>("VenueId")
+                        + " VenueName : "
+                        + reader.GetFieldValue<string>("VenueName")
+                        + $" LastUpdateTime : {timestamp}");
+                    }
+                }
+            }
+            // [END spanner_query_with_timestamp_parameter]
+        }
+
         public static object InsertStructSampleData(
             string projectId, string instanceId, string databaseId)
         {
@@ -2552,14 +3099,14 @@ namespace GoogleCloudSamples.Spanner
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
             List<Singer> singers = new List<Singer> {
-                new Singer {singerId = 6, firstName = "Elena",
-                    lastName = "Campbell"},
-                new Singer {singerId = 7, firstName = "Gabriel",
-                    lastName = "Wright"},
-                new Singer {singerId = 8, firstName = "Benjamin",
-                    lastName = "Martinez"},
-                new Singer {singerId = 9, firstName = "Hannah",
-                    lastName = "Harris"},
+                new Singer {SingerId = 6, FirstName = "Elena",
+                    LastName = "Campbell"},
+                new Singer {SingerId = 7, FirstName = "Gabriel",
+                    LastName = "Wright"},
+                new Singer {SingerId = 8, FirstName = "Benjamin",
+                    LastName = "Martinez"},
+                new Singer {SingerId = 9, FirstName = "Hannah",
+                    LastName = "Harris"},
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -2575,9 +3122,9 @@ namespace GoogleCloudSamples.Spanner
                 });
                 await Task.WhenAll(singers.Select(singer =>
                 {
-                    cmd.Parameters["SingerId"].Value = singer.singerId;
-                    cmd.Parameters["FirstName"].Value = singer.firstName;
-                    cmd.Parameters["LastName"].Value = singer.lastName;
+                    cmd.Parameters["SingerId"].Value = singer.SingerId;
+                    cmd.Parameters["FirstName"].Value = singer.FirstName;
+                    cmd.Parameters["LastName"].Value = singer.LastName;
                     return cmd.ExecuteNonQueryAsync();
                 }));
                 Console.WriteLine("Inserted struct data.");
@@ -3081,6 +3628,36 @@ namespace GoogleCloudSamples.Spanner
                 .Add((UpdateUsingBatchDmlOptions opts) =>
                     UpdateUsingBatchDml(opts.projectId, opts.instanceId,
                     opts.databaseId))
+                .Add((CreateTableWithDatatypesOptions opts) =>
+                    CreateTableWithDatatypes(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((WriteDatatypesDataOptions opts) =>
+                    WriteDatatypesData(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryWithArrayOptions opts) =>
+                    QueryWithArray(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryWithBoolOptions opts) =>
+                    QueryWithBool(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryWithBytesOptions opts) =>
+                    QueryWithBytes(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryWithDateOptions opts) =>
+                    QueryWithDate(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryWithFloatOptions opts) =>
+                    QueryWithFloat(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryWithIntOptions opts) =>
+                    QueryWithInt(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryWithStringOptions opts) =>
+                    QueryWithString(opts.projectId,
+                        opts.instanceId, opts.databaseId))
+                .Add((QueryWithTimestampOptions opts) =>
+                    QueryWithTimestamp(opts.projectId,
+                        opts.instanceId, opts.databaseId))
                 .Add((ListDatabaseTablesOptions opts) =>
                     ListDatabaseTables(opts.projectId, opts.instanceId,
                         opts.databaseId))

@@ -414,6 +414,76 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("1 3 20000", readOutput.Stdout);
         }
 
+        [Fact]
+        void TestDatatypes()
+        {
+            // Create a new table that includes supported datatypes.
+            ConsoleOutput createOutput = _spannerCmd.Run("createTableWithDatatypes",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, createOutput.ExitCode);
+            // Write data to the new table.
+            ConsoleOutput writeOutput = _spannerCmd.Run("writeDatatypesData",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, writeOutput.ExitCode);
+            // Query records using an array parameter.
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithArray",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("19 Venue 19 2020-11-01", readOutput.Stdout);
+            Assert.Contains("42 Venue 42 2020-10-01", readOutput.Stdout);
+            // Query records using an bool parameter.
+            readOutput = _spannerCmd.Run("queryWithBool",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("19 Venue 19 True", readOutput.Stdout);
+            // Query records using an bytes parameter.
+            readOutput = _spannerCmd.Run("queryWithBytes",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("4 Venue 4", readOutput.Stdout);
+            // Query records using an date parameter.
+            readOutput = _spannerCmd.Run("queryWithDate",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("4 Venue 4 2018-09-02", readOutput.Stdout);
+            Assert.Contains("42 Venue 42 2018-10-01", readOutput.Stdout);
+            // Query records using an float64 parameter.
+            readOutput = _spannerCmd.Run("queryWithFloat",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("4 Venue 4 0.8", readOutput.Stdout);
+            Assert.Contains("19 Venue 19 0.9", readOutput.Stdout);
+            // Query records using an int64 parameter.
+            readOutput = _spannerCmd.Run("queryWithInt",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("19 Venue 19 6300", readOutput.Stdout);
+            Assert.Contains("42 Venue 42 3000", readOutput.Stdout);
+            // Query records using an string parameter.
+            readOutput = _spannerCmd.Run("queryWithString",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm expected result in output.
+            Assert.Contains("42 Venue 42", readOutput.Stdout);
+            // Query records using a timestamp parameter.
+            readOutput = _spannerCmd.Run("queryWithTimestamp",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            // Confirm output includes valid timestamps.
+            string columnText = "LastUpdateTime : ";
+            string[] result = readOutput.Stdout.Split(
+                new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            string valueToTest = result[0].Substring(result[0].IndexOf(columnText) + columnText.Length);
+            DateTime value;
+            Assert.True(DateTime.TryParse(valueToTest, out value));
+        }
+
         [Fact(Skip = "Triggers infinite loop described here: https://github.com/commandlineparser/commandline/commit/95ded2dbcc5285302723e68221cd30a72444ba84")]
         void TestSpannerNoArgsSucceeds()
         {
