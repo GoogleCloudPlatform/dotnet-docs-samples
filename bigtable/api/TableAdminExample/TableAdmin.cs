@@ -318,8 +318,8 @@ namespace GoogleCloudSamples.Bigtable
             {
                 Rules =
                 {
-                    new GcRule {MaxNumVersions = 1},
-                    new GcRule {MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5))}
+                    new GcRule { MaxNumVersions = 1 },
+                    new GcRule { MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5)) }
                 }
             };
             GcRule gcRule = new GcRule { Union = unionRule };
@@ -371,8 +371,8 @@ namespace GoogleCloudSamples.Bigtable
             {
                 Rules =
                 {
-                    new GcRule {MaxNumVersions = 2},
-                    new GcRule {MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5))}
+                    new GcRule { MaxNumVersions = 2 },
+                    new GcRule { MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5)) }
                 }
             };
             GcRule gcRule = new GcRule { Intersection = intersectionRule };
@@ -420,14 +420,14 @@ namespace GoogleCloudSamples.Bigtable
             // Create a nested GC rule:
             // Drop cells that are either older than the 10 recent versions
             // OR
-            // Drop cells that are older than a month AND older than the 2 recent versions.
+            // Drop cells that are older than 5 days AND older than the 2 recent versions.
             // Initialize request argument(s).
             GcRule.Types.Intersection intersectionRule = new GcRule.Types.Intersection
             {
                 Rules =
                 {
-                    new GcRule {MaxNumVersions = 2},
-                    new GcRule {MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5))}
+                    new GcRule { MaxNumVersions = 2 },
+                    new GcRule { MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5)) }
                 }
             };
 
@@ -435,8 +435,8 @@ namespace GoogleCloudSamples.Bigtable
             {
                 Rules =
                 {
-                    new GcRule {MaxNumVersions = 10},
-                    new GcRule {Intersection = intersectionRule}
+                    new GcRule { MaxNumVersions = 10 },
+                    new GcRule { Intersection = intersectionRule }
                 }
             };
 
