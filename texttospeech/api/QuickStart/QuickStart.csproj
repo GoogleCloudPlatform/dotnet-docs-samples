@@ -13,6 +13,6 @@
     <None Remove="sample.mp3" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="1.0.0-beta03" />
+    <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="1.0.0" />
   </ItemGroup>
 </Project>
