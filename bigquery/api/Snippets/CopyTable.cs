@@ -36,7 +36,9 @@ public class BigQueryCopyTable
             destinationDatasetId, "destination_table");
         BigQueryJob job = client.CreateCopyJob(
             sourceTableRef, destinationTableRef)
-            .PollUntilCompleted();  // Wait for the job to complete.
+            .PollUntilCompleted() // Wait for the job to complete.
+            .ThrowOnAnyError();
+
         // Retrieve destination table
         BigQueryTable destinationTable = client.GetTable(destinationTableRef);
         Console.WriteLine(

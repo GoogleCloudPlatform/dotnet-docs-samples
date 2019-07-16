@@ -40,7 +40,8 @@ public class BigQueryLoadFromFile
             // Note that there are methods available for formats other than CSV
             BigQueryJob job = client.UploadCsv(
                 datasetId, tableId, null, stream, uploadCsvOptions);
-            job.PollUntilCompleted();  // Waits for the job to complete.
+            job = job.PollUntilCompleted().ThrowOnAnyError();  // Waits for the job to complete.
+
             // Display the number of rows uploaded
             BigQueryTable table = client.GetTable(datasetId, tableId);
             Console.WriteLine(
