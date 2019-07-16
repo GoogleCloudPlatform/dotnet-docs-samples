@@ -103,6 +103,8 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("addCommitTimestamp",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            _spannerCmd.Run("addIndex",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
@@ -158,6 +160,17 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
+
+        [Fact]
+        void TestQueryDataWithIndex()
+        {
+            RefillMarketingBudgetsAsync(100000, 500000).Wait();
+            ConsoleOutput output = _spannerCmd.Run("queryDataWithIndex",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("AlbumId : 2 AlbumTitle : Go, Go, Go MarketingBudget :", output.Stdout);
+            Assert.Contains("AlbumId : 2 AlbumTitle : Forever Hold your Peace MarketingBudget : 500000", output.Stdout);
         }
 
         [Fact]
@@ -354,7 +367,7 @@ namespace GoogleCloudSamples.Spanner
             readOutput = _spannerCmd.Run("querySingersTable",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
-            // Confirm expected result in output.            
+            // Confirm expected result in output.
             Assert.Contains("Melissa Garcia", readOutput.Stdout);
             Assert.Contains("Russell Morales", readOutput.Stdout);
             Assert.Contains("Jacqueline Long", readOutput.Stdout);
@@ -363,7 +376,7 @@ namespace GoogleCloudSamples.Spanner
             readOutput = _spannerCmd.Run("queryWithParameter",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
-            // Confirm expected result in output.            
+            // Confirm expected result in output.
             Assert.Contains("SingerId : 12 FirstName : Melissa LastName : Garcia", readOutput.Stdout);
             // Update records within a transaction using a DML Statement.
             readOutput = _spannerCmd.Run("writeWithTransactionUsingDml",

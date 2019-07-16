@@ -770,12 +770,16 @@ namespace GoogleCloudSamples.Spanner
                 {
                     while (await reader.ReadAsync())
                     {
+                        var marketingBudget = reader.IsDBNull(
+                            reader.GetOrdinal("MarketingBudget")) ?
+                            "" :
+                            reader.GetFieldValue<string>("MarketingBudget");
                         Console.WriteLine("AlbumId : "
                         + reader.GetFieldValue<string>("AlbumId")
                         + " AlbumTitle : "
                         + reader.GetFieldValue<string>("AlbumTitle")
                         + " MarketingBudget : "
-                        + reader.GetFieldValue<string>("MarketingBudget"));
+                        + marketingBudget);
                     }
                 }
             }
@@ -1674,7 +1678,7 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END spanner_dml_batch_update]
 
-        // [START spanner_delete_data]	    
+        // [START spanner_delete_data]
         public static async Task DeleteSampleDataAsync(
             string projectId, string instanceId, string databaseId)
         {
@@ -2402,7 +2406,7 @@ namespace GoogleCloudSamples.Spanner
                 + $"/databases/{databaseId}";
             using (var connection = new SpannerConnection(connectionString))
             {
-                // Define create table statement for table with 
+                // Define create table statement for table with
                 // commit timestamp column.
                 string createTableStatement =
                 @"CREATE TABLE Performances (
