@@ -712,18 +712,18 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestBucketPolicyOnly()
+        public void TestUniformBucketLevelAccess()
         {
-            using (var bucketPolicyOnly = new BucketFixture())
+            using (var uniformBucketLevelAccess = new BucketFixture())
             {
-                var enableBucketPolicyOnly = Run("enable-bucket-policy-only", bucketPolicyOnly.BucketName);
-                AssertSucceeded(enableBucketPolicyOnly);
-                var getBucketPolicyOnly = Run("get-bucket-policy-only", bucketPolicyOnly.BucketName);
-                AssertSucceeded(getBucketPolicyOnly);
-                var disableBucketPolicyOnly = Run("disable-bucket-policy-only", bucketPolicyOnly.BucketName);
-                AssertSucceeded(disableBucketPolicyOnly);
-                getBucketPolicyOnly = Run("get-bucket-policy-only", bucketPolicyOnly.BucketName);
-                AssertSucceeded(getBucketPolicyOnly);
+                var enableUniformBucketLevelAccess = Run("enable-uniform-bucket-level-access", uniformBucketLevelAccess.BucketName);
+                AssertSucceeded(enableUniformBucketLevelAccess);
+                var getUniformBucketLevelAccess = Run("get-uniform-bucket-level-access", uniformBucketLevelAccess.BucketName);
+                AssertSucceeded(getUniformBucketLevelAccess);
+                var disableUniformBucketLevelAccess = Run("disable-uniform-bucket-level-access", uniformBucketLevelAccess.BucketName);
+                AssertSucceeded(disableUniformBucketLevelAccess);
+                getUniformBucketLevelAccess = Run("get-uniform-bucket-level-access", uniformBucketLevelAccess.BucketName);
+                AssertSucceeded(getUniformBucketLevelAccess);
             }
         }
 

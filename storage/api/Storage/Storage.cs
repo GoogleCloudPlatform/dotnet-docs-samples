@@ -75,9 +75,9 @@ namespace GoogleCloudSamples
             "  Storage release-object-temporary-hold bucket-name object-name\n" +
             "  Storage set-object-event-based-hold bucket-name object-name\n" +
             "  Storage release-object-event-based-hold bucket-name object-name\n" +
-            "  Storage enable-bucket-policy-only bucket-name\n" +
-            "  Storage disable-bucket-policy-only bucket-name\n" +
-            "  Storage get-bucket-policy-only bucket-name\n";
+            "  Storage enable-uniform-bucket-level-access bucket-name\n" +
+            "  Storage disable-uniform-bucket-level-access bucket-name\n" +
+            "  Storage get-uniform-bucket-level-access bucket-name\n";
 
         // [START storage_create_bucket]
         private void CreateBucket(string bucketName)
@@ -705,6 +705,42 @@ namespace GoogleCloudSamples
         }
         // [END storage_generate_signed_url]
 
+        // [START storage_generate_signed_url_v4]
+        private void GenerateSignedUrlV4(string bucketName, string objectName)
+        {
+            UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(Environment
+                .GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS")).
+                .WithSigningVersion(SigningVersion.V4);
+
+            string url =
+                urlSigner.urlSignerSign(bucketName, objectName, TimeSpan.FromMinutes(15));
+
+            Console.WriteLine("Generate GET signed URL:");
+            Console.WriteLine(url);
+            Console.WriteLine("You can use this URL with any user agent, for example:")
+            Console.WriteLine("curl '{0}'", url);
+            C
+        }
+        // [END storage_generate_signed_url_v4]
+
+        // [START storage_generate_upload_signed_url_v4]
+        private void GenerateUploadSignedUrlV4(string bucketName, string objectName)
+        {
+            UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(Environment
+                .GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS")).
+                .WithSigningVersion(SigningVersion.V4);
+
+            string url =
+                urlSigner.urlSignerSign(bucketName, objectName, TimeSpan.FromMinutes(15), HttpMethod.Put);
+
+            Console.WriteLine("Generate PUT signed URL:");
+            Console.WriteLine(url);
+            Console.WriteLine("You can use this URL with any user agent, for example:");
+            Console.WriteLine("curl -X PUT -H 'Content-Type: application/octet-stream' " +
+                              "--upload-file my-file '{0}'", url);
+        }
+        // [END storage_generate_upload_signed_url_v4]
+
         // [START storage_generate_encryption_key]
         void GenerateEncryptionKey()
         {
@@ -963,60 +999,60 @@ namespace GoogleCloudSamples
         }
         // [END storage_release_temporary_hold]
 
-        // [START storage_enable_bucket_policy_only]
-        private void EnableBucketPolicyOnly(string bucketName)
+        // [START storage_enable_uniform_bucket_level_access]
+        private void EnableUniformBucketLevelAccess(string bucketName)
         {
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
-            bucket.IamConfiguration.BucketPolicyOnly.Enabled = true;
+            bucket.IamConfiguration.UniformBucketLevelAccess.Enabled = true;
             bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
             {
                 // Use IfMetagenerationMatch to avoid race conditions.
                 IfMetagenerationMatch = bucket.Metageneration,
             });
 
-            Console.WriteLine($"Bucket Policy Only was enabled for {bucketName}.");
+            Console.WriteLine($"Uniform bucket-level access was enabled for {bucketName}.");
         }
-        // [END storage_enable_bucket_policy_only]
+        // [END storage_enable_uniform_bucket_level_access]
 
-        // [START storage_disable_bucket_policy_only]
-        private void DisableBucketPolicyOnly(string bucketName)
+        // [START storage_disable_uniform_bucket_level_access]
+        private void DisableUniformBucketLevelAccess(string bucketName)
         {
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
-            bucket.IamConfiguration.BucketPolicyOnly.Enabled = false;
+            bucket.IamConfiguration.UniformBucketLevelAccess.Enabled = false;
             bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
             {
                 // Use IfMetagenerationMatch to avoid race conditions.
                 IfMetagenerationMatch = bucket.Metageneration,
             });
 
-            Console.WriteLine($"Bucket Policy Only was disabled for {bucketName}.");
+            Console.WriteLine($"Uniform bucket-level access was disabled for {bucketName}.");
         }
-        // [END storage_disable_bucket_policy_only]
+        // [END storage_disable_uniform_bucket_level_access]
 
-        // [START storage_get_bucket_policy_only]
-        private void GetBucketPolicyOnly(string bucketName)
+        // [START storage_get_uniform_bucket_level_access]
+        private void GetUniformBucketLevelAccess(string bucketName)
         {
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
-            var bucketPolicyOnly = bucket.IamConfiguration.BucketPolicyOnly;
+            var uniformBucketLevelAccess = bucket.IamConfiguration.UniformBucketLevelAccess;
 
-            bool? enabledOrNull = bucketPolicyOnly?.Enabled;
-            bool bucketPolicyEnabled =
+            bool? enabledOrNull = uniformBucketLevelAccess?.Enabled;
+            bool uniformBucketLevelAccess =
                 enabledOrNull.HasValue ? enabledOrNull.Value : false;
-            if (bucketPolicyEnabled)
+            if (uniformBucketLevelAccess)
             {
-                Console.WriteLine($"Bucket Policy Only is enabled for {bucketName}.");
+                Console.WriteLine($"Uniform bucket-level access is enabled for {bucketName}.");
                 Console.WriteLine(
-                    $"Bucket Policy Only will be locked on {bucketPolicyOnly.LockedTime}.");
+                    $"Uniform bucket-level access will be locked on {uniformBucketLevelAccess.LockedTime}.");
             }
             else
             {
-                Console.WriteLine($"Bucket Policy Only is not enabled for {bucketName}.");
+                Console.WriteLine($"Uniform bucket-level access is not enabled for {bucketName}.");
             }
         }
-        // [END storage_get_bucket_policy_only]
+        // [END storage_get_uniform_bucket_level_access]
 
         private void UploadFileRequesterPays(string bucketName, string localPath,
             string objectName = null)
@@ -1335,19 +1371,19 @@ namespace GoogleCloudSamples
                         ReleaseObjectEventBasedHold(args[1], args[2]);
                         break;
 
-                    case "enable-bucket-policy-only":
+                    case "enable-uniform-bucket-level-access":
                         if (args.Length < 2 && PrintUsage()) return -1;
-                        EnableBucketPolicyOnly(args[1]);
+                        EnableUniformBucketLevelAccess(args[1]);
                         break;
 
-                    case "disable-bucket-policy-only":
+                    case "disable-uniform-bucket-level-access":
                         if (args.Length < 2 && PrintUsage()) return -1;
-                        DisableBucketPolicyOnly(args[1]);
+                        DisableUniformBucketLevelAccess(args[1]);
                         break;
 
-                    case "get-bucket-policy-only":
+                    case "get-uniform-bucket-level-access":
                         if (args.Length < 2 && PrintUsage()) return -1;
-                        GetBucketPolicyOnly(args[1]);
+                        GetUniformBucketLevelAccess(args[1]);
                         break;
 
                     default:
