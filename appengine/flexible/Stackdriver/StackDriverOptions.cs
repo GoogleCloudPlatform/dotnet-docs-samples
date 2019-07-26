@@ -16,10 +16,12 @@
 
 namespace Stackdriver
 {
+    // [START trace_setup_aspnetcore_stackdriver_options]
     public class StackdriverOptions
     {
         public string ProjectId { get; set; }
         public string ServiceName { get; set; }
         public string Version { get; set; }
     }
+    // [END trace_setup_aspnetcore_stackdriver_options]
 }

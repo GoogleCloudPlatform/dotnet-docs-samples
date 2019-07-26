@@ -1,11 +1,11 @@
 // Copyright (c) 2019 Google LLC.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
 // the License at
-// 
+//
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -192,7 +192,6 @@ namespace GoogleCloudSamples
             return Convert.FromBase64String(base64);
         }
 
-
         public static object GetRegistries(string projectId, string cloudRegion)
         {
             var cloudIot = CreateAuthorizedClient();
@@ -215,6 +214,9 @@ namespace GoogleCloudSamples
         }
 
 
+        /// <summary>
+        /// Creates a JWT using RSA encryption to be used in connecting the client.
+        /// </summary>
         // [START iot_mqtt_jwt]
         public static string CreateJwtRsa(string projectId, string privateKeyFile)
         {
@@ -250,12 +252,12 @@ namespace GoogleCloudSamples
 
                 Dictionary<string, object> payload =
                     new Dictionary<string, object> {
-                      {"iat", jwtIatTime.ToUnixTimeSeconds()}, 
+                      {"iat", jwtIatTime.ToUnixTimeSeconds()},
                       // The time that the token was issued at
                       {"aud",projectId},
                         // The audience field should always
                         // be set to the GCP project id.
-                      {"exp", jwtExpTime.ToUnixTimeSeconds()} 
+                      {"exp", jwtExpTime.ToUnixTimeSeconds()}
                     // The time the token expires.
                 };
                 Console.WriteLine("iat time {0}", jwtIatTime);
@@ -265,11 +267,13 @@ namespace GoogleCloudSamples
                 return Jose.JWT.Encode(payload, rsa, Jose.JwsAlgorithm.RS256);
             }
         }
-        //[END iot_mqtt_jwt]
+        // [END iot_mqtt_jwt]
 
-        // [START iot_mqtt_client]
-        // [START iot_listen_for_config_messages]
-        // [START iot_send_data_from_bound_device]
+        /// <summary>
+        /// Configures and returns the MQTT client for connecting to Google Cloud
+        /// IoT Core.
+        /// </summary>
+        // [START iot_mqtt_config]
         public static MqttClient GetClient(string projectId, string cloudRegion,
             string registryId, string deviceId, string caCert, string mqttBridgeHostname,
             int mqttBridgePort)
@@ -284,7 +288,7 @@ namespace GoogleCloudSamples
                 fs.Read(data, 0, data.Length);
                 if (data[0] != 0x30)
                 {
-                    // maybe it's ASCII PEM base64 encoded ? 
+                    // maybe it's ASCII PEM base64 encoded ?
                     data = PEM("CERTIFICATE", data);
                 }
                 fs.Close();
@@ -299,7 +303,7 @@ namespace GoogleCloudSamples
             };
 
             Console.WriteLine("Creating the client {0}", client);
-            // register to message received 
+            // register to message received
             client.ConnectionClosed += Client_ConnectionClosed;
             client.MqttMsgSubscribed += Client_MqttMsgSubscribed;
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
@@ -307,15 +311,12 @@ namespace GoogleCloudSamples
 
             return client;
         }
-        // [END iot_listen_for_config_messages]
-        // [END iot_send_data_from_bound_device]
-        // [END iot_mqtt_client]
 
         public static object SetupMqttTopics(MqttClient client, string deviceId)
         {
-            // This is the topic that the device will receive configuration updates on.
+            // The configuration topic is used for acknowledged changes.
             string mqttConfigTopic = $"/devices/{deviceId}/config";
-            // The topic that the device will receive commands on.
+            // The commands topic is used for frequent, transitory, updates.
             string mqttCommandTopic = $"/devices/{deviceId}/commands/#";
             string mqttErrorTopic = $"/devices/{deviceId}/errors";
 
@@ -326,20 +327,15 @@ namespace GoogleCloudSamples
             };
 
             byte[] qosLevels = new byte[] {
-                MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE , 
-                // config topic, QoS 1 enables message acknowledgement.
-                MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE , 
-                // command topic
-                MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE  
-                // error topic
+                MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, // config topic, Qos *1*
+                MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, // command topic, Qos 0
+                MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE // error topic, Qos 0
             };
-            // Subscribe to the config topic, and command topic.
             Console.WriteLine("Subscribing to {0}", mqttCommandTopic);
             client.Subscribe(topics, qosLevels);
             return 0;
         }
 
-        // [START iot_mqtt_event_handlers]
         public static void Client_ConnectionClosed(object sender, EventArgs e)
         {
             Console.WriteLine("On Disconnect: {0} {1}", e.GetType(), sender);
@@ -356,22 +352,21 @@ namespace GoogleCloudSamples
         {
             Console.WriteLine("On Publish {0}", e.IsPublished);
         }
+
         // the event MqttMsgPublishReceived raised when a message is published
         // on a topic the client is subscribed to.
         public static void Client_MqttMsgPublishReceived(object sender,
             MqttMsgPublishEventArgs e)
         {
-            // handle message received 
+            // handle message received
             var output = $"Received { Encoding.UTF8.GetString(e.Message)}" +
                 $" on topic {e.Topic} with Qos {e.QosLevel}";
             Console.WriteLine(output);
         }
-        // [END iot_mqtt_event_handlers]
+        // [END iot_mqtt_config]
 
 
-        //[START iot_start_mqtt_client]
-        //[START iot_listen_for_config_messages]
-        //[START iot_send_data_from_bound_device]
+        // [START iot_mqtt_run]
         public static object StartMqtt(string projectId, string cloudRegion,
             string registryId, string deviceId, string privateKeyFile,
             string algorithm, string caCert, int numMsgs = 20,
@@ -388,16 +383,16 @@ namespace GoogleCloudSamples
                 mqttBridgeHostName,
                 mqttBridgePort);
 
-            // Create our MQTT client. The client_id is a unique string 
-            // that identifies this device.For Google Cloud IoT Core, 
+            // Create our MQTT client. The client_id is a unique string
+            // that identifies this device.For Google Cloud IoT Core,
             // it must be in the format below.
             var clientId = $"projects/{projectId}" +
                 $"/locations/{cloudRegion}" +
                 $"/registries/{registryId}" +
                 $"/devices/{deviceId}";
 
-            // With Google Cloud IoT Core, the username field is ignored, 
-            // and the password field is used to transmit a JWT to authorize 
+            // With Google Cloud IoT Core, the username field is ignored,
+            // and the password field is used to transmit a JWT to authorize
             // the device.
             DateTime iat = DateTime.Now;
             var pass = CreateJwtRsa(projectId, privateKeyFile);
@@ -410,7 +405,7 @@ namespace GoogleCloudSamples
             double retryIntervalMs = initialConnectIntervalMillis;
             double totalRetryTimeMs = 0;
 
-            // Both connect and publish operations may fail. If they do, 
+            // Both connect and publish operations may fail. If they do,
             // allow retries but with an exponential backoff time period.
             while (!client.IsConnected &&
                 totalRetryTimeMs < maxConnectRetryTimeElapsedMillis)
@@ -449,13 +444,9 @@ namespace GoogleCloudSamples
             Console.WriteLine("Finished loop successfully. Goodbye!");
             return 0;
         }
-        //[END iot_send_data_from_bound_device]
-        //[END iot_listen_for_config_messages]
-        //[END iot_start_mqtt_client]
+        // [END iot_mqtt_run]
 
         // [START iot_attach_device]
-        // [START iot_listen_for_config_messages]
-        // [START iot_send_data_from_bound_device]
         public static object AttachDevice(MqttClient client, string deviceId, string auth)
         {
             var attachTopic = $"/devices/{deviceId}/attach";
@@ -466,13 +457,9 @@ namespace GoogleCloudSamples
             Console.WriteLine("Waiting for device to attach.");
             return 0;
         }
-        //[END iot_send_data_from_bound_device]
-        //[END iot_listen_for_config_messages]
-        //[END iot_attach_device]
+        // [END iot_attach_device]
 
-        //[START iot_detach_device]
-        //[START iot_listen_for_config_messages]
-        //[START iot_send_data_from_bound_device]
+        // [START iot_detach_device]
         public static object DetachDevice(MqttClient client, string deviceId)
         {
             var detachTopic = $"/devices/{deviceId}/detach";
@@ -481,11 +468,13 @@ namespace GoogleCloudSamples
             client.Publish(detachTopic, BinaryData, MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, true);
             return 0;
         }
-        //[END iot_send_data_from_bound_device]
-        //[END iot_listen_for_config_messages]
-        //[END iot_detach_device]
+        // [END iot_detach_device]
 
-        //[START iot_listen_for_config_messages]
+        /// <summary>
+        /// Listens for configuration and system error messages on the gateway and
+        /// bound devices.
+        /// </summary>
+        // [START iot_listen_for_config_messages]
         public static object ListenForConfigMessages(string projectId, string cloudRegion,
             string registryId, string deviceId, string gatewayId, int numMessages,
             string privateKeyFile, string algorithm, string caCerts, string mqttBridgeHostname,
@@ -493,9 +482,6 @@ namespace GoogleCloudSamples
         {
             var clientId = $"projects/{projectId}/locations/{cloudRegion}/registries/{registryId}" +
                 $"/devices/{gatewayId}";
-            // Listens for configuration and system error messages on the gateway and
-            // bound devices.
-
             var jwtIatTime = SystemClock.Instance.GetCurrentInstant();
             // Create a duration
             Duration durationExp = Duration.FromMinutes(jwtExpiresMinutes);
@@ -521,10 +507,6 @@ namespace GoogleCloudSamples
               mqttBridgeHostname,
               mqttBridgePort);
 
-            // With Google Cloud IoT Core, the username field is ignored, 
-            // and the password field is used to transmit a JWT to authorize 
-            // the device.
-
             double initialConnectIntervalMillis = 0.5;
             double maxConnectIntervalMillis = 6;
             double maxConnectRetryTimeElapsedMillis = 900;
@@ -533,7 +515,7 @@ namespace GoogleCloudSamples
             double retryIntervalMs = initialConnectIntervalMillis;
             double totalRetryTimeMs = 0;
 
-            // Both connect and publish operations may fail. If they do, 
+            // Both connect and publish operations may fail. If they do,
             // allow retries but with an exponential backoff time period.
             while (!mqttClient.IsConnected &&
                 totalRetryTimeMs < maxConnectRetryTimeElapsedMillis)
@@ -593,9 +575,9 @@ namespace GoogleCloudSamples
             Console.WriteLine("Finished.");
             return 0;
         }
-        //[END iot_listen_for_config_messages]
+        // [END iot_listen_for_config_messages]
 
-        //[START iot_send_data_from_bound_device]
+        // [START iot_send_data_from_bound_device]
         public static object SendDataFromBoundDevice(string projectId, string cloudRegion,
             string registryId, string deviceId, string gatewayId, string privateKeyFile,
             string algorithm, string caCerts, string mqttBridgeHostname, int mqttBridgePort,
@@ -629,10 +611,8 @@ namespace GoogleCloudSamples
             mqttClient.Disconnect();
             return 0;
         }
-        //[END iot_send_data_from_bound_device]
+        // [END iot_send_data_from_bound_device]
 
-        //[START iot_send_data_from_device]
-        //[START iot_send_data_from_bound_device]
         public static object SendDataFromDevice(MqttClient client, string deviceId,
             string messageType, string data)
         {
@@ -650,8 +630,6 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-        //[END iot_send_data_from_bound_device]
-        //[END iot_send_data_from_device]
 
         public static void printExceptions(AggregateException exceps)
         {
@@ -678,6 +656,7 @@ namespace GoogleCloudSamples
                 }
             );
         }
+
         public static MqttClient publishMsgsAndWait(MqttClient client,
             string messageType, string deviceId, int numMsgs,
             string registryId, DateTime iat, int jwtExpiresMin,
@@ -729,8 +708,8 @@ namespace GoogleCloudSamples
                     client.Connect(clientId, "unused", pass);
                 }
 
-                // Publish "payload" to the MQTT topic. qos=1 means at least 
-                // once delivery. Cloud IoT Core also supports qos=0 for at 
+                // Publish "payload" to the MQTT topic. qos=1 means at least
+                // once delivery. Cloud IoT Core also supports qos=0 for at
                 // most once delivery.
                 client.Publish(mqttTopic, BinaryData,
                     MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);

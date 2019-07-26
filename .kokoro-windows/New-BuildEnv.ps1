@@ -23,7 +23,7 @@ choco list -li | Tee-Object -Variable chocoList
 $chocoPackages = ($chocoList) -join ' '
 
 if (-not $chocoPackages.Contains('Microsoft .NET Core SDK - 2.1.4')) {
-    choco install -y --sxs dotnetcore-sdk --version 2.1.401    
+    choco install -y --sxs dotnetcore-sdk --version 2.2.203
 }
 
 if (-not $chocoPackages.Contains('.NET Core SDK 1.1.')) {
@@ -46,7 +46,7 @@ if (-not (($chocoPackages.Contains('python 2.7.') -or
 }
 
 if (-not $chocoPackages.Contains('selenium-chrome-driver 2.')) {
-    choco install -y selenium-chrome-driver
+    choco install -y selenium-chrome-driver --version 2.46
 }
 if (-not $chocoPackages.Contains('iisexpress')) {
     choco install -y --sxs iisexpress

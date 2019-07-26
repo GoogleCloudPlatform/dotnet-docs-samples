@@ -110,10 +110,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object CreateTable(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Creating table");
             // [START bigtable_create_table]
             // Creates table if doesn't exist.
@@ -158,10 +155,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object ListTables()
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Listing tables");
             // [START bigtable_list_tables]
             // Lists tables in intance.
@@ -194,10 +188,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object GetTable(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Getting table");
             // [START bigtable_get_table]
             // Getting information about a table.
@@ -227,10 +218,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object CreateMaxAgeFamily(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Creating column family cf1 with max age GC rule...");
             // [START bigtable_create_family_gc_max_age]
             // Create a column family with GC policy : maximum age
@@ -261,10 +249,8 @@ namespace GoogleCloudSamples.Bigtable
                 // Make the request
                 Table response = bigtableTableAdminClient.ModifyColumnFamilies(request);
                 Console.WriteLine("Created column family");
-                // [END bigtable_create_bigtableTableAdminClient]
                 // Print table information.
                 GetTable(tableId);
-                // [START bigtable_create_bigtableTableAdminClient]
             }
             catch (Exception ex)
             {
@@ -276,10 +262,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object CreateMaxVersionsFamily(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Creating column family cf2 with max versions GC rule...");
             // [START bigtable_create_family_gc_max_versions]
             // Create a column family with GC policy : most recent N versions
@@ -325,10 +308,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object CreateUnionFamily(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Creating column family cf3 with union GC rule...");
             // [START bigtable_create_family_gc_union]
             // Create a column family with GC policy to drop data that matches at least one condition.
@@ -338,8 +318,8 @@ namespace GoogleCloudSamples.Bigtable
             {
                 Rules =
                 {
-                    new GcRule {MaxNumVersions = 1},
-                    new GcRule {MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5))}
+                    new GcRule { MaxNumVersions = 1 },
+                    new GcRule { MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5)) }
                 }
             };
             GcRule gcRule = new GcRule { Union = unionRule };
@@ -381,10 +361,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object CreateIntersectionFamily(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Creating column family cf4 with intersect GC rule...");
             // [START bigtable_create_family_gc_intersection]
             // Create a column family with GC policy to drop data that matches all conditions.
@@ -394,8 +371,8 @@ namespace GoogleCloudSamples.Bigtable
             {
                 Rules =
                 {
-                    new GcRule {MaxNumVersions = 2},
-                    new GcRule {MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5))}
+                    new GcRule { MaxNumVersions = 2 },
+                    new GcRule { MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5)) }
                 }
             };
             GcRule gcRule = new GcRule { Intersection = intersectionRule };
@@ -437,23 +414,20 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object CreateNestedFamily(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Creating column family cf5 with a nested GC rule...");
             // [START bigtable_create_family_gc_nested]
             // Create a nested GC rule:
             // Drop cells that are either older than the 10 recent versions
             // OR
-            // Drop cells that are older than a month AND older than the 2 recent versions.
+            // Drop cells that are older than 5 days AND older than the 2 recent versions.
             // Initialize request argument(s).
             GcRule.Types.Intersection intersectionRule = new GcRule.Types.Intersection
             {
                 Rules =
                 {
-                    new GcRule {MaxNumVersions = 2},
-                    new GcRule {MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5))}
+                    new GcRule { MaxNumVersions = 2 },
+                    new GcRule { MaxAge = Duration.FromTimeSpan(TimeSpan.FromDays(5)) }
                 }
             };
 
@@ -461,8 +435,8 @@ namespace GoogleCloudSamples.Bigtable
             {
                 Rules =
                 {
-                    new GcRule {MaxNumVersions = 10},
-                    new GcRule {Intersection = intersectionRule}
+                    new GcRule { MaxNumVersions = 10 },
+                    new GcRule { Intersection = intersectionRule }
                 }
             };
 
@@ -505,10 +479,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object UpdateFamily(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Updating column family cf1 GC rule...");
             // [START bigtable_update_gc_rule]
             // Update the column family metadata to update the GC rule.
@@ -554,10 +525,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object DeleteFamily(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Deleting column family cf2 GC rule...");
             // [START bigtable_delete_family]
             // Delete a column family.
@@ -599,10 +567,7 @@ namespace GoogleCloudSamples.Bigtable
 
         private static object DeleteTable(string tableId)
         {
-            // [START bigtable_create_bigtableTableAdminClient]
             BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-            // [END bigtable_create_bigtableTableAdminClient]
-
             Console.WriteLine("Deleting table");
             // [START bigtable_delete_table]
             // Delete the entire table.

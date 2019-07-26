@@ -1,11 +1,11 @@
 ﻿# Copyright (c) 2018 Google LLC.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
 # the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -135,7 +135,11 @@ foreach ($role in $roles.Split()) {
 Bind $serviceAccountEmail roles/iap.httpsResourceAccessor surferjeff-iap
 
 # Create task queue.  The test needs it.
-$taskQueue = gcloud beta tasks queues  list --filter=my-appengine-queue --format=json | ConvertFrom-Json
+$taskQueue = gcloud tasks queues  list --filter=my-queue --format=json | ConvertFrom-Json
 if (-not $taskQueue) {
-    gcloud beta tasks queues create-app-engine-queue my-appengine-queue
+    gcloud tasks queues create my-queue
 }
+
+# Create topic and subscription for getting-started\background-processing.
+gcloud pubsub topics create translate-requests
+gcloud pubsub subscriptions create translate-requests --topic=translate-requests

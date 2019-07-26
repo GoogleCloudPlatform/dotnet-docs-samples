@@ -115,11 +115,35 @@ can use [this older sample](
 
       writeUsingDml                     Insert multiple records using a DML statement.
 
+      queryWithParameter                Query record inserted using DML with a query parameter.
+
       writeWithTransactionUsingDml      Update data using a DML statement within a read-write transaction.
 
       updateUsingPartitionedDml         Update multiple records using a partitioned DML statement.
 
       deleteUsingPartitionedDml         Delete multiple records using a partitioned DML statement.
+
+      updateUsingBatchDml               Updates sample data in the database using Batch DML.
+
+      createTableWithDatatypes          Create 'Venues' table containing supported datatype columns.
+
+      writeDatatypesData                Write data into 'Venues' table.
+
+      queryWithArray                    Query ARRAY datatype from the 'Venues' table.
+
+      queryWithBool                     Query BOOL datatype from the 'Venues' table.
+
+      queryWithBytes                    Query BYTES datatype from the Venues' table.
+
+      queryWithDate                     Query DATE datatype from the 'Venues' table.
+
+      queryWithFloat                    Query FLOAT64 datatype from the 'Venues' table.
+
+      queryWithInt                      Query INT64 datatype from the 'Venues' table.
+
+      queryWithString                   Query STRING datatype from the 'Venues' table.
+
+      queryWithTimestamp                Query TIMESTAMP datatype from the 'Venues' table.
 
       listDatabaseTables                List all the user-defined tables in the database.
 

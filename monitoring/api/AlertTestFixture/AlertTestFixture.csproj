@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Monitoring.V3" Version="1.1.0-beta03" />
+    <PackageReference Include="Google.Cloud.Monitoring.V3" Version="1.1.0" />
   </ItemGroup>
 
 </Project>

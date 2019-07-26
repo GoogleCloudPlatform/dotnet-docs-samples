@@ -33,7 +33,7 @@ public class BigQueryQueryLegacy
             parameters: null,
             options: new QueryOptions { UseLegacySql = true });
         // Wait for the job to complete.
-        job.PollUntilCompleted();
+        job = job.PollUntilCompleted().ThrowOnAnyError();
         // Display the results
         foreach (BigQueryRow row in client.GetQueryResults(job.Reference))
         {

@@ -17,11 +17,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 using Google.Cloud.Firestore;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Newtonsoft.Json;
 
 
 namespace GoogleCloudSamples
@@ -41,25 +46,65 @@ namespace GoogleCloudSamples
             }
         }
 
+        // Clean-up function to delete all indexes in a collection
+        private static async Task DeleteIndexes(string collection)
+        {
+            GoogleCredential credential =
+                GoogleCredential.GetApplicationDefault();
+            //Inject the Cloud Platform scope if required.
+            if (credential.IsCreateScopedRequired)
+            {
+                credential = credential.CreateScoped(new[]
+                {
+                    "https://www.googleapis.com/auth/cloud-platform"
+                });
+            }
+            HttpClient http = new Google.Apis.Http.HttpClientFactory()
+                .CreateHttpClient(
+                new Google.Apis.Http.CreateHttpClientArgs()
+                {
+                    ApplicationName = "Google Cloud Platform Firestore Sample",
+                    GZipEnabled = true,
+                    Initializers = { credential },
+                });
+            string uriString = "https://firestore.googleapis.com/v1beta1/projects/"
+            + Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID")
+            + "/databases/(default)/indexes";
+            UriBuilder uri = new UriBuilder(uriString);
+            var resultText = http.GetAsync(uri.Uri).Result.Content
+                .ReadAsStringAsync().Result;
+            dynamic result = Newtonsoft.Json.JsonConvert
+                .DeserializeObject(resultText);
+
+            List<string> indexesToBeDeleted = new List<string>();
+
+            if (result.indexes != null)
+            {
+                foreach (var index in result.indexes)
+                {
+                    if (index.collection == collection)
+                    {
+                        string name = index.name;
+                        indexesToBeDeleted.Add(name);
+                    }
+                }
+            }
+            foreach (string indexToBeDeleted in indexesToBeDeleted)
+            {
+                uriString = "https://firestore.googleapis.com/v1beta1/" + indexToBeDeleted;
+                UriBuilder deleteUri = new UriBuilder(uriString);
+                await http.DeleteAsync(deleteUri.Uri);
+            }
+        }
+
         // Clean up function to delete all collections and indexes after testing is complete
         public void Dispose()
         {
-            CommandLineRunner _manageIndexes = new CommandLineRunner()
-            {
-                VoidMain = ManageIndexes.Main,
-                Command = "dotnet run"
-            };
-
-            ConsoleOutput RunManageIndexes(params string[] args)
-            {
-    return _manageIndexes.Run(args);
-}
-
             DeleteCollection("users").Wait();
             DeleteCollection("cities/SF/neighborhoods").Wait();
             DeleteCollection("cities").Wait();
             DeleteCollection("data").Wait();
-            var manageIndexesOutput = RunManageIndexes("delete-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            DeleteIndexes("cities").Wait();
         }
     }
 
