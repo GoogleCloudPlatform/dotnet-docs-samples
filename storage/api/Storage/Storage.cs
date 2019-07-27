@@ -1039,6 +1039,7 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
             bucket.IamConfiguration.UniformBucketLevelAccess.Enabled = true;
+	    bucket.IamConfiguration.BucketPolicyOnly.Enabled = true;
             bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
             {
                 // Use IfMetagenerationMatch to avoid race conditions.
@@ -1055,6 +1056,9 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
             bucket.IamConfiguration.UniformBucketLevelAccess.Enabled = false;
+	    /** WORK AROUND **/
+	    bucket.IamConfiguration.BucketPolicyOnly.Enabled = false;
+	    /** WORK AROUND **/
             bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
             {
                 // Use IfMetagenerationMatch to avoid race conditions.
