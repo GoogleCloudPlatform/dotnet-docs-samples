@@ -708,22 +708,6 @@ namespace GoogleCloudSamples
         // [END storage_generate_signed_url]
 
         // [START storage_generate_signed_url_v4]
-<<<<<<< HEAD
-        private void GenerateSignedUrlV4(string bucketName, string objectName)
-        {
-            UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(Environment
-                .GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS")).
-                .WithSigningVersion(SigningVersion.V4);
-
-            string url =
-                urlSigner.urlSignerSign(bucketName, objectName, TimeSpan.FromMinutes(15));
-
-            Console.WriteLine("Generate GET signed URL:");
-            Console.WriteLine(url);
-            Console.WriteLine("You can use this URL with any user agent, for example:")
-            Console.WriteLine("curl '{0}'", url);
-            C
-=======
         private void GenerateV4SignedGetUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
@@ -734,27 +718,10 @@ namespace GoogleCloudSamples
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
             Console.WriteLine($"curl '{url}'");
->>>>>>> master
         }
         // [END storage_generate_signed_url_v4]
 
         // [START storage_generate_upload_signed_url_v4]
-<<<<<<< HEAD
-        private void GenerateUploadSignedUrlV4(string bucketName, string objectName)
-        {
-            UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(Environment
-                .GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS")).
-                .WithSigningVersion(SigningVersion.V4);
-
-            string url =
-                urlSigner.urlSignerSign(bucketName, objectName, TimeSpan.FromMinutes(15), HttpMethod.Put);
-
-            Console.WriteLine("Generate PUT signed URL:");
-            Console.WriteLine(url);
-            Console.WriteLine("You can use this URL with any user agent, for example:");
-            Console.WriteLine("curl -X PUT -H 'Content-Type: application/octet-stream' " +
-                              "--upload-file my-file '{0}'", url);
-=======
         private void GenerateV4SignedPutUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
@@ -771,7 +738,6 @@ namespace GoogleCloudSamples
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
             Console.WriteLine($"curl -X PUT -H 'Content-Type: text/plain' --upload-file my-file '{url}'");
->>>>>>> master
         }
         // [END storage_generate_upload_signed_url_v4]
 
@@ -1039,7 +1005,6 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
             bucket.IamConfiguration.UniformBucketLevelAccess.Enabled = true;
-	    bucket.IamConfiguration.BucketPolicyOnly.Enabled = true;
             bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
             {
                 // Use IfMetagenerationMatch to avoid race conditions.
@@ -1056,9 +1021,6 @@ namespace GoogleCloudSamples
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
             bucket.IamConfiguration.UniformBucketLevelAccess.Enabled = false;
-	    /** WORK AROUND **/
-	    bucket.IamConfiguration.BucketPolicyOnly.Enabled = false;
-	    /** WORK AROUND **/
             bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
             {
                 // Use IfMetagenerationMatch to avoid race conditions.
