@@ -306,7 +306,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Kind:\t{bucket.Kind}");
             Console.WriteLine($"Lifecycle:\t{bucket.Lifecycle}");
             Console.WriteLine($"Location:\t{bucket.Location}");
-            Console.WriteLine($"LocationType:\t{bucket.locationType}");
+            Console.WriteLine($"LocationType:\t{bucket.LocationType}");
             Console.WriteLine($"Logging:\t{bucket.Logging}");
             Console.WriteLine($"Metageneration:\t{bucket.Metageneration}");
             Console.WriteLine($"Owner:\t{bucket.Owner}");
