@@ -286,6 +286,7 @@ namespace GoogleCloudSamples
         }
         // [END storage_get_metadata]
 
+        // [START storage_get_bucket_metadata]
         private void GetBucketMetadata(string bucketName)
         {
             var storage = StorageClient.Create();
@@ -317,6 +318,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Versioning:\t{bucket.Versioning}");
             Console.WriteLine($"Website:\t{bucket.Website}");
         }
+        // [END storage_get_bucket_metadata]
 
         // [START storage_make_public]
         private void MakePublic(string bucketName, string objectName)
