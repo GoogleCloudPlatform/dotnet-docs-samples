@@ -1045,9 +1045,9 @@ namespace GoogleCloudSamples
             var uniformBucketLevelAccess = bucket.IamConfiguration.UniformBucketLevelAccess;
 
             bool? enabledOrNull = uniformBucketLevelAccess?.Enabled;
-            bool uniformBucketLevelAccess =
+            bool uniformBucketLevelAccessEnabled =
                 enabledOrNull.HasValue ? enabledOrNull.Value : false;
-            if (uniformBucketLevelAccess)
+            if (uniformBucketLevelAccessEnabled)
             {
                 Console.WriteLine($"Uniform bucket-level access is enabled for {bucketName}.");
                 Console.WriteLine(
