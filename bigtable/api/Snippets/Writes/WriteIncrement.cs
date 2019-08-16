@@ -40,10 +40,11 @@ namespace Writes
             try
             {
                 String COLUMN_FAMILY = "stats_summary";
+                // Increment the value of stats_summary:connected_wifi by -1 (change 1 to 0 to show it's disconnected)
                 ReadModifyWriteRowResponse readModifyWriteRowResponse = bigtableClient.ReadModifyWriteRow(
                 tableName,
                 rowkey,
-                ReadModifyWriteRules.Increment(COLUMN_FAMILY, "connected_cell", -1));
+                ReadModifyWriteRules.Increment(COLUMN_FAMILY, "connected_wifi", -1));
                 return $"Successfully updated row {readModifyWriteRowResponse.Row.Key}";
             }
             catch (Exception ex)

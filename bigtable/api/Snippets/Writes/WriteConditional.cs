@@ -49,7 +49,7 @@ namespace Writes
                     RowFilters.FamilyNameExact(COLUMN_FAMILY),
                     RowFilters.ColumnQualifierExact("os_build"),
                     RowFilters.ValueRegex("PQ2A\\..*")),
-                Mutations.SetCell(COLUMN_FAMILY, "os_name", "android2", timestamp));
+                Mutations.SetCell(COLUMN_FAMILY, "os_name", "android", timestamp));
 
                 return $"Successfully updated row's os_name: {checkAndMutateRowResponse.PredicateMatched}";
             }

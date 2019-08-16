@@ -70,8 +70,6 @@ public class WriteSnippetsTest : IClassFixture<BigtableClientFixture>
 
         Writes.WriteConditional writeConditional = new Writes.WriteConditional();
         Assert.Contains("Successfully updated row's os_name: True", writeConditional.writeConditional(this.fixture.projectId, this.fixture.instanceId, this.fixture.tableId));
-
-
     }
 
     [Fact]
