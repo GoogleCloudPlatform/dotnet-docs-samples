@@ -23,7 +23,7 @@ namespace Writes
     public class WriteConditional
     {
         /// <summary>
-        /// Mutate one row in an existing table and column family. Updates multiple cells within that row using one API call.
+        /// Check if a row has a certain value then mutate the row if it does.
         ///</summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>

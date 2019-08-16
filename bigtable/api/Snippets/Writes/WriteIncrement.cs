@@ -23,7 +23,7 @@ namespace Writes
     public class WriteIncrement
     {
         /// <summary>
-        /// Mutate one row in an existing table and column family. Updates multiple cells within that row using one API call.
+        /// Increments a cell value in a row with an existing value at that cell.
         ///</summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
