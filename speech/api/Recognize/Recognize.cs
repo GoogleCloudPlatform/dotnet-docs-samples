@@ -325,7 +325,10 @@ namespace GoogleCloudSamples
         {
             GoogleCredential googleCredential;
             using (Stream m = new FileStream(credentialsFilePath, FileMode.Open))
+            {
                 googleCredential = GoogleCredential.FromStream(m);
+            }
+
             var channel = new Grpc.Core.Channel(SpeechClient.DefaultEndpoint.Host,
                 googleCredential.ToChannelCredentials());
             var speech = SpeechClient.Create(channel);
@@ -556,7 +559,11 @@ namespace GoogleCloudSamples
                 {
                     lock (writeLock)
                     {
-                        if (!writeMore) return;
+                        if (!writeMore)
+                        {
+                            return;
+                        }
+
                         streamingCall.WriteAsync(
                             new StreamingRecognizeRequest()
                             {
@@ -570,7 +577,11 @@ namespace GoogleCloudSamples
             await Task.Delay(TimeSpan.FromSeconds(seconds));
             // Stop recording and shut down.
             waveIn.StopRecording();
-            lock (writeLock) writeMore = false;
+            lock (writeLock)
+            {
+                writeMore = false;
+            }
+
             await streamingCall.WriteCompleteAsync();
             await printResponses;
             return 0;
