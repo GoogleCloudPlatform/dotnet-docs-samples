@@ -48,7 +48,6 @@ public class BigtableClientFixture : IDisposable
     {
         _bigtableTableAdminClient.DeleteTable(new Google.Cloud.Bigtable.Common.V2.TableName(projectId, instanceId, tableId));
     }
-
 }
 public class WriteSnippetsTest : IClassFixture<BigtableClientFixture>
 {
@@ -78,5 +77,4 @@ public class WriteSnippetsTest : IClassFixture<BigtableClientFixture>
         Writes.WriteBatch writeBatch = new Writes.WriteBatch();
         Assert.Contains("Successfully wrote 2 rows", writeBatch.writeBatch(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
     }
-
 }
