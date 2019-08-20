@@ -257,6 +257,18 @@ Where command is one of
             Console.WriteLine("Updated the Regions array of the DC document in the cities collection.");
         }
 
+        private static async Task UpdateDocumentIncrement(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            // [START fs_update_document_increment]
+            DocumentReference washingtonRef = db.Collection("cities").Document("DC");
+
+            // Atomically increment the population of the city by 50.
+            await washingtonRef.UpdateAsync("Regions", FieldValue.Increment(50));
+            // [END fs_update_document_increment]
+            Console.WriteLine("Updated the population of the DC document in the cities collection.");
+        }
+
         public static void Main(string[] args)
         {
             if (args.Length < 2)
@@ -311,6 +323,10 @@ Where command is one of
 
                 case "update-document-array":
                     UpdateDocumentArray(project).Wait();
+                    break;
+
+                case "update-document-increment":
+                    UpdateDocumentIncrement(project).Wait();
                     break;
 
                 default:

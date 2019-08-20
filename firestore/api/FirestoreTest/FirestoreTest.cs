@@ -353,6 +353,14 @@ namespace GoogleCloudSamples
             Assert.Contains("Updated the Regions array of the DC document in the cities collection.", output.Stdout);
         }
 
+        [Fact]
+        public void UpdateDocumentIncrementTest()
+        {
+            RunQueryData("update-document-increment", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunAddData("update-document-increment", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Updated the population of the DC document in the cities collection.", output.Stdout);
+        }
+
 
         // DELETE DATA TESTS
         [Fact]
