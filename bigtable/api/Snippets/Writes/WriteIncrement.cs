@@ -38,7 +38,7 @@ namespace Writes
             TableName tableName = new TableName(projectId, instanceId, tableId);
             BigtableByteString rowkey = new BigtableByteString("phone#4c410523#20190501");
             String COLUMN_FAMILY = "stats_summary";
-            
+
             // Increment the value of stats_summary:connected_wifi by -1 (change 1 to 0 to show it's disconnected)
             ReadModifyWriteRowResponse readModifyWriteRowResponse = bigtableClient.ReadModifyWriteRow(
                 tableName,
