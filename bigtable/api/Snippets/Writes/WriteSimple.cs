@@ -36,27 +36,18 @@ namespace Writes
             BigtableClient bigtableClient = BigtableClient.Create();
 
             TableName tableName = new TableName(projectId, instanceId, tableId);
-
             BigtableByteString rowkey = new BigtableByteString("phone#4c410523#20190501");
             BigtableVersion timestamp = new BigtableVersion(DateTime.UtcNow);
-            try
-            {
-                String COLUMN_FAMILY = "stats_summary";
-                Mutation[] mutations = {
+            String COLUMN_FAMILY = "stats_summary";
+
+            Mutation[] mutations = {
                     Mutations.SetCell(COLUMN_FAMILY, "connected_cell", 1, timestamp),
                     Mutations.SetCell(COLUMN_FAMILY, "connected_wifi", 1, timestamp),
                     Mutations.SetCell(COLUMN_FAMILY, "os_build", "PQ2A.190405.003", timestamp)
                 };
-                MutateRowResponse mutateRowResponse = bigtableClient.MutateRow(tableName, rowkey, mutations);
-                Console.WriteLine(mutateRowResponse);
-                return $"Successfully wrote row {rowkey}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"WriteSimple error:");
-                Console.WriteLine(ex.Message);
-                throw;
-            }
+            MutateRowResponse mutateRowResponse = bigtableClient.MutateRow(tableName, rowkey, mutations);
+            Console.WriteLine(mutateRowResponse);
+            return $"Successfully wrote row {rowkey}";
         }
     }
 }

@@ -36,13 +36,11 @@ namespace Writes
             BigtableClient bigtableClient = BigtableClient.Create();
 
             TableName tableName = new TableName(projectId, instanceId, tableId);
-
             BigtableByteString rowkey = new BigtableByteString("phone#4c410523#20190501");
             BigtableVersion timestamp = new BigtableVersion(DateTime.UtcNow);
-            try
-            {
-                String COLUMN_FAMILY = "stats_summary";
-                CheckAndMutateRowResponse checkAndMutateRowResponse = bigtableClient.CheckAndMutateRow(
+            String COLUMN_FAMILY = "stats_summary";
+
+            CheckAndMutateRowResponse checkAndMutateRowResponse = bigtableClient.CheckAndMutateRow(
                 tableName,
                 rowkey,
                 RowFilters.Chain(
@@ -51,14 +49,7 @@ namespace Writes
                     RowFilters.ValueRegex("PQ2A\\..*")),
                 Mutations.SetCell(COLUMN_FAMILY, "os_name", "android", timestamp));
 
-                return $"Successfully updated row's os_name: {checkAndMutateRowResponse.PredicateMatched}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"WriteConditional error:");
-                Console.WriteLine(ex.Message);
-                throw;
-            }
+            return $"Successfully updated row's os_name: {checkAndMutateRowResponse.PredicateMatched}";
         }
     }
 }

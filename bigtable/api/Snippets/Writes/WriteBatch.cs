@@ -37,44 +37,35 @@ namespace Writes
 
             TableName tableName = new TableName(projectId, instanceId, tableId);
             BigtableVersion timestamp = new BigtableVersion(DateTime.UtcNow);
+            String COLUMN_FAMILY = "stats_summary";
 
-            try
-            {
-                String COLUMN_FAMILY = "stats_summary";
-                MutateRowsRequest.Types.Entry mutations1 = Mutations.CreateEntry(new BigtableByteString("tablet#a0b81f74#20190501"),
-                    Mutations.SetCell(COLUMN_FAMILY, "connected_cell", 1, timestamp),
-                    Mutations.SetCell(COLUMN_FAMILY, "os_build", "12155.0.0-rc1", timestamp)
-                );
-                MutateRowsRequest.Types.Entry mutations2 = Mutations.CreateEntry(new BigtableByteString("tablet#a0b81f74#20190502"),
-                    Mutations.SetCell(COLUMN_FAMILY, "connected_cell", 1, timestamp),
-                    Mutations.SetCell(COLUMN_FAMILY, "os_build", "12145.0.0-rc6", timestamp)
-                );
-                MutateRowsRequest.Types.Entry[] entries = {
+            MutateRowsRequest.Types.Entry mutations1 = Mutations.CreateEntry(new BigtableByteString("tablet#a0b81f74#20190501"),
+                Mutations.SetCell(COLUMN_FAMILY, "connected_cell", 1, timestamp),
+                Mutations.SetCell(COLUMN_FAMILY, "os_build", "12155.0.0-rc1", timestamp)
+            );
+            MutateRowsRequest.Types.Entry mutations2 = Mutations.CreateEntry(new BigtableByteString("tablet#a0b81f74#20190502"),
+                Mutations.SetCell(COLUMN_FAMILY, "connected_cell", 1, timestamp),
+                Mutations.SetCell(COLUMN_FAMILY, "os_build", "12145.0.0-rc6", timestamp)
+            );
+            MutateRowsRequest.Types.Entry[] entries = {
                     mutations1,
                     mutations2
                 };
-                MutateRowsResponse mutateRowResponse = bigtableClient.MutateRows(tableName, entries);
-                foreach (MutateRowsResponse.Types.Entry entry in mutateRowResponse.Entries)
-                {
-                    if (entry.Status.Code == 0)
-                    {
-                        Console.WriteLine($"Row {entry.Index} written successfully");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"\tFailed to write row {entry.Index}");
-                        Console.WriteLine(entry.Status.Message);
-                        return entry.Status.Message;
-                    }
-                }
-                return "Successfully wrote 2 rows";
-            }
-            catch (Exception ex)
+            MutateRowsResponse mutateRowResponse = bigtableClient.MutateRows(tableName, entries);
+            foreach (MutateRowsResponse.Types.Entry entry in mutateRowResponse.Entries)
             {
-                Console.WriteLine($"WriteBatch error:");
-                Console.WriteLine(ex.Message);
-                throw;
+                if (entry.Status.Code == 0)
+                {
+                    Console.WriteLine($"Row {entry.Index} written successfully");
+                }
+                else
+                {
+                    Console.WriteLine($"\tFailed to write row {entry.Index}");
+                    Console.WriteLine(entry.Status.Message);
+                    return entry.Status.Message;
+                }
             }
+            return "Successfully wrote 2 rows";
         }
     }
 }

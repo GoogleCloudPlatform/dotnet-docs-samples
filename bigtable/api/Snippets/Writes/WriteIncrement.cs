@@ -37,22 +37,14 @@ namespace Writes
 
             TableName tableName = new TableName(projectId, instanceId, tableId);
             BigtableByteString rowkey = new BigtableByteString("phone#4c410523#20190501");
-            try
-            {
-                String COLUMN_FAMILY = "stats_summary";
-                // Increment the value of stats_summary:connected_wifi by -1 (change 1 to 0 to show it's disconnected)
-                ReadModifyWriteRowResponse readModifyWriteRowResponse = bigtableClient.ReadModifyWriteRow(
+            String COLUMN_FAMILY = "stats_summary";
+            
+            // Increment the value of stats_summary:connected_wifi by -1 (change 1 to 0 to show it's disconnected)
+            ReadModifyWriteRowResponse readModifyWriteRowResponse = bigtableClient.ReadModifyWriteRow(
                 tableName,
                 rowkey,
                 ReadModifyWriteRules.Increment(COLUMN_FAMILY, "connected_wifi", -1));
-                return $"Successfully updated row {readModifyWriteRowResponse.Row.Key}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"WriteIncrement error:");
-                Console.WriteLine(ex.Message);
-                throw;
-            }
+            return $"Successfully updated row {readModifyWriteRowResponse.Row.Key}";
         }
     }
 }
