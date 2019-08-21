@@ -20,7 +20,7 @@ using Google.Cloud.Bigtable.Admin.V2;
 public class BigtableClientFixture : IDisposable
 {
     public readonly string projectId =
-        Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT");
+        Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     public readonly string instanceId =
         Environment.GetEnvironmentVariable("TEST_BIGTABLE_INSTANCE");
     public readonly string tableId = $"mobile-time-series-{Guid.NewGuid().ToString().Substring(0, 8)}";
