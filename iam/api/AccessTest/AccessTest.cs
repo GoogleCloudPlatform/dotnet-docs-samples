@@ -23,10 +23,11 @@ namespace GoogleCloudSamples
         private readonly string _role1;
         private readonly string _role2;
         private readonly string _member1;
-        private readonly string _member2; 
+        private readonly string _member2;
         private readonly string _member3;
 
-         public AccessTest(){
+        public AccessTest()
+        {
             _project = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _role1 = "roles/viewer";
             _role2 = "roles/editor";
