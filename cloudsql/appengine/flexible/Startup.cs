@@ -102,8 +102,8 @@ namespace CloudSql
             // [START cloud_sql_mysql_connection_pool]
             var connectionString = new MySqlConnectionStringBuilder(
                 Configuration["CloudSql:ConnectionString"])
-                // ConnectionString set in appsetings.json formatted as:
-                // "Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes"
+            // ConnectionString set in appsetings.json formatted as:
+            // "Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes"
             {
                 // Connecting to a local proxy that does not support ssl.
                 SslMode = MySqlSslMode.None,
@@ -150,8 +150,8 @@ namespace CloudSql
             // [START cloud_sql_postgres_connection_pool]
             var connectionString = new NpgsqlConnectionStringBuilder(
                 Configuration["CloudSql:ConnectionString"])
-                // ConnectionString set in appsetings.json formatted as:
-                // "Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes"
+            // ConnectionString set in appsetings.json formatted as:
+            // "Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes"
             {
                 // Connecting to a local proxy that does not support ssl.
                 SslMode = SslMode.Disable
