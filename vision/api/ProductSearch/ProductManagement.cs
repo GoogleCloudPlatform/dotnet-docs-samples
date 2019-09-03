@@ -224,7 +224,6 @@ namespace GoogleCloudSamples
                 ProductSetPurgeConfig = productSetPurgeConfig,
                 DeleteOrphanProducts = true,
                 Force = true
-
             };
 
             // Purge operation is async.

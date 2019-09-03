@@ -121,10 +121,12 @@ namespace GoogleCloudSamples
         {
             var client = ProductSearchClient.Create();
             var parent = LocationName.Format(opts.ProjectID, opts.ComputeRegion);
-            var productSetPurgeConfig = new ProductSetPurgeConfig {
+            var productSetPurgeConfig = new ProductSetPurgeConfig
+            {
                 ProductSetId = opts.ProductSetId
             };
-            var req = new PurgeProductsRequest {
+            var req = new PurgeProductsRequest
+            {
                 Parent = parent,
                 ProductSetPurgeConfig = productSetPurgeConfig,
                 Force = true
