@@ -264,6 +264,7 @@ namespace GoogleCloudSamples
         {
             var output = _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
             Assert.Equal(0, output.ExitCode);
+
             _productSearch.Run("create_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_SET_DISPLAY_NAME);
             _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_SET_ID);
 
@@ -271,10 +272,8 @@ namespace GoogleCloudSamples
             Assert.Contains(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
 
             _productSearch.Run("purge_products_in_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
-
             output = _productSearch.Run("list_products", _projectId, REGION_NAME);
             Assert.DoesNotContain(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
-
         }
 
         [Fact]
