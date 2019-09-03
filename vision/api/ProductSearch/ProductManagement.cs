@@ -41,6 +41,11 @@ namespace GoogleCloudSamples
     class DeleteProductOptions : ProductWithIDOptions
     { }
 
+    [Verb("purge_orphan_products", HelpText = "Perform the purge")]
+    class PurgeOrphanProductsOptions : ProductWithIDOptions
+    {
+    }
+
     public class ProductManagement
     {
         public static void RegisterCommands(VerbMap<object> verbMap)
@@ -50,7 +55,8 @@ namespace GoogleCloudSamples
                 .Add((ListProductsOptions opts) => ListProducts(opts))
                 .Add((GetProductOptions opts) => GetProduct(opts))
                 .Add((UpdateProductLabelsOptions opts) => UpdateProductLabels(opts))
-                .Add((DeleteProductOptions opts) => DeleteProduct(opts));
+                .Add((DeleteProductOptions opts) => DeleteProduct(opts))
+                .Add((PurgeOrphanProductsOptions opts) => PurgeOrphanProducts(opts));
         }
 
         // [START vision_product_search_create_product]
@@ -201,5 +207,35 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END vision_product_search_delete_product]
+
+        // [START vision_product_search_purge_orphan_products]
+        private static int PurgeOrphanProducts(PurgeOrphanProductsOptions opts)
+        {
+            var client = ProductSearchClient.Create();
+            var parent = LocationName.Format(opts.ProjectID, opts.ComputeRegion);
+            var productSetPurgeConfig = new ProductSetPurgeConfig
+            {
+                ProductSetId = opts.ProductID
+            };
+
+            var request = new PurgeProductsRequest
+            {
+                Parent = parent,
+                ProductSetPurgeConfig = productSetPurgeConfig,
+                DeleteOrphanProducts = true,
+                Force = true
+
+            };
+
+            // Purge operation is async.
+            var operation = client.PurgeProductsAsync(request);
+
+            // wait until long operation to finish.
+            operation.Result.PollUntilCompleted();
+            Console.WriteLine("Orphan products deleted.");
+
+            return 0;
+        }
+        // [END vision_product_search_purge_orphan_products]
     }
 }

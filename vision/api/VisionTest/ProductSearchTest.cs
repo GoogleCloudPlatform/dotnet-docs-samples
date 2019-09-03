@@ -7,7 +7,7 @@ namespace GoogleCloudSamples
     public class ProductSearchTest : IDisposable
     {
         private const string REGION_NAME = "us-west1";
-        private const string PRODUCT_ID = "fake_product_id_for_testing_1";
+        private const string PRODUCT_ID = "fake_product_id_for_testing_98329048902";
         private const string PRODUCT_DISPLAY_NAME = "fake_product_display_name_for_testing";
         private const string PRODUCT_CATEGORY = "apparel";
         private const string PRODUCT_ID_2 = "fake_product_id_for_testing_2";
@@ -257,6 +257,37 @@ namespace GoogleCloudSamples
             var output = _productSearch.Run("get_similar_products_gcs", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, REF_IMAGE_GCS_URI, SEARCH_FILTER);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
+        }
+
+        [Fact]
+        public void TestPurgeProducsInProductSet()
+        {
+            var output = _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            Assert.Equal(0, output.ExitCode);
+            _productSearch.Run("create_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_SET_DISPLAY_NAME);
+            _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_SET_ID);
+
+            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
+            Assert.Contains(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+
+            _productSearch.Run("purge_products_in_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
+
+            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
+            Assert.DoesNotContain(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+
+        }
+
+        [Fact]
+        public void TestPurgeOrphanProducts()
+        {
+            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            var output = _productSearch.Run("list_products", _projectId, REGION_NAME);
+            Assert.Contains(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+
+            _productSearch.Run("purge_orphan_products", _projectId, REGION_NAME);
+
+            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
+            Assert.DoesNotContain(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
         }
 
         public void Dispose()
