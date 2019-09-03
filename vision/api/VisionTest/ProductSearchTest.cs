@@ -7,7 +7,7 @@ namespace GoogleCloudSamples
     public class ProductSearchTest : IDisposable
     {
         private const string REGION_NAME = "us-west1";
-        private const string PRODUCT_ID = "fake_product_id_for_testing_98329048902";
+        private const string PRODUCT_ID = "fake_product_id_for_testing_1";
         private const string PRODUCT_DISPLAY_NAME = "fake_product_display_name_for_testing";
         private const string PRODUCT_CATEGORY = "apparel";
         private const string PRODUCT_ID_2 = "fake_product_id_for_testing_2";

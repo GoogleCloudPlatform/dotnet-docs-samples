@@ -2,10 +2,7 @@
 using Google.Cloud.Vision.V1;
 using CommandLine;
 using System.Linq;
-using System.Threading.Tasks;
-using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
-using System.Threading;
 
 namespace GoogleCloudSamples
 {
