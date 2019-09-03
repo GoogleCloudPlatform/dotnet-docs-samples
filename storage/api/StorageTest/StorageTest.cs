@@ -459,6 +459,45 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void TestHmacSamples()
+        {
+            //These need to all run as one test so that we can use the created key in every test
+
+            String serviceAccountEmail = "it-service-account@gcloud-devel.iam.gserviceaccount.com";
+            var createdHmacKey = Run("create-hmac-key", serviceAccountEmail);
+            AssertSucceeded(createdHmacKey);
+
+            String idLine = Regex.Match(createdHmacKey.Stdout, "Access ID: .*\n").Captures[0].Value;
+            String id = idLine.Substring(11).Replace("\n", String.Empty);
+
+            var listedHmacKeys = Run("list-hmac-keys", serviceAccountEmail);
+            AssertSucceeded(listedHmacKeys);
+            Assert.Contains(id, listedHmacKeys.Stdout);
+
+            var fetchedHmacKey = Run("get-hmac-key", id);
+            AssertSucceeded(fetchedHmacKey);
+            Assert.Contains(id, fetchedHmacKey.Stdout);
+
+            var deactivatedHmacKey = Run("deactivate-hmac-key", id);
+            AssertSucceeded(deactivatedHmacKey);
+            Assert.Contains(id, deactivatedHmacKey.Stdout);
+
+            var reactivatedHmacKey = Run("activate-hmac-key", id);
+            AssertSucceeded(reactivatedHmacKey);
+            Assert.Contains(id, reactivatedHmacKey.Stdout);
+
+            Run("deactivate-hmac-key", id);
+
+            var deletedKey = Run("delete-hmac-key", id);
+            AssertSucceeded(deletedKey);
+            Assert.Contains(id, deletedKey.Stdout);
+
+            listedHmacKeys = Run("list-hmac-keys", serviceAccountEmail);
+            AssertSucceeded(listedHmacKeys);
+            Assert.DoesNotContain(id, listedHmacKeys.Stdout);
+        }
+
+        [Fact]
         public void TestAddBucketOwner()
         {
             using (var bucket = new BucketFixture())
