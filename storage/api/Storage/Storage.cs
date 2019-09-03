@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
 {
     public class Storage
     {
-        private static readonly string s_projectId = "YOUR-PROJECT-ID";
+        private static readonly string s_projectId = "gcloud-devel";
 
         private static readonly string s_usage =
             "Usage: \n" +
