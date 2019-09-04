@@ -42,7 +42,7 @@ namespace GoogleCloudSamples
     { }
 
     [Verb("purge_orphan_products", HelpText = "Perform the purge")]
-    class PurgeOrphanProductsOptions : ProductWithIDOptions
+    class PurgeOrphanProductsOptions : BaseOptions
     {
     }
 
@@ -213,15 +213,10 @@ namespace GoogleCloudSamples
         {
             var client = ProductSearchClient.Create();
             var parent = LocationName.Format(opts.ProjectID, opts.ComputeRegion);
-            var productSetPurgeConfig = new ProductSetPurgeConfig
-            {
-                ProductSetId = opts.ProductID
-            };
 
             var request = new PurgeProductsRequest
             {
                 Parent = parent,
-                ProductSetPurgeConfig = productSetPurgeConfig,
                 DeleteOrphanProducts = true,
                 Force = true
             };
