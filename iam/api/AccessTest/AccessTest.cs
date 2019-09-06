@@ -25,15 +25,17 @@ namespace GoogleCloudSamples
         private readonly string _member1;
         private readonly string _member2;
         private readonly string _member3;
+        private bool ContainsMemberOne = false;
+        private bool ContainsMemberTwo = false;
 
         public AccessTest()
         {
             _project = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _role1 = "roles/viewer";
             _role2 = "roles/editor";
-            _member1 = "user:user1@example.com";
-            _member2 = "user:user2@example.com";
-            _member3 = "user:user3@example.com";
+            _member1 = "user:yaraarryn.677500@gmail.com";
+            _member2 = "user:obaraclegane.724498@gmail.com";
+            _member3 = "user:yaraarryn.677500@gmail.com";
         }
 
         [Fact]
@@ -42,23 +44,44 @@ namespace GoogleCloudSamples
             // Test GetPolicy
             var policy = AccessManager.GetPolicy(_project);
 
-            // Test AddBinding
+            // Test AddBinding by adding _member1 to _role1
             policy = AccessManager.AddBinding(policy, _role1, _member1);
+            
+            ContainsMemberOne = AccessManager.TestBinding(policy, _role1, _member1);
+            if(!ContainsMemberOne){
+                throw new Exception("Failed to add member 1");
+            }
 
-            // Test AddMember
+            // Test AddMember by adding _member2 to _role1
             policy = AccessManager.AddMember(policy, _role1, _member2);
 
-            // Test RemoveMember where role binding doesn't exist
+            ContainsMemberTwo = AccessManager.TestBinding(policy, _role1, _member2);
+            if(!ContainsMemberTwo){
+                throw new Exception("Failed to add member 2");
+            }
+
+            // Test RemoveMember where role binding doesn't exist (_member1 from _role2)
             policy = AccessManager.RemoveMember(policy, _role2, _member1);
 
-            // Test RemoveMember where member doesn't exist
+            // Test RemoveMember where member doesn't exist (_member3 from _role1)
             policy = AccessManager.RemoveMember(policy, _role1, _member3);
 
-            // Test RemoveMember
+            // Test RemoveMember by removing _member1 from _role1
             policy = AccessManager.RemoveMember(policy, _role1, _member1);
 
-            // Test RemoveMember when removing last member from binding
+            ContainsMemberOne = AccessManager.TestBinding(policy, _role1, _member1);
+            if(ContainsMemberOne){
+                throw new Exception("Failed to remove member 1");
+            }
+
+            // Test RemoveMember when removing last member from binding (_member2 from _role1)
             policy = AccessManager.RemoveMember(policy, _role1, _member2);
+
+            ContainsMemberTwo = AccessManager.TestBinding(policy, _role2, _member2);
+            if(ContainsMemberTwo)
+            {
+                throw new Exception("Failed to remove member 2");
+            }
 
             // Test SetPolicy
             policy = AccessManager.SetPolicy(_project, policy);
