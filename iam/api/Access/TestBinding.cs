@@ -17,11 +17,11 @@ using Google.Apis.CloudResourceManager.v1.Data;
 
 public partial class AccessManager
 {
-    public static bool TestMember(Policy policy, string member)
+    public static bool TestBinding(Policy policy, string role, string member)
     {
         foreach(Binding x in policy.Bindings)
         {
-            if (x.Members.Contains(member))
+            if (x.Role.Equals(role) && x.Members.Contains(member))
             {
                 return true;
             }
