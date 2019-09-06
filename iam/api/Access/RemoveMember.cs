@@ -22,8 +22,11 @@ public partial class AccessManager
     public static Policy RemoveMember(Policy policy, string role, string member)
     {
         var binding = policy.Bindings.First(x => x.Role == role);
-        binding.Members.Remove(member);
-        return policy;
+	    if(binding.Members != null && binding.Members.Contains(member))
+	    {
+		    binding.Members.Remove(member);	
+	    }	
+	    return policy;
     }
 }
 // [END iam_modify_policy_remove_member]
