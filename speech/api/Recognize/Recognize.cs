@@ -96,6 +96,11 @@ namespace GoogleCloudSamples
         public int Seconds { get; set; } = 3;
     }
 
+    [Verb("listen-infinite", HelpText = "Detects speech in a microphone input stream, with no length limit.")]
+    class ListenInfiniteOptions
+    {
+    }
+
     [Verb("rec", HelpText = "Detects speech in an audio file. Supports other file formats.")]
     class RecOptions : Options
     {
@@ -594,7 +599,7 @@ namespace GoogleCloudSamples
         {
             return (int)Parser.Default.ParseArguments<
                 SyncOptions, AsyncOptions,
-                StreamingOptions, ListenOptions,
+                StreamingOptions, ListenOptions, ListenInfiniteOptions,
                 RecOptions, SyncOptionsWithCreds,
                 OptionsWithContext
                 >(args).MapResult(
@@ -611,6 +616,7 @@ namespace GoogleCloudSamples
                     : LongRunningRecognize(opts.FilePath),
                 (StreamingOptions opts) => StreamingRecognizeAsync(opts.FilePath).Result,
                 (ListenOptions opts) => StreamingMicRecognizeAsync(opts.Seconds).Result,
+                (ListenInfiniteOptions opts) => InfiniteStreaming.RecognizeAsync().Result,
                 (RecOptions opts) => Rec(opts.FilePath, opts.BitRate, opts.Encoding),
                 (SyncOptionsWithCreds opts) => SyncRecognizeWithCredentials(
                     opts.FilePath, opts.CredentialsFilePath),
