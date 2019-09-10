@@ -20,6 +20,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Google.Apis.Auth.OAuth2;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -463,7 +464,7 @@ namespace GoogleCloudSamples
         {
             //These need to all run as one test so that we can use the created key in every test
 
-            String serviceAccountEmail = "it-service-account@gcloud-devel.iam.gserviceaccount.com";
+            String serviceAccountEmail = GetServiceAccountEmail();
             var createdHmacKey = Run("create-hmac-key", serviceAccountEmail);
             AssertSucceeded(createdHmacKey);
 
@@ -844,6 +845,19 @@ namespace GoogleCloudSamples
             finally
             {
                 Run("disable-requester-pays", _bucketName);
+            }
+        }
+
+        private static string GetServiceAccountEmail()
+        {
+            var cred = GoogleCredential.GetApplicationDefault().UnderlyingCredential;
+            switch (cred)
+            {
+                case ServiceAccountCredential sac:
+                    return sac.Id;
+                // TODO: We may well need to handle ComputeCredential for Kokoro.
+                default:
+                    throw new InvalidOperationException($"Unable to retrieve service account email address for credential type {cred.GetType()}");
             }
         }
     }
