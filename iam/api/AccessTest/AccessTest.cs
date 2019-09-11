@@ -25,8 +25,8 @@ namespace GoogleCloudSamples
         private readonly string _member1;
         private readonly string _member2;
         private readonly string _member3;
-        private bool ContainsMemberOne = false;
-        private bool ContainsMemberTwo = false;
+        private bool _containsMemberOne = false;
+        private bool _containsMemberTwo = false;
 
         public AccessTest()
         {
@@ -48,8 +48,8 @@ namespace GoogleCloudSamples
             // Test AddBinding by adding _member1 to _role1
             policy = AccessManager.AddBinding(policy, _role1, _member1);
 
-            ContainsMemberOne = AccessManager.TestBinding(policy, _role1, _member1);
-            if (!ContainsMemberOne)
+            _containsMemberOne = AccessManager.TestBinding(policy, _role1, _member1);
+            if (!_containsMemberOne)
             {
                 throw new Exception("Failed to add member 1");
             }
@@ -57,8 +57,8 @@ namespace GoogleCloudSamples
             // Test AddMember by adding _member2 to _role1
             policy = AccessManager.AddMember(policy, _role1, _member2);
 
-            ContainsMemberTwo = AccessManager.TestBinding(policy, _role1, _member2);
-            if (!ContainsMemberTwo)
+            _containsMemberTwo = AccessManager.TestBinding(policy, _role1, _member2);
+            if (!_containsMemberTwo)
             {
                 throw new Exception("Failed to add member 2");
             }
@@ -72,8 +72,8 @@ namespace GoogleCloudSamples
             // Test RemoveMember by removing _member1 from _role1
             policy = AccessManager.RemoveMember(policy, _role1, _member1);
 
-            ContainsMemberOne = AccessManager.TestBinding(policy, _role1, _member1);
-            if (ContainsMemberOne)
+            _containsMemberOne = AccessManager.TestBinding(policy, _role1, _member1);
+            if (_containsMemberOne)
             {
                 throw new Exception("Failed to remove member 1");
             }
@@ -81,8 +81,8 @@ namespace GoogleCloudSamples
             // Test RemoveMember when removing last member from binding (_member2 from _role1)
             policy = AccessManager.RemoveMember(policy, _role1, _member2);
 
-            ContainsMemberTwo = AccessManager.TestBinding(policy, _role2, _member2);
-            if (ContainsMemberTwo)
+            _containsMemberTwo = AccessManager.TestBinding(policy, _role2, _member2);
+            if (_containsMemberTwo)
             {
                 throw new Exception("Failed to remove member 2");
             }
