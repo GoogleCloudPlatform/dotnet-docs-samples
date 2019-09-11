@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START iam_modify_policy_remove_member]
 
-using System.Linq;
 using Google.Apis.CloudResourceManager.v1.Data;
 
 public partial class AccessManager
 {
-    public static Policy RemoveMember(Policy policy, string role, string member)
+    public static bool TestBinding(Policy policy, string role, string member)
     {
-        var binding = policy.Bindings.First(x => x.Role == role);
-        if (binding.Members != null && binding.Members.Contains(member))
+        foreach (Binding x in policy.Bindings)
         {
-            binding.Members.Remove(member);
+            if (x.Role.Equals(role) && x.Members.Contains(member))
+            {
+                return true;
+            }
         }
-        return policy;
+        return false;
     }
 }
-// [END iam_modify_policy_remove_member]
