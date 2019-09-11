@@ -17,14 +17,11 @@ Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet build
 if ($LASTEXITCODE) {
-	# Failed to build.  Report it.
-} else {
-	Skip-Test
+	throw "Build failed."
 }
-break  # TODO: Fix and run the test below.  It times out.
 
 $randomString = ""
-1..10 | foreach {
+1..10 | ForEach-Object {
 	$char = [char] (65 + (Get-Random 26) )
 	$randomString = $randomString+$char
 }
@@ -32,7 +29,10 @@ $usersCollection = "kokoro-test-users-"+$randomString
 $citiesCollection = "kokoro-test-cities-"+$randomString
 $dataCollection = "kokoro-test-data-"+$randomString
 
-BackupAndEdit-TextFile "FirestoreTest.cs","..\Quickstart\Program.cs","..\AddData\Program.cs","..\DataModel\Program.cs","..\DeleteData\Program.cs","..\GetData\Program.cs","..\ManageIndexes\Program.cs","..\OrderLimitData\Program.cs","..\PaginateData\Program.cs","..\QueryData\Program.cs","..\TransactionsAndBatchedWrites\Program.cs" `
+BackupAndEdit-TextFile "FirestoreTest.cs", "..\Quickstart\Program.cs", "..\AddData\Program.cs", `
+"..\DataModel\Program.cs", "..\DeleteData\Program.cs", "..\ListenData\Program.cs", `
+"..\GetData\Program.cs", "..\ManageIndexes\Program.cs", "..\OrderLimitData\Program.cs", `
+"..\PaginateData\Program.cs", "..\QueryData\Program.cs", "..\TransactionsAndBatchedWrites\Program.cs" `
 	@{'db.Collection("users")' = 'db.Collection("'+$usersCollection+'")';
 	  'db.Collection("cities")' = 'db.Collection("'+$citiesCollection+'")';
 	  'db.Collection("data")' = 'db.Collection("'+$dataCollection+'")';
@@ -40,6 +40,7 @@ BackupAndEdit-TextFile "FirestoreTest.cs","..\Quickstart\Program.cs","..\AddData
 	  'DeleteCollection("cities")' = 'DeleteCollection("'+$citiesCollection+'")';
 	  'DeleteCollection("data")' = 'DeleteCollection("'+$dataCollection+'")';
 	  'DeleteCollection("cities/SF/neighborhoods")' = 'DeleteCollection("'+$citiesCollection+'/SF/neighborhoods")';
+	  'DeleteIndexes("cities")' = 'DeleteIndexes("'+$citiesCollection+'")';
 	  'YOUR_COLLECTION_NAME' = $citiesCollection;
 	  } `
 {

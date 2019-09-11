@@ -5,11 +5,14 @@ FROM microsoft/powershell
 # steps from https://www.microsoft.com/net/core#linuxubuntu
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 RUN mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+RUN curl https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
+
 RUN sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod xenial main" > /etc/apt/sources.list.d/dotnetdev.list'
 RUN apt-get -y install apt-transport-https
 RUN apt-get -y update
 RUN apt-get -y install dotnet-dev-1.1
-RUN apt-get -y install dotnet-sdk-2.1
+RUN apt-get -y install dotnet-sdk-2.2
 
 # install phantomjs
 # steps from https://www.vultr.com/docs/how-to-install-phantomjs-on-ubuntu-16-04

@@ -22,14 +22,14 @@ using Google.Api.Gax.ResourceNames;
 
 namespace GoogleCloudSamples.Bigtable
 {
-    [Verb("createProdInstance", HelpText = "Create a `PRODUCTION` type Instance with SSD storage type in this project.")]
+    [Verb("createProdInstance", HelpText = "Create a `PRODUCTION` type instance with SSD storage type in this project.")]
     class CreateProdInstanceOptions
     {
         [Value(1, HelpText = "The displayName for an instance to create.", Required = true)]
         public string displayName { get; set; }
     }
 
-    [Verb("createDevInstance", HelpText = "Create a `DEVELOPMENT` type Instance with HDD storage type in this project.")]
+    [Verb("createDevInstance", HelpText = "Create a `DEVELOPMENT` type instance with HDD storage type in this project.")]
     class CreateDevInstanceOptions
     {
         [Value(1, HelpText = "The displayName for an instance to create.", Required = true)]
@@ -51,28 +51,28 @@ namespace GoogleCloudSamples.Bigtable
     [Verb("listClusters", HelpText = "Lists clusters in an instance.")]
     class ListClustersOptions
     {
-        [Value(1, HelpText = "The instanceId of the instance for which a list of clusters is requested.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance for which a list of clusters is requested.", Required = true)]
         public string instanceId { get; set; }
     }
 
     [Verb("createCluster", HelpText = "Creates an additional replicated cluster within an instance.")]
     class CreateClusterOptions
     {
-        [Value(1, HelpText = "The instanceId to which cluster belongs.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance to which the cluster belongs.", Required = true)]
         public string instanceId { get; set; }
     }
 
     [Verb("deleteCluster", HelpText = "Deletes a cluster from an instance.")]
     class DeleteClusterOptions
     {
-        [Value(1, HelpText = "The instanceId to which cluster belongs.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance to which the cluster belongs.", Required = true)]
         public string instanceId { get; set; }
     }
 
     [Verb("deleteInstance", HelpText = "Deletes an instance from a project.")]
     class DeleteInstanceOptions
     {
-        [Value(1, HelpText = "The instanceId of the instance to delete.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance to delete.", Required = true)]
         public string instanceId { get; set; }
     }
 
@@ -83,18 +83,15 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object CreateProdInstance(string displayName)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Creating a PRODUCTION instance");
             // [START bigtable_create_prod_instance]
-            // Creates a Production Instance with "<intanceId>-prod" instance id
-            // with cluster id "ssd-cluster1", 3 nodes and location us-east1-b.
-            displayName += " Prod"; // display name is for display purposes only, it doesn't have to equal to instanceId and can be amended after instance is created.
+            // Creates a production instance with "<intanceId>-prod" instance ID,
+            // with cluster ID "ssd-cluster1", 3 nodes and location us-east1-b.
+            displayName += " Prod"; // Display name is for display purposes only. It doesn't have to equal instanceId and can be amended after instance is created.
             string instanceId = Regex.Replace(displayName, @"[^A-Za-z0-9_\.~]+", "-").ToLower();
 
-            // Please refer to the link below for the full list of availabel locations:
+            // Please refer to the link below for the full list of available locations:
             // https://cloud.google.com/bigtable/docs/locations
             string zone1 = "us-east1-b";
 
@@ -104,7 +101,7 @@ namespace GoogleCloudSamples.Bigtable
                 DisplayName = displayName,
                 // You can choose DEVELOPMENT or PRODUCTION type here.
                 // If not set, will default to PRODUCTION type.
-                // Instance type can be upgraded from DEVELOPMENT to PRODUCTION but can not be dowgraded after instance is created.
+                // Instance type can be upgraded from DEVELOPMENT to PRODUCTION but cannot be dowgraded after the instance is created.
                 Type = Instance.Types.Type.Production,
                 Labels = { { "prod-label", "prod-label" } }
             };
@@ -113,13 +110,13 @@ namespace GoogleCloudSamples.Bigtable
             Cluster myCluster1 = new Cluster
             {
                 // You can choose SSD or HDD storage type here: StorageType.Ssd or StorageType.Hdd.
-                // Cluster storage type can not be changed after instance is created.
+                // Cluster storage type can not be changed after the instance is created.
                 // If not set will default to SSD type.
                 DefaultStorageType = StorageType.Ssd,
                 LocationAsLocationName = new LocationName(projectId, zone1),
-                // Serve Nodes count can only be set if PRODUCTION type instance is being created (refer to line 297 above) 
+                // Serve Nodes count can only be set if PRODUCTION type instance is being created.
                 // Minimum count of 3 serve nodes must be specified.
-                // Serve Nodes count can be increased and decreased after instance is created.
+                // Serve Nodes count can be increased and decreased after an instance is created.
                 ServeNodes = 3
             };
 
@@ -163,19 +160,16 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object CreateDevInstance(string displayName)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Creating a DEVELOPMENT instance");
             // [START bigtable_create_dev_instance]
-            // Creates a DEVELOPMENT Instance with "<intanceId>-dev" instance id
-            // with cluster id "hdd-cluster" and location us-east1-b.
+            // Creates a DEVELOPMENT Instance with "<intanceId>-dev" instance ID,
+            // with cluster ID "hdd-cluster" and location us-east1-b.
             // Cluster node count should not be set while creating DEVELOPMENT instance.
             displayName += " Dev"; // display name is for display purposes only, it doesn't have to equal to instanceId and can be amended after instance is created.
             string instanceId = Regex.Replace(displayName, @"[^A-Za-z0-9_\.~]+", "-").ToLower();
 
-            // Please refer to the link below for the full list of availabel locations:
+            // Please refer to the link below for the full list of available locations:
             // https://cloud.google.com/bigtable/docs/locations
             string zone = "us-east1-b";
 
@@ -185,7 +179,7 @@ namespace GoogleCloudSamples.Bigtable
                 DisplayName = displayName,
                 // You can choose DEVELOPMENT or PRODUCTION type here.
                 // If not set, will default to PRODUCTION type.
-                // Instance type can be upgraded from DEVELOPMENT to PRODUCTION but can not be dowgraded after instance is created.
+                // Instance type can be upgraded from DEVELOPMENT to PRODUCTION but cannot be dowgraded after the instance is created.
                 Type = Instance.Types.Type.Development,
                 Labels = { { "dev-label", "dev-label" } }
             };
@@ -194,7 +188,7 @@ namespace GoogleCloudSamples.Bigtable
             Cluster myCluster = new Cluster
             {
                 // You can choose SSD or HDD storage type here: StorageType.Ssd or StorageType.Hdd.
-                // Cluster storage type can not be changed after instance is created.
+                // Cluster storage type cannot be changed after an instance is created.
                 // If not set will default to SSD type.
                 DefaultStorageType = StorageType.Hdd,
                 LocationAsLocationName = new LocationName(projectId, zone),
@@ -238,11 +232,9 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object ListInstances()
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine($"Listing Instances in the project {projectId}");
+
             // [START bigtable_list_instances]
             // Lists instances in the project.
             // Initialize request argument(s).
@@ -277,10 +269,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object GetInstance(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Getting information about an instance");
             // [START bigtable_get_instance]
             // Initialize request argument(s).
@@ -308,10 +297,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object ListClusters(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine($"Listing clusters on instance {instanceId}");
             // [START bigtable_list_clusters]
             // Lists clusters in the instance.
@@ -346,10 +332,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object CreateCluster(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Print current instance information");
             GetInstance(instanceId);
 
@@ -404,10 +387,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object DeleteCluster(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Print current instance information");
             GetInstance(instanceId);
 
@@ -442,10 +422,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static object DeleteInstance(string instanceId)
         {
-            // [START bigtable_create_bigtableInstanceAdminClient]
             BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
-            // [END bigtable_create_bigtableInstanceAdminClient]
-
             Console.WriteLine("Print list of instances in the project");
             ListInstances();
 

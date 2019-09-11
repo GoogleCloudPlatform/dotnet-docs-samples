@@ -36,7 +36,7 @@ public class BigQueryExtractTableJson
             destinationUri: destinationUri,
             options: jobOptions
         );
-        job.PollUntilCompleted();  // Waits for the job to complete.
+        job = job.PollUntilCompleted().ThrowOnAnyError();  // Waits for the job to complete.
         Console.Write($"Exported table to {destinationUri}.");
     }
 }

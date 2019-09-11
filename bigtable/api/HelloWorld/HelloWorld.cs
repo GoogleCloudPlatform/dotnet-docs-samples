@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dependencies]
+// [START bigtable_hw_imports]
 
 using System;
 using System.Linq;
@@ -21,13 +21,13 @@ using System.Collections.Generic;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
 using Grpc.Core;
-// [END dependencies]
+// [END bigtable_hw_imports]
 
 namespace GoogleCloudSamples.Bigtable
 {
     public class HelloWorld
     {
-        // Set up some Cloud Bigtable metadata for convinience
+        // Set up some Cloud Bigtable metadata for convenience
         // Your Google Cloud Platform project ID
         private const string projectId = "YOUR-PROJECT-ID";
 
@@ -41,8 +41,8 @@ namespace GoogleCloudSamples.Bigtable
         // The name of a culomn inside the column family.
         private const string columnName = "greeting";
         // Some friendly greetings to write to Cloud Bigtable
-        private static readonly string[] s_greetings = { "Hello World!", "Hellow Bigtable!", "Hellow C#!" };
-        // This List containce mapping indices from MutateRowsRequest to s_greetings[].
+        private static readonly string[] s_greetings = { "Hello World!", "Hello Bigtable!", "Hello C#!" };
+        // This List contains mapping indices from MutateRowsRequest to s_greetings[].
         private static List<int> s_mapToOriginalGreetingIndex;
         private const string rowKeyPrefix = "greeting";
         private static int s_greetingIndex;
@@ -51,17 +51,17 @@ namespace GoogleCloudSamples.Bigtable
         {
             try
             {
-                // [START connecting_to_bigtable]
+                // [START bigtable_hw_connect]
                 // BigtableTableAdminClient API lets us create, manage and delete tables.
                 BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
 
                 // BigtableClient API lets us read and write to a table.
                 BigtableClient bigtableClient = BigtableClient.Create();
-                // [END connecting_to_bigtable]
+                // [END bigtable_hw_connect]
 
-                // [START creating_a_table]
+                // [START bigtable_hw_create_table]
                 // Create a table with a single column family.
-                Console.WriteLine($"Create new table: {tableId} with column family: {columnFamily}, Instance: {instanceId}");
+                Console.WriteLine($"Create new table: {tableId} with column family: {columnFamily}, instance: {instanceId}");
 
                 // Check whether a table with given TableName already exists.
                 if (!TableExist(bigtableTableAdminClient))
@@ -87,17 +87,17 @@ namespace GoogleCloudSamples.Bigtable
                         });
                     // Confirm that table was created successfully.
                     Console.WriteLine(TableExist(bigtableTableAdminClient)
-                        ? $"Table {tableId} created succsessfully\n"
+                        ? $"Table {tableId} created successfully\n"
                         : $"There was a problem creating a table {tableId}");
                 }
                 else
                 {
-                    Console.WriteLine($"Table: {tableId} already exist");
+                    Console.WriteLine($"Table: {tableId} already exists");
                 }
-                // [END creating_a_table]
+                // [END bigtable_hw_create_table]
 
-                // [START writing_rows]
-                // Initialise Google.Cloud.Bigtable.V2.TableName object.
+                // [START bigtable_hw_write_rows]
+                // Initialize Google.Cloud.Bigtable.V2.TableName object.
                 Google.Cloud.Bigtable.Common.V2.TableName tableName = new Google.Cloud.Bigtable.Common.V2.TableName(projectId, instanceId, tableId);
 
                 // Write some rows
@@ -124,7 +124,7 @@ namespace GoogleCloudSamples.Bigtable
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"\tFailed to write Greeting: --{s_greetings[s_greetingIndex]}");
+                    Console.WriteLine($"\tFailed to write greeting: --{s_greetings[s_greetingIndex]}");
                     Console.WriteLine(ex.Message);
                     throw;
                 }
@@ -148,7 +148,7 @@ namespace GoogleCloudSamples.Bigtable
                 // Make the request to write multiple rows.
                 MutateRowsResponse response = bigtableClient.MutateRows(request);
 
-                // Check the Status code of each entry to insure that it was written successfully
+                // Check the status code of each entry to ensure that it was written successfully.
                 foreach (MutateRowsResponse.Types.Entry entry in response.Entries)
                 {
                     s_greetingIndex = s_mapToOriginalGreetingIndex[(int)entry.Index];
@@ -158,37 +158,37 @@ namespace GoogleCloudSamples.Bigtable
                     }
                     else
                     {
-                        Console.WriteLine($"\tFailed to write Greeting: --{s_greetings[s_greetingIndex]}");
+                        Console.WriteLine($"\tFailed to write greeting: --{s_greetings[s_greetingIndex]}");
                         Console.WriteLine(entry.Status.Message);
                     }
                 }
 
                 Mutation MutationBuilder() =>
                     Mutations.SetCell(columnFamily, columnName, s_greetings[s_greetingIndex], new BigtableVersion(DateTime.UtcNow));
-                //[END writing_rows]
+                //[END bigtable_hw_write_rows]
 
-                // [START creating_a_filter]
+                // [START bigtable_hw_create_filter]
                 RowFilter filter = RowFilters.CellsPerRowLimit(1);
-                // [END creating_a_filter]
+                // [END bigtable_hw_create_filter]
 
-                // [START getting_a_row]
+                // [START bigtable_hw_get_with_filter]
                 // Read from the table.
                 Console.WriteLine("Read the first row");
 
                 int rowIndex = 0;
 
-                // Read a specific row. Apply filter to return latest only cell value accross entire row.
+                // Read a specific row. Apply a filter to return latest only cell value accross entire row.
                 Row rowRead = bigtableClient.ReadRow(
                     tableName, rowKey: rowKeyPrefix + rowIndex, filter: filter);
                 Console.WriteLine(
                     $"\tRow key: {rowRead.Key.ToStringUtf8()} " +
                     $"  -- Value: {rowRead.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
                     $"  -- Time Stamp: {rowRead.Families[0].Columns[0].Cells[0].TimestampMicros}");
-                // [END getting_a_row]
+                // [END bigtable_hw_get_with_filter]
 
-                // [START scanning_all_rows]
+                // [START bigtable_hw_scan_with_filter]
                 Console.WriteLine("Read all rows using streaming");
-                // stream the content of the whole table. Apply filter to return latest only cell values accross all rows.
+                // stream the content of the whole table. Apply a filter to return latest only cell values accross all rows.
                 ReadRowsStream responseRead = bigtableClient.ReadRows(tableName, filter: filter);
 
                 Task printRead = PrintReadRowsAsync();
@@ -203,22 +203,22 @@ namespace GoogleCloudSamples.Bigtable
                                           $"  -- Time Stamp: {row.Families[0].Columns[0].Cells[0].TimestampMicros}");
                     });
                 }
-                // [END scanning_all_rows]
+                // [END bigtable_hw_scan_with_filter]
 
-                // [START deleting_a_table]
+                // [START bigtable_hw_delete_table]
                 // Clean up. Delete the table.
                 Console.WriteLine($"Delete table: {tableId}");
 
                 bigtableTableAdminClient.DeleteTable(name: tableName);
                 if (!TableExist(bigtableTableAdminClient))
                 {
-                    Console.WriteLine($"Table: {tableId} deleted succsessfully");
+                    Console.WriteLine($"Table: {tableId} deleted successfully");
                 }
-                // [END deleting_a_table]
+                // [END bigtable_hw_delete_table]
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception while running HelloWorld {ex.Message}");
+                Console.WriteLine($"Exception while running HelloWorld: {ex.Message}");
             }
         }
 
@@ -247,17 +247,14 @@ namespace GoogleCloudSamples.Bigtable
 
         public static int Main(string[] args)
         {
-            // Instantiates a BigtableTableAdminclient used to create a table.
-            BigtableTableAdminClient bigtableTableAdminClient = BigtableTableAdminClient.Create();
-
             if (projectId == "YOUR-PROJECT" + "-ID")
             {
-                Console.WriteLine("Edit HelloWorld.cs and replace YOUR-PROJECT-ID with your project id.");
+                Console.WriteLine("Edit HelloWorld.cs and replace YOUR-PROJECT-ID with your project ID.");
                 return -1;
             }
             if (instanceId == "YOUR-INSTANCE" + "-ID")
             {
-                Console.WriteLine("Edit HelloWorld.cs and replace YOUR-INSTANCE-ID with your instance id.");
+                Console.WriteLine("Edit HelloWorld.cs and replace YOUR-INSTANCE-ID with your instance ID.");
                 return -1;
             }
 

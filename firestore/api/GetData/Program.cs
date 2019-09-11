@@ -154,20 +154,13 @@ Where command is one of
             QuerySnapshot capitalQuerySnapshot = await capitalQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in capitalQuerySnapshot.Documents)
             {
-                if (documentSnapshot.Exists)
+                Console.WriteLine("Document data for {0} document:", documentSnapshot.Id);
+                Dictionary<string, object> city = documentSnapshot.ToDictionary();
+                foreach (KeyValuePair<string, object> pair in city)
                 {
-                    Console.WriteLine("Document data for {0} document:", documentSnapshot.Id);
-                    Dictionary<string, object> city = documentSnapshot.ToDictionary();
-                    foreach (KeyValuePair<string, object> pair in city)
-                    {
-                        Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
-                    }
-                    Console.WriteLine("");
+                    Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
                 }
-                else
-                {
-                    Console.WriteLine("Document {0} does not exist!", documentSnapshot.Id);
-                }
+                Console.WriteLine("");
             }
             // [END fs_get_multiple_docs]
         }
@@ -180,20 +173,13 @@ Where command is one of
             QuerySnapshot allCitiesQuerySnapshot = await allCitiesQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents)
             {
-                if (documentSnapshot.Exists)
+                Console.WriteLine("Document data for {0} document:", documentSnapshot.Id);
+                Dictionary<string, object> city = documentSnapshot.ToDictionary();
+                foreach (KeyValuePair<string, object> pair in city)
                 {
-                    Console.WriteLine("Document data for {0} document:", documentSnapshot.Id);
-                    Dictionary<string, object> city = documentSnapshot.ToDictionary();
-                    foreach (KeyValuePair<string, object> pair in city)
-                    {
-                        Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
-                    }
-                    Console.WriteLine("");
+                    Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
                 }
-                else
-                {
-                    Console.WriteLine("Document {0} does not exist!", documentSnapshot.Id);
-                }
+                Console.WriteLine("");
             }
             // [END fs_get_all_docs]
         }

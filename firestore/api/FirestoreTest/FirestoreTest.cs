@@ -17,11 +17,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 using Google.Cloud.Firestore;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Newtonsoft.Json;
 
 
 namespace GoogleCloudSamples
@@ -41,26 +46,65 @@ namespace GoogleCloudSamples
             }
         }
 
+        // Clean-up function to delete all indexes in a collection
+        private static async Task DeleteIndexes(string collection)
+        {
+            GoogleCredential credential =
+                GoogleCredential.GetApplicationDefault();
+            //Inject the Cloud Platform scope if required.
+            if (credential.IsCreateScopedRequired)
+            {
+                credential = credential.CreateScoped(new[]
+                {
+                    "https://www.googleapis.com/auth/cloud-platform"
+                });
+            }
+            HttpClient http = new Google.Apis.Http.HttpClientFactory()
+                .CreateHttpClient(
+                new Google.Apis.Http.CreateHttpClientArgs()
+                {
+                    ApplicationName = "Google Cloud Platform Firestore Sample",
+                    GZipEnabled = true,
+                    Initializers = { credential },
+                });
+            string uriString = "https://firestore.googleapis.com/v1beta1/projects/"
+            + Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID")
+            + "/databases/(default)/indexes";
+            UriBuilder uri = new UriBuilder(uriString);
+            var resultText = http.GetAsync(uri.Uri).Result.Content
+                .ReadAsStringAsync().Result;
+            dynamic result = Newtonsoft.Json.JsonConvert
+                .DeserializeObject(resultText);
+
+            List<string> indexesToBeDeleted = new List<string>();
+
+            if (result.indexes != null)
+            {
+                foreach (var index in result.indexes)
+                {
+                    if (index.collection == collection)
+                    {
+                        string name = index.name;
+                        indexesToBeDeleted.Add(name);
+                    }
+                }
+            }
+            foreach (string indexToBeDeleted in indexesToBeDeleted)
+            {
+                uriString = "https://firestore.googleapis.com/v1beta1/" + indexToBeDeleted;
+                UriBuilder deleteUri = new UriBuilder(uriString);
+                await http.DeleteAsync(deleteUri.Uri);
+            }
+        }
+
         // Clean up function to delete all collections and indexes after testing is complete
         public void Dispose()
         {
-            CommandLineRunner _manageIndexes = new CommandLineRunner()
-            {
-                VoidMain = ManageIndexes.Main,
-                Command = "dotnet run"
-            };
-
-            ConsoleOutput RunManageIndexes(params string[] args)
-            {
-                return _manageIndexes.Run(args);
-            }
-
             DeleteCollection("users").Wait();
             DeleteCollection("cities/SF/neighborhoods").Wait();
             DeleteCollection("cities").Wait();
             DeleteCollection("data").Wait();
-            var manageIndexesOutput = RunManageIndexes("delete-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            Assert.Contains("Index deletion completed!", manageIndexesOutput.Stdout);
+            DeleteIndexes("cities").Wait();
         }
     }
 
@@ -309,6 +353,14 @@ namespace GoogleCloudSamples
             Assert.Contains("Updated the Regions array of the DC document in the cities collection.", output.Stdout);
         }
 
+        [Fact]
+        public void UpdateDocumentIncrementTest()
+        {
+            RunQueryData("update-document-increment", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunAddData("update-document-increment", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Updated the population of the DC document in the cities collection.", output.Stdout);
+        }
+
 
         // DELETE DATA TESTS
         [Fact]
@@ -537,10 +589,20 @@ namespace GoogleCloudSamples
             Assert.DoesNotContain("Document BJ returned by query State=CA and Name=San Francisco", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "b/137857855")]
         public void CompositeIndexChainedQueryTest()
         {
             var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            if (!manageIndexesOutput.Stdout.Contains("completed"))
+            {
+                var numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                int numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                while (numIndexesCreated < 3)
+                {
+                    numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                    numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                }
+            }
             Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunQueryData("composite-index-chained-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -595,10 +657,20 @@ namespace GoogleCloudSamples
             Assert.DoesNotContain("Document BJ returned by order by name descending with limit query", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "b/137857855")]
         public void OrderByStateAndPopulationQueryTest()
         {
             var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            if (!manageIndexesOutput.Stdout.Contains("completed"))
+            {
+                var numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                int numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                while (numIndexesCreated < 3)
+                {
+                    numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                    numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                }
+            }
             Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             var output = RunOrderLimitData("order-by-state-and-population-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -739,10 +811,20 @@ namespace GoogleCloudSamples
             Assert.DoesNotContain("Document DC returned by paginated query cursor.", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "b/137857855")]
         public void MultipleCursorConditionsTest()
         {
             var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            if (!manageIndexesOutput.Stdout.Contains("completed"))
+            {
+                var numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                int numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                while (numIndexesCreated < 3)
+                {
+                    numIndexesCreatedOutput = RunManageIndexes("count-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+                    numIndexesCreated = numIndexesCreatedOutput.Stdout.Split('\n').Length;
+                }
+            }
             Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             RunPaginateData("multiple-cursor-conditions", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
