@@ -30,7 +30,8 @@ namespace GoogleCloudSamples
 
         public AccessTest()
         {
-            _project = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            _project = "test-project-100009";
+            //Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _role1 = "roles/viewer";
             _role2 = "roles/editor";
             _member1 = "user:yaraarryn.677500@gmail.com";
@@ -46,9 +47,10 @@ namespace GoogleCloudSamples
 
             // Test AddBinding by adding _member1 to _role1
             policy = AccessManager.AddBinding(policy, _role1, _member1);
-            
+
             ContainsMemberOne = AccessManager.TestBinding(policy, _role1, _member1);
-            if(!ContainsMemberOne){
+            if (!ContainsMemberOne)
+            {
                 throw new Exception("Failed to add member 1");
             }
 
@@ -56,7 +58,8 @@ namespace GoogleCloudSamples
             policy = AccessManager.AddMember(policy, _role1, _member2);
 
             ContainsMemberTwo = AccessManager.TestBinding(policy, _role1, _member2);
-            if(!ContainsMemberTwo){
+            if (!ContainsMemberTwo)
+            {
                 throw new Exception("Failed to add member 2");
             }
 
@@ -70,7 +73,8 @@ namespace GoogleCloudSamples
             policy = AccessManager.RemoveMember(policy, _role1, _member1);
 
             ContainsMemberOne = AccessManager.TestBinding(policy, _role1, _member1);
-            if(ContainsMemberOne){
+            if (ContainsMemberOne)
+            {
                 throw new Exception("Failed to remove member 1");
             }
 
@@ -78,7 +82,7 @@ namespace GoogleCloudSamples
             policy = AccessManager.RemoveMember(policy, _role1, _member2);
 
             ContainsMemberTwo = AccessManager.TestBinding(policy, _role2, _member2);
-            if(ContainsMemberTwo)
+            if (ContainsMemberTwo)
             {
                 throw new Exception("Failed to remove member 2");
             }
