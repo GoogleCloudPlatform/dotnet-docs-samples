@@ -31,7 +31,7 @@ namespace GoogleCloudSamples
         public AccessTest()
         {
             _project = "test-project-100009";
-            //Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _role1 = "roles/viewer";
             _role2 = "roles/editor";
             _member1 = "user:yaraarryn.677500@gmail.com";
