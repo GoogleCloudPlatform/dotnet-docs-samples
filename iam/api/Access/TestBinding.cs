@@ -19,7 +19,7 @@ public partial class AccessManager
 {
     public static bool TestBinding(Policy policy, string role, string member)
     {
-        foreach(Binding x in policy.Bindings)
+        foreach (Binding x in policy.Bindings)
         {
             if (x.Role.Equals(role) && x.Members.Contains(member))
             {
