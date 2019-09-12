@@ -260,7 +260,7 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestPurgeProducsInProductSet()
+        public void TestPurgeProductsInProductSet()
         {
             var output = _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
             Assert.Equal(0, output.ExitCode);

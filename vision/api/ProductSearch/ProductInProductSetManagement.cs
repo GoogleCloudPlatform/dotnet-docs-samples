@@ -134,7 +134,7 @@ namespace GoogleCloudSamples
 
             var response = client.PurgeProductsAsync(req);
 
-            // wait until it finishesp
+            // wait until it finishes   
             response.Result.PollUntilCompleted();
 
             Console.WriteLine("Products removed from product set.");
