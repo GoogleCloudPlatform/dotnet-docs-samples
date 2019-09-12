@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
+// DbExceptionFilterAttribute is an ExceptionFilter to 
+// manage unhandled database exceptions
 public class DbExceptionFilterAttribute : ExceptionFilterAttribute
 {
     private readonly IHostingEnvironment _hostingEnvironment;
@@ -38,9 +40,12 @@ public class DbExceptionFilterAttribute : ExceptionFilterAttribute
         var dbException = context.Exception as DbException;
         if (!_hostingEnvironment.IsDevelopment() || null == dbException)
         {
-            // do nothing
+            // Log exceptions here from 'Staging' and 'Production'
+            // hosting environments. Hosting environment is set in
+            // Properties/launchSettings.json
             return;
         }
+        // Hosting environment is 'Development' so display exception in View
         var result = new ViewResult {ViewName = "DbException"};
         result.ViewData = new ViewDataDictionary(_modelMetadataProvider,context.ModelState);
         result.ViewData.Add("Exception", dbException);

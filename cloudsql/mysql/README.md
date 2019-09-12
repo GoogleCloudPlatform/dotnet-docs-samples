@@ -56,7 +56,7 @@ when running in Google App Engine Flexible Environment.
     PS > dotnet run
     ```
 
-### Deploy to App Engine
+### Deploy to App Engine Flexible
 
 1.  Edit [app.yaml](app.yaml).  Replace `your-project-id:us-central1:instance-name`
     with your instance connection name, and update the tcp port number to 
@@ -84,7 +84,7 @@ make it easy to deploy to App Engine.  Install them if you are running Visual St
 
 3.  Open **CloudSql.csproj**, and Press **F5**.
 
-### Deploy to App Engine
+### Deploy to App Engine Flexible
 
 0.  Edit [app.yaml](app.yaml).  Replace `your-project-id:us-central1:instance-name`
     with your instance connection name, and update the tcp port number to 

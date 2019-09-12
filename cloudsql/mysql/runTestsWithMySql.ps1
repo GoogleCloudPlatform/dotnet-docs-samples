@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+Import-Module -DisableNameChecking ..\..\BuildTools.psm1
 
 # Download and run the sql proxy.
 if (-not (Test-Path cloud_sql_proxy.exe)) {

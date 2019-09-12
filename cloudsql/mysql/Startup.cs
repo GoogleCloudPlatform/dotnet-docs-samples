@@ -111,13 +111,25 @@ namespace CloudSql
             connectionString.Pooling = true;
             // [START_EXCLUDE]
             // [START cloud_sql_mysql_max_connections]
+            // MaximumPoolSize sets maximum number of connections allowed in the pool.            
             connectionString.MaximumPoolSize = 5;
+            // MinimumPoolSize sets the minimum number of connections in the pool.
+            connectionString.MinimumPoolSize = 0;
             // [END cloud_sql_mysql_max_connections]
             // [START cloud_sql_mysql_connection_timeout]
+            // ConnectionTimeout sets the time to wait (in seconds) while
+            // trying to establish a connection before terminating the attempt.
             connectionString.ConnectionTimeout = 15;
             // [END cloud_sql_mysql_connection_timeout]
             // [START cloud_sql_mysql_connection_lifetime]
-            connectionString.ConnectionLifeTime = 300;
+            // ConnectionLifeTime sets the lifetime of a pooled connection
+            // (in seconds) that a connection lives before it is destroyed
+            // and recreated. Connections that are returned to the pool are
+            // destroyed if it's been more than the number of seconds
+            // specified by ConnectionLifeTime since the connection was
+            // created. The default value is zero (0) which means the
+            // connection always returns to pool.
+            connectionString.ConnectionLifeTime = 1800; // 30 minutes
             // [END cloud_sql_mysql_connection_lifetime]
             // [END_EXCLUDE]
             DbConnection connection =
@@ -159,12 +171,20 @@ namespace CloudSql
             connectionString.Pooling = true;
             // [START_EXCLUDE]
             // [START cloud_sql_postgres_max_connections]
+            // MaxPoolSize sets maximum number of connections allowed in the pool. 
             connectionString.MaxPoolSize = 5;
+            // MinPoolSize sets the minimum number of connections in the pool.
+            connectionString.MinPoolSize = 0;
             // [END cloud_sql_postgres_max_connections]
             // [START cloud_sql_postgres_connection_timeout]
+            // Timeout sets the time to wait (in seconds) while
+            // trying to establish a connection before terminating the attempt.
             connectionString.Timeout = 15;
             // [END cloud_sql_postgres_connection_timeout]
             // [START cloud_sql_postgres_connection_lifetime]
+            // ConnectionIdleLifetime sets the time (in seconds) to wait before
+            // closing idle connections in the pool if the count of all
+            // connections exceeds MinPoolSize.
             connectionString.ConnectionIdleLifetime = 300;
             // [END cloud_sql_postgres_connection_lifetime]
             // [END_EXCLUDE]
