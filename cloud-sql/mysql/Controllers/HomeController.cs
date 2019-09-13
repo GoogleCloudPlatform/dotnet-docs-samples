@@ -110,7 +110,7 @@ namespace CloudSql.Controllers
 
             if (validInput)
             {
-                // [START cloud_sql_connection_usage]
+                // [START cloud_sql_mysql_dotnet_ado_create]
                 insertTimestamp = DateTime.Now;
                 try
                 {
@@ -139,7 +139,7 @@ namespace CloudSql.Controllers
                     // parameters depending on the situation.
                     return StatusCode((int)HttpStatusCode.InternalServerError, ex);
                 }
-                // [END cloud_sql_connection_usage]
+                // [END cloud_sql_mysql_dotnet_ado_create]
             }
             else
             {

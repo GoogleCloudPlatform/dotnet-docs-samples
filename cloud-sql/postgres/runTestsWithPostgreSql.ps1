@@ -32,8 +32,7 @@ try {
 	dotnet restore
 	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
 	BackupAndEdit-TextFile "appsettings.json" `
-		@{'Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes' = $env:TEST_CLOUDSQL2_POSTGRESQL_VOTES_CONNECTIONSTRING; `
-		'MySQL' = 'PostgreSQL'} `
+		@{'Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes' = $env:TEST_CLOUDSQL2_POSTGRESQL_VOTES_CONNECTIONSTRING} `
 	{
 		dotnet build
 		Receive-Job $proxy -ErrorAction 'SilentlyContinue'

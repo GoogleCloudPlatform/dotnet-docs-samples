@@ -1,7 +1,7 @@
-# Google Cloud SQL and Google App Engine Flexible Environment
+# Google Cloud SQL with MySQL and Google App Engine Flexible Environment
 
 This sample application demonstrates how to store data in Google Cloud SQL
-when running in Google App Engine Flexible Environment.
+with a MySQL database when running in Google App Engine Flexible Environment.
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ when running in Google App Engine Flexible Environment.
 3.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md)
     or newer.
 
-4.  [Create a second generation Google Cloud SQL instance](
+4.  [Create a second generation Google Cloud SQL MySQL instance](
     https://cloud.google.com/sql/docs/postgres/create-instance).
 
 6.  Under the instance's "USERS" tab, create a new user. Note the "User name" and "Password".
@@ -87,8 +87,7 @@ make it easy to deploy to App Engine.  Install them if you are running Visual St
 ### Deploy to App Engine Flexible
 
 0.  Edit [app.yaml](app.yaml).  Replace `your-project-id:us-central1:instance-name`
-    with your instance connection name, and update the tcp port number to 
-    `5432` for a PostgreSQL instance or `3306` for a MySQL instance.
+    with your instance connection name.
 
 1.  In Solution Explorer, right-click the **CloudSql** project and choose **Publish CloudSql to Google Cloud**.
 

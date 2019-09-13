@@ -68,19 +68,7 @@ namespace CloudSql
         {
             DbConnection connection;
             string database = Configuration["CloudSQL:Database"];
-            switch (database.ToLower())
-            {
-                case "mysql":
-                    connection = GetMySqlConnection();
-                    break;
-                case "postgresql":
-                    connection = GetPostgreSqlConnection();
-                    break;
-                default:
-                    throw new ArgumentException(string.Format(
-                        "Invalid database {0}.  Fix appsettings.json.",
-                            database), "CloudSQL:Database");
-            }
+            connection = GetMySqlConnection();
             connection.Open();
             using (var createTableCommand = connection.CreateCommand())
             {
@@ -99,7 +87,7 @@ namespace CloudSql
 
         DbConnection NewMysqlConnection()
         {
-            // [START cloud_sql_mysql_connection_pool]
+            // [START cloud_sql_mysql_dotnet_ado_connection]
             var connectionString = new MySqlConnectionStringBuilder(
                 Configuration["CloudSql:ConnectionString"])
             // ConnectionString set in appsetings.json formatted as:
@@ -110,18 +98,18 @@ namespace CloudSql
             };
             connectionString.Pooling = true;
             // [START_EXCLUDE]
-            // [START cloud_sql_mysql_max_connections]
+            // [START cloud_sql_mysql_dotnet_ado_limit]
             // MaximumPoolSize sets maximum number of connections allowed in the pool.            
             connectionString.MaximumPoolSize = 5;
             // MinimumPoolSize sets the minimum number of connections in the pool.
             connectionString.MinimumPoolSize = 0;
-            // [END cloud_sql_mysql_max_connections]
-            // [START cloud_sql_mysql_connection_timeout]
+            // [END cloud_sql_mysql_dotnet_ado_limit]
+            // [START cloud_sql_mysql_dotnet_ado_timeout]
             // ConnectionTimeout sets the time to wait (in seconds) while
             // trying to establish a connection before terminating the attempt.
             connectionString.ConnectionTimeout = 15;
-            // [END cloud_sql_mysql_connection_timeout]
-            // [START cloud_sql_mysql_connection_lifetime]
+            // [END cloud_sql_mysql_dotnet_ado_timeout]
+            // [START cloud_sql_mysql_dotnet_ado_lifetime]
             // ConnectionLifeTime sets the lifetime of a pooled connection
             // (in seconds) that a connection lives before it is destroyed
             // and recreated. Connections that are returned to the pool are
@@ -130,17 +118,17 @@ namespace CloudSql
             // created. The default value is zero (0) which means the
             // connection always returns to pool.
             connectionString.ConnectionLifeTime = 1800; // 30 minutes
-            // [END cloud_sql_mysql_connection_lifetime]
+            // [END cloud_sql_mysql_dotnet_ado_lifetime]
             // [END_EXCLUDE]
             DbConnection connection =
                 new MySqlConnection(connectionString.ConnectionString);
-            // [END cloud_sql_mysql_connection_pool]
+            // [END cloud_sql_mysql_dotnet_ado_connection]
             return connection;
         }
 
         DbConnection GetMySqlConnection()
         {
-            // [START cloud_sql_mysql_connection_backoff]
+            // [START cloud_sql_mysql_dotnet_ado_backoff]
             var connection = Policy
                 .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
                 .WaitAndRetry(new[]
@@ -153,66 +141,9 @@ namespace CloudSql
                     // Log any warnings here.
                 })
                 .Execute(() => NewMysqlConnection());
-            // [END cloud_sql_mysql_connection_backoff]
+            // [END cloud_sql_mysql_dotnet_ado_backoff]
             return connection;
         }
-
-        DbConnection NewPostgreSqlConnection()
-        {
-            // [START cloud_sql_postgres_connection_pool]
-            var connectionString = new NpgsqlConnectionStringBuilder(
-                Configuration["CloudSql:ConnectionString"])
-            // ConnectionString set in appsetings.json formatted as:
-            // "Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes"
-            {
-                // Connecting to a local proxy that does not support ssl.
-                SslMode = SslMode.Disable
-            };
-            connectionString.Pooling = true;
-            // [START_EXCLUDE]
-            // [START cloud_sql_postgres_max_connections]
-            // MaxPoolSize sets maximum number of connections allowed in the pool. 
-            connectionString.MaxPoolSize = 5;
-            // MinPoolSize sets the minimum number of connections in the pool.
-            connectionString.MinPoolSize = 0;
-            // [END cloud_sql_postgres_max_connections]
-            // [START cloud_sql_postgres_connection_timeout]
-            // Timeout sets the time to wait (in seconds) while
-            // trying to establish a connection before terminating the attempt.
-            connectionString.Timeout = 15;
-            // [END cloud_sql_postgres_connection_timeout]
-            // [START cloud_sql_postgres_connection_lifetime]
-            // ConnectionIdleLifetime sets the time (in seconds) to wait before
-            // closing idle connections in the pool if the count of all
-            // connections exceeds MinPoolSize.
-            connectionString.ConnectionIdleLifetime = 300;
-            // [END cloud_sql_postgres_connection_lifetime]
-            // [END_EXCLUDE]
-            NpgsqlConnection connection =
-                new NpgsqlConnection(connectionString.ConnectionString);
-            // [END cloud_sql_postgres_connection_pool]
-            return connection;
-        }
-
-        DbConnection GetPostgreSqlConnection()
-        {
-            // [START cloud_sql_postgres_connection_backoff]
-            var connection = Policy
-                .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
-                .WaitAndRetry(new[]
-                {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(5)
-                }, (result, timeSpan, retryCount, context) =>
-                {
-                    // Log any warnings here.
-                })
-                .Execute(() => NewPostgreSqlConnection());
-            // [END cloud_sql_postgres_connection_backoff]
-            return connection;
-        }
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
