@@ -2,6 +2,7 @@
 using Google.Cloud.Vision.V1;
 using CommandLine;
 using System.Linq;
+using Google.Protobuf.WellKnownTypes;
 
 namespace GoogleCloudSamples
 {
@@ -23,6 +24,10 @@ namespace GoogleCloudSamples
         public string ProductSetId { get; set; }
     }
 
+    [Verb("purge_products_in_product_set", HelpText = "Delete all products in a product set")]
+    class PurgeProductsInProductSetOptions : ProductSetWithIDOptions
+    {
+    }
     public class ProductInProductSetManagement
     {
         public static void RegisterCommands(VerbMap<object> verbMap)
@@ -30,7 +35,8 @@ namespace GoogleCloudSamples
             verbMap
                 .Add((AddProductToProductSetOptions opts) => AddProductToProductSet(opts))
                 .Add((ListProductsInProductSetOptions opts) => ListProductsInProductSet(opts))
-                .Add((RemoveProductFromProductSetOptions opts) => RemoveProductFromProductSet(opts));
+                .Add((RemoveProductFromProductSetOptions opts) => RemoveProductFromProductSet(opts))
+                .Add((PurgeProductsInProductSetOptions opts) => PurgeProductsInProductSet(opts));
         }
 
         // [START vision_product_search_add_product_to_product_set]
@@ -109,5 +115,31 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END vision_product_search_remove_product_from_product_set]
+
+        // [START vision_product_search_purge_products_in_product_set]
+        private static int PurgeProductsInProductSet(PurgeProductsInProductSetOptions opts)
+        {
+            var client = ProductSearchClient.Create();
+            var parent = LocationName.Format(opts.ProjectID, opts.ComputeRegion);
+            var productSetPurgeConfig = new ProductSetPurgeConfig
+            {
+                ProductSetId = opts.ProductSetId
+            };
+            var req = new PurgeProductsRequest
+            {
+                Parent = parent,
+                ProductSetPurgeConfig = productSetPurgeConfig,
+                Force = true
+            };
+
+            var response = client.PurgeProductsAsync(req);
+
+            // wait until it finishes   
+            response.Result.PollUntilCompleted();
+
+            Console.WriteLine("Products removed from product set.");
+            return 0;
+        }
+        // [END vision_product_search_purge_products_in_product_set]
     }
 }
