@@ -56,7 +56,7 @@ namespace GoogleCloudSamples
             "  Storage print-acl bucket-name object-name\n" +
             "  Storage create-hmac-key service-account-email\n" +
             "  Storage get-hmac-key access-id\n" +
-            "  Storage list-hmac-keys service-account-email\n" +
+            "  Storage list-hmac-keys\n" +
             "  Storage deactivate-hmac-key access-id\n" +
             "  Storage activate-hmac-key access-id\n" +
             "  Storage delete-hmac-key access-id\n" +
@@ -507,10 +507,10 @@ namespace GoogleCloudSamples
         // [END storage_delete_hmac_key]
 
         // [START storage_list_hmac_keys]
-        private void ListHmacKeys(String serviceAccountEmail = null)
+        private void ListHmacKeys()
         {
             var storage = StorageClient.Create();
-            var keys = storage.ListHmacKeys(s_projectId, serviceAccountEmail);
+            var keys = storage.ListHmacKeys(s_projectId);
 
             foreach (var metadata in keys)
             {
@@ -1367,10 +1367,7 @@ namespace GoogleCloudSamples
                         break;
 
                     case "list-hmac-keys":
-                        if (args.Length > 1)
-                            ListHmacKeys(args[1]);
-                        else
-                            ListHmacKeys();
+                        ListHmacKeys();
                         break;
 
                     case "get-hmac-key":
