@@ -19,7 +19,7 @@ using Google.Apis.CloudResourceManager.v1.Data;
 
 public partial class AccessManager
 {
-    public Policy AddMember(Policy policy, string role, string member)
+    public static Policy AddMember(Policy policy, string role, string member)
     {
         var binding = policy.Bindings.First(x => x.Role == role);
         binding.Members.Add(member);
