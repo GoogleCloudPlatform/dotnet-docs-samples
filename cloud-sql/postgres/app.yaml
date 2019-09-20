@@ -1,0 +1,6 @@
+﻿# Optional file for deploying to Google App Engine Flexible Environment.
+runtime: aspnetcore
+env: flex
+
+beta_settings:
+    cloud_sql_instances: "your-project-id:us-central1:instance-name=tcp:5432"
