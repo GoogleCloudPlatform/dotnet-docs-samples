@@ -259,6 +259,36 @@ namespace GoogleCloudSamples
             Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
         }
 
+        [Fact]
+        public void TestPurgeProductsInProductSet()
+        {
+            var output = _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            Assert.Equal(0, output.ExitCode);
+
+            _productSearch.Run("create_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_SET_DISPLAY_NAME);
+            _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_SET_ID);
+
+            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
+            Assert.Contains(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+
+            _productSearch.Run("purge_products_in_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
+            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
+            Assert.DoesNotContain(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+        }
+
+        [Fact]
+        public void TestPurgeOrphanProducts()
+        {
+            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            var output = _productSearch.Run("list_products", _projectId, REGION_NAME);
+            Assert.Contains(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+
+            _productSearch.Run("purge_orphan_products", _projectId, REGION_NAME);
+
+            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
+            Assert.DoesNotContain(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+        }
+
         public void Dispose()
         {
             var listRefImageOutput = _productSearch.Run("list_ref_images", _projectId, REGION_NAME, PRODUCT_ID);
