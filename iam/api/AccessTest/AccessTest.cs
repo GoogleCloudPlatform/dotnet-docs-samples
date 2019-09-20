@@ -28,8 +28,8 @@ namespace GoogleCloudSamples
         private readonly string _member1;
         private readonly string _member2;
         private readonly string _member3;
-        private bool _containsMemberOne = false;
-        private bool _containsMemberTwo = false;
+        private readonly bool _containsMemberOne = false;
+        private readonly bool _containsMemberTwo = false;
 
         public AccessTest()
         {
@@ -46,25 +46,25 @@ namespace GoogleCloudSamples
             var credential = GoogleCredential.GetApplicationDefault()
                 .CreateScoped(IamService.Scope.CloudPlatform);
             var service = new IamService(new IamService.Initializer
-                {
-                    HttpClientInitializer = credential
-                });
+            {
+                HttpClientInitializer = credential
+            });
 
             //Create custom roles for testing
             var role1 = new Role
             {
                 Title = "C# Test Custom Role",
                 Description = "Role for AccessTest",
-                IncludedPermissions = new List<string>{"iam.roles.get"},
+                IncludedPermissions = new List<string> { "iam.roles.get" },
                 Stage = "GA"
             };
-            
+
             var request = new CreateRoleRequest
             {
                 Role = role1,
                 RoleId = "csharpTestCustomRole" + new Random().Next()
             };
-            
+
             role1 = service.Projects.Roles.Create(request, "projects/" + _project).Execute();
             var role1NameComponents = role1.Name.Split('/');
             var role1NameShort = role1NameComponents[2] + "/" + role1NameComponents[3];
@@ -73,21 +73,21 @@ namespace GoogleCloudSamples
             {
                 Title = "C# Test Custom Role",
                 Description = "Role for AccessTest",
-                IncludedPermissions = new List<string>{"iam.roles.get"},
+                IncludedPermissions = new List<string> { "iam.roles.get" },
                 Stage = "GA"
             };
-            
+
             request = new CreateRoleRequest
             {
                 Role = role2,
                 RoleId = "csharpTestCustomRole" + new Random().Next()
             };
-            
+
             role2 = service.Projects.Roles.Create(request, "projects/" + _project).Execute();
             var role2NameComponents = role2.Name.Split('/');
             var role2NameShort = role2NameComponents[2] + "/" + role2NameComponents[3];
-       
-       
+
+
             // Test GetPolicy
             var policy = AccessManager.GetPolicy(_project);
 
@@ -116,6 +116,5 @@ namespace GoogleCloudSamples
             service.Projects.Roles.Delete(role1.Name).Execute();
             service.Projects.Roles.Delete(role2.Name).Execute();
         }
-        
     }
 }
