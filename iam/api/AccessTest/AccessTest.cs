@@ -28,9 +28,6 @@ namespace GoogleCloudSamples
         private readonly string _member1;
         private readonly string _member2;
         private readonly string _member3;
-        private readonly bool _containsMemberOne = false;
-        private readonly bool _containsMemberTwo = false;
-
         public AccessTest()
         {
             _project = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -50,7 +47,7 @@ namespace GoogleCloudSamples
                 HttpClientInitializer = credential
             });
 
-            //Create custom roles for testing
+            // Create custom roles for testing
             var role1 = new Role
             {
                 Title = "C# Test Custom Role",
@@ -66,55 +63,66 @@ namespace GoogleCloudSamples
             };
 
             role1 = service.Projects.Roles.Create(request, "projects/" + _project).Execute();
-            var role1NameComponents = role1.Name.Split('/');
-            var role1NameShort = role1NameComponents[2] + "/" + role1NameComponents[3];
-
-            var role2 = new Role
+            try
             {
-                Title = "C# Test Custom Role",
-                Description = "Role for AccessTest",
-                IncludedPermissions = new List<string> { "iam.roles.get" },
-                Stage = "GA"
-            };
+                var role1NameComponents = role1.Name.Split('/');
+                var role1NameShort = role1NameComponents[2] + "/" + role1NameComponents[3];
 
-            request = new CreateRoleRequest
+                var role2 = new Role
+                {
+                    Title = "C# Test Custom Role",
+                    Description = "Role for AccessTest",
+                    IncludedPermissions = new List<string> { "iam.roles.get" },
+                    Stage = "GA"
+                };
+
+                request = new CreateRoleRequest
+                {
+                    Role = role2,
+                    RoleId = "csharpTestCustomRole" + new Random().Next()
+                };
+
+                role2 = service.Projects.Roles.Create(request, "projects/" + _project).Execute();
+                try
+                {
+                    var role2NameComponents = role2.Name.Split('/');
+                    var role2NameShort = role2NameComponents[2] + "/" + role2NameComponents[3];
+
+
+                    // Test GetPolicy
+                    var policy = AccessManager.GetPolicy(_project);
+
+                    // Test AddBinding by adding _member1 to role1
+                    policy = AccessManager.AddBinding(policy, role1NameShort, _member1);
+
+                    // Test AddMember by adding _member2 to role1
+                    policy = AccessManager.AddMember(policy, role1NameShort, _member2);
+
+                    // Test RemoveMember where role binding doesn't exist (_member1 from role2)
+                    policy = AccessManager.RemoveMember(policy, role2NameShort, _member1);
+
+                    // Test RemoveMember where member doesn't exist (_member3 from role1)
+                    policy = AccessManager.RemoveMember(policy, role1NameShort, _member3);
+
+                    // Test RemoveMember by removing _member1 from role1
+                    policy = AccessManager.RemoveMember(policy, role1NameShort, _member1);
+
+                    // Test RemoveMember when removing last member from binding (_member2 from role1)
+                    policy = AccessManager.RemoveMember(policy, role1NameShort, _member2);
+
+                    // Test SetPolicy
+                    policy = AccessManager.SetPolicy(_project, policy);
+                }
+                finally
+                {
+                    // Delete custom roles
+                    service.Projects.Roles.Delete(role2.Name).Execute();
+                }
+            }
+            finally
             {
-                Role = role2,
-                RoleId = "csharpTestCustomRole" + new Random().Next()
-            };
-
-            role2 = service.Projects.Roles.Create(request, "projects/" + _project).Execute();
-            var role2NameComponents = role2.Name.Split('/');
-            var role2NameShort = role2NameComponents[2] + "/" + role2NameComponents[3];
-
-
-            // Test GetPolicy
-            var policy = AccessManager.GetPolicy(_project);
-
-            // Test AddBinding by adding _member1 to role1
-            policy = AccessManager.AddBinding(policy, role1NameShort, _member1);
-
-            // Test AddMember by adding _member2 to role1
-            policy = AccessManager.AddMember(policy, role1NameShort, _member2);
-
-            // Test RemoveMember where role binding doesn't exist (_member1 from role2)
-            policy = AccessManager.RemoveMember(policy, role2NameShort, _member1);
-
-            // Test RemoveMember where member doesn't exist (_member3 from role1)
-            policy = AccessManager.RemoveMember(policy, role1NameShort, _member3);
-
-            // Test RemoveMember by removing _member1 from role1
-            policy = AccessManager.RemoveMember(policy, role1NameShort, _member1);
-
-            // Test RemoveMember when removing last member from binding (_member2 from role1)
-            policy = AccessManager.RemoveMember(policy, role1NameShort, _member2);
-
-            // Test SetPolicy
-            policy = AccessManager.SetPolicy(_project, policy);
-
-            // Delete custom roles
-            service.Projects.Roles.Delete(role1.Name).Execute();
-            service.Projects.Roles.Delete(role2.Name).Execute();
+                service.Projects.Roles.Delete(role1.Name).Execute();
+            }
         }
     }
 }
