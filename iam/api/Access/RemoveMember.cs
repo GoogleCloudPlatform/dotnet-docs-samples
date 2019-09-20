@@ -21,12 +21,20 @@ public partial class AccessManager
 {
     public static Policy RemoveMember(Policy policy, string role, string member)
     {
-        var binding = policy.Bindings.First(x => x.Role == role);
-        if (binding.Members != null && binding.Members.Contains(member))
-        {
-            binding.Members.Remove(member);
+        try{
+            var binding = policy.Bindings.First(x => x.Role == role);
+            if (binding.Members.Count !=0 && binding.Members.Contains(member))
+            {
+                binding.Members.Remove(member);
+            }
+            if (binding.Members.Count == 0){
+                policy.Bindings.Remove(binding);
+            }
+            return policy;
+        }catch(System.InvalidOperationException e){
+            System.Diagnostics.Debug.WriteLine("Role does not exist in policy: \n" + e.ToString());
+            return policy;
         }
-        return policy;
     }
 }
 // [END iam_modify_policy_remove_member]
