@@ -468,8 +468,7 @@ namespace GoogleCloudSamples
             var createdHmacKey = Run("create-hmac-key", serviceAccountEmail);
             AssertSucceeded(createdHmacKey);
 
-            String idLine = Regex.Match(createdHmacKey.Stdout, "Access ID: .*\n").Captures[0].Value;
-            String id = idLine.Substring(11).Replace("\n", String.Empty);
+            String id = Regex.Match(createdHmacKey.Stdout, @"Access ID: (.*)\r?\n").Groups[1].Value;
 
             var listedHmacKeys = Run("list-hmac-keys");
             AssertSucceeded(listedHmacKeys);
