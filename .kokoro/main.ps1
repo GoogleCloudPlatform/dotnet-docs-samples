@@ -34,7 +34,7 @@ try {
     $groups = @(
         $false,  # 0: Everything.
         $false,  # 1: Everything not in another group.
-        @('video', 'applications')  # 2
+        @('video', 'applications', 'storage')  # 2
     )
 
     $union = $groups[2..($groups.Length-1)] | Select-Object
