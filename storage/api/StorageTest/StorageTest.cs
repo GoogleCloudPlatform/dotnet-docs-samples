@@ -21,6 +21,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -463,6 +464,7 @@ namespace GoogleCloudSamples
         public void TestHmacSamples()
         {
             //These need to all run as one test so that we can use the created key in every test
+            DeleteAllHmacKeys(Storage.s_projectId);
 
             String serviceAccountEmail = GetServiceAccountEmail();
             var createdHmacKey = Run("create-hmac-key", serviceAccountEmail);
@@ -857,6 +859,21 @@ namespace GoogleCloudSamples
                 // TODO: We may well need to handle ComputeCredential for Kokoro.
                 default:
                     throw new InvalidOperationException($"Unable to retrieve service account email address for credential type {cred.GetType()}");
+            }
+        }
+
+        private static void DeleteAllHmacKeys(String projectId)
+        {
+            var client = StorageClient.Create();
+            var key = client.ListHmacKeys(projectId);
+            foreach (var metadata in key)
+            {
+                if (metadata.State == "ACTIVE")
+                {
+                    metadata.State = HmacKeyStates.Inactive;
+                    client.UpdateHmacKey(metadata);
+                }
+                client.DeleteHmacKey(projectId, metadata.AccessId);
             }
         }
     }
