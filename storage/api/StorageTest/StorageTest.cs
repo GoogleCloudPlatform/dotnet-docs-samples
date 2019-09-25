@@ -20,6 +20,8 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -459,6 +461,45 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void TestHmacSamples()
+        {
+            //These need to all run as one test so that we can use the created key in every test
+            DeleteAllHmacKeys(Storage.s_projectId);
+
+            String serviceAccountEmail = GetServiceAccountEmail();
+            var createdHmacKey = Run("create-hmac-key", serviceAccountEmail);
+            AssertSucceeded(createdHmacKey);
+
+            String id = Regex.Match(createdHmacKey.Stdout, @"Access ID: ([0-9A-Z]+)").Groups[1].Value;
+
+            var listedHmacKeys = Run("list-hmac-keys");
+            AssertSucceeded(listedHmacKeys);
+            Assert.Contains(id, listedHmacKeys.Stdout);
+
+            var fetchedHmacKey = Run("get-hmac-key", id);
+            AssertSucceeded(fetchedHmacKey);
+            Assert.Contains(id, fetchedHmacKey.Stdout);
+
+            var deactivatedHmacKey = Run("deactivate-hmac-key", id);
+            AssertSucceeded(deactivatedHmacKey);
+            Assert.Contains(id, deactivatedHmacKey.Stdout);
+
+            var reactivatedHmacKey = Run("activate-hmac-key", id);
+            AssertSucceeded(reactivatedHmacKey);
+            Assert.Contains(id, reactivatedHmacKey.Stdout);
+
+            Run("deactivate-hmac-key", id);
+
+            var deletedKey = Run("delete-hmac-key", id);
+            AssertSucceeded(deletedKey);
+            Assert.Contains(id, deletedKey.Stdout);
+
+            listedHmacKeys = Run("list-hmac-keys", serviceAccountEmail);
+            AssertSucceeded(listedHmacKeys);
+            Assert.DoesNotContain(id, listedHmacKeys.Stdout);
+        }
+
+        [Fact]
         public void TestAddBucketOwner()
         {
             using (var bucket = new BucketFixture())
@@ -805,6 +846,34 @@ namespace GoogleCloudSamples
             finally
             {
                 Run("disable-requester-pays", _bucketName);
+            }
+        }
+
+        private static string GetServiceAccountEmail()
+        {
+            var cred = GoogleCredential.GetApplicationDefault().UnderlyingCredential;
+            switch (cred)
+            {
+                case ServiceAccountCredential sac:
+                    return sac.Id;
+                // TODO: We may well need to handle ComputeCredential for Kokoro.
+                default:
+                    throw new InvalidOperationException($"Unable to retrieve service account email address for credential type {cred.GetType()}");
+            }
+        }
+
+        private static void DeleteAllHmacKeys(String projectId)
+        {
+            var client = StorageClient.Create();
+            var key = client.ListHmacKeys(projectId);
+            foreach (var metadata in key)
+            {
+                if (metadata.State == "ACTIVE")
+                {
+                    metadata.State = HmacKeyStates.Inactive;
+                    client.UpdateHmacKey(metadata);
+                }
+                client.DeleteHmacKey(projectId, metadata.AccessId);
             }
         }
     }
