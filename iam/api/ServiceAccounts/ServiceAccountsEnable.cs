@@ -1,4 +1,4 @@
- // Copyright 2018 Google Inc.
+// Copyright 2018 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public partial class ServiceAccounts
         });
 
         var request = new EnableServiceAccountRequest();
-        
+
         string resource = "projects/-/serviceAccounts/" + email;
         service.Projects.ServiceAccounts.Enable(request, resource).Execute();
         Console.WriteLine("Enabled service account: " + email);

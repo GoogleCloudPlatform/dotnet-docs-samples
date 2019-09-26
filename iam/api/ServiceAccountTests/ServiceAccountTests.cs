@@ -22,10 +22,10 @@ namespace GoogleCloudSamples
             var key = ServiceAccountKeys.CreateKey(email);
             ServiceAccountKeys.ListKeys(email);
             ServiceAccountKeys.DeleteKey(key.Name);
-            
-            ServiceAccounts.DisableServiceAccount(email);        
+
+            ServiceAccounts.DisableServiceAccount(email);
             ServiceAccounts.EnableServiceAccount(email);
-            
+
             ServiceAccounts.DeleteServiceAccount(email);
         }
     }
