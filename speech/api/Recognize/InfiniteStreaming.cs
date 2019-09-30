@@ -66,9 +66,11 @@ namespace GoogleCloudSamples
         private DateTime _rpcStreamDeadline;
 
         /// <summary>
-        /// The task indicating when the next response is ready.
+        /// The task indicating when the next response is ready, or when we've
+        /// reached the end of the stream. (The task will complete in either case, with a result
+        /// of True if it's moved to another response, or False at the end of the stream.)
         /// </summary>
-        private Task<bool> _moveNextTask;
+        private Task<bool> _serverResponseAvailableTask;
 
         private InfiniteStreaming()
         {
@@ -121,7 +123,7 @@ namespace GoogleCloudSamples
             _rpcStream = _client.StreamingRecognize();
             _rpcStreamDeadline = now + StreamTimeLimit;
             _processingBufferStart = TimeSpan.Zero;
-            _moveNextTask = _rpcStream.ResponseStream.MoveNext();
+            _serverResponseAvailableTask = _rpcStream.ResponseStream.MoveNext();
             await _rpcStream.WriteAsync(new StreamingRecognizeRequest
             {
                 StreamingConfig = new StreamingRecognitionConfig
@@ -150,10 +152,10 @@ namespace GoogleCloudSamples
         /// </summary>
         private bool ProcessResponses()
         {
-            while (_moveNextTask.IsCompleted && _moveNextTask.Result)
+            while (_serverResponseAvailableTask.IsCompleted && _serverResponseAvailableTask.Result)
             {
                 var response = _rpcStream.ResponseStream.Current;
-                _moveNextTask = _rpcStream.ResponseStream.MoveNext();
+                _serverResponseAvailableTask = _rpcStream.ResponseStream.MoveNext();
                 // Uncomment this to see the details of interim results.
                 // Console.WriteLine($"Response: {response}");
 
