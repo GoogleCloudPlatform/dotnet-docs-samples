@@ -36,7 +36,7 @@ namespace GoogleCloudSamples
         private const int ChannelCount = 1;
         private const int BytesPerSample = 2;
         private const int BytesPerSecond = SampleRate * ChannelCount * BytesPerSample;
-        private static readonly TimeSpan StreamTimeLimit = TimeSpan.FromSeconds(290);
+        private static readonly TimeSpan s_streamTimeLimit = TimeSpan.FromSeconds(290);
 
         private readonly SpeechClient _client;
 
@@ -121,7 +121,7 @@ namespace GoogleCloudSamples
             }
             // We need to create a new stream, either because we're just starting or because we've just closed the previous one.
             _rpcStream = _client.StreamingRecognize();
-            _rpcStreamDeadline = now + StreamTimeLimit;
+            _rpcStreamDeadline = now + s_streamTimeLimit;
             _processingBufferStart = TimeSpan.Zero;
             _serverResponseAvailableTask = _rpcStream.ResponseStream.MoveNext();
             await _rpcStream.WriteAsync(new StreamingRecognizeRequest
