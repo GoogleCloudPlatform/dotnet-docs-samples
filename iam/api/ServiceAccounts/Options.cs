@@ -50,3 +50,17 @@ internal class DeleteServiceAccountOptions
     [Option("email", HelpText = "The service account's email.", Required = true)]
     public string Email { get; set; }
 }
+
+[Verb("disable", HelpText = "Disables a service account.")]
+internal class EnableServiceAccountOptions
+{
+    [Option("email", HelpText = "The service account email.", Required = true)]
+    public string Email { get; set; }
+}
+
+[Verb("enable", HelpText = "Enables a service account.")]
+internal class DisableServiceAccountOptions
+{
+    [Option("email", HelpText = "The service account email.", Required = true)]
+    public string Email { get; set; }
+}

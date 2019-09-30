@@ -44,6 +44,16 @@ public partial class ServiceAccounts
                 DeleteServiceAccount(x.Email);
                 return 0;
             },
+            (DisableServiceAccountOptions x) =>
+            {
+                DisableServiceAccount(x.Email);
+                return 0;
+            },
+            (EnableServiceAccountOptions x) =>
+            {
+                EnableServiceAccount(x.Email);
+                return 0;
+            },
             error => 1);
     }
 }
