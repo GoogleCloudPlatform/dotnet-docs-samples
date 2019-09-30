@@ -112,6 +112,9 @@ namespace GoogleCloudSamples
 
                     // Test SetPolicy
                     policy = AccessManager.SetPolicy(_project, policy);
+
+                    // Test TestPermissions
+                    var permissions = AccessManager.TestPermissions(_project);
                 }
                 finally
                 {
