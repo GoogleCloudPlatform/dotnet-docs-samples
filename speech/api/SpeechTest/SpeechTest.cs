@@ -83,10 +83,14 @@ namespace GoogleCloudSamples
         public void TestListen()
         {
             var output = _recognize.Run("listen", "3");
-            if (0 == output.ExitCode)
+            if (output.ExitCode == 0)
+            {
                 Assert.Contains("Speak now.", output.Stdout);
+            }
             else
+            {
                 Assert.Contains("No microphone.", output.Stdout);
+            }
         }
 
         [Fact]
