@@ -36,10 +36,8 @@ namespace GoogleCloudSamples
             _member3 = "daeneryssnow.827847@gmail.com";
         }
 
-        [Fact]
-        public void TestAccess()
+        public IamService initializeService()
         {
-            // Initializing service for role creation
             var credential = GoogleCredential.GetApplicationDefault()
                 .CreateScoped(IamService.Scope.CloudPlatform);
             var service = new IamService(new IamService.Initializer
@@ -47,8 +45,12 @@ namespace GoogleCloudSamples
                 HttpClientInitializer = credential
             });
 
-            // Create custom roles for testing
-            var role1 = new Role
+            return service;
+        }
+
+        public Role createCustomRole(IamService service)
+        {
+            var role = new Role
             {
                 Title = "C# Test Custom Role",
                 Description = "Role for AccessTest",
@@ -58,37 +60,34 @@ namespace GoogleCloudSamples
 
             var request = new CreateRoleRequest
             {
-                Role = role1,
+                Role = role,
                 RoleId = "csharpTestCustomRole" + new Random().Next()
             };
 
-            role1 = service.Projects.Roles.Create(request, "projects/" + _project).Execute();
+            role = service.Projects.Roles.Create(request, "projects/" + _project).Execute();
+            return role;
+        }
+
+        public String parseRoleName(Role role)
+        {
+            var roleNameComponents = role.Name.Split('/');
+            var roleNameShort = roleNameComponents[2] + "/" + roleNameComponents[3];
+            return roleNameShort;
+        }
+
+        [Fact]
+        public void TestAccess()
+        {
+            var service = initializeService();
+
+            var role1 = createCustomRole(service);
+            var role1NameShort = parseRoleName(role1);
             try
             {
-                var role1NameComponents = role1.Name.Split('/');
-                var role1NameShort = role1NameComponents[2] + "/" + role1NameComponents[3];
-
-                var role2 = new Role
-                {
-                    Title = "C# Test Custom Role",
-                    Description = "Role for AccessTest",
-                    IncludedPermissions = new List<string> { "iam.roles.get" },
-                    Stage = "GA"
-                };
-
-                request = new CreateRoleRequest
-                {
-                    Role = role2,
-                    RoleId = "csharpTestCustomRole" + new Random().Next()
-                };
-
-                role2 = service.Projects.Roles.Create(request, "projects/" + _project).Execute();
+                var role2 = createCustomRole(service);
+                var role2NameShort = parseRoleName(role2);
                 try
                 {
-                    var role2NameComponents = role2.Name.Split('/');
-                    var role2NameShort = role2NameComponents[2] + "/" + role2NameComponents[3];
-
-
                     // Test GetPolicy
                     var policy = AccessManager.GetPolicy(_project);
 
