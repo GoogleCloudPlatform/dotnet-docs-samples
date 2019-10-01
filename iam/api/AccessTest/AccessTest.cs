@@ -112,9 +112,6 @@ namespace GoogleCloudSamples
 
                     // Test SetPolicy
                     policy = AccessManager.SetPolicy(_project, policy);
-
-                    // Test TestPermissions
-                    var permissions = AccessManager.TestPermissions(_project);
                 }
                 finally
                 {
@@ -126,6 +123,12 @@ namespace GoogleCloudSamples
             {
                 service.Projects.Roles.Delete(role1.Name).Execute();
             }
+        }
+
+        [Fact]
+        public void testPermissions()
+        {
+            var permissions = AccessManager.TestPermissions(_project);
         }
     }
 }
