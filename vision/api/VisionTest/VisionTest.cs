@@ -118,7 +118,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("landmarks", Path.Combine("data", "tower.jpg"));
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Eiffel", output.Stdout);
+            Assert.Matches(@".*(Eiffel|Mars).*", output.Stdout);
         }
 
         [Fact]
