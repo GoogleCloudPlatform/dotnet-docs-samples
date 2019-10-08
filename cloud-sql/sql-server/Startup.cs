@@ -71,6 +71,7 @@ namespace CloudSql
             connection.Open();
             using (var createTableCommand = connection.CreateCommand())
             {
+                // Create the 'votes' table if it does not already exist.
                 createTableCommand.CommandText = @"
                  IF OBJECT_ID(N'dbo.votes', N'U') IS NULL 
                    BEGIN 

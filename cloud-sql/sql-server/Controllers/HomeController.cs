@@ -61,6 +61,7 @@ namespace CloudSql.Controllers
             }
             using (var countsCommand = _connection.CreateCommand())
             {
+                // Get the current vote totals for SPACES and TABS.
                 countsCommand.CommandText = @"
                     SELECT COUNT(vote_id) FROM votes WHERE candidate= @candidate";
                 var candidate = countsCommand.CreateParameter();
@@ -114,6 +115,7 @@ namespace CloudSql.Controllers
                 insertTimestamp = DateTime.Now;
                 try
                 {
+                    // Insert a vote for SPACE or TAB with a timestamp.
                     using (var insertVoteCommand = _connection.CreateCommand())
                     {
                         insertVoteCommand.CommandText =

@@ -26,7 +26,7 @@ if (-not (Test-Path cloud_sql_proxy.exe)) {
 $proxy = Start-Job -ArgumentList (Get-Location) -ScriptBlock {
 	Set-Location $args[0]
 	./cloud_sql_proxy.exe --instances=$env:TEST_CLOUDSQL2_SQLSERVER_INSTANCE=tcp:1433 `
-		--credential_file=$GOOGLE_APPLICATION_CREDENTIALS
+		--credential_file=$env:GOOGLE_APPLICATION_CREDENTIALS
 }
 try {
 	dotnet restore
