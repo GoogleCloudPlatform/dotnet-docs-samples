@@ -142,7 +142,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("text", Path.Combine("data", "logo.jpg"));
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Google", output.Stdout);
+            Assert.Contains("google", output.Stdout.ToLower());
         }
 
         [Fact]
