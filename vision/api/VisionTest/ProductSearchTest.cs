@@ -9,10 +9,12 @@ namespace GoogleCloudSamples
     public class ProductSearchTest : IDisposable
     {
         public readonly string REGION_NAME = "us-west1";
+        public readonly string IMPORT_PRODUCT_ID = "fake_product_id_for_testing_1";
         public readonly string PRODUCT_ID = "fake_product_id_for_testing_" + TestUtil.RandomName();
         public readonly string PRODUCT_DISPLAY_NAME = "fake_product_display_name_for_testing";
         public readonly string PRODUCT_CATEGORY = "apparel";
-        public readonly string PRODUCT_ID_2 = "fake_product_id_for_testing_" + TestUtil.RandomName();
+        public readonly string PRODUCT_ID_2 = "fake_product_id_for_testing_2";
+        public readonly string IMPORT_PRODUCT_ID_2 = "fake_product_id_for_testing";
         public readonly string PRODUCT_SET_ID = "fake_product_set_id_for_testing_" + TestUtil.RandomName();
         public readonly string IMPORT_PRODUCT_SET_ID = "fake_product_set_id_for_testing";
         public readonly string PRODUCT_SET_DISPLAY_NAME = "fake_product_set_display_name_for_testing";
@@ -46,7 +48,7 @@ namespace GoogleCloudSamples
             return _productSearch.Run(arguments);
         }
 
-        public void CreateProductSet()
+        protected void CreateProductSet()
         {
             // Create a indexed product set for TestProductSearch() and TestProductSearchGcs()
             // tests. These tests remain in the project after the test completes.
@@ -230,22 +232,15 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestImportProductSets()
         {
-            var output = Run("list_product_sets", _projectId, REGION_NAME);
-            Assert.DoesNotContain(PRODUCT_SET_ID, output.Stdout);
-
-            output = Run("list_products", _projectId, REGION_NAME);
-            Assert.DoesNotContain(PRODUCT_ID, output.Stdout);
-            Assert.DoesNotContain(PRODUCT_ID_2, output.Stdout);
-
-            output = Run("import_product_set", _projectId, REGION_NAME, CSV_GCS_URI);
+            var output = Run("import_product_set", _projectId, REGION_NAME, CSV_GCS_URI);
             Assert.Equal(0, output.ExitCode);
 
             output = Run("list_product_sets", _projectId, REGION_NAME);
             Assert.Contains(IMPORT_PRODUCT_SET_ID, output.Stdout);
 
             output = Run("list_products", _projectId, REGION_NAME);
-            Assert.Contains(PRODUCT_ID, output.Stdout);
-            Assert.Contains(PRODUCT_ID_2, output.Stdout);
+            Assert.Contains(IMPORT_PRODUCT_ID, output.Stdout);
+            Assert.Contains(IMPORT_PRODUCT_ID_2, output.Stdout);
         }
 
         [Fact]
