@@ -8,23 +8,23 @@ namespace GoogleCloudSamples
 {
     public class ProductSearchTestsBase
     {
-        public string REGION_NAME {get; private set;} = "us-west1" ;
-        public string PRODUCT_ID {get; private set;} = "fake_product_id_for_testing_1";
-        public string PRODUCT_DISPLAY_NAME {get; private set;} = "fake_product_display_name_for_testing";
-        public string PRODUCT_CATEGORY {get; private set;} = "apparel";
-        public string PRODUCT_ID_2 {get; private set;} = "fake_product_id_for_testing_2";
-        public string PRODUCT_SET_ID {get; private set;} = "fake_product_set_id_for_testing";
-        public string PRODUCT_SET_DISPLAY_NAME {get; private set;} = "fake_product_set_display_name_for_testing";
-        public string REF_IMAGE_ID {get; private set;} = "fake_ref_image_id";
-        public string REF_IMAGE_GCS_URI {get; private set;} = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
-        public string CSV_GCS_URI {get; private set;} = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
-        public string IMAGE_URI_1 {get; private set;} = "shoes_1.jpg";
-        public string IMAGE_URI_2 {get; private set;} = "shoes_2.jpg";
-        public string SEARCH_FILTER {get; private set;} = "style=womens";
+        public string REGION_NAME { get; private set; } = "us-west1";
+        public string PRODUCT_ID { get; private set; } = "fake_product_id_for_testing_1";
+        public string PRODUCT_DISPLAY_NAME { get; private set; } = "fake_product_display_name_for_testing";
+        public string PRODUCT_CATEGORY { get; private set; } = "apparel";
+        public string PRODUCT_ID_2 { get; private set; } = "fake_product_id_for_testing_2";
+        public string PRODUCT_SET_ID { get; private set; } = "fake_product_set_id_for_testing";
+        public string PRODUCT_SET_DISPLAY_NAME { get; private set; } = "fake_product_set_display_name_for_testing";
+        public string REF_IMAGE_ID { get; private set; } = "fake_ref_image_id";
+        public string REF_IMAGE_GCS_URI { get; private set; } = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
+        public string CSV_GCS_URI { get; private set; } = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
+        public string IMAGE_URI_1 { get; private set; } = "shoes_1.jpg";
+        public string IMAGE_URI_2 { get; private set; } = "shoes_2.jpg";
+        public string SEARCH_FILTER { get; private set; } = "style=womens";
 
         // For search tests. Product set must be indexed for search to succeed.
-        public string INDEXED_PRODUCT_SET {get; private set;} = "indexed_product_set_id_for_testing";
-        public string INDEXED_PRODUCT_1 {get; private set;} = "indexed_product_id_for_testing_1";
+        public string INDEXED_PRODUCT_SET { get; private set; } = "indexed_product_set_id_for_testing";
+        public string INDEXED_PRODUCT_1 { get; private set; } = "indexed_product_id_for_testing_1";
 
         public readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
@@ -35,15 +35,16 @@ namespace GoogleCloudSamples
         };
 
         // Keep a list of all the things created while running tests.
-        private List<string[]> _createCommands = new List<string[]>();
+        private readonly List<string[]> _createCommands = new List<string[]>();
 
         /// <summary>
         ///  Run the command and track all cloud assets that were created.
         /// </summary>
         /// <param name="arguments">The command arguments.</param>
-        public ConsoleOutput Run(params string[] arguments) 
+        public ConsoleOutput Run(params string[] arguments)
         {
-            if (arguments[0].StartsWith("create_")) {
+            if (arguments[0].StartsWith("create_"))
+            {
                 _createCommands.Add(arguments);
             }
             return _productSearch.Run(arguments);
@@ -87,7 +88,6 @@ namespace GoogleCloudSamples
             INDEXED_PRODUCT_1 += TestUtil.RandomName();
             INDEXED_PRODUCT_SET += TestUtil.RandomName();
         }
-
     }
 
     public class ProductSearchTests : ProductSearchTestsBase, IDisposable
@@ -290,7 +290,7 @@ namespace GoogleCloudSamples
 
     // These tests all require products and indexes that live longer than the
     // test.
-    public class ProductSearchCodependentTests : ProductSearchTestsBase 
+    public class ProductSearchCodependentTests : ProductSearchTestsBase
     {
         protected void CreateProductSet()
         {
@@ -358,6 +358,5 @@ namespace GoogleCloudSamples
             Assert.Contains(PRODUCT_ID, output.Stdout);
             Assert.Contains(PRODUCT_ID_2, output.Stdout);
         }
-
     }
 }
