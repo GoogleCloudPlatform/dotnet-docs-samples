@@ -125,7 +125,7 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void testPermissions()
+        public void TestPermissions()
         {
             var permissions = AccessManager.TestPermissions(_project);
         }
