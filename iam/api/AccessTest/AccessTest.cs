@@ -36,7 +36,7 @@ namespace GoogleCloudSamples
             _member3 = "daeneryssnow.827847@gmail.com";
         }
 
-        public IamService initializeService()
+        public IamService InitializeService()
         {
             var credential = GoogleCredential.GetApplicationDefault()
                 .CreateScoped(IamService.Scope.CloudPlatform);
@@ -48,7 +48,7 @@ namespace GoogleCloudSamples
             return service;
         }
 
-        public Role createCustomRole(IamService service)
+        public Role CreateCustomRole(IamService service)
         {
             var role = new Role
             {
@@ -68,7 +68,7 @@ namespace GoogleCloudSamples
             return role;
         }
 
-        public String parseRoleName(Role role)
+        public String ParseRoleName(Role role)
         {
             var roleNameComponents = role.Name.Split('/');
             var roleNameShort = roleNameComponents[2] + "/" + roleNameComponents[3];
@@ -78,14 +78,14 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestAccess()
         {
-            var service = initializeService();
+            var service = InitializeService();
 
-            var role1 = createCustomRole(service);
-            var role1NameShort = parseRoleName(role1);
+            var role1 = CreateCustomRole(service);
+            var role1NameShort = ParseRoleName(role1);
             try
             {
-                var role2 = createCustomRole(service);
-                var role2NameShort = parseRoleName(role2);
+                var role2 = CreateCustomRole(service);
+                var role2NameShort = ParseRoleName(role2);
                 try
                 {
                     // Test GetPolicy
@@ -127,7 +127,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestPermissions()
         {
-            var permissions = AccessManager.TestPermissions(_project);
+            var permissions = AccessManager.TestIamPermissions(_project);
         }
     }
 }

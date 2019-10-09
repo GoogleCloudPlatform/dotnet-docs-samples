@@ -22,7 +22,7 @@ using Google.Apis.CloudResourceManager.v1.Data;
 
 public partial class AccessManager
 {
-    public static IList<String> TestPermissions(string projectId)
+    public static IList<String> TestIamPermissions(string projectId)
     {
         var credential = GoogleCredential.GetApplicationDefault()
             .CreateScoped(CloudResourceManagerService.Scope.CloudPlatform);
