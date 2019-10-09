@@ -6,28 +6,25 @@ using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class ProductSearchTest : IDisposable
+    public class ProductSearchTestsBase
     {
-        public readonly string REGION_NAME = "us-west1";
-        public readonly string IMPORT_PRODUCT_ID = "fake_product_id_for_testing_1";
-        public readonly string PRODUCT_ID = "fake_product_id_for_testing_" + TestUtil.RandomName();
-        public readonly string PRODUCT_DISPLAY_NAME = "fake_product_display_name_for_testing";
-        public readonly string PRODUCT_CATEGORY = "apparel";
-        public readonly string PRODUCT_ID_2 = "fake_product_id_for_testing_2";
-        public readonly string IMPORT_PRODUCT_ID_2 = "fake_product_id_for_testing";
-        public readonly string PRODUCT_SET_ID = "fake_product_set_id_for_testing_" + TestUtil.RandomName();
-        public readonly string IMPORT_PRODUCT_SET_ID = "fake_product_set_id_for_testing";
-        public readonly string PRODUCT_SET_DISPLAY_NAME = "fake_product_set_display_name_for_testing";
-        public readonly string REF_IMAGE_ID = "fake_ref_image_id_" + TestUtil.RandomName();
-        public readonly string REF_IMAGE_GCS_URI = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
-        public readonly string CSV_GCS_URI = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
-        public readonly string IMAGE_URI_1 = "shoes_1.jpg";
-        public readonly string IMAGE_URI_2 = "shoes_2.jpg";
-        public readonly string SEARCH_FILTER = "style=womens";
+        public string REGION_NAME {get; private set;} = "us-west1" ;
+        public string PRODUCT_ID {get; private set;} = "fake_product_id_for_testing_1";
+        public string PRODUCT_DISPLAY_NAME {get; private set;} = "fake_product_display_name_for_testing";
+        public string PRODUCT_CATEGORY {get; private set;} = "apparel";
+        public string PRODUCT_ID_2 {get; private set;} = "fake_product_id_for_testing_2";
+        public string PRODUCT_SET_ID {get; private set;} = "fake_product_set_id_for_testing";
+        public string PRODUCT_SET_DISPLAY_NAME {get; private set;} = "fake_product_set_display_name_for_testing";
+        public string REF_IMAGE_ID {get; private set;} = "fake_ref_image_id";
+        public string REF_IMAGE_GCS_URI {get; private set;} = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
+        public string CSV_GCS_URI {get; private set;} = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
+        public string IMAGE_URI_1 {get; private set;} = "shoes_1.jpg";
+        public string IMAGE_URI_2 {get; private set;} = "shoes_2.jpg";
+        public string SEARCH_FILTER {get; private set;} = "style=womens";
 
         // For search tests. Product set must be indexed for search to succeed.
-        public readonly string INDEXED_PRODUCT_SET = "indexed_product_set_id_for_testing_" + TestUtil.RandomName();
-        public readonly string INDEXED_PRODUCT_1 = "indexed_product_id_for_testing_" + TestUtil.RandomName();
+        public string INDEXED_PRODUCT_SET {get; private set;} = "indexed_product_set_id_for_testing";
+        public string INDEXED_PRODUCT_1 {get; private set;} = "indexed_product_id_for_testing_1";
 
         public readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
@@ -38,8 +35,12 @@ namespace GoogleCloudSamples
         };
 
         // Keep a list of all the things created while running tests.
-        public List<string[]> _createCommands = new List<string[]>();
+        private List<string[]> _createCommands = new List<string[]>();
 
+        /// <summary>
+        ///  Run the command and track all cloud assets that were created.
+        /// </summary>
+        /// <param name="arguments">The command arguments.</param>
         public ConsoleOutput Run(params string[] arguments) 
         {
             if (arguments[0].StartsWith("create_")) {
@@ -47,43 +48,7 @@ namespace GoogleCloudSamples
             }
             return _productSearch.Run(arguments);
         }
-
-        protected void CreateProductSet()
-        {
-            // Create a indexed product set for TestProductSearch() and TestProductSearchGcs()
-            // tests. These tests remain in the project after the test completes.
-            var output = Run("list_product_sets", _projectId, REGION_NAME);
-            if (!output.Stdout.Contains(INDEXED_PRODUCT_SET))
-            {
-                Run("create_product_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_SET_DISPLAY_NAME);
-            }
-
-            output = Run("list_products", _projectId, REGION_NAME);
-            if (!output.Stdout.Contains(INDEXED_PRODUCT_1))
-            {
-                Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
-            }
-
-            output = Run("list_ref_images", _projectId, REGION_NAME, INDEXED_PRODUCT_1);
-            if (!output.Stdout.Contains(REF_IMAGE_ID))
-            {
-                Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
-            }
-
-            output = Run("list_products_in_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET);
-            if (!output.Stdout.Contains(INDEXED_PRODUCT_1))
-            {
-                Run("add_product_to_set", _projectId, REGION_NAME, INDEXED_PRODUCT_1, INDEXED_PRODUCT_SET);
-            }
-
-            output = Run("get_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1);
-            if (!output.Stdout.Contains("style") || !output.Stdout.Contains("womens"))
-            {
-                Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
-            }
-        }
-
-        public void Dispose()
+        protected void DeleteCreations()
         {
             // Clean up everything the test created.
             _createCommands.Reverse();
@@ -105,6 +70,36 @@ namespace GoogleCloudSamples
             {
                 throw new AggregateException(exceptions);
             }
+        }
+
+        /// <summary>
+        /// Add a random chunk to all the Ids used in the tests, so that
+        /// multiple machines can run the same tests at the same time
+        /// in the same Google Cloud project without interfering with each
+        /// other.
+        /// </summary>
+        protected void RandomizeIds()
+        {
+            PRODUCT_ID += TestUtil.RandomName();
+            PRODUCT_ID_2 += TestUtil.RandomName();
+            PRODUCT_SET_ID += TestUtil.RandomName();
+            REF_IMAGE_ID += TestUtil.RandomName();
+            INDEXED_PRODUCT_1 += TestUtil.RandomName();
+            INDEXED_PRODUCT_SET += TestUtil.RandomName();
+        }
+
+    }
+
+    public class ProductSearchTests : ProductSearchTestsBase, IDisposable
+    {
+        public ProductSearchTests()
+        {
+            RandomizeIds();
+        }
+
+        public void Dispose()
+        {
+            DeleteCreations();
         }
 
         [Fact]
@@ -230,20 +225,6 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestImportProductSets()
-        {
-            var output = Run("import_product_set", _projectId, REGION_NAME, CSV_GCS_URI);
-            Assert.Equal(0, output.ExitCode);
-
-            output = Run("list_product_sets", _projectId, REGION_NAME);
-            Assert.Contains(IMPORT_PRODUCT_SET_ID, output.Stdout);
-
-            output = Run("list_products", _projectId, REGION_NAME);
-            Assert.Contains(IMPORT_PRODUCT_ID, output.Stdout);
-            Assert.Contains(IMPORT_PRODUCT_ID_2, output.Stdout);
-        }
-
-        [Fact]
         public void TestAddProductToSet()
         {
             Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
@@ -277,24 +258,6 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestProductSearch()
-        {
-            CreateProductSet();
-            var output = Run("get_similar_products", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
-        }
-
-        [Fact]
-        public void TestProductSearchGcs()
-        {
-            CreateProductSet();
-            var output = Run("get_similar_products_gcs", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, REF_IMAGE_GCS_URI, SEARCH_FILTER);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
-        }
-
-        [Fact]
         public void TestPurgeProductsInProductSet()
         {
             var output = Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
@@ -323,5 +286,78 @@ namespace GoogleCloudSamples
             output = Run("list_products", _projectId, REGION_NAME);
             Assert.DoesNotContain(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
         }
+    }
+
+    // These tests all require products and indexes that live longer than the
+    // test.
+    public class ProductSearchCodependentTests : ProductSearchTestsBase 
+    {
+        protected void CreateProductSet()
+        {
+            // Create a indexed product set for TestProductSearch() and TestProductSearchGcs()
+            // tests. These tests remain in the project after the test completes.
+            var output = Run("list_product_sets", _projectId, REGION_NAME);
+            if (!output.Stdout.Contains(INDEXED_PRODUCT_SET))
+            {
+                Run("create_product_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_SET_DISPLAY_NAME);
+            }
+
+            output = Run("list_products", _projectId, REGION_NAME);
+            if (!output.Stdout.Contains(INDEXED_PRODUCT_1))
+            {
+                Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            }
+
+            output = Run("list_ref_images", _projectId, REGION_NAME, INDEXED_PRODUCT_1);
+            if (!output.Stdout.Contains(REF_IMAGE_ID))
+            {
+                Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+            }
+
+            output = Run("list_products_in_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET);
+            if (!output.Stdout.Contains(INDEXED_PRODUCT_1))
+            {
+                Run("add_product_to_set", _projectId, REGION_NAME, INDEXED_PRODUCT_1, INDEXED_PRODUCT_SET);
+            }
+
+            output = Run("get_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1);
+            if (!output.Stdout.Contains("style") || !output.Stdout.Contains("womens"))
+            {
+                Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
+            }
+        }
+
+        [Fact]
+        public void TestProductSearch()
+        {
+            CreateProductSet();
+            var output = Run("get_similar_products", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
+        }
+
+        [Fact]
+        public void TestProductSearchGcs()
+        {
+            CreateProductSet();
+            var output = Run("get_similar_products_gcs", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, REF_IMAGE_GCS_URI, SEARCH_FILTER);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
+        }
+
+        [Fact]
+        public void TestImportProductSets()
+        {
+            var output = Run("import_product_set", _projectId, REGION_NAME, CSV_GCS_URI);
+            Assert.Equal(0, output.ExitCode);
+
+            output = Run("list_product_sets", _projectId, REGION_NAME);
+            Assert.Contains(PRODUCT_SET_ID, output.Stdout);
+
+            output = Run("list_products", _projectId, REGION_NAME);
+            Assert.Contains(PRODUCT_ID, output.Stdout);
+            Assert.Contains(PRODUCT_ID_2, output.Stdout);
+        }
+
     }
 }
