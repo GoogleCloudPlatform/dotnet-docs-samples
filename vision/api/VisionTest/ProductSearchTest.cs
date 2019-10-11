@@ -25,7 +25,7 @@ namespace GoogleCloudSamples
         // For search tests. Product set must be indexed for search to succeed.
         protected string IndexedProductSet { get; private set; } = "indexed_product_set_id_for_testing";
         protected string IndexedProduct1 { get; private set; } = "indexed_product_id_for_testing_1";
-        protected string ProjectId { get; private set; }= Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         private readonly CommandLineRunner _productSearch = new CommandLineRunner()
         {
@@ -55,15 +55,17 @@ namespace GoogleCloudSamples
         protected void DeleteCreations()
         {
             // Clean up everything the test created.
-            _createCommands.Reverse();
+            List<string[]> commands = new List<string[]>(_createCommands);
+            _createCommands.Clear();
+            commands.Reverse();
+
             var exceptions = new List<Exception>();
-            foreach (string[] arguments in _createCommands)
+            foreach (string[] command in commands)
             {
-                var deleteCommand = arguments.ToList();
-                deleteCommand[0] = deleteCommand[0].Replace("create_", "delete_");
+                command[0] = command[0].Replace("create_", "delete_");
                 try
                 {
-                    Run(deleteCommand.ToArray());
+                    Run(command);
                 }
                 catch (Exception e)
                 {
