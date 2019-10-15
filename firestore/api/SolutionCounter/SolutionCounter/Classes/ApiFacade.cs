@@ -81,9 +81,7 @@ namespace SolutionCounter.Classes
             // Initialize each shard with count=0
             for (var i = 0; i < ShardsCounter.NumShards; i++)
             {
-                var docNew = colRef.Document(i.ToString());
-
-                await docNew.SetAsync(new Shard { Count = 0 });
+                await colRef.Document(i.ToString()).SetAsync(new Shard { Count = 0 });
             }
         }
 
@@ -102,16 +100,9 @@ namespace SolutionCounter.Classes
                 throw new ArgumentException("ArgumentException: NumShards must be more than 0");
 
             var rand = new Random();
-
             var docId = rand.Next(0, ShardsCounter.NumShards);
-
             var shardRef = docRef.Collection("shards").Document(docId.ToString());
-
-            var shard = await shardRef.GetSnapshotAsync();
-
-            var currentCount = shard.GetValue<int>("Count");
-
-            await shardRef.UpdateAsync("Count", ++currentCount);
+            await shardRef.UpdateAsync("Count", FieldValue.Increment(1));
         }
 
         // [END fs_increment_counter]
@@ -126,7 +117,6 @@ namespace SolutionCounter.Classes
         public int GetCount(DocumentReference docRef)
         {
             var snapshotList = docRef.Collection("shards").GetSnapshotAsync().Result;
-
             return snapshotList.Sum(snap => snap.GetValue<int>("Count"));
         }
 
