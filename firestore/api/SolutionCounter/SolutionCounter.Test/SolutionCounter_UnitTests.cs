@@ -55,15 +55,12 @@ namespace SolutionCounter.Tests
             var projectId = Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID");
 
             var isNullProjectId = string.IsNullOrEmpty(projectId);
-
             Assert.AreNotEqual(true, isNullProjectId);
 
             _api.FireStoreDb = FirestoreDb.Create(projectId);
-
             Assert.AreNotEqual(null, _api.FireStoreDb);
 
             _docRef = _api.FireStoreDb.Collection("counter_samples_test").Document("TestDocCounter");
-
             Assert.AreNotEqual(null, _docRef);
         }
 
@@ -76,7 +73,6 @@ namespace SolutionCounter.Tests
             _api.InitShardsCounter(2);
 
             var currentShardsCount = _api.ShardsCounter.NumShards;
-
             Assert.AreNotEqual(0, currentShardsCount);
         }
 
@@ -94,7 +90,6 @@ namespace SolutionCounter.Tests
             }).ContinueWith(async t =>
             {
                 var snapShots = await _docRef.Collection("shards").GetSnapshotAsync();
-
                 Assert.AreNotEqual(0, snapShots.Count);
             });
         }
@@ -109,7 +104,6 @@ namespace SolutionCounter.Tests
             await Task.Run(async () =>
             {
                 await _api.IncrementCounterAsync(_docRef);
-
                 await _api.IncrementCounterAsync(_docRef);
 
             }).ContinueWith(async t =>
@@ -117,7 +111,6 @@ namespace SolutionCounter.Tests
                 await Task.Delay(5000);
 
                 var count = _api.GetCount(_docRef);
-
                 Assert.AreEqual(2, count);
             });
         }

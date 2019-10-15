@@ -35,7 +35,6 @@ namespace SolutionCounter.Classes
                 var api = new ApiFacade();
 
                 api.InitFireStoreDb();
-
                 api.InitShardsCounter(2);
 
                 var docRef = api.FireStoreDb.Collection("counter_samples1").Document("DCounter");
@@ -43,7 +42,6 @@ namespace SolutionCounter.Classes
                 Task.Run(async () =>
                 {
                     Console.WriteLine("Application start ...");
-
                     await api.InitCounterAsync(docRef);
 
                 }).ContinueWith(async t =>
@@ -57,7 +55,6 @@ namespace SolutionCounter.Classes
                     var countTotal = api.GetCount(docRef);
 
                     Console.WriteLine(countTotal);
-
                     Console.WriteLine("Application stopped ...");
                 });
             }

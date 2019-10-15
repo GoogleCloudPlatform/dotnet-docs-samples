@@ -31,7 +31,6 @@ namespace SolutionCounter
         internal static void Main(string[] args)
         {
             Startup.Start();
-
             Console.ReadLine();
         }
     }
