@@ -73,9 +73,6 @@ namespace SolutionCounter.Classes
         /// <returns>The <see cref="Task"/></returns>
         public async Task InitCounterAsync(DocumentReference docRef)
         {
-            if (ShardsCounter.NumShards == 0)
-                throw new ArgumentException("ArgumentException: NumShards must be more than 0");
-
             CollectionReference colRef = docRef.Collection("shards");
 
             // Initialize each shard with count=0
@@ -96,9 +93,6 @@ namespace SolutionCounter.Classes
         /// <returns>The <see cref="Task"/></returns>
         public async Task IncrementCounterAsync(DocumentReference docRef)
         {
-            if (ShardsCounter.NumShards == 0)
-                throw new ArgumentException("ArgumentException: NumShards must be more than 0");
-
             var rand = new Random();
             var docId = rand.Next(0, ShardsCounter.NumShards);
             var shardRef = docRef.Collection("shards").Document(docId.ToString());
