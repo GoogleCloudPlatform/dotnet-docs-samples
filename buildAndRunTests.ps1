@@ -54,20 +54,15 @@ if ($Lint) {
 if ($UpdatePackages) {
     Update-Packages $PackageMask
 }
-$private:modifiedConfigs = Update-Config
-Try {
-    $timeoutSeconds = 600
-    $masks = if ($Skip) {
-        "*runTest*.ps1"
-    } elseif ($Deploy) {
-        "*deployTest*.ps1"
-    } else {
-        $TestMasks
-    }
-    $private:testScripts = Find-Files -Masks $masks
-    # Avoid infinitely recursing and invoking this script.
-    $testScripts | where {$_ -ne $invocation.MyCommand.Path} |  Run-TestScripts $timeoutSeconds
+
+$timeoutSeconds = 600
+$masks = if ($Skip) {
+    "*runTest*.ps1"
+} elseif ($Deploy) {
+    "*deployTest*.ps1"
+} else {
+    $TestMasks
 }
-Finally {
-    Revert-Config $modifiedConfigs
-}
+$private:testScripts = Find-Files -Masks $masks
+# Avoid infinitely recursing and invoking this script.
+$testScripts | where {$_ -ne $invocation.MyCommand.Path} |  Run-TestScripts $timeoutSeconds
