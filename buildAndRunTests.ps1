@@ -21,20 +21,13 @@
 # place, and then looking for git diffs.  So, be sure the git client is clean
 # before running.
 #
-#.PARAMETER UpdatePackages
-# Update each project's NuGet packages to the latest version before running tests.
-#
-#.PARAMETER PackageMask
-# When UpdatePackages is set, specifies which packages to update.
-#
 #.PARAMETER Skip
 # Skip tests with the named like 'skiptest'
 #
 #.EXAMPLE
 # .\buildAndRunTests.ps1 -Lint
 ##############################################################################
-param([switch]$Lint, [switch]$UpdatePackages, [string]$PackageMask="Google.*",
-    [switch]$Skip, [switch]$Deploy, 
+param([switch]$Lint, [switch]$Skip, [switch]$Deploy, 
     [string[]]$TestMasks=@('*runtest*.ps1', '*skiptest*.ps1'))
 
 $private:invocation = (Get-Variable MyInvocation -Scope 0).Value
@@ -50,9 +43,6 @@ gcloud info
 if ($Lint) {
     Add-Copyright
     Find-Files -Masks *.csproj -AntiMasks appengine,endpoints,QuickStartCore | Lint-Code
-}
-if ($UpdatePackages) {
-    Update-Packages $PackageMask
 }
 
 $timeoutSeconds = 600
