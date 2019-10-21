@@ -37,6 +37,12 @@ function When-Empty($Target, $ArgList, [ScriptBlock]$ScriptBlock) {
 #.SYNOPSIS
 # Recursively find all the files that match a mask.
 #
+#.DESCRIPTION
+# Why not simply cal Get-ChildItem -Recurse ...?
+# Traversing the many directories that are full of junk we're not interested
+# can take a long time.  Unlike Get-ChildItem, this function does not
+# traverse directories that match the AntiMasks.
+#
 #.PARAMETER Path
 # Start searching from where?  Defaults to the current directory.
 #
@@ -246,6 +252,10 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
     [string]$Verb, [hashtable]$Results)
 {
     foreach ($script in $Scripts) {
+        # Fork a job for each script for a couple reasons:
+        # 1. If it runs beyond its timeout, we can kill it and move on.
+        # 2. We can tee its output to a separate file, and dump it into an
+        #    XML failure report if it fails.
         $startDate = Get-Date
         $relativePath = Resolve-Path -Relative $script
         $jobState = 'Failed'
