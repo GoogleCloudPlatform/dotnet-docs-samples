@@ -1019,5 +1019,3 @@ function New-RandomName([string]$Prefix = '', [int]$Length = 20,
     $randomString = $randomChars -join ''
     return "$Prefix$randomString"
 }
-
-New-RandomName
