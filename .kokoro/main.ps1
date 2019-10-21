@@ -38,7 +38,8 @@ try {
         @('iam') # 3: Runs once every 24 hours to avoid bursting active roles limit of 300.
     )
 
-    $union = $groups[2..($groups.Length-1)] | Select-Object
+    $union = $groups[2..($groups.Length-1)] | `
+         % {$_} # Flatten the list
     $groups[0] = $allDirs
     $groups[1] = $allDirs | Where-Object { -not $union.Contains($_) }
 
