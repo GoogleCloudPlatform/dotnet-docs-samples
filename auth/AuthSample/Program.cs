@@ -31,7 +31,7 @@ namespace GoogleCloudSamples
     class BaseOptions
     {
         string _projectId;
-        [Option('p', Default = null, HelpText = "Your Google project id.")]
+        [Option('p', HelpText = "Your Google project id.")]
         public string ProjectId
         {
             get
