@@ -16,8 +16,7 @@ public class TranslateTextWithGlossaryAndModelTest : IDisposable
 
     readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
-        VoidMain = TranslateV3TranslateTextWithGlossaryAndModelMain.Main,
-        Command = "Translate Text with Glossary and Model"
+        VoidMain = TranslateV3TranslateTextWithGlossaryAndModelMain.Main
     };
 
     //Setup
@@ -40,7 +39,6 @@ public class TranslateTextWithGlossaryAndModelTest : IDisposable
     /// <param name="arguments">The command arguments.</param>
     public ConsoleOutput Run(params string[] arguments)
     {
-        Console.WriteLine(arguments);
         return _quickStart.Run(arguments);
     }
 

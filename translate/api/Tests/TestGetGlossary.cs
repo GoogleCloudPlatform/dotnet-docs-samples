@@ -14,8 +14,7 @@ public class GetGlossaryTest : IDisposable
 
     readonly CommandLineRunner _sample = new CommandLineRunner()
     {
-        VoidMain = TranslateV3GetGlossaryMain.Main,
-        Command = "Get Glossary"
+        VoidMain = TranslateV3GetGlossaryMain.Main
     };
 
     //Setup

@@ -14,8 +14,7 @@ public class ListGlossaryTest : IDisposable
 
     readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
-        VoidMain = TranslateV3ListGlossaryMain.Main,
-        Command = "TranslateV3ListGlossary.SampleListGlossaries"
+        VoidMain = TranslateV3ListGlossaryMain.Main
     };
 
     //Setup
@@ -38,7 +37,6 @@ public class ListGlossaryTest : IDisposable
     /// <param name="arguments">The command arguments.</param>
     public ConsoleOutput Run(params string[] arguments)
     {
-        Console.WriteLine(arguments);
         return _quickStart.Run(arguments);
     }
 

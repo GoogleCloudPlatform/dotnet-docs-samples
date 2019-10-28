@@ -12,8 +12,7 @@ public class GetSupportedLanguagesTest
 
     readonly CommandLineRunner _sample = new CommandLineRunner()
     {
-        VoidMain = TranslateV3GetSupportedLanguagesMain.Main,
-        Command = "Get Supported Languages"
+        VoidMain = TranslateV3GetSupportedLanguagesMain.Main
     };
 
 

@@ -21,8 +21,7 @@ namespace Tests
         protected string InputUri { get; private set; } = "gs://cloud-samples-data/translation/text_with_glossary.txt";
         readonly CommandLineRunner _sample = new CommandLineRunner()
         {
-            VoidMain = BatchTranslateTextWithGlossaryMain.Main,
-            Command = "Batch Translate Text with Glossary"
+            VoidMain = BatchTranslateTextWithGlossaryMain.Main
         };
 
         //Setup

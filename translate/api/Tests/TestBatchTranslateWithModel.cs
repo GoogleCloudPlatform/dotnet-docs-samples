@@ -21,8 +21,7 @@ namespace Tests
         protected string ModelId { get; private set; } = "TRL8772189639420149760";
         readonly CommandLineRunner _sample = new CommandLineRunner()
         {
-            VoidMain = TranslateV3BatchTranslateTextWithModelMain.Main,
-            Command = "Batch Translate Text with Model"
+            VoidMain = TranslateV3BatchTranslateTextWithModelMain.Main
         };
 
         //Setup

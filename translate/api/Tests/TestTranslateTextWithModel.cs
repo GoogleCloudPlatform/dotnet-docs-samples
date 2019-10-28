@@ -13,8 +13,7 @@ public class TranslateTextWithModelTest
 
     readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
-        VoidMain = TranslateV3TranslateTextWithModelMain.Main,
-        Command = "Translate Text with Model"
+        VoidMain = TranslateV3TranslateTextWithModelMain.Main
     };
 
     /// <summary>
@@ -23,7 +22,6 @@ public class TranslateTextWithModelTest
     /// <param name="arguments">The command arguments.</param>
     public ConsoleOutput Run(params string[] arguments)
     {
-        Console.WriteLine(arguments);
         return _quickStart.Run(arguments);
     }
 

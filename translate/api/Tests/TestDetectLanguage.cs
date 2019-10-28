@@ -12,8 +12,7 @@ public class DetectLanguageTest
 
     readonly CommandLineRunner _sample = new CommandLineRunner()
     {
-        VoidMain = TranslateV3DetectLanguageMain.Main,
-        Command = "Get Supported Languages"
+        VoidMain = TranslateV3DetectLanguageMain.Main
     };
 
 

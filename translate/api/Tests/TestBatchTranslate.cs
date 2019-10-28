@@ -19,8 +19,7 @@ namespace Tests
         protected string InputUri { get; private set; } = "gs://cloud-samples-data/translation/glossary_ja.csv";
         readonly CommandLineRunner _sample = new CommandLineRunner()
         {
-            VoidMain = TranslateV3BatchTranslateTextMain.Main,
-            Command = "Batch Translate Text"
+            VoidMain = TranslateV3BatchTranslateTextMain.Main
         };
 
         //Setup
