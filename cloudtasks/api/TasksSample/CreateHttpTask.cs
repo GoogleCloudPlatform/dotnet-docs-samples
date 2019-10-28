@@ -14,7 +14,7 @@
 
 // [START cloud_tasks_create_http_task]
 
-using Google.Cloud.Tasks.V2Beta3;
+using Google.Cloud.Tasks.V2;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System;
