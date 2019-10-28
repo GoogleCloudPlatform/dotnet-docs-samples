@@ -8,7 +8,7 @@ using GoogleCloudSamples;
 
 public class GetSupportedLanguagesTest
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GCLOUD_PROJECT");
+    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
     readonly CommandLineRunner _sample = new CommandLineRunner()
     {

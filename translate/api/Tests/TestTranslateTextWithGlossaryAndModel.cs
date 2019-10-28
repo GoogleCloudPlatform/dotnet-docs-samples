@@ -8,7 +8,7 @@ using GoogleCloudSamples;
 
 public class TranslateTextWithGlossaryAndModelTest : IDisposable
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GCLOUD_PROJECT");
+    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     protected string GlossaryId { get; private set; }
     protected string GlossaryInputUri { get; private set; } = "gs://cloud-samples-data/translation/glossary_ja.csv";
     protected string ModelId { get; private set; } = "TRL2188848820815848149";

@@ -13,7 +13,7 @@ namespace Tests
 {
     public class BatchTranslateWithGlossaryAndModelTest : IDisposable
     {
-        protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GCLOUD_PROJECT");
+        protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         protected string _bucketName { get; private set; }
 
         protected string GlossaryId { get; private set; }

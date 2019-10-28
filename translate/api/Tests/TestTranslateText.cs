@@ -8,7 +8,7 @@ using GoogleCloudSamples;
 
 public class TranslateTextTest
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GCLOUD_PROJECT");
+    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
     readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
