@@ -18,7 +18,7 @@ namespace Tests
         protected Bucket Bucket { get; private set; }
         protected string InputUri { get; private set; } = "gs://cloud-samples-data/translation/custom_model_text.txt";
 
-        protected string ModelId { get; private set; } = "TRL2188848820815848149";
+        protected string ModelId { get; private set; } = "TRL8772189639420149760";
         readonly CommandLineRunner _sample = new CommandLineRunner()
         {
             VoidMain = TranslateV3BatchTranslateTextWithModelMain.Main,

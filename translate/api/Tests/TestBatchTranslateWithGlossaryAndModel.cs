@@ -18,7 +18,7 @@ namespace Tests
 
         protected string GlossaryId { get; private set; }
         //TODO : Create and Train dotnet-docs-samples-testing automl model 
-        protected string ModelId { get; private set; } = "TRL2188848820815848149";
+        protected string ModelId { get; private set; } = "TRL8772189639420149760";
         protected string GlossaryInputUri { get; private set; } = "gs://cloud-samples-data/translation/glossary_ja.csv";
         protected string InputUri { get; private set; } = "gs://cloud-samples-data/translation/text_with_custom_model_and_glossary.txt";
         readonly CommandLineRunner _sample = new CommandLineRunner()
