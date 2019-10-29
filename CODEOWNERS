@@ -1,4 +1,4 @@
-*           @SurferJeffAtGoogle
+*           @amanda-tarafa
 
 bigquery/   @jsimonweb
 bigtable/   @jsimonweb
@@ -19,3 +19,5 @@ vision/     @beccasaurus
 applications/liftAndShiftPetshop/   @simonz130
 
 applications/googlehome-meets-dotnetcontainers/ @meteatamel
+
+applications/sudokumb   @SurferJeffAtGoogle
