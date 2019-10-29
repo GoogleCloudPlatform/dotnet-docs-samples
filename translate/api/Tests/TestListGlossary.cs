@@ -17,15 +17,14 @@ public class ListGlossaryTest : IDisposable
         VoidMain = TranslateV3ListGlossaryMain.Main
     };
 
-    //Setup
+    // Setup
     public ListGlossaryTest()
     {
         GlossaryId = "translate-v3" + TestUtil.RandomName();
         TranslateV3CreateGlossary.SampleCreateGlossary(ProjectId, GlossaryId, GlossaryInputUri);
     }
 
-
-    //TearDown
+    // TearDown
     public void Dispose()
     {
         TranslateV3DeleteGlossary.SampleDeleteGlossary(ProjectId, GlossaryId);
@@ -39,7 +38,6 @@ public class ListGlossaryTest : IDisposable
     {
         return _quickStart.Run(arguments);
     }
-
 
     [Fact]
     public void TestListGlossaries()

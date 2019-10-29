@@ -32,6 +32,7 @@ namespace Google.Cloud.Translate.V3.Samples
         public static void SampleBatchTranslateText(string inputUri, string outputUri, string projectId, string location, string sourceLang, string targetLang)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            // TODO(developer): Uncomment and set the following variables
             // string inputUri = "gs://cloud-samples-data/text.txt"
             // string outputUri = "gs://YOUR_BUCKET_ID/path_to_store_results/"
             // string projectId = "[Google Cloud Project ID]"
@@ -80,7 +81,7 @@ namespace Google.Cloud.Translate.V3.Samples
         {
             new Parser(with => with.CaseInsensitiveEnumValues = true).ParseArguments<Options>(args)
                 .WithParsed<Options>(opts =>
-                    TranslateV3BatchTranslateText.SampleBatchTranslateText(opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location, opts.SourceLang, opts.TargetLang));
+                    TranslateV3BatchTranslateText.SampleBatchTranslateText(opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location, opts.SourceLanguage, opts.TargetLanguage));
         }
 
         public class Options
@@ -97,11 +98,11 @@ namespace Google.Cloud.Translate.V3.Samples
             [Option("location", Default = "us-central1")]
             public string Location { get; set; }
 
-            [Option("source_lang", Default = "en")]
-            public string SourceLang { get; set; }
+            [Option("source_language", Default = "en")]
+            public string SourceLanguage { get; set; }
 
-            [Option("target_lang", Default = "ja")]
-            public string TargetLang { get; set; }
+            [Option("target_language", Default = "ja")]
+            public string TargetLanguage { get; set; }
         }
     }
 }

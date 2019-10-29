@@ -38,6 +38,7 @@ namespace Google.Cloud.Translate.V3.Samples
             string sourceLanguage)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            // TODO(developer): Uncomment and set the following variables
             // string inputUri = "gs://cloud-samples-data/text.txt"
             // string outputUri = "gs://YOUR_BUCKET_ID/path_to_store_results/"
             // string projectId = "[Google Cloud Project ID]"
@@ -77,9 +78,9 @@ namespace Google.Cloud.Translate.V3.Samples
                 Glossaries =
                 {
                     { targetLanguage, new TranslateTextGlossaryConfig
-                            {
-                                Glossary = glossaryPath,
-                            }
+                        {
+                            Glossary = glossaryPath,
+                        }
                     },
                 },
             };

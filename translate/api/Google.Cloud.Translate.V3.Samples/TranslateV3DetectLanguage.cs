@@ -32,6 +32,7 @@ namespace Google.Cloud.Translate.V3.Samples
         public static void SampleDetectLanguage(string text, string projectId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            // TODO(developer): Uncomment and set the following variables
             // string text = "Hello, world!"
             // string project = "[Google Cloud Project ID]"
             DetectLanguageRequest request = new DetectLanguageRequest

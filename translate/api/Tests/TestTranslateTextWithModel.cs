@@ -25,7 +25,6 @@ public class TranslateTextWithModelTest
         return _quickStart.Run(arguments);
     }
 
-
     [Fact]
     public void TestTranslateTextWithModel()
     {

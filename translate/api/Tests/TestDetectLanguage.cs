@@ -15,7 +15,6 @@ public class DetectLanguageTest
         VoidMain = TranslateV3DetectLanguageMain.Main
     };
 
-
     /// <summary>
     ///  Run the command and track all cloud assets that were created.
     /// </summary>

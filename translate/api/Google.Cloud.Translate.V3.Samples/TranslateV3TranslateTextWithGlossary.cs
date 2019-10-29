@@ -36,11 +36,12 @@ namespace Google.Cloud.Translate.V3.Samples
         public static void SampleTranslateTextWithGlossary(string text, string sourceLanguage, string targetLanguage, string projectId, string glossaryId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            // TODO(developer): Uncomment and set the following variables
             // string text = "Hello, world!"
             // string sourceLanguage = "en"
             // string targetLanguage = "fr"
             // string projectId = "[Google Cloud Project ID]"
-            // string glossaryPath = $"projects/[YOUR_PROJECT_ID]/locations/[LOCATION]/glossaries/[YOUR_GLOSSARY_ID]"
+            // string glossaryId = "[YOUR_GLOSSARY_ID]"
 
             string glossaryPath = $"projects/{projectId}/locations/{"us-central1"}/glossaries/{glossaryId}";
             TranslateTextRequest request = new TranslateTextRequest

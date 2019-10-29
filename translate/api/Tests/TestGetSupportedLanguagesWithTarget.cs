@@ -15,7 +15,6 @@ public class GetSupportedLanguagesWithTargetTest
         VoidMain = TranslateV3GetSupportedLanguagesForTargetMain.Main
     };
 
-
     /// <summary>
     ///  Run the command and track all cloud assets that were created.
     /// </summary>

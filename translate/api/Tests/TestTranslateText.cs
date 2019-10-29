@@ -24,7 +24,6 @@ public class TranslateTextTest
         return _quickStart.Run(arguments);
     }
 
-
     [Fact]
     public void TestTranslateText()
     {

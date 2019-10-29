@@ -24,10 +24,10 @@ namespace Tests
             VoidMain = TranslateV3BatchTranslateTextWithModelMain.Main
         };
 
-        //Setup
+        // Setup
         public BatchTranslateWithModelTest()
         {
-            //Create temp bucket
+            // Create temp bucket
             var storageClient = StorageClient.Create();
             _bucketName = "translate-v3-" + TestUtil.RandomName();
             Bucket = storageClient.CreateBucket(ProjectId, _bucketName);

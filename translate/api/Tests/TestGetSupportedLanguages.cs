@@ -15,7 +15,6 @@ public class GetSupportedLanguagesTest
         VoidMain = TranslateV3GetSupportedLanguagesMain.Main
     };
 
-
     /// <summary>
     ///  Run the command and track all cloud assets that were created.
     /// </summary>

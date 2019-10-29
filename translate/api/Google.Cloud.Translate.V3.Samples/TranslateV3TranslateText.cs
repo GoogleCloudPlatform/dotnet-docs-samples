@@ -34,6 +34,7 @@ namespace Google.Cloud.Translate.V3.Samples
         public static void SampleTranslateText(string text, string targetLanguage, string projectId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            // TODO(developer): Uncomment and set the following variables
             // string text = "Hello, world!"
             // string targetLanguage = "fr"
             // string projectId = "[Google Cloud Project ID]"

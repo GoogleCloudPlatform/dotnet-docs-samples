@@ -32,8 +32,8 @@ namespace Google.Cloud.Translate.V3.Samples
         public static void SampleCreateGlossary(string projectId, string glossaryId, string inputUri)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            // TODO(developer): Uncomment and set the following variables
             // string projectId = "[Google Cloud Project ID]"
-            // string project2 = "[Your Google Cloud Project ID]"
             // string glossaryId = "my_glossary_id_123"
             // string inputUri = "gs://cloud-samples-data/translation/glossary.csv"
             CreateGlossaryRequest request = new CreateGlossaryRequest
@@ -46,10 +46,10 @@ namespace Google.Cloud.Translate.V3.Samples
                     LanguageCodesSet = new Glossary.Types.LanguageCodesSet
                     {
                         LanguageCodes =
-                                           {
-                                               "en",
-                                               "ja",
-                                           },
+                        {
+                            "en", // source lang
+                            "ja", // target lang
+                        },
                     },
                     InputConfig = new GlossaryInputConfig
                     {

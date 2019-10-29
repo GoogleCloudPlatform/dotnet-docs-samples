@@ -17,7 +17,6 @@ namespace Tests
         protected string _bucketName { get; private set; }
 
         protected string GlossaryId { get; private set; }
-        //TODO : Create and Train dotnet-docs-samples-testing automl model 
         protected string ModelId { get; private set; } = "TRL8772189639420149760";
         protected string GlossaryInputUri { get; private set; } = "gs://cloud-samples-data/translation/glossary_ja.csv";
         protected string InputUri { get; private set; } = "gs://cloud-samples-data/translation/text_with_custom_model_and_glossary.txt";
@@ -26,15 +25,15 @@ namespace Tests
             VoidMain = BatchTranslateTextWithGlossaryAndModelMain.Main
         };
 
-        //Setup
+        // Setup
         public BatchTranslateWithGlossaryAndModelTest()
         {
-            //Create temp bucket
+            // Create temp bucket
             var storageClient = StorageClient.Create();
             _bucketName = "translate-v3-" + TestUtil.RandomName();
             storageClient.CreateBucket(ProjectId, _bucketName);
 
-            //Create temp glossary
+            // Create temp glossary
             GlossaryId = "must-start-with-letters" + TestUtil.RandomName();
             TranslateV3CreateGlossary.SampleCreateGlossary(ProjectId, GlossaryId, GlossaryInputUri);
         }

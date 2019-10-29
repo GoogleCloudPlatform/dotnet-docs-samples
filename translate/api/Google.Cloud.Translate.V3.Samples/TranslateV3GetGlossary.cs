@@ -31,6 +31,7 @@ namespace Google.Cloud.Translate.V3.Samples
         public static void SampleGetGlossary(string projectId, string glossaryId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            // TODO(developer): Uncomment and set the following variables
             // string projectId = "[Google Cloud Project ID]"
             // string glossaryId = "[Glossary ID]"
             GetGlossaryRequest request = new GetGlossaryRequest

@@ -31,6 +31,7 @@ namespace Google.Cloud.Translate.V3.Samples
         public static void SampleDeleteGlossary(string projectId, string glossaryId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            // TODO(developer): Uncomment and set the following variables
             // string project = "[Google Cloud Project ID]"
             // string glossaryId = "[Glossary ID]"
             DeleteGlossaryRequest request = new DeleteGlossaryRequest

@@ -24,15 +24,15 @@ namespace Tests
             VoidMain = BatchTranslateTextWithGlossaryMain.Main
         };
 
-        //Setup
+        // Setup
         public BatchTranslateWithGlossaryTest()
         {
-            //Create temp bucket
+            // Create temp bucket
             var storageClient = StorageClient.Create();
             _bucketName = "translate-v3-" + TestUtil.RandomName();
             storageClient.CreateBucket(ProjectId, _bucketName);
 
-            //Create temp glossary
+            // Create temp glossary
             GlossaryId = "must-start-with-letters" + TestUtil.RandomName();
             TranslateV3CreateGlossary.SampleCreateGlossary(ProjectId, GlossaryId, GlossaryInputUri);
         }

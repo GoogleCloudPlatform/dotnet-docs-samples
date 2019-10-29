@@ -32,6 +32,7 @@ namespace Google.Cloud.Translate.V3.Samples
         public static void SampleListGlossaries(string projectId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            // TODO(developer): Uncomment and set the following variables
             // string project = "[Google Cloud Project ID]"
             ListGlossariesRequest request = new ListGlossariesRequest
             {
