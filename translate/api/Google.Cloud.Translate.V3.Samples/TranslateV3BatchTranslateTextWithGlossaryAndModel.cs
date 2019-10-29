@@ -89,7 +89,7 @@ namespace Google.Cloud.Translate.V3.Samples
                     { targetLanguage, new TranslateTextGlossaryConfig
                         {
                             Glossary = glossaryPath,
-                        } 
+                        }
                     },
                 },
             };
