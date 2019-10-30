@@ -17,7 +17,7 @@
 // This is a generated sample ("LongRunningRequestPollUntilComplete", "batch_translate_text_with_glossary_and_model")
 
 using CommandLine;
-// [START batch_translate_text_with_glossary_and_model]
+// [START translate_v3_batch_translate_text_with_glossary_and_model]
 using Google.Cloud.Translate.V3;
 using System;
 using System.Collections.Generic;
@@ -101,7 +101,7 @@ namespace Google.Cloud.Translate.V3.Samples
         }
     }
 
-    // [END batch_translate_text_with_glossary_and_model]
+    // [END translate_v3_batch_translate_text_with_glossary_and_model]
 
     public class BatchTranslateTextWithGlossaryAndModelMain
     {
