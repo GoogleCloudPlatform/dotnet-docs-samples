@@ -31,7 +31,7 @@ public class TranslateTextWithModelTest
         var output = Run("--project_id=" + ProjectId,
             "--location=us-central1", "--text=That' il do it",
             "--target_language=ja", "--model_id=" + ModelId);
-        Assert.True(output.Stdout.Contains("\u305D\u308C\u306F\u305D\u3046\u3060") || output.Stdout.Contains("\u305D\u308C\u3058\u3083\u3042"));
+        Assert.True(output.Stdout.Contains("\u305D\u308C\u306F\u305D\u3046\u3060") || output.Stdout.Contains("\u3084\u308B"));
     }
 }
 

@@ -50,7 +50,8 @@ public class TranslateTextWithGlossaryAndModelTest : IDisposable
             "--target_language=ja",
             "--glossary_id=" + GlossaryId,
             "--model_id=" + ModelId);
-        Assert.True(output.Stdout.Contains("\u305D\u308C\u306F\u305D\u3046\u3060") || output.Stdout.Contains("\u305D\u308C\u3058\u3083\u3042")); //custom model
+        Assert.True(output.Stdout.Contains("\u3084\u308B\u6B3A\u304F")
+            || output.Stdout.Contains("\u305D\u308C\u3058\u3083\u3042")); // custom model
         Assert.Contains("\u6B3A\u304F", output.Stdout); //glossary
     }
 }
