@@ -29,7 +29,7 @@ namespace Google.Cloud.Translate.V3.Samples
         /// <summary>
         /// Batch translate text
         /// </summary>
-        public static void SampleBatchTranslateText(string inputUri, string outputUri, string projectId, string location, string sourceLang, string targetLang)
+        public static void SampleBatchTranslateText(string inputUri, string outputUri, string projectId, string location, string sourceLanguage, string targetLanguage)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
             // TODO(developer): Uncomment and set the following variables
@@ -37,15 +37,15 @@ namespace Google.Cloud.Translate.V3.Samples
             // string outputUri = "gs://YOUR_BUCKET_ID/path_to_store_results/"
             // string projectId = "[Google Cloud Project ID]"
             // string location = "us-central1"
-            // string sourceLang = "en"
-            // string targetLang = "ja"
+            // string sourceLanguage = "en"
+            // string targetLanguage = "ja"
             BatchTranslateTextRequest request = new BatchTranslateTextRequest
             {
                 ParentAsLocationName = new LocationName(projectId, location),
-                SourceLanguageCode = sourceLang,
+                SourceLanguageCode = sourceLanguage,
                 TargetLanguageCodes =
                 {
-                    targetLang,
+                    targetLanguage,
                 },
                 InputConfigs =
                 {

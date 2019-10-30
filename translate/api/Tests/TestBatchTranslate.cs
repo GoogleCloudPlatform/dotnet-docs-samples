@@ -61,8 +61,8 @@ namespace Tests
 
             var output = _sample.Run("--project_id=" + ProjectId,
                 "--location=us-central1",
-                "--source_lang=en",
-                "--target_lang=es",
+                "--source_language=en",
+                "--target_language=es",
                 "--output_uri=" + outputUri,
                 "--input_uri=gs://cloud-samples-data/translation/text.txt");
 
