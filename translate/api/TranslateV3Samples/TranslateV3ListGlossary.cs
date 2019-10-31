@@ -32,8 +32,6 @@ namespace TranslateV3Samples
         public static void ListGlossariesSample(string projectId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
-            // TODO(developer): Uncomment and set the following variables
-            // string project = "[Google Cloud Project ID]"
             ListGlossariesRequest request = new ListGlossariesRequest
             {
                 ParentAsLocationName = new LocationName(projectId, "us-central1"),

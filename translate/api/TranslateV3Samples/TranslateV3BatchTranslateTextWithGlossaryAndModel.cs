@@ -39,15 +39,6 @@ namespace TranslateV3Samples
             string sourceLanguage, string modelId, string glossaryId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
-            // TODO(developer): Uncomment and set the following variables
-            // string inputUri = "gs://cloud-samples-data/text.txt"
-            // string outputUri = "gs://YOUR_BUCKET_ID/path_to_store_results/"
-            // string projectId = "[Google Cloud Project ID]"
-            // string location = "us-central1"
-            // string targetLanguage = "en"
-            // string sourceLanguage = "de"
-            // string modelId = "{YOUR_MODEL_ID}"
-            // string glossaryId = "{YOUR_GLOSSARY_ID}"
 
             string modelPath = $"projects/{projectId}/locations/{location}/models/{modelId}";
             string glossaryPath = $"projects/{projectId}/locations/{location}/glossaries/{glossaryId}";

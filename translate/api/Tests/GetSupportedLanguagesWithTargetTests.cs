@@ -6,13 +6,13 @@ using Xunit;
 using TranslateV3Samples;
 using GoogleCloudSamples;
 
-public class GetSupportedLanguagesTest
+public class GetSupportedLanguagesWithTargetTests
 {
     private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
     private readonly CommandLineRunner _sample = new CommandLineRunner()
     {
-        VoidMain = TranslateV3GetSupportedLanguagesMain.Main
+        VoidMain = TranslateV3GetSupportedLanguagesForTargetMain.Main
     };
 
     /// <summary>
@@ -25,9 +25,10 @@ public class GetSupportedLanguagesTest
     }
 
     [Fact]
-    public void GetSupportedLanguages()
+    public void GetSupportedLanguagesWithTargetTest()
     {
-        var output = Run("--project_id=" + _projectId);
-        Assert.Contains("zh-CN", output.Stdout);
+        var output = Run("--project_id=" + _projectId, "--language_code=is");
+        Assert.Contains("Language Code: sq", output.Stdout);
+        Assert.Contains("Display Name: albanska", output.Stdout);
     }
 }

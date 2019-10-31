@@ -34,10 +34,6 @@ namespace TranslateV3Samples
         public static void TranslateTextSample(string text, string targetLanguage, string projectId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
-            // TODO(developer): Uncomment and set the following variables
-            // string text = "Hello, world!"
-            // string targetLanguage = "fr"
-            // string projectId = "[Google Cloud Project ID]"
             TranslateTextRequest request = new TranslateTextRequest
             {
                 Contents =

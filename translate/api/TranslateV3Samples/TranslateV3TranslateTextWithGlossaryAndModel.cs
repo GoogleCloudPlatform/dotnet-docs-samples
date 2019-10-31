@@ -38,14 +38,6 @@ namespace TranslateV3Samples
             string targetLanguage, string sourceLanguage, string projectId, string location)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
-            // TODO(developer): Uncomment and set the following variables
-            // string modelId = "[YOUR_MODEL_ID]"
-            // string glossaryId = "[YOUR_GLOSSARY_ID]"
-            // string text = "Hello, world!"
-            // string targetLanguage = "fr"
-            // string sourceLanguage = "en"
-            // string projectId = "[Google Cloud Project ID]"
-            // string location = "global"
             string modelPath = $"projects/{projectId}/locations/{location}/models/{modelId}";
             string glossaryPath = $"projects/{projectId}/locations/{location}/glossaries/{glossaryId}";
 

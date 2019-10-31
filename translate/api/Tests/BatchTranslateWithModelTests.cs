@@ -11,21 +11,21 @@ using System.Linq;
 
 namespace Tests
 {
-    public class BatchTranslateWithGlossaryAndModelTest : IDisposable
+    public class BatchTranslateWithModelTests : IDisposable
     {
         private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly string _modelId = "TRL8772189639420149760";
+        private readonly string _inputUri = "gs://cloud-samples-data/translation/custom_model_text.txt";
         private readonly string _bucketName;
-        protected string GlossaryId { get; private set; }
-        protected string ModelId { get; private set; } = "TRL8772189639420149760";
-        protected string GlossaryInputUri { get; private set; } = "gs://cloud-samples-data/translation/glossary_ja.csv";
-        protected string InputUri { get; private set; } = "gs://cloud-samples-data/translation/text_with_custom_model_and_glossary.txt";
+        protected Bucket Bucket { get; private set; }
+
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {
-            VoidMain = BatchTranslateTextWithGlossaryAndModelMain.Main
+            VoidMain = TranslateV3BatchTranslateTextWithModelMain.Main
         };
 
         // Setup
-        public BatchTranslateWithGlossaryAndModelTest()
+        public BatchTranslateWithModelTests()
         {
             // Create temp bucket
             using (var storageClient = StorageClient.Create())
@@ -33,10 +33,6 @@ namespace Tests
                 _bucketName = "translate-v3-" + TestUtil.RandomName();
                 storageClient.CreateBucket(_projectId, _bucketName);
             }
-
-            // Create temp glossary
-            GlossaryId = "must-start-with-letters" + TestUtil.RandomName();
-            TranslateV3CreateGlossary.CreateGlossarySample(_projectId, GlossaryId, GlossaryInputUri);
         }
 
         public void Dispose()
@@ -45,15 +41,12 @@ namespace Tests
             {
                 // Clean up output files.
                 var blobList = storageClient.ListObjects(_bucketName, "");
-                foreach (var outputFile in blobList.Where(x => x.Name.Contains("translation/")).Select(x => x.Name))
+                storageClient.DeleteBucket(_bucketName,
+                new DeleteBucketOptions
                 {
-                    storageClient.DeleteObject(_bucketName, outputFile);
-                }
-                storageClient.DeleteBucket(_bucketName);
+                    DeleteObjects = true
+                }); ;
             }
-
-            // Clean up glossary
-            TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, GlossaryId);
         }
 
         /// <summary>
@@ -66,7 +59,7 @@ namespace Tests
         }
 
         [Fact]
-        public void BatchTranslateTextWithGlossaryAndModel()
+        public void BatchTranslateTextWithModelTest()
         {
             string outputUri =
                 string.Format("gs://{0}/translation/BATCH_TRANSLATION_OUTPUT/", _bucketName);
@@ -75,11 +68,11 @@ namespace Tests
                 "--location=us-central1",
                 "--source_language=en",
                 "--target_language=ja",
-                "--glossary_id=" + GlossaryId,
-                "--model_id=" + ModelId,
                 "--output_uri=" + outputUri,
-                "--input_uri=" + InputUri);
-            Assert.Contains("Total Characters: 25", output.Stdout);
+                "--input_uri=" + _inputUri,
+                "--model_id=" + _modelId);
+
+            Assert.Contains("Total Characters: 15", output.Stdout);
         }
     }
 }

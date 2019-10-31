@@ -6,22 +6,21 @@ using Xunit;
 using TranslateV3Samples;
 using GoogleCloudSamples;
 
-public class GetGlossaryTest : IDisposable
+public class ListGlossaryTests : IDisposable
 {
     private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
     protected string GlossaryId { get; private set; }
-    protected string GlossaryInputUri { get; private set; } = "gs://cloud-samples-data/translation/glossary_ja.csv";
-
-    private readonly CommandLineRunner _sample = new CommandLineRunner()
+    private readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
-        VoidMain = TranslateV3GetGlossaryMain.Main
+        VoidMain = TranslateV3ListGlossaryMain.Main
     };
 
     // Setup
-    public GetGlossaryTest()
+    public ListGlossaryTests()
     {
         GlossaryId = "translate-v3" + TestUtil.RandomName();
-        TranslateV3CreateGlossary.CreateGlossarySample(_projectId, GlossaryId, GlossaryInputUri);
+        TranslateV3CreateGlossary.CreateGlossarySample(_projectId, GlossaryId, _glossaryInputUri);
     }
 
     // TearDown
@@ -36,13 +35,13 @@ public class GetGlossaryTest : IDisposable
     /// <param name="arguments">The command arguments.</param>
     public ConsoleOutput Run(params string[] arguments)
     {
-        return _sample.Run(arguments);
+        return _quickStart.Run(arguments);
     }
 
     [Fact]
-    public void GetGlossary()
+    public void ListGlossariesTest()
     {
-        var output = Run("--project_id=" + _projectId, "--glossary_id=" + GlossaryId);
+        var output = Run("--project_id=" + _projectId);
         Assert.Contains("gs://cloud-samples-data/translation/glossary_ja.csv", output.Stdout);
     }
 }

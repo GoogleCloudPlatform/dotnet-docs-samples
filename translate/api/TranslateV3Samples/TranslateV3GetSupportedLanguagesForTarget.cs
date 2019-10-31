@@ -31,9 +31,6 @@ namespace TranslateV3Samples
         public static void GetSupportedLanguagesForTargetSample(string languageCode, string projectId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
-            // TODO(developer): Uncomment and set the following variables
-            // string languageCode = "en"
-            // string projectId = "[Google Cloud Project ID]"
             GetSupportedLanguagesRequest request = new GetSupportedLanguagesRequest
             {
                 ParentAsLocationName = new LocationName(projectId, "global"),

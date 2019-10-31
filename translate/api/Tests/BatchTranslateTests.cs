@@ -11,21 +11,18 @@ using System.Linq;
 
 namespace Tests
 {
-    public class BatchTranslateWithModelTest : IDisposable
+    public class BatchTranslateTests : IDisposable
     {
         private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         private readonly string _bucketName;
-        protected Bucket Bucket { get; private set; }
-        protected string InputUri { get; private set; } = "gs://cloud-samples-data/translation/custom_model_text.txt";
 
-        protected string ModelId { get; private set; } = "TRL8772189639420149760";
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {
-            VoidMain = TranslateV3BatchTranslateTextWithModelMain.Main
+            VoidMain = TranslateV3BatchTranslateTextMain.Main
         };
 
         // Setup
-        public BatchTranslateWithModelTest()
+        public BatchTranslateTests()
         {
             // Create temp bucket
             using (var storageClient = StorageClient.Create())
@@ -41,11 +38,11 @@ namespace Tests
             {
                 // Clean up output files.
                 var blobList = storageClient.ListObjects(_bucketName, "");
-                foreach (var outputFile in blobList.Where(x => x.Name.Contains("translation/")).Select(x => x.Name))
+                storageClient.DeleteBucket(_bucketName,
+                new DeleteBucketOptions
                 {
-                    storageClient.DeleteObject(_bucketName, outputFile);
-                }
-                storageClient.DeleteBucket(_bucketName);
+                    DeleteObjects = true
+                }); ;
             }
         }
 
@@ -59,7 +56,7 @@ namespace Tests
         }
 
         [Fact]
-        public void BatchTranslateTextWithModel()
+        public void BatchTranslateTextTest()
         {
             string outputUri =
                 string.Format("gs://{0}/translation/BATCH_TRANSLATION_OUTPUT/", _bucketName);
@@ -67,12 +64,11 @@ namespace Tests
             var output = _sample.Run("--project_id=" + _projectId,
                 "--location=us-central1",
                 "--source_language=en",
-                "--target_language=ja",
+                "--target_language=es",
                 "--output_uri=" + outputUri,
-                "--input_uri=" + InputUri,
-                "--model_id=" + ModelId);
+                "--input_uri=gs://cloud-samples-data/translation/text.txt");
 
-            Assert.Contains("Total Characters: 15", output.Stdout);
+            Assert.Contains("Total Characters: 13", output.Stdout);
         }
     }
 }

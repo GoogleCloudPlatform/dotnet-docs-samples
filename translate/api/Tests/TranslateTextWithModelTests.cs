@@ -6,10 +6,10 @@ using Xunit;
 using TranslateV3Samples;
 using GoogleCloudSamples;
 
-public class TranslateTextWithModelTest
+public class TranslateTextWithModelTests
 {
     private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    protected string ModelId { get; private set; } = "TRL8772189639420149760";
+    private readonly string _modelId = "TRL8772189639420149760";
 
     private readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
@@ -26,11 +26,11 @@ public class TranslateTextWithModelTest
     }
 
     [Fact]
-    public void TranslateTextWithModel()
+    public void TranslateTextWithModelTest()
     {
         var output = Run("--project_id=" + _projectId,
             "--location=us-central1", "--text=That' il do it",
-            "--target_language=ja", "--model_id=" + ModelId);
+            "--target_language=ja", "--model_id=" + _modelId);
         Assert.True(output.Stdout.Contains("\u305D\u308C\u306F\u305D\u3046\u3060") || output.Stdout.Contains("\u3084\u308B"));
     }
 }

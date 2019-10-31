@@ -36,14 +36,6 @@ namespace TranslateV3Samples
         public static void BatchTranslateTextWithModelSample(string inputUri, string outputUri, string projectId, string location, string targetLanguage, string sourceLanguage, string modelId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
-            // TODO(developer): Uncomment and set the following variables
-            // string inputUri = "gs://cloud-samples-data/text.txt"
-            // string outputUri = "gs://YOUR_BUCKET_ID/path_to_store_results/"
-            // string projectId = "[Google Cloud Project ID]"
-            // string location = "us-central1"
-            // string targetLanguage = "en"
-            // string sourceLanguage = "de"
-            // string modelId = "YOUR_MODEL_ID"
             string modelPath = $"projects/{projectId}/locations/{location}/models/{modelId}";
 
             BatchTranslateTextRequest request = new BatchTranslateTextRequest
