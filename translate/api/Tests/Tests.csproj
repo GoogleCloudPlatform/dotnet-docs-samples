@@ -8,7 +8,7 @@
 
   <ItemGroup>
       <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
-      <ProjectReference Include=" ..\Google.Cloud.Translate.V3.Samples\Google.Cloud.Translate.V3.Samples.csproj" />
+      <ProjectReference Include=" ..\TranslateV3Samples\TranslateV3Samples.csproj" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">

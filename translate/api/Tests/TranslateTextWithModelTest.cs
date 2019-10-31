@@ -3,15 +3,15 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using Google.Cloud.Translate.V3.Samples;
+using TranslateV3Samples;
 using GoogleCloudSamples;
 
 public class TranslateTextWithModelTest
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     protected string ModelId { get; private set; } = "TRL8772189639420149760";
 
-    readonly CommandLineRunner _quickStart = new CommandLineRunner()
+    private readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
         VoidMain = TranslateV3TranslateTextWithModelMain.Main
     };
@@ -26,9 +26,9 @@ public class TranslateTextWithModelTest
     }
 
     [Fact]
-    public void TestTranslateTextWithModel()
+    public void TranslateTextWithModel()
     {
-        var output = Run("--project_id=" + ProjectId,
+        var output = Run("--project_id=" + _projectId,
             "--location=us-central1", "--text=That' il do it",
             "--target_language=ja", "--model_id=" + ModelId);
         Assert.True(output.Stdout.Contains("\u305D\u308C\u306F\u305D\u3046\u3060") || output.Stdout.Contains("\u3084\u308B"));

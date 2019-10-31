@@ -3,14 +3,14 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using Google.Cloud.Translate.V3.Samples;
+using TranslateV3Samples;
 using GoogleCloudSamples;
 
 public class GetSupportedLanguagesTest
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-    readonly CommandLineRunner _sample = new CommandLineRunner()
+    private readonly CommandLineRunner _sample = new CommandLineRunner()
     {
         VoidMain = TranslateV3GetSupportedLanguagesMain.Main
     };
@@ -25,9 +25,9 @@ public class GetSupportedLanguagesTest
     }
 
     [Fact]
-    public void TestGetSupportedLanguages()
+    public void GetSupportedLanguages()
     {
-        var output = Run("--project_id=" + ProjectId);
+        var output = Run("--project_id=" + _projectId);
         Assert.Contains("zh-CN", output.Stdout);
     }
 }

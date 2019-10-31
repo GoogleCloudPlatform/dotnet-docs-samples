@@ -3,16 +3,16 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using Google.Cloud.Translate.V3.Samples;
+using TranslateV3Samples;
 using GoogleCloudSamples;
 
 public class GetGlossaryTest : IDisposable
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     protected string GlossaryId { get; private set; }
     protected string GlossaryInputUri { get; private set; } = "gs://cloud-samples-data/translation/glossary_ja.csv";
 
-    readonly CommandLineRunner _sample = new CommandLineRunner()
+    private readonly CommandLineRunner _sample = new CommandLineRunner()
     {
         VoidMain = TranslateV3GetGlossaryMain.Main
     };
@@ -21,13 +21,13 @@ public class GetGlossaryTest : IDisposable
     public GetGlossaryTest()
     {
         GlossaryId = "translate-v3" + TestUtil.RandomName();
-        TranslateV3CreateGlossary.SampleCreateGlossary(ProjectId, GlossaryId, GlossaryInputUri);
+        TranslateV3CreateGlossary.CreateGlossarySample(_projectId, GlossaryId, GlossaryInputUri);
     }
 
     // TearDown
     public void Dispose()
     {
-        TranslateV3DeleteGlossary.SampleDeleteGlossary(ProjectId, GlossaryId);
+        TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, GlossaryId);
     }
 
     /// <summary>
@@ -40,9 +40,9 @@ public class GetGlossaryTest : IDisposable
     }
 
     [Fact]
-    public void TestGetGlossary()
+    public void GetGlossary()
     {
-        var output = Run("--project_id=" + ProjectId, "--glossary_id=" + GlossaryId);
+        var output = Run("--project_id=" + _projectId, "--glossary_id=" + GlossaryId);
         Assert.Contains("gs://cloud-samples-data/translation/glossary_ja.csv", output.Stdout);
     }
 }

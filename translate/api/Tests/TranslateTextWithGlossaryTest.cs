@@ -3,16 +3,16 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using Google.Cloud.Translate.V3.Samples;
+using TranslateV3Samples;
 using GoogleCloudSamples;
 
 public class TranslateTextWithGlossaryTest : IDisposable
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     protected string GlossaryId { get; private set; }
     protected string GlossaryInputUri { get; private set; } = "gs://cloud-samples-data/translation/glossary_ja.csv";
 
-    readonly CommandLineRunner _quickStart = new CommandLineRunner()
+    private readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
         VoidMain = TranslateV3TranslateTextWithGlossaryMain.Main
     };
@@ -21,13 +21,13 @@ public class TranslateTextWithGlossaryTest : IDisposable
     public TranslateTextWithGlossaryTest()
     {
         GlossaryId = "translate-v3" + TestUtil.RandomName();
-        TranslateV3CreateGlossary.SampleCreateGlossary(ProjectId, GlossaryId, GlossaryInputUri);
+        TranslateV3CreateGlossary.CreateGlossarySample(_projectId, GlossaryId, GlossaryInputUri);
     }
 
     // TearDown
     public void Dispose()
     {
-        TranslateV3DeleteGlossary.SampleDeleteGlossary(ProjectId, GlossaryId);
+        TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, GlossaryId);
     }
 
     /// <summary>
@@ -40,9 +40,9 @@ public class TranslateTextWithGlossaryTest : IDisposable
     }
 
     [Fact]
-    public void TestTranslateTextWithGlossary()
+    public void TranslateTextWithGlossary()
     {
-        var output = Run("--project_id=" + ProjectId, "--text=account", "--target_language=ja", "--glossary_id=" + GlossaryId);
+        var output = Run("--project_id=" + _projectId, "--text=account", "--target_language=ja", "--glossary_id=" + GlossaryId);
         Assert.True(output.Stdout.Contains("\u30A2\u30AB\u30A6\u30F3\u30C8") || output.Stdout.Contains("\u53E3\u5EA7"));
     }
 }

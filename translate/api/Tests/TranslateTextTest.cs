@@ -3,14 +3,14 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using Google.Cloud.Translate.V3.Samples;
+using TranslateV3Samples;
 using GoogleCloudSamples;
 
 public class TranslateTextTest
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-    readonly CommandLineRunner _quickStart = new CommandLineRunner()
+    private readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
         VoidMain = TranslateV3TranslateTextMain.Main
     };
@@ -25,9 +25,9 @@ public class TranslateTextTest
     }
 
     [Fact]
-    public void TestTranslateText()
+    public void TranslateText()
     {
-        var output = Run("--project_id=" + ProjectId, "--text=Hello world", "--target_language=sr-Latn");
+        var output = Run("--project_id=" + _projectId, "--text=Hello world", "--target_language=sr-Latn");
         Assert.True(output.Stdout.Contains("Zdravo svet") || output.Stdout.Contains("Pozdrav svijetu"));
     }
 }

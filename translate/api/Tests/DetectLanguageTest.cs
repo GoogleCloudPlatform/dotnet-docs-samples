@@ -3,14 +3,14 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using Google.Cloud.Translate.V3.Samples;
+using TranslateV3Samples;
 using GoogleCloudSamples;
 
 public class DetectLanguageTest
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-    readonly CommandLineRunner _sample = new CommandLineRunner()
+    private readonly CommandLineRunner _sample = new CommandLineRunner()
     {
         VoidMain = TranslateV3DetectLanguageMain.Main
     };
@@ -25,9 +25,9 @@ public class DetectLanguageTest
     }
 
     [Fact]
-    public void TestDetectLanguage()
+    public void DetectLanguage()
     {
-        var output = Run("--project_id=" + ProjectId, "--text=H\u00E6 s\u00E6ta");
+        var output = Run("--project_id=" + _projectId, "--text=H\u00E6 s\u00E6ta");
         Assert.Contains("is", output.Stdout);
     }
 }

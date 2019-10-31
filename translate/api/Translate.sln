@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickStart", "QuickStart\Qu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snippets", "Snippets\Snippets.csproj", "{843771A2-E7AC-41A8-A6FE-CF5F1FB2F623}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Google.Cloud.Translate.V3.Samples", "Google.Cloud.Translate.V3.Samples\Google.Cloud.Translate.V3.Samples.csproj", "{18E25C5E-C466-463D-B4A8-4BE536083025}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslateV3Samples", "TranslateV3Samples\TranslateV3Samples.csproj", "{18E25C5E-C466-463D-B4A8-4BE536083025}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{7399DC4A-4D80-4E57-AB71-1B6F94A554A9}"
 EndProject

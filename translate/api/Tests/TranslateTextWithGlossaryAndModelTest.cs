@@ -3,18 +3,18 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using Google.Cloud.Translate.V3.Samples;
+using TranslateV3Samples;
 using GoogleCloudSamples;
 
 public class TranslateTextWithGlossaryAndModelTest : IDisposable
 {
-    protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     protected string GlossaryId { get; private set; }
     protected string GlossaryInputUri { get; private set; } = "gs://cloud-samples-data/translation/glossary_ja.csv";
     protected string ModelId { get; private set; } = "TRL8772189639420149760";
     protected string InputUri { get; private set; } = "gs://cloud-samples-data/translation/text_with_custom_model_and_glossary.txt";
 
-    readonly CommandLineRunner _quickStart = new CommandLineRunner()
+    private readonly CommandLineRunner _quickStart = new CommandLineRunner()
     {
         VoidMain = TranslateV3TranslateTextWithGlossaryAndModelMain.Main
     };
@@ -23,13 +23,13 @@ public class TranslateTextWithGlossaryAndModelTest : IDisposable
     public TranslateTextWithGlossaryAndModelTest()
     {
         GlossaryId = "translate-v3" + TestUtil.RandomName();
-        TranslateV3CreateGlossary.SampleCreateGlossary(ProjectId, GlossaryId, GlossaryInputUri);
+        TranslateV3CreateGlossary.CreateGlossarySample(_projectId, GlossaryId, GlossaryInputUri);
     }
 
     // TearDown
     public void Dispose()
     {
-        TranslateV3DeleteGlossary.SampleDeleteGlossary(ProjectId, GlossaryId);
+        TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, GlossaryId);
     }
 
     /// <summary>
@@ -42,9 +42,9 @@ public class TranslateTextWithGlossaryAndModelTest : IDisposable
     }
 
     [Fact]
-    public void TestTranslateTextWithGlossaryAndModel()
+    public void TranslateTextWithGlossaryAndModel()
     {
-        var output = Run("--project_id=" + ProjectId,
+        var output = Run("--project_id=" + _projectId,
             "--location=us-central1",
             "--text=That' il do it. deception",
             "--target_language=ja",
