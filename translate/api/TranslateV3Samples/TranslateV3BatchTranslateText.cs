@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Generated code. DO NOT EDIT!
-
-// This is a generated sample ("LongRunningRequestPollUntilComplete", "translate_v3_batch_translate_text")
-
-using CommandLine;
 // [START translate_v3_batch_translate_text]
 using System;
 using System.Collections.Generic;
 using Google.Cloud.Translate.V3;
 
-namespace TranslateV3Samples
+namespace GoogleCloudSamples
 {
     public static class TranslateV3BatchTranslateText
     {
@@ -67,35 +62,4 @@ namespace TranslateV3Samples
     }
 
     // [END translate_v3_batch_translate_text]
-
-    public class TranslateV3BatchTranslateTextMain
-    {
-        public static void Main(string[] args)
-        {
-            new Parser(with => with.CaseInsensitiveEnumValues = true).ParseArguments<Options>(args)
-                .WithParsed<Options>(opts =>
-                    TranslateV3BatchTranslateText.BatchTranslateTextSample(opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location, opts.SourceLanguage, opts.TargetLanguage));
-        }
-
-        public class Options
-        {
-            [Option("input_uri", Default = "gs://cloud-samples-data/text.txt")]
-            public string InputUri { get; set; }
-
-            [Option("output_uri", Default = "gs://YOUR_BUCKET_ID/path_to_store_results/")]
-            public string OutputUri { get; set; }
-
-            [Option("project_id", Default = "[Google Cloud Project ID]")]
-            public string ProjectId { get; set; }
-
-            [Option("location", Default = "us-central1")]
-            public string Location { get; set; }
-
-            [Option("source_language", Default = "en")]
-            public string SourceLanguage { get; set; }
-
-            [Option("target_language", Default = "ja")]
-            public string TargetLanguage { get; set; }
-        }
-    }
 }

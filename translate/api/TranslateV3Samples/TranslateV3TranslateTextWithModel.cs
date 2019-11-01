@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Generated code. DO NOT EDIT!
-
-// This is a generated sample ("Request", "translate_v3_translate_text_with_model")
-
 using CommandLine;
 // [START translate_v3_translate_text_with_model]
 using Google.Cloud.Translate.V3;
 using System;
-using System.Collections.Generic;
 
-namespace TranslateV3Samples
+namespace GoogleCloudSamples
 {
     public static class TranslateV3TranslateTextWithModel
     {
@@ -62,35 +57,4 @@ namespace TranslateV3Samples
     }
 
     // [END translate_v3_translate_text_with_model]
-
-    public class TranslateV3TranslateTextWithModelMain
-    {
-        public static void Main(string[] args)
-        {
-            new Parser(with => with.CaseInsensitiveEnumValues = true).ParseArguments<Options>(args)
-                .WithParsed<Options>(opts =>
-                    TranslateV3TranslateTextWithModel.TranslateTextWithModelSample(opts.ModelId, opts.Text, opts.TargetLanguage, opts.SourceLanguage, opts.ProjectId, opts.Location));
-        }
-
-        public class Options
-        {
-            [Option("model_id", Default = "[MODEL ID]")]
-            public string ModelId { get; set; }
-
-            [Option("text", Default = "Hello, world!")]
-            public string Text { get; set; }
-
-            [Option("target_language", Default = "fr")]
-            public string TargetLanguage { get; set; }
-
-            [Option("source_language", Default = "en")]
-            public string SourceLanguage { get; set; }
-
-            [Option("project_id", Default = "[Google Cloud Project ID]")]
-            public string ProjectId { get; set; }
-
-            [Option("location", Default = "global")]
-            public string Location { get; set; }
-        }
-    }
 }

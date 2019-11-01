@@ -1,15 +1,23 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
-using TranslateV3Samples;
-using GoogleCloudSamples;
-using Google.Cloud.Storage.V1;
-using Google.Apis.Storage.v1.Data;
-using System.Linq;
+﻿// Copyright 2019 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-namespace Tests
+using System;
+using Xunit;
+using Google.Cloud.Storage.V1;
+using CommandLine;
+
+namespace GoogleCloudSamples
 {
     public class BatchTranslateWithGlossaryAndModelTests : IDisposable
     {
@@ -18,10 +26,10 @@ namespace Tests
         private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
         private readonly string _inputUri = "gs://cloud-samples-data/translation/text_with_custom_model_and_glossary.txt";
         private readonly string _bucketName;
-        protected string GlossaryId { get; private set; }
+        private readonly string _glossaryId;
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {
-            VoidMain = BatchTranslateTextWithGlossaryAndModelMain.Main
+            VoidMain = TranslateV3Samples.Main
         };
 
         // Setup
@@ -35,34 +43,23 @@ namespace Tests
             }
 
             // Create temp glossary
-            GlossaryId = "must-start-with-letters" + TestUtil.RandomName();
-            TranslateV3CreateGlossary.CreateGlossarySample(_projectId, GlossaryId, _glossaryInputUri);
+            _glossaryId = "must-start-with-letters" + TestUtil.RandomName();
+            TranslateV3CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
         }
 
         public void Dispose()
         {
             using (var storageClient = StorageClient.Create())
             {
-                // Clean up output files.
-                var blobList = storageClient.ListObjects(_bucketName, "");
                 storageClient.DeleteBucket(_bucketName,
                 new DeleteBucketOptions
                 {
                     DeleteObjects = true
-                }); ;
+                });
             }
 
             // Clean up glossary
-            TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, GlossaryId);
-        }
-
-        /// <summary>
-        ///  Run the command and track all cloud assets that were created.
-        /// </summary>
-        /// <param name="arguments">The command arguments.</param>
-        public ConsoleOutput Run(params string[] arguments)
-        {
-            return _sample.Run(arguments);
+            TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
         }
 
         [Fact]
@@ -71,11 +68,12 @@ namespace Tests
             string outputUri =
                 string.Format("gs://{0}/translation/BATCH_TRANSLATION_OUTPUT/", _bucketName);
 
-            var output = _sample.Run("--project_id=" + _projectId,
+            var output = _sample.Run("batchTranslateTextWithGlossaryAndModel",
+                "--project_id=" + _projectId,
                 "--location=us-central1",
                 "--source_language=en",
                 "--target_language=ja",
-                "--glossary_id=" + GlossaryId,
+                "--glossary_id=" + _glossaryId,
                 "--model_id=" + _modelId,
                 "--output_uri=" + outputUri,
                 "--input_uri=" + _inputUri);

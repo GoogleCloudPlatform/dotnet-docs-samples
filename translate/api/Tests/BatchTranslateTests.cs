@@ -1,15 +1,23 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
-using TranslateV3Samples;
-using GoogleCloudSamples;
-using Google.Cloud.Storage.V1;
-using Google.Apis.Storage.v1.Data;
-using System.Linq;
+﻿// Copyright 2019 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-namespace Tests
+using System;
+using CommandLine;
+using Xunit;
+using Google.Cloud.Storage.V1;
+
+namespace GoogleCloudSamples
 {
     public class BatchTranslateTests : IDisposable
     {
@@ -18,7 +26,7 @@ namespace Tests
 
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {
-            VoidMain = TranslateV3BatchTranslateTextMain.Main
+            VoidMain = TranslateV3Samples.Main
         };
 
         // Setup
@@ -36,23 +44,12 @@ namespace Tests
         {
             using (var storageClient = StorageClient.Create())
             {
-                // Clean up output files.
-                var blobList = storageClient.ListObjects(_bucketName, "");
                 storageClient.DeleteBucket(_bucketName,
                 new DeleteBucketOptions
                 {
                     DeleteObjects = true
-                }); ;
+                }); 
             }
-        }
-
-        /// <summary>
-        ///  Run the command and track all cloud assets that were created.
-        /// </summary>
-        /// <param name="arguments">The command arguments.</param>
-        public ConsoleOutput Run(params string[] arguments)
-        {
-            return _sample.Run(arguments);
         }
 
         [Fact]
@@ -60,8 +57,9 @@ namespace Tests
         {
             string outputUri =
                 string.Format("gs://{0}/translation/BATCH_TRANSLATION_OUTPUT/", _bucketName);
-
-            var output = _sample.Run("--project_id=" + _projectId,
+            
+            var output = _sample.Run("batchTranslateText",
+                "--project_id=" + _projectId,
                 "--location=us-central1",
                 "--source_language=en",
                 "--target_language=es",

@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Generated code. DO NOT EDIT!
-
-// This is a generated sample ("Request", "translate_v3_get_supported_languages_for_target")
-
 using CommandLine;
 // [START translate_v3_get_supported_languages_for_target]
 using Google.Cloud.Translate.V3;
 using System;
 
-namespace TranslateV3Samples
+namespace GoogleCloudSamples
 {
     public static class TranslateV3GetSupportedLanguagesForTarget
     {
@@ -47,23 +43,4 @@ namespace TranslateV3Samples
     }
 
     // [END translate_v3_get_supported_languages_for_target]
-
-    public class TranslateV3GetSupportedLanguagesForTargetMain
-    {
-        public static void Main(string[] args)
-        {
-            new Parser(with => with.CaseInsensitiveEnumValues = true).ParseArguments<Options>(args)
-                .WithParsed<Options>(opts =>
-                    TranslateV3GetSupportedLanguagesForTarget.GetSupportedLanguagesForTargetSample(opts.LanguageCode, opts.ProjectId));
-        }
-
-        public class Options
-        {
-            [Option("language_code", Default = "en")]
-            public string LanguageCode { get; set; }
-
-            [Option("project_id", Default = "[Google Cloud Project ID]")]
-            public string ProjectId { get; set; }
-        }
-    }
 }

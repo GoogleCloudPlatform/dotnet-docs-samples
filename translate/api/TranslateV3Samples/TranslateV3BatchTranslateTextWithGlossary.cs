@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Generated code. DO NOT EDIT!
-
-// This is a generated sample ("LongRunningRequestPollUntilComplete", "batch_translate_text_with_glossary")
-
 using CommandLine;
 // [START translate_v3_batch_translate_text_with_glossary]
 using Google.Cloud.Translate.V3;
 using System;
-using System.Collections.Generic;
 
-namespace TranslateV3Samples
+namespace GoogleCloudSamples
 {
     public static class TranslateV3BatchTranslateTextWithGlossary
     {
@@ -69,7 +64,8 @@ namespace TranslateV3Samples
                 },
                 Glossaries =
                 {
-                    { targetLanguage, new TranslateTextGlossaryConfig
+                    { 
+                        targetLanguage, new TranslateTextGlossaryConfig
                         {
                             Glossary = glossaryPath,
                         }
@@ -85,38 +81,4 @@ namespace TranslateV3Samples
     }
 
     // [END translate_v3_batch_translate_text_with_glossary]
-
-    public class BatchTranslateTextWithGlossaryMain
-    {
-        public static void Main(string[] args)
-        {
-            new Parser(with => with.CaseInsensitiveEnumValues = true).ParseArguments<Options>(args)
-                .WithParsed<Options>(opts =>
-                    TranslateV3BatchTranslateTextWithGlossary.BatchTranslateTextWithGlossarySample(opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location, opts.GlossaryId, opts.TargetLanguage, opts.SourceLanguage));
-        }
-
-        public class Options
-        {
-            [Option("input_uri", Default = "gs://cloud-samples-data/text.txt")]
-            public string InputUri { get; set; }
-
-            [Option("output_uri", Default = "gs://YOUR_BUCKET_ID/path_to_store_results/")]
-            public string OutputUri { get; set; }
-
-            [Option("project_id", Default = "[Google Cloud Project ID]")]
-            public string ProjectId { get; set; }
-
-            [Option("location", Default = "us-central1")]
-            public string Location { get; set; }
-
-            [Option("glossary_id", Default = "[YOUR_GLOSSARY_ID]")]
-            public string GlossaryId { get; set; }
-
-            [Option("target_language", Default = "en")]
-            public string TargetLanguage { get; set; }
-
-            [Option("source_language", Default = "de")]
-            public string SourceLanguage { get; set; }
-        }
-    }
 }

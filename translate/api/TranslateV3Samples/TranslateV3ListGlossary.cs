@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Generated code. DO NOT EDIT!
-
-// This is a generated sample ("RequestPagedAll", "translate_v3_list_glossary")
-
-using CommandLine;
 // [START translate_v3_list_glossary]
 using Google.Api.Gax;
 using Google.Cloud.Translate.V3;
 using System;
 
-namespace TranslateV3Samples
+namespace GoogleCloudSamples
 {
     public static class TranslateV3ListGlossary
     {
@@ -48,20 +43,4 @@ namespace TranslateV3Samples
     }
 
     // [END translate_v3_list_glossary]
-
-    public class TranslateV3ListGlossaryMain
-    {
-        public static void Main(string[] args)
-        {
-            new Parser(with => with.CaseInsensitiveEnumValues = true).ParseArguments<Options>(args)
-                .WithParsed<Options>(opts =>
-                    TranslateV3ListGlossary.ListGlossariesSample(opts.ProjectId));
-        }
-
-        public class Options
-        {
-            [Option("project_id", Default = "[Google Cloud Project ID]")]
-            public string ProjectId { get; set; }
-        }
-    }
 }

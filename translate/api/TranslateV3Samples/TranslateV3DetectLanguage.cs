@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Generated code. DO NOT EDIT!
-
-// This is a generated sample ("Request", "translate_v3_detect_language")
-
 using CommandLine;
 // [START translate_v3_detect_language]
 using Google.Cloud.Translate.V3;
 using System;
 
-namespace TranslateV3Samples
+namespace GoogleCloudSamples
 {
     public static class TranslateV3DetectLanguage
     {
@@ -52,23 +48,4 @@ namespace TranslateV3Samples
     }
 
     // [END translate_v3_detect_language]
-
-    public class TranslateV3DetectLanguageMain
-    {
-        public static void Main(string[] args)
-        {
-            new Parser(with => with.CaseInsensitiveEnumValues = true).ParseArguments<Options>(args)
-                .WithParsed<Options>(opts =>
-                    TranslateV3DetectLanguage.DetectLanguageSample(opts.Text, opts.ProjectId));
-        }
-
-        public class Options
-        {
-            [Option("text", Default = "Hello, world!")]
-            public string Text { get; set; }
-
-            [Option("project_id", Default = "[Google Cloud Project ID]")]
-            public string ProjectId { get; set; }
-        }
-    }
 }

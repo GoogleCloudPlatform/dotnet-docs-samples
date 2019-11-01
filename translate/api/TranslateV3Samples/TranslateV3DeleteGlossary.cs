@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Generated code. DO NOT EDIT!
-
-// This is a generated sample ("LongRunningRequestPollUntilComplete", "translate_v3_delete_glossary")
-
 using CommandLine;
 // [START translate_v3_delete_glossary]
 using Google.Cloud.Translate.V3;
 using System;
 
-namespace TranslateV3Samples
+namespace GoogleCloudSamples
 {
     public static class TranslateV3DeleteGlossary
     {
@@ -42,23 +38,4 @@ namespace TranslateV3Samples
     }
 
     // [END translate_v3_delete_glossary]
-
-    public class TranslateV3DeleteGlossaryMain
-    {
-        public static void Main(string[] args)
-        {
-            new Parser(with => with.CaseInsensitiveEnumValues = true).ParseArguments<Options>(args)
-                .WithParsed<Options>(opts =>
-                    TranslateV3DeleteGlossary.DeleteGlossarySample(opts.ProjectId, opts.GlossaryId));
-        }
-
-        public class Options
-        {
-            [Option("project_id", Default = "[Google Cloud Project ID]")]
-            public string ProjectId { get; set; }
-
-            [Option("glossary_id", Default = "[Glossary ID]")]
-            public string GlossaryId { get; set; }
-        }
-    }
 }
