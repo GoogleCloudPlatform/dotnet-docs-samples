@@ -29,7 +29,7 @@ namespace Google.Cloud.Translate.V3.Samples
         /// <summary>
         /// Batch translate text
         /// </summary>
-        public static void SampleBatchTranslateText(string inputUri, string outputUri, string projectId, string location, string sourceLanguage, string targetLanguage)
+        public static void BatchTranslateTextSample(string inputUri, string outputUri, string projectId, string location, string sourceLanguage, string targetLanguage)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
             // TODO(developer): Uncomment and set the following variables
@@ -81,7 +81,7 @@ namespace Google.Cloud.Translate.V3.Samples
         {
             new Parser(with => with.CaseInsensitiveEnumValues = true).ParseArguments<Options>(args)
                 .WithParsed<Options>(opts =>
-                    TranslateV3BatchTranslateText.SampleBatchTranslateText(opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location, opts.SourceLanguage, opts.TargetLanguage));
+                    TranslateV3BatchTranslateText.BatchTranslateTextSample(opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location, opts.SourceLanguage, opts.TargetLanguage));
         }
 
         public class Options
