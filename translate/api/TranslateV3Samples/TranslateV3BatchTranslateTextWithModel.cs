@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using CommandLine;
 // [START translate_v3_batch_translate_text_with_model]
 using Google.Cloud.Translate.V3;
 using System;
@@ -22,9 +21,10 @@ namespace GoogleCloudSamples
     public static class TranslateV3BatchTranslateTextWithModel
     {
         /// <summary>
-        /// Batch translate text using AutoML Translation model
+        /// Batch translate text using Translation model.
+        /// Model can be AutoML or General[built-in] model.
         /// </summary>
-        /// <param name="targetLanguage">Required. Specify up to 10 language codes here.</param>
+        /// <param name="targetLanguage">Target language code..</param>
         /// <param name="sourceLanguage">Required. Source language code.</param>
         /// <param name="modelId">The models to use for translation. Map's key is target language
         /// code.</param>
@@ -39,7 +39,7 @@ namespace GoogleCloudSamples
                 SourceLanguageCode = sourceLanguage,
                 TargetLanguageCodes =
                 {
-                    // Required. Specify up to 10 language codes here.
+                    // Target language code..
                     targetLanguage,
                 },
                 InputConfigs =

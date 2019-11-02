@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START translate_v3_list_glossary]
+
 using Google.Api.Gax;
 using Google.Cloud.Translate.V3;
 using System;

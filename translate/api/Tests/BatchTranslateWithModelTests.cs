@@ -15,7 +15,6 @@
 using System;
 using Xunit;
 using Google.Cloud.Storage.V1;
-using CommandLine;
 
 namespace GoogleCloudSamples
 {

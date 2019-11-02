@@ -15,7 +15,6 @@
 using System;
 using Xunit;
 using GoogleCloudSamples;
-using CommandLine;
 
 public class TranslateTextWithGlossaryTests : IDisposable
 {

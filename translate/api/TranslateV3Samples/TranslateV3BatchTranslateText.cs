@@ -13,8 +13,8 @@
 // limitations under the License.
 
 // [START translate_v3_batch_translate_text]
+
 using System;
-using System.Collections.Generic;
 using Google.Cloud.Translate.V3;
 
 namespace GoogleCloudSamples
@@ -22,9 +22,20 @@ namespace GoogleCloudSamples
     public static class TranslateV3BatchTranslateText
     {
         /// <summary>
-        /// Batch translate text
+        /// Translates a batch of texts on GCS and stores the result in a GCS location.
         /// </summary>
-        public static void BatchTranslateTextSample(string inputUri, string outputUri, string projectId, string location, string sourceLanguage, string targetLanguage)
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        /// <param name="location">Region.</param>
+        /// <param name="inputUri">Input configuration that stored in GCS.</param>
+        /// <param name="outputUri">The GCS path for translation output.</param>
+        /// <param name="sourceLanguage">Source language code.</param>
+        /// <param name="targetLanguage">Target language code.</param>
+        public static void BatchTranslateTextSample(string inputUri = "gs://cloud-samples-data/text.txt",
+            string outputUri = "gs://YOUR_BUCKET_ID/path_to_store_results/",
+            string projectId = "[Google Cloud Project ID]",
+            string location = "us-central1",
+            string sourceLanguage = "en",
+            string targetLanguage = "ja")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
             BatchTranslateTextRequest request = new BatchTranslateTextRequest

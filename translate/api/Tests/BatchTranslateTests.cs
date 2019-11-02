@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using CommandLine;
 using Xunit;
 using Google.Cloud.Storage.V1;
 
@@ -48,7 +47,7 @@ namespace GoogleCloudSamples
                 new DeleteBucketOptions
                 {
                     DeleteObjects = true
-                }); 
+                });
             }
         }
 
@@ -57,7 +56,7 @@ namespace GoogleCloudSamples
         {
             string outputUri =
                 string.Format("gs://{0}/translation/BATCH_TRANSLATION_OUTPUT/", _bucketName);
-            
+
             var output = _sample.Run("batchTranslateText",
                 "--project_id=" + _projectId,
                 "--location=us-central1",

@@ -1,5 +1,4 @@
-﻿
-// Copyright 2019 Google Inc.
+﻿// Copyright 2019 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -177,7 +176,7 @@ namespace GoogleCloudSamples
     internal class TranslateTextOptions : TranslateTextBaseOptions { }
 
     [Verb("translateTextWithGlossary", HelpText = "")]
-    internal class TranslateTextWithGlossaryOptions: TranslateTextBaseOptions
+    internal class TranslateTextWithGlossaryOptions : TranslateTextBaseOptions
     {
         [Option("source_language", Default = "en")]
         public string SourceLanguage { get; set; }
@@ -215,7 +214,8 @@ namespace GoogleCloudSamples
         public string GlossaryId { get; set; }
     }
 
-    public class TranslateV3Samples {
+    public class TranslateV3Samples
+    {
         public static void Main(string[] args)
         {
             // Command line argument parser we use doesn't support more than 15 options, therefore
@@ -262,7 +262,7 @@ namespace GoogleCloudSamples
                                   opts.InputUri, opts.OutputUri, opts.ProjectId,
                                   opts.Location, opts.SourceLanguage, opts.TargetLanguage);
                                return 0;
-                            },
+                           },
                         (BatchTranslateTextWithGlossaryAndModelOptions opts) =>
                         {
                             TranslateV3BatchTranslateTextWithGlossaryAndModel.BatchTranslateTextWithGlossaryAndModelSample(
@@ -276,52 +276,62 @@ namespace GoogleCloudSamples
                                     opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location, opts.GlossaryId, opts.TargetLanguage, opts.SourceLanguage);
                             return 0;
                         },
-                        (BatchTranslateTextWithModelOptions opts) => {
+                        (BatchTranslateTextWithModelOptions opts) =>
+                        {
                             TranslateV3BatchTranslateTextWithModel.BatchTranslateTextWithModelSample(
                                 opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location,
                                 opts.TargetLanguage, opts.SourceLanguage, opts.ModelId);
                             return 0;
                         },
-                        (DetectLanguageOptions opts) => {
+                        (DetectLanguageOptions opts) =>
+                        {
                             TranslateV3DetectLanguage.DetectLanguageSample(opts.Text, opts.ProjectId);
                             return 0;
                         },
-                        (GetGlossaryOptions opts) => {
+                        (GetGlossaryOptions opts) =>
+                        {
                             TranslateV3GetGlossary.GetGlossarySample(opts.ProjectId, opts.GlossaryId);
                             return 0;
                         },
-                        (GetSupportedLanguagesOptions opts) => {
+                        (GetSupportedLanguagesOptions opts) =>
+                        {
                             TranslateV3GetSupportedLanguages.GetSupportedLanguagesSample(opts.ProjectId);
                             return 0;
                         },
-                        (GetSupportedLanguagesWithTargetOptions opts) => {
+                        (GetSupportedLanguagesWithTargetOptions opts) =>
+                        {
                             TranslateV3GetSupportedLanguagesForTarget.GetSupportedLanguagesForTargetSample(opts.LanguageCode, opts.ProjectId);
                             return 0;
                         },
-                        (ListGlossaryOptions opts) => {
+                        (ListGlossaryOptions opts) =>
+                        {
                             TranslateV3ListGlossary.ListGlossariesSample(opts.ProjectId);
                             return 0;
                         },
-                        (TranslateTextOptions opts) => {
+                        (TranslateTextOptions opts) =>
+                        {
                             TranslateV3TranslateText.TranslateTextSample(opts.Text, opts.TargetLanguage, opts.ProjectId);
                             return 0;
                         },
-                        (TranslateTextWithModelOptions opts) => {
+                        (TranslateTextWithModelOptions opts) =>
+                        {
                             TranslateV3TranslateTextWithModel.TranslateTextWithModelSample(opts.ModelId, opts.Text, opts.TargetLanguage, opts.SourceLanguage, opts.ProjectId, opts.Location);
                             return 0;
                         },
-                        (TranslateTextWithGlossaryOptions opts) => {
+                        (TranslateTextWithGlossaryOptions opts) =>
+                        {
                             TranslateV3TranslateTextWithGlossary.TranslateTextWithGlossarySample(opts.Text, opts.SourceLanguage, opts.TargetLanguage, opts.ProjectId, opts.GlossaryId);
                             return 0;
                         },
-                        (TranslateTextWithGlossaryAndModelOptions opts) => {
+                        (TranslateTextWithGlossaryAndModelOptions opts) =>
+                        {
                             TranslateV3TranslateTextWithGlossaryAndModel.TranslateTextWithGlossaryAndModelSample(opts.ModelId, opts.GlossaryId,
                            opts.Text, opts.TargetLanguage, opts.SourceLanguage, opts.ProjectId, opts.Location);
                             return 0;
                         },
                         errs => 1);
-                    break; 
-                }
+                    break;
             }
         }
+    }
 }

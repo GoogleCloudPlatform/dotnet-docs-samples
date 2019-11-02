@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using CommandLine;
 // [START translate_v3_translate_text_with_model]
 using Google.Cloud.Translate.V3;
 using System;
@@ -24,10 +23,10 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Translating Text with Model
         /// </summary>
-        /// <param name="modelId">The `model` type requested for this translation.</param>
+        /// <param name="modelId">Translation Model ID.</param>
         /// <param name="text">The content to translate in string format</param>
-        /// <param name="targetLanguage">Required. The BCP-47 language code to use for translation.</param>
-        /// <param name="sourceLanguage">Optional. The BCP-47 language code of the input text.</param>
+        /// <param name="targetLanguage">Required. Target language code.</param>
+        /// <param name="sourceLanguage">Optional. Source language code.</param>
         public static void TranslateTextWithModelSample(string modelId, string text,
             string targetLanguage, string sourceLanguage, string projectId, string location)
         {

@@ -23,11 +23,11 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Translating Text with Glossary and Model
         /// </summary>
-        /// <param name="modelId">The `model` type requested for this translation.</param>
-        /// <param name="glossaryId">Specifies the glossary used for this translation.</param>
+        /// <param name="modelId">Translation Model ID.</param>
+        /// <param name="glossaryId">Translation Glossary ID.</param>
         /// <param name="text">The content to translate in string format</param>
-        /// <param name="targetLanguage">Required. The BCP-47 language code to use for translation.</param>
-        /// <param name="sourceLanguage">Optional. The BCP-47 language code of the input text.</param>
+        /// <param name="targetLanguage">Required. Target language code.</param>
+        /// <param name="sourceLanguage">Optional. Source language code.</param>
         public static void TranslateTextWithGlossaryAndModelSample(string modelId, string glossaryId, string text,
             string targetLanguage, string sourceLanguage, string projectId, string location)
         {
@@ -47,7 +47,7 @@ namespace GoogleCloudSamples
                 Model = modelPath,
                 GlossaryConfig = new TranslateTextGlossaryConfig
                 {
-                    // Specifies the glossary used for this translation.
+                    // Translation Glossary ID.
                     Glossary = glossaryPath,
                 },
                 SourceLanguageCode = sourceLanguage,

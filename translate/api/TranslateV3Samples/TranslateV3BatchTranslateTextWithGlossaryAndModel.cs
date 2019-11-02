@@ -21,16 +21,23 @@ namespace GoogleCloudSamples
     public static class TranslateV3BatchTranslateTextWithGlossaryAndModel
     {
         /// <summary>
-        /// Batch translate text with Model and Glossary
+        /// Translates a batch of texts on GCS and stores the result in a GCS location.
+        /// Glossary is applied for translation.
+        /// The model to use for translation. Can be AutoML or General (built-in) Model.
         /// </summary>
-        /// <param name="targetLanguage">Required. Specify up to 10 language codes here.</param>
-        /// <param name="sourceLanguage">Required. Source language code.</param>
-        /// <param name="modelId">The models to use for translation. Map's key is target language
-        /// code.</param>
-        /// <param name="glossaryId">Required. Specifies the glossary used for this translation.</param>
-        public static void BatchTranslateTextWithGlossaryAndModelSample(string inputUri, string outputUri,
-            string projectId, string location, string targetLanguage,
-            string sourceLanguage, string modelId, string glossaryId)
+        /// <param name="targetLanguage">Target language code.</param>
+        /// <param name="sourceLanguage">Source language code.</param>
+        /// <param name="modelId">Translation model ID.</param>
+        /// <param name="glossaryId">Translation Glossary ID.</param>
+        public static void BatchTranslateTextWithGlossaryAndModelSample(
+            string inputUri = "gs://cloud-samples-data/text.txt",
+            string outputUri = "gs://YOUR_BUCKET_ID/path_to_store_results/",
+            string projectId = "[Google Cloud Project ID]", 
+            string location = "us-central1",
+            string targetLanguage = "ja",
+            string sourceLanguage = "en", 
+            string modelId = "[YOUR-MODEL-ID]",
+            string glossaryId = "[YOUR_GLOSSARY_ID]")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
 
@@ -43,7 +50,7 @@ namespace GoogleCloudSamples
                 SourceLanguageCode = sourceLanguage,
                 TargetLanguageCodes =
                 {
-                    // Required. Specify up to 10 language codes here.
+                    // Target language code..
                     targetLanguage,
                 },
                 InputConfigs =

@@ -15,7 +15,6 @@
 // [START translate_v3_translate_text_with_glossary]
 using Google.Cloud.Translate.V3;
 using System;
-using System.Collections.Generic;
 
 namespace GoogleCloudSamples
 {
@@ -25,9 +24,9 @@ namespace GoogleCloudSamples
         /// Translates a given text using a glossary.
         /// </summary>
         /// <param name="text">The content to translate in string format</param>
-        /// <param name="sourceLanguage">Optional. The BCP-47 language code of the input text.</param>
-        /// <param name="targetLanguage">Required. The BCP-47 language code to use for translation.</param>
-        /// <param name="glossaryId">Specifies the glossary used for this translation.</param>
+        /// <param name="sourceLanguage">Optional. Source language code.</param>
+        /// <param name="targetLanguage">Required. Target language code.</param>
+        /// <param name="glossaryId">Translation Glossary ID.</param>
         public static void TranslateTextWithGlossarySample(string text, string sourceLanguage, string targetLanguage, string projectId, string glossaryId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
@@ -45,7 +44,7 @@ namespace GoogleCloudSamples
                 SourceLanguageCode = sourceLanguage,
                 GlossaryConfig = new TranslateTextGlossaryConfig
                 {
-                    // Specifies the glossary used for this translation.
+                    // Translation Glossary ID.
                     Glossary = glossaryPath,
                 },
                 MimeType = "text/plain",

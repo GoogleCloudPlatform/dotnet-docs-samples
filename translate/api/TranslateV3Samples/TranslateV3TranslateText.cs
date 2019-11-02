@@ -15,7 +15,6 @@
 // [START translate_v3_translate_text]
 using Google.Cloud.Translate.V3;
 using System;
-using System.Collections.Generic;
 
 namespace GoogleCloudSamples
 {
@@ -25,7 +24,7 @@ namespace GoogleCloudSamples
         /// Translating Text
         /// </summary>
         /// <param name="text">The content to translate in string format</param>
-        /// <param name="targetLanguage">Required. The BCP-47 language code to use for translation.</param>
+        /// <param name="targetLanguage">Required. Target language code.</param>
         public static void TranslateTextSample(string text, string targetLanguage, string projectId)
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();

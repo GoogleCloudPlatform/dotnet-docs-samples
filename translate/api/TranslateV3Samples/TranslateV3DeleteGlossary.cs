@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using CommandLine;
 // [START translate_v3_delete_glossary]
+
 using Google.Cloud.Translate.V3;
 using System;
 
