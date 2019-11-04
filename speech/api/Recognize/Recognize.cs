@@ -96,6 +96,11 @@ namespace GoogleCloudSamples
         public int Seconds { get; set; } = 3;
     }
 
+    [Verb("listen-infinite", HelpText = "Detects speech in a microphone input stream, with no length limit.")]
+    class ListenInfiniteOptions
+    {
+    }
+
     [Verb("rec", HelpText = "Detects speech in an audio file. Supports other file formats.")]
     class RecOptions : Options
     {
@@ -325,7 +330,10 @@ namespace GoogleCloudSamples
         {
             GoogleCredential googleCredential;
             using (Stream m = new FileStream(credentialsFilePath, FileMode.Open))
+            {
                 googleCredential = GoogleCredential.FromStream(m);
+            }
+
             var channel = new Grpc.Core.Channel(SpeechClient.DefaultEndpoint.Host,
                 googleCredential.ToChannelCredentials());
             var speech = SpeechClient.Create(channel);
@@ -556,7 +564,11 @@ namespace GoogleCloudSamples
                 {
                     lock (writeLock)
                     {
-                        if (!writeMore) return;
+                        if (!writeMore)
+                        {
+                            return;
+                        }
+
                         streamingCall.WriteAsync(
                             new StreamingRecognizeRequest()
                             {
@@ -570,7 +582,11 @@ namespace GoogleCloudSamples
             await Task.Delay(TimeSpan.FromSeconds(seconds));
             // Stop recording and shut down.
             waveIn.StopRecording();
-            lock (writeLock) writeMore = false;
+            lock (writeLock)
+            {
+                writeMore = false;
+            }
+
             await streamingCall.WriteCompleteAsync();
             await printResponses;
             return 0;
@@ -583,7 +599,7 @@ namespace GoogleCloudSamples
         {
             return (int)Parser.Default.ParseArguments<
                 SyncOptions, AsyncOptions,
-                StreamingOptions, ListenOptions,
+                StreamingOptions, ListenOptions, ListenInfiniteOptions,
                 RecOptions, SyncOptionsWithCreds,
                 OptionsWithContext
                 >(args).MapResult(
@@ -600,6 +616,7 @@ namespace GoogleCloudSamples
                     : LongRunningRecognize(opts.FilePath),
                 (StreamingOptions opts) => StreamingRecognizeAsync(opts.FilePath).Result,
                 (ListenOptions opts) => StreamingMicRecognizeAsync(opts.Seconds).Result,
+                (ListenInfiniteOptions opts) => InfiniteStreaming.RecognizeAsync().Result,
                 (RecOptions opts) => Rec(opts.FilePath, opts.BitRate, opts.Encoding),
                 (SyncOptionsWithCreds opts) => SyncRecognizeWithCredentials(
                     opts.FilePath, opts.CredentialsFilePath),

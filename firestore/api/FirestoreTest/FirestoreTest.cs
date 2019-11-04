@@ -353,6 +353,14 @@ namespace GoogleCloudSamples
             Assert.Contains("Updated the Regions array of the DC document in the cities collection.", output.Stdout);
         }
 
+        [Fact]
+        public void UpdateDocumentIncrementTest()
+        {
+            RunQueryData("update-document-increment", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunAddData("update-document-increment", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Updated the population of the DC document in the cities collection.", output.Stdout);
+        }
+
 
         // DELETE DATA TESTS
         [Fact]
@@ -581,7 +589,7 @@ namespace GoogleCloudSamples
             Assert.DoesNotContain("Document BJ returned by query State=CA and Name=San Francisco", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "b/137857855")]
         public void CompositeIndexChainedQueryTest()
         {
             var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -649,7 +657,7 @@ namespace GoogleCloudSamples
             Assert.DoesNotContain("Document BJ returned by order by name descending with limit query", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "b/137857855")]
         public void OrderByStateAndPopulationQueryTest()
         {
             var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -803,7 +811,7 @@ namespace GoogleCloudSamples
             Assert.DoesNotContain("Document DC returned by paginated query cursor.", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "b/137857855")]
         public void MultipleCursorConditionsTest()
         {
             var manageIndexesOutput = RunManageIndexes("create-indexes", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));

@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
 {
     public class Storage
     {
-        private static readonly string s_projectId = "YOUR-PROJECT-ID";
+        public static readonly string s_projectId = "YOUR-PROJECT-ID";
 
         private static readonly string s_usage =
             "Usage: \n" +
@@ -54,6 +54,12 @@ namespace GoogleCloudSamples
             "                              key-ring key-name local-file-path [object-name]\n" +
             "  Storage print-acl bucket-name\n" +
             "  Storage print-acl bucket-name object-name\n" +
+            "  Storage create-hmac-key service-account-email\n" +
+            "  Storage get-hmac-key access-id\n" +
+            "  Storage list-hmac-keys\n" +
+            "  Storage deactivate-hmac-key access-id\n" +
+            "  Storage activate-hmac-key access-id\n" +
+            "  Storage delete-hmac-key access-id\n" +
             "  Storage add-owner bucket-name user-email\n" +
             "  Storage add-owner bucket-name object-name user-email\n" +
             "  Storage add-default-owner bucket-name user-email\n" +
@@ -286,6 +292,7 @@ namespace GoogleCloudSamples
         }
         // [END storage_get_metadata]
 
+        // [START storage_get_bucket_metadata]
         private void GetBucketMetadata(string bucketName)
         {
             var storage = StorageClient.Create();
@@ -305,6 +312,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Kind:\t{bucket.Kind}");
             Console.WriteLine($"Lifecycle:\t{bucket.Lifecycle}");
             Console.WriteLine($"Location:\t{bucket.Location}");
+            Console.WriteLine($"LocationType:\t{bucket.LocationType}");
             Console.WriteLine($"Logging:\t{bucket.Logging}");
             Console.WriteLine($"Metageneration:\t{bucket.Metageneration}");
             Console.WriteLine($"Owner:\t{bucket.Owner}");
@@ -317,6 +325,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Versioning:\t{bucket.Versioning}");
             Console.WriteLine($"Website:\t{bucket.Website}");
         }
+        // [END storage_get_bucket_metadata]
 
         // [START storage_make_public]
         private void MakePublic(string bucketName, string objectName)
@@ -406,6 +415,113 @@ namespace GoogleCloudSamples
                 }
         }
         // [END storage_print_bucket_acl_for_user]
+
+        // [START storage_create_hmac_key]
+        private void CreateHmacKey(String serviceAccountEmail)
+        {
+            var storage = StorageClient.Create();
+            var key = storage.CreateHmacKey(s_projectId, serviceAccountEmail);
+
+            var secret = key.Secret;
+            var metadata = key.Metadata;
+
+            Console.WriteLine($"The Base64 encoded secret is: {secret}");
+            Console.WriteLine("Make sure to save that secret, there's no API to recover it.");
+            Console.WriteLine("The HMAC key metadata is:");
+            Console.WriteLine($"ID: {metadata.Id}");
+            Console.WriteLine($"Access ID: {metadata.AccessId}");
+            Console.WriteLine($"Project ID: {metadata.ProjectId}");
+            Console.WriteLine($"Service Account Email: {metadata.ServiceAccountEmail}");
+            Console.WriteLine($"State: {metadata.State}");
+            Console.WriteLine($"Time Created: {metadata.TimeCreated}");
+            Console.WriteLine($"Time Updated: {metadata.Updated}");
+            Console.WriteLine($"ETag: {metadata.ETag}");
+        }
+        // [END storage_create_hmac_key]
+
+        // [START storage_get_hmac_key]
+        private void GetHmacKey(String accessId)
+        {
+            var storage = StorageClient.Create();
+            var metadata = storage.GetHmacKey(s_projectId, accessId);
+
+            Console.WriteLine("The HMAC key metadata is:");
+            Console.WriteLine($"ID: {metadata.Id}");
+            Console.WriteLine($"Access ID: {metadata.AccessId}");
+            Console.WriteLine($"Project ID: {metadata.ProjectId}");
+            Console.WriteLine($"Service Account Email: {metadata.ServiceAccountEmail}");
+            Console.WriteLine($"State: {metadata.State}");
+            Console.WriteLine($"Time Created: {metadata.TimeCreated}");
+            Console.WriteLine($"Time Updated: {metadata.Updated}");
+            Console.WriteLine($"ETag: {metadata.ETag}");
+        }
+        // [END storage_get_hmac_key]
+
+        // [START storage_deactivate_hmac_key]
+        private void DeactivateHmacKey(String accessId)
+        {
+            var storage = StorageClient.Create();
+            var metadata = storage.GetHmacKey(s_projectId, accessId);
+            metadata.State = HmacKeyStates.Inactive;
+            var updatedMetadata = storage.UpdateHmacKey(metadata);
+
+            Console.WriteLine("The HMAC key is now inactive.");
+            Console.WriteLine("The HMAC key metadata is:");
+            Console.WriteLine($"ID: {updatedMetadata.Id}");
+            Console.WriteLine($"Access ID: {updatedMetadata.AccessId}");
+            Console.WriteLine($"Project ID: {updatedMetadata.ProjectId}");
+            Console.WriteLine($"Service Account Email: {updatedMetadata.ServiceAccountEmail}");
+            Console.WriteLine($"State: {updatedMetadata.State}");
+            Console.WriteLine($"Time Created: {updatedMetadata.TimeCreated}");
+            Console.WriteLine($"Time Updated: {updatedMetadata.Updated}");
+            Console.WriteLine($"ETag: {updatedMetadata.ETag}");
+        }
+        // [END storage_deactivate_hmac_key]
+
+        // [START storage_activate_hmac_key]
+        private void ActivateHmacKey(String accessId)
+        {
+            var storage = StorageClient.Create();
+            var metadata = storage.GetHmacKey(s_projectId, accessId);
+            metadata.State = HmacKeyStates.Active;
+            var updatedMetadata = storage.UpdateHmacKey(metadata);
+
+            Console.WriteLine("The HMAC key is now active.");
+            Console.WriteLine("The HMAC key metadata is:");
+            Console.WriteLine($"ID: {updatedMetadata.Id}");
+            Console.WriteLine($"Access ID: {updatedMetadata.AccessId}");
+            Console.WriteLine($"Project ID: {updatedMetadata.ProjectId}");
+            Console.WriteLine($"Service Account Email: {updatedMetadata.ServiceAccountEmail}");
+            Console.WriteLine($"State: {updatedMetadata.State}");
+            Console.WriteLine($"Time Created: {updatedMetadata.TimeCreated}");
+            Console.WriteLine($"Time Updated: {updatedMetadata.Updated}");
+            Console.WriteLine($"ETag: {updatedMetadata.ETag}");
+        }
+        // [END storage_activate_hmac_key]
+
+        // [START storage_delete_hmac_key]
+        private void DeleteHmacKey(String accessId)
+        {
+            var storage = StorageClient.Create();
+            storage.DeleteHmacKey(s_projectId, accessId);
+
+            Console.WriteLine($"Key {accessId} was deleted.");
+        }
+        // [END storage_delete_hmac_key]
+
+        // [START storage_list_hmac_keys]
+        private void ListHmacKeys()
+        {
+            var storage = StorageClient.Create();
+            var keys = storage.ListHmacKeys(s_projectId);
+
+            foreach (var metadata in keys)
+            {
+                Console.WriteLine($"Service Account Email: {metadata.ServiceAccountEmail}");
+                Console.WriteLine($"Access ID: {metadata.AccessId}");
+            }
+        }
+        // [END storage_list_hmac_keys]
 
         // [START storage_add_bucket_owner]
         private void AddBucketOwner(string bucketName, string userEmail)
@@ -1249,6 +1365,35 @@ namespace GoogleCloudSamples
                     case "print-default-acl":
                         if (args.Length < 2 && PrintUsage()) return -1;
                         PrintBucketDefaultAcl(args[1]);
+                        break;
+
+                    case "create-hmac-key":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        CreateHmacKey(args[1]);
+                        break;
+
+                    case "list-hmac-keys":
+                        ListHmacKeys();
+                        break;
+
+                    case "get-hmac-key":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        GetHmacKey(args[1]);
+                        break;
+
+                    case "deactivate-hmac-key":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        DeactivateHmacKey(args[1]);
+                        break;
+
+                    case "activate-hmac-key":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        ActivateHmacKey(args[1]);
+                        break;
+
+                    case "delete-hmac-key":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        DeleteHmacKey(args[1]);
                         break;
 
                     case "add-owner":

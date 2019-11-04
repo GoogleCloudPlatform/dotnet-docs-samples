@@ -45,8 +45,8 @@ if (-not (($chocoPackages.Contains('python 2.7.') -or
     choco install -y --sxs python --version 2.7.6
 }
 
-if (-not $chocoPackages.Contains('selenium-chrome-driver 2.')) {
-    choco install -y selenium-chrome-driver --version 2.46
+if (-not $chocoPackages.Contains('selenium-chrome-driver 77.')) {
+    choco install -y selenium-chrome-driver --version 77.0.3865.40
 }
 if (-not $chocoPackages.Contains('iisexpress')) {
     choco install -y --sxs iisexpress

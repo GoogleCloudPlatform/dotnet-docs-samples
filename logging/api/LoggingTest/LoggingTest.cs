@@ -164,7 +164,10 @@ namespace GoogleCloudSamples
                 });
             }
 
-            [Fact]
+            [Fact(Skip = "delete-log most often reports NotFound, even after 5 " +
+                "minutes or so.  The eventual consistency of the API is so " +
+                "long that it can't be tested in the limited time " +
+                "allotted to a unit test.")]
             public void TestDeleteLog()
             {
                 string logId = "logForTestDeleteLog" + RandomName();
@@ -176,7 +179,6 @@ namespace GoogleCloudSamples
                 Eventually(() =>
                 {
                     Run("delete-log", logId).AssertSucceeded();
-                    _logsToDelete.Remove(logId);
                 });
             }
 
@@ -220,8 +222,7 @@ namespace GoogleCloudSamples
                 {
                     // Try listing sinks.
                     var results = Run("list-sinks");
-                    // Confirm list-sinks results are not null.
-                    Assert.NotNull(results);
+                    Assert.Equal(0, results.ExitCode);
                 });
             }
 
