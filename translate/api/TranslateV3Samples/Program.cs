@@ -218,14 +218,13 @@ namespace GoogleCloudSamples
     {
         public static void Main(string[] args)
         {
-            // Command line argument parser we use doesn't support more than 15 options, therefore
-            // we split it
             if (args.Length == 0)
             {
                 Console.WriteLine("Invalid number of arguments supplied");
                 Environment.Exit(-1);
             }
 
+            // If we ever have more than 15 verbs we should split this.
             switch (args[0])
             {
                 case "batchTranslateText":
@@ -258,74 +257,74 @@ namespace GoogleCloudSamples
                         >(args).MapResult(
                         (BatchTranslateTextOptions opts) =>
                            {
-                               TranslateV3BatchTranslateText.BatchTranslateTextSample(
+                               BatchTranslateText.BatchTranslateTextSample(
                                   opts.InputUri, opts.OutputUri, opts.ProjectId,
                                   opts.Location, opts.SourceLanguage, opts.TargetLanguage);
                                return 0;
                            },
                         (BatchTranslateTextWithGlossaryAndModelOptions opts) =>
                         {
-                            TranslateV3BatchTranslateTextWithGlossaryAndModel.BatchTranslateTextWithGlossaryAndModelSample(
+                            BatchTranslateTextWithGlossaryAndModel.BatchTranslateTextWithGlossaryAndModelSample(
                                 opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location,
                                 opts.TargetLanguage, opts.SourceLanguage, opts.ModelId, opts.GlossaryId);
                             return 0;
                         },
                         (BatchTranslateTextWithGlossaryOptions opts) =>
                         {
-                            TranslateV3BatchTranslateTextWithGlossary.BatchTranslateTextWithGlossarySample(
+                            BatchTranslateTextWithGlossary.BatchTranslateTextWithGlossarySample(
                                     opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location, opts.GlossaryId, opts.TargetLanguage, opts.SourceLanguage);
                             return 0;
                         },
                         (BatchTranslateTextWithModelOptions opts) =>
                         {
-                            TranslateV3BatchTranslateTextWithModel.BatchTranslateTextWithModelSample(
+                            BatchTranslateTextWithModel.BatchTranslateTextWithModelSample(
                                 opts.InputUri, opts.OutputUri, opts.ProjectId, opts.Location,
                                 opts.TargetLanguage, opts.SourceLanguage, opts.ModelId);
                             return 0;
                         },
                         (DetectLanguageOptions opts) =>
                         {
-                            TranslateV3DetectLanguage.DetectLanguageSample(opts.Text, opts.ProjectId);
+                            DetectLanguage.DetectLanguageSample(opts.Text, opts.ProjectId);
                             return 0;
                         },
                         (GetGlossaryOptions opts) =>
                         {
-                            TranslateV3GetGlossary.GetGlossarySample(opts.ProjectId, opts.GlossaryId);
+                            GetGlossary.GetGlossarySample(opts.ProjectId, opts.GlossaryId);
                             return 0;
                         },
                         (GetSupportedLanguagesOptions opts) =>
                         {
-                            TranslateV3GetSupportedLanguages.GetSupportedLanguagesSample(opts.ProjectId);
+                            GetSupportedLanguages.GetSupportedLanguagesSample(opts.ProjectId);
                             return 0;
                         },
                         (GetSupportedLanguagesWithTargetOptions opts) =>
                         {
-                            TranslateV3GetSupportedLanguagesForTarget.GetSupportedLanguagesForTargetSample(opts.LanguageCode, opts.ProjectId);
+                            GetSupportedLanguagesForTarget.GetSupportedLanguagesForTargetSample(opts.LanguageCode, opts.ProjectId);
                             return 0;
                         },
                         (ListGlossaryOptions opts) =>
                         {
-                            TranslateV3ListGlossary.ListGlossariesSample(opts.ProjectId);
+                            ListGlossary.ListGlossariesSample(opts.ProjectId);
                             return 0;
                         },
                         (TranslateTextOptions opts) =>
                         {
-                            TranslateV3TranslateText.TranslateTextSample(opts.Text, opts.TargetLanguage, opts.ProjectId);
+                            TranslateText.TranslateTextSample(opts.Text, opts.TargetLanguage, opts.ProjectId);
                             return 0;
                         },
                         (TranslateTextWithModelOptions opts) =>
                         {
-                            TranslateV3TranslateTextWithModel.TranslateTextWithModelSample(opts.ModelId, opts.Text, opts.TargetLanguage, opts.SourceLanguage, opts.ProjectId, opts.Location);
+                            TranslateTextWithModel.TranslateTextWithModelSample(opts.ModelId, opts.Text, opts.TargetLanguage, opts.SourceLanguage, opts.ProjectId, opts.Location);
                             return 0;
                         },
                         (TranslateTextWithGlossaryOptions opts) =>
                         {
-                            TranslateV3TranslateTextWithGlossary.TranslateTextWithGlossarySample(opts.Text, opts.SourceLanguage, opts.TargetLanguage, opts.ProjectId, opts.GlossaryId);
+                            TranslateTextWithGlossary.TranslateTextWithGlossarySample(opts.Text, opts.SourceLanguage, opts.TargetLanguage, opts.ProjectId, opts.GlossaryId);
                             return 0;
                         },
                         (TranslateTextWithGlossaryAndModelOptions opts) =>
                         {
-                            TranslateV3TranslateTextWithGlossaryAndModel.TranslateTextWithGlossaryAndModelSample(opts.ModelId, opts.GlossaryId,
+                            TranslateTextWithGlossaryAndModel.TranslateTextWithGlossaryAndModelSample(opts.ModelId, opts.GlossaryId,
                            opts.Text, opts.TargetLanguage, opts.SourceLanguage, opts.ProjectId, opts.Location);
                             return 0;
                         },

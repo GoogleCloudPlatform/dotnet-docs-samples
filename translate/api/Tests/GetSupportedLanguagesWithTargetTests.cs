@@ -14,24 +14,26 @@
 
 using System;
 using Xunit;
-using GoogleCloudSamples;
 
-public class GetSupportedLanguagesWithTargetTests
+namespace GoogleCloudSamples
 {
-    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
-    private readonly CommandLineRunner _sample = new CommandLineRunner()
+    public class GetSupportedLanguagesWithTargetTests
     {
-        VoidMain = TranslateV3Samples.Main
-    };
+        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-    [Fact]
-    public void GetSupportedLanguagesWithTargetTest()
-    {
-        var output = _sample.Run("getSupportedLanguagesWithTarget",
-            "--project_id=" + _projectId, 
-            "--language_code=is");
-        Assert.Contains("Language Code: sq", output.Stdout);
-        Assert.Contains("Display Name: albanska", output.Stdout);
+        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        {
+            VoidMain = TranslateV3Samples.Main
+        };
+
+        [Fact]
+        public void GetSupportedLanguagesWithTargetTest()
+        {
+            var output = _sample.Run("getSupportedLanguagesWithTarget",
+                "--project_id=" + _projectId,
+                "--language_code=is");
+            Assert.Contains("Language Code: sq", output.Stdout);
+            Assert.Contains("Display Name: albanska", output.Stdout);
+        }
     }
 }

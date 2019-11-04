@@ -14,39 +14,40 @@
 
 using System;
 using Xunit;
-using GoogleCloudSamples;
 
-public class ListGlossaryTests : IDisposable
+namespace GoogleCloudSamples
 {
-    private readonly string _projectId = "dotnet-docs-samples-tests";
-    private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
-    private readonly string _glossaryId;
-    private readonly CommandLineRunner _sample = new CommandLineRunner()
+    public class ListGlossaryTests : IDisposable
     {
-        VoidMain = TranslateV3Samples.Main
-    };
+        private readonly string _projectId = "dotnet-docs-samples-tests";
+        private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
+        private readonly string _glossaryId;
+        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        {
+            VoidMain = TranslateV3Samples.Main
+        };
 
-    // Setup
-    public ListGlossaryTests()
-    {
-        _glossaryId = "translate-v3" + TestUtil.RandomName();
-        TranslateV3CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
-    }
+        // Setup
+        public ListGlossaryTests()
+        {
+            _glossaryId = "translate-v3" + TestUtil.RandomName();
+            CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
+        }
 
-    // TearDown
-    public void Dispose()
-    {
-        TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
-    }
+        // TearDown
+        public void Dispose()
+        {
+            DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
+        }
 
-    [Fact]
-    public void ListGlossariesTest()
-    {
-        var output = _sample.Run("listGlossaries",
-            "--project_id=" + _projectId);
-        Assert.Contains("gs://cloud-samples-data/translation/glossary_ja.csv", output.Stdout);
+        [Fact]
+        public void ListGlossariesTest()
+        {
+            var output = _sample.Run("listGlossaries",
+                "--project_id=" + _projectId);
+            Assert.Contains("gs://cloud-samples-data/translation/glossary_ja.csv", output.Stdout);
+        }
     }
 }
-
 
 

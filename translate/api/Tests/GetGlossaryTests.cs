@@ -14,39 +14,41 @@
 
 using System;
 using Xunit;
-using GoogleCloudSamples;
 
-public class GetGlossaryTests : IDisposable
+namespace GoogleCloudSamples
 {
-    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private readonly string _glossaryId;
-    private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
-
-    private readonly CommandLineRunner _sample = new CommandLineRunner()
+    public class GetGlossaryTests : IDisposable
     {
-        VoidMain = TranslateV3Samples.Main
-    };
+        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly string _glossaryId;
+        private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
 
-    // Setup
-    public GetGlossaryTests()
-    {
-        _glossaryId = "translate-v3" + TestUtil.RandomName();
-        TranslateV3CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
-    }
+        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        {
+            VoidMain = TranslateV3Samples.Main
+        };
 
-    // TearDown
-    public void Dispose()
-    {
-        TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
-    }
+        // Setup
+        public GetGlossaryTests()
+        {
+            _glossaryId = "translate-v3" + TestUtil.RandomName();
+            CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
+        }
 
-    [Fact]
-    public void GetGlossaryTest()
-    {
-        var output = _sample.Run("getGlossary",
-            "--project_id=" + _projectId, 
-            "--glossary_id=" + _glossaryId);
-        Assert.Contains("gs://cloud-samples-data/translation/glossary_ja.csv", output.Stdout);
+        // TearDown
+        public void Dispose()
+        {
+            DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
+        }
+
+        [Fact]
+        public void GetGlossaryTest()
+        {
+            var output = _sample.Run("getGlossary",
+                "--project_id=" + _projectId,
+                "--glossary_id=" + _glossaryId);
+            Assert.Contains("gs://cloud-samples-data/translation/glossary_ja.csv", output.Stdout);
+        }
     }
 }
 

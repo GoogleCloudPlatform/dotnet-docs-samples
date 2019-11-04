@@ -13,23 +13,25 @@
 // limitations under the License.
 
 using Xunit;
-using GoogleCloudSamples;
 
-public class DetectLanguageTests
+namespace GoogleCloudSamples
 {
-    private readonly string _projectId = "dotnet-docs-samples-tests";
-
-    private readonly CommandLineRunner _sample = new CommandLineRunner()
+    public class DetectLanguageTests
     {
-        VoidMain = TranslateV3Samples.Main
-    };
+        private readonly string _projectId = "dotnet-docs-samples-tests";
 
-    [Fact]
-    public void DetectLanguageTest()
-    {
-        var output = _sample.Run("detectLanguage",
-            "--project_id=" + _projectId,
-            "--text=H\u00E6 s\u00E6ta");
-        Assert.Contains("is", output.Stdout);
+        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        {
+            VoidMain = TranslateV3Samples.Main
+        };
+
+        [Fact]
+        public void DetectLanguageTest()
+        {
+            var output = _sample.Run("detectLanguage",
+                "--project_id=" + _projectId,
+                "--text=H\u00E6 s\u00E6ta");
+            Assert.Contains("is", output.Stdout);
+        }
     }
 }

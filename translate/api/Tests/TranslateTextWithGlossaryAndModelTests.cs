@@ -14,48 +14,49 @@
 
 using System;
 using Xunit;
-using GoogleCloudSamples;
 
-public class TranslateTextWithGlossaryAndModelTests : IDisposable
+namespace GoogleCloudSamples
 {
-    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
-    private readonly string _modelId = "TRL8772189639420149760";
-    private readonly string _glossaryId;
-
-    private readonly CommandLineRunner _sample = new CommandLineRunner()
+    public class TranslateTextWithGlossaryAndModelTests : IDisposable
     {
-        VoidMain = TranslateV3Samples.Main
-    };
+        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
+        private readonly string _modelId = "TRL8772189639420149760";
+        private readonly string _glossaryId;
 
-    // Setup
-    public TranslateTextWithGlossaryAndModelTests()
-    {
-        _glossaryId = "translate-v3" + TestUtil.RandomName();
-        TranslateV3CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
-    }
+        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        {
+            VoidMain = TranslateV3Samples.Main
+        };
 
-    // TearDown
-    public void Dispose()
-    {
-        TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
-    }
+        // Setup
+        public TranslateTextWithGlossaryAndModelTests()
+        {
+            _glossaryId = "translate-v3" + TestUtil.RandomName();
+            CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
+        }
 
-    [Fact]
-    public void TranslateTextWithGlossaryAndModelTest()
-    {
-        var output = _sample.Run("translateTextWithGlossaryAndModel",
-            "--project_id=" + _projectId,
-            "--location=us-central1",
-            "--text=That' il do it. deception",
-            "--target_language=ja",
-            "--glossary_id=" + _glossaryId,
-            "--model_id=" + _modelId);
-        Assert.True(output.Stdout.Contains("\u3084\u308B\u6B3A\u304F")
-            || output.Stdout.Contains("\u305D\u308C\u3058\u3083\u3042")); // custom model
-        Assert.Contains("\u6B3A\u304F", output.Stdout); //glossary
+        // TearDown
+        public void Dispose()
+        {
+            DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
+        }
+
+        [Fact]
+        public void TranslateTextWithGlossaryAndModelTest()
+        {
+            var output = _sample.Run("translateTextWithGlossaryAndModel",
+                "--project_id=" + _projectId,
+                "--location=us-central1",
+                "--text=That' il do it. deception",
+                "--target_language=ja",
+                "--glossary_id=" + _glossaryId,
+                "--model_id=" + _modelId);
+            Assert.True(output.Stdout.Contains("\u3084\u308B\u6B3A\u304F")
+                || output.Stdout.Contains("\u305D\u308C\u3058\u3083\u3042")); // custom model
+            Assert.Contains("\u6B3A\u304F", output.Stdout); //glossary
+        }
     }
 }
-
 
 

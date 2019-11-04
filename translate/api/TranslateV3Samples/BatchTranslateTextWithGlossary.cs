@@ -12,45 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START batch_translate_text_with_glossary_and_model]
+// [START translate_v3_batch_translate_text_with_glossary]
+
 using Google.Cloud.Translate.V3;
 using System;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3BatchTranslateTextWithGlossaryAndModel
+    public static class BatchTranslateTextWithGlossary
     {
         /// <summary>
         /// Translates a batch of texts on GCS and stores the result in a GCS location.
         /// Glossary is applied for translation.
-        /// The model to use for translation. Can be AutoML or General (built-in) Model.
         /// </summary>
+        /// <param name="inputUri">The GCS path where input configuration is stored.</param>
+        /// <param name="outputUri">The GCS path for translation output.</param>
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        /// <param name="location">Region.</param>
+        /// <param name="glossaryId">Required. Translation Glossary ID.</param>
         /// <param name="targetLanguage">Target language code.</param>
         /// <param name="sourceLanguage">Source language code.</param>
-        /// <param name="modelId">Translation model ID.</param>
-        /// <param name="glossaryId">Translation Glossary ID.</param>
-        public static void BatchTranslateTextWithGlossaryAndModelSample(
+        public static void BatchTranslateTextWithGlossarySample(
             string inputUri = "gs://cloud-samples-data/text.txt",
             string outputUri = "gs://YOUR_BUCKET_ID/path_to_store_results/",
-            string projectId = "[Google Cloud Project ID]", 
+            string projectId = "[Google Cloud Project ID]",
             string location = "us-central1",
-            string targetLanguage = "ja",
-            string sourceLanguage = "en", 
-            string modelId = "[YOUR-MODEL-ID]",
-            string glossaryId = "[YOUR_GLOSSARY_ID]")
+            string glossaryId = "[YOUR_GLOSSARY_ID]",
+            string targetLanguage = "en",
+            string sourceLanguage = "ja")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
 
-            string modelPath = $"projects/{projectId}/locations/{location}/models/{modelId}";
             string glossaryPath = $"projects/{projectId}/locations/{location}/glossaries/{glossaryId}";
-
             BatchTranslateTextRequest request = new BatchTranslateTextRequest
             {
                 ParentAsLocationName = new LocationName(projectId, location),
                 SourceLanguageCode = sourceLanguage,
                 TargetLanguageCodes =
                 {
-                    // Target language code..
+                    // Target language code.
                     targetLanguage,
                 },
                 InputConfigs =
@@ -71,14 +71,9 @@ namespace GoogleCloudSamples
                         OutputUriPrefix = outputUri,
                     },
                 },
-                Models =
-                {
-                    // The models to use for translation. Map's key is target language code.
-                    { targetLanguage, modelPath },
-                },
                 Glossaries =
                 {
-                    { 
+                    {
                         targetLanguage, new TranslateTextGlossaryConfig
                         {
                             Glossary = glossaryPath,
@@ -88,11 +83,10 @@ namespace GoogleCloudSamples
             };
             // Poll until the returned long-running operation is completed.
             BatchTranslateResponse response = translationServiceClient.BatchTranslateText(request).PollUntilCompleted().Result;
-            // Display the translation for each input text provided
             Console.WriteLine($"Total Characters: {response.TotalCharacters}");
             Console.WriteLine($"Translated Characters: {response.TranslatedCharacters}");
         }
     }
 
-    // [END batch_translate_text_with_glossary_and_model]
+    // [END translate_v3_batch_translate_text_with_glossary]
 }

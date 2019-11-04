@@ -19,12 +19,17 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3CreateGlossary
+    public static class CreateGlossary
     {
         /// <summary>
-        /// Create Glossary
+        /// Create Glossary.
         /// </summary>
-        public static void CreateGlossarySample(string projectId, string glossaryId, string inputUri)
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        /// <param name="glossaryId">Glossary ID.</param>
+        /// <param name="inputUri">Google Cloud Storage URI where glossary is stored in csv format.</param>
+        public static void CreateGlossarySample(string projectId = "[Google Cloud Project ID]",
+            string glossaryId = "[YOUR_GLOSSARY_ID]",
+            string inputUri = "gs://cloud-samples-data/translation/glossary_ja.csv")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
             CreateGlossaryRequest request = new CreateGlossaryRequest

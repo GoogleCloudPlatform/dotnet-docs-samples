@@ -49,7 +49,7 @@ namespace GoogleCloudSamples
                 new DeleteBucketOptions
                 {
                     DeleteObjects = true
-                }); ;
+                });
             }
         }
 

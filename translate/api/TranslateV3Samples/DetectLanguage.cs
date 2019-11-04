@@ -19,13 +19,15 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3DetectLanguage
+    public static class DetectLanguage
     {
         /// <summary>
-        /// Detecting the language of a text string
+        /// Detects the language of a given text.
         /// </summary>
         /// <param name="text">The text string for performing language detection</param>
-        public static void DetectLanguageSample(string text, string projectId)
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        public static void DetectLanguageSample(string text = "[TEXT_STRING_FOR_DETECTION]",
+            string projectId = "[Google Cloud Project ID]")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
             DetectLanguageRequest request = new DetectLanguageRequest

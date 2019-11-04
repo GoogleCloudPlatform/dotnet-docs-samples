@@ -14,28 +14,27 @@
 
 using System;
 using Xunit;
-using GoogleCloudSamples;
 
-public class TranslateTextWithModelTests
+namespace GoogleCloudSamples
 {
-    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private readonly string _modelId = "TRL8772189639420149760";
-
-    private readonly CommandLineRunner _sample = new CommandLineRunner()
+    public class TranslateTextWithModelTests
     {
-        VoidMain = TranslateV3Samples.Main
-    };
+        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly string _modelId = "TRL8772189639420149760";
 
-    [Fact]
-    public void TranslateTextWithModelTest()
-    {
-        var output = _sample.Run("translateTextWithModel",
-            "--project_id=" + _projectId,
-            "--location=us-central1", "--text=That' il do it",
-            "--target_language=ja", "--model_id=" + _modelId);
-        Assert.True(output.Stdout.Contains("\u305D\u308C\u306F\u305D\u3046\u3060") || output.Stdout.Contains("\u3084\u308B"));
+        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        {
+            VoidMain = TranslateV3Samples.Main
+        };
+
+        [Fact]
+        public void TranslateTextWithModelTest()
+        {
+            var output = _sample.Run("translateTextWithModel",
+                "--project_id=" + _projectId,
+                "--location=us-central1", "--text=That' il do it",
+                "--target_language=ja", "--model_id=" + _modelId);
+            Assert.True(output.Stdout.Contains("\u305D\u308C\u306F\u305D\u3046\u3060") || output.Stdout.Contains("\u3084\u308B"));
+        }
     }
 }
-
-
-

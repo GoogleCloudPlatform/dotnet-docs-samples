@@ -19,14 +19,14 @@ using Google.Cloud.Translate.V3;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3BatchTranslateText
+    public static class BatchTranslateText
     {
         /// <summary>
         /// Translates a batch of texts on GCS and stores the result in a GCS location.
         /// </summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="location">Region.</param>
-        /// <param name="inputUri">Input configuration that stored in GCS.</param>
+        /// <param name="inputUri">The GCS path where input configuration is stored.</param>
         /// <param name="outputUri">The GCS path for translation output.</param>
         /// <param name="sourceLanguage">Source language code.</param>
         /// <param name="targetLanguage">Target language code.</param>

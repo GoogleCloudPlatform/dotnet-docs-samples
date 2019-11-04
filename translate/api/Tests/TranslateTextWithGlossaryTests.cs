@@ -14,42 +14,44 @@
 
 using System;
 using Xunit;
-using GoogleCloudSamples;
 
-public class TranslateTextWithGlossaryTests : IDisposable
+namespace GoogleCloudSamples
 {
-    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
-    private readonly string _glossaryId;
-
-
-    private readonly CommandLineRunner _sample = new CommandLineRunner()
+    public class TranslateTextWithGlossaryTests : IDisposable
     {
-        VoidMain = TranslateV3Samples.Main
-    };
+        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
+        private readonly string _glossaryId;
 
-    // Setup
-    public TranslateTextWithGlossaryTests()
-    {
-        _glossaryId = "translate-v3" + TestUtil.RandomName();
-        TranslateV3CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
-    }
 
-    // TearDown
-    public void Dispose()
-    {
-        TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
-    }
+        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        {
+            VoidMain = TranslateV3Samples.Main
+        };
 
-    [Fact]
-    public void TranslateTextWithGlossaryTest()
-    {
-        var output = _sample.Run("translateTextWithGlossary",
-            "--project_id=" + _projectId, 
-            "--text=account",
-            "--target_language=ja",
-            "--glossary_id=" + _glossaryId);
-        Assert.True(output.Stdout.Contains("\u30A2\u30AB\u30A6\u30F3\u30C8") || output.Stdout.Contains("\u53E3\u5EA7"));
+        // Setup
+        public TranslateTextWithGlossaryTests()
+        {
+            _glossaryId = "translate-v3" + TestUtil.RandomName();
+            CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
+        }
+
+        // TearDown
+        public void Dispose()
+        {
+            DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
+        }
+
+        [Fact]
+        public void TranslateTextWithGlossaryTest()
+        {
+            var output = _sample.Run("translateTextWithGlossary",
+                "--project_id=" + _projectId,
+                "--text=account",
+                "--target_language=ja",
+                "--glossary_id=" + _glossaryId);
+            Assert.True(output.Stdout.Contains("\u30A2\u30AB\u30A6\u30F3\u30C8") || output.Stdout.Contains("\u53E3\u5EA7"));
+        }
     }
 }
 

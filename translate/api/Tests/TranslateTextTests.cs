@@ -14,27 +14,27 @@
 
 using System;
 using Xunit;
-using GoogleCloudSamples;
 
-public class TranslateTextTests
+namespace GoogleCloudSamples
 {
-    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
-    private readonly CommandLineRunner _sample = new CommandLineRunner()
+    public class TranslateTextTests
     {
-        VoidMain = TranslateV3Samples.Main
-    };
+        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-    [Fact]
-    public void TranslateTextTest()
-    {
-        var output = _sample.Run("translateText",
-            "--project_id=" + _projectId, 
-            "--text=Hello world", 
-            "--target_language=sr-Latn");
-        Assert.True(output.Stdout.Contains("Zdravo svet") || output.Stdout.Contains("Pozdrav svijetu"));
+        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        {
+            VoidMain = TranslateV3Samples.Main
+        };
+
+        [Fact]
+        public void TranslateTextTest()
+        {
+            var output = _sample.Run("translateText",
+                "--project_id=" + _projectId,
+                "--text=Hello world",
+                "--target_language=sr-Latn");
+            Assert.True(output.Stdout.Contains("Zdravo svet") || output.Stdout.Contains("Pozdrav svijetu"));
+        }
     }
 }
-
-
 

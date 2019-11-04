@@ -12,30 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START translate_v3_delete_glossary]
+// [START translate_v3_get_glossary]
 
 using Google.Cloud.Translate.V3;
 using System;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3DeleteGlossary
+    public static class GetGlossary
     {
         /// <summary>
-        /// Delete Glossary
+        /// Retrieves a glossary.
         /// </summary>
-        public static void DeleteGlossarySample(string projectId, string glossaryId)
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        /// <param name="glossaryId">Glossary ID.</param>
+        public static void GetGlossarySample(string projectId = "[Google Cloud Project ID]",
+            string glossaryId = "[YOUR_GLOSSARY_ID]")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
-            DeleteGlossaryRequest request = new DeleteGlossaryRequest
+            GetGlossaryRequest request = new GetGlossaryRequest
             {
                 GlossaryName = new GlossaryName(projectId, "us-central1", glossaryId),
             };
-            // Poll until the returned long-running operation is complete
-            DeleteGlossaryResponse response = translationServiceClient.DeleteGlossary(request).PollUntilCompleted().Result;
-            Console.WriteLine("Deleted Glossary.");
+            Glossary response = translationServiceClient.GetGlossary(request);
+            Console.WriteLine($"Glossary name: {response.Name}");
+            Console.WriteLine($"Entry count: {response.EntryCount}");
+            Console.WriteLine($"Input URI: {response.InputConfig.GcsSource.InputUri}");
         }
     }
 
-    // [END translate_v3_delete_glossary]
+    // [END translate_v3_get_glossary]
 }

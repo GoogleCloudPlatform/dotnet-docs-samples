@@ -12,33 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START translate_v3_get_supported_languages]
+// [START translate_v3_delete_glossary]
 
 using Google.Cloud.Translate.V3;
 using System;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3GetSupportedLanguages
+    public static class DeleteGlossary
     {
         /// <summary>
-        /// Getting a list of supported language codes
+        /// Deletes a Glossary.
         /// </summary>
-        public static void GetSupportedLanguagesSample(string projectId)
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        /// <param name="glossaryId">Glossary ID.</param>
+        public static void DeleteGlossarySample(string projectId = "[Google Cloud Project ID]",
+            string glossaryId = "[YOUR_GLOSSARY_ID]")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
-            GetSupportedLanguagesRequest request = new GetSupportedLanguagesRequest
+            DeleteGlossaryRequest request = new DeleteGlossaryRequest
             {
-                ParentAsLocationName = new LocationName(projectId, "global"),
+                GlossaryName = new GlossaryName(projectId, "us-central1", glossaryId),
             };
-            SupportedLanguages response = translationServiceClient.GetSupportedLanguages(request);
-            // List language codes of supported languages
-            foreach (SupportedLanguage language in response.Languages)
-            {
-                Console.WriteLine($"Language Code: {language.LanguageCode}");
-            }
+            // Poll until the returned long-running operation is complete
+            DeleteGlossaryResponse response = translationServiceClient.DeleteGlossary(request).PollUntilCompleted().Result;
+            Console.WriteLine("Deleted Glossary.");
         }
     }
 
-    // [END translate_v3_get_supported_languages]
+    // [END translate_v3_delete_glossary]
 }

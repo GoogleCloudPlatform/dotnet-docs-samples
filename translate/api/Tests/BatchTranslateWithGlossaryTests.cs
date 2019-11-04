@@ -43,7 +43,7 @@ namespace GoogleCloudSamples
 
             // Create temp glossary
             _glossaryId = "must-start-with-letters" + TestUtil.RandomName();
-            TranslateV3CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
+            CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
         }
 
         public void Dispose()
@@ -58,7 +58,7 @@ namespace GoogleCloudSamples
             }
 
             // Clean up glossary
-            TranslateV3DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
+            DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
         }
 
         [Fact]

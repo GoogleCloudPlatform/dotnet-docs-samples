@@ -13,12 +13,13 @@
 // limitations under the License.
 
 // [START translate_v3_batch_translate_text_with_model]
+
 using Google.Cloud.Translate.V3;
 using System;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3BatchTranslateTextWithModel
+    public static class BatchTranslateTextWithModel
     {
         /// <summary>
         /// Batch translate text using Translation model.
@@ -26,9 +27,19 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="targetLanguage">Target language code..</param>
         /// <param name="sourceLanguage">Required. Source language code.</param>
-        /// <param name="modelId">The models to use for translation. Map's key is target language
-        /// code.</param>
-        public static void BatchTranslateTextWithModelSample(string inputUri, string outputUri, string projectId, string location, string targetLanguage, string sourceLanguage, string modelId)
+        /// <param name="modelId">A model is used for Translation.
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        /// <param name="inputUri">The GCS path where input configuration is stored.</param>
+        /// <param name="outputUri">The GCS path for translation output.</param>
+        /// <param name="location"> Region.</param>
+        public static void BatchTranslateTextWithModelSample(
+            string inputUri = "gs://cloud-samples-data/translation/custom_model_text.txt'",
+            string outputUri = "gs://YOUR_BUCKET_ID/path_to_store_results/",
+            string projectId = "[Google Cloud Project ID]",
+            string location = "us-central1",
+            string targetLanguage = "ja",
+            string sourceLanguage = "en",
+            string modelId = "[YOUR-MODEL-ID]")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
             string modelPath = $"projects/{projectId}/locations/{location}/models/{modelId}";
@@ -62,13 +73,12 @@ namespace GoogleCloudSamples
                 },
                 Models =
                 {
-                    // The models to use for translation. Map's key is target language code.
+                    // A model is used for Translation. code.
                     { targetLanguage,  modelPath},
                 },
             };
             // Poll until the returned long-running operation is completed.
             BatchTranslateResponse response = translationServiceClient.BatchTranslateText(request).PollUntilCompleted().Result;
-            // Display the translation for each input text provided
             Console.WriteLine($"Total Characters: {response.TotalCharacters}");
             Console.WriteLine($"Translated Characters: {response.TranslatedCharacters}");
         }

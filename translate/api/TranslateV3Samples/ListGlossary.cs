@@ -20,12 +20,13 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3ListGlossary
+    public static class ListGlossary
     {
         /// <summary>
-        /// List Glossaries
+        /// Lists all the glossaries for a given project.
         /// </summary>
-        public static void ListGlossariesSample(string projectId)
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        public static void ListGlossariesSample(string projectId = "[Google Cloud Project ID]")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
             ListGlossariesRequest request = new ListGlossariesRequest
@@ -33,7 +34,7 @@ namespace GoogleCloudSamples
                 ParentAsLocationName = new LocationName(projectId, "us-central1"),
             };
             PagedEnumerable<ListGlossariesResponse, Glossary> response = translationServiceClient.ListGlossaries(request);
-            // Iterate over pages (of server-defined size), performing one RPC per page
+            // Iterate over glossaries and display each glossary's details.
             foreach (Glossary item in response)
             {
                 Console.WriteLine($"Glossary name: {item.Name}");

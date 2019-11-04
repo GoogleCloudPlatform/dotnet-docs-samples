@@ -12,35 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START translate_v3_get_supported_languages_for_target]
+// [START translate_v3_get_supported_languages]
 
 using Google.Cloud.Translate.V3;
 using System;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3GetSupportedLanguagesForTarget
+    public static class GetSupportedLanguages
     {
         /// <summary>
-        /// Listing supported languages with target language name
+        /// Getting a list of supported language codes
         /// </summary>
-        public static void GetSupportedLanguagesForTargetSample(string languageCode, string projectId)
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        public static void GetSupportedLanguagesSample(string projectId = "[Google Cloud Project ID]")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
             GetSupportedLanguagesRequest request = new GetSupportedLanguagesRequest
             {
                 ParentAsLocationName = new LocationName(projectId, "global"),
-                DisplayLanguageCode = languageCode,
             };
             SupportedLanguages response = translationServiceClient.GetSupportedLanguages(request);
             // List language codes of supported languages
             foreach (SupportedLanguage language in response.Languages)
             {
                 Console.WriteLine($"Language Code: {language.LanguageCode}");
-                Console.WriteLine($"Display Name: {language.DisplayName}");
             }
         }
     }
 
-    // [END translate_v3_get_supported_languages_for_target]
+    // [END translate_v3_get_supported_languages]
 }

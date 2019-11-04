@@ -12,51 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START translate_v3_translate_text_with_glossary]
+// [START translate_v3_translate_text_with_model]
+
 using Google.Cloud.Translate.V3;
 using System;
 
 namespace GoogleCloudSamples
 {
-    public static class TranslateV3TranslateTextWithGlossary
+    public static class TranslateTextWithModel
     {
         /// <summary>
-        /// Translates a given text using a glossary.
+        /// Translates a given text to a target language with custom model.
         /// </summary>
-        /// <param name="text">The content to translate in string format</param>
-        /// <param name="sourceLanguage">Optional. Source language code.</param>
+        /// <param name="modelId">Translation Model ID.</param>
+        /// <param name="text">The content to translate.t</param>
         /// <param name="targetLanguage">Required. Target language code.</param>
-        /// <param name="glossaryId">Translation Glossary ID.</param>
-        public static void TranslateTextWithGlossarySample(string text, string sourceLanguage, string targetLanguage, string projectId, string glossaryId)
+        /// <param name="sourceLanguage">Optional. Source language code.</param>
+        /// <param name="projectId"> Google Project ID.</param>
+        /// <param name="location"> Region.</param>
+        public static void TranslateTextWithModelSample(
+            string modelId = "[YOUR_MODEL_ID]",
+            string text = "[TEXT_TO_TRANSLATE]",
+            string targetLanguage = "ja",
+            string sourceLanguage = "en",
+            string projectId = "[Google Cloud Project ID]",
+            string location = "us-central1")
         {
             TranslationServiceClient translationServiceClient = TranslationServiceClient.Create();
+            string modelPath = $"projects/{projectId}/locations/{location}/models/{modelId}";
 
-            string glossaryPath = $"projects/{projectId}/locations/{"us-central1"}/glossaries/{glossaryId}";
             TranslateTextRequest request = new TranslateTextRequest
             {
                 Contents =
                 {
-                    // The content to translate in string format
+                    // The content to translate.
                     text,
                 },
                 TargetLanguageCode = targetLanguage,
-                ParentAsLocationName = new LocationName(projectId, "us-central1"),
+                ParentAsLocationName = new LocationName(projectId, location),
+                Model = modelPath,
                 SourceLanguageCode = sourceLanguage,
-                GlossaryConfig = new TranslateTextGlossaryConfig
-                {
-                    // Translation Glossary ID.
-                    Glossary = glossaryPath,
-                },
                 MimeType = "text/plain",
             };
             TranslateTextResponse response = translationServiceClient.TranslateText(request);
             // Display the translation for each input text provided
-            foreach (Translation translation in response.GlossaryTranslations)
+            foreach (Translation translation in response.Translations)
             {
                 Console.WriteLine($"Translated text: {translation.TranslatedText}");
             }
         }
     }
 
-    // [END translate_v3_translate_text_with_glossary]
+    // [END translate_v3_translate_text_with_model]
 }
