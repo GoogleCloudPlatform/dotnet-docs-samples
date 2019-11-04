@@ -91,9 +91,9 @@ can use [this older sample](
     Storage release-object-temporary-hold bucket-name object-name
     Storage set-object-event-based-hold bucket-name object-name
     Storage release-object-event-based-hold bucket-name object-name
-    Storage enable-bucket-policy-only bucket-name
-    Storage disable-bucket-policy-only bucket-name
-    Storage get-bucket-policy-only bucket-name
+    Storage enable-uniform-bucket-level-access bucket-name
+    Storage disable-uniform-bucket-level-access bucket-name
+    Storage get-uniform-bucket-level-access bucket-name
       ```
 
 ## Contributing changes
