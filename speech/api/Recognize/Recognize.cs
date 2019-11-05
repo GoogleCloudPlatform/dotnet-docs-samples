@@ -60,6 +60,9 @@ namespace GoogleCloudSamples
 
         [Option('c', HelpText = "Set number of channels")]
         public int NumberOfChannels { get; set; }
+
+        [Option('s', HelpText = "Set number of speakers")]
+        public int NumberOfSpeakers { get; set; }
     }
 
     [Verb("with-context", HelpText = "Detects speech in an audio file."
@@ -259,7 +262,6 @@ namespace GoogleCloudSamples
         // [START speech_transcribe_multichannel_beta]
         static object SyncRecognizeMultipleChannels(string filePath, int channelCount)
         {
-            Console.WriteLine("Starting multi-channel");
             var speech = SpeechClient.Create();
 
             // Create transcription request
@@ -284,6 +286,43 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_transcribe_multichannel_beta]
+
+        // [START speech_transcribe_diarization]
+        static object SyncRecognizeMultipleSpeakers(string filePath, int numberOfSpeakers)
+        {
+            var speech = SpeechClient.Create();
+
+            // Create the transcription request
+            var response = speech.Recognize(new RecognitionConfig()
+            { 
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                LanguageCode = "en",
+                DiarizationConfig = new SpeakerDiarizationConfig()
+                {
+                    EnableSpeakerDiarization = true,
+                    MinSpeakerCount = 2
+                }
+            }, RecognitionAudio.FromFile(filePath));
+
+            // Print out the results.
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine($"Transcript: { alternative.Transcript}");
+                    Console.WriteLine("Word details:");
+                    Console.WriteLine($" Word count:{alternative.Words.Count}");
+                    foreach (var item in alternative.Words)
+                    {
+                        Console.WriteLine($"  {item.Word}");
+                        // Console.WriteLine($"  Speaker: {item.SpeakerTag}");
+                    }
+                }
+            }
+
+            return 0;
+        }
+        // [END speech_transcribe_diarization]
 
         /// <summary>
         /// Reads a list of phrases from stdin.
@@ -609,7 +648,8 @@ namespace GoogleCloudSamples
                     SyncRecognizePunctuation(opts.FilePath) : (opts.SelectModel != null) ?
                     SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : opts.UseEnhancedModel ?
                     SyncRecognizeEnhancedModel(opts.FilePath) : (opts.NumberOfChannels > 1) ?
-                    SyncRecognizeMultipleChannels(opts.FilePath, opts.NumberOfChannels) : SyncRecognize(opts.FilePath),
+                    SyncRecognizeMultipleChannels(opts.FilePath, opts.NumberOfChannels) : (opts.NumberOfSpeakers > 1) ?
+                    SyncRecognizeMultipleSpeakers(opts.FilePath, opts.NumberOfSpeakers) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
                     : AsyncRecognizeGcs(opts.FilePath))
