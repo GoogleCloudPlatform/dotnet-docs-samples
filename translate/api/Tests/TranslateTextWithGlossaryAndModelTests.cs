@@ -12,46 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class TranslateTextWithGlossaryAndModelTests : IDisposable
+    [Collection(nameof(TranslateFixture))]
+    public class TranslateTextWithGlossaryAndModelTests
     {
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
-        private readonly string _modelId = "TRL8772189639420149760";
-        private readonly string _glossaryId;
-
+        private readonly TranslateFixture _fixture;
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {
             VoidMain = TranslateV3Samples.Main
         };
 
-        // Setup
-        public TranslateTextWithGlossaryAndModelTests()
+        public TranslateTextWithGlossaryAndModelTests(TranslateFixture fixture)
         {
-            _glossaryId = "translate-v3" + TestUtil.RandomName();
-            CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
-        }
-
-        // TearDown
-        public void Dispose()
-        {
-            DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
+            _fixture = fixture;
         }
 
         [Fact]
         public void TranslateTextWithGlossaryAndModelTest()
         {
             var output = _sample.Run("translateTextWithGlossaryAndModel",
-                "--project_id=" + _projectId,
+                "--project_id=" + _fixture._projectId,
                 "--location=us-central1",
                 "--text=That' il do it. deception",
                 "--target_language=ja",
-                "--glossary_id=" + _glossaryId,
-                "--model_id=" + _modelId);
+                "--glossary_id=" + _fixture._glossaryId,
+                "--model_id=" + _fixture._modelId);
             Assert.True(output.Stdout.Contains("\u3084\u308B\u6B3A\u304F")
                 || output.Stdout.Contains("\u305D\u308C\u3058\u3083\u3042")); // custom model
             Assert.Contains("\u6B3A\u304F", output.Stdout); //glossary

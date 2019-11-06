@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
     public class DetectLanguageTests
     {
-        private readonly string _projectId = "dotnet-docs-samples-tests";
+        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {

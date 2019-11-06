@@ -12,61 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
-using Google.Cloud.Storage.V1;
 
 namespace GoogleCloudSamples
 {
-    public class BatchTranslateWithModelTests : IDisposable
+    [Collection(nameof(TranslateFixture))]
+    public class BatchTranslateWithModelTests
     {
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private readonly string _modelId = "TRL8772189639420149760";
         private readonly string _inputUri = "gs://cloud-samples-data/translation/custom_model_text.txt";
-        private readonly string _bucketName;
+        private readonly TranslateFixture _fixture;
 
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {
             VoidMain = TranslateV3Samples.Main
         };
 
-        // Setup
-        public BatchTranslateWithModelTests()
+        public BatchTranslateWithModelTests(TranslateFixture fixture)
         {
-            // Create temp bucket
-            using (var storageClient = StorageClient.Create())
-            {
-                _bucketName = "translate-v3-" + TestUtil.RandomName();
-                storageClient.CreateBucket(_projectId, _bucketName);
-            }
-        }
-
-        public void Dispose()
-        {
-            using (var storageClient = StorageClient.Create())
-            {
-                storageClient.DeleteBucket(_bucketName,
-                new DeleteBucketOptions
-                {
-                    DeleteObjects = true
-                });
-            }
+            _fixture = fixture;
         }
 
         [Fact]
         public void BatchTranslateTextWithModelTest()
         {
             string outputUri =
-                string.Format("gs://{0}/translation/BATCH_TRANSLATION_OUTPUT/", _bucketName);
+                string.Format("gs://{0}/translation/BATCH_TRANSLATE_MODEL_OUTPUT/", _fixture._bucketName);
 
             var output = _sample.Run("batchTranslateTextWithModel",
-                "--project_id=" + _projectId,
+                "--project_id=" + _fixture._projectId,
                 "--location=us-central1",
                 "--source_language=en",
                 "--target_language=ja",
                 "--output_uri=" + outputUri,
                 "--input_uri=" + _inputUri,
-                "--model_id=" + _modelId);
+                "--model_id=" + _fixture._modelId);
 
             Assert.Contains("Total Characters: 15", output.Stdout);
         }

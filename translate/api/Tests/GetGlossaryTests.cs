@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class GetGlossaryTests : IDisposable
+    [Collection(nameof(TranslateFixture))]
+    public class GetGlossaryTests
     {
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private readonly string _glossaryId;
-        private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
+        private readonly TranslateFixture _fixture;
 
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {
@@ -29,24 +27,17 @@ namespace GoogleCloudSamples
         };
 
         // Setup
-        public GetGlossaryTests()
+        public GetGlossaryTests(TranslateFixture fixture)
         {
-            _glossaryId = "translate-v3" + TestUtil.RandomName();
-            CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
-        }
-
-        // TearDown
-        public void Dispose()
-        {
-            DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
+            _fixture = fixture;
         }
 
         [Fact]
         public void GetGlossaryTest()
         {
             var output = _sample.Run("getGlossary",
-                "--project_id=" + _projectId,
-                "--glossary_id=" + _glossaryId);
+                "--project_id=" + _fixture._projectId,
+                "--glossary_id=" + _fixture._glossaryId);
             Assert.Contains("gs://cloud-samples-data/translation/glossary_ja.csv", output.Stdout);
         }
     }

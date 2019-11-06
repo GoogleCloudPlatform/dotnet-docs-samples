@@ -17,39 +17,28 @@ using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class TranslateTextWithGlossaryTests : IDisposable
+    [Collection(nameof(TranslateFixture))]
+    public class TranslateTextWithGlossaryTests
     {
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
-        private readonly string _glossaryId;
-
-
+        private readonly TranslateFixture _fixture;
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {
             VoidMain = TranslateV3Samples.Main
         };
 
-        // Setup
-        public TranslateTextWithGlossaryTests()
+        public TranslateTextWithGlossaryTests(TranslateFixture fixture)
         {
-            _glossaryId = "translate-v3" + TestUtil.RandomName();
-            CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
-        }
-
-        // TearDown
-        public void Dispose()
-        {
-            DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
+            _fixture = fixture;
         }
 
         [Fact]
         public void TranslateTextWithGlossaryTest()
         {
             var output = _sample.Run("translateTextWithGlossary",
-                "--project_id=" + _projectId,
+                "--project_id=" + _fixture._projectId,
                 "--text=account",
                 "--target_language=ja",
-                "--glossary_id=" + _glossaryId);
+                "--glossary_id=" + _fixture._glossaryId);
             Assert.True(output.Stdout.Contains("\u30A2\u30AB\u30A6\u30F3\u30C8") || output.Stdout.Contains("\u53E3\u5EA7"));
         }
     }

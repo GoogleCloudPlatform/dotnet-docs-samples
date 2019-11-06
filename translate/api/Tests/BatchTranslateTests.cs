@@ -12,53 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
-using Google.Cloud.Storage.V1;
 
 namespace GoogleCloudSamples
 {
-    public class BatchTranslateTests : IDisposable
+    [Collection(nameof(TranslateFixture))]
+    public class BatchTranslateTests
     {
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private readonly string _bucketName;
+        private readonly TranslateFixture _fixture;
 
         private readonly CommandLineRunner _sample = new CommandLineRunner()
         {
             VoidMain = TranslateV3Samples.Main
         };
 
-        // Setup
-        public BatchTranslateTests()
+        public BatchTranslateTests(TranslateFixture fixture)
         {
-            // Create temp bucket
-            using (var storageClient = StorageClient.Create())
-            {
-                _bucketName = "translate-v3-" + TestUtil.RandomName();
-                storageClient.CreateBucket(_projectId, _bucketName);
-            }
-        }
-
-        public void Dispose()
-        {
-            using (var storageClient = StorageClient.Create())
-            {
-                storageClient.DeleteBucket(_bucketName,
-                new DeleteBucketOptions
-                {
-                    DeleteObjects = true
-                });
-            }
+            _fixture = fixture;
         }
 
         [Fact]
         public void BatchTranslateTextTest()
         {
             string outputUri =
-                string.Format("gs://{0}/translation/BATCH_TRANSLATION_OUTPUT/", _bucketName);
+                string.Format("gs://{0}/translation/BATCH_TRANSLATE_OUTPUT/", _fixture._bucketName);
 
             var output = _sample.Run("batchTranslateText",
-                "--project_id=" + _projectId,
+                "--project_id=" + _fixture._projectId,
                 "--location=us-central1",
                 "--source_language=en",
                 "--target_language=es",
