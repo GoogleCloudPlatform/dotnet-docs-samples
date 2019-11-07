@@ -22,11 +22,6 @@ namespace GoogleCloudSamples
         private readonly TranslateFixture _fixture;
         private readonly string _inputUri = "gs://cloud-samples-data/translation/text_with_custom_model_and_glossary.txt";
 
-        private readonly CommandLineRunner _sample = new CommandLineRunner()
-        {
-            VoidMain = TranslateV3Samples.Main
-        };
-
         public BatchTranslateWithGlossaryAndModelTests(TranslateFixture fixture)
         {
             _fixture = fixture;
@@ -36,15 +31,15 @@ namespace GoogleCloudSamples
         public void BatchTranslateTextWithGlossaryAndModelTest()
         {
             string outputUri =
-                string.Format("gs://{0}/translation/BATCH_TRANSLATE_GLOSSARY_MODEL_OUTPUT/", _fixture._bucketName);
+                string.Format("gs://{0}/translation/BATCH_TRANSLATE_GLOSSARY_MODEL_OUTPUT/", _fixture.BucketName);
 
-            var output = _sample.Run("batchTranslateTextWithGlossaryAndModel",
-                "--project_id=" + _fixture._projectId,
+            var output = _fixture.SampleRunner.Run("batchTranslateTextWithGlossaryAndModel",
+                "--project_id=" + _fixture.ProjectId,
                 "--location=us-central1",
                 "--source_language=en",
                 "--target_language=ja",
-                "--glossary_id=" + _fixture._glossaryId,
-                "--model_id=" + _fixture._modelId,
+                "--glossary_id=" + _fixture.GlossaryId,
+                "--model_id=" + _fixture.ModelId,
                 "--output_uri=" + outputUri,
                 "--input_uri=" + _inputUri);
             Assert.Contains("Total Characters: 25", output.Stdout);

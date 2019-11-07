@@ -21,11 +21,6 @@ namespace GoogleCloudSamples
     {
         private readonly TranslateFixture _fixture;
 
-        private readonly CommandLineRunner _sample = new CommandLineRunner()
-        {
-            VoidMain = TranslateV3Samples.Main
-        };
-
         public BatchTranslateTests(TranslateFixture fixture)
         {
             _fixture = fixture;
@@ -35,10 +30,10 @@ namespace GoogleCloudSamples
         public void BatchTranslateTextTest()
         {
             string outputUri =
-                string.Format("gs://{0}/translation/BATCH_TRANSLATE_OUTPUT/", _fixture._bucketName);
+                string.Format("gs://{0}/translation/BATCH_TRANSLATE_OUTPUT/", _fixture.BucketName);
 
-            var output = _sample.Run("batchTranslateText",
-                "--project_id=" + _fixture._projectId,
+            var output = _fixture.SampleRunner.Run("batchTranslateText",
+                "--project_id=" + _fixture.ProjectId,
                 "--location=us-central1",
                 "--source_language=en",
                 "--target_language=es",

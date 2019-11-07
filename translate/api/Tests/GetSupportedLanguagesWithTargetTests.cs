@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
+    [Collection(nameof(TranslateFixture))]
     public class GetSupportedLanguagesWithTargetTests
     {
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly TranslateFixture _fixture;
 
-        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        public GetSupportedLanguagesWithTargetTests(TranslateFixture fixture)
         {
-            VoidMain = TranslateV3Samples.Main
-        };
-
+            _fixture = fixture;
+        }
         [Fact]
         public void GetSupportedLanguagesWithTargetTest()
         {
-            var output = _sample.Run("getSupportedLanguagesWithTarget",
-                "--project_id=" + _projectId,
+            var output = _fixture.SampleRunner.Run("getSupportedLanguagesWithTarget",
+                "--project_id=" + _fixture.ProjectId,
                 "--language_code=is");
             Assert.Contains("Language Code: sq", output.Stdout);
             Assert.Contains("Display Name: albanska", output.Stdout);

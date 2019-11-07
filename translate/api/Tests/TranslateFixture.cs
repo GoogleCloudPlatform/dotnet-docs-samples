@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 using Xunit;
@@ -31,39 +30,35 @@ namespace GoogleCloudSamples
         private readonly string _glossaryInputUri = "gs://cloud-samples-data/translation/glossary_ja.csv";
         private readonly StorageClient _client;
 
-        public readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        public string _glossaryId;
-        public readonly string _modelId = "TRL8772189639420149760";
-        public string _bucketName;
+        public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public string ModelId { get; } = "TRL8772189639420149760";
+        public string GlossaryId { get; }
+        public string BucketName { get; }
+
+        public CommandLineRunner SampleRunner { get; } = new CommandLineRunner()
+        {
+            VoidMain = TranslateV3Samples.Main
+        };
 
         public TranslateFixture()
         {
             _client = StorageClient.Create();
-            _bucketName = "translate-v3-bucket-" + TestUtil.RandomName();
-            _glossaryId = "must-start-with-letters" + TestUtil.RandomName();
+            BucketName = "translate-v3-bucket-" + TestUtil.RandomName();
+            GlossaryId = "must-start-with-letters" + TestUtil.RandomName();
 
-            CreateBucket(_bucketName);
-            CreateGlossary.CreateGlossarySample(_projectId, _glossaryId, _glossaryInputUri);
+            _client.CreateBucket(ProjectId, BucketName);
+            CreateGlossary.CreateGlossarySample(ProjectId, GlossaryId, _glossaryInputUri);
         }
-
-        internal Bucket CreateBucket(string name)
-        {
-            var bucket = _client.CreateBucket(_projectId, _bucketName);
-            return bucket;
-        }
-
 
         public void Dispose()
         {
-            using (var storageClient = StorageClient.Create())
+            _client.DeleteBucket(BucketName,
+            new DeleteBucketOptions
             {
-                storageClient.DeleteBucket(_bucketName,
-                new DeleteBucketOptions
-                {
-                    DeleteObjects = true
-                });
-            }
-            DeleteGlossary.DeleteGlossarySample(_projectId, _glossaryId);
+                DeleteObjects = true
+            });
+            _client.Dispose();
+            DeleteGlossary.DeleteGlossarySample(ProjectId, GlossaryId);
         }
     }
 }

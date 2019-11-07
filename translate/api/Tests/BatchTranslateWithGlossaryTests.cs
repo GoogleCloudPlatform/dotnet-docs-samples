@@ -22,11 +22,6 @@ namespace GoogleCloudSamples
         private readonly string _inputUri = "gs://cloud-samples-data/translation/text_with_glossary.txt";
         private readonly TranslateFixture _fixture;
 
-        private readonly CommandLineRunner _sample = new CommandLineRunner()
-        {
-            VoidMain = TranslateV3Samples.Main
-        };
-
         public BatchTranslateWithGlossaryTests(TranslateFixture fixture)
         {
             _fixture = fixture;
@@ -36,14 +31,14 @@ namespace GoogleCloudSamples
         public void BatchTranslateTextWithGlossaryTest()
         {
             string outputUri =
-                string.Format("gs://{0}/translation/BATCH_TRANSLATE_GLOSSARY_OUTPUT/", _fixture._bucketName);
+                string.Format("gs://{0}/translation/BATCH_TRANSLATE_GLOSSARY_OUTPUT/", _fixture.BucketName);
 
-            var output = _sample.Run("batchTranslateTextWithGlossary",
-                "--project_id=" + _fixture._projectId,
+            var output = _fixture.SampleRunner.Run("batchTranslateTextWithGlossary",
+                "--project_id=" + _fixture.ProjectId,
                 "--location=us-central1",
                 "--source_language=en",
                 "--target_language=ja",
-                "--glossary_id=" + _fixture._glossaryId,
+                "--glossary_id=" + _fixture.GlossaryId,
                 "--output_uri=" + outputUri,
                 "--input_uri=" + _inputUri);
 

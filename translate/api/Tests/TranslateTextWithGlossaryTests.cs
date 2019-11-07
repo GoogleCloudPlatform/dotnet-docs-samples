@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -21,10 +20,6 @@ namespace GoogleCloudSamples
     public class TranslateTextWithGlossaryTests
     {
         private readonly TranslateFixture _fixture;
-        private readonly CommandLineRunner _sample = new CommandLineRunner()
-        {
-            VoidMain = TranslateV3Samples.Main
-        };
 
         public TranslateTextWithGlossaryTests(TranslateFixture fixture)
         {
@@ -34,11 +29,11 @@ namespace GoogleCloudSamples
         [Fact]
         public void TranslateTextWithGlossaryTest()
         {
-            var output = _sample.Run("translateTextWithGlossary",
-                "--project_id=" + _fixture._projectId,
+            var output = _fixture.SampleRunner.Run("translateTextWithGlossary",
+                "--project_id=" + _fixture.ProjectId,
                 "--text=account",
                 "--target_language=ja",
-                "--glossary_id=" + _fixture._glossaryId);
+                "--glossary_id=" + _fixture.GlossaryId);
             Assert.True(output.Stdout.Contains("\u30A2\u30AB\u30A6\u30F3\u30C8") || output.Stdout.Contains("\u53E3\u5EA7"));
         }
     }

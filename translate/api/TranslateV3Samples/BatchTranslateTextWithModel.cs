@@ -25,7 +25,7 @@ namespace GoogleCloudSamples
         /// Batch translate text using Translation model.
         /// Model can be AutoML or General[built-in] model.
         /// </summary>
-        /// <param name="targetLanguage">Target language code..</param>
+        /// <param name="targetLanguage">Target language code.</param>
         /// <param name="sourceLanguage">Required. Source language code.</param>
         /// <param name="modelId">A model is used for Translation.
         /// <param name="projectId">Your Google Cloud Project ID.</param>
@@ -50,7 +50,7 @@ namespace GoogleCloudSamples
                 SourceLanguageCode = sourceLanguage,
                 TargetLanguageCodes =
                 {
-                    // Target language code..
+                    // Target language code.
                     targetLanguage,
                 },
                 InputConfigs =
@@ -73,7 +73,7 @@ namespace GoogleCloudSamples
                 },
                 Models =
                 {
-                    // A model is used for Translation. code.
+                    // A model is used for Translation.
                     { targetLanguage,  modelPath},
                 },
             };

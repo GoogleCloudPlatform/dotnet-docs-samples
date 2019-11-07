@@ -51,7 +51,7 @@ namespace GoogleCloudSamples
                 SourceLanguageCode = sourceLanguage,
                 GlossaryConfig = new TranslateTextGlossaryConfig
                 {
-                    // Translation Glossary ID.
+                    // Translation Glossary Path.
                     Glossary = glossaryPath,
                 },
                 MimeType = "text/plain",

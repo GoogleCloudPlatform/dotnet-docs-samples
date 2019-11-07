@@ -55,7 +55,7 @@ namespace GoogleCloudSamples
                 SourceLanguageCode = sourceLanguage,
                 TargetLanguageCodes =
                 {
-                    // Target language code..
+                    // Target language code.
                     targetLanguage,
                 },
                 InputConfigs =
@@ -78,7 +78,7 @@ namespace GoogleCloudSamples
                 },
                 Models =
                 {
-                    // A model is used for Translation. code.
+                    // A model is used for Translation.
                     { targetLanguage, modelPath },
                 },
                 Glossaries =

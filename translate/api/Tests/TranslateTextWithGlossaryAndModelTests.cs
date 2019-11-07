@@ -20,10 +20,6 @@ namespace GoogleCloudSamples
     public class TranslateTextWithGlossaryAndModelTests
     {
         private readonly TranslateFixture _fixture;
-        private readonly CommandLineRunner _sample = new CommandLineRunner()
-        {
-            VoidMain = TranslateV3Samples.Main
-        };
 
         public TranslateTextWithGlossaryAndModelTests(TranslateFixture fixture)
         {
@@ -33,13 +29,13 @@ namespace GoogleCloudSamples
         [Fact]
         public void TranslateTextWithGlossaryAndModelTest()
         {
-            var output = _sample.Run("translateTextWithGlossaryAndModel",
-                "--project_id=" + _fixture._projectId,
+            var output = _fixture.SampleRunner.Run("translateTextWithGlossaryAndModel",
+                "--project_id=" + _fixture.ProjectId,
                 "--location=us-central1",
                 "--text=That' il do it. deception",
                 "--target_language=ja",
-                "--glossary_id=" + _fixture._glossaryId,
-                "--model_id=" + _fixture._modelId);
+                "--glossary_id=" + _fixture.GlossaryId,
+                "--model_id=" + _fixture.ModelId);
             Assert.True(output.Stdout.Contains("\u3084\u308B\u6B3A\u304F")
                 || output.Stdout.Contains("\u305D\u308C\u3058\u3083\u3042")); // custom model
             Assert.Contains("\u6B3A\u304F", output.Stdout); //glossary

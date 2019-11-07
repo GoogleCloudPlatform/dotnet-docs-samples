@@ -56,7 +56,7 @@ namespace GoogleCloudSamples
                 Model = modelPath,
                 GlossaryConfig = new TranslateTextGlossaryConfig
                 {
-                    // Translation Glossary ID.
+                    // Translation Glossary path.
                     Glossary = glossaryPath,
                 },
                 SourceLanguageCode = sourceLanguage,

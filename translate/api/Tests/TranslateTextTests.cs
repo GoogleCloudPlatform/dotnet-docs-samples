@@ -12,25 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
+    [Collection(nameof(TranslateFixture))]
     public class TranslateTextTests
     {
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly TranslateFixture _fixture;
 
-        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        public TranslateTextTests(TranslateFixture fixture)
         {
-            VoidMain = TranslateV3Samples.Main
-        };
+            _fixture = fixture;
+        }
 
         [Fact]
         public void TranslateTextTest()
         {
-            var output = _sample.Run("translateText",
-                "--project_id=" + _projectId,
+            var output = _fixture.SampleRunner.Run("translateText",
+                "--project_id=" + _fixture.ProjectId,
                 "--text=Hello world",
                 "--target_language=sr-Latn");
             Assert.True(output.Stdout.Contains("Zdravo svet") || output.Stdout.Contains("Pozdrav svijetu"));

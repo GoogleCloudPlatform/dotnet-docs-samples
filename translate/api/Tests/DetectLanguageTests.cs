@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
+    [Collection(nameof(TranslateFixture))]
     public class DetectLanguageTests
     {
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private readonly TranslateFixture _fixture;
 
-        private readonly CommandLineRunner _sample = new CommandLineRunner()
+        public DetectLanguageTests(TranslateFixture fixture)
         {
-            VoidMain = TranslateV3Samples.Main
-        };
-
+            _fixture = fixture;
+        }
         [Fact]
         public void DetectLanguageTest()
         {
-            var output = _sample.Run("detectLanguage",
-                "--project_id=" + _projectId,
+            var output = _fixture.SampleRunner.Run("detectLanguage",
+                "--project_id=" + _fixture.ProjectId,
                 "--text=H\u00E6 s\u00E6ta");
             Assert.Contains("is", output.Stdout);
         }
