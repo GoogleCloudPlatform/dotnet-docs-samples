@@ -19,7 +19,11 @@ using System;
 
 class AutoMLVisionClassificationDeployModelNodeCount
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Deploy a model with a specified node count.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="modelId">the Id of the model.</param>
     public static void VisionClassificationDeployModelNodeCount(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID")
     {

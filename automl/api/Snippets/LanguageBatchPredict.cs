@@ -19,7 +19,12 @@ using System;
 
 class AutoMLLanguageBatchPredict
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to classify the text content.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="inputUri">The GCS path where input file is stored.</param>
+    /// <param name="outputUri">The GCS path for classified output.</param>
     public static void LanguageBatchPredict(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID",
         String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_file.json",

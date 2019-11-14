@@ -19,7 +19,13 @@ using System;
 
 class AutoMLVisionBatchPredict
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to get a dataset by ID.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="modelId">the Id of the model.</param>
+    /// <param name="inputUri">The GCS path where all images are.</param>
+    /// <param name="outputUri">The GCS path to store the output of your prediction request.</param>
     public static void VisionBatchPredict(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID",
         String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_file.json",

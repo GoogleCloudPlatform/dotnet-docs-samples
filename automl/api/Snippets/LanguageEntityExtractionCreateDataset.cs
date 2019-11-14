@@ -20,7 +20,11 @@ using System;
 
 class AutoMLLanguageEntityExtractionCreateDataset
 {
-    // TODO: complete summary
+    /// <summary>
+    ///  Demonstrates using the AutoML client to create a dataset.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="displayName">The name of the dataset to be created.</param>
     public static void LanguageEntityExtractionCreateDataset(string projectId = "YOUR-PROJECT-ID",
         string displayName = "YOUR-DATASET-NAME")
     {

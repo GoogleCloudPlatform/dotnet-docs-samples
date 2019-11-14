@@ -20,7 +20,11 @@ using System;
 
 class AutoMLDeleteDataset
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Deletes a dataset and all of its contents.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="datasetId">the Id of the dataset.</param>
     public static void DeleteDataset(string projectId = "YOUR-PROJECT-ID",
         string datasetId = "YOUR-DATASET-ID")
     {
