@@ -19,7 +19,11 @@ using System;
 
 class AutoMLUndeployModel
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Undeploys a model.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="modelId">the Id of the model.</param>
     public static void UndeployModel(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID")
     {

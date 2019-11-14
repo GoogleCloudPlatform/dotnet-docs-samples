@@ -21,7 +21,12 @@ using System.IO;
 
 class AutoMLVisionClassificationPredict
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to predict the text content using given model.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="modelId">the Id of the model.</param>
+    /// <param name="filePath">the Local text file path of the content to be classified.</param>
     public static void VisionClassificationPredict(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID",
         string filePath = "path_to_local_file.jpg")

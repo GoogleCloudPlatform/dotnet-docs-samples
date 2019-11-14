@@ -19,7 +19,10 @@ using System;
 
 class AutoMLListModels
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to list all models.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
     public static void ListModels(string projectId = "YOUR-PROJECT-ID")
     {
         // Initialize client that will be used to send requests. This client only needs to be created
