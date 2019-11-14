@@ -20,6 +20,12 @@ using System;
 
 class AutoMLLanguageTextClassificationCreateModel
 {
+    /// <summary>
+    /// Demonstrates using the AutoML client to create a model.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="datasetId">the Id of the dataset.</param>
+    /// <param name="displayName">The name of the dataset to be created.</param>
     public static void LanguageTextClassificationCreateModel(string projectId = "YOUR-PROJECT-ID",
         string datasetId = "YOUR_DATASET_ID",
         string displayName = "YOUR_DATASET_NAME")

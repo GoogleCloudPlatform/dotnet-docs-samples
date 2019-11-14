@@ -20,6 +20,11 @@ using System;
 
 class AutoMLLanguageSentimentAnalysisCreateModel
 {
+    /// <summary>
+    /// Demonstrates using the AutoML client to get a dataset by ID.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="datasetId">the Id of the dataset.</param>
     public static void LanguageSentimentAnalysisCreateModel(string projectId = "YOUR-PROJECT-ID",
         string datasetId = "YOUR_DATASET_ID",
         string displayName = "YOUR_DATASET_NAME")

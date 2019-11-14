@@ -19,7 +19,11 @@ using System;
 
 class AutoMLGetModel
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to get a model by ID.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="modelId">the Id of the model.</param>
     public static void GetModel(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID")
     {
