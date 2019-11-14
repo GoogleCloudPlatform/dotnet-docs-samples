@@ -38,7 +38,8 @@ class AutoMLLanguageEntityExtractionPredict
             Content = content,
             MimeType = "text/plain"
         };
-        ExamplePayload payload = new ExamplePayload {
+        ExamplePayload payload = new ExamplePayload
+        {
             TextSnippet = textSnippet
         };
 

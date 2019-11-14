@@ -32,7 +32,7 @@ class AutoMLListOperationStatus
         string projectLocation = LocationName.Format(projectId, "us-central1");
 
         // Create list operations request.
-        ListOperationsRequest listrequest = new ListOperationsRequest 
+        ListOperationsRequest listrequest = new ListOperationsRequest
         {
             Name = projectLocation
         };
