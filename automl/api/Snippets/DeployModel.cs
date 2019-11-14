@@ -39,4 +39,5 @@ class AutoMLDeployModel
         Console.WriteLine("Model deployment finished.");
     }
 }
+
 // [END automl_deploy_model]
