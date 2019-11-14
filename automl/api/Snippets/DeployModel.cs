@@ -58,5 +58,6 @@ namespace GoogleCloudSamples
                 AutoMLDeployModel.DeployModel(opts.ProjectID, opts.ModelId));
         }
     }
+}
 
 // [END automl_deploy_model]
