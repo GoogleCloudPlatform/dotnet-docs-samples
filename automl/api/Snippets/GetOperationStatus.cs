@@ -16,7 +16,6 @@
 
 using Google.Cloud.AutoML.V1;
 using Google.LongRunning;
-using Google.Protobuf.WellKnownTypes;
 using System;
 
 class AutoMLGetOperationStatus

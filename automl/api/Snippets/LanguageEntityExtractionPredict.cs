@@ -60,7 +60,6 @@ class AutoMLLanguageEntityExtractionPredict
         foreach (AnnotationPayload annotationPayload in response.Payload)
         {
             Console.WriteLine($"Text Extract Entity Type: {annotationPayload.DisplayName}");
-            //TODO: not sure im not doing it right here!
             Console.WriteLine($"Text score: {annotationPayload.TextExtraction.Score.ToString("0.00")}");
             TextSegment textSegment = annotationPayload.TextExtraction.TextSegment;
             Console.WriteLine($"Text Extract Entity Content: {textSegment.Content}");

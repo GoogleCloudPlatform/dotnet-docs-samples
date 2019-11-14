@@ -54,9 +54,9 @@ class AutoMLGetModel
     public static int Main(string[] args)
     {
         //...
-        AutoMLGetModelEvaluation.GetModelEvaluation("python-docs-samples-tests",
-            "VCN5809837033354428416",
-            "4155580323981904692");
+        AutoMLLanguageEntityExtractionPredict.LanguageEntityExtractionPredict("python-docs-samples-tests",
+            "TEN5112482778553778176",
+            "Haploinsufficiency of the transcription factors FOXC1 and FOXC2 results in aberrant ocular development.\tAnterior segment developmental disorders , including Axenfeld-Rieger anomaly ( ARA ) , variably associate with harmfully elevated intraocular pressure ( IOP ) , which causes glaucoma . Clinically observed dysgenesis does not correlate with IOP , however , and the etiology of glaucoma development is not understood . The forkhead transcription factor genes Foxc1 ( formerly Mf1 ) and Foxc2 ( formerly Mfh1 ) are expressed in the mesenchyme from which the ocular drainage structures derive . Mutations in the human homolog of Foxc1 , FKHL7 , cause dominant anterior segment defects and glaucoma in various families . We show that Foxc1 ( + / - ) mice have anterior segment abnormalities similar to those reported in human patients . These abnormalities include small or absent Schlemms canal , aberrantly developed trabecular meshwork , iris hypoplasia , severely eccentric pupils and displaced Schwalbes line . The penetrance of clinically obvious abnormalities varies with genetic background . In some affected eyes , collagen bundles were half normal diameter , or collagen and elastic tissue were very sparse . Thus , abnormalities in extracellular matrix synthesis or organization may contribute to development of the ocular phenotypes . Despite the abnormalities in ocular drainage structures in Foxc1 ( + / - ) mice , IOP was normal in almost all mice analyzed , on all genetic backgrounds and at all ages . Similar abnormalities were found in Foxc2 ( + / - ) mice , but no disease-associated mutations were identified in the human homolog FKHL14 in 32 ARA patients . Foxc1 ( + / - ) and Foxc2 ( + / - ) mice are useful models for studying anterior segment development and its anomalies , and may allow identification of genes that interact with Foxc1 and Foxc2 ( or FKHL7 and FKHL14 ) to produce a phenotype with elevated IOP and glaucoma . .");
         return 0;
     }
 }
