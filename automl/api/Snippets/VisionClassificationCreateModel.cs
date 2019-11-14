@@ -56,7 +56,6 @@ class AutoMLVisionClassificationCreateModel
         // Don't wait for model creation to finish, as this can take several hours.
         // However, you can use the `name` of the operation to check the status of your model.
 
-        //TODO: not sure about doing the right thing?
         Console.WriteLine($"Training operation name: {response.Name}");
         Console.WriteLine("Training started...");
     }

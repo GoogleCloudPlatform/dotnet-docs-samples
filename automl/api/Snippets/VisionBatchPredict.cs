@@ -20,7 +20,7 @@ using System;
 class AutoMLVisionBatchPredict
 {
     /// <summary>
-    /// Demonstrates using the AutoML client to get a dataset by ID.
+    /// Demonstrates using the AutoML client to predict image contents.
     /// </summary>
     /// <param name="projectId">GCP Project ID.</param>
     /// <param name="modelId">the Id of the model.</param>
