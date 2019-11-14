@@ -21,7 +21,7 @@ using System;
 class AutoMLLanguageSentimentAnalysisCreateModel
 {
     /// <summary>
-    /// Demonstrates using the AutoML client to get a dataset by ID.
+    /// Demonstrates using the AutoML client to create a model.
     /// </summary>
     /// <param name="projectId">GCP Project ID.</param>
     /// <param name="datasetId">the Id of the dataset.</param>
@@ -54,7 +54,6 @@ class AutoMLLanguageSentimentAnalysisCreateModel
         // Don't wait for model creation to finish, as this can take several hours.
         // However, you can use the `name` of the operation to check the status of your model.
 
-        //TODO: not sure about doing the right thing?
         Console.WriteLine($"Training operation name: {response.Name}");
         Console.WriteLine("Training started...");
     }

@@ -21,7 +21,7 @@ using System;
 class AutoMLImportDataset
 {
     /// <summary>
-    /// Demonstrates using the AutoML client to get a dataset by ID.
+    /// Import labeled items.
     /// </summary>
     /// <param name="projectId">GCP Project ID.</param>
     /// <param name="datasetId">the Id of the dataset.</param>
