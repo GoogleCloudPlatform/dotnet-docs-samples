@@ -24,7 +24,10 @@ using System;
 
 class AutoMLListDatasets
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to list all datasets.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
     public static void ListDatasets(string projectId = "YOUR-PROJECT-ID")
     {
         // Initialize client that will be used to send requests. This client only needs to be created

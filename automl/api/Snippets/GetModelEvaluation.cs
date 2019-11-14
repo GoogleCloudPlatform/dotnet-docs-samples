@@ -19,7 +19,12 @@ using System;
 
 class AutoMLGetModelEvaluation
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to get model evaluations.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="modelId">the Id of the model.</param>
+    /// <param name="modelEvaluationId">the Id of your model evaluation.</param>
     public static void GetModelEvaluation(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID",
         string modelEvaluationId = " YOUR-MODEL-EVAL-ID")

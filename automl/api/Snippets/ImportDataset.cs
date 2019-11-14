@@ -20,7 +20,13 @@ using System;
 
 class AutoMLImportDataset
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to get a dataset by ID.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="datasetId">the Id of the dataset.</param>
+    /// <param name="path">Google Cloud Storage URIs. 
+    /// Target files must be in AutoML CSV format.</param>
     public static void ImportDataset(string projectId = "YOUR-PROJECT-ID",
         string datasetId = "YOUR-DATASET-ID",
         string path = "gs://BUCKET_ID/path_to_training_data.csv")

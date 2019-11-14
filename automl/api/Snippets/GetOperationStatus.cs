@@ -21,7 +21,11 @@ using System;
 
 class AutoMLGetOperationStatus
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to get operation status.
+    /// </summary>
+    /// <param name="operationFullId">the complete name of a operation. For example, the name of your
+    /// operation is projects/[projectId]/locations/us-central1/operations/[operationId].</param>
     public static void GetOperationStatus(string operationFullId
         = "projects/[projectId]/locations/us-central1/operations/[operationId]")
     {
