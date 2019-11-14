@@ -20,7 +20,12 @@ using System;
 
 class AutoMLExportDataset
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to export a dataset to a Google Cloud Storage bucket.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="datasetId">the Id of the dataset.</param>
+    /// <param name="gcsUri">the Destination URI (Google Cloud Storage).</param>
     public static void ExportDataset(string projectId = "YOUR-PROJECT-ID",
         string datasetId = "YOUR-DATASET-ID", string gcsUri = "gs://BUCKET_ID/path_to_export/")
     {

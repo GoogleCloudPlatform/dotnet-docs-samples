@@ -19,7 +19,11 @@ using System;
 
 class AutoMLVisionObjectDetectionCreateDataset
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to get a dataset by ID.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="datasetId">the Id of the dataset.</param>
     public static void VisionObjectDetectionCreateDataset(string projectId = "YOUR-PROJECT-ID",
         string displayName = "YOUR-DATASET-NAME")
     {

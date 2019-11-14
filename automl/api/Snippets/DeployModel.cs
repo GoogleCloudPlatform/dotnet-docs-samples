@@ -19,7 +19,12 @@ using System;
 
 class AutoMLDeployModel
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Deploys a model. If a model is already deployed, 
+    /// deploying it with the same parameters has no effect. 
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="modelId">the Id of the model.</param>
     public static void DeployModel(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID")
     {
@@ -33,6 +38,5 @@ class AutoMLDeployModel
         client.DeployModelAsync(modelFullId).Result.PollUntilCompleted();
         Console.WriteLine("Model deployment finished.");
     }
-}
 
 // [END automl_deploy_model]

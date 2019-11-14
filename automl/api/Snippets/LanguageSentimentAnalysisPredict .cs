@@ -19,7 +19,12 @@ using System;
 
 class AutoMLLanguageSentimentAnalysisPredict
 {
-    // TODO: complete summary
+    /// <summary>
+    /// Demonstrates using the AutoML client to predict the text content using given model.
+    /// </summary>
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="modelId">the Id of the model.</param>
+    /// <param name="content">Text content for prediction.</param>
     public static void LanguageSentimentAnalysisPredict(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID",
         string content = "YOUR TEXT TO PREDICT")
