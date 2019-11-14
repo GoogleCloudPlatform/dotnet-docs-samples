@@ -22,7 +22,7 @@ using System;
 class AutoMLGetOperationStatus
 {
     // TODO: complete summary
-    public static void GetOperationStatus(string operationFullId 
+    public static void GetOperationStatus(string operationFullId
         = "projects/[projectId]/locations/us-central1/operations/[operationId]")
     {
         // Initialize client that will be used to send requests. This client only needs to be created

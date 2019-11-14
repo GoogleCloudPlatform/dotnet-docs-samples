@@ -31,7 +31,7 @@ class AutoMLListModels
         string projectLocation = LocationName.Format(projectId, "us-central1");
 
         // Create list models request.
-        ListModelsRequest listModlesRequest = new ListModelsRequest 
+        ListModelsRequest listModlesRequest = new ListModelsRequest
         {
             Parent = projectLocation,
             Filter = ""

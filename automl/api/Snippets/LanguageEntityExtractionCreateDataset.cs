@@ -32,7 +32,8 @@ class AutoMLLanguageEntityExtractionCreateDataset
         // A resource that represents Google Cloud Platform location.
         string projectLocation = LocationName.Format(projectId, "us-central1");
 
-        TextExtractionDatasetMetadata metadata = new TextExtractionDatasetMetadata {
+        TextExtractionDatasetMetadata metadata = new TextExtractionDatasetMetadata
+        {
         };
 
         Dataset dataset = new
@@ -41,8 +42,8 @@ class AutoMLLanguageEntityExtractionCreateDataset
             DisplayName = displayName,
             TextExtractionDatasetMetadata = metadata
         };
-        
-            
+
+
 
         Dataset createdDataset = client
             .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;

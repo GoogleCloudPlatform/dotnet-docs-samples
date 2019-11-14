@@ -38,7 +38,8 @@ class AutoMLLanguageSentimentAnalysisPredict
             Content = content,
             MimeType = "text/plain" // Types: text/plain, text/html
         };
-        ExamplePayload payload = new ExamplePayload {
+        ExamplePayload payload = new ExamplePayload
+        {
             TextSnippet = textSnippet
         };
 

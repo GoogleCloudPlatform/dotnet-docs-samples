@@ -21,8 +21,8 @@ using System;
 class AutoMLVisionClassificationCreateModel
 {
     public static void VisionClassificationCreateModel(string projectId = "YOUR-PROJECT-ID",
-        string datasetId = "YOUR_DATASET_ID", 
-        string displayName = "YOUR_DATASET_NAME") 
+        string datasetId = "YOUR_DATASET_ID",
+        string displayName = "YOUR_DATASET_NAME")
     {
         // Initialize client that will be used to send requests. This client only needs to be created
         // once, and can be reused for multiple requests. After completing all of your requests, call

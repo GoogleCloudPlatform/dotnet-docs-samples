@@ -22,7 +22,7 @@ class AutoMLLanguageBatchPredict
     // TODO: complete summary
     public static void LanguageBatchPredict(string projectId = "YOUR-PROJECT-ID",
         string modelId = "YOUR-MODEL-ID",
-        String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_file.json", 
+        String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_file.json",
         String outputUri = "gs://YOUR_BUCKET_ID/path_to_save_results/")
     {
         // Initialize client that will be used to send requests. This client only needs to be created
