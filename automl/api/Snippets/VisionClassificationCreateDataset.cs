@@ -49,7 +49,7 @@ class AutoMLVisionClassificationCreateDataset
             DisplayName = displayName,
             ImageClassificationDatasetMetadata = metadata
         };
-        
+
         Dataset createdDataset = client
             .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;
 

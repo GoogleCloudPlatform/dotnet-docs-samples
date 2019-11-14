@@ -36,10 +36,12 @@ class AutoMLVisionClassificationPredict
         ByteString content = ByteString.CopyFrom(File.ReadAllBytes(filePath));
 
 
-        Image image = new Image {
+        Image image = new Image
+        {
             ImageBytes = content
         };
-        ExamplePayload payload = new ExamplePayload {
+        ExamplePayload payload = new ExamplePayload
+        {
             Image = image
         };
 

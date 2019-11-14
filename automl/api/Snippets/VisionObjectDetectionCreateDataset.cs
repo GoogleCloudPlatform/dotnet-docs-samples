@@ -33,7 +33,7 @@ class AutoMLVisionObjectDetectionCreateDataset
 
         ImageObjectDetectionDatasetMetadata metadata =
            new ImageObjectDetectionDatasetMetadata
-           {};
+           { };
 
 
         Dataset dataset = new
@@ -42,7 +42,7 @@ class AutoMLVisionObjectDetectionCreateDataset
             DisplayName = displayName,
             ImageObjectDetectionDatasetMetadata = metadata
         };
-        
+
         Dataset createdDataset = client
             .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;
 

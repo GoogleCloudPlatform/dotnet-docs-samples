@@ -30,7 +30,8 @@ class AutoMLUndeployModel
 
         // Get the full path of the model.
         string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
-        UndeployModelRequest request = new UndeployModelRequest {
+        UndeployModelRequest request = new UndeployModelRequest
+        {
             Name = modelFullId
         };
 
