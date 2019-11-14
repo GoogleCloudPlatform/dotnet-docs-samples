@@ -50,7 +50,7 @@ class AutoMLLanguageTextClassificationCreateDataset
             DisplayName = displayName,
             TextClassificationDatasetMetadata = metadata
         };
-        
+
         Dataset createdDataset = client
             .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;
 

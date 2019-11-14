@@ -22,7 +22,7 @@ class AutoMLImportDataset
 {
     // TODO: complete summary
     public static void ImportDataset(string projectId = "YOUR-PROJECT-ID",
-        string datasetId = "YOUR-DATASET-ID", 
+        string datasetId = "YOUR-DATASET-ID",
         string path = "gs://BUCKET_ID/path_to_training_data.csv")
     {
         // Initialize client that will be used to send requests. This client only needs to be created

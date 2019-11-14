@@ -32,11 +32,9 @@ class AutoMLDeleteDataset
         // Get the full path of the dataset.
         string datasetFullPath = DatasetName.Format(projectId, "us-central1", datasetId);
         DatasetName datasetFullId = DatasetName.Parse(datasetFullPath);
-        Empty response =  client.DeleteDatasetAsync(datasetFullId).Result.PollUntilCompleted().Result;
+        Empty response = client.DeleteDatasetAsync(datasetFullId).Result.PollUntilCompleted().Result;
         Console.WriteLine($"Dataset deleted. {response}");
     }
-
-
 }
 
 // [END automl_delete_dataset]

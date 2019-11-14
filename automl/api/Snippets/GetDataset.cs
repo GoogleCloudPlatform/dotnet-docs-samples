@@ -90,7 +90,6 @@ class AutoMLGetDataset
         // [START automl_translate_get_dataset]
         // [START automl_vision_classification_get_dataset]
     }
-
 }
 
 // [END automl_language_entity_extraction_get_dataset]
