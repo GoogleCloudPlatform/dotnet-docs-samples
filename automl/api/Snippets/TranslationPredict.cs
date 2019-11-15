@@ -27,10 +27,18 @@ namespace GoogleCloudSamples
 
     public class AutoMLTranslationPredict
     {
-        
+        // [START automl_translate_predict]
+
+        /// <summary>
+        /// Translates text from the provided file using the specified model.
+        /// </summary>
+        /// <returns>Success or failure as integer</returns>
+        /// <param name="projectID">Project identifier.</param>
+        /// <param name="modelID">Model identifier.</param>
+        /// <param name="filePath">File path.</param>
         public static object TranslationPredict(string projectID,
-                                              string modelID,
-                                              string filePath)
+                                                string modelID,
+                                                string filePath)
         {
             // Initialize client that will be used to send requests. This client only needs to be created
             // once, and can be reused for multiple requests. After completing all of your requests, call
@@ -68,7 +76,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-
+        // [END automl_translate_predict]
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
