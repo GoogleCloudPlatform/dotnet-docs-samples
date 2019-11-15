@@ -12,8 +12,6 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_translation_create_dataset]
-
 using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
@@ -32,6 +30,8 @@ namespace GoogleCloudSamples
 
     public class AutoMLTranslationCreateDataset
     {
+        // [START automl_translate_create_dataset]
+
         /// <summary>
         /// Demonstrates using the AutoML client to create a dataset with given display name.
         /// </summary>
@@ -39,11 +39,11 @@ namespace GoogleCloudSamples
         /// <param name="displayName">the readable name of the dataset.</param>
         /// <param name="targetLanguage">the language to translate to</param>
         /// <param name="sourceLanguage">the language to translate from</param>
-        /// <returns>Success or failure</returns>
-        public static object TranslationCreateDataset(string projectID = "YOUR-PROJECT-ID",
-                                                    string displayName = "YOUR-DATASET-NAME",
-                                                    string targetLanguage = "TARGET-LANG-CODE",
-                                                    string sourceLanguage = "SOURCE-LANG-CODE")
+        /// <returns>Success or failure as integer</returns>
+        public static object TranslationCreateDataset(string projectID,
+                                                      string displayName,
+                                                      string targetLanguage,
+                                                      string sourceLanguage)
         {
 
             // Initialize client that will be used to send requests. This client only needs to be created
@@ -77,6 +77,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Dataset id: {datasetId}");
             return 0;
         }
+        // [END automl_translate_create_dataset]
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
@@ -89,4 +90,4 @@ namespace GoogleCloudSamples
         }
     }
 }
-// [END automl_translation_create_dataset]
+
