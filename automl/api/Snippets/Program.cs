@@ -11,11 +11,15 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
+<<<<<<< HEAD
 
+=======
+>>>>>>> 51eed317... Adds code snippets for AutoML Translation: create dataset, create model, predict.
 using CommandLine;
 
 namespace GoogleCloudSamples
 {
+<<<<<<< HEAD
     public class BaseOptions
     {
         [Value(0, HelpText = "Your project ID")]
@@ -23,6 +27,8 @@ namespace GoogleCloudSamples
     }
 
 
+=======
+>>>>>>> 51eed317... Adds code snippets for AutoML Translation: create dataset, create model, predict.
     [Verb("create_dataset", HelpText = "Create a new dataset for training a model")]
     public class CreateDatasetOptions
     {
@@ -35,7 +41,11 @@ namespace GoogleCloudSamples
 
     [Verb("create_model", HelpText = "Create a new custom model")]
     public class CreateModelOptions
+<<<<<<< HEAD
     {
+=======
+    { 
+>>>>>>> 51eed317... Adds code snippets for AutoML Translation: create dataset, create model, predict.
         [Value(0, HelpText = "Your project ID")]
         public string ProjectID { get; set; }
 
@@ -46,6 +56,7 @@ namespace GoogleCloudSamples
         public string DatasetID { get; set; }
     }
 
+<<<<<<< HEAD
     [Verb("get_model", HelpText = "Retrieve a model for AutoML")]
     public class GetModelOptions
     {
@@ -56,6 +67,8 @@ namespace GoogleCloudSamples
         public string ModelId { get; set; }
     }
 
+=======
+>>>>>>> 51eed317... Adds code snippets for AutoML Translation: create dataset, create model, predict.
     [Verb("predict", HelpText = "Make a prediction with a custom model")]
     public class PredictOptions
     {
