@@ -38,5 +38,5 @@ class AutoMLDeployModel
         client.DeployModelAsync(modelFullId).Result.PollUntilCompleted();
         Console.WriteLine("Model deployment finished.");
     }
-
+}
 // [END automl_deploy_model]
