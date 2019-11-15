@@ -11,22 +11,30 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
+
 using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
 namespace GoogleCloudSamples
 {
-
     [Verb("create_translation_model", HelpText = "Create a new custom AutoML Translation model")]
     public class AutoMLTranslationCreateModelOptions : CreateModelOptions
     { }
 
     public class AutoMLTranslationCreateModel
     {
+        // [START automl_translate_create_model]
+        /// <summary>
+        /// Creates a new model for AutoML Translation
+        /// </summary>
+        /// <returns>Success or failure as integer</returns>
+        /// <param name="projectID">GCP Project ID.</param>
+        /// <param name="displayName">Display name.</param>
+        /// <param name="datasetID">Dataset identifier.</param>
         public static object TranslationCreateModel(string projectID,
-                                                 string displayName,
-                                                 string datasetID)
+                                                    string displayName,
+                                                    string datasetID)
         {
 
             // Initialize client that will be used to send requests. This client only needs to be created
@@ -55,6 +63,7 @@ namespace GoogleCloudSamples
 
             return 0;
         }
+        // [END automl_translate_create_model]
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
