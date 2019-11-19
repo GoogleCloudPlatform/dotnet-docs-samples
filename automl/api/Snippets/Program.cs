@@ -70,6 +70,7 @@ namespace GoogleCloudSamples
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
+<<<<<<< HEAD
             AutoMLBatchPredict.RegisterCommands(verbMap);
             AutoMLListModels.RegisterCommands(verbMap);
             AutoMLDeleteModel.RegisterCommands(verbMap);
@@ -93,6 +94,9 @@ namespace GoogleCloudSamples
             AutoMLGetModelEvaluation.RegisterCommands(verbMap);
             AutoMLGetModel.RegisterCommands(verbMap);
             AutoMLImportDataset.RegisterCommands(verbMap);
+=======
+            AutoMLDeleteModel.RegisterCommands(verbMap);
+>>>>>>> 55c8601c... Adds DeleteModel code sample to AutoML samples
             AutoMLTranslationCreateDataset.RegisterCommands(verbMap);
             AutoMLTranslationCreateModel.RegisterCommands(verbMap);
             AutoMLTranslationPredict.RegisterCommands(verbMap);
