@@ -53,6 +53,7 @@ namespace GoogleCloudSamples
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
+            AutoMLDeleteModel.RegisterCommands(verbMap);
             AutoMLTranslationCreateDataset.RegisterCommands(verbMap);
             AutoMLTranslationCreateModel.RegisterCommands(verbMap);
             AutoMLTranslationPredict.RegisterCommands(verbMap);
