@@ -32,7 +32,7 @@ $dataCollection = "kokoro-test-data-"+$randomString
 BackupAndEdit-TextFile "FirestoreTest.cs", "..\Quickstart\Program.cs", "..\AddData\Program.cs", `
 "..\DataModel\Program.cs", "..\DeleteData\Program.cs", "..\ListenData\Program.cs", `
 "..\GetData\Program.cs", "..\ManageIndexes\Program.cs", "..\OrderLimitData\Program.cs", `
-"..\PaginateData\Program.cs", "..\QueryData\Program.cs", "..\TransactionsAndBatchedWrites\Program.cs" `
+"..\PaginateData\Program.cs", "..\QueryData\Program.cs", "..\SolutionCounter\Program.cs", "..\TransactionsAndBatchedWrites\Program.cs" `
 	@{'db.Collection("users")' = 'db.Collection("'+$usersCollection+'")';
 	  'db.Collection("cities")' = 'db.Collection("'+$citiesCollection+'")';
 	  'db.Collection("data")' = 'db.Collection("'+$dataCollection+'")';
