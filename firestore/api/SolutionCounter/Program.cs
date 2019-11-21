@@ -141,7 +141,6 @@ Where command is one of
         // [END fs_increment_counter]
 
         // [START fs_get_count]
-
         /// <summary>
         /// The GetCount returns a total count across all shards.
         /// </summary>
