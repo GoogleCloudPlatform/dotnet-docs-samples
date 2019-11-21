@@ -26,7 +26,6 @@ namespace GoogleCloudSamples
     // to realize counter with high frequency.
 
     // [START counter_classes]
-
     // counters/${ID}
     /// <summary>
     /// Defines the <see cref="Counter" />
