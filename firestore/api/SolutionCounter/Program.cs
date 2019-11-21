@@ -56,7 +56,6 @@ namespace GoogleCloudSamples
         [FirestoreProperty]
         public int Count { get; set; }
     }
-
     // [END fs_counter_classes]
 
     /// <summary>
