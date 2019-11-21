@@ -107,7 +107,6 @@ Where command is one of
         }
 
         // [START fs_create_counter]
-
         /// <summary>
         /// The InitCounterAsync creates a given number of shards as
         /// sub collection of specified document.
