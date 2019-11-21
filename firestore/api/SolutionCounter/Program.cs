@@ -126,7 +126,6 @@ Where command is one of
         // [END fs_create_counter]
 
         // [START fs_increment_counter]
-
         /// <summary>
         /// The IncrementCounterAsync increments a randomly picked shard.
         /// </summary>
