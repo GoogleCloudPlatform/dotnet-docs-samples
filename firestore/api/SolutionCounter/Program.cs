@@ -123,7 +123,6 @@ Where command is one of
                 await colRef.Document(i.ToString()).SetAsync(new Shard { Count = 0 });
             }
         }
-
         // [END fs_create_counter]
 
         // [START fs_increment_counter]
