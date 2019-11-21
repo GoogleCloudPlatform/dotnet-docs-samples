@@ -138,7 +138,6 @@ Where command is one of
             var shardRef = docRef.Collection("shards").Document(docId.ToString());
             await shardRef.UpdateAsync("Count", FieldValue.Increment(1));
         }
-
         // [END fs_increment_counter]
 
         // [START fs_get_count]
