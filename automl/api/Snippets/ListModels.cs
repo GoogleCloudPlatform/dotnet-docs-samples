@@ -12,53 +12,71 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_list_models]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLListModels
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to list all models.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    public static void ListModels(string projectId = "YOUR-PROJECT-ID")
+    [Verb("list_model", HelpText = "")]
+    public class ListModelOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+        [Value(0, HelpText = "Your project ID")]
+        public string ProjectID { get; set; }
+    }
 
-        // A resource that represents Google Cloud Platform location.
-        string projectLocation = LocationName.Format(projectId, "us-central1");
-
-        // Create list models request.
-        ListModelsRequest listModlesRequest = new ListModelsRequest
+    class AutoMLListModels
+    {
+        // [START automl_list_models]
+        /// <summary>
+        /// Demonstrates using the AutoML client to list all models.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        public static object ListModels(string projectId = "YOUR-PROJECT-ID")
         {
-            Parent = projectLocation,
-            Filter = ""
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
 
-        // List all the models available in the region by applying filter.
-        Console.WriteLine("List of models:");
-        foreach (Model model in client.ListModels(listModlesRequest))
+            // A resource that represents Google Cloud Platform location.
+            string projectLocation = LocationName.Format(projectId, "us-central1");
+
+            // Create list models request.
+            ListModelsRequest listModlesRequest = new ListModelsRequest
+            {
+                Parent = projectLocation,
+                Filter = ""
+            };
+
+            // List all the models available in the region by applying filter.
+            Console.WriteLine("List of models:");
+            foreach (Model model in client.ListModels(listModlesRequest))
+            {
+                // Display the model information.
+                Console.WriteLine($"Model name: {model.Name}");
+                // To get the model id, you have to parse it out of the `name` field. As models Ids are
+                // required for other methods.
+                // Name Format: `projects/{project_id}/locations/{location_id}/models/{model_id}`
+                string[] names = model.Name.Split("/");
+                string retrievedModelId = names[names.Length - 1];
+                Console.WriteLine($"Model id: {retrievedModelId}");
+                Console.WriteLine($"Model display name: {model.DisplayName}");
+                Console.WriteLine("Model create time:");
+                Console.WriteLine($"\tseconds: {model.CreateTime.Seconds}");
+                Console.WriteLine($"\tnanos: {model.CreateTime.Nanos}");
+                Console.WriteLine($"Model deployment state: {model.DeploymentState}");
+            }
+
+            return 0;
+        }
+
+        // [END automl_list_models]
+        public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            // Display the model information.
-            Console.WriteLine($"Model name: {model.Name}");
-            // To get the model id, you have to parse it out of the `name` field. As models Ids are
-            // required for other methods.
-            // Name Format: `projects/{project_id}/locations/{location_id}/models/{model_id}`
-            string[] names = model.Name.Split("/");
-            string retrievedModelId = names[names.Length - 1];
-            Console.WriteLine($"Model id: {retrievedModelId}");
-            Console.WriteLine($"Model display name: {model.DisplayName}");
-            Console.WriteLine("Model create time:");
-            Console.WriteLine($"\tseconds: {model.CreateTime.Seconds}");
-            Console.WriteLine($"\tnanos: {model.CreateTime.Nanos}");
-            Console.WriteLine($"Model deployment state: {model.DeploymentState}");
+            verbMap
+                .Add((ListModelOptions opts) =>
+                     AutoMLListModels.ListModels(opts.ProjectID));
         }
     }
 }
-
-// [END automl_list_models]

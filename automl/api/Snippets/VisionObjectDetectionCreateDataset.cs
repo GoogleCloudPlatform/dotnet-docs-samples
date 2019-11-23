@@ -12,53 +12,68 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_vision_object_detection_create_dataset]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLVisionObjectDetectionCreateDataset
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to create a dataset.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="datasetId">the Id of the dataset.</param>
-    public static void VisionObjectDetectionCreateDataset(string projectId = "YOUR-PROJECT-ID",
-        string displayName = "YOUR-DATASET-NAME")
+    [Verb("vision_object_detection_create_dataset", HelpText = "Translate text from the source to the target language")]
+    public class VisionObjectDetectionCreateDatasetOptions : CreateDatasetOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
-
-        // A resource that represents Google Cloud Platform location.
-        string projectLocation = LocationName.Format(projectId, "us-central1");
-
-        ImageObjectDetectionDatasetMetadata metadata =
-           new ImageObjectDetectionDatasetMetadata
-           { };
-
-
-        Dataset dataset = new
-            Dataset
+    }
+    class AutoMLVisionObjectDetectionCreateDataset
+    {
+        // [START automl_vision_object_detection_create_dataset]
+        /// <summary>
+        /// Demonstrates using the AutoML client to create a dataset.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="displayName">the Id of the dataset.</param>
+        public static object VisionObjectDetectionCreateDataset(string projectId = "YOUR-PROJECT-ID",
+            string displayName = "YOUR-DATASET-NAME")
         {
-            DisplayName = displayName,
-            ImageObjectDetectionDatasetMetadata = metadata
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
 
-        Dataset createdDataset = client
-            .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;
+            // A resource that represents Google Cloud Platform location.
+            string projectLocation = LocationName.Format(projectId, "us-central1");
 
-        // Display the dataset information.
-        Console.WriteLine($"Dataset name: {createdDataset.Name}");
-        // To get the dataset id, you have to parse it out of the `name` field. As dataset Ids are
-        // required for other methods.
-        // Name Form: `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`
-        string[] names = createdDataset.Name.Split("/");
-        string datasetId = names[names.Length - 1];
-        Console.WriteLine($"Dataset id: {datasetId}");
+            ImageObjectDetectionDatasetMetadata metadata =
+               new ImageObjectDetectionDatasetMetadata
+               { };
+
+
+            Dataset dataset = new
+                Dataset
+            {
+                DisplayName = displayName,
+                ImageObjectDetectionDatasetMetadata = metadata
+            };
+
+            Dataset createdDataset = client
+                .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;
+
+            // Display the dataset information.
+            Console.WriteLine($"Dataset name: {createdDataset.Name}");
+            // To get the dataset id, you have to parse it out of the `name` field. As dataset Ids are
+            // required for other methods.
+            // Name Form: `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`
+            string[] names = createdDataset.Name.Split("/");
+            string datasetId = names[names.Length - 1];
+            Console.WriteLine($"Dataset id: {datasetId}");
+            return 0;
+        }
+        // [END automl_vision_object_detection_create_dataset]
+
+        public static void RegisterCommands(VerbMap<object> verbMap)
+        {
+            verbMap
+                .Add((VisionObjectDetectionCreateDatasetOptions opts) =>
+                     AutoMLVisionObjectDetectionCreateDataset.VisionObjectDetectionCreateDataset(opts.ProjectID,
+                     opts.DisplayName));
+        }
     }
 }
-
-// [END automl_vision_object_detection_create_dataset]

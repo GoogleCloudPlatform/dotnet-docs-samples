@@ -1,20 +1,15 @@
 ﻿using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
-using System.IO;
 
 namespace GoogleCloudSamples
 {
-
     public class AutoMLDeleteModel
     {
-        [Verb("delete_model", HelpText = "Delete a custommodel")]
-        public class DeleteModelOptions : PredictOptions
+        [Verb("delete_model", HelpText = "Delete a custom model.")]
+        public class DeleteModelOptions : BaseOptions
         {
-            [Value(0, HelpText = "Your project ID")]
-            public string ProjectID { get; set; }
-
-            [Value(1, HelpText = "ID of the model to use for prediction")]
+            [Value(1, HelpText = "ID of the model to use for deletion.")]
             public string ModelID { get; set; }
         }
 
@@ -28,7 +23,6 @@ namespace GoogleCloudSamples
         public static object DeleteModel(string projectId,
                                          string modelId)
         {
-
             // Initialize client that will be used to send requests. This client only needs to be created
             // once, and can be reused for multiple requests. After completing all of your requests, call
             // the "close" method on the client to safely clean up any remaining background resources.
@@ -45,7 +39,6 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Model deleted. {response}");
 
             return 0;
-
         }
         // [END automl_delete_model]
 

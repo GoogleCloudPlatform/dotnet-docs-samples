@@ -12,73 +12,95 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_vision_batch_predict]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLVisionBatchPredict
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to predict image contents.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="modelId">the Id of the model.</param>
-    /// <param name="inputUri">The GCS path where all images are.</param>
-    /// <param name="outputUri">The GCS path to store the output of your prediction request.</param>
-    public static void VisionBatchPredict(string projectId = "YOUR-PROJECT-ID",
-        string modelId = "YOUR-MODEL-ID",
-        String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_file.json",
-        String outputUri = "gs://YOUR_BUCKET_ID/path_to_save_results/")
+    [Verb("translate_predict", HelpText = "Translate text from the source to the target language")]
+    public class VisionBatchPredictOptions : PredictOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        PredictionServiceClient client = PredictionServiceClient.Create();
+        [Value(2, HelpText = "Location of file with text to translate")]
+        public string InputUri { get; set; }
 
-        // Get the full path of the model.
-        string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
-
-        GcsSource gcsSource = new GcsSource
+        [Value(3, HelpText = "Location of file with text to translate")]
+        public string OutputUri { get; set; }
+    }
+    class AutoMLVisionBatchPredict
+    {
+        // [START automl_vision_batch_predict]
+        /// <summary>
+        /// Demonstrates using the AutoML client to predict image contents.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="modelId">the Id of the model.</param>
+        /// <param name="inputUri">The GCS path where all images are.</param>
+        /// <param name="outputUri">The GCS path to store the output of your prediction request.</param>
+        public static object VisionBatchPredict(string projectId = "YOUR-PROJECT-ID",
+            string modelId = "YOUR-MODEL-ID",
+            String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_file.json",
+            String outputUri = "gs://YOUR_BUCKET_ID/path_to_save_results/")
         {
-            InputUris = { inputUri }
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            PredictionServiceClient client = PredictionServiceClient.Create();
 
-        BatchPredictInputConfig inputConfig = new
-            BatchPredictInputConfig
-        {
-            GcsSource = gcsSource
-        };
+            // Get the full path of the model.
+            string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
 
-        GcsDestination gcsDestination = new
-            GcsDestination
-        {
-            OutputUriPrefix = outputUri
-        };
+            GcsSource gcsSource = new GcsSource
+            {
+                InputUris = { inputUri }
+            };
 
-        BatchPredictOutputConfig outputConfig = new
-            BatchPredictOutputConfig
-        {
-            GcsDestination = gcsDestination
-        };
+            BatchPredictInputConfig inputConfig = new
+                BatchPredictInputConfig
+            {
+                GcsSource = gcsSource
+            };
 
-        BatchPredictRequest request = new
-            BatchPredictRequest
-        {
-            Name = modelFullId,
-            InputConfig = inputConfig,
-            OutputConfig = outputConfig,
-            Params =
+            GcsDestination gcsDestination = new
+                GcsDestination
+            {
+                OutputUriPrefix = outputUri
+            };
+
+            BatchPredictOutputConfig outputConfig = new
+                BatchPredictOutputConfig
+            {
+                GcsDestination = gcsDestination
+            };
+
+            BatchPredictRequest request = new
+                BatchPredictRequest
+            {
+                Name = modelFullId,
+                InputConfig = inputConfig,
+                OutputConfig = outputConfig,
+                Params =
             {
                 { "score_threshold" , "0.8" } // [0.0-1.0] Only produce results higher than this value
             }
-        };
+            };
 
-        client.BatchPredictAsync(request).Result.PollUntilCompleted();
+            client.BatchPredictAsync(request).Result.PollUntilCompleted();
 
-        Console.WriteLine("Waiting for operation to complete...");
-        Console.WriteLine("Batch Prediction results saved to specified Cloud Storage bucket.");
+            Console.WriteLine("Waiting for operation to complete...");
+            Console.WriteLine("Batch Prediction results saved to specified Cloud Storage bucket.");
+            return 0;
+        }
+        // [END automl_vision_batch_predict]
+
+        public static void RegisterCommands(VerbMap<object> verbMap)
+        {
+            verbMap
+                .Add((VisionBatchPredictOptions opts) =>
+                     AutoMLVisionBatchPredict.VisionBatchPredict(opts.ProjectID,
+                                                                 opts.ModelID,
+                                                                 opts.InputUri,
+                                                                 opts.OutputUri));
+        }
     }
 }
-
-// [END automl_vision_batch_predict]

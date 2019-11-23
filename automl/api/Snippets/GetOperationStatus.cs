@@ -12,47 +12,65 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_get_operation_status]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using Google.LongRunning;
 using System;
 
-class AutoMLGetOperationStatus
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to get operation status.
-    /// </summary>
-    /// <param name="operationFullId">the complete name of a operation. For example, the name of your
-    /// operation is projects/[projectId]/locations/us-central1/operations/[operationId].</param>
-    public static void GetOperationStatus(string operationFullId
-        = "projects/[projectId]/locations/us-central1/operations/[operationId]")
+    [Verb("get_operation_status", HelpText = "")]
+    public class GetOperationStatusOption
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+        [Value(0, HelpText = "Your project ID")]
+        public string OperationFullId { get; set; }
+    }
 
-        // Get the latest state of a long-running operation.
-        //TODO: I dont know why there is no 'GetOperationsClient'
-        Operation operation = client.CreateModelOperationsClient.GetOperation(operationFullId);
-
-        // Display operation details.
-        Console.WriteLine("Operation details:");
-        Console.WriteLine($"\tName: {operation.Name}");
-        Console.WriteLine($"\tMetadata Type Url: {operation.Metadata.TypeUrl}");
-        Console.WriteLine($"\tDone: {operation.Done}");
-        if (operation.Response != null)
+    public class AutoMLGetOperationStatus
+    {
+        // [START automl_get_operation_status]
+        /// <summary>
+        /// Demonstrates using the AutoML client to get operation status.
+        /// </summary>
+        /// <param name="operationFullId">the complete name of a operation. For example, the name of your
+        /// operation is projects/[projectId]/locations/us-central1/operations/[operationId].</param>
+        public static object GetOperationStatus(string operationFullId
+            = "projects/[projectId]/locations/us-central1/operations/[operationId]")
         {
-            Console.WriteLine($"\tResponse Type Url: {operation.Response.TypeUrl}");
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
+
+            // Get the latest state of a long-running operation.
+            //TODO: I dont know why there is no 'GetOperationsClient'
+            Operation operation = client.CreateModelOperationsClient.GetOperation(operationFullId);
+
+            // Display operation details.
+            Console.WriteLine("Operation details:");
+            Console.WriteLine($"\tName: {operation.Name}");
+            Console.WriteLine($"\tMetadata Type Url: {operation.Metadata.TypeUrl}");
+            Console.WriteLine($"\tDone: {operation.Done}");
+            if (operation.Response != null)
+            {
+                Console.WriteLine($"\tResponse Type Url: {operation.Response.TypeUrl}");
+            }
+            if (operation.Error != null)
+            {
+                Console.WriteLine("\tResponse:");
+                Console.WriteLine($"\t\tError code: {operation.Error.Code}");
+                Console.WriteLine($"\t\tError message: {operation.Error.Message}");
+            }
+
+            return 0;
         }
-        if (operation.Error != null)
+
+        // [END automl_get_operation_status]
+        public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            Console.WriteLine("\tResponse:");
-            Console.WriteLine($"\t\tError code: {operation.Error.Code}");
-            Console.WriteLine($"\t\tError message: {operation.Error.Message}");
+            verbMap
+                .Add((GetOperationStatusOption opts) =>
+                     AutoMLGetOperationStatus.GetOperationStatus(opts.OperationFullId));
         }
     }
 }
-
-// [END automl_get_operation_status]
