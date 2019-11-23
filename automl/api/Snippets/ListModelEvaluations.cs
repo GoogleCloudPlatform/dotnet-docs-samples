@@ -12,50 +12,66 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_list_model_evaluations]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLListModelEvaluations
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to list model evaluations.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="modelId">the Id of the model.</param>
-    public static void ListModelEvaluations(string projectId = "YOUR-PROJECT-ID",
-        string modelId = "YOUR-MODEL-ID")
+    [Verb("list_model_evaluations", HelpText = "")]
+    public class ListModelEvaluationsOptions : ListModelOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+        [Value(1, HelpText = "Your project ID")]
+        public string ModelId { get; set; }
+    }
 
-        // Get the full path of the model.
-        string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
-
-        // Create list models request.
-        ListModelEvaluationsRequest listModlesRequest = new ListModelEvaluationsRequest
+    class AutoMLListModelEvaluations
+    {
+        // [START automl_list_model_evaluations]
+        /// <summary>
+        /// Demonstrates using the AutoML client to list model evaluations.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="modelId">the Id of the model.</param>
+        public static object ListModelEvaluations(string projectId = "YOUR-PROJECT-ID",
+            string modelId = "YOUR-MODEL-ID")
         {
-            Parent = modelFullId
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
 
-        // List all the model evaluations in the model by applying filter.
-        Console.WriteLine("List of model evaluations:");
-        foreach (ModelEvaluation modelEvaluation in client.ListModelEvaluations(listModlesRequest))
+            // Get the full path of the model.
+            string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
+
+            // Create list models request.
+            ListModelEvaluationsRequest listModlesRequest = new ListModelEvaluationsRequest
+            {
+                Parent = modelFullId
+            };
+
+            // List all the model evaluations in the model by applying filter.
+            Console.WriteLine("List of model evaluations:");
+            foreach (ModelEvaluation modelEvaluation in client.ListModelEvaluations(listModlesRequest))
+            {
+                Console.WriteLine($"Model Evaluation Name: {modelEvaluation.Name}");
+                Console.WriteLine($"Model Annotation Spec Id: {modelEvaluation.AnnotationSpecId}");
+                Console.WriteLine("Create Time:");
+                Console.WriteLine($"\tseconds: {modelEvaluation.CreateTime.Seconds}");
+                Console.WriteLine($"\tnanos: {modelEvaluation.CreateTime.Nanos / 1e9}");
+                Console.WriteLine(
+                    $"Evalution Example Count: {modelEvaluation.EvaluatedExampleCount}");
+                Console.WriteLine(
+                    $"Model Evaluation Metrics: {modelEvaluation.TranslationEvaluationMetrics}");
+            }
+            return 0;
+        }
+        // [END automl_list_model_evaluations]
+        public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            Console.WriteLine($"Model Evaluation Name: {modelEvaluation.Name}");
-            Console.WriteLine($"Model Annotation Spec Id: {modelEvaluation.AnnotationSpecId}");
-            Console.WriteLine("Create Time:");
-            Console.WriteLine($"\tseconds: {modelEvaluation.CreateTime.Seconds}");
-            Console.WriteLine($"\tnanos: {modelEvaluation.CreateTime.Nanos / 1e9}");
-            Console.WriteLine(
-                $"Evalution Example Count: {modelEvaluation.EvaluatedExampleCount}");
-            Console.WriteLine(
-                $"Model Evaluation Metrics: {modelEvaluation.TranslationEvaluationMetrics}");
+            verbMap
+                .Add((ListModelEvaluationsOptions opts) =>
+                     AutoMLListModelEvaluations.ListModelEvaluations(opts.ProjectID, opts.ModelId));
         }
     }
 }
-
-// [END automl_list_model_evaluations]
