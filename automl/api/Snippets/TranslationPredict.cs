@@ -11,6 +11,7 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
+
 using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
@@ -18,7 +19,7 @@ using System.IO;
 
 namespace GoogleCloudSamples
 {
-    [Verb("translate", HelpText = "Translate text from the source to the target language")]
+    [Verb("translate_predict", HelpText = "Translate text from the source to the target language")]
     public class AutoMLTranslationPredictOptions : PredictOptions
     {
         [Value(2, HelpText = "Location of file with text to translate")]
@@ -69,9 +70,9 @@ namespace GoogleCloudSamples
 
             var response = client.Predict(predictionRequest);
 
-            foreach(var payload in response.Payload)
+            foreach (var payload in response.Payload)
             {
-                Console.Write($"Translation: {payload.Translation.TranslatedContent.Content}");
+                Console.Write($"Translated Content: {payload.Translation.TranslatedContent.Content}");
             }
 
             return 0;

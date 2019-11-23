@@ -12,46 +12,67 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_export_dataset]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-class AutoMLExportDataset
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to export a dataset to a Google Cloud Storage bucket.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="datasetId">the Id of the dataset.</param>
-    /// <param name="gcsUri">the Destination URI (Google Cloud Storage).</param>
-    public static void ExportDataset(string projectId = "YOUR-PROJECT-ID",
-        string datasetId = "YOUR-DATASET-ID", string gcsUri = "gs://BUCKET_ID/path_to_export/")
+    [Verb("export_dataset", HelpText = "Translate text from the source to the target language")]
+    public class ExportDatasetOptions : BaseOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+        [Value(1, HelpText = "Location of file with text to translate")]
+        public string DatasetId { get; set; }
 
-        // Get the complete path of the dataset.
-        string datasetFullPath = DatasetName.Format(projectId, "us-central1", datasetId);
-        DatasetName datasetFullId = DatasetName.Parse(datasetFullPath);
-        GcsDestination gcsDestination = new GcsDestination
+        [Value(2, HelpText = "Location of file with text to translate")]
+        public string GcsUri { get; set; }
+    }
+
+    class AutoMLExportDataset
+    {
+        // [START automl_export_dataset]
+        /// <summary>
+        /// Demonstrates using the AutoML client to export a dataset to a Google Cloud Storage bucket.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="datasetId">the Id of the dataset.</param>
+        /// <param name="gcsUri">the Destination URI (Google Cloud Storage).</param>
+        public static object ExportDataset(string projectId = "YOUR-PROJECT-ID",
+            string datasetId = "YOUR-DATASET-ID", string gcsUri = "gs://BUCKET_ID/path_to_export/")
         {
-            OutputUriPrefix = gcsUri
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
 
-        // Export the dataset to the output URI.
-        OutputConfig outputConfig = new OutputConfig
+            // Get the complete path of the dataset.
+            string datasetFullPath = DatasetName.Format(projectId, "us-central1", datasetId);
+            DatasetName datasetFullId = DatasetName.Parse(datasetFullPath);
+            GcsDestination gcsDestination = new GcsDestination
+            {
+                OutputUriPrefix = gcsUri
+            };
+
+            // Export the dataset to the output URI.
+            OutputConfig outputConfig = new OutputConfig
+            {
+                GcsDestination = gcsDestination
+            };
+
+            Console.WriteLine("Processing export...");
+            Empty response = client.ExportDataAsync(datasetFullId, outputConfig).Result.PollUntilCompleted().Result;
+            Console.WriteLine($"Dataset exported. {response}");
+            return 0;
+        }
+        // [END automl_export_dataset]
+        public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            GcsDestination = gcsDestination
-        };
-
-        Console.WriteLine("Processing export...");
-        Empty response = client.ExportDataAsync(datasetFullId, outputConfig).Result.PollUntilCompleted().Result;
-        Console.WriteLine($"Dataset exported. {response}");
+            verbMap
+                .Add((ExportDatasetOptions opts) =>
+                     AutoMLExportDataset.ExportDataset(opts.ProjectID,
+                                                                 opts.DatasetId,
+                                                                 opts.GcsUri));
+        }
     }
 }
-
-// [END automl_export_dataset]

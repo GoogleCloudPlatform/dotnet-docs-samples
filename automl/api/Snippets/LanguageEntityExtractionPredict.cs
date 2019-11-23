@@ -12,61 +12,79 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_language_entity_extraction_predict]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLLanguageEntityExtractionPredict
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to predict the text content using given model.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="modelId">the Id of the model.</param>
-    /// <param name="content">Text content for prediction.</param>
-    public static void LanguageEntityExtractionPredict(string projectId = "YOUR-PROJECT-ID",
-        string modelId = "YOUR-MODEL-ID",
-        string content = "YOUR TEXT TO PREDICT")
+    [Verb("language_entity_extraction_predict", HelpText = "Translate text from the source to the target language")]
+    public class LanguageEntityExtractionPredictOptions : PredictOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        PredictionServiceClient client = PredictionServiceClient.Create();
-
-        // Get the full path of the model.
-        string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
-
-        TextSnippet textSnippet = new
-            TextSnippet
+        [Value(2, HelpText = "Location of file with text to translate")]
+        public string Content { get; set; }
+    }
+    class AutoMLLanguageEntityExtractionPredict
+    {
+        // [START automl_language_entity_extraction_predict]
+        /// <summary>
+        /// Demonstrates using the AutoML client to predict the text content using given model.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="modelId">the Id of the model.</param>
+        /// <param name="content">Text content for prediction.</param>
+        public static object LanguageEntityExtractionPredict(string projectId = "YOUR-PROJECT-ID",
+            string modelId = "YOUR-MODEL-ID",
+            string content = "YOUR TEXT TO PREDICT")
         {
-            Content = content,
-            MimeType = "text/plain"
-        };
-        ExamplePayload payload = new ExamplePayload
-        {
-            TextSnippet = textSnippet
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            PredictionServiceClient client = PredictionServiceClient.Create();
 
-        PredictRequest predictRequest = new
-            PredictRequest
-        {
-            Name = modelFullId,
-            Payload = payload
-        };
+            // Get the full path of the model.
+            string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
 
-        PredictResponse response = client.Predict(predictRequest);
+            TextSnippet textSnippet = new
+                TextSnippet
+            {
+                Content = content,
+                MimeType = "text/plain"
+            };
+            ExamplePayload payload = new ExamplePayload
+            {
+                TextSnippet = textSnippet
+            };
 
-        foreach (AnnotationPayload annotationPayload in response.Payload)
+            PredictRequest predictRequest = new
+                PredictRequest
+            {
+                Name = modelFullId,
+                Payload = payload
+            };
+
+            PredictResponse response = client.Predict(predictRequest);
+
+            foreach (AnnotationPayload annotationPayload in response.Payload)
+            {
+                Console.WriteLine($"Text Extract Entity Type: {annotationPayload.DisplayName}");
+                Console.WriteLine($"Text score: {annotationPayload.TextExtraction.Score.ToString("0.00")}");
+                TextSegment textSegment = annotationPayload.TextExtraction.TextSegment;
+                Console.WriteLine($"Text Extract Entity Content: {textSegment.Content}");
+                Console.WriteLine($"Text Start Offset: {textSegment.StartOffset}");
+                Console.WriteLine($"Text End Offset: {textSegment.EndOffset}");
+            }
+            return 0;
+        }
+        // [END automl_language_entity_extraction_predict]
+
+        public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            Console.WriteLine($"Text Extract Entity Type: {annotationPayload.DisplayName}");
-            Console.WriteLine($"Text score: {annotationPayload.TextExtraction.Score.ToString("0.00")}");
-            TextSegment textSegment = annotationPayload.TextExtraction.TextSegment;
-            Console.WriteLine($"Text Extract Entity Content: {textSegment.Content}");
-            Console.WriteLine($"Text Start Offset: {textSegment.StartOffset}");
-            Console.WriteLine($"Text End Offset: {textSegment.EndOffset}");
+            verbMap
+                .Add((LanguageEntityExtractionPredictOptions opts) =>
+                     AutoMLLanguageEntityExtractionPredict.LanguageEntityExtractionPredict(opts.ProjectID,
+                                                                 opts.ModelID,
+                                                                 opts.Content));
         }
     }
 }
-
-// [END automl_language_entity_extraction_predict]

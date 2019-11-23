@@ -12,45 +12,63 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_get_model_evaluation]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLGetModelEvaluation
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to get model evaluations.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="modelId">the Id of the model.</param>
-    /// <param name="modelEvaluationId">the Id of your model evaluation.</param>
-    public static void GetModelEvaluation(string projectId = "YOUR-PROJECT-ID",
-        string modelId = "YOUR-MODEL-ID",
-        string modelEvaluationId = " YOUR-MODEL-EVAL-ID")
+    class AutoMLGetModelEvaluation
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+        [Verb("get_model_evaluation", HelpText = "")]
+        public class GetModelEvaluationOptions : GetModelOptions
+        {
+            [Value(2, HelpText = "Your project ID")]
+            public string ModelEvalId { get; set; }
+        }
 
-        // Get the full path of the model evaluation.
-        string modelEvaluationFullId =
-            ModelEvaluationName.Format(projectId, "us-central1", modelId, modelEvaluationId);
+        // [START automl_get_model_evaluation]
+        /// <summary>
+        /// Demonstrates using the AutoML client to get model evaluations.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="modelId">the Id of the model.</param>
+        /// <param name="modelEvaluationId">the Id of your model evaluation.</param>
+        public static object GetModelEvaluation(string projectId = "YOUR-PROJECT-ID",
+            string modelId = "YOUR-MODEL-ID",
+            string modelEvaluationId = " YOUR-MODEL-EVAL-ID")
+        {
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
 
-        // Get complete detail of the model evaluation.
-        ModelEvaluation modelEvaluation = client.GetModelEvaluation(modelEvaluationFullId);
+            // Get the full path of the model evaluation.
+            string modelEvaluationFullId =
+                ModelEvaluationName.Format(projectId, "us-central1", modelId, modelEvaluationId);
 
-        Console.WriteLine($"Model Evaluation Name: {modelEvaluation.Name}");
-        Console.WriteLine($"Model Annotation Spec Id: {modelEvaluation.AnnotationSpecId}");
-        Console.WriteLine("Create Time:");
-        Console.WriteLine($"\tseconds: {modelEvaluation.CreateTime.Seconds}");
-        Console.WriteLine($"\tnanos: {modelEvaluation.CreateTime.Nanos / 1e9}");
-        Console.WriteLine(
-            $"Evalution Example Count: {modelEvaluation.EvaluatedExampleCount}");
-        Console.WriteLine(
-            $"Model Evaluation Metrics: {modelEvaluation.TranslationEvaluationMetrics}");
+            // Get complete detail of the model evaluation.
+            ModelEvaluation modelEvaluation = client.GetModelEvaluation(modelEvaluationFullId);
+
+            Console.WriteLine($"Model Evaluation Name: {modelEvaluation.Name}");
+            Console.WriteLine($"Model Annotation Spec Id: {modelEvaluation.AnnotationSpecId}");
+            Console.WriteLine("Create Time:");
+            Console.WriteLine($"\tseconds: {modelEvaluation.CreateTime.Seconds}");
+            Console.WriteLine($"\tnanos: {modelEvaluation.CreateTime.Nanos / 1e9}");
+            Console.WriteLine(
+                $"Evalution Example Count: {modelEvaluation.EvaluatedExampleCount}");
+            Console.WriteLine(
+                $"Model Evaluation Metrics: {modelEvaluation.TranslationEvaluationMetrics}");
+            return 0;
+        }
+
+        // [END automl_get_model_evaluation]
+
+        public static void RegisterCommands(VerbMap<object> verbMap)
+        {
+            verbMap
+                .Add((GetModelEvaluationOptions opts) =>
+                     AutoMLGetModelEvaluation.GetModelEvaluation(opts.ProjectID, opts.ModelId, opts.ModelEvalId));
+        }
     }
 }
-
-// [END automl_get_model_evaluation]
