@@ -12,52 +12,68 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_language_text_classification_create_model]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using Google.LongRunning;
 using System;
 
-class AutoMLLanguageTextClassificationCreateModel
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to create a model.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="datasetId">the Id of the dataset.</param>
-    /// <param name="displayName">The name of the dataset to be created.</param>
-    public static void LanguageTextClassificationCreateModel(string projectId = "YOUR-PROJECT-ID",
-        string datasetId = "YOUR_DATASET_ID",
-        string displayName = "YOUR_DATASET_NAME")
+    [Verb("language_text_classification_create_model", HelpText = "Translate text from the source to the target language")]
+    public class LanguageTextClassificationCreateModelOptions : CreateModelOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
-
-        // A resource that represents Google Cloud Platform location.
-        string projectLocation = LocationName.Format(projectId, "us-central1");
-        // Set model metadata.
-        TextClassificationModelMetadata metadata = new
-            TextClassificationModelMetadata
+    }
+    class AutoMLLanguageTextClassificationCreateModel
+    {
+        // [START automl_language_text_classification_create_model]
+        /// <summary>
+        /// Demonstrates using the AutoML client to create a model.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="datasetId">the Id of the dataset.</param>
+        /// <param name="displayName">The name of the dataset to be created.</param>
+        public static object LanguageTextClassificationCreateModel(string projectId = "YOUR-PROJECT-ID",
+            string datasetId = "YOUR_DATASET_ID",
+            string displayName = "YOUR_DATASET_NAME")
         {
-        };
-        Model model = new Model
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
+
+            // A resource that represents Google Cloud Platform location.
+            string projectLocation = LocationName.Format(projectId, "us-central1");
+            // Set model metadata.
+            TextClassificationModelMetadata metadata = new
+                TextClassificationModelMetadata
+            {
+            };
+            Model model = new Model
+            {
+                DisplayName = displayName,
+                DatasetId = datasetId,
+                TextClassificationModelMetadata = metadata
+            };
+
+            // Create a model with the model metadata in the region.
+            Operation<Model, OperationMetadata> response =
+                client.CreateModel(projectLocation, model);
+            // Don't wait for model creation to finish, as this can take several hours.
+            // However, you can use the `name` of the operation to check the status of your model.
+
+            Console.WriteLine($"Training operation name: {response.Name}");
+            Console.WriteLine("Training started...");
+            return 0;
+        }
+        // [END automl_language_text_classification_create_model]
+
+        public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            DisplayName = displayName,
-            DatasetId = datasetId,
-            TextClassificationModelMetadata = metadata
-        };
-
-        // Create a model with the model metadata in the region.
-        Operation<Model, OperationMetadata> response =
-            client.CreateModel(projectLocation, model);
-        // Don't wait for model creation to finish, as this can take several hours.
-        // However, you can use the `name` of the operation to check the status of your model.
-
-        Console.WriteLine($"Training operation name: {response.Name}");
-        Console.WriteLine("Training started...");
+            verbMap
+                .Add((LanguageTextClassificationCreateModelOptions opts) =>
+                     AutoMLLanguageTextClassificationCreateModel.LanguageTextClassificationCreateModel(opts.ProjectID,
+                                                                 opts.DatasetID,
+                                                                 opts.DisplayName));
+        }
     }
 }
-
-// [END automl_language_text_classification_create_model]

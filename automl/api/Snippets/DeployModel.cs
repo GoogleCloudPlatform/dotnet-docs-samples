@@ -12,31 +12,50 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_deploy_model]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLDeployModel
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Deploys a model. If a model is already deployed, 
-    /// deploying it with the same parameters has no effect. 
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="modelId">the Id of the model.</param>
-    public static void DeployModel(string projectId = "YOUR-PROJECT-ID",
-        string modelId = "YOUR-MODEL-ID")
+    class AutoMLDeployModel
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+        [Verb("deploy_model", HelpText = "Translate text from the source to the target language")]
+        public class DeployModelOptions : BaseOptions
+        {
+            [Value(1, HelpText = "Location of file with text to translate")]
+            public string ModelId { get; set; }
+        }
 
-        // Get the full path of the model.
-        string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
-        client.DeployModelAsync(modelFullId).Result.PollUntilCompleted();
-        Console.WriteLine("Model deployment finished.");
+        // [START automl_deploy_model]
+        /// <summary>
+        /// Deploys a model. If a model is already deployed, 
+        /// deploying it with the same parameters has no effect. 
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="modelId">the Id of the model.</param>
+        public static object DeployModel(string projectId = "YOUR-PROJECT-ID",
+            string modelId = "YOUR-MODEL-ID")
+        {
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
+
+            // Get the full path of the model.
+            string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
+            client.DeployModelAsync(modelFullId).Result.PollUntilCompleted();
+            Console.WriteLine("Model deployment finished.");
+            return 0;
+        }
+
+        // [END automl_deploy_model]
+        public static void RegisterCommands(VerbMap<object> verbMap)
+        {
+            verbMap
+                .Add((DeployModelOptions opts) =>
+                     AutoMLDeployModel.DeployModel(opts.ProjectID,
+                                                                 opts.ModelId));
+        }
     }
 }
-// [END automl_deploy_model]

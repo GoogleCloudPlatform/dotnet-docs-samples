@@ -12,60 +12,75 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_vision_classification_create_dataset]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLVisionClassificationCreateDataset
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    ///  Demonstrates using the AutoML client to create a dataset.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="displayName">The name of the dataset to be created.</param>
-    public static void VisionClassificationCreateDataset(string projectId = "YOUR-PROJECT-ID",
-        string displayName = "YOUR-DATASET-NAME")
+    [Verb("vision_classification_create_dataset", HelpText = "Translate text from the source to the target language")]
+    public class VisionClassificationCreateDatasetOptions : CreateDatasetOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+    }
 
-        // A resource that represents Google Cloud Platform location.
-        string projectLocation = LocationName.Format(projectId, "us-central1");
-
-        // Specify the classification type
-        // Types:
-        // MultiLabel: Multiple labels are allowed for one example.
-        // MultiClass: At most one label is allowed per example.
-        ClassificationType classificationType = ClassificationType.Multilabel;
-        ImageClassificationDatasetMetadata metadata =
-           new ImageClassificationDatasetMetadata
-           {
-               ClassificationType = classificationType
-           };
-
-
-        Dataset dataset = new
-            Dataset
+    class AutoMLVisionClassificationCreateDataset
+    {
+        // [START automl_vision_classification_create_dataset]
+        /// <summary>
+        ///  Demonstrates using the AutoML client to create a dataset.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="displayName">The name of the dataset to be created.</param>
+        public static void VisionClassificationCreateDataset(string projectId = "YOUR-PROJECT-ID",
+            string displayName = "YOUR-DATASET-NAME")
         {
-            DisplayName = displayName,
-            ImageClassificationDatasetMetadata = metadata
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
 
-        Dataset createdDataset = client
-            .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;
+            // A resource that represents Google Cloud Platform location.
+            string projectLocation = LocationName.Format(projectId, "us-central1");
 
-        // Display the dataset information.
-        Console.WriteLine($"Dataset name: {createdDataset.Name}");
-        // To get the dataset id, you have to parse it out of the `name` field. As dataset Ids are
-        // required for other methods.
-        // Name Form: `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`
-        string[] names = createdDataset.Name.Split("/");
-        string datasetId = names[names.Length - 1];
-        Console.WriteLine($"Dataset id: {datasetId}");
+            // Specify the classification type
+            // Types:
+            // MultiLabel: Multiple labels are allowed for one example.
+            // MultiClass: At most one label is allowed per example.
+            ClassificationType classificationType = ClassificationType.Multilabel;
+            ImageClassificationDatasetMetadata metadata =
+               new ImageClassificationDatasetMetadata
+               {
+                   ClassificationType = classificationType
+               };
+
+
+            Dataset dataset = new
+                Dataset
+            {
+                DisplayName = displayName,
+                ImageClassificationDatasetMetadata = metadata
+            };
+
+            Dataset createdDataset = client
+                .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;
+
+            // Display the dataset information.
+            Console.WriteLine($"Dataset name: {createdDataset.Name}");
+            // To get the dataset id, you have to parse it out of the `name` field. As dataset Ids are
+            // required for other methods.
+            // Name Form: `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`
+            string[] names = createdDataset.Name.Split("/");
+            string datasetId = names[names.Length - 1];
+            Console.WriteLine($"Dataset id: {datasetId}");
+        }
+        // [END automl_vision_classification_create_dataset]
+        public static void RegisterCommands(VerbMap<object> verbMap)
+        {
+            verbMap
+                .Add((VisionClassificationCreateDatasetOptions opts) =>
+                     AutoMLVisionClassificationCreateDataset.VisionClassificationCreateDataset(opts.ProjectID,
+                                                                 opts.DisplayName));
+        }
     }
 }
 
-// [END automl_vision_classification_create_dataset]
