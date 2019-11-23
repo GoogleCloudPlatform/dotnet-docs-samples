@@ -12,68 +12,89 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_language_batch_predict]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLLanguageBatchPredict
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Demonstrates using the AutoML client to classify the text content.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="inputUri">The GCS path where input file is stored.</param>
-    /// <param name="outputUri">The GCS path for classified output.</param>
-    public static void LanguageBatchPredict(string projectId = "YOUR-PROJECT-ID",
-        string modelId = "YOUR-MODEL-ID",
-        String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_file.json",
-        String outputUri = "gs://YOUR_BUCKET_ID/path_to_save_results/")
+    [Verb("language_batch_predict", HelpText = "Translate text from the source to the target language")]
+    public class LanguageBatchPredictOptions : BaseOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        PredictionServiceClient client = PredictionServiceClient.Create();
+        [Value(1, HelpText = "Location of file with text to translate")]
+        public string InputUri { get; set; }
 
-        // Get the full path of the model.
-        string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
-
-        GcsSource gcsSource = new GcsSource
+        [Value(2, HelpText = "Location of file with text to translate")]
+        public string OutputUri { get; set; }
+    }
+    class AutoMLLanguageBatchPredict
+    {
+        // [START automl_language_batch_predict]
+        /// <summary>
+        /// Demonstrates using the AutoML client to classify the text content.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="inputUri">The GCS path where input file is stored.</param>
+        /// <param name="outputUri">The GCS path for classified output.</param>
+        public static void LanguageBatchPredict(string projectId = "YOUR-PROJECT-ID",
+            string modelId = "YOUR-MODEL-ID",
+            String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_file.json",
+            String outputUri = "gs://YOUR_BUCKET_ID/path_to_save_results/")
         {
-            InputUris = { inputUri }
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            PredictionServiceClient client = PredictionServiceClient.Create();
 
-        BatchPredictInputConfig inputConfig = new
-            BatchPredictInputConfig
+            // Get the full path of the model.
+            string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
+
+            GcsSource gcsSource = new GcsSource
+            {
+                InputUris = { inputUri }
+            };
+
+            BatchPredictInputConfig inputConfig = new
+                BatchPredictInputConfig
+            {
+                GcsSource = gcsSource
+            };
+
+            GcsDestination gcsDestination = new
+                GcsDestination
+            {
+                OutputUriPrefix = outputUri
+            };
+
+            BatchPredictOutputConfig outputConfig = new
+                BatchPredictOutputConfig
+            {
+                GcsDestination = gcsDestination
+            };
+
+            BatchPredictRequest request = new
+                BatchPredictRequest
+            {
+                Name = modelFullId,
+                InputConfig = inputConfig,
+                OutputConfig = outputConfig
+            };
+
+            client.BatchPredictAsync(request).Result.PollUntilCompleted();
+
+            Console.WriteLine("Waiting for operation to complete...");
+            Console.WriteLine("Batch Prediction results saved to specified Cloud Storage bucket.");
+        }
+
+        // [END automl_language_batch_predict]
+
+        public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            GcsSource = gcsSource
-        };
-
-        GcsDestination gcsDestination = new
-            GcsDestination
-        {
-            OutputUriPrefix = outputUri
-        };
-
-        BatchPredictOutputConfig outputConfig = new
-            BatchPredictOutputConfig
-        {
-            GcsDestination = gcsDestination
-        };
-
-        BatchPredictRequest request = new
-            BatchPredictRequest
-        {
-            Name = modelFullId,
-            InputConfig = inputConfig,
-            OutputConfig = outputConfig
-        };
-
-        client.BatchPredictAsync(request).Result.PollUntilCompleted();
-
-        Console.WriteLine("Waiting for operation to complete...");
-        Console.WriteLine("Batch Prediction results saved to specified Cloud Storage bucket.");
+            verbMap
+                .Add((LanguageBatchPredictOptions opts) =>
+                     AutoMLLanguageBatchPredict.LanguageBatchPredict(opts.ProjectID,
+                                                                 opts.InputUri,
+                                                                 opts.OutputUri));
+        }
     }
 }
-
-// [END automl_language_batch_predict]
