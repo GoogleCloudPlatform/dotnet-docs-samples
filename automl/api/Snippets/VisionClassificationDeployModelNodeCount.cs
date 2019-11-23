@@ -12,43 +12,61 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_vision_classification_deploy_model_node_count]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 
-class AutoMLVisionClassificationDeployModelNodeCount
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Deploy a model with a specified node count.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="modelId">the Id of the model.</param>
-    public static void VisionClassificationDeployModelNodeCount(string projectId = "YOUR-PROJECT-ID",
-        string modelId = "YOUR-MODEL-ID")
+    [Verb("vision_classification_deploy_model_node_count", HelpText = "Translate text from the source to the target language")]
+    public class DeployModelOptions : BaseOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+        [Value(1, HelpText = "Location of file with text to translate")]
+        public string ModelId { get; set; }
+    }
 
-        // Get the full path of the model.
-        string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
-        ImageClassificationModelDeploymentMetadata metadata = new
-            ImageClassificationModelDeploymentMetadata
+    class AutoMLVisionClassificationDeployModelNodeCount
+    {
+        // [START automl_vision_classification_deploy_model_node_count]
+        /// <summary>
+        /// Deploy a model with a specified node count.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="modelId">the Id of the model.</param>
+        public static object VisionClassificationDeployModelNodeCount(string projectId = "YOUR-PROJECT-ID",
+            string modelId = "YOUR-MODEL-ID")
         {
-            NodeCount = 2
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
 
-        DeployModelRequest request = new DeployModelRequest
+            // Get the full path of the model.
+            string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
+            ImageClassificationModelDeploymentMetadata metadata = new
+                ImageClassificationModelDeploymentMetadata
+            {
+                NodeCount = 2
+            };
+
+            DeployModelRequest request = new DeployModelRequest
+            {
+                Name = modelFullId,
+                ImageClassificationModelDeploymentMetadata = metadata
+            };
+
+            client.DeployModelAsync(request).Result.PollUntilCompleted();
+            Console.WriteLine("Model deployment finished");
+            return 0;
+        }
+        // [END automl_vision_classification_deploy_model_node_count]
+
+        public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            Name = modelFullId,
-            ImageClassificationModelDeploymentMetadata = metadata
-        };
-
-        client.DeployModelAsync(request).Result.PollUntilCompleted();
-        Console.WriteLine("Model deployment finished");
+            verbMap
+                .Add((DeployModelOptions opts) =>
+                     AutoMLVisionClassificationDeployModelNodeCount.VisionClassificationDeployModelNodeCount(opts.ProjectID,
+                                                                 opts.ModelId));
+        }
     }
 }
-
-// [END automl_vision_classification_deploy_model_node_count]

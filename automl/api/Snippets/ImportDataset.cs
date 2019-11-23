@@ -12,51 +12,73 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_import_data]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-class AutoMLImportDataset
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Import labeled items.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="datasetId">the Id of the dataset.</param>
-    /// <param name="path">Google Cloud Storage URIs. 
-    /// Target files must be in AutoML CSV format.</param>
-    public static void ImportDataset(string projectId = "YOUR-PROJECT-ID",
-        string datasetId = "YOUR-DATASET-ID",
-        string path = "gs://BUCKET_ID/path_to_training_data.csv")
+    [Verb("import_dataset", HelpText = "Create a new custom AutoML Translation model")]
+    public class AutoMLImportDatasetOptions : BaseOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+        [Value(1, HelpText = "the Id of the dataset.")]
+        public string DatasetId { get; set; }
 
-        // Get the complete path of the dataset.
-        string datasetFullId = DatasetName.Format(projectId, "us-central1", datasetId);
-
-        // Get multiple Google Cloud Storage URIs to import data from
-        GcsSource gcsSource = new
-            GcsSource
+        [Value(2, HelpText = "")]
+        public string GcsPath { get; set; }
+    }
+    class AutoMLImportDataset
+    {
+        // [START automl_import_data]
+        /// <summary>
+        /// Import labeled items.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="datasetId">the Id of the dataset.</param>
+        /// <param name="path">Google Cloud Storage URIs. 
+        /// Target files must be in AutoML CSV format.</param>
+        public static object ImportDataset(string projectId = "YOUR-PROJECT-ID",
+            string datasetId = "YOUR-DATASET-ID",
+            string path = "gs://BUCKET_ID/path_to_training_data.csv")
         {
-            InputUris = { path.Split(",") }
-        };
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
 
-        // Import data from the input URI
-        InputConfig inputConfig = new InputConfig
+            // Get the complete path of the dataset.
+            string datasetFullId = DatasetName.Format(projectId, "us-central1", datasetId);
+
+            // Get multiple Google Cloud Storage URIs to import data from
+            GcsSource gcsSource = new
+                GcsSource
+            {
+                InputUris = { path.Split(",") }
+            };
+
+            // Import data from the input URI
+            InputConfig inputConfig = new InputConfig
+            {
+                GcsSource = gcsSource
+            };
+
+            Console.WriteLine("Processing import...");
+
+            Empty response = client.ImportDataAsync(datasetFullId, inputConfig).Result.PollUntilCompleted().Result;
+            Console.WriteLine($"Data imported. {response}");
+            return 0;
+        }
+
+        // [END automl_import_data]
+
+        public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            GcsSource = gcsSource
-        };
-
-        Console.WriteLine("Processing import...");
-
-        Empty response = client.ImportDataAsync(datasetFullId, inputConfig).Result.PollUntilCompleted().Result;
-        Console.WriteLine($"Dataset imported. {response}");
+            verbMap
+                .Add((AutoMLImportDatasetOptions opts) =>
+                     AutoMLImportDataset.ImportDataset(opts.ProjectID,
+                                                                         opts.DatasetId,
+                                                                         opts.GcsPath));
+        }
     }
 }
-
-// [END automl_import_data]

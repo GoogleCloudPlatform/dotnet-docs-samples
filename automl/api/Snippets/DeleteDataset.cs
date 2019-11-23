@@ -12,33 +12,51 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START automl_delete_dataset]
-
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-class AutoMLDeleteDataset
+namespace GoogleCloudSamples
 {
-    /// <summary>
-    /// Deletes a dataset and all of its contents.
-    /// </summary>
-    /// <param name="projectId">GCP Project ID.</param>
-    /// <param name="datasetId">the Id of the dataset.</param>
-    public static void DeleteDataset(string projectId = "YOUR-PROJECT-ID",
-        string datasetId = "YOUR-DATASET-ID")
+    [Verb("delete_dataset", HelpText = "Translate text from the source to the target language")]
+    public class AutoMLDeleteDatasetOptions : BaseOptions
     {
-        // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the "close" method on the client to safely clean up any remaining background resources.
-        AutoMlClient client = AutoMlClient.Create();
+        [Value(1, HelpText = "Location of file with text to translate")]
+        public string DatasetId { get; set; }
+    }
+    class AutoMLDeleteDataset
+    {
+        // [START automl_delete_dataset]
+        /// <summary>
+        /// Deletes a dataset and all of its contents.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="datasetId">the Id of the dataset.</param>
+        public static object DeleteDataset(string projectId = "YOUR-PROJECT-ID",
+            string datasetId = "YOUR-DATASET-ID")
+        {
+            // Initialize client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests. After completing all of your requests, call
+            // the "close" method on the client to safely clean up any remaining background resources.
+            AutoMlClient client = AutoMlClient.Create();
 
-        // Get the full path of the dataset.
-        string datasetFullPath = DatasetName.Format(projectId, "us-central1", datasetId);
-        DatasetName datasetFullId = DatasetName.Parse(datasetFullPath);
-        Empty response = client.DeleteDatasetAsync(datasetFullId).Result.PollUntilCompleted().Result;
-        Console.WriteLine($"Dataset deleted. {response}");
+            // Get the full path of the dataset.
+            string datasetFullPath = DatasetName.Format(projectId, "us-central1", datasetId);
+            DatasetName datasetFullId = DatasetName.Parse(datasetFullPath);
+            Empty response = client.DeleteDatasetAsync(datasetFullId).Result.PollUntilCompleted().Result;
+            Console.WriteLine($"Dataset deleted. {response}");
+
+            return 0;
+        }
+        // [END automl_delete_dataset]
+
+        public static void RegisterCommands(VerbMap<object> verbMap)
+        {
+            verbMap
+                .Add((AutoMLDeleteDatasetOptions opts) =>
+                     AutoMLDeleteDataset.DeleteDataset(opts.ProjectID,
+                                                                 opts.DatasetId));
+        }
     }
 }
-
-// [END automl_delete_dataset]
