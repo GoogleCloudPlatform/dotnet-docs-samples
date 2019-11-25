@@ -63,6 +63,9 @@ namespace GoogleCloudSamples
 
         [Option('s', HelpText = "Set number of speakers")]
         public int NumberOfSpeakers { get; set; }
+
+        [Option('r', HelpText = "Use recognition metadata")]
+        public bool UseRecognitionMetadata { get; set; }
     }
 
     [Verb("with-context", HelpText = "Detects speech in an audio file."
@@ -323,6 +326,38 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_transcribe_diarization]
+
+        //[START speech_transcribe_recognition_metadata]
+        static object SyncRecognizeRecognitionMetadata(string filePath)
+        {
+            var speech = SpeechClient.Create();
+            var response = speech.Recognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Flac,
+                LanguageCode = "en",
+                Metadata = new RecognitionMetadata()
+                {
+                    // Modify these following settings for your audio source
+                    InteractionType = RecognitionMetadata.Types.InteractionType.VoiceSearch,
+                    IndustryNaicsCodeOfAudio = 23810,
+                    MicrophoneDistance = RecognitionMetadata.Types.MicrophoneDistance.Nearfield,
+                    OriginalMediaType = RecognitionMetadata.Types.OriginalMediaType.Audio,
+                    RecordingDeviceType = RecognitionMetadata.Types.RecordingDeviceType.OtherIndoorDevice,
+                    OriginalMimeType = "audio/mp3",
+                    RecordingDeviceName = "Polycom SoundStation IP 6000",
+                    AudioTopic = "questions about landmarks in NYC"
+
+                }
+
+            }, RecognitionAudio.FromFile(filePath));
+
+            foreach (var result in response.Results)
+            {
+                Console.WriteLine($"Transcript: { result.Alternatives[0].Transcript}");
+            }
+            return 0;
+        }
+        // [END speech_transcribe_recognition_metadata]
 
         /// <summary>
         /// Reads a list of phrases from stdin.
@@ -649,7 +684,8 @@ namespace GoogleCloudSamples
                     SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : opts.UseEnhancedModel ?
                     SyncRecognizeEnhancedModel(opts.FilePath) : (opts.NumberOfChannels > 1) ?
                     SyncRecognizeMultipleChannels(opts.FilePath, opts.NumberOfChannels) : (opts.NumberOfSpeakers > 1) ?
-                    SyncRecognizeMultipleSpeakers(opts.FilePath, opts.NumberOfSpeakers) : SyncRecognize(opts.FilePath),
+                    SyncRecognizeMultipleSpeakers(opts.FilePath, opts.NumberOfSpeakers) : opts.UseRecognitionMetadata ?
+                    SyncRecognizeRecognitionMetadata(opts.FilePath) : (opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
                     : AsyncRecognizeGcs(opts.FilePath))
