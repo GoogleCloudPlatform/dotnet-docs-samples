@@ -160,6 +160,14 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Channel Tag: 2", output.Stdout);
         }
+
+        [Fact]
+        public void TestSyncMultiSpeaker()
+        {
+            var output = Run("sync", "-s", _audioWavPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Channel Tag: 2", output.Stdout);
+        }
     }
 
     public class CloudStorageRecognizeTests : CommonRecognizeTests, IClassFixture<RandomBucketFixture>, System.IDisposable
