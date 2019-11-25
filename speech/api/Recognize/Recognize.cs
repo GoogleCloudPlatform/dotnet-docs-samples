@@ -318,7 +318,7 @@ namespace GoogleCloudSamples
                     foreach (var item in alternative.Words)
                     {
                         Console.WriteLine($"  {item.Word}");
-                        // Console.WriteLine($"  Speaker: {item.SpeakerTag}");
+                        Console.WriteLine($"  Speaker: {item.SpeakerTag}");
                     }
                 }
             }
@@ -337,16 +337,18 @@ namespace GoogleCloudSamples
                 LanguageCode = "en",
                 Metadata = new RecognitionMetadata()
                 {
-                    // Modify these following settings for your audio source
-                    InteractionType = RecognitionMetadata.Types.InteractionType.VoiceSearch,
-                    IndustryNaicsCodeOfAudio = 23810,
-                    MicrophoneDistance = RecognitionMetadata.Types.MicrophoneDistance.Nearfield,
                     OriginalMediaType = RecognitionMetadata.Types.OriginalMediaType.Audio,
-                    RecordingDeviceType = RecognitionMetadata.Types.RecordingDeviceType.OtherIndoorDevice,
                     OriginalMimeType = "audio/mp3",
-                    RecordingDeviceName = "Polycom SoundStation IP 6000",
-                    AudioTopic = "questions about landmarks in NYC"
 
+                    // The kind of device used to capture the audio
+                    RecordingDeviceType = RecognitionMetadata.Types.RecordingDeviceType.OtherIndoorDevice,
+
+                    // Use case of the audio, e.g. PHONE_CALL, DISCUSSION, etc
+                    InteractionType = RecognitionMetadata.Types.InteractionType.VoiceSearch,
+
+                    // The name of the defice used to make the recording.
+                    // Arbitrary string, e.g. 'Pixel XL', 'VoIP', or other value
+                    RecordingDeviceName = "Pixel XL"
                 }
 
             }, RecognitionAudio.FromFile(filePath));

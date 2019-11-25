@@ -166,7 +166,15 @@ namespace GoogleCloudSamples
         {
             var output = Run("sync", "-s", _audioWavPath);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Channel Tag: 2", output.Stdout);
+            Assert.Contains("Speaker: 1", output.Stdout);
+        }
+
+        [Fact]
+        public void TestSyncRecognitionMetadata()
+        {
+            var output = Run("sync", "-r", _audioFlacPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Brooklyn", output.Stdout);
         }
     }
 
