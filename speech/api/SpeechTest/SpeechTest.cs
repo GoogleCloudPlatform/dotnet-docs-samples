@@ -164,7 +164,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSyncMultiSpeaker()
         {
-            var output = Run("sync", "-s", _audioWavPath);
+            var output = Run("sync", "-s", "2", _audioWavPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Speaker: 1", output.Stdout);
         }
