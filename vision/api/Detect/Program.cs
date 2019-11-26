@@ -258,14 +258,12 @@ namespace GoogleCloudSamples
 
         private static object DetectTextWithLocation(Image image)
         {
-            Console.WriteLine("Starting detecting ...");
-
             // [START vision_text_detection_with_multiregion]
 
             // Instantiate a client connected to the 'eu' location.
             var client = new ImageAnnotatorClientBuilder()
             {
-                Endpoint = new ServiceEndpoint("eu-vision.googleapis.com", 8080)
+                Endpoint = new ServiceEndpoint("eu-vision.googleapis.com")
             }.Build();
             // [END vision_text_detection_with_multiregion]
 
