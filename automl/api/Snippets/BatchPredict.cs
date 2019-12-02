@@ -21,12 +21,6 @@ namespace GoogleCloudSamples
     [Verb("batch_predict", HelpText = "Batch Predict your files and save the results to GCS")]
     public class BatchPredictOptions : PredictOptions
     {
-        [Value(0, HelpText = "Your project ID")]
-        public string ProjectId { get; set; }
-
-        [Value(1, HelpText = "Your Model ID")]
-        public string ModelId { get; set; }
-
         [Value(2, HelpText = "GCS location of your csv or jsonl file")]
         public string InputUri { get; set; }
 
@@ -85,10 +79,9 @@ namespace GoogleCloudSamples
                 Name = modelFullId,
                 InputConfig = inputConfig,
                 OutputConfig = outputConfig,
-                Params =
-            {
-                { "score_threshold" , "0.8" } // [0.0-1.0] Only produce results higher than this value
-            }
+                Params = {
+                    { "score_threshold" , "0.8" } // [0.0-1.0] Only produce results higher than this value
+                }
             };
 
             client.BatchPredictAsync(request).Result.PollUntilCompleted();
