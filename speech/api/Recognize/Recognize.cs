@@ -297,7 +297,7 @@ namespace GoogleCloudSamples
 
             // Create the transcription request
             var response = speech.Recognize(new RecognitionConfig()
-            { 
+            {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 LanguageCode = "en",
                 DiarizationConfig = new SpeakerDiarizationConfig()
@@ -350,7 +350,6 @@ namespace GoogleCloudSamples
                     // Arbitrary string, e.g. 'Pixel XL', 'VoIP', or other value
                     RecordingDeviceName = "Pixel XL"
                 }
-
             }, RecognitionAudio.FromFile(filePath));
 
             foreach (var result in response.Results)
