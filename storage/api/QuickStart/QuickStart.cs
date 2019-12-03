@@ -32,9 +32,8 @@ namespace GoogleCloudSamples
             // [START storage_quickstart]
 
             // Instantiates a client.
-            using(StorageClient storageClient = StorageClient.Create())
+            using (StorageClient storageClient = StorageClient.Create())
             {
-
                 // The name for the new bucket.
                 string bucketName = projectId + "-test-bucket";
                 try
