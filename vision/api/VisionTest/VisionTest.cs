@@ -132,7 +132,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void DetectTextWithMultiRegion()
         {
-            var output = Run("text", "-m", Path.Combine("data", "bonito.gif"));
+            var output = Run("text", Path.Combine("data", "bonito.gif"), "-m");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("fermented", output.Stdout);
         }
