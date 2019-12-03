@@ -76,6 +76,7 @@ namespace GoogleCloudSamples
             AutoMLDeleteDataset.RegisterCommands(verbMap);
             AutoMLDeployModel.RegisterCommands(verbMap);
             AutoMLLanguageBatchPredict.RegisterCommands(verbMap);
+            AutoMLLanguageSentimentAnalysisCreateDataset.RegisterCommands(verbMap);
             AutoMLLanguageEntityExtractionCreateDataset.RegisterCommands(verbMap);
             AutoMLLanguageEntityExtractionCreateModel.RegisterCommands(verbMap);
             AutoMLLanguageEntityExtractionPredict.RegisterCommands(verbMap);
