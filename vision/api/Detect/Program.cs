@@ -260,7 +260,7 @@ namespace GoogleCloudSamples
         {
             // [START vision_set_endpoint]
             // Instantiate a client connected to the 'eu' location.
-            var client = new ImageAnnotatorClientBuilder()
+            var client = new ImageAnnotatorClientBuilder
             {
                 Endpoint = new ServiceEndpoint("eu-vision.googleapis.com")
             }.Build();
