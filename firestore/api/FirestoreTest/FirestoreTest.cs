@@ -231,6 +231,17 @@ namespace GoogleCloudSamples
             return _manageIndexes.Run(args);
         }
 
+		readonly CommandLineRunner _distrubutedCounter = new CommandLineRunner()
+        {
+            VoidMain = DistributedCounter.Main,
+            Command = "dotnet run"
+        };
+
+        protected ConsoleOutput RunDistributedCounter(params string[] args)
+        {
+            return _distrubutedCounter.Run(args);
+        }
+		
         // QUICKSTART TESTS
         [Fact]
         public void InitializeProjectIdTest()
@@ -828,6 +839,16 @@ namespace GoogleCloudSamples
             Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             RunPaginateData("multiple-cursor-conditions", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+        }
+		
+		[Fact]
+        public void RunDistributedCounterTest()
+        {
+            var output = RunDistributedCounter("run-distributed-counter", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Created Cloud Firestore client with project ID", output.Stdout);
+            Assert.Contains("Distributed counter initialized.", output.Stdout);
+            Assert.Contains("Distributed counter incremented.", output.Stdout);
+            Assert.DoesNotContain("Total count: 0", output.Stdout);
         }
     }
 }
