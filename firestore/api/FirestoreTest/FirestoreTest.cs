@@ -230,8 +230,8 @@ namespace GoogleCloudSamples
         {
             return _manageIndexes.Run(args);
         }
-
-		readonly CommandLineRunner _distrubutedCounter = new CommandLineRunner()
+        
+        readonly CommandLineRunner _distrubutedCounter = new CommandLineRunner()
         {
             VoidMain = DistributedCounter.Main,
             Command = "dotnet run"
@@ -241,7 +241,7 @@ namespace GoogleCloudSamples
         {
             return _distrubutedCounter.Run(args);
         }
-		
+
         // QUICKSTART TESTS
         [Fact]
         public void InitializeProjectIdTest()
@@ -840,8 +840,8 @@ namespace GoogleCloudSamples
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             RunPaginateData("multiple-cursor-conditions", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
         }
-		
-		[Fact]
+        
+        [Fact]
         public void RunDistributedCounterTest()
         {
             var output = RunDistributedCounter("run-distributed-counter", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
