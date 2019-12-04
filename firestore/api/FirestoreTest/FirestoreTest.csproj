@@ -25,6 +25,7 @@
     <ProjectReference Include="..\TransactionsAndBatchedWrites\TransactionsAndBatchedWrites.csproj" />
     <ProjectReference Include="..\PaginateData\PaginateData.csproj" />
     <ProjectReference Include="..\ManageIndexes\ManageIndexes.csproj" />
+    <ProjectReference Include="..\SolutionCounter\SolutionCounter.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
 </Project>
