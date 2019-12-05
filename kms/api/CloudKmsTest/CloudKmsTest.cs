@@ -12,10 +12,15 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System.IO;
-using Xunit;
 using System;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Google.Cloud.Kms.V1;
+using Google.Protobuf;
+using Xunit;
 
 namespace GoogleCloudSamples
 {
@@ -24,7 +29,17 @@ namespace GoogleCloudSamples
     // </summary>
     public class CommonTests
     {
-        private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private static readonly string s_projectId = LoadProjectId();
+
+        private static string LoadProjectId()
+        {
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            if (String.IsNullOrEmpty(projectId))
+            {
+                throw new ArgumentException("environment variable GOOGLE_PROJECT_ID is unset");
+            }
+            return projectId;
+        }
 
         readonly CommandLineRunner _cloudKms = new CommandLineRunner()
         {
@@ -278,6 +293,124 @@ namespace GoogleCloudSamples
                 }
             }
             return (foundRole && foundMember);
+        }
+
+        private CryptoKeyVersionName BuildAsymmetricKey(KeyRingName keyRingName, String cryptoKey,
+                CryptoKey.Types.CryptoKeyPurpose purpose,
+                CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm algorithm)
+        {
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKey cryptoKeyToCreate = new CryptoKey
+            {
+                Purpose = purpose,
+                VersionTemplate = new CryptoKeyVersionTemplate
+                {
+                    Algorithm = algorithm,
+                    ProtectionLevel = ProtectionLevel.Software,
+                },
+            };
+            CryptoKey key = client.CreateCryptoKey(keyRingName, cryptoKey, cryptoKeyToCreate);
+
+            CryptoKeyVersionName ckvName = CryptoKeyVersionName.Parse(key.Name + "/cryptoKeyVersions/1");
+            CryptoKeyVersion ckv = client.GetCryptoKeyVersion(ckvName);
+
+            // The version is generated asynchronously. Wait for it to be in state Enabled before
+            // proceeding. Throw an exception if it hasn't been generated after 5 minutes.
+            Task refresher = Task.Run(async () =>
+            {
+                while (ckv.State != CryptoKeyVersion.Types.CryptoKeyVersionState.Enabled)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+                    ckv = client.GetCryptoKeyVersion(ckvName);
+                }
+            });
+            if (!refresher.Wait(TimeSpan.FromMinutes(5)))
+            {
+                throw new TimeoutException($"Timed out waiting for version '{{ckv.Name}}' to become enabled.");
+            }
+
+            return ckvName;
+        }
+
+        [Fact]
+        public void TestAsymmetricSignAndVerify()
+        {
+            string contentFile = @"../../../../test/data/test_file.txt";
+            string signatureFile = @"../../../../test/data/test_file_signature.bin";
+            string timeStamp = $"-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
+            string keyRing = $"testKeyRing{timeStamp}";
+            string cryptoKey = $"testCryptoKey{timeStamp}";
+            KeyRingName keyRingName = new KeyRingName(s_projectId, "global", keyRing);
+
+            Run("createKeyRing", keyRingName.ProjectId, keyRingName.LocationId, keyRingName.KeyRingId);
+
+            CryptoKeyVersionName version = BuildAsymmetricKey(
+                keyRingName, cryptoKey, CryptoKey.Types.CryptoKeyPurpose.AsymmetricSign,
+                CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.EcSignP256Sha256);
+
+            var signOutput = Run("asymmetricSign", version.ProjectId, version.LocationId, version.KeyRingId,
+                    version.CryptoKeyId, version.CryptoKeyVersionId, contentFile, signatureFile);
+            Assert.Equal(0, signOutput.ExitCode);
+
+            var verifyOutput = Run("asymmetricVerify", version.ProjectId, version.LocationId, version.KeyRingId,
+                    version.CryptoKeyId, version.CryptoKeyVersionId, contentFile, signatureFile);
+            Assert.Equal(0, verifyOutput.ExitCode);
+            Assert.Contains("verified: True", verifyOutput.Stdout);
+
+            // Delete signature file to clean up
+            File.Delete(signatureFile);
+        }
+
+        [Fact]
+        public void TestAsymmetricEncryptAndDecrypt()
+        {
+            string plaintextFile = @"../../../../test/data/test_file.txt";
+            string ciphertextFile = @"../../../../test/data/test_file_ciphertext.txt";
+            string recoveredPlaintextFile = @"../../../../test/data/test_file_recovered_plaintext.txt";
+            string timeStamp = $"-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
+            string keyRing = $"testKeyRing{timeStamp}";
+            string cryptoKey = $"testCryptoKey{timeStamp}";
+            KeyRingName keyRingName = new KeyRingName(s_projectId, "global", keyRing);
+
+            Run("createKeyRing", keyRingName.ProjectId, keyRingName.LocationId, keyRingName.KeyRingId);
+
+            CryptoKeyVersionName version = BuildAsymmetricKey(
+                keyRingName, cryptoKey, CryptoKey.Types.CryptoKeyPurpose.AsymmetricDecrypt,
+                CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.RsaDecryptOaep2048Sha256);
+
+            var signOutput = Run("asymmetricEncrypt", version.ProjectId, version.LocationId, version.KeyRingId,
+                    version.CryptoKeyId, version.CryptoKeyVersionId, plaintextFile, ciphertextFile);
+            Assert.Equal(0, signOutput.ExitCode);
+            Assert.NotEqual(File.ReadAllBytes(plaintextFile), File.ReadAllBytes(ciphertextFile));
+
+            var verifyOutput = Run("asymmetricDecrypt", version.ProjectId, version.LocationId, version.KeyRingId,
+                    version.CryptoKeyId, version.CryptoKeyVersionId, ciphertextFile, recoveredPlaintextFile);
+            Assert.Equal(0, verifyOutput.ExitCode);
+            Assert.Equal(File.ReadAllBytes(plaintextFile), File.ReadAllBytes(recoveredPlaintextFile));
+
+            // Delete files to clean up
+            File.Delete(ciphertextFile);
+            File.Delete(recoveredPlaintextFile);
+        }
+
+        [Fact]
+        public void TestGetPublicKey()
+        {
+            string timeStamp = $"-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
+            string keyRing = $"testKeyRing{timeStamp}";
+            string cryptoKey = $"testCryptoKey{timeStamp}";
+            KeyRingName keyRingName = new KeyRingName(s_projectId, "global", keyRing);
+
+            Run("createKeyRing", keyRingName.ProjectId, keyRingName.LocationId, keyRingName.KeyRingId);
+
+            CryptoKeyVersionName version = BuildAsymmetricKey(
+                keyRingName, cryptoKey, CryptoKey.Types.CryptoKeyPurpose.AsymmetricSign,
+                CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.EcSignP256Sha256);
+
+            var pubKeyOutput = Run("getPublicKey", version.ProjectId, version.LocationId,
+                    version.KeyRingId, version.CryptoKeyId, version.CryptoKeyVersionId);
+            Assert.Equal(0, pubKeyOutput.ExitCode);
+            Assert.Contains("--BEGIN PUBLIC KEY--", pubKeyOutput.Stdout);
         }
     }
 

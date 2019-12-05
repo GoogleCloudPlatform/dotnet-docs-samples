@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 using CommandLine;
 using Google.Cloud.Iam.V1;
@@ -26,6 +27,9 @@ using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities.IO.Pem;
 
 namespace GoogleCloudSamples
 {
@@ -203,6 +207,85 @@ namespace GoogleCloudSamples
         public string role { get; set; }
         [Value(4, HelpText = "The member to add to the keyRing's IAM policy.", Required = true)]
         public string member { get; set; }
+    }
+
+    [Verb("asymmetricSign", HelpText = "Create a digital signature for a file using Cloud KMS.")]
+    class AsymmetricSignOptions : AsymmetricSignVerifyOptions { }
+
+    [Verb("asymmetricVerify", HelpText = "Verify a digital signature for a file using Cloud KMS.")]
+    class AsymmetricVerifyOptions : AsymmetricSignVerifyOptions { }
+
+    class AsymmetricSignVerifyOptions
+    {
+        [Value(0, HelpText = "The project containing the crypto key.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The location of the crypto key. Ex. 'global'", Required = true)]
+        public string locationId { get; set; }
+
+        [Value(2, HelpText = "The name of the key ring containing the crypto key.", Required = true)]
+        public string keyRingId { get; set; }
+
+        [Value(3, HelpText = "The name of the crypto key.", Required = true)]
+        public string cryptoKeyId { get; set; }
+
+        [Value(4, HelpText = "The name of the crypto key version.", Required = true)]
+        public string cryptoKeyVersionId { get; set; }
+
+        [Value(5, HelpText = "The name of the content file to sign over or verify.", Required = true)]
+        public string contentFile { get; set; }
+
+        [Value(6, HelpText = "The name of the signature file to create (if signing) or load (if verifying).", Required = true)]
+        public string signatureFile { get; set; }
+    }
+
+    [Verb("asymmetricEncrypt", HelpText = "Encrypt a file using a public key from Cloud KMS.")]
+    class AsymmetricEncryptOptions : AsymmetricEncryptDecryptOptions { }
+
+    [Verb("asymmetricDecrypt", HelpText = "Decrypt a file using an asymmetric key in Cloud KMS.")]
+    class AsymmetricDecryptOptions : AsymmetricEncryptDecryptOptions { }
+
+    class AsymmetricEncryptDecryptOptions
+    {
+        [Value(0, HelpText = "The project containing the crypto key.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The location of the crypto key. Ex. 'global'", Required = true)]
+        public string locationId { get; set; }
+
+        [Value(2, HelpText = "The name of the key ring containing the crypto key.", Required = true)]
+        public string keyRingId { get; set; }
+
+        [Value(3, HelpText = "The name of the crypto key.", Required = true)]
+        public string cryptoKeyId { get; set; }
+
+        [Value(4, HelpText = "The name of the crypto key version.", Required = true)]
+        public string cryptoKeyVersionId { get; set; }
+
+        [Value(5, HelpText = "The name of the input file (the plaintext to encrypt, or the ciphertext to decrypt).", Required = true)]
+        public string inputFile { get; set; }
+
+        [Value(6, HelpText = "The name of the output file (the ciphertext if encrypting, or the plaintext if decrypting).", Required = true)]
+        public string outputFile { get; set; }
+    }
+
+    [Verb("getPublicKey", HelpText = "Get the public key for a asymmetric key stored in Cloud KMS.")]
+    class GetPublicKeyOptions
+    {
+        [Value(0, HelpText = "The project containing the crypto key.", Required = true)]
+        public string projectId { get; set; }
+
+        [Value(1, HelpText = "The location of the crypto key. Ex. 'global'", Required = true)]
+        public string locationId { get; set; }
+
+        [Value(2, HelpText = "The name of the key ring containing the crypto key.", Required = true)]
+        public string keyRingId { get; set; }
+
+        [Value(3, HelpText = "The name of the crypto key.", Required = true)]
+        public string cryptoKeyId { get; set; }
+
+        [Value(4, HelpText = "The name of the crypto key version.", Required = true)]
+        public string cryptoKeyVersionId { get; set; }
     }
 
     public class CloudKmsSample
@@ -551,6 +634,123 @@ string plaintextFile, string ciphertextFile)
         }
         // [END kms_decrypt]
 
+        // [START kms_asymmetric_sign]
+        public static void AsymmetricSign(string projectId, string locationId, string keyRingId,
+                string cryptoKeyId, String cryptoKeyVersionId, string contentFile, string signatureFile)
+        {
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(
+                projectId, locationId, keyRingId, cryptoKeyId, cryptoKeyVersionId);
+
+            byte[] content = File.ReadAllBytes(contentFile);
+
+            // Note that some key algorithms will require a different hash function.
+            // For example, EC_SIGN_P384_SHA384 requires a SHA-384 digest.
+            Digest digest = new Digest();
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                digest.Sha256 = ByteString.CopyFrom(sha256.ComputeHash(content));
+            }
+
+            AsymmetricSignResponse result = client.AsymmetricSign(keyVersionName, digest);
+
+            // Output the signature to a file.
+            File.WriteAllBytes(signatureFile, result.Signature.ToByteArray());
+            Console.Write($"Signature file created: {signatureFile}");
+        }
+        // [END kms_asymmetric_sign]
+
+        // [START kms_asymmetric_verify]
+        public static void AsymmetricVerify(string projectId, string locationId, string keyRingId,
+                string cryptoKeyId, String cryptoKeyVersionId, string contentFile, string signatureFile)
+        {
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(
+                projectId, locationId, keyRingId, cryptoKeyId, cryptoKeyVersionId);
+
+            byte[] content = File.ReadAllBytes(contentFile);
+            byte[] signature = File.ReadAllBytes(signatureFile);
+
+            string pubKeyPem = client.GetPublicKey(keyVersionName).Pem;
+            PemReader reader = new PemReader(new StringReader(pubKeyPem));
+            byte[] publicKeyInfoBytes = reader.ReadPemObject().Content;
+            AsymmetricKeyParameter key = PublicKeyFactory.CreateKey(publicKeyInfoBytes);
+
+            // The algorithm string to use will vary depending on the algorithm associated
+            // with the CryptoKeyVersion. `SignerUtilities.cs` in BouncyCastle source
+            // contains a mapping of algorithm strings.
+            // "SHA512withRSA/PSS" and "SHA256withRSA" (for PKCS1) are also useful example
+            // values.
+            const string algorithm = "SHA256withECDSA";
+
+            ISigner signer = SignerUtilities.GetSigner(algorithm);
+            signer.Init(false, key);
+            signer.BlockUpdate(content, 0, content.Length);
+            bool verified = signer.VerifySignature(signature);
+
+            Console.Write($"Signature verified: {verified}");
+        }
+        // [END kms_asymmetric_verify]
+
+        // [START kms_asymmetric_encrypt]
+        public static void AsymmetricEncrypt(string projectId, string locationId, string keyRingId,
+                string cryptoKeyId, String cryptoKeyVersionId, string plaintextFile, string ciphertextFile)
+        {
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(
+                projectId, locationId, keyRingId, cryptoKeyId, cryptoKeyVersionId);
+
+            byte[] plaintext = File.ReadAllBytes(plaintextFile);
+
+            string pubKeyPem = client.GetPublicKey(keyVersionName).Pem;
+            PemReader reader = new PemReader(new StringReader(pubKeyPem));
+            byte[] publicKeyInfoBytes = reader.ReadPemObject().Content;
+            AsymmetricKeyParameter key = PublicKeyFactory.CreateKey(publicKeyInfoBytes);
+
+            // The algorithm string to use will vary depending on the algorithm associated
+            // with the CryptoKeyVersion. `CipherUtilities.cs` in BouncyCastle source
+            // contains a mapping of algorithm strings.
+            const string algorithm = "RSA/NONE/OAEPWithSHA256AndMGF1Padding";
+
+            IBufferedCipher cipher = CipherUtilities.GetCipher(algorithm);
+            cipher.Init(true, key);
+            byte[] ciphertext = cipher.DoFinal(plaintext);
+
+            // Output the ciphertext to a file.
+            File.WriteAllBytes(ciphertextFile, ciphertext);
+            Console.Write($"Ciphertext file created: {ciphertextFile}");
+        }
+        // [END kms_asymmetric_encrypt]
+
+        // [START kms_asymmetric_decrypt]
+        public static void AsymmetricDecrypt(string projectId, string locationId, string keyRingId,
+                string cryptoKeyId, String cryptoKeyVersionId, string ciphertextFile, string plaintextFile)
+        {
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(
+                projectId, locationId, keyRingId, cryptoKeyId, cryptoKeyVersionId);
+
+            ByteString ciphertext = ByteString.CopyFrom(File.ReadAllBytes(ciphertextFile));
+            AsymmetricDecryptResponse result = client.AsymmetricDecrypt(keyVersionName, ciphertext);
+
+            // Output the plaintext to a file.
+            File.WriteAllBytes(plaintextFile, result.Plaintext.ToByteArray());
+            Console.Write($"Plaintext file created: {plaintextFile}");
+        }
+        // [END kms_asymmetric_decrypt]
+
+        // [START kms_get_public_key]
+        public static void GetPublicKey(string projectId, string locationId, string keyRingId,
+                string cryptoKeyId, String cryptoKeyVersionId)
+        {
+            KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+            CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(
+                projectId, locationId, keyRingId, cryptoKeyId, cryptoKeyVersionId);
+
+            Console.Write(client.GetPublicKey(keyVersionName).Pem);
+        }
+        // [END kms_get_public_key]
+
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments(args,
@@ -561,7 +761,9 @@ string plaintextFile, string ciphertextFile)
                     typeof(DestroyCryptoKeyVersionOptions), typeof(RestoreCryptoKeyVersionOptions),
                     typeof(GetCryptoKeyIamPolicyOptions), typeof(AddMemberToCryptoKeyPolicyOptions),
                     typeof(GetKeyRingIamPolicyOptions), typeof(AddMemberToKeyRingPolicyOptions),
-                    typeof(RemoveMemberFromCryptoKeyPolicyOptions))
+                    typeof(RemoveMemberFromCryptoKeyPolicyOptions), typeof(AsymmetricSignOptions),
+                    typeof(AsymmetricVerifyOptions), typeof(AsymmetricEncryptOptions),
+                    typeof(AsymmetricDecryptOptions), typeof(GetPublicKeyOptions))
                 .WithParsed<CreateKeyRingOptions>(opts => CreateKeyRing(opts.projectId, opts.locationId, opts.keyRingId))
                 .WithParsed<GetKeyRingOptions>(opts => GetKeyRing(opts.projectId, opts.locationId, opts.keyRingId))
                 .WithParsed<CreateCryptoKeyOptions>(opts => CreateCryptoKey(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId))
@@ -581,7 +783,12 @@ string plaintextFile, string ciphertextFile)
                 .WithParsed<GetCryptoKeyIamPolicyOptions>(opts => GetCryptoKeyIamPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId))
                 .WithParsed<AddMemberToKeyRingPolicyOptions>(opts => AddMemberToKeyRingPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.role, opts.member))
                 .WithParsed<GetKeyRingIamPolicyOptions>(opts => GetKeyRingIamPolicy(opts.projectId, opts.locationId, opts.keyRingId))
-                .WithParsed<RemoveMemberFromCryptoKeyPolicyOptions>(opts => RemoveMemberFromCryptoKeyPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.role, opts.member));
+                .WithParsed<RemoveMemberFromCryptoKeyPolicyOptions>(opts => RemoveMemberFromCryptoKeyPolicy(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.role, opts.member))
+                .WithParsed<AsymmetricSignOptions>(opts => AsymmetricSign(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.cryptoKeyVersionId, opts.contentFile, opts.signatureFile))
+                .WithParsed<AsymmetricVerifyOptions>(opts => AsymmetricVerify(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.cryptoKeyVersionId, opts.contentFile, opts.signatureFile))
+                .WithParsed<AsymmetricEncryptOptions>(opts => AsymmetricEncrypt(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.cryptoKeyVersionId, opts.inputFile, opts.outputFile))
+                .WithParsed<AsymmetricDecryptOptions>(opts => AsymmetricDecrypt(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.cryptoKeyVersionId, opts.inputFile, opts.outputFile))
+                .WithParsed<GetPublicKeyOptions>(opts => GetPublicKey(opts.projectId, opts.locationId, opts.keyRingId, opts.cryptoKeyId, opts.cryptoKeyVersionId));
         }
     }
 }
