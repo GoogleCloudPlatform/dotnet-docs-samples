@@ -27,7 +27,12 @@ namespace GoogleCloudSamples
 
     class AutoMLListModelEvaluations
     {
-        // [START automl_list_model_evaluations]
+        // [START automl_language_entity_extraction_list_model_evaluations]
+        // [START automl_language_sentiment_analysis_list_model_evaluations]
+        // [START automl_language_text_classification_list_model_evaluations]
+        // [START automl_translate_list_model_evaluations]
+        // [START automl_vision_classification_list_model_evaluations]
+        // [START automl_vision_object_detection_list_model_evaluations]
         /// <summary>
         /// Demonstrates using the AutoML client to list model evaluations.
         /// </summary>
@@ -61,12 +66,49 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"\tnanos: {modelEvaluation.CreateTime.Nanos / 1e9}");
                 Console.WriteLine(
                     $"Evalution Example Count: {modelEvaluation.EvaluatedExampleCount}");
+                // [END automl_language_sentiment_analysis_list_model_evaluations]
+                // [END automl_language_text_classification_list_model_evaluations]
+                // [END automl_translate_list_model_evaluations]
+                // [END automl_vision_classification_list_model_evaluations]
+                // [END automl_vision_object_detection_list_model_evaluations]
+                Console.WriteLine(
+                    $"Entity Extraction Model Evaluation Metrics: {modelEvaluation.TextExtractionEvaluationMetrics}");
+                // [END automl_language_entity_extraction_list_model_evaluations]
+
+                // [START automl_language_sentiment_analysis_list_model_evaluations]
+                Console.WriteLine(
+                    $"Sentiment Analysis Model Evaluation Metrics: {modelEvaluation.TextSentimentEvaluationMetrics}");
+                // [END automl_language_sentiment_analysis_list_model_evaluations]
+
+                // [START automl_language_text_classification_list_model_evaluations]
+                // [START automl_vision_classification_list_model_evaluations]
+                Console.WriteLine(
+                    $"Classificatio Model Evaluation Metrics: {modelEvaluation.ClassificationEvaluationMetrics}");
+                // [END automl_language_text_classification_list_model_evaluations]
+                // [END automl_vision_classification_list_model_evaluations]
+                
+                // [START automl_translate_list_model_evaluations]
                 Console.WriteLine(
                     $"Model Evaluation Metrics: {modelEvaluation.TranslationEvaluationMetrics}");
+                // [END automl_translate_list_model_evaluations]
+
+                // [START automl_vision_object_detection_list_model_evaluations]
+                Console.WriteLine(
+                    $"Object Detection Model Evaluation Metrics: {modelEvaluation.ImageObjectDetectionEvaluationMetrics}");
+                // [START automl_language_entity_extraction_list_model_evaluations]
+                // [START automl_language_sentiment_analysis_list_model_evaluations]
+                // [START automl_language_text_classification_list_model_evaluations]
+                // [START automl_translate_list_model_evaluations]
+                // [START automl_vision_classification_list_model_evaluations]
             }
             return 0;
         }
-        // [END automl_list_model_evaluations]
+        // [END automl_language_entity_extraction_list_model_evaluations]
+        // [END automl_language_sentiment_analysis_list_model_evaluations]
+        // [END automl_language_text_classification_list_model_evaluations]
+        // [END automl_translate_list_model_evaluations]
+        // [END automl_vision_classification_list_model_evaluations]
+        // [END automl_vision_object_detection_list_model_evaluations]
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
             verbMap
