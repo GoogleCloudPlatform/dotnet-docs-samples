@@ -11,7 +11,6 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
-
 using CommandLine;
 
 namespace GoogleCloudSamples
@@ -46,15 +45,7 @@ namespace GoogleCloudSamples
         public string DatasetID { get; set; }
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     [Verb("get_model", HelpText = "Retrieve a model for AutoML")]
-=======
-    [Verb("get_model", HelpText = "")]
->>>>>>> 99a9e02a... added tests and reformatted
-=======
-    [Verb("get_model", HelpText = "Retrieve a model for AutoML")]
->>>>>>> d42fde96... finished IT
     public class GetModelOptions
     {
         [Value(0, HelpText = "Your project ID")]
@@ -79,9 +70,6 @@ namespace GoogleCloudSamples
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
             AutoMLBatchPredict.RegisterCommands(verbMap);
             AutoMLListModels.RegisterCommands(verbMap);
             AutoMLDeleteModel.RegisterCommands(verbMap);
@@ -105,9 +93,6 @@ namespace GoogleCloudSamples
             AutoMLGetModelEvaluation.RegisterCommands(verbMap);
             AutoMLGetModel.RegisterCommands(verbMap);
             AutoMLImportDataset.RegisterCommands(verbMap);
-=======
-            AutoMLDeleteModel.RegisterCommands(verbMap);
->>>>>>> 55c8601c... Adds DeleteModel code sample to AutoML samples
             AutoMLTranslationCreateDataset.RegisterCommands(verbMap);
             AutoMLTranslationCreateModel.RegisterCommands(verbMap);
             AutoMLTranslationPredict.RegisterCommands(verbMap);
@@ -120,52 +105,6 @@ namespace GoogleCloudSamples
             AutoMLVisionObjectDetectionCreateModel.RegisterCommands(verbMap);
             AutoMLVisionObjectDetectionPredict.RegisterCommands(verbMap);
             AutoMLVisionObjectDetectionDeployModelNodeCount.RegisterCommands(verbMap);
-=======
-=======
-            AutoMLBatchPredict.RegisterCommands(verbMap);
->>>>>>> d42fde96... finished IT
-            AutoMLListModels.RegisterCommands(verbMap);
-            AutoMLDeleteModel.RegisterCommands(verbMap);
-            AutoMLDeleteDataset.RegisterCommands(verbMap);
-            AutoMLDeployModel.RegisterCommands(verbMap);
-            AutoMLLanguageBatchPredict.RegisterCommands(verbMap);
-            AutoMLLanguageSentimentAnalysisCreateDataset.RegisterCommands(verbMap);
-            AutoMLLanguageSentimentAnalysisCreateModel.RegisterCommands(verbMap);
-            AutoMLLanguageSentimentAnalysisPredict.RegisterCommands(verbMap);
-            AutoMLLanguageTextClassificationCreateDataset.RegisterCommands(verbMap);
-            AutoMLLanguageTextClassificationCreateModel.RegisterCommands(verbMap);
-            AutoMLLanguageTextClassificationPredict.RegisterCommands(verbMap);
-            AutoMLLanguageEntityExtractionCreateDataset.RegisterCommands(verbMap);
-            AutoMLLanguageEntityExtractionCreateModel.RegisterCommands(verbMap);
-            AutoMLLanguageEntityExtractionPredict.RegisterCommands(verbMap);
-            AutoMLListDatasets.RegisterCommands(verbMap);
-            AutoMLListModelEvaluations.RegisterCommands(verbMap);
-            AutoMLListOperationStatus.RegisterCommands(verbMap);
-            AutoMLExportDataset.RegisterCommands(verbMap);
-            AutoMLGetDataset.RegisterCommands(verbMap);
-            AutoMLGetOperationStatus.RegisterCommands(verbMap);
-            AutoMLGetModelEvaluation.RegisterCommands(verbMap);
-            AutoMLGetModel.RegisterCommands(verbMap);
-            AutoMLImportDataset.RegisterCommands(verbMap);
-            AutoMLTranslationCreateDataset.RegisterCommands(verbMap);
-            AutoMLTranslationCreateModel.RegisterCommands(verbMap);
-            AutoMLTranslationPredict.RegisterCommands(verbMap);
-<<<<<<< HEAD
-            AutoMLLanguageSentimentAnalysisCreateModel.RegisterCommands(verbMap);
-            AutoMLLanguageEntityExtractionCreateDataset.RegisterCommands(verbMap);
->>>>>>> 99a9e02a... added tests and reformatted
-=======
-            AutoMLUndeployModel.RegisterCommands(verbMap);
-            AutoMLVisionBatchPredict.RegisterCommands(verbMap);
-            AutoMLVisionClassificationDeployModelNodeCount.RegisterCommands(verbMap);
-            AutoMLVisionClassificationCreateDataset.RegisterCommands(verbMap);
-            AutoMLVisionClassificationCreateModel.RegisterCommands(verbMap);
-            AutoMLVisionClassificationPredict.RegisterCommands(verbMap);
-            AutoMLVisionObjectDetectionCreateDataset.RegisterCommands(verbMap);
-            AutoMLVisionObjectDetectionCreateModel.RegisterCommands(verbMap);
-            AutoMLVisionObjectDetectionPredict.RegisterCommands(verbMap);
-            AutoMLVisionObjectDetectionDeployModelNodeCount.RegisterCommands(verbMap);
->>>>>>> d42fde96... finished IT
 
             verbMap.NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
