@@ -21,11 +21,7 @@ using System.Threading.Tasks;
 namespace GoogleCloudSamples
 {
     [Verb("import_dataset", HelpText = "Import a dataset")]
-<<<<<<< HEAD
     public class ImportDatasetOptions : BaseOptions
-=======
-    public class AutoMLImportDatasetOptions : BaseOptions
->>>>>>> d42fde96... finished IT
     {
         [Value(1, HelpText = "the Id of the dataset.")]
         public string DatasetId { get; set; }
