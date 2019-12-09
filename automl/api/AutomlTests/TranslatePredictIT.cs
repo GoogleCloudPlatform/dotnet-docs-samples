@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +13,6 @@
 // limitations under the License.
 
 using Xunit;
-=======
-﻿using Xunit;
->>>>>>> d42fde96... finished IT
 
 namespace GoogleCloudSamples
 {

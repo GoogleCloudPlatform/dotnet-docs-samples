@@ -35,11 +35,7 @@ namespace GoogleCloudSamples
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _client = StorageClient.Create();
-<<<<<<< HEAD
             string BucketName = "automl-bucket-" + TestUtil.RandomName();
-=======
-            string BucketName = "translate-v3-bucket-" + TestUtil.RandomName();
->>>>>>> d42fde96... finished IT
             Bucket bucket = new Bucket { Location = "us-central1", Name = BucketName };
             Bucket = _client.CreateBucket(ProjectId, bucket);
         }

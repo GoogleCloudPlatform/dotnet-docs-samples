@@ -22,11 +22,7 @@ namespace GoogleCloudSamples
     [Verb("batch_predict", HelpText = "Batch Predict your files and save the results to GCS")]
     public class BatchPredictOptions : PredictOptions
     {
-<<<<<<< HEAD
         [Value(2, HelpText = "GCS bucket of your csv or jsonl file that contains paths to the images or text contents.")]
-=======
-        [Value(2, HelpText = "GCS location of your csv or jsonl file.")]
->>>>>>> d42fde96... finished IT
         public string InputUri { get; set; }
 
         [Value(3, HelpText = "GCS location to save the results.")]
