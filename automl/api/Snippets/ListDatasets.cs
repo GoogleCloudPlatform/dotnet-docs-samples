@@ -20,7 +20,7 @@ namespace GoogleCloudSamples
 {
     public class AutoMLListDatasets
     {
-        [Verb("list_datasets", HelpText = "Create a dataset for AutoML Translation")]
+        [Verb("list_datasets", HelpText = "List all datasets")]
         public class ListDatasetsOptions : BaseOptions
         {
         }

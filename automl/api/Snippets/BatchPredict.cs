@@ -21,10 +21,10 @@ namespace GoogleCloudSamples
     [Verb("batch_predict", HelpText = "Batch Predict your files and save the results to GCS")]
     public class BatchPredictOptions : PredictOptions
     {
-        [Value(2, HelpText = "GCS location of your csv or jsonl file")]
+        [Value(2, HelpText = "GCS location of your csv or jsonl file.")]
         public string InputUri { get; set; }
 
-        [Value(3, HelpText = "GCS location to save the results")]
+        [Value(3, HelpText = "GCS location to save the results.")]
         public string OutputUri { get; set; }
     }
     class AutoMLBatchPredict

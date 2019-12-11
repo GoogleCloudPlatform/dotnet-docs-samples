@@ -18,7 +18,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("language_entity_extraction_predict", HelpText = "Translate text from the source to the target language")]
+    [Verb("language_entity_extraction_predict", HelpText = "Extract the text content")]
     public class LanguageEntityExtractionPredictOptions : PredictOptions
     {
         [Value(2, HelpText = "Location of file with text to translate")]

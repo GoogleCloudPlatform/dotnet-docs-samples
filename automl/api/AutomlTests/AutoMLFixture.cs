@@ -9,11 +9,8 @@ namespace GoogleCloudSamples
     public class AutoMLFixture : ICollectionFixture<AutoMLFixture>
     {
         private readonly StorageClient _client;
-
-        public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        //public string ModelId { get; } = "TRL8772189639420149760";
-        //public string GlossaryId { get; }
-        public Bucket Bucket { get; set; }
+        public readonly string ProjectId;
+        public readonly Bucket Bucket;
 
         public CommandLineRunner SampleRunner { get; } = new CommandLineRunner()
         {
@@ -22,11 +19,11 @@ namespace GoogleCloudSamples
 
         public AutoMLFixture()
         {
+            ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             _client = StorageClient.Create();
             string BucketName = "translate-v3-bucket-" + TestUtil.RandomName();
-            //GlossaryId = "must-start-with-letters" + TestUtil.RandomName();
-
-            Bucket = _client.CreateBucket(ProjectId, BucketName);
+            Bucket bucket = new Bucket { Location = "us-central1", Name = BucketName };
+            Bucket = _client.CreateBucket(ProjectId, bucket);
         }
 
         public void Dispose()
