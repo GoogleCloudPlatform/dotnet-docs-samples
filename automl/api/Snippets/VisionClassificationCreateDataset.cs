@@ -18,7 +18,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("vision_classification_create_dataset", HelpText = "Translate text from the source to the target language")]
+    [Verb("create_dataset_vision_classification", HelpText = "Create a dataset for Image classification")]
     public class VisionClassificationCreateDatasetOptions : CreateDatasetOptions
     {
     }
@@ -31,7 +31,7 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="projectId">GCP Project ID.</param>
         /// <param name="displayName">The name of the dataset to be created.</param>
-        public static void VisionClassificationCreateDataset(string projectId = "YOUR-PROJECT-ID",
+        public static object VisionClassificationCreateDataset(string projectId = "YOUR-PROJECT-ID",
             string displayName = "YOUR-DATASET-NAME")
         {
             // Initialize client that will be used to send requests. This client only needs to be created
@@ -72,6 +72,7 @@ namespace GoogleCloudSamples
             string[] names = createdDataset.Name.Split("/");
             string datasetId = names[names.Length - 1];
             Console.WriteLine($"Dataset id: {datasetId}");
+            return 0;
         }
         // [END automl_vision_classification_create_dataset]
         public static void RegisterCommands(VerbMap<object> verbMap)

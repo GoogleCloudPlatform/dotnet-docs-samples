@@ -18,13 +18,16 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("language_batch_predict", HelpText = "Translate text from the source to the target language")]
+    [Verb("language_batch_predict", HelpText = "Make predictions for multiple text contents.")]
     public class LanguageBatchPredictOptions : BaseOptions
     {
-        [Value(1, HelpText = "Location of file with text to translate")]
+        [Value(1, HelpText = "ID of model for AutoML Language.")]
+        public string ModelId { get; set; }
+
+        [Value(2, HelpText = "GCS bucket location for input file.")]
         public string InputUri { get; set; }
 
-        [Value(2, HelpText = "Location of file with text to translate")]
+        [Value(3, HelpText = "GCS bucket path to save the result.")]
         public string OutputUri { get; set; }
     }
     class AutoMLLanguageBatchPredict
@@ -36,7 +39,7 @@ namespace GoogleCloudSamples
         /// <param name="projectId">GCP Project ID.</param>
         /// <param name="inputUri">The GCS path where input file is stored.</param>
         /// <param name="outputUri">The GCS path for classified output.</param>
-        public static void LanguageBatchPredict(string projectId = "YOUR-PROJECT-ID",
+        public static object LanguageBatchPredict(string projectId = "YOUR-PROJECT-ID",
             string modelId = "YOUR-MODEL-ID",
             String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_file.json",
             String outputUri = "gs://YOUR_BUCKET_ID/path_to_save_results/")
@@ -84,6 +87,7 @@ namespace GoogleCloudSamples
 
             Console.WriteLine("Waiting for operation to complete...");
             Console.WriteLine("Batch Prediction results saved to specified Cloud Storage bucket.");
+            return 0;
         }
 
         // [END automl_language_batch_predict]
@@ -93,6 +97,7 @@ namespace GoogleCloudSamples
             verbMap
                 .Add((LanguageBatchPredictOptions opts) =>
                      AutoMLLanguageBatchPredict.LanguageBatchPredict(opts.ProjectID,
+                                                                opts.ModelId,
                                                                  opts.InputUri,
                                                                  opts.OutputUri));
         }

@@ -19,10 +19,10 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("get_operation_status", HelpText = "")]
+    [Verb("get_operation_status", HelpText = "Get the status of an operation")]
     public class GetOperationStatusOption
     {
-        [Value(0, HelpText = "Your project ID")]
+        [Value(0, HelpText = "Full ID of an operation.")]
         public string OperationFullId { get; set; }
     }
 

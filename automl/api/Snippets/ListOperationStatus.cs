@@ -19,7 +19,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("list_operation_status", HelpText = "Create a dataset for AutoML Translation")]
+    [Verb("list_operation_status", HelpText = "List operations")]
     public class ListOperationStatusOption : BaseOptions
     {
     }

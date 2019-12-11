@@ -14,29 +14,31 @@
 
 using CommandLine;
 using Google.Cloud.AutoML.V1;
+using Google.Protobuf;
 using System;
+using System.IO;
 
 namespace GoogleCloudSamples
 {
-    [Verb("language_text_classification_predict", HelpText = "Predict the text content using given model")]
-    public class LanguageTextClassificationPredictOptions : PredictOptions
+    [Verb("vision_object_detection_predict", HelpText = "Prediction for an image (object detection)")]
+    public class VisionObjectDetectionPredictOptions : PredictOptions
     {
-        [Value(2, HelpText = "Location of file with text to translate.")]
-        public string Content { get; set; }
+        [Value(2, HelpText = "Location of image file.")]
+        public string FilePath { get; set; }
     }
 
-    class AutoMLLanguageTextClassificationPredict
+    class AutoMLVisionObjectDetectionPredict
     {
-        // [START automl_language_text_classification_predict]
+        // [START automl_vision_object_detection_predict]
         /// <summary>
         /// Demonstrates using the AutoML client to predict the text content using given model.
         /// </summary>
         /// <param name="projectId">GCP Project ID.</param>
         /// <param name="modelId">the Id of the model.</param>
-        /// <param name="content">Text content for prediction.</param>
-        public static object LanguageTextClassificationPredict(string projectId = "YOUR-PROJECT-ID",
+        /// <param name="filePath">the Local text file path of the content to be classified.</param>
+        public static object VisionObjectDetectionPredict(string projectId = "YOUR-PROJECT-ID",
             string modelId = "YOUR-MODEL-ID",
-            string content = "YOUR TEXT TO PREDICT")
+            string filePath = "path_to_local_file.jpg")
         {
             // Initialize client that will be used to send requests. This client only needs to be created
             // once, and can be reused for multiple requests. After completing all of your requests, call
@@ -45,23 +47,27 @@ namespace GoogleCloudSamples
 
             // Get the full path of the model.
             string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
+            ByteString content = ByteString.CopyFrom(File.ReadAllBytes(filePath));
 
-            TextSnippet textSnippet = new
-                TextSnippet
+
+            Image image = new Image
             {
-                Content = content,
-                MimeType = "text/plain" // Types: text/plain, text/html
+                ImageBytes = content
             };
             ExamplePayload payload = new ExamplePayload
             {
-                TextSnippet = textSnippet
+                Image = image
             };
+
 
             PredictRequest predictRequest = new
                 PredictRequest
             {
                 Name = modelFullId,
-                Payload = payload
+                Payload = payload,
+                Params = {
+                { "score_threshold", "0.5" } // [0.0-1.0] Only produce results higher than this value
+            }
             };
 
             PredictResponse response = client.Predict(predictRequest);
@@ -71,19 +77,24 @@ namespace GoogleCloudSamples
                 Console.WriteLine($"Predicted class name: {annotationPayload.DisplayName}");
                 Console.WriteLine(
                     $"Predicted sentiment score: " +
-                    $"{annotationPayload.Classification.Score.ToString("0.00")}");
+                    $"{annotationPayload.ImageObjectDetection.Score.ToString("0.00")}");
+                BoundingPoly boundingPoly = annotationPayload.ImageObjectDetection.BoundingBox;
+                Console.WriteLine("Normalized Vertices:");
+                foreach (NormalizedVertex vertex in boundingPoly.NormalizedVertices)
+                {
+                    Console.WriteLine($"\tX: {vertex.X}, Y: {vertex.Y}");
+                }
             }
             return 0;
         }
-        // [END automl_language_text_classification_predict]
-
+        // [END automl_vision_object_detection_predict]
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
             verbMap
-                .Add((LanguageTextClassificationPredictOptions opts) =>
-                     AutoMLLanguageTextClassificationPredict.LanguageTextClassificationPredict(opts.ProjectID,
+                .Add((VisionObjectDetectionPredictOptions opts) =>
+                     AutoMLVisionObjectDetectionPredict.VisionObjectDetectionPredict(opts.ProjectID,
                                                                  opts.ModelID,
-                                                                 opts.Content));
+                                                                 opts.FilePath));
         }
     }
 }

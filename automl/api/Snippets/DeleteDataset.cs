@@ -19,10 +19,10 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("delete_dataset", HelpText = "Translate text from the source to the target language")]
+    [Verb("delete_dataset", HelpText = "Delete a dataset")]
     public class AutoMLDeleteDatasetOptions : BaseOptions
     {
-        [Value(1, HelpText = "Location of file with text to translate")]
+        [Value(1, HelpText = "Dataset ID to delete.")]
         public string DatasetId { get; set; }
     }
     class AutoMLDeleteDataset

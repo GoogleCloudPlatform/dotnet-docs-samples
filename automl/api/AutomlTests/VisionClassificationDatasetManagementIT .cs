@@ -3,31 +3,30 @@
 namespace GoogleCloudSamples
 {
     [Collection(nameof(AutoMLFixture))]
-    public class TranslateDatasetManagementIT
+    public class VisionClassificationDatasetManagementIT
     {
         private readonly AutoMLFixture _fixture;
-        private readonly string _datasetId;
-        public TranslateDatasetManagementIT(AutoMLFixture fixture)
+        private readonly string _datasetId = "TST6012617763841900544";
+        public VisionClassificationDatasetManagementIT(AutoMLFixture fixture)
         {
             _fixture = fixture;
-            _datasetId = "TRL4101288322767257600";
         }
 
         [Fact]
-        public void TestCreateImportDeleteDataset()
+        public void TestVisionClassificationCreateImportDeleteDataset()
         {
             string datasetName = "test_dataset_" + TestUtil.RandomName();
             datasetName = datasetName.Substring(0, 32);
 
             // create dataset
-            ConsoleOutput output = _fixture.SampleRunner.Run("create_translation_dataset",
-            _fixture.ProjectId, datasetName, "en", "ja");
+            ConsoleOutput output = _fixture.SampleRunner.Run("create_dataset_vision_classification",
+            _fixture.ProjectId, datasetName);
 
             Assert.Contains("Dataset name: ", output.Stdout);
 
             // import data
             string datasetId = output.Stdout.Split("\n")[1].Split()[2];
-            string data = $"gs://{_fixture.ProjectId}-vcm/en-ja.csv";
+            string data = $"gs://{_fixture.ProjectId}-vcm/flower_traindata.csv";
             output = _fixture.SampleRunner.Run("import_dataset",
             _fixture.ProjectId, datasetId, data);
 

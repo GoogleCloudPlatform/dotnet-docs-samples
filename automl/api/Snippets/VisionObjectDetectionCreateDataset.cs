@@ -18,7 +18,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("vision_object_detection_create_dataset", HelpText = "Translate text from the source to the target language")]
+    [Verb("create_dataset_vision_object_detection", HelpText = "Create a dataset for Object Detection")]
     public class VisionObjectDetectionCreateDatasetOptions : CreateDatasetOptions
     {
     }
