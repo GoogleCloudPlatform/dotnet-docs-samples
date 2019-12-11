@@ -19,7 +19,11 @@ using System;
 namespace GoogleCloudSamples
 {
     [Verb("list_model", HelpText = "List all models")]
+<<<<<<< HEAD
     public class ListModelOptions : BaseOptions
+=======
+    public class ListModelOptions
+>>>>>>> d42fde96... finished IT
     {
     }
 

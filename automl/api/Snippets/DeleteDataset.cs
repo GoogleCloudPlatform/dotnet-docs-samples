@@ -21,7 +21,11 @@ using System.Threading.Tasks;
 namespace GoogleCloudSamples
 {
     [Verb("delete_dataset", HelpText = "Delete a dataset")]
+<<<<<<< HEAD
     public class DeleteDatasetOptions : BaseOptions
+=======
+    public class AutoMLDeleteDatasetOptions : BaseOptions
+>>>>>>> d42fde96... finished IT
     {
         [Value(1, HelpText = "Dataset ID to delete.")]
         public string DatasetId { get; set; }
