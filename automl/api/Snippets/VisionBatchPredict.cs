@@ -18,13 +18,13 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("translate_predict", HelpText = "Translate text from the source to the target language")]
+    [Verb("vision_batch_predict", HelpText = "Multiple predictions for images using a batch predict.")]
     public class VisionBatchPredictOptions : PredictOptions
     {
-        [Value(2, HelpText = "Location of file with text to translate")]
+        [Value(2, HelpText = "Input GCS location that contains the paths to the images to annotate")]
         public string InputUri { get; set; }
 
-        [Value(3, HelpText = "Location of file with text to translate")]
+        [Value(3, HelpText = "GCS path to save the result")]
         public string OutputUri { get; set; }
     }
     class AutoMLVisionBatchPredict
