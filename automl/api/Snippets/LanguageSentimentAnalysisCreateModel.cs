@@ -19,6 +19,10 @@ using System;
 
 namespace GoogleCloudSamples
 {
+<<<<<<< HEAD
+=======
+    [Verb("create_model_language_sent_analysis", HelpText = "Create a model for language sentiment analysis")]
+>>>>>>> d42fde96... finished IT
     public class LanguageSentimentAnalysisCreateModeloptions : CreateModelOptions
     {
         public static object LanguageSentimentAnalysisCreateModel(string projectId = "YOUR-PROJECT-ID",
