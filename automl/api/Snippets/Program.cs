@@ -76,7 +76,6 @@ namespace GoogleCloudSamples
             AutoMLDeleteModel.RegisterCommands(verbMap);
             AutoMLDeleteDataset.RegisterCommands(verbMap);
             AutoMLDeployModel.RegisterCommands(verbMap);
-            AutoMLLanguageBatchPredict.RegisterCommands(verbMap);
             AutoMLLanguageSentimentAnalysisCreateDataset.RegisterCommands(verbMap);
             AutoMLLanguageSentimentAnalysisCreateModel.RegisterCommands(verbMap);
             AutoMLLanguageSentimentAnalysisPredict.RegisterCommands(verbMap);
@@ -99,7 +98,6 @@ namespace GoogleCloudSamples
             AutoMLTranslationCreateModel.RegisterCommands(verbMap);
             AutoMLTranslationPredict.RegisterCommands(verbMap);
             AutoMLUndeployModel.RegisterCommands(verbMap);
-            AutoMLVisionBatchPredict.RegisterCommands(verbMap);
             AutoMLVisionClassificationDeployModelNodeCount.RegisterCommands(verbMap);
             AutoMLVisionClassificationCreateDataset.RegisterCommands(verbMap);
             AutoMLVisionClassificationCreateModel.RegisterCommands(verbMap);
