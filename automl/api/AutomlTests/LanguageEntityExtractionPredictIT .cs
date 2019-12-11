@@ -28,7 +28,6 @@ _fixture.ProjectId, _modelId, text);
         public void TestBatchPredict()
         {
             string bucketId = $"{ _fixture.ProjectId}-lcm";
-
             string inputUri = $"gs://{bucketId}/entity_extraction/input.jsonl";
             string outputUri = $"gs://{_fixture.Bucket.Name}/TEST_BATCH_PREDICT/";
 
