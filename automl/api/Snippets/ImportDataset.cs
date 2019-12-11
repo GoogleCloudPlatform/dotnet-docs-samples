@@ -20,7 +20,7 @@ using System;
 namespace GoogleCloudSamples
 {
     [Verb("import_dataset", HelpText = "Import a dataset")]
-    public class AutoMLImportDatasetOptions : BaseOptions
+    public class ImportDatasetOptions : BaseOptions
     {
         [Value(1, HelpText = "the Id of the dataset.")]
         public string DatasetId { get; set; }
@@ -75,7 +75,7 @@ namespace GoogleCloudSamples
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
             verbMap
-                .Add((AutoMLImportDatasetOptions opts) =>
+                .Add((ImportDatasetOptions opts) =>
                      AutoMLImportDataset.ImportDataset(opts.ProjectID,
                                                                          opts.DatasetId,
                                                                          opts.GcsPath));
