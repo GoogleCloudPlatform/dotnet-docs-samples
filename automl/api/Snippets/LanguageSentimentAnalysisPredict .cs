@@ -18,10 +18,10 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("language_sentiment_analysis_predict", HelpText = "Translate text from the source to the target language")]
+    [Verb("language_sentiment_analysis_predict", HelpText = "Analyzes the sentiment of the provided text")]
     public class LanguageSentimentAnalysisPredictOptions : PredictOptions
     {
-        [Value(2, HelpText = "Location of file with text to translate")]
+        [Value(2, HelpText = "Text content.")]
         public string Content { get; set; }
     }
     class AutoMLLanguageSentimentAnalysisPredict

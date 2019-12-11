@@ -19,7 +19,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("vision_classification_create_model", HelpText = "Translate text from the source to the target language")]
+    [Verb("create_model_vision_classification", HelpText = "Create a model for Image Classification")]
     public class VisionClassificationCreateModelOptions : CreateModelOptions
     {
     }
@@ -32,7 +32,7 @@ namespace GoogleCloudSamples
         /// <param name="projectId">GCP Project ID.</param>
         /// <param name="datasetId">the Id of the dataset.</param>
         /// <param name="displayName">The name of the dataset to be created.</param>
-        public static void VisionClassificationCreateModel(string projectId = "YOUR-PROJECT-ID",
+        public static object VisionClassificationCreateModel(string projectId = "YOUR-PROJECT-ID",
             string datasetId = "YOUR_DATASET_ID",
             string displayName = "YOUR_DATASET_NAME")
         {
@@ -64,6 +64,7 @@ namespace GoogleCloudSamples
 
             Console.WriteLine($"Training operation name: {response.Name}");
             Console.WriteLine("Training started...");
+            return 0;
         }
         // [END automl_vision_classification_create_model]
         public static void RegisterCommands(VerbMap<object> verbMap)

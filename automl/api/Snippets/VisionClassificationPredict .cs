@@ -20,7 +20,7 @@ using System.IO;
 
 namespace GoogleCloudSamples
 {
-    [Verb("vision_classification_predict", HelpText = "Translate text from the source to the target language")]
+    [Verb("vision_classification_predict", HelpText = "Classify the content")]
     public class VisionClassificationPredictOptions : PredictOptions
     {
         [Value(2, HelpText = "Location of file with text to translate")]
