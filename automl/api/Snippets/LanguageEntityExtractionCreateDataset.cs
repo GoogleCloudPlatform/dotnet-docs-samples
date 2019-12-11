@@ -18,7 +18,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("language_entity_extraction_create_dataset", HelpText = "Translate text from the source to the target language")]
+    [Verb("create_dataset_language_entity_extraction", HelpText = "Create a dataset for Language Entity Extraction")]
     public class LanguageEntityExtractionCreateDataset : CreateDatasetOptions
     {
     }

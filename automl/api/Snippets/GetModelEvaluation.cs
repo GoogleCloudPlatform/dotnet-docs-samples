@@ -20,10 +20,10 @@ namespace GoogleCloudSamples
 {
     class AutoMLGetModelEvaluation
     {
-        [Verb("get_model_evaluation", HelpText = "")]
+        [Verb("get_model_evaluation", HelpText = "Get a model evaluation")]
         public class GetModelEvaluationOptions : GetModelOptions
         {
-            [Value(2, HelpText = "Your project ID")]
+            [Value(2, HelpText = "ID of model evaluation.")]
             public string ModelEvalId { get; set; }
         }
 

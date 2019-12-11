@@ -18,7 +18,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("language_text_classification_create_dataset", HelpText = "Translate text from the source to the target language")]
+    [Verb("create_dataset_language_text_classification", HelpText = "Create a dataset for Text Classification")]
     public class LanguageTextClassificationCreateDatasetOptions : CreateDatasetOptions
     {
     }

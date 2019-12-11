@@ -19,13 +19,13 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("import_dataset", HelpText = "Create a new custom AutoML Translation model")]
+    [Verb("import_dataset", HelpText = "Import a dataset")]
     public class AutoMLImportDatasetOptions : BaseOptions
     {
         [Value(1, HelpText = "the Id of the dataset.")]
         public string DatasetId { get; set; }
 
-        [Value(2, HelpText = "")]
+        [Value(2, HelpText = "GCS path to a training data.")]
         public string GcsPath { get; set; }
     }
     class AutoMLImportDataset

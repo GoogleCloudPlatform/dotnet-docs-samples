@@ -18,10 +18,10 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("undeploy_model", HelpText = "Translate text from the source to the target language")]
+    [Verb("undeploy_model", HelpText = "Undeploy a model")]
     public class UndeployModelOptions : BaseOptions
     {
-        [Value(1, HelpText = "Location of file with text to translate")]
+        [Value(1, HelpText = "ID of model.")]
         public string ModelId { get; set; }
     }
     class AutoMLUndeployModel

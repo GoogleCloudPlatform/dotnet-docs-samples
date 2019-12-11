@@ -18,7 +18,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("language_sentiment_analysis_create_dataset", HelpText = "Create a dataset for language sentiment analysis.")]
+    [Verb("create_dataset_language_sentiment_analysis", HelpText = "Create a dataset for language sentiment analysis")]
     public class LanguageSentimentAnalysisCreateDatasetOptions : CreateDatasetOptions
     {
     }

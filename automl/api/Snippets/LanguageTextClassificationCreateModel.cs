@@ -19,7 +19,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("language_text_classification_create_model", HelpText = "Translate text from the source to the target language")]
+    [Verb("language_text_classification_create_model", HelpText = "Create a model for Text Classification")]
     public class LanguageTextClassificationCreateModelOptions : CreateModelOptions
     {
     }

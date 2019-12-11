@@ -6,7 +6,7 @@ namespace GoogleCloudSamples
 {
     public class AutoMLDeleteModel
     {
-        [Verb("delete_model", HelpText = "Delete a custom model.")]
+        [Verb("delete_model", HelpText = "Delete a custom model")]
         public class DeleteModelOptions : BaseOptions
         {
             [Value(1, HelpText = "ID of the model to use for deletion.")]

@@ -20,10 +20,10 @@ namespace GoogleCloudSamples
 {
     class AutoMLDeployModel
     {
-        [Verb("deploy_model", HelpText = "Translate text from the source to the target language")]
+        [Verb("deploy_model", HelpText = "Deploy a model")]
         public class DeployModelOptions : BaseOptions
         {
-            [Value(1, HelpText = "Location of file with text to translate")]
+            [Value(1, HelpText = "ID of model to deploy.")]
             public string ModelId { get; set; }
         }
 
