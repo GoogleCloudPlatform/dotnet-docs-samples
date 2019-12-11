@@ -20,7 +20,7 @@ using System;
 namespace GoogleCloudSamples
 {
     [Verb("delete_dataset", HelpText = "Delete a dataset")]
-    public class AutoMLDeleteDatasetOptions : BaseOptions
+    public class DeleteDatasetOptions : BaseOptions
     {
         [Value(1, HelpText = "Dataset ID to delete.")]
         public string DatasetId { get; set; }
@@ -54,7 +54,7 @@ namespace GoogleCloudSamples
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
             verbMap
-                .Add((AutoMLDeleteDatasetOptions opts) =>
+                .Add((DeleteDatasetOptions opts) =>
                      AutoMLDeleteDataset.DeleteDataset(opts.ProjectID,
                                                                  opts.DatasetId));
         }

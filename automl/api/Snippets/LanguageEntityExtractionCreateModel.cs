@@ -19,7 +19,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("language_entity_extraction_create_model", HelpText = "Create a Model for Language Entity Extraction")]
+    [Verb("create_model_language_entity_extraction", HelpText = "Create a Model for Language Entity Extraction")]
     public class LanguageEntityExtractionCreateModelOptions : CreateModelOptions
     {
     }
