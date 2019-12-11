@@ -19,13 +19,13 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("export_dataset", HelpText = "Translate text from the source to the target language")]
+    [Verb("export_dataset", HelpText = "Export a dataset to a GCS bucket")]
     public class ExportDatasetOptions : BaseOptions
     {
-        [Value(1, HelpText = "Location of file with text to translate")]
+        [Value(1, HelpText = "ID of dataset to export.")]
         public string DatasetId { get; set; }
 
-        [Value(2, HelpText = "Location of file with text to translate")]
+        [Value(2, HelpText = "GCS bucket where dataset will be exported.")]
         public string GcsUri { get; set; }
     }
 

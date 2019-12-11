@@ -18,7 +18,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("list_model", HelpText = "")]
+    [Verb("list_model", HelpText = "List all models")]
     public class ListModelOptions
     {
         [Value(0, HelpText = "Your project ID")]

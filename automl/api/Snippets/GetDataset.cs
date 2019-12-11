@@ -18,7 +18,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("get_dataset", HelpText = "Create a dataset for AutoML Translation")]
+    [Verb("get_dataset", HelpText = "Retrieve a dataset for AutoML Translation")]
     public class GetDatasetOptions : BaseOptions
     {
         [Value(1, HelpText = "ID of dataset to retreive.")]

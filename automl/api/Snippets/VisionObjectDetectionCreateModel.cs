@@ -19,7 +19,7 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    [Verb("vision_object_detection_create_model", HelpText = "Translate text from the source to the target language")]
+    [Verb("create_model_vision_object_detection", HelpText = "Create a model for object detection")]
     public class VisionObjectDetectionCreateModelOptions : CreateModelOptions
     {
     }
@@ -32,7 +32,7 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="projectId">GCP Project ID.</param>
         /// <param name="datasetId">the Id of the dataset.</param>
-        public static void VisionObjectDetectionCreateModel(string projectId = "YOUR-PROJECT-ID",
+        public static object VisionObjectDetectionCreateModel(string projectId = "YOUR-PROJECT-ID",
             string datasetId = "YOUR_DATASET_ID",
             string displayName = "YOUR_DATASET_NAME")
         {
@@ -64,6 +64,7 @@ namespace GoogleCloudSamples
 
             Console.WriteLine($"Training operation name: {response.Name}");
             Console.WriteLine("Training started...");
+            return 0;
         }
         // [END automl_vision_object_detection_create_model]
 
