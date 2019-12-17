@@ -6,8 +6,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.42.0.1783" />
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.0.0" />
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.42.0.1797" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="1.1.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
     <PackageReference Include="NodaTime" Version="2.4.4" />

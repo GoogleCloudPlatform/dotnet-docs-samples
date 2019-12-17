@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Api.Gax" Version="2.10.0" />
-    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="2.0.1" />
+    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Polly" Version="7.1.0" />
   </ItemGroup>

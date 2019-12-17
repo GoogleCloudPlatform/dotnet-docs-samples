@@ -5,7 +5,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.CloudTalentSolution.v3" Version="1.42.0.1798" />
+    <PackageReference Include="Google.Apis.CloudTalentSolution.v3" Version="1.42.0.1804" />
     <PackageReference Include="Google.Apis.JobService.v2" Version="1.37.0.1439" />
     <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />

@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
     <PackageReference Include="Google.Cloud.Language.V1" Version="1.4.0" />
-    <PackageReference Include="Google.Cloud.Storage.V1" Version="2.3.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="2.4.0" />
     <PackageReference Include="Google.Apis.Auth" version="1.42.0" />
   </ItemGroup>
 </Project>
