@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="Google.Apis.CloudTalentSolution.v3" Version="1.42.0.1798" />
+    <PackageReference Include="Google.Apis.CloudTalentSolution.v3" Version="1.42.0.1804" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QuickStart\QuickStart.csproj" />

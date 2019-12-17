@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.BigQuery.DataTransfer.V1" Version="1.0.0" />
+    <PackageReference Include="Google.Cloud.BigQuery.DataTransfer.V1" Version="1.1.0" />
   </ItemGroup>
 
 </Project>

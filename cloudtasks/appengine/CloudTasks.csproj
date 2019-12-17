@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" Version="1.42.0" />
-    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="3.0.0-beta16" />
+    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
