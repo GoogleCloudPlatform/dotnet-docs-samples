@@ -72,7 +72,7 @@ namespace WebSolver
             ILoggerFactory loggerFactory)
         {
             // Configure logging service.
-            loggerFactory.AddGoogle(Configuration["Google:ProjectId"]);
+            loggerFactory.AddGoogle(app.ApplicationServices, Configuration["Google:ProjectId"]);
 
             // Configure error reporting service.
             app.UseGoogleExceptionLogging();
