@@ -19,6 +19,7 @@ using Google.LongRunning;
 using Google.Cloud.Bigtable.Admin.V2;
 using System.Text.RegularExpressions;
 using Google.Api.Gax.ResourceNames;
+using LocationName = Google.Cloud.Bigtable.Admin.V2.LocationName;
 
 namespace GoogleCloudSamples.Bigtable
 {
