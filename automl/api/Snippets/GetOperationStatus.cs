@@ -37,9 +37,8 @@ namespace GoogleCloudSamples
         public static object GetOperationStatus(string operationFullId
             = "projects/[projectId]/locations/us-central1/operations/[operationId]")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // Get the latest state of a long-running operation.
@@ -68,8 +67,7 @@ namespace GoogleCloudSamples
         // [END automl_get_operation_status]
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((GetOperationStatusOption opts) =>
+            verbMap.Add((GetOperationStatusOption opts) =>
                      AutoMLGetOperationStatus.GetOperationStatus(opts.OperationFullId));
         }
     }

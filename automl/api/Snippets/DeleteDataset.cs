@@ -16,6 +16,7 @@ using CommandLine;
 using Google.Cloud.AutoML.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -36,16 +37,15 @@ namespace GoogleCloudSamples
         public static object DeleteDataset(string projectId = "YOUR-PROJECT-ID",
             string datasetId = "YOUR-DATASET-ID")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // Get the full path of the dataset.
-            string datasetFullPath = DatasetName.Format(projectId, "us-central1", datasetId);
-            DatasetName datasetFullId = DatasetName.Parse(datasetFullPath);
-            Empty response = client.DeleteDatasetAsync(datasetFullId).Result.PollUntilCompleted().Result;
-            Console.WriteLine($"Dataset deleted. {response}");
+            DatasetName datasetFullId = new DatasetName(projectId, "us-central1", datasetId);
+            var result = Task.Run(() => client.DeleteDatasetAsync(datasetFullId)).Result;
+            result.PollUntilCompleted();
+            Console.WriteLine("Dataset deleted.");
 
             return 0;
         }
@@ -53,10 +53,8 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((DeleteDatasetOptions opts) =>
-                     AutoMLDeleteDataset.DeleteDataset(opts.ProjectID,
-                                                                 opts.DatasetId));
+            verbMap.Add((DeleteDatasetOptions opts) =>
+                AutoMLDeleteDataset.DeleteDataset(opts.ProjectID, opts.DatasetId));
         }
     }
 }

@@ -41,9 +41,8 @@ namespace GoogleCloudSamples
         public static object ListModelEvaluations(string projectId = "YOUR-PROJECT-ID",
             string modelId = "YOUR-MODEL-ID")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // Get the full path of the model.
@@ -111,8 +110,7 @@ namespace GoogleCloudSamples
         // [END automl_vision_object_detection_list_model_evaluations]
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((ListModelEvaluationsOptions opts) =>
+            verbMap.Add((ListModelEvaluationsOptions opts) =>
                      AutoMLListModelEvaluations.ListModelEvaluations(opts.ProjectID, opts.ModelId));
         }
     }
