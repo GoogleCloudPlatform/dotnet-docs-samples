@@ -29,32 +29,32 @@ BackupAndEdit-TextFile @("WebApp/appsettings.json",
 	if ($LASTEXITCODE) {
 		throw "Build failed."
 	}
-	Push-Location .
-	$portNumber = 5510
-	$url = "http://localhost:$portNumber"
-	try {
-		# Launch WebSolver.
-		Set-Location WebSolver
-		$webSolverJob = Run-Kestrel "http://localhost:5511"
-		# Launch WebApp.
-		Set-Location ../WebApp
-		$webAppJob = Run-Kestrel $url
-		# Launch the test.
-		Set-Location ../WebAppTest
-		dotnet test --no-restore --no-build -v n --test-adapter-path:. --logger:junit
-		if ($LASTEXITCODE) {
-			throw "TEST FAILED."
-		}
-	} finally {
-		# Stop the kestrel jobs.
-		foreach ($job in @($webAppJob, $webSolverJob)) {
-			Stop-Job $job
-			Receive-Job $job
-		}
-		# Clean up datastore.
-		Pop-Location
-		Start-Sleep -Seconds 15  # Wait for datastore eventual consistency.
-		dotnet run --no-restore --no-build --project 'Remove-DatastoreNamespace/Remove-DatastoreNamespace.csproj' `
-			-- -p $env:GOOGLE_PROJECT_ID -n $randomNamespace
-	}		
+#	Push-Location .
+#	$portNumber = 5510
+#	$url = "http://localhost:$portNumber"
+#	try {
+#		# Launch WebSolver.
+#		Set-Location WebSolver
+#		$webSolverJob = Run-Kestrel "http://localhost:5511"
+#		# Launch WebApp.
+#		Set-Location ../WebApp
+#		$webAppJob = Run-Kestrel $url
+#		# Launch the test.
+#		Set-Location ../WebAppTest
+#		dotnet test --no-restore --no-build -v n --test-adapter-path:. --logger:junit
+#		if ($LASTEXITCODE) {
+#			throw "TEST FAILED."
+#		}
+#	} finally {
+#		# Stop the kestrel jobs.
+#		foreach ($job in @($webAppJob, $webSolverJob)) {
+#			Stop-Job $job
+#			Receive-Job $job
+#		}
+#		# Clean up datastore.
+#		Pop-Location
+#		Start-Sleep -Seconds 15  # Wait for datastore eventual consistency.
+#		dotnet run --no-restore --no-build --project 'Remove-DatastoreNamespace/Remove-DatastoreNamespace.csproj' `
+#			-- -p $env:GOOGLE_PROJECT_ID -n $randomNamespace
+#	}		
 }
