@@ -89,7 +89,7 @@ _fixture.ProjectId);
         }
 
         [Fact]
-        public void testDeleteModel()
+        public void TestDeleteModel()
         {
             // As model creation can take many hours, instead try to delete a
             // nonexistent model and confirm that the model was not found, but other

@@ -36,12 +36,12 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="projectId">GCP Project ID.</param>
         /// <param name="modelId">the Id of the model.</param>
-        /// <param name="inputUri">The GCS path where all images or text contents are.</param>
+        /// <param name="inputUri">GCS bucket of your csv or jsonl file that contains paths to the images or text contents.</param>
         /// <param name="outputUri">The GCS path to store the output of your prediction request.</param>
         public static object BatchPredict(string projectId = "YOUR-PROJECT-ID",
             string modelId = "YOUR-MODEL-ID",
-            String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_csv_or_jsonl",
-            String outputUri = "gs://YOUR_BUCKET_ID/path_to_save_results/")
+            string inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_csv_or_jsonl", //images or text contents
+            string outputUri = "gs://YOUR_BUCKET_ID/path_to_save_results/")
         {
             // Initialize the client that will be used to send requests. This client only needs to be created
             // once, and can be reused for multiple requests.
