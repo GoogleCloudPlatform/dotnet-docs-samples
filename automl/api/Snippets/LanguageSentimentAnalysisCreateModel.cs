@@ -36,16 +36,14 @@ namespace GoogleCloudSamples
             string datasetId = "YOUR_DATASET_ID",
             string displayName = "YOUR_DATASET_NAME")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // A resource that represents Google Cloud Platform location.
             string projectLocation = LocationName.Format(projectId, "us-central1");
             // Set model metadata.
-            TextSentimentModelMetadata metadata = new
-                TextSentimentModelMetadata
+            TextSentimentModelMetadata metadata = new TextSentimentModelMetadata
             {
             };
             Model model = new Model
@@ -68,11 +66,11 @@ namespace GoogleCloudSamples
         // [END automl_language_sentiment_analysis_create_model]
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((LanguageSentimentAnalysisCreateModeloptions opts) =>
-                     AutoMLLanguageSentimentAnalysisCreateModel.LanguageSentimentAnalysisCreateModel(opts.ProjectID,
-                                                                 opts.DatasetID,
-                                                                 opts.DisplayName));
+            verbMap.Add((LanguageSentimentAnalysisCreateModeloptions opts) =>
+                AutoMLLanguageSentimentAnalysisCreateModel.LanguageSentimentAnalysisCreateModel(
+                    opts.ProjectID,
+                    opts.DatasetID,
+                    opts.DisplayName));
         }
     }
 }

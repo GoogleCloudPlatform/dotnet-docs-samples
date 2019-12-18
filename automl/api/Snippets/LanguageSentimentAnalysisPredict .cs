@@ -37,16 +37,14 @@ namespace GoogleCloudSamples
             string modelId = "YOUR-MODEL-ID",
             string content = "YOUR TEXT TO PREDICT")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             PredictionServiceClient client = PredictionServiceClient.Create();
 
             // Get the full path of the model.
             string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
 
-            TextSnippet textSnippet = new
-                TextSnippet
+            TextSnippet textSnippet = new TextSnippet
             {
                 Content = content,
                 MimeType = "text/plain" // Types: text/plain, text/html
@@ -56,8 +54,7 @@ namespace GoogleCloudSamples
                 TextSnippet = textSnippet
             };
 
-            PredictRequest predictRequest = new
-                PredictRequest
+            PredictRequest predictRequest = new PredictRequest
             {
                 Name = modelFullId,
                 Payload = payload
@@ -77,11 +74,11 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((LanguageSentimentAnalysisPredictOptions opts) =>
-                     AutoMLLanguageSentimentAnalysisPredict.LanguageSentimentAnalysisPredict(opts.ProjectID,
-                                                                 opts.ModelID,
-                                                                 opts.Content));
+            verbMap.Add((LanguageSentimentAnalysisPredictOptions opts) =>
+                AutoMLLanguageSentimentAnalysisPredict.LanguageSentimentAnalysisPredict(
+                    opts.ProjectID,
+                    opts.ModelID,
+                    opts.Content));
         }
     }
 }

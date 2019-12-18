@@ -41,9 +41,8 @@ namespace GoogleCloudSamples
                                                 string modelID,
                                                 string filePath)
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             var client = PredictionServiceClient.Create();
 
             // Get the full path of the model.
@@ -81,11 +80,11 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((AutoMLTranslationPredictOptions opts) =>
-                     AutoMLTranslationPredict.TranslationPredict(opts.ProjectID,
-                                                                 opts.ModelID,
-                                                                 opts.FilePath));
+            verbMap.Add((AutoMLTranslationPredictOptions opts) =>
+                AutoMLTranslationPredict.TranslationPredict(
+                    opts.ProjectID,
+                    opts.ModelID,
+                    opts.FilePath));
         }
     }
 }
