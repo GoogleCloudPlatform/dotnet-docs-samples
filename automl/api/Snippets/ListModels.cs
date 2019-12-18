@@ -19,10 +19,8 @@ using System;
 namespace GoogleCloudSamples
 {
     [Verb("list_model", HelpText = "List all models")]
-    public class ListModelOptions
+    public class ListModelOptions : BaseOptions
     {
-        [Value(0, HelpText = "Your project ID")]
-        public string ProjectID { get; set; }
     }
 
     class AutoMLListModels
