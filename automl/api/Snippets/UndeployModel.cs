@@ -15,6 +15,7 @@
 using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -35,9 +36,8 @@ namespace GoogleCloudSamples
         public static object UndeployModel(string projectId = "YOUR-PROJECT-ID",
             string modelId = "YOUR-MODEL-ID")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // Get the full path of the model.
@@ -47,7 +47,8 @@ namespace GoogleCloudSamples
                 Name = modelFullId
             };
 
-            client.UndeployModelAsync(request).Result.PollUntilCompleted();
+            var result = Task.Run(() => client.UndeployModelAsync(request)).Result;
+            result.PollUntilCompleted();
             Console.WriteLine("Model undeployment finished");
             return 0;
         }
@@ -55,10 +56,8 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((UndeployModelOptions opts) =>
-                     AutoMLUndeployModel.UndeployModel(opts.ProjectID,
-                                                                 opts.ModelId));
+            verbMap.Add((UndeployModelOptions opts) =>
+                     AutoMLUndeployModel.UndeployModel(opts.ProjectID, opts.ModelId));
         }
     }
 }
