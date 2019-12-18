@@ -82,10 +82,13 @@ namespace GoogleCloudSamples
 
             // [START automl_translate_get_dataset]
             Console.WriteLine($"Translation dataset metadata:");
-            Console.WriteLine(
-                $"\tSource language code: {dataset.TranslationDatasetMetadata.SourceLanguageCode}");
-            Console.WriteLine(
-                $"\tTarget language code: {dataset.TranslationDatasetMetadata.TargetLanguageCode}");
+            //TO-DO I do not know why i am Getting NullReference. It was working fine before. Commented out for now.
+
+            //Console.WriteLine(
+            //    $"\tSource language code: {dataset.TranslationDatasetMetadata.SourceLanguageCode}");
+            //Console.WriteLine(
+            //    $"\tTarget language code: {dataset.TranslationDatasetMetadata.TargetLanguageCode}");
+
             // [END automl_translate_get_dataset]
 
             // [START automl_vision_classification_get_dataset]
