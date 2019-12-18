@@ -41,9 +41,8 @@ namespace GoogleCloudSamples
         public static object GetDataset(string projectId = "YOUR-PROJECT-ID",
             string datasetId = "YOUR-DATASET-ID")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // Get the full path of the model.
@@ -115,8 +114,7 @@ namespace GoogleCloudSamples
         // [END automl_vision_object_detection_get_dataset]
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((GetDatasetOptions opts) =>
+            verbMap.Add((GetDatasetOptions opts) =>
                      AutoMLGetDataset.GetDataset(opts.ProjectID, opts.DatasetID));
         }
     }

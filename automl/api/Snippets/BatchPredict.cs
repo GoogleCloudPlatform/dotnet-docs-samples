@@ -15,13 +15,14 @@
 using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
     [Verb("batch_predict", HelpText = "Batch Predict your files and save the results to GCS")]
     public class BatchPredictOptions : PredictOptions
     {
-        [Value(2, HelpText = "GCS location of your csv or jsonl file.")]
+        [Value(2, HelpText = "GCS bucket of your csv or jsonl file that contains paths to the images or text contents.")]
         public string InputUri { get; set; }
 
         [Value(3, HelpText = "GCS location to save the results.")]
@@ -31,20 +32,19 @@ namespace GoogleCloudSamples
     {
         // [START automl_batch_predict]
         /// <summary>
-        /// Demonstrates using the AutoML client to predict image contents.
+        /// Demonstrates using the AutoML client to predict image or text contents.
         /// </summary>
         /// <param name="projectId">GCP Project ID.</param>
         /// <param name="modelId">the Id of the model.</param>
-        /// <param name="inputUri">The GCS path where all images are.</param>
+        /// <param name="inputUri">The GCS path where all images or text contents are.</param>
         /// <param name="outputUri">The GCS path to store the output of your prediction request.</param>
         public static object BatchPredict(string projectId = "YOUR-PROJECT-ID",
             string modelId = "YOUR-MODEL-ID",
             String inputUri = "gs://YOUR_BUCKET_ID/path_to_your_input_csv_or_jsonl",
             String outputUri = "gs://YOUR_BUCKET_ID/path_to_save_results/")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             PredictionServiceClient client = PredictionServiceClient.Create();
 
             // Get the full path of the model.
@@ -55,38 +55,36 @@ namespace GoogleCloudSamples
                 InputUris = { inputUri }
             };
 
-            BatchPredictInputConfig inputConfig = new
-                BatchPredictInputConfig
+            BatchPredictInputConfig inputConfig = new BatchPredictInputConfig
             {
                 GcsSource = gcsSource
             };
 
-            GcsDestination gcsDestination = new
-                GcsDestination
+            GcsDestination gcsDestination = new GcsDestination
             {
                 OutputUriPrefix = outputUri
             };
 
-            BatchPredictOutputConfig outputConfig = new
-                BatchPredictOutputConfig
+            BatchPredictOutputConfig outputConfig = new BatchPredictOutputConfig
             {
                 GcsDestination = gcsDestination
             };
 
-            BatchPredictRequest request = new
-                BatchPredictRequest
+            BatchPredictRequest request = new BatchPredictRequest
             {
                 Name = modelFullId,
                 InputConfig = inputConfig,
                 OutputConfig = outputConfig,
-                Params = {
+                Params =
+                {
                     { "score_threshold" , "0.8" } // [0.0-1.0] Only produce results higher than this value
                 }
             };
 
-            client.BatchPredictAsync(request).Result.PollUntilCompleted();
-
+            var result = Task.Run(() => client.BatchPredictAsync(request)).Result;
             Console.WriteLine("Waiting for operation to complete...");
+            result.PollUntilCompleted();
+
             Console.WriteLine("Batch Prediction results saved to specified Cloud Storage bucket.");
             return 0;
         }
@@ -94,12 +92,11 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((BatchPredictOptions opts) =>
-                     AutoMLBatchPredict.BatchPredict(opts.ProjectID,
-                                                                 opts.ModelID,
-                                                                 opts.InputUri,
-                                                                 opts.OutputUri));
+            verbMap.Add((BatchPredictOptions opts) => AutoMLBatchPredict.BatchPredict(
+                         opts.ProjectID,
+                         opts.ModelID,
+                         opts.InputUri,
+                         opts.OutputUri));
         }
     }
 }

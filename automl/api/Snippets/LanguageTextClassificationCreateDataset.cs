@@ -15,6 +15,7 @@
 using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -34,9 +35,8 @@ namespace GoogleCloudSamples
         public static object LanguageTextClassificationCreateDataset(string projectId = "YOUR-PROJECT-ID",
             string displayName = "YOUR-DATASET-NAME")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // A resource that represents Google Cloud Platform location.
@@ -49,21 +49,19 @@ namespace GoogleCloudSamples
             ClassificationType classificationType = ClassificationType.Multilabel;
 
             // Specify the text classification type for the dataset.
-            TextClassificationDatasetMetadata metadata = new
-                TextClassificationDatasetMetadata
+            TextClassificationDatasetMetadata metadata = new TextClassificationDatasetMetadata
             {
                 ClassificationType = classificationType
             };
 
-            Dataset dataset = new
-                Dataset
+            Dataset dataset = new Dataset
             {
                 DisplayName = displayName,
                 TextClassificationDatasetMetadata = metadata
             };
 
-            Dataset createdDataset = client
-                .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;
+            var result = Task.Run(() => client.CreateDatasetAsync(projectLocation, dataset)).Result;
+            Dataset createdDataset = result.PollUntilCompleted().Result;
 
             // Display the dataset information.
             Console.WriteLine($"Dataset name: {createdDataset.Name}");
@@ -81,8 +79,9 @@ namespace GoogleCloudSamples
         {
             verbMap
                 .Add((LanguageTextClassificationCreateDatasetOptions opts) =>
-                     AutoMLLanguageTextClassificationCreateDataset.LanguageTextClassificationCreateDataset(opts.ProjectID,
-                                                                 opts.DisplayName));
+                     AutoMLLanguageTextClassificationCreateDataset.LanguageTextClassificationCreateDataset(
+                         opts.ProjectID,
+                         opts.DisplayName));
         }
     }
 }

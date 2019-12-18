@@ -16,6 +16,7 @@ using CommandLine;
 using Google.Cloud.AutoML.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -42,17 +43,15 @@ namespace GoogleCloudSamples
             string datasetId = "YOUR-DATASET-ID",
             string path = "gs://BUCKET_ID/path_to_training_data.csv")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // Get the complete path of the dataset.
             string datasetFullId = DatasetName.Format(projectId, "us-central1", datasetId);
 
             // Get multiple Google Cloud Storage URIs to import data from
-            GcsSource gcsSource = new
-                GcsSource
+            GcsSource gcsSource = new GcsSource
             {
                 InputUris = { path.Split(",") }
             };
@@ -63,10 +62,10 @@ namespace GoogleCloudSamples
                 GcsSource = gcsSource
             };
 
+            var result = Task.Run(() => client.ImportDataAsync(datasetFullId, inputConfig)).Result;
             Console.WriteLine("Processing import...");
-
-            Empty response = client.ImportDataAsync(datasetFullId, inputConfig).Result.PollUntilCompleted().Result;
-            Console.WriteLine($"Data imported. {response}");
+            result.PollUntilCompleted();
+            Console.WriteLine($"Data imported.");
             return 0;
         }
 
@@ -74,11 +73,8 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((ImportDatasetOptions opts) =>
-                     AutoMLImportDataset.ImportDataset(opts.ProjectID,
-                                                                         opts.DatasetId,
-                                                                         opts.GcsPath));
+            verbMap.Add((ImportDatasetOptions opts) =>
+                     AutoMLImportDataset.ImportDataset(opts.ProjectID, opts.DatasetId, opts.GcsPath));
         }
     }
 }

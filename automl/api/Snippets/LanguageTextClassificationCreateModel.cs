@@ -36,16 +36,14 @@ namespace GoogleCloudSamples
             string datasetId = "YOUR_DATASET_ID",
             string displayName = "YOUR_DATASET_NAME")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // A resource that represents Google Cloud Platform location.
             string projectLocation = LocationName.Format(projectId, "us-central1");
             // Set model metadata.
-            TextClassificationModelMetadata metadata = new
-                TextClassificationModelMetadata
+            TextClassificationModelMetadata metadata = new TextClassificationModelMetadata
             {
             };
             Model model = new Model
@@ -69,11 +67,11 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((LanguageTextClassificationCreateModelOptions opts) =>
-                     AutoMLLanguageTextClassificationCreateModel.LanguageTextClassificationCreateModel(opts.ProjectID,
-                                                                 opts.DatasetID,
-                                                                 opts.DisplayName));
+            verbMap.Add((LanguageTextClassificationCreateModelOptions opts) =>
+                AutoMLLanguageTextClassificationCreateModel.LanguageTextClassificationCreateModel(
+                    opts.ProjectID,
+                    opts.DatasetID,
+                    opts.DisplayName));
         }
     }
 }
