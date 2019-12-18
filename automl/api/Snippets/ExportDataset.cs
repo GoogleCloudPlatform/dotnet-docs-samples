@@ -16,6 +16,7 @@ using CommandLine;
 using Google.Cloud.AutoML.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -41,14 +42,12 @@ namespace GoogleCloudSamples
         public static object ExportDataset(string projectId = "YOUR-PROJECT-ID",
             string datasetId = "YOUR-DATASET-ID", string gcsUri = "gs://BUCKET_ID/path_to_export/")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // Get the complete path of the dataset.
-            string datasetFullPath = DatasetName.Format(projectId, "us-central1", datasetId);
-            DatasetName datasetFullId = DatasetName.Parse(datasetFullPath);
+            DatasetName datasetFullId = new DatasetName(projectId, "us-central1", datasetId);
             GcsDestination gcsDestination = new GcsDestination
             {
                 OutputUriPrefix = gcsUri
@@ -60,19 +59,20 @@ namespace GoogleCloudSamples
                 GcsDestination = gcsDestination
             };
 
+            var result = Task.Run(() => client.ExportDataAsync(datasetFullId, outputConfig)).Result;
             Console.WriteLine("Processing export...");
-            Empty response = client.ExportDataAsync(datasetFullId, outputConfig).Result.PollUntilCompleted().Result;
-            Console.WriteLine($"Dataset exported. {response}");
+            result.PollUntilCompleted();
+            Console.WriteLine($"Dataset exported.");
             return 0;
         }
         // [END automl_export_dataset]
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((ExportDatasetOptions opts) =>
-                     AutoMLExportDataset.ExportDataset(opts.ProjectID,
-                                                                 opts.DatasetId,
-                                                                 opts.GcsUri));
+            verbMap.Add((ExportDatasetOptions opts) =>
+                AutoMLExportDataset.ExportDataset(
+                    opts.ProjectID,
+                    opts.DatasetId,
+                    opts.GcsUri));
         }
     }
 }

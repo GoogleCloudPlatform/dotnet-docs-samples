@@ -31,24 +31,22 @@ namespace GoogleCloudSamples
     {
         // [START automl_vision_object_detection_predict]
         /// <summary>
-        /// Demonstrates using the AutoML client to predict the text content using given model.
+        /// Demonstrates using the AutoML client to predict the image content using given model.
         /// </summary>
         /// <param name="projectId">GCP Project ID.</param>
         /// <param name="modelId">the Id of the model.</param>
-        /// <param name="filePath">the Local text file path of the content to be classified.</param>
+        /// <param name="filePath">the Local image file path of the content to be classified.</param>
         public static object VisionObjectDetectionPredict(string projectId = "YOUR-PROJECT-ID",
             string modelId = "YOUR-MODEL-ID",
             string filePath = "path_to_local_file.jpg")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             PredictionServiceClient client = PredictionServiceClient.Create();
 
             // Get the full path of the model.
             string modelFullId = ModelName.Format(projectId, "us-central1", modelId);
             ByteString content = ByteString.CopyFrom(File.ReadAllBytes(filePath));
-
 
             Image image = new Image
             {
@@ -60,14 +58,14 @@ namespace GoogleCloudSamples
             };
 
 
-            PredictRequest predictRequest = new
-                PredictRequest
+            PredictRequest predictRequest = new PredictRequest
             {
                 Name = modelFullId,
                 Payload = payload,
-                Params = {
-                { "score_threshold", "0.5" } // [0.0-1.0] Only produce results higher than this value
-            }
+                Params =
+                {
+                    { "score_threshold", "0.5" } // [0.0-1.0] Only produce results higher than this value
+                }
             };
 
             PredictResponse response = client.Predict(predictRequest);
@@ -90,11 +88,11 @@ namespace GoogleCloudSamples
         // [END automl_vision_object_detection_predict]
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((VisionObjectDetectionPredictOptions opts) =>
-                     AutoMLVisionObjectDetectionPredict.VisionObjectDetectionPredict(opts.ProjectID,
-                                                                 opts.ModelID,
-                                                                 opts.FilePath));
+            verbMap.Add((VisionObjectDetectionPredictOptions opts) =>
+                AutoMLVisionObjectDetectionPredict.VisionObjectDetectionPredict(
+                    opts.ProjectID,
+                    opts.ModelID,
+                    opts.FilePath));
         }
     }
 }

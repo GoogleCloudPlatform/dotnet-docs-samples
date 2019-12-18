@@ -15,6 +15,7 @@
 using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -34,9 +35,8 @@ namespace GoogleCloudSamples
         public static object LanguageEntityExtractionCreateDataset(string projectId = "YOUR-PROJECT-ID",
             string displayName = "YOUR-DATASET-NAME")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // A resource that represents Google Cloud Platform location.
@@ -46,17 +46,14 @@ namespace GoogleCloudSamples
             {
             };
 
-            Dataset dataset = new
-                Dataset
+            Dataset dataset = new Dataset
             {
                 DisplayName = displayName,
                 TextExtractionDatasetMetadata = metadata
             };
 
-
-
-            Dataset createdDataset = client
-                .CreateDatasetAsync(projectLocation, dataset).Result.PollUntilCompleted().Result;
+            var result = Task.Run(() => client.CreateDatasetAsync(projectLocation, dataset)).Result;
+            Dataset createdDataset = result.PollUntilCompleted().Result;
 
             // Display the dataset information.
             Console.WriteLine($"Dataset name: {createdDataset.Name}");
@@ -73,10 +70,10 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((LanguageEntityExtractionCreateDataset opts) =>
-                     AutoMLLanguageEntityExtractionCreateDataset.LanguageEntityExtractionCreateDataset(opts.ProjectID,
-                                                                 opts.DisplayName));
+            verbMap.Add((LanguageEntityExtractionCreateDataset opts) =>
+                     AutoMLLanguageEntityExtractionCreateDataset.LanguageEntityExtractionCreateDataset(
+                         opts.ProjectID,
+                         opts.DisplayName));
         }
     }
 }

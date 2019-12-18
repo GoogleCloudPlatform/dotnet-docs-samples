@@ -28,9 +28,8 @@ namespace GoogleCloudSamples
         public static object GetModel(string projectId = "YOUR-PROJECT-ID",
             string modelId = "YOUR-MODEL-ID")
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
             // Get the full path of the model.
@@ -58,8 +57,7 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((GetModelOptions opts) =>
+            verbMap.Add((GetModelOptions opts) =>
                      AutoMLGetModel.GetModel(opts.ProjectID, opts.ModelId));
         }
     }

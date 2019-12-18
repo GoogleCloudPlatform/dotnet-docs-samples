@@ -15,6 +15,7 @@
 using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -45,9 +46,8 @@ namespace GoogleCloudSamples
                                                       string targetLanguage,
                                                       string sourceLanguage)
         {
-            // Initialize client that will be used to send requests. This client only needs to be created
-            // once, and can be reused for multiple requests. After completing all of your requests, call
-            // the "close" method on the client to safely clean up any remaining background resources.
+            // Initialize the client that will be used to send requests. This client only needs to be created
+            // once, and can be reused for multiple requests.
             var client = AutoMlClient.Create();
 
             // A resource that represents Google Cloud Platform location.
@@ -63,8 +63,8 @@ namespace GoogleCloudSamples
                 }
             };
 
-            var dataset = client.CreateDatasetAsync(locationName, datasetRequest)
-                                .Result.PollUntilCompleted().Result;
+            var result = Task.Run(() => client.CreateDatasetAsync(locationName, datasetRequest)).Result;
+            Dataset dataset = result.PollUntilCompleted().Result;
 
             // Display the dataset information.
             Console.WriteLine($"Dataset name: {dataset.Name}");
@@ -80,12 +80,12 @@ namespace GoogleCloudSamples
 
         public static void RegisterCommands(VerbMap<object> verbMap)
         {
-            verbMap
-                .Add((AutoMLTranslationCreateDatasetOptions opts) =>
-                     AutoMLTranslationCreateDataset.TranslationCreateDataset(opts.ProjectID,
-                                                                             opts.DisplayName,
-                                                                             opts.TargetLanguage,
-                                                                             opts.SourceLanguage));
+            verbMap.Add((AutoMLTranslationCreateDatasetOptions opts) =>
+                AutoMLTranslationCreateDataset.TranslationCreateDataset(
+                    opts.ProjectID,
+                    opts.DisplayName,
+                    opts.TargetLanguage,
+                    opts.SourceLanguage));
         }
     }
 }
