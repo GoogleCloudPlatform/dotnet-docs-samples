@@ -33,22 +33,22 @@ namespace GoogleCloudSamples
 
     class SecretOptions {
         [Value(0, HelpText = "Full resource name of the secret", Required = true)]
-        public string name { get; set; }
+        public string Name { get; set; }
     }
 
     class SecretVersionOptions {
         [Value(0, HelpText = "Full resource name of the version", Required = true)]
-        public string name { get; set; }
+        public string Name { get; set; }
     }
 
     [Verb("create", HelpText = "Create a secret")]
     class CreateSecretOptions
     {
         [Value(0, HelpText = "Full resource name of project", Required = true)]
-        public string projectId { get; set; }
+        public string ProjectId { get; set; }
 
         [Value(1, HelpText = "Name of the secret", Required = true)]
-        public string id { get; set; }
+        public string Id { get; set; }
     }
 
     [Verb("delete", HelpText = "Delete secret")]
@@ -88,11 +88,20 @@ namespace GoogleCloudSamples
     public class SecretManagerSample
     {
         // [START secretmanager_access_secret_version]
+        /// <summary>
+        /// Accesses a secret with provided version.
+        /// </summary>
+        /// <param name="name">Secret version name to access.</param>
+        /// <example>
+        /// With a specific version.
+        /// <code>AccessSecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// </example>
+        /// <example>
+        /// With an alias version.
+        /// <code>AccessSecretVersion("projects/my-project/secrets/my-secret/versions/latest")</code>
+        /// </example>
         public static void AccessSecretVersion(string name)
         {
-            // string name = "projects/my-project/secrets/my-secret/versions/5";
-            // string name = "projects/my-project/secrets/my-secret/versions/latest";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -112,10 +121,17 @@ namespace GoogleCloudSamples
         // [END secretmanager_access_secret_version]
 
         // [START secretmanager_add_secret_version]
+        /// <summary>
+        /// Add a secret version to the given secret. The given secret must
+        /// already exist.
+        /// </summary>
+        /// <param name="parent">Secret in which to add the version.</param>
+        /// <example>
+        /// Add a secret version.
+        /// <code>AddSecretVersion("projects/my-project/secrets/my-secret")</code>
+        /// </example>
         public static void AddSecretVersion(string parent)
         {
-            // string parent = "projects/my-project/secrets/my-secret";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the secret payload.
@@ -138,11 +154,17 @@ namespace GoogleCloudSamples
         // [END secretmanager_add_secret_version]
 
         // [START secretmanager_create_secret]
+        /// <summary>
+        /// Create a new secret in the given project with the given name.
+        /// </summary>
+        /// <param name="parent">Project in which to create the secret.</param>
+        /// <param name="id">ID to use for the secret.</param>
+        /// <example>
+        /// Create a secret.
+        /// <code>CreateSecret("projects/my-project", "my-secret")</code>
+        /// </example>
         public static void CreateSecret(string parent, string id)
         {
-            // string parent = "projects/my-project";
-            // string id = "my-secret";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -166,10 +188,16 @@ namespace GoogleCloudSamples
         // [END secretmanager_create_secret]
 
         // [START secretmanager_delete_secret]
+        /// <summary>
+        /// Delete an existing secret with the given name.
+        /// </summary>
+        /// <param name="name">Name of the secret to delete.</param>
+        /// <example>
+        /// Delete a secret.
+        /// <code>DeleteSecret("projects/my-project/secrets/my-secret")</code>
+        /// </example>
         public static void DeleteSecret(string name)
         {
-            // string name = "projects/my-project/secrets/my-secret";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -185,10 +213,16 @@ namespace GoogleCloudSamples
         // [END secretmanager_delete_secret]
 
         // [START secretmanager_destroy_secret_version]
+        /// <summary>
+        /// Destroy an existing secret version.
+        /// </summary>
+        /// <param name="name">Name of the secret version to destroy.</param>
+        /// <example>
+        /// Destroy a secret version.
+        /// <code>DestroySecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// </example>
         public static void DestroySecretVersion(string name)
         {
-            // string name = "projects/my-project/secrets/my-secret/versions/5";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -204,10 +238,16 @@ namespace GoogleCloudSamples
         // [END secretmanager_destroy_secret_version]
 
         // [START secretmanager_disable_secret_version]
+        /// <summary>
+        /// Disable an existing secret version.
+        /// </summary>
+        /// <param name="name">Name of the secret to disable.</param>
+        /// <example>
+        /// Disable an existing secret version.
+        /// <code>DisableSecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// </example>
         public static void DisableSecretVersion(string name)
         {
-            // string name = "projects/my-project/secrets/my-secret/versions/5";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -223,10 +263,16 @@ namespace GoogleCloudSamples
         // [END secretmanager_disable_secret_version]
 
         // [START secretmanager_enable_secret_version]
+        /// <summary>
+        /// Enable an existing secret version.
+        /// </summary>
+        /// <param name="name">Name of the secret to enable.</param>
+        /// <example>
+        /// Enable an existing secret version.
+        /// <code>EnableSecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// </example>
         public static void EnableSecretVersion(string name)
         {
-            // string name = "projects/my-project/secrets/my-secret/versions/5";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -242,10 +288,20 @@ namespace GoogleCloudSamples
         // [END secretmanager_enable_secret_version]
 
         // [START secretmanager_get_secret_version]
+        /// <summary>
+        /// Get an existing secret version.
+        /// </summary>
+        /// <param name="name">Name of the secret version to get.</param>
+        /// <example>
+        /// Get an existing secret version.
+        /// <code>GetSecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// </example>
+        /// <example>
+        /// With an alias version.
+        /// <code>GetSecretVersion("projects/my-project/secrets/my-secret/versions/latest")</code>
+        /// </example>
         public static void GetSecretVersion(string name)
         {
-            // string name = "projects/my-project/secrets/my-secret/versions/5";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -261,10 +317,16 @@ namespace GoogleCloudSamples
         // [END secretmanager_get_secret_version]
 
         // [START secretmanager_get_secret]
+        /// <summary>
+        /// Get an existing secret.
+        /// </summary>
+        /// <param name="name">Name of the secret to get.</param>
+        /// <example>
+        /// Get an existing secret.
+        /// <code>GetSecret("projects/my-project/secrets/my-secret")</code>
+        /// </example>
         public static void GetSecret(string name)
         {
-            // string name = "projects/my-project/secrets/my-secret";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -280,10 +342,16 @@ namespace GoogleCloudSamples
         // [END secretmanager_get_secret]
 
         // [START secretmanager_list_secret_versions]
+        /// <summary>
+        /// List all secret versions for a secret.
+        /// </summary>
+        /// <param name="parent">Parent secret for which to list secret versions.</param>
+        /// <example>
+        /// List all secret versions.
+        /// <code>ListSecretVersions("projects/my-project/secrets/my-secret")</code>
+        /// </example>
         public static void ListSecretVersions(string parent)
         {
-            // string parent = "projects/my-project/secrets/my-secret";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -301,10 +369,16 @@ namespace GoogleCloudSamples
         // [END secretmanager_list_secret_versions]
 
         // [START secretmanager_list_secrets]
+        /// <summary>
+        /// List all secret for a project
+        /// </summary>
+        /// <param name="parent">Parent project for which to secrets.</param>
+        /// <example>
+        /// List all secrets.
+        /// <code>ListSecrets("projects/my-project")</code>
+        /// </example>
         public static void ListSecrets(string parent)
         {
-            // string parent = "projects/my-project";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
@@ -322,29 +396,35 @@ namespace GoogleCloudSamples
         // [END secretmanager_list_secrets]
 
         // [START secretmanager_update_secret]
+        /// <summary>
+        /// Update an existing secret.
+        /// </summary>
+        /// <param name="name">Name of the secret to update.</param>
+        /// <example>
+        /// Update an existing secret.
+        /// <code>UpdateSecret("projects/my-project/secrets/my-secret")</code>
+        /// </example>
         public static void UpdateSecret(string name)
         {
-            // string name = "projects/my-project/secrets/my-secret";
-
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
+
+            // Create the secret to update.
+            var secret = new Secret
+            {
+                Name = name,
+            };
+            secret.Labels["secretmanager"] = "rocks";
 
             // Create the request.
             var request = new UpdateSecretRequest
             {
-                Secret = new Secret
-                {
-                  Name = name,
-                  // Labels = new Dictionary<string, string>
-                  // {
-                  //   {"secretmanager", "rocks"},
-                  // },
-                },
+                Secret = secret,
                 UpdateMask = FieldMask.FromString("labels"),
             };
 
             // Update the secret
-            var secret = client.UpdateSecret(request);
-            Console.WriteLine($"Updated secret {secret.Name}");
+            var updatedSecret = client.UpdateSecret(request);
+            Console.WriteLine($"Updated secret {updatedSecret.Name}");
         }
         // [END secretmanager_update_secret]
 
@@ -364,18 +444,18 @@ namespace GoogleCloudSamples
                 typeof(ListSecretVersionsOptions),
                 typeof(ListSecretsOptions),
                 typeof(UpdateSecretOptions))
-            .WithParsed<AccessSecretVersionOptions>(opts => AccessSecretVersion(opts.name))
-            .WithParsed<AddSecretVersionOptions>(opts => AddSecretVersion(opts.name))
-            .WithParsed<CreateSecretOptions>(opts => CreateSecret(opts.projectId, opts.id))
-            .WithParsed<DeleteSecretOptions>(opts => DeleteSecret(opts.name))
-            .WithParsed<DestroySecretVersionOptions>(opts => DestroySecretVersion(opts.name))
-            .WithParsed<DisableSecretVersionOptions>(opts => DisableSecretVersion(opts.name))
-            .WithParsed<EnableSecretVersionOptions>(opts => EnableSecretVersion(opts.name))
-            .WithParsed<GetSecretVersionOptions>(opts => GetSecretVersion(opts.name))
-            .WithParsed<GetSecretOptions>(opts => GetSecret(opts.name))
-            .WithParsed<ListSecretVersionsOptions>(opts => ListSecretVersions(opts.name))
-            .WithParsed<ListSecretsOptions>(opts => ListSecrets(opts.name))
-            .WithParsed<UpdateSecretOptions>(opts => UpdateSecret(opts.name));
+            .WithParsed<AccessSecretVersionOptions>(opts => AccessSecretVersion(opts.Name))
+            .WithParsed<AddSecretVersionOptions>(opts => AddSecretVersion(opts.Name))
+            .WithParsed<CreateSecretOptions>(opts => CreateSecret(opts.ProjectId, opts.Id))
+            .WithParsed<DeleteSecretOptions>(opts => DeleteSecret(opts.Name))
+            .WithParsed<DestroySecretVersionOptions>(opts => DestroySecretVersion(opts.Name))
+            .WithParsed<DisableSecretVersionOptions>(opts => DisableSecretVersion(opts.Name))
+            .WithParsed<EnableSecretVersionOptions>(opts => EnableSecretVersion(opts.Name))
+            .WithParsed<GetSecretVersionOptions>(opts => GetSecretVersion(opts.Name))
+            .WithParsed<GetSecretOptions>(opts => GetSecret(opts.Name))
+            .WithParsed<ListSecretVersionsOptions>(opts => ListSecretVersions(opts.Name))
+            .WithParsed<ListSecretsOptions>(opts => ListSecrets(opts.Name))
+            .WithParsed<UpdateSecretOptions>(opts => UpdateSecret(opts.Name));
         }
     }
 }
