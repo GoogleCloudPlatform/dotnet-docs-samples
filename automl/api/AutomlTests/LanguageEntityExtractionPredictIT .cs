@@ -14,7 +14,7 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestEntityExtractionPredict()
+        public void TestPredict()
         {
             string text = "Constitutional mutations in the WT1 gene in patients with Denys-Drash syndrome.";
             ConsoleOutput output = _fixture.SampleRunner.Run("language_entity_extraction_predict",

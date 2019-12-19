@@ -28,7 +28,7 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestLangEntityExtractCreateImportDeleteDataset()
+        public void TestCreateImportDeleteDataset()
         {
             // Create a random dataset name with a length of 32 characters (max allowed by AutoML)
             // To prevent name collisions when running tests in multiple java versions at once.
