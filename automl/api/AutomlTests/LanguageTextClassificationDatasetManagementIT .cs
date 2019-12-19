@@ -28,7 +28,7 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestLanguageCreateImportDeleteDataset()
+        public void TestCreateImportDeleteDataset()
         {
             string datasetName = "test_dataset_" + TestUtil.RandomName();
             datasetName = datasetName.Substring(0, 32);

@@ -40,7 +40,7 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestVisionObjectDetectionDeployUndeployModelWithNodeCount()
+        public void TestDeployUndeployModelWithNodeCount()
         {
             ConsoleOutput output = _fixture.SampleRunner.Run("undeploy_model", _fixture.ProjectId, _modelId);
 
