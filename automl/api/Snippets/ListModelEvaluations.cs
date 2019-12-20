@@ -85,7 +85,6 @@ namespace GoogleCloudSamples
                     $"Classificatio Model Evaluation Metrics: {modelEvaluation.ClassificationEvaluationMetrics}");
                 // [END automl_language_text_classification_list_model_evaluations]
                 // [END automl_vision_classification_list_model_evaluations]
-
                 // [START automl_translate_list_model_evaluations]
                 Console.WriteLine(
                     $"Model Evaluation Metrics: {modelEvaluation.TranslationEvaluationMetrics}");
