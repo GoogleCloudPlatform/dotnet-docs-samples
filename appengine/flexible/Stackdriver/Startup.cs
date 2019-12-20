@@ -79,7 +79,7 @@ namespace Stackdriver
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             // Configure logging service.
-            loggerFactory.AddGoogle(Configuration["Stackdriver:ProjectId"]);
+            loggerFactory.AddGoogle(app.ApplicationServices, Configuration["Stackdriver:ProjectId"]);
             var logger = loggerFactory.CreateLogger("testStackdriverLogging");
             // Write the log entry.
             logger.LogInformation("Stackdriver sample started. This is a log message.");

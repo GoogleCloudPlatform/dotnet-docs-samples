@@ -37,7 +37,7 @@ namespace WebApp
             ILoggerFactory loggerFactory)
         {
             // Log to Google.
-            loggerFactory.AddGoogle("YOUR-PROJECT-ID");
+            loggerFactory.AddGoogle(app.ApplicationServices, "YOUR-PROJECT-ID");
             // [END logging_setup_aspnetcore_logger_factory]
 
             if (env.IsDevelopment())
