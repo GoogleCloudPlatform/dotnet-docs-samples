@@ -100,15 +100,27 @@ namespace GoogleCloudSamples
 
     public class QuickStartTests
     {
+        private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
         readonly CommandLineRunner _quickStart = new CommandLineRunner()
         {
             VoidMain = QuickStart.Main,
             Command = "QuickStart"
         };
 
+        readonly CommandLineRunner _secretManager = new CommandLineRunner()
+        {
+            VoidMain = SecretManagerSample.Main,
+            Command = "SecretManagerSample"
+        };
+
         [Fact]
         public void TestRun()
         {
+            string ts = $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
+            string secret1Id = $"csharp-quickstart-{ts}-1";
+            _secretManager.Run("create", projectId, secret1Id);
+
             var output = _quickStart.Run();
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("secrets/", output.Stdout);
