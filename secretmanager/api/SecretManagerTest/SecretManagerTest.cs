@@ -24,7 +24,7 @@ namespace GoogleCloudSamples
     // </summary>
     public class CommonTests
     {
-        private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         readonly CommandLineRunner _secretManager = new CommandLineRunner()
         {
@@ -37,71 +37,64 @@ namespace GoogleCloudSamples
             return _secretManager.Run(args);
         }
 
-        private readonly RetryRobot _retryRobot = new RetryRobot()
-        {
-            RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) }
-        };
-
-        private void Eventually(Action action) => _retryRobot.Eventually(action);
-
         [Fact]
         public void TestCreateAddAccessDelete()
         {
             string secretId = $"csharp-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
-            Run("create", $"projects/{s_projectId}", secretId);
-            Run("add-version", $"projects/{s_projectId}/secrets/{secretId}");
+            Run("create", projectId, secretId);
+            Run("add-version", projectId, secretId);
 
-            var accessVersionOut = Run("access-version", $"projects/{s_projectId}/secrets/{secretId}/versions/1");
+            var accessVersionOut = Run("access-version", projectId, secretId, "1");
             Assert.Contains("my super secret data", accessVersionOut.Stdout);
 
-            Run("delete", $"projects/{s_projectId}/secrets/{secretId}");
+            Run("delete", projectId, secretId);
         }
 
         [Fact]
         public void TestEnableDisableDestroy()
         {
             string secretId = $"csharp-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
-            Run("create", $"projects/{s_projectId}", secretId);
-            Run("add-version", $"projects/{s_projectId}/secrets/{secretId}");
+            Run("create", projectId, secretId);
+            Run("add-version", projectId, secretId);
 
-            var disableOut = Run("disable-version", $"projects/{s_projectId}/secrets/{secretId}/versions/1");
+            var disableOut = Run("disable-version", projectId, secretId, "1");
             Assert.Contains("Disabled secret version", disableOut.Stdout);
 
-            var enableOut = Run("enable-version", $"projects/{s_projectId}/secrets/{secretId}/versions/1");
+            var enableOut = Run("enable-version", projectId, secretId, "1");
             Assert.Contains("Enabled secret version", enableOut.Stdout);
 
-            var destroyOut = Run("destroy-version", $"projects/{s_projectId}/secrets/{secretId}/versions/1");
+            var destroyOut = Run("destroy-version", projectId, secretId, "1");
             Assert.Contains("Destroyed secret version", destroyOut.Stdout);
 
-            Run("delete", $"projects/{s_projectId}/secrets/{secretId}");
+            Run("delete", projectId, secretId);
         }
 
         [Fact]
         public void TestList()
         {
             string ts = $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
-            string secret1Id = $"csharp-{ts}-1";
-            string secret2Id = $"csharp-{ts}-2";
-            string secret3Id = $"csharp-{ts}-3";
+            string secret1Id = $"csharp-list-{ts}-1";
+            string secret2Id = $"csharp-list-{ts}-2";
+            string secret3Id = $"csharp-list-{ts}-3";
 
 
-            Run("create", $"projects/{s_projectId}", secret1Id);
-            Run("create", $"projects/{s_projectId}", secret2Id);
-            Run("create", $"projects/{s_projectId}", secret3Id);
+            Run("create", projectId, secret1Id);
+            Run("create", projectId, secret2Id);
+            Run("create", projectId, secret3Id);
 
-            Run("add-version", $"projects/{s_projectId}/secrets/{secret1Id}");
-            Run("add-version", $"projects/{s_projectId}/secrets/{secret1Id}");
-            Run("add-version", $"projects/{s_projectId}/secrets/{secret1Id}");
+            Run("add-version", projectId, secret1Id);
+            Run("add-version", projectId, secret1Id);
+            Run("add-version", projectId, secret1Id);
 
-            var secretsOut = Run("list", $"projects/{s_projectId}");
+            var secretsOut = Run("list", projectId);
             Assert.Contains($"{ts}", secretsOut.Stdout);
 
-            var versionsOut = Run("list-versions", $"projects/{s_projectId}/secrets/{secret1Id}");
+            var versionsOut = Run("list-versions", projectId, secret1Id);
             Assert.Contains($"{secret1Id}/versions/1", versionsOut.Stdout);
 
-            Run("delete", $"projects/{s_projectId}/secrets/{secret1Id}");
-            Run("delete", $"projects/{s_projectId}/secrets/{secret2Id}");
-            Run("delete", $"projects/{s_projectId}/secrets/{secret3Id}");
+            Run("delete", projectId, secret1Id);
+            Run("delete", projectId, secret2Id);
+            Run("delete", projectId, secret3Id);
         }
     }
 

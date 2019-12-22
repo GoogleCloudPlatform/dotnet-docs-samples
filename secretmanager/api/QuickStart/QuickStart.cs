@@ -18,6 +18,7 @@
 
 using System;
 using System.Linq;
+using Google.Api.Gax.ResourceNames;
 // Imports the Secret Manager client library
 using Google.Cloud.Secrets.V1Beta1;
 
@@ -35,7 +36,7 @@ namespace GoogleCloudSamples
 
             // Create the list secrets request.
             var request = new ListSecretsRequest{
-              Parent = $"projects/{projectId}",
+              ParentAsProjectName = new ProjectName(projectId),
             };
 
             // List secrets in the project.

@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 
 using CommandLine;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Iam.V1;
 using Google.Cloud.Secrets.V1Beta1;
 using Google.Protobuf;
@@ -31,25 +32,32 @@ using Newtonsoft.Json;
 namespace GoogleCloudSamples
 {
 
+    class ProjectOptions {
+        [Value(0, HelpText = "Project in which the secrets reside", Required = true)]
+        public string ProjectId { get; set; }
+    }
+
     class SecretOptions {
-        [Value(0, HelpText = "Full resource name of the secret", Required = true)]
-        public string Name { get; set; }
+        [Value(0, HelpText = "Project for the secret", Required = true)]
+        public string ProjectId { get; set; }
+
+        [Value(1, HelpText = "ID of the secret", Required = true)]
+        public string SecretId { get; set; }
     }
 
     class SecretVersionOptions {
-        [Value(0, HelpText = "Full resource name of the version", Required = true)]
-        public string Name { get; set; }
+        [Value(0, HelpText = "Project for the secret", Required = true)]
+        public string ProjectId { get; set; }
+
+        [Value(1, HelpText = "ID of the secret", Required = true)]
+        public string SecretId { get; set; }
+
+        [Value(2, HelpText = "Version of the secret", Required = true)]
+        public string SecretVersion { get; set; }
     }
 
     [Verb("create", HelpText = "Create a secret")]
-    class CreateSecretOptions
-    {
-        [Value(0, HelpText = "Full resource name of project", Required = true)]
-        public string ProjectId { get; set; }
-
-        [Value(1, HelpText = "Name of the secret", Required = true)]
-        public string Id { get; set; }
-    }
+    class CreateSecretOptions : SecretOptions { }
 
     [Verb("delete", HelpText = "Delete secret")]
     class DeleteSecretOptions : SecretOptions { }
@@ -58,7 +66,7 @@ namespace GoogleCloudSamples
     class GetSecretOptions : SecretOptions { }
 
     [Verb("list", HelpText = "List secrets")]
-    class ListSecretsOptions : SecretOptions { }
+    class ListSecretsOptions : ProjectOptions { }
 
     [Verb("update", HelpText = "Update secret")]
     class UpdateSecretOptions : SecretOptions { }
@@ -67,7 +75,7 @@ namespace GoogleCloudSamples
     class AccessSecretVersionOptions : SecretVersionOptions { }
 
     [Verb("add-version", HelpText = "Add a new version")]
-    class AddSecretVersionOptions : SecretVersionOptions { }
+    class AddSecretVersionOptions : SecretOptions { }
 
     [Verb("destroy-version", HelpText = "Destroy secret version")]
     class DestroySecretVersionOptions : SecretVersionOptions { }
@@ -82,7 +90,7 @@ namespace GoogleCloudSamples
     class GetSecretVersionOptions : SecretVersionOptions { }
 
     [Verb("list-versions", HelpText = "List secret versions")]
-    class ListSecretVersionsOptions : SecretVersionOptions { }
+    class ListSecretVersionsOptions : SecretOptions { }
 
 
     public class SecretManagerSample
@@ -91,23 +99,25 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Accesses a secret with provided version.
         /// </summary>
-        /// <param name="name">Secret version name to access.</param>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
+        /// <param name="secretVersion">Version of the secret.</param>
         /// <example>
         /// With a specific version.
-        /// <code>AccessSecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// <code>AccessSecretVersion("my-project", "my-secret", "5")</code>
         /// </example>
         /// <example>
         /// With an alias version.
-        /// <code>AccessSecretVersion("projects/my-project/secrets/my-secret/versions/latest")</code>
+        /// <code>AccessSecretVersion("my-project", "my-secret", "latest")</code>
         /// </example>
-        public static void AccessSecretVersion(string name)
+        public static void AccessSecretVersion(string projectId, string secretId, string secretVersion)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
             var request = new AccessSecretVersionRequest
             {
-                Name = name,
+                SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
             };
 
             // Access the secret and print the result.
@@ -125,12 +135,13 @@ namespace GoogleCloudSamples
         /// Add a secret version to the given secret. The given secret must
         /// already exist.
         /// </summary>
-        /// <param name="parent">Secret in which to add the version.</param>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
         /// <example>
         /// Add a secret version.
-        /// <code>AddSecretVersion("projects/my-project/secrets/my-secret")</code>
+        /// <code>AddSecretVersion("my-project", "my-secret")</code>
         /// </example>
-        public static void AddSecretVersion(string parent)
+        public static void AddSecretVersion(string projectId, string secretId)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
@@ -140,7 +151,7 @@ namespace GoogleCloudSamples
             // Create the request.
             var request = new AddSecretVersionRequest
             {
-                Parent = parent,
+                ParentAsSecretName = new SecretName(projectId, secretId),
                 Payload = new SecretPayload
                 {
                     Data = ByteString.CopyFrom(payload, Encoding.UTF8),
@@ -157,21 +168,21 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Create a new secret in the given project with the given name.
         /// </summary>
-        /// <param name="parent">Project in which to create the secret.</param>
-        /// <param name="id">ID to use for the secret.</param>
+        /// <param name="projectId">ID of the project in which to create the secret.</param>
+        /// <param name="secretId">ID of the secret.</param>
         /// <example>
         /// Create a secret.
-        /// <code>CreateSecret("projects/my-project", "my-secret")</code>
+        /// <code>CreateSecret("my-project", "my-secret")</code>
         /// </example>
-        public static void CreateSecret(string parent, string id)
+        public static void CreateSecret(string projectId, string secretId)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
             var request = new CreateSecretRequest
             {
-                Parent = parent,
-                SecretId = id,
+                ParentAsProjectName = new ProjectName(projectId),
+                SecretId = secretId,
                 Secret = new Secret
                 {
                     Replication = new Replication
@@ -191,24 +202,25 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Delete an existing secret with the given name.
         /// </summary>
-        /// <param name="name">Name of the secret to delete.</param>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
         /// <example>
         /// Delete a secret.
-        /// <code>DeleteSecret("projects/my-project/secrets/my-secret")</code>
+        /// <code>DeleteSecret("my-project", "my-secret")</code>
         /// </example>
-        public static void DeleteSecret(string name)
+        public static void DeleteSecret(string projectId, string secretId)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
             var request = new DeleteSecretRequest
             {
-                Name = name,
+                SecretName = new SecretName(projectId, secretId),
             };
 
             // Delete the secret.
             client.DeleteSecret(request);
-            Console.WriteLine($"Deleted secret {name}");
+            Console.WriteLine($"Deleted secret {secretId}");
         }
         // [END secretmanager_delete_secret]
 
@@ -216,19 +228,21 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Destroy an existing secret version.
         /// </summary>
-        /// <param name="name">Name of the secret version to destroy.</param>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
+        /// <param name="secretVersion">Version of the secret.</param>
         /// <example>
         /// Destroy a secret version.
-        /// <code>DestroySecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// <code>DestroySecretVersion("my-project", "my-secret", "5")</code>
         /// </example>
-        public static void DestroySecretVersion(string name)
+        public static void DestroySecretVersion(string projectId, string secretId, string secretVersion)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
             var request = new DestroySecretVersionRequest
             {
-                Name = name,
+                SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
             };
 
             // Destroy the secret version.
@@ -241,19 +255,21 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Disable an existing secret version.
         /// </summary>
-        /// <param name="name">Name of the secret to disable.</param>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
+        /// <param name="secretVersion">Version of the secret.</param>
         /// <example>
         /// Disable an existing secret version.
-        /// <code>DisableSecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// <code>DisableSecretVersion("my-project", "my-secret", "5")</code>
         /// </example>
-        public static void DisableSecretVersion(string name)
+        public static void DisableSecretVersion(string projectId, string secretId, string secretVersion)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
             var request = new DisableSecretVersionRequest
             {
-                Name = name,
+                SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
             };
 
             // Disable the secret version.
@@ -266,19 +282,21 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Enable an existing secret version.
         /// </summary>
-        /// <param name="name">Name of the secret to enable.</param>
-        /// <example>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
+        /// <param name="secretVersion">Version of the secret.</param>
+        /// <example>1
         /// Enable an existing secret version.
-        /// <code>EnableSecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// <code>EnableSecretVersion("my-project", "my-secret", "5")</code>
         /// </example>
-        public static void EnableSecretVersion(string name)
+        public static void EnableSecretVersion(string projectId, string secretId, string secretVersion)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
             var request = new EnableSecretVersionRequest
             {
-                Name = name,
+                SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
             };
 
             // Enable the secret version.
@@ -291,23 +309,25 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Get an existing secret version.
         /// </summary>
-        /// <param name="name">Name of the secret version to get.</param>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
+        /// <param name="secretVersion">Version of the secret.</param>
         /// <example>
         /// Get an existing secret version.
-        /// <code>GetSecretVersion("projects/my-project/secrets/my-secret/versions/5")</code>
+        /// <code>GetSecretVersion("my-project", "my-secret", "5")</code>
         /// </example>
         /// <example>
         /// With an alias version.
-        /// <code>GetSecretVersion("projects/my-project/secrets/my-secret/versions/latest")</code>
+        /// <code>GetSecretVersion("my-project", "my-secret", "latest")</code>
         /// </example>
-        public static void GetSecretVersion(string name)
+        public static void GetSecretVersion(string projectId, string secretId, string secretVersion)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
             var request = new GetSecretVersionRequest
             {
-                Name = name,
+                SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
             };
 
             // Get the secret version.
@@ -320,19 +340,20 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Get an existing secret.
         /// </summary>
-        /// <param name="name">Name of the secret to get.</param>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
         /// <example>
         /// Get an existing secret.
-        /// <code>GetSecret("projects/my-project/secrets/my-secret")</code>
+        /// <code>GetSecret("my-project", "my-secret")</code>
         /// </example>
-        public static void GetSecret(string name)
+        public static void GetSecret(string projectId, string secretId)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
             var request = new GetSecretRequest
             {
-                Name = name,
+                SecretName = new SecretName(projectId, secretId),
             };
 
             // Get the secret.
@@ -345,19 +366,23 @@ namespace GoogleCloudSamples
         /// <summary>
         /// List all secret versions for a secret.
         /// </summary>
-        /// <param name="parent">Parent secret for which to list secret versions.</param>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
         /// <example>
         /// List all secret versions.
-        /// <code>ListSecretVersions("projects/my-project/secrets/my-secret")</code>
+        /// <code>ListSecretVersions("my-project", "my-secret")</code>
         /// </example>
-        public static void ListSecretVersions(string parent)
+        public static void ListSecretVersions(string projectId, string secretId)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
+
+            Console.WriteLine($"projectId: ${projectId}");
+            Console.WriteLine($"secretId: ${secretId}");
 
             // Create the request.
             var request = new ListSecretVersionsRequest
             {
-                Parent = parent,
+                ParentAsSecretName = new SecretName(projectId, secretId),
             };
 
             // List all versions and their state.
@@ -372,19 +397,19 @@ namespace GoogleCloudSamples
         /// <summary>
         /// List all secret for a project
         /// </summary>
-        /// <param name="parent">Parent project for which to secrets.</param>
+        /// <param name="projectId">ID of the project where secrets reside.</param>
         /// <example>
         /// List all secrets.
-        /// <code>ListSecrets("projects/my-project")</code>
+        /// <code>ListSecrets("my-project")</code>
         /// </example>
-        public static void ListSecrets(string parent)
+        public static void ListSecrets(string projectId)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the request.
             var request = new ListSecretsRequest
             {
-                Parent = parent,
+                ParentAsProjectName = new ProjectName(projectId),
             };
 
             // List all secrets in the project.
@@ -399,19 +424,20 @@ namespace GoogleCloudSamples
         /// <summary>
         /// Update an existing secret.
         /// </summary>
-        /// <param name="name">Name of the secret to update.</param>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
         /// <example>
         /// Update an existing secret.
-        /// <code>UpdateSecret("projects/my-project/secrets/my-secret")</code>
+        /// <code>UpdateSecret("my-project", "my-secret")</code>
         /// </example>
-        public static void UpdateSecret(string name)
+        public static void UpdateSecret(string projectId, string secretId)
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the secret to update.
             var secret = new Secret
             {
-                Name = name,
+                SecretName = new SecretName(projectId, secretId),
             };
             secret.Labels["secretmanager"] = "rocks";
 
@@ -444,18 +470,18 @@ namespace GoogleCloudSamples
                 typeof(ListSecretVersionsOptions),
                 typeof(ListSecretsOptions),
                 typeof(UpdateSecretOptions))
-            .WithParsed<AccessSecretVersionOptions>(opts => AccessSecretVersion(opts.Name))
-            .WithParsed<AddSecretVersionOptions>(opts => AddSecretVersion(opts.Name))
-            .WithParsed<CreateSecretOptions>(opts => CreateSecret(opts.ProjectId, opts.Id))
-            .WithParsed<DeleteSecretOptions>(opts => DeleteSecret(opts.Name))
-            .WithParsed<DestroySecretVersionOptions>(opts => DestroySecretVersion(opts.Name))
-            .WithParsed<DisableSecretVersionOptions>(opts => DisableSecretVersion(opts.Name))
-            .WithParsed<EnableSecretVersionOptions>(opts => EnableSecretVersion(opts.Name))
-            .WithParsed<GetSecretVersionOptions>(opts => GetSecretVersion(opts.Name))
-            .WithParsed<GetSecretOptions>(opts => GetSecret(opts.Name))
-            .WithParsed<ListSecretVersionsOptions>(opts => ListSecretVersions(opts.Name))
-            .WithParsed<ListSecretsOptions>(opts => ListSecrets(opts.Name))
-            .WithParsed<UpdateSecretOptions>(opts => UpdateSecret(opts.Name));
+            .WithParsed<AccessSecretVersionOptions>(opts => AccessSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+            .WithParsed<AddSecretVersionOptions>(opts => AddSecretVersion(opts.ProjectId, opts.SecretId))
+            .WithParsed<CreateSecretOptions>(opts => CreateSecret(opts.ProjectId, opts.SecretId))
+            .WithParsed<DeleteSecretOptions>(opts => DeleteSecret(opts.ProjectId, opts.SecretId))
+            .WithParsed<DestroySecretVersionOptions>(opts => DestroySecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+            .WithParsed<DisableSecretVersionOptions>(opts => DisableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+            .WithParsed<EnableSecretVersionOptions>(opts => EnableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+            .WithParsed<GetSecretVersionOptions>(opts => GetSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+            .WithParsed<GetSecretOptions>(opts => GetSecret(opts.ProjectId, opts.SecretId))
+            .WithParsed<ListSecretVersionsOptions>(opts => ListSecretVersions(opts.ProjectId, opts.SecretId))
+            .WithParsed<ListSecretsOptions>(opts => ListSecrets(opts.ProjectId))
+            .WithParsed<UpdateSecretOptions>(opts => UpdateSecret(opts.ProjectId, opts.SecretId));
         }
     }
 }
