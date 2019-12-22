@@ -31,13 +31,14 @@ using Newtonsoft.Json;
 
 namespace GoogleCloudSamples
 {
-
-    class ProjectOptions {
+    class ProjectOptions
+    {
         [Value(0, HelpText = "Project in which the secrets reside", Required = true)]
         public string ProjectId { get; set; }
     }
 
-    class SecretOptions {
+    class SecretOptions
+    {
         [Value(0, HelpText = "Project for the secret", Required = true)]
         public string ProjectId { get; set; }
 
@@ -45,7 +46,8 @@ namespace GoogleCloudSamples
         public string SecretId { get; set; }
     }
 
-    class SecretVersionOptions {
+    class SecretVersionOptions
+    {
         [Value(0, HelpText = "Project for the secret", Required = true)]
         public string ProjectId { get; set; }
 
@@ -388,7 +390,7 @@ namespace GoogleCloudSamples
             // List all versions and their state.
             foreach (var version in client.ListSecretVersions(request))
             {
-              Console.WriteLine($"Secret version {version.Name}, {version.State}");
+                Console.WriteLine($"Secret version {version.Name}, {version.State}");
             }
         }
         // [END secretmanager_list_secret_versions]
@@ -415,7 +417,7 @@ namespace GoogleCloudSamples
             // List all secrets in the project.
             foreach (var secret in client.ListSecrets(request))
             {
-              Console.WriteLine($"Secret {secret.Name}");
+                Console.WriteLine($"Secret {secret.Name}");
             }
         }
         // [END secretmanager_list_secrets]
@@ -455,33 +457,33 @@ namespace GoogleCloudSamples
         // [END secretmanager_update_secret]
 
 
-    public static void Main(string[] args)
+        public static void Main(string[] args)
         {
-        Parser.Default.ParseArguments(args,
-                typeof(AccessSecretVersionOptions),
-                typeof(AddSecretVersionOptions),
-                typeof(CreateSecretOptions),
-                typeof(DestroySecretVersionOptions),
-                typeof(DeleteSecretOptions),
-                typeof(EnableSecretVersionOptions),
-                typeof(DisableSecretVersionOptions),
-                typeof(GetSecretVersionOptions),
-                typeof(GetSecretOptions),
-                typeof(ListSecretVersionsOptions),
-                typeof(ListSecretsOptions),
-                typeof(UpdateSecretOptions))
-            .WithParsed<AccessSecretVersionOptions>(opts => AccessSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
-            .WithParsed<AddSecretVersionOptions>(opts => AddSecretVersion(opts.ProjectId, opts.SecretId))
-            .WithParsed<CreateSecretOptions>(opts => CreateSecret(opts.ProjectId, opts.SecretId))
-            .WithParsed<DeleteSecretOptions>(opts => DeleteSecret(opts.ProjectId, opts.SecretId))
-            .WithParsed<DestroySecretVersionOptions>(opts => DestroySecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
-            .WithParsed<DisableSecretVersionOptions>(opts => DisableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
-            .WithParsed<EnableSecretVersionOptions>(opts => EnableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
-            .WithParsed<GetSecretVersionOptions>(opts => GetSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
-            .WithParsed<GetSecretOptions>(opts => GetSecret(opts.ProjectId, opts.SecretId))
-            .WithParsed<ListSecretVersionsOptions>(opts => ListSecretVersions(opts.ProjectId, opts.SecretId))
-            .WithParsed<ListSecretsOptions>(opts => ListSecrets(opts.ProjectId))
-            .WithParsed<UpdateSecretOptions>(opts => UpdateSecret(opts.ProjectId, opts.SecretId));
+            Parser.Default.ParseArguments(args,
+                    typeof(AccessSecretVersionOptions),
+                    typeof(AddSecretVersionOptions),
+                    typeof(CreateSecretOptions),
+                    typeof(DestroySecretVersionOptions),
+                    typeof(DeleteSecretOptions),
+                    typeof(EnableSecretVersionOptions),
+                    typeof(DisableSecretVersionOptions),
+                    typeof(GetSecretVersionOptions),
+                    typeof(GetSecretOptions),
+                    typeof(ListSecretVersionsOptions),
+                    typeof(ListSecretsOptions),
+                    typeof(UpdateSecretOptions))
+                .WithParsed<AccessSecretVersionOptions>(opts => AccessSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+                .WithParsed<AddSecretVersionOptions>(opts => AddSecretVersion(opts.ProjectId, opts.SecretId))
+                .WithParsed<CreateSecretOptions>(opts => CreateSecret(opts.ProjectId, opts.SecretId))
+                .WithParsed<DeleteSecretOptions>(opts => DeleteSecret(opts.ProjectId, opts.SecretId))
+                .WithParsed<DestroySecretVersionOptions>(opts => DestroySecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+                .WithParsed<DisableSecretVersionOptions>(opts => DisableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+                .WithParsed<EnableSecretVersionOptions>(opts => EnableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+                .WithParsed<GetSecretVersionOptions>(opts => GetSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+                .WithParsed<GetSecretOptions>(opts => GetSecret(opts.ProjectId, opts.SecretId))
+                .WithParsed<ListSecretVersionsOptions>(opts => ListSecretVersions(opts.ProjectId, opts.SecretId))
+                .WithParsed<ListSecretsOptions>(opts => ListSecrets(opts.ProjectId))
+                .WithParsed<UpdateSecretOptions>(opts => UpdateSecret(opts.ProjectId, opts.SecretId));
         }
     }
 }

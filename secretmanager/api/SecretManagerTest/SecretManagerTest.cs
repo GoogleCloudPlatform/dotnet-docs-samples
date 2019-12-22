@@ -24,7 +24,7 @@ namespace GoogleCloudSamples
     // </summary>
     public class CommonTests
     {
-        private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         readonly CommandLineRunner _secretManager = new CommandLineRunner()
         {
@@ -41,32 +41,32 @@ namespace GoogleCloudSamples
         public void TestCreateAddAccessDelete()
         {
             string secretId = $"csharp-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
-            Run("create", projectId, secretId);
-            Run("add-version", projectId, secretId);
+            Run("create", s_projectId, secretId);
+            Run("add-version", s_projectId, secretId);
 
-            var accessVersionOut = Run("access-version", projectId, secretId, "1");
+            var accessVersionOut = Run("access-version", s_projectId, secretId, "1");
             Assert.Contains("my super secret data", accessVersionOut.Stdout);
 
-            Run("delete", projectId, secretId);
+            Run("delete", s_projectId, secretId);
         }
 
         [Fact]
         public void TestEnableDisableDestroy()
         {
             string secretId = $"csharp-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
-            Run("create", projectId, secretId);
-            Run("add-version", projectId, secretId);
+            Run("create", s_projectId, secretId);
+            Run("add-version", s_projectId, secretId);
 
-            var disableOut = Run("disable-version", projectId, secretId, "1");
+            var disableOut = Run("disable-version", s_projectId, secretId, "1");
             Assert.Contains("Disabled secret version", disableOut.Stdout);
 
-            var enableOut = Run("enable-version", projectId, secretId, "1");
+            var enableOut = Run("enable-version", s_projectId, secretId, "1");
             Assert.Contains("Enabled secret version", enableOut.Stdout);
 
-            var destroyOut = Run("destroy-version", projectId, secretId, "1");
+            var destroyOut = Run("destroy-version", s_projectId, secretId, "1");
             Assert.Contains("Destroyed secret version", destroyOut.Stdout);
 
-            Run("delete", projectId, secretId);
+            Run("delete", s_projectId, secretId);
         }
 
         [Fact]
@@ -78,29 +78,29 @@ namespace GoogleCloudSamples
             string secret3Id = $"csharp-list-{ts}-3";
 
 
-            Run("create", projectId, secret1Id);
-            Run("create", projectId, secret2Id);
-            Run("create", projectId, secret3Id);
+            Run("create", s_projectId, secret1Id);
+            Run("create", s_projectId, secret2Id);
+            Run("create", s_projectId, secret3Id);
 
-            Run("add-version", projectId, secret1Id);
-            Run("add-version", projectId, secret1Id);
-            Run("add-version", projectId, secret1Id);
+            Run("add-version", s_projectId, secret1Id);
+            Run("add-version", s_projectId, secret1Id);
+            Run("add-version", s_projectId, secret1Id);
 
-            var secretsOut = Run("list", projectId);
+            var secretsOut = Run("list", s_projectId);
             Assert.Contains($"{ts}", secretsOut.Stdout);
 
-            var versionsOut = Run("list-versions", projectId, secret1Id);
+            var versionsOut = Run("list-versions", s_projectId, secret1Id);
             Assert.Contains($"{secret1Id}/versions/1", versionsOut.Stdout);
 
-            Run("delete", projectId, secret1Id);
-            Run("delete", projectId, secret2Id);
-            Run("delete", projectId, secret3Id);
+            Run("delete", s_projectId, secret1Id);
+            Run("delete", s_projectId, secret2Id);
+            Run("delete", s_projectId, secret3Id);
         }
     }
 
     public class QuickStartTests
     {
-        private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         readonly CommandLineRunner _quickStart = new CommandLineRunner()
         {
@@ -119,7 +119,7 @@ namespace GoogleCloudSamples
         {
             string ts = $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
             string secret1Id = $"csharp-quickstart-{ts}-1";
-            _secretManager.Run("create", projectId, secret1Id);
+            _secretManager.Run("create", s_projectId, secret1Id);
 
             var output = _quickStart.Run();
             Assert.Equal(0, output.ExitCode);

@@ -35,8 +35,9 @@ namespace GoogleCloudSamples
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
             // Create the list secrets request.
-            var request = new ListSecretsRequest{
-              ParentAsProjectName = new ProjectName(projectId),
+            var request = new ListSecretsRequest
+            {
+                ParentAsProjectName = new ProjectName(projectId),
             };
 
             // List secrets in the project.
