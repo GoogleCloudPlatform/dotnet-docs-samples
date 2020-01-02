@@ -19,10 +19,10 @@ using System.Linq;
 
 namespace GoogleCloudSamples
 {
-    // <summary>
+    /// <summary>
     /// Runs the sample app's methods and tests the outputs
-    // </summary>
-    public class CommonTests
+    /// </summary>
+    public class SampleTests
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
@@ -35,6 +35,14 @@ namespace GoogleCloudSamples
         protected ConsoleOutput Run(params string[] args)
         {
             return _secretManager.Run(args);
+        }
+
+        public SampleTests()
+        {
+            if (s_projectId == null || s_projectId == "")
+            {
+                throw new Exception("missing GOOGLE_PROJECT_ID");
+            }
         }
 
         [Fact]
@@ -113,6 +121,14 @@ namespace GoogleCloudSamples
             VoidMain = SecretManagerSample.Main,
             Command = "SecretManagerSample"
         };
+
+        public QuickStartTests()
+        {
+            if (s_projectId == null || s_projectId == "")
+            {
+                throw new Exception("missing GOOGLE_PROJECT_ID");
+            }
+        }
 
         [Fact]
         public void TestRun()
