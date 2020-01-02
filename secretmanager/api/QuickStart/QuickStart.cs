@@ -20,7 +20,7 @@ using System;
 using System.Linq;
 using Google.Api.Gax.ResourceNames;
 // Imports the Secret Manager client library
-using Google.Cloud.Secrets.V1Beta1;
+using Google.Cloud.SecretManager.V1Beta1;
 
 namespace GoogleCloudSamples
 {
