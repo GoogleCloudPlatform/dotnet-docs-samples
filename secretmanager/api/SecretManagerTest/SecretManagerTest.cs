@@ -17,6 +17,9 @@ using Xunit;
 using System;
 using System.Linq;
 
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.SecretManager.V1Beta1;
+
 namespace GoogleCloudSamples
 {
     /// <summary>
@@ -116,11 +119,10 @@ namespace GoogleCloudSamples
             Command = "QuickStart"
         };
 
-        readonly CommandLineRunner _secretManager = new CommandLineRunner()
+        protected ConsoleOutput Run(params string[] args)
         {
-            VoidMain = SecretManagerSample.Main,
-            Command = "SecretManagerSample"
-        };
+            return _quickStart.Run(args);
+        }
 
         public QuickStartTests()
         {
@@ -134,12 +136,34 @@ namespace GoogleCloudSamples
         public void TestRun()
         {
             string ts = $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
-            string secret1Id = $"csharp-quickstart-{ts}-1";
-            _secretManager.Run("create", s_projectId, secret1Id);
+            string secretId = $"csharp-quickstart-{ts}-1";
 
+            SecretManagerServiceClient client = SecretManagerServiceClient.Create();
+
+            // Create the secret
+            var secret = client.CreateSecret(new CreateSecretRequest
+            {
+                ParentAsProjectName = new ProjectName(s_projectId),
+                SecretId = secretId,
+                Secret = new Secret
+                {
+                    Replication = new Replication
+                    {
+                        Automatic = new Replication.Types.Automatic(),
+                    },
+                },
+            });
+
+            // Verify output
             var output = _quickStart.Run();
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("secrets/", output.Stdout);
+
+            // Delete the secret
+            client.DeleteSecret(new DeleteSecretRequest
+            {
+                SecretName = new SecretName(s_projectId, secretId),
+            });
         }
     }
 }
