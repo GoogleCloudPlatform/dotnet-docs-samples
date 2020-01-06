@@ -37,19 +37,5 @@ _fixture.ProjectId, _modelId, filePath);
 
             Assert.Contains("Predicted class name:", output.Stdout);
         }
-
-        [Fact]
-        public void TestVisionBatchPredict()
-        {
-            string inputUri = $"gs://{_bucketId}/batch_predict_test.csv";
-            string outputUri = $"gs://{_fixture.Bucket.Name}/TEST_BATCH_PREDICT/";
-
-            // Act
-            ConsoleOutput output = _fixture.SampleRunner.Run("vision_batch_predict",
-_fixture.ProjectId, _modelId, inputUri, outputUri);
-
-            // Assert
-            Assert.Contains("Batch Prediction results saved to specified Cloud Storage bucket", output.Stdout);
-        }
     }
 }

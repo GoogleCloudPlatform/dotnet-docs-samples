@@ -32,7 +32,7 @@ _fixture.ProjectId, _modelId, text);
             string outputUri = $"gs://{_fixture.Bucket.Name}/TEST_BATCH_PREDICT/";
 
             // Act
-            ConsoleOutput output = _fixture.SampleRunner.Run("language_batch_predict",
+            ConsoleOutput output = _fixture.SampleRunner.Run("batch_predict",
 _fixture.ProjectId, _modelId, inputUri, outputUri);
 
             // Assert
