@@ -74,11 +74,7 @@ namespace GoogleCloudSamples
             {
                 Name = modelFullId,
                 InputConfig = inputConfig,
-                OutputConfig = outputConfig,
-                Params =
-                {
-                    { "score_threshold" , "0.8" } // [0.0-1.0] Only produce results higher than this value
-                }
+                OutputConfig = outputConfig
             };
 
             var result = Task.Run(() => client.BatchPredictAsync(request)).Result;
