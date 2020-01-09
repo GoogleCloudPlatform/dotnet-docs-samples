@@ -109,6 +109,9 @@ namespace GoogleCloudSamples
         }
     }
 
+    /// <summary>
+    /// Runs the quickstart and tests behavior
+    /// </summary>
     public class QuickStartTests
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -138,28 +141,16 @@ namespace GoogleCloudSamples
             string ts = $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
             string secretId = $"csharp-quickstart-{ts}-1";
 
-            SecretManagerServiceClient client = SecretManagerServiceClient.Create();
-
-            // Create the secret
-            var secret = client.CreateSecret(new CreateSecretRequest
-            {
-                ParentAsProjectName = new ProjectName(s_projectId),
-                SecretId = secretId,
-                Secret = new Secret
-                {
-                    Replication = new Replication
-                    {
-                        Automatic = new Replication.Types.Automatic(),
-                    },
-                },
-            });
+            // Run quickstart
+            var output = _quickStart.Run(s_projectId, secretId);
 
             // Verify output
-            var output = _quickStart.Run();
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("secrets/", output.Stdout);
+            Assert.Contains($"Plaintext: my super secret data", output.Stdout);
 
-            // Delete the secret
+            // Delete the secret created by quickstart
+            SecretManagerServiceClient client = SecretManagerServiceClient.Create();
+
             client.DeleteSecret(new DeleteSecretRequest
             {
                 SecretName = new SecretName(s_projectId, secretId),

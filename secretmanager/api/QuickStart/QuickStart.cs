@@ -18,7 +18,10 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using Google.Api.Gax.ResourceNames;
+using Google.Protobuf;
+
 // Imports the Secret Manager client library
 using Google.Cloud.SecretManager.V1Beta1;
 
@@ -28,23 +31,61 @@ namespace GoogleCloudSamples
     {
         public static void Main(string[] args)
         {
-            // Your Google Cloud Platform project ID.
+            // GCP project in which to store secrets in Secret Manager.
             string projectId = "YOUR-PROJECT-ID";
 
-            // Instantiate a Secret Manager client.
+            // ID of the secret to create.
+            string secretId = "YOUR-SECRET-ID";
+
+            // [END secretmanager_quickstart]
+            projectId = args[0];
+            secretId = args[1];
+            // [START secretmanager_quickstart]
+            // Create a Secret Manager client.
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
-            // Create the list secrets request.
-            var request = new ListSecretsRequest
+            // Create the parent secret.
+            var createSecretRequest = new CreateSecretRequest
             {
                 ParentAsProjectName = new ProjectName(projectId),
+                SecretId = secretId,
+                Secret = new Secret
+                {
+                    Replication = new Replication
+                    {
+                        Automatic = new Replication.Types.Automatic(),
+                    },
+                },
             };
 
-            // List secrets in the project.
-            foreach (var secret in client.ListSecrets(request))
+            var secret = client.CreateSecret(createSecretRequest);
+
+            // Add a secret version.
+            var addSecretVersionRequest = new AddSecretVersionRequest
             {
-                Console.WriteLine(secret.Name);
-            }
+                ParentAsSecretName = secret.SecretName,
+                Payload = new SecretPayload
+                {
+                    Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
+                },
+            };
+
+            var version = client.AddSecretVersion(addSecretVersionRequest);
+
+            // Access the secret version.
+            var accessSecretVersionRequest = new AccessSecretVersionRequest
+            {
+                SecretVersionName = version.SecretVersionName,
+            };
+
+            var result = client.AccessSecretVersion(accessSecretVersionRequest);
+
+            // Print the results
+            //
+            // WARNING: Do not print secrets in production environments. This
+            // snippet is for demonstration purposes only.
+            string payload = result.Payload.Data.ToStringUtf8();
+            Console.WriteLine($"Plaintext: {payload}");
         }
     }
 }

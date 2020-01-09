@@ -13,11 +13,5 @@
 # the License.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
-$filesToProcess = "..\QuickStart\QuickStart.cs"
-
-BackupAndEdit-TextFile $filesToProcess `
-    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{
-    dotnet restore
-    dotnet test --test-adapter-path:. --logger:junit
-}
+dotnet restore
+dotnet test --test-adapter-path:. --logger:junit
