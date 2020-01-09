@@ -31,7 +31,7 @@ namespace GoogleCloudSamples
         public void TestPredict()
         {
             string text = "Hopefully this Claritin kicks in soon";
-            ConsoleOutput output = _fixture.SampleRunner.Run("language_entity_extraction_predict",
+            ConsoleOutput output = _fixture.SampleRunner.Run("language_sentiment_analysis_predict",
 _fixture.ProjectId, _modelId, text);
 
             Assert.Contains("Predicted sentiment score:", output.Stdout);
