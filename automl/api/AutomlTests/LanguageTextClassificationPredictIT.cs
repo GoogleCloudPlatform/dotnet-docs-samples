@@ -31,7 +31,7 @@ namespace GoogleCloudSamples
         public void TestPredict()
         {
             string text = "Fruit and nut flavour";
-            ConsoleOutput output = _fixture.SampleRunner.Run("language_entity_extraction_predict",
+            ConsoleOutput output = _fixture.SampleRunner.Run("language_text_classification_predict",
 _fixture.ProjectId, _modelId, text);
 
             Assert.Contains("Predicted class name:", output.Stdout);
