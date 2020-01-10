@@ -6,6 +6,6 @@
     <StartupObject>GoogleCloudSamples.QuickStart</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.CloudTalentSolution.v3" Version="1.42.0.1804" />
+    <PackageReference Include="Google.Apis.CloudTalentSolution.v3" Version="1.43.0.1811" />
   </ItemGroup>
 </Project>
