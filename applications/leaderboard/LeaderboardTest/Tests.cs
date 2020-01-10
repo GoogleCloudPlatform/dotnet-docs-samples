@@ -82,7 +82,7 @@ namespace GoogleCloudSamples.Leaderboard
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/928")]
         void TestLeaderboard()
         {
             // Insert Player records.
