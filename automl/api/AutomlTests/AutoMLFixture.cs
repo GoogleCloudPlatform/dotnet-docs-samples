@@ -25,6 +25,7 @@ namespace GoogleCloudSamples
         private readonly StorageClient _client;
         public readonly string ProjectId;
         public readonly Bucket Bucket;
+        public readonly string DatasetName;
 
         public CommandLineRunner SampleRunner { get; } = new CommandLineRunner()
         {
@@ -38,6 +39,9 @@ namespace GoogleCloudSamples
             string BucketName = "automl-bucket-" + TestUtil.RandomName();
             Bucket bucket = new Bucket { Location = "us-central1", Name = BucketName };
             Bucket = _client.CreateBucket(ProjectId, bucket);
+
+            DatasetName = "test_dataset_" + TestUtil.RandomName();
+            DatasetName = DatasetName.Substring(0, 32);
         }
 
         public void Dispose()

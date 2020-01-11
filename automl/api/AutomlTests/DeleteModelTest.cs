@@ -15,40 +15,38 @@
 using Grpc.Core;
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
     [Collection(nameof(AutoMLFixture))]
-    public class VisionObjectDetectionDeployModelNodeCountTest
+    public class DeleteModelTest
     {
         private readonly AutoMLFixture _fixture;
-        private readonly string _modelId = "IOD0000000000000000000";
-        public VisionObjectDetectionDeployModelNodeCountTest(AutoMLFixture fixture)
+        public DeleteModelTest(AutoMLFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Fact]
-        public void TestDeployModelWithNodeCount()
+        public void TestDeleteModel()
         {
-            // As model deployment can take a long time, instead try to deploy a
+            // As model creation can take many hours, instead try to delete a
             // nonexistent model and confirm that the model was not found, but other
             // elements of the request were valid.
-
-            /* TODO: FIX --> throwing Internal Error that I do not know of.
             try
             {
-                ConsoleOutput output = _fixture.SampleRunner.Run("vision_object_detection_deploy_model_node_count", _fixture.ProjectId, _modelId);
-                Assert.Contains("The model does not exist", output.Stdout);
+                _fixture.SampleRunner.Run("delete_model",
+                                   _fixture.ProjectId,
+                                   "TRL0000000000000000000");
             }
             catch (Exception ex) when (ex is ThreadInterruptedException ||
-                 ex is IOException || ex is RpcException || ex is AggregateException)
+                   ex is IOException || ex is RpcException)
             {
                 Assert.Contains("The model does not exist", ex.Message);
             }
-            */
         }
     }
 }
