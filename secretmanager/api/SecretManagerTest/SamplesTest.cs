@@ -15,19 +15,24 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Xunit;
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1Beta1;
+using Google.Protobuf;
 
 namespace GoogleCloudSamples
 {
     /// <summary>
     /// Runs the sample app's methods and tests the outputs
     /// </summary>
-    public class SampleTests
+    public class SampleTests : IClassFixture<SecretsFixture>
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private static readonly SecretManagerServiceClient s_client = SecretManagerServiceClient.Create();
+
+        protected SecretsFixture secretsFixture;
 
         readonly CommandLineRunner _secretManager = new CommandLineRunner()
         {
@@ -40,72 +45,142 @@ namespace GoogleCloudSamples
             return _secretManager.Run(args);
         }
 
-        public SampleTests()
+        public SampleTests(SecretsFixture secretsFixture)
         {
             if (String.IsNullOrEmpty(s_projectId))
             {
                 throw new Exception("missing GOOGLE_PROJECT_ID");
             }
+
+            this.secretsFixture = secretsFixture;
         }
 
         [Fact]
-        public void TestCreateAddAccessDelete()
+        public void TestAccessSecretVersion()
         {
-            string secretId = $"csharp-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
-            Run("create", s_projectId, secretId);
-            Run("add-version", s_projectId, secretId);
-
-            var accessVersionOut = Run("access-version", s_projectId, secretId, "1");
-            Assert.Contains("my super secret data", accessVersionOut.Stdout);
-
-            Run("delete", s_projectId, secretId);
+            var name = secretsFixture.SecretVersion.SecretVersionName;
+            var output = Run("access-version", name.ProjectId, name.SecretId, name.SecretVersionId);
+            Assert.Contains("my super secret data", output.Stdout);
         }
 
         [Fact]
-        public void TestEnableDisableDestroy()
+        public void TestAddSecretVersion()
         {
-            string secretId = $"csharp-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
-            Run("create", s_projectId, secretId);
-            Run("add-version", s_projectId, secretId);
-
-            var disableOut = Run("disable-version", s_projectId, secretId, "1");
-            Assert.Contains("Disabled secret version", disableOut.Stdout);
-
-            var enableOut = Run("enable-version", s_projectId, secretId, "1");
-            Assert.Contains("Enabled secret version", enableOut.Stdout);
-
-            var destroyOut = Run("destroy-version", s_projectId, secretId, "1");
-            Assert.Contains("Destroyed secret version", destroyOut.Stdout);
-
-            Run("delete", s_projectId, secretId);
+            var name = secretsFixture.SecretWithVersions.SecretName;
+            var output = Run("add-version", name.ProjectId, name.SecretId);
+            Assert.Contains("Added secret version", output.Stdout);
         }
 
         [Fact]
-        public void TestList()
+        public void TestCreateSecret()
         {
-            string ts = $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
-            string secret1Id = $"csharp-list-{ts}-1";
-            string secret2Id = $"csharp-list-{ts}-2";
-            string secret3Id = $"csharp-list-{ts}-3";
+            var name = secretsFixture.SecretToCreateName;
+            var output = Run("create", name.ProjectId, name.SecretId);
+            Assert.Contains("Created secret", output.Stdout);
 
+            var secret = s_client.GetSecret(new GetSecretRequest
+            {
+                SecretName = name
+            });
+            Assert.Equal(name.SecretId, secret.SecretName.SecretId);
+        }
 
-            Run("create", s_projectId, secret1Id);
-            Run("create", s_projectId, secret2Id);
-            Run("create", s_projectId, secret3Id);
+        [Fact]
+        public void TestDeleteSecret()
+        {
+            var name = secretsFixture.SecretToDelete.SecretName;
+            var output = Run("delete", name.ProjectId, name.SecretId);
+            Assert.Contains($"Deleted secret {name.SecretId}", output.Stdout);
 
-            Run("add-version", s_projectId, secret1Id);
-            Run("add-version", s_projectId, secret1Id);
-            Run("add-version", s_projectId, secret1Id);
+            Assert.Throws<Grpc.Core.RpcException>(() =>
+            {
+                s_client.GetSecret(new GetSecretRequest { SecretName = name });
+            });
+        }
 
-            var secretsOut = Run("list", s_projectId);
-            Assert.Contains($"{ts}", secretsOut.Stdout);
+        [Fact]
+        public void TestDestroySecretVersion()
+        {
+            var name = secretsFixture.SecretVersionToDestroy.SecretVersionName;
+            var output = Run("destroy-version", name.ProjectId, name.SecretId, name.SecretVersionId);
+            Assert.Contains($"Destroyed secret version {name}", output.Stdout);
 
-            var versionsOut = Run("list-versions", s_projectId, secret1Id);
-            Assert.Contains($"{secret1Id}/versions/1", versionsOut.Stdout);
+            var version = s_client.GetSecretVersion(new GetSecretVersionRequest
+            {
+                SecretVersionName = name
+            });
+            Assert.Equal(SecretVersion.Types.State.Destroyed, version.State);
+        }
 
-            Run("delete", s_projectId, secret1Id);
-            Run("delete", s_projectId, secret2Id);
-            Run("delete", s_projectId, secret3Id);
+        [Fact]
+        public void TestDisableSecretVersion()
+        {
+            var name = secretsFixture.SecretVersionToDisable.SecretVersionName;
+            var disableOut = Run("disable-version", name.ProjectId, name.SecretId, name.SecretVersionId);
+            Assert.Contains($"Disabled secret version {name}", disableOut.Stdout);
+
+            var version = s_client.GetSecretVersion(new GetSecretVersionRequest
+            {
+                SecretVersionName = name
+            });
+            Assert.Equal(SecretVersion.Types.State.Disabled, version.State);
+        }
+
+        [Fact]
+        public void TestEnableSecretVersion()
+        {
+            var name = secretsFixture.SecretVersionToEnable.SecretVersionName;
+            var enableOut = Run("enable-version", name.ProjectId, name.SecretId, name.SecretVersionId);
+            Assert.Contains($"Enabled secret version {name}", enableOut.Stdout);
+
+            var version = s_client.GetSecretVersion(new GetSecretVersionRequest
+            {
+                SecretVersionName = name
+            });
+            Assert.Equal(SecretVersion.Types.State.Enabled, version.State);
+        }
+
+        [Fact]
+        public void TestGetSecretVersion()
+        {
+            var name = secretsFixture.SecretVersion.SecretVersionName;
+            var output = Run("get-version", name.ProjectId, name.SecretId, name.SecretVersionId);
+            Assert.Contains($"Secret version {name}, state Enabled", output.Stdout);
+        }
+
+        [Fact]
+        public void TestGetSecret()
+        {
+            var name = secretsFixture.Secret.SecretName;
+            var output = Run("get", name.ProjectId, name.SecretId);
+            Assert.Contains($"Secret {name}, replication Automatic", output.Stdout);
+        }
+
+        [Fact]
+        public void TestListSecretVersions()
+        {
+            var name = secretsFixture.SecretWithVersions.SecretName;
+            var output = Run("list-versions", name.ProjectId, name.SecretId);
+            Assert.Contains($"Secret version", output.Stdout);
+        }
+
+        [Fact]
+        public void TestListSecrets()
+        {
+            var name = secretsFixture.Secret.SecretName;
+            var output = Run("list", name.ProjectId);
+            Assert.Contains($"Secret {name}", output.Stdout);
+        }
+
+        [Fact]
+        public void TestUpdateSecret()
+        {
+            var name = secretsFixture.Secret.SecretName;
+            var output = Run("update", name.ProjectId, name.SecretId);
+            Assert.Contains($"Updated secret {name}", output.Stdout);
+
+            var secret = s_client.GetSecret(new GetSecretRequest { SecretName = name });
+            Assert.Equal("rocks", secret.Labels["secretmanager"]);
         }
     }
 }
