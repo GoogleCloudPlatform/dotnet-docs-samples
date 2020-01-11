@@ -17,24 +17,28 @@ using Xunit;
 namespace GoogleCloudSamples
 {
     [Collection(nameof(AutoMLFixture))]
-    public class LanguageTextClassificationPredictIT
+    public class LanguageSentimentAnalysisCreateDatasetTest
     {
         private readonly AutoMLFixture _fixture;
-        private readonly string _modelId;
-        public LanguageTextClassificationPredictIT(AutoMLFixture fixture)
+        public LanguageSentimentAnalysisCreateDatasetTest(AutoMLFixture fixture)
         {
             _fixture = fixture;
-            _modelId = "TCN6081675890159255552";
         }
 
         [Fact]
-        public void TestPredict()
+        public void TestCreateDataset()
         {
-            string text = "Fruit and nut flavour";
-            ConsoleOutput output = _fixture.SampleRunner.Run("language_text_classification_predict",
-_fixture.ProjectId, _modelId, text);
+            //// create dataset
+            //ConsoleOutput output = _fixture.SampleRunner.Run("create_dataset_language_sentiment_analysis",
+            //_fixture.ProjectId, _fixture.DatasetName);
 
-            Assert.Contains("Predicted class name:", output.Stdout);
+            //string datasetId = output.Stdout.Split("\n")[1].Split()[2];
+
+            //// delete dataset
+            //output = _fixture.SampleRunner.Run("delete_dataset",
+            //_fixture.ProjectId, datasetId);
+
+            //Assert.Contains("Dataset deleted", output.Stdout);
         }
     }
 }

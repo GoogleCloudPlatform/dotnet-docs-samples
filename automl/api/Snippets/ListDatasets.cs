@@ -47,8 +47,7 @@ namespace GoogleCloudSamples
             string projectLocation = LocationName.Format(projectId, "us-central1");
             ListDatasetsRequest request = new ListDatasetsRequest
             {
-                Parent = projectLocation,
-                Filter = "translation_dataset_metadata:*"
+                Parent = projectLocation
             };
 
             // List all the datasets available in the region by applying filter.
@@ -88,10 +87,13 @@ namespace GoogleCloudSamples
 
                 // [START automl_translate_list_datasets]
                 Console.WriteLine("Translation dataset metadata:");
-                Console.WriteLine(
-                    $"\tSource language code: {dataset.TranslationDatasetMetadata.SourceLanguageCode}");
-                Console.WriteLine(
-                    $"\tTarget language code: {dataset.TranslationDatasetMetadata.TargetLanguageCode}");
+
+                //TODO: throwing null pointer reference!.
+
+                //Console.WriteLine(
+                //    $"\tSource language code: {dataset.TranslationDatasetMetadata.SourceLanguageCode}");
+                //Console.WriteLine(
+                //    $"\tTarget language code: {dataset.TranslationDatasetMetadata.TargetLanguageCode}");
                 // [END automl_translate_list_datasets]
 
                 // [START automl_vision_classification_list_datasets]

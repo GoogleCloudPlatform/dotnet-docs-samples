@@ -45,7 +45,7 @@ namespace GoogleCloudSamples
             // Set model metadata.
             ImageClassificationModelMetadata metadata = new ImageClassificationModelMetadata
             {
-                TrainBudgetMilliNodeHours = 8
+                TrainBudgetMilliNodeHours = 24000
             };
             Model model = new Model
             {
