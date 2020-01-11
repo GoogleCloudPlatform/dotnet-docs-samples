@@ -38,8 +38,10 @@ namespace GoogleCloudSamples
             string secretId = "YOUR-SECRET-ID";
 
             // [END secretmanager_quickstart]
-            projectId = args[0];
-            secretId = args[1];
+            if (args.Length > 1) {
+              projectId = args[0];
+              secretId = args[1];
+            }
             // [START secretmanager_quickstart]
             // Create a Secret Manager client.
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
