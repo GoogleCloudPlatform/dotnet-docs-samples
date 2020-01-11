@@ -15,16 +15,20 @@ This sample requires [.NET Core 2.1](
     to visit Cloud Platform Console and enable the Secret Manager API.
 
 1.  Edit [QuickStart.cs](QuickStart/QuickStart.cs), and replace
-    `YOUR-PROJECT-ID` with the id of the project you created in step 1.
+    `YOUR-PROJECT-ID` with the id of the project you created in step 1 and
+    `YOUR-SECRET-ID` with a name for your secret.
 
 1.  From a command line with `dotnet` available:
 
     ```text
     PS C:\...\dotnet-docs-samples\secretmanager\api\QuickStart> dotnet restore
     PS C:\...\dotnet-docs-samples\secretmanager\api\QuickStart> dotnet run
-    Secrets:
-    projects/your-project-number/secrets/my-secret1
-    projects/your-project-number/secrets/my-secret2
+    ```
+
+    The output will look like:
+
+    ```text
+    Plaintext: my super secret data
     ```
 
 
