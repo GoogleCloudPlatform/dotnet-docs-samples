@@ -21,7 +21,11 @@ This sample requires [.NET Core 3.0](
     ```text
     PS C:\...\dotnet-docs-samples\secretmanager\api\SecretManagerSample> dotnet restore
     PS C:\...\dotnet-docs-samples\secretmanager\api\SecretManagerSample> dotnet run
+    ```
 
+    The output will look like:
+
+    ```text
     No verb selected.
 
       access-version     Access the provided secret version
