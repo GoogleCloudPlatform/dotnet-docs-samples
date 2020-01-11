@@ -26,8 +26,8 @@ using Google.Cloud.Iam.V1;
 using Google.Cloud.SecretManager.V1Beta1;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GoogleCloudSamples
 {
