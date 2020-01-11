@@ -12,11 +12,11 @@ This sample requires [.NET Core 3.0](
 
 1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
-4.  Enable APIs for your project.
+1.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=secretmanager.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Secret Manager API.
 
-10. Run the SecretManagerSample to see a list of subcommands:
+1. Run the SecretManagerSample to see a list of subcommands:
 
     ```text
     PS C:\...\dotnet-docs-samples\secretmanager\api\SecretManagerSample> dotnet restore
