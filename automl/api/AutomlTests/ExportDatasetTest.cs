@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,34 +21,32 @@ using Xunit;
 namespace GoogleCloudSamples
 {
     [Collection(nameof(AutoMLFixture))]
-    public class VisionObjectDetectionDeployModelNodeCountTest
+    public class ExportDatasetTest
     {
         private readonly AutoMLFixture _fixture;
-        private readonly string _modelId = "IOD0000000000000000000";
-        public VisionObjectDetectionDeployModelNodeCountTest(AutoMLFixture fixture)
+        private readonly string _datasetId;
+        public ExportDatasetTest(AutoMLFixture fixture)
         {
             _fixture = fixture;
+            _datasetId = "TEN0000000000000000000";
         }
 
         [Fact]
-        public void TestDeployModelWithNodeCount()
+        public void TestExportDataset()
         {
-            // As model deployment can take a long time, instead try to deploy a
-            // nonexistent model and confirm that the model was not found, but other
-            // elements of the request were valid.
-
-            /* TODO: FIX --> throwing Internal Error that I do not know of.
             try
             {
-                ConsoleOutput output = _fixture.SampleRunner.Run("vision_object_detection_deploy_model_node_count", _fixture.ProjectId, _modelId);
-                Assert.Contains("The model does not exist", output.Stdout);
+                // export dataset
+                ConsoleOutput output = _fixture.SampleRunner.Run("export_dataset", _fixture.ProjectId, _datasetId,
+                  $"gs://{ _fixture.Bucket.Name}/TEST_EXPORT_OUTPUT/");
+
+                Assert.Contains("The Dataset doesn't exist or is inaccessible for use with AutoMl.", output.Stdout);
             }
             catch (Exception ex) when (ex is ThreadInterruptedException ||
-                 ex is IOException || ex is RpcException || ex is AggregateException)
+   ex is IOException || ex is RpcException || ex is AggregateException)
             {
-                Assert.Contains("The model does not exist", ex.Message);
+                Assert.Contains("The Dataset doesn't exist or is inaccessible for use with AutoMl.", ex.Message);
             }
-            */
         }
     }
 }

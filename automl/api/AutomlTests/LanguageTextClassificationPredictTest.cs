@@ -17,24 +17,24 @@ using Xunit;
 namespace GoogleCloudSamples
 {
     [Collection(nameof(AutoMLFixture))]
-    public class LanguageSentimentAnalysisPredictIT
+    public class LanguageTextClassificationPredictTest
     {
         private readonly AutoMLFixture _fixture;
         private readonly string _modelId;
-        public LanguageSentimentAnalysisPredictIT(AutoMLFixture fixture)
+        public LanguageTextClassificationPredictTest(AutoMLFixture fixture)
         {
             _fixture = fixture;
-            _modelId = "TST3802432266244718592";
+            _modelId = "TCN6081675890159255552";
         }
 
         [Fact]
         public void TestPredict()
         {
-            string text = "Hopefully this Claritin kicks in soon";
-            ConsoleOutput output = _fixture.SampleRunner.Run("language_sentiment_analysis_predict",
+            string text = "Fruit and nut flavour";
+            ConsoleOutput output = _fixture.SampleRunner.Run("language_text_classification_predict",
 _fixture.ProjectId, _modelId, text);
 
-            Assert.Contains("Predicted sentiment score:", output.Stdout);
+            Assert.Contains("Predicted class name:", output.Stdout);
         }
     }
 }
