@@ -378,9 +378,6 @@ namespace GoogleCloudSamples
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
-            Console.WriteLine($"projectId: ${projectId}");
-            Console.WriteLine($"secretId: ${secretId}");
-
             // Create the request.
             var request = new ListSecretVersionsRequest
             {
