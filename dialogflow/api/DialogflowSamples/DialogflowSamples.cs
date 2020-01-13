@@ -24,6 +24,7 @@ namespace GoogleCloudSamples
             var verbMap = new VerbMap<object>();
 
             DetectIntentTexts.RegisterCommands(verbMap);
+            DetectIntentStream.RegisterCommands(verbMap);
             ContextManagement.RegisterCommands(verbMap);
             IntentManagement.RegisterCommands(verbMap);
             EntityManagement.RegisterCommands(verbMap);
