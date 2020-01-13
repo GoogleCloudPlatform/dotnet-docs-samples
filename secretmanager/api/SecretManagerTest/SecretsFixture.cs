@@ -30,7 +30,7 @@ namespace GoogleCloudSamples
     public class SecretsFixture : IDisposable
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private static readonly SecretManagerServiceClient s_client = SecretManagerServiceClient.Create();
+        private readonly SecretManagerServiceClient _client = SecretManagerServiceClient.Create();
 
         public Secret Secret { get; private set; }
         public Secret SecretToDelete { get; private set; }
@@ -88,7 +88,7 @@ namespace GoogleCloudSamples
                     },
                 },
             };
-            return s_client.CreateSecret(request);
+            return _client.CreateSecret(request);
         }
 
         private SecretVersion AddSecretVersion(Secret secret)
@@ -104,14 +104,14 @@ namespace GoogleCloudSamples
                 },
             };
 
-            return s_client.AddSecretVersion(request);
+            return _client.AddSecretVersion(request);
         }
 
         private void DeleteSecret(SecretName name)
         {
             try
             {
-                s_client.DeleteSecret(new DeleteSecretRequest
+                _client.DeleteSecret(new DeleteSecretRequest
                 {
                     SecretName = name
                 });
@@ -124,7 +124,7 @@ namespace GoogleCloudSamples
 
         private void DisableSecretVersion(SecretVersion version)
         {
-            s_client.DisableSecretVersion(new DisableSecretVersionRequest
+            _client.DisableSecretVersion(new DisableSecretVersionRequest
             {
                 SecretVersionName = version.SecretVersionName,
             });
