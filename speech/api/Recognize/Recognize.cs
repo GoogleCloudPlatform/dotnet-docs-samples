@@ -686,7 +686,7 @@ namespace GoogleCloudSamples
                     SyncRecognizeEnhancedModel(opts.FilePath) : (opts.NumberOfChannels > 1) ?
                     SyncRecognizeMultipleChannels(opts.FilePath, opts.NumberOfChannels) : (opts.NumberOfSpeakers > 1) ?
                     SyncRecognizeMultipleSpeakers(opts.FilePath, opts.NumberOfSpeakers) : opts.UseRecognitionMetadata ?
-                    SyncRecognizeRecognitionMetadata(opts.FilePath) : (opts.FilePath),
+                    SyncRecognizeRecognitionMetadata(opts.FilePath) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
                     : AsyncRecognizeGcs(opts.FilePath))
