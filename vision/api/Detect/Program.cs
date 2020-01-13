@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using Google.Protobuf;
+using Google.Api.Gax.Grpc;
 
 namespace GoogleCloudSamples
 {
@@ -48,7 +49,11 @@ namespace GoogleCloudSamples
     class DetectLandmarksOptions : ImageOptions { }
 
     [Verb("text", HelpText = "Detect text.")]
-    class DetectTextOptions : ImageOptions { }
+    class DetectTextOptions : ImageOptions
+    {
+        [Option('m', HelpText = "Uses multi-region endpoint")]
+        public bool EnableMultiRegion { get; set; }
+    }
 
     [Verb("logos", HelpText = "Detect logos.")]
     class DetectLogosOptions : ImageOptions { }
@@ -251,6 +256,23 @@ namespace GoogleCloudSamples
             return 0;
         }
 
+        private static object DetectTextWithLocation(Image image)
+        {
+            // [START vision_set_endpoint]
+            // Instantiate a client connected to the 'eu' location.
+            var client = new ImageAnnotatorClientBuilder
+            {
+                Endpoint = new ServiceEndpoint("eu-vision.googleapis.com")
+            }.Build();
+            // [END vision_set_endpoint]
+            var response = client.DetectText(image);
+            foreach (var annotation in response)
+            {
+                if (annotation.Description != null)
+                    Console.WriteLine(annotation.Description);
+            }
+            return 0;
+        }
 
         private static object DetectLogos(Image image)
         {
@@ -472,7 +494,9 @@ namespace GoogleCloudSamples
                 (DetectPropertiesOptions opts) => DetectProperties(ImageFromArg(opts.FilePath)),
                 (DetectFacesOptions opts) => DetectFaces(ImageFromArg(opts.FilePath)),
                 (DetectLandmarksOptions opts) => DetectLandmarks(ImageFromArg(opts.FilePath)),
-                (DetectTextOptions opts) => DetectText(ImageFromArg(opts.FilePath)),
+                (DetectTextOptions opts) => opts.EnableMultiRegion ?
+                    DetectTextWithLocation(ImageFromArg(opts.FilePath))
+                    : DetectText(ImageFromArg(opts.FilePath)),
                 (DetectLogosOptions opts) => DetectLogos(ImageFromArg(opts.FilePath)),
                 (DetectCropHintOptions opts) => DetectCropHint(ImageFromArg(opts.FilePath)),
                 (DetectWebOptions opts) => DetectWeb(ImageFromArg(opts.FilePath)),

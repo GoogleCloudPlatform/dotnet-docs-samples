@@ -15,6 +15,7 @@
 // [START translate_v3_batch_translate_text]
 
 using System;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Translate.V3;
 
 namespace GoogleCloudSamples

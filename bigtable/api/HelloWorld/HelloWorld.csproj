@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Bigtable.Admin.V2" Version="1.0.0" />
-    <PackageReference Include="Google.Cloud.Bigtable.V2" Version="1.0.0" />
+    <PackageReference Include="Google.Cloud.Bigtable.Admin.V2" Version="1.1.0" />
+    <PackageReference Include="Google.Cloud.Bigtable.V2" Version="1.1.0" />
   </ItemGroup>
 
 </Project>
