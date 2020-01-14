@@ -58,6 +58,7 @@ language.googleapis.com
 logging.googleapis.com
 monitoring.googleapis.com
 pubsub.googleapis.com
+secretmanager.googleapis.com
 servicemanagement.googleapis.com
 speech.googleapis.com
 sql-component.googleapis.com
@@ -100,6 +101,8 @@ roles/logging.viewer
 roles/monitoring.admin
 roles/pubsub.admin
 roles/resourcemanager.projectIamAdmin
+roles/secretmanager.admin
+roles/secretmanager.secretAccessor
 roles/storage.admin
 "@
 
