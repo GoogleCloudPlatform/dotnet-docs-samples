@@ -362,21 +362,6 @@ namespace GoogleCloudSamples
         // [END speech_transcribe_recognition_metadata]
 
 
-        // [START speech_transcribe_word_level_confidence]
-        static object SyncRecognizeWordLevelConfidence(string filePath)
-        {
-            var speech = SpeechClient.Create();
-            var response = speech.Recognize(new RecognitionConfig
-            {
-                Encoding = RecognitionConfig.Types.AudioEncoding.Flac,
-                LanguageCode = "en",
-                EnableWordConfidence = true
-            }, RecognitionAudio.FromFile(filePath));
-
-            // TODO(erschmid): Print response output.
-        }
-        // [END speech_transcribe_word_level_confidence]
-
         /// <summary>
         /// Reads a list of phrases from stdin.
         /// </summary>
