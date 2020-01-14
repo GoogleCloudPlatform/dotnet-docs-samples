@@ -27,6 +27,7 @@ using System.Linq;
 public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
 {
     private readonly string _projectId;
+    private readonly string _jsonPath;
     private readonly BigQueryClient _client;
     readonly List<BigQueryDataset> _tempDatasets = new List<BigQueryDataset>();
     readonly StorageClient _storage;
@@ -37,11 +38,21 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     public BigQueryTest(RandomBucketFixture randomBucketFixture)
     {
         _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        _jsonPath = System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
         _client = BigQueryClient.Create(_projectId);
         _storage = StorageClient.Create();
         _bucketName = randomBucketFixture.BucketName;
         _stringOut = new StringWriter();
         Console.SetOut(_stringOut);
+    }
+
+    [Fact]
+    public void TestAuthenticateServiceAccount()
+    {
+        var snippet = new BigQueryAuthenticateServiceAccount();
+        snippet.AuthenticateWithServiceAccount(_projectId, _jsonPath);
+        var outputLines = _stringOut.ToString().Trim().Split(new[] { '\n' });
+        Assert.Equal(100, outputLines.Count());
     }
 
     [Fact]
