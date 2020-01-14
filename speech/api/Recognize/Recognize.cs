@@ -297,7 +297,6 @@ namespace GoogleCloudSamples
         static object SyncRecognizeMultipleSpeakers(string filePath, int numberOfSpeakers)
         {
             var speech = SpeechClient.Create();
-
             var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
