@@ -64,7 +64,7 @@ namespace GoogleCloudSamples
                 {
                     AudioEncoding = AudioEncoding.Linear16,
                     LanguageCode = "en-US",
-                    SampleRateHertz = 8000
+                    SampleRateHertz = 16000
                 }
             };
 
