@@ -60,6 +60,15 @@ namespace GoogleCloudSamples
 
         [Option('c', HelpText = "Set number of channels")]
         public int NumberOfChannels { get; set; }
+
+        [Option('s', HelpText = "Set number of speakers")]
+        public int NumberOfSpeakers { get; set; }
+
+        [Option('r', HelpText = "Use recognition metadata")]
+        public bool UseRecognitionMetadata { get; set; }
+
+        [Option('l', HelpText = "Add word-level confidence values to transcription.")]
+        public bool EnableWordLevelConfidence { get; set; }
     }
 
     [Verb("with-context", HelpText = "Detects speech in an audio file."
@@ -259,7 +268,6 @@ namespace GoogleCloudSamples
         // [START speech_transcribe_multichannel_beta]
         static object SyncRecognizeMultipleChannels(string filePath, int channelCount)
         {
-            Console.WriteLine("Starting multi-channel");
             var speech = SpeechClient.Create();
 
             // Create transcription request
@@ -284,6 +292,75 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_transcribe_multichannel_beta]
+
+        // [START speech_transcribe_diarization]
+        static object SyncRecognizeMultipleSpeakers(string filePath, int numberOfSpeakers)
+        {
+            var speech = SpeechClient.Create();
+            var response = speech.Recognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                LanguageCode = "en",
+                DiarizationConfig = new SpeakerDiarizationConfig()
+                {
+                    EnableSpeakerDiarization = true,
+                    MinSpeakerCount = 2
+                }
+            }, RecognitionAudio.FromFile(filePath));
+
+            // Print out the results.
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine($"Transcript: { alternative.Transcript}");
+                    Console.WriteLine("Word details:");
+                    Console.WriteLine($" Word count:{alternative.Words.Count}");
+                    foreach (var item in alternative.Words)
+                    {
+                        Console.WriteLine($"  {item.Word}");
+                        Console.WriteLine($"  Speaker: {item.SpeakerTag}");
+                    }
+                }
+            }
+
+            return 0;
+        }
+        // [END speech_transcribe_diarization]
+
+        //[START speech_transcribe_recognition_metadata]
+        static object SyncRecognizeRecognitionMetadata(string filePath)
+        {
+            var speech = SpeechClient.Create();
+            var response = speech.Recognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Flac,
+                LanguageCode = "en",
+                Metadata = new RecognitionMetadata()
+                {
+                    OriginalMediaType = RecognitionMetadata.Types.OriginalMediaType.Audio,
+                    OriginalMimeType = "audio/mp3",
+
+                    // The kind of device used to capture the audio
+                    RecordingDeviceType = RecognitionMetadata.Types.RecordingDeviceType.OtherIndoorDevice,
+
+                    // Use case of the audio, e.g. PHONE_CALL, DISCUSSION, etc
+                    InteractionType = RecognitionMetadata.Types.InteractionType.VoiceSearch,
+
+                    // The name of the defice used to make the recording.
+                    // Arbitrary string, e.g. 'Pixel XL', 'VoIP', or other value
+                    RecordingDeviceName = "Pixel XL"
+                }
+            }, RecognitionAudio.FromFile(filePath));
+
+            foreach (var result in response.Results)
+            {
+                Console.WriteLine($"Transcript: { result.Alternatives[0].Transcript}");
+            }
+            return 0;
+        }
+        // [END speech_transcribe_recognition_metadata]
+
 
         /// <summary>
         /// Reads a list of phrases from stdin.
@@ -609,7 +686,9 @@ namespace GoogleCloudSamples
                     SyncRecognizePunctuation(opts.FilePath) : (opts.SelectModel != null) ?
                     SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : opts.UseEnhancedModel ?
                     SyncRecognizeEnhancedModel(opts.FilePath) : (opts.NumberOfChannels > 1) ?
-                    SyncRecognizeMultipleChannels(opts.FilePath, opts.NumberOfChannels) : SyncRecognize(opts.FilePath),
+                    SyncRecognizeMultipleChannels(opts.FilePath, opts.NumberOfChannels) : (opts.NumberOfSpeakers > 1) ?
+                    SyncRecognizeMultipleSpeakers(opts.FilePath, opts.NumberOfSpeakers) : opts.UseRecognitionMetadata ?
+                    SyncRecognizeRecognitionMetadata(opts.FilePath) : SyncRecognize(opts.FilePath),
                 (AsyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     (opts.EnableWordTimeOffsets ? AsyncRecognizeGcsWords(opts.FilePath)
                     : AsyncRecognizeGcs(opts.FilePath))
