@@ -168,10 +168,10 @@ Where command is one of
             var docRef = FirestoreDb.Collection("counter_samples").Document("DCounter");
 
             Console.WriteLine("Application start ...");
-            InitCounterAsync(docRef);
+            InitCounterAsync(docRef).Wait();
             Console.WriteLine("Distributed counter initialized.");
 
-            IncrementCounterAsync(docRef);
+            IncrementCounterAsync(docRef).Wait();
             Console.WriteLine("Distributed counter incremented.");
 
             var countTotal = GetCount(docRef);
