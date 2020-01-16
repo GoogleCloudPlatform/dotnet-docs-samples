@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="Google.Cloud.Kms.V1" Version="1.0.0" />
+    <PackageReference Include="Google.Cloud.Kms.V1" Version="1.1.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>

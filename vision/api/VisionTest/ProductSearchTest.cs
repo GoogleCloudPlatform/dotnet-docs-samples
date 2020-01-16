@@ -1,318 +1,367 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class ProductSearchTest : IDisposable
+    public class ProductSearchTestsBase
     {
-        private const string REGION_NAME = "us-west1";
-        private const string PRODUCT_ID = "fake_product_id_for_testing_1";
-        private const string PRODUCT_DISPLAY_NAME = "fake_product_display_name_for_testing";
-        private const string PRODUCT_CATEGORY = "apparel";
-        private const string PRODUCT_ID_2 = "fake_product_id_for_testing_2";
-        private const string PRODUCT_SET_ID = "fake_product_set_id_for_testing";
-        private const string PRODUCT_SET_DISPLAY_NAME = "fake_product_set_display_name_for_testing";
-        private const string REF_IMAGE_ID = "fake_ref_image_id";
-        private const string REF_IMAGE_GCS_URI = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
-        private const string CSV_GCS_URI = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
-        private const string IMAGE_URI_1 = "shoes_1.jpg";
-        private const string IMAGE_URI_2 = "shoes_2.jpg";
-        private const string SEARCH_FILTER = "style=womens";
+        protected string RegionName { get; private set; } = "us-west1";
+        protected string ProductId { get; private set; } = "fake_product_id_for_testing_1";
+        protected string ProductDisplayName { get; private set; } = "fake_product_display_name_for_testing";
+        protected string ProductCategory { get; private set; } = "apparel";
+        protected string ProductId2 { get; private set; } = "fake_product_id_for_testing_2";
+        protected string ProductSetId { get; private set; } = "fake_product_set_id_for_testing";
+        protected string ProductSetDisplayName { get; private set; } = "fake_product_set_display_name_for_testing";
+        protected string RefImageId { get; private set; } = "fake_ref_image_id";
+        protected string RefImageGcsUri { get; private set; } = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
+        protected string CsvGcsUri { get; private set; } = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
+        protected string ImageUri1 { get; private set; } = "shoes_1.jpg";
+        protected string ImageUri2 { get; private set; } = "shoes_2.jpg";
+        protected string SearchFilter { get; private set; } = "style=womens";
 
         // For search tests. Product set must be indexed for search to succeed.
-        private const string INDEXED_PRODUCT_SET = "indexed_product_set_id_for_testing";
-        private const string INDEXED_PRODUCT_1 = "indexed_product_id_for_testing_1";
+        protected string IndexedProductSet { get; private set; } = "indexed_product_set_id_for_testing";
+        protected string IndexedProduct1 { get; private set; } = "indexed_product_id_for_testing_1";
+        protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
-        readonly CommandLineRunner _productSearch = new CommandLineRunner()
+        private readonly CommandLineRunner _productSearch = new CommandLineRunner()
         {
             Main = ProductSearchProgram.Main,
             Command = "Product Search"
         };
 
-        public ProductSearchTest()
+        // Keep a list of all the things created while running tests.
+        private readonly List<string[]> _createCommands = new List<string[]>();
+
+        /// <summary>
+        ///  Run the command and track all cloud assets that were created.
+        /// </summary>
+        /// <param name="arguments">The command arguments.</param>
+        public ConsoleOutput Run(params string[] arguments)
         {
-            // Create a indexed product set for TestProductSearch() and TestProductSearchGcs()
-            // tests. These tests remain in the project after the test completes.
-            var output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
-            if (!output.Stdout.Contains(INDEXED_PRODUCT_SET))
+            if (arguments[0].StartsWith("create_"))
             {
-                _productSearch.Run("create_product_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_SET_DISPLAY_NAME);
+                _createCommands.Add(arguments);
             }
+            return _productSearch.Run(arguments);
+        }
 
-            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            if (!output.Stdout.Contains(INDEXED_PRODUCT_1))
-            {
-                _productSearch.Run("create_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
-            }
+        /// <summary>
+        /// Delete all the things created in Run() commands.
+        /// </summary>
+        protected void DeleteCreations()
+        {
+            // Clean up everything the test created.
+            List<string[]> commands = new List<string[]>(_createCommands);
+            _createCommands.Clear();
+            commands.Reverse();
 
-            output = _productSearch.Run("list_ref_images", _projectId, REGION_NAME, INDEXED_PRODUCT_1);
-            if (!output.Stdout.Contains(REF_IMAGE_ID))
+            var exceptions = new List<Exception>();
+            foreach (string[] command in commands)
             {
-                _productSearch.Run("create_ref_image", _projectId, REGION_NAME, INDEXED_PRODUCT_1, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+                command[0] = command[0].Replace("create_", "delete_");
+                try
+                {
+                    Run(command);
+                }
+                catch (Exception e)
+                {
+                    exceptions.Add(e);
+                }
             }
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException(exceptions);
+            }
+        }
 
-            output = _productSearch.Run("list_products_in_set", _projectId, REGION_NAME, INDEXED_PRODUCT_SET);
-            if (!output.Stdout.Contains(INDEXED_PRODUCT_1))
-            {
-                _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, INDEXED_PRODUCT_1, INDEXED_PRODUCT_SET);
-            }
+        /// <summary>
+        /// Add a random chunk to all the Ids used in the tests, so that
+        /// multiple machines can run the same tests at the same time
+        /// in the same Google Cloud project without interfering with each
+        /// other.
+        /// </summary>
+        protected void RandomizeIds()
+        {
+            ProductId += TestUtil.RandomName();
+            ProductId2 += TestUtil.RandomName();
+            ProductSetId += TestUtil.RandomName();
+            RefImageId += TestUtil.RandomName();
+            IndexedProduct1 += TestUtil.RandomName();
+            IndexedProductSet += TestUtil.RandomName();
+        }
+    }
 
-            output = _productSearch.Run("get_product", _projectId, REGION_NAME, INDEXED_PRODUCT_1);
-            if (!output.Stdout.Contains("style") || !output.Stdout.Contains("womens"))
-            {
-                _productSearch.Run("update_product_labels", _projectId, REGION_NAME, INDEXED_PRODUCT_1, "style,womens");
-            }
+    public class ProductSearchTests : ProductSearchTestsBase, IDisposable
+    {
+        public ProductSearchTests()
+        {
+            RandomizeIds();
+        }
+
+        public void Dispose()
+        {
+            DeleteCreations();
         }
 
         [Fact]
         public void TestCreateProduct()
         {
-            var output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.DoesNotContain(PRODUCT_ID, output.Stdout);
+            var output = Run("list_products", ProjectId, RegionName);
+            Assert.DoesNotContain(ProductId, output.Stdout);
 
-            output = _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            output = Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
             Assert.Equal(0, output.ExitCode);
 
-            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.Contains(PRODUCT_ID, output.Stdout);
+            output = Run("list_products", ProjectId, RegionName);
+            Assert.Contains(ProductId, output.Stdout);
         }
 
         [Fact]
         public void TestGetProduct()
         {
-            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
 
-            var output = _productSearch.Run("get_product", _projectId, REGION_NAME, PRODUCT_ID);
+            var output = Run("get_product", ProjectId, RegionName, ProductId);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains(_projectId, output.Stdout);
+            Assert.Contains(ProjectId, output.Stdout);
         }
 
         [Fact]
         public void TestDeleteProduct()
         {
-            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
 
-            var output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.Contains(PRODUCT_ID, output.Stdout);
+            var output = Run("list_products", ProjectId, RegionName);
+            Assert.Contains(ProductId, output.Stdout);
 
-            output = _productSearch.Run("delete_product", _projectId, REGION_NAME, PRODUCT_ID);
+            output = Run("delete_product", ProjectId, RegionName, ProductId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Product deleted.", output.Stdout);
 
-            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.DoesNotContain(PRODUCT_ID, output.Stdout);
+            output = Run("list_products", ProjectId, RegionName);
+            Assert.DoesNotContain(ProductId, output.Stdout);
         }
 
         [Fact]
         public void TestCreateProductSet()
         {
-            var output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
-            Assert.DoesNotContain(PRODUCT_SET_ID, output.Stdout);
+            var output = Run("list_product_sets", ProjectId, RegionName);
+            Assert.DoesNotContain(ProductSetId, output.Stdout);
 
-            output = _productSearch.Run("create_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_SET_DISPLAY_NAME);
+            output = Run("create_product_set", ProjectId, RegionName, ProductSetId, ProductSetDisplayName);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains(PRODUCT_SET_DISPLAY_NAME, output.Stdout);
+            Assert.Contains(ProductSetDisplayName, output.Stdout);
 
-            output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
-            Assert.Contains(PRODUCT_SET_ID, output.Stdout);
+            output = Run("list_product_sets", ProjectId, RegionName);
+            Assert.Contains(ProductSetId, output.Stdout);
         }
 
 
         [Fact]
         public void TestGetProductSet()
         {
-            _productSearch.Run("create_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_SET_DISPLAY_NAME);
+            Run("create_product_set", ProjectId, RegionName, ProductSetId, ProductSetDisplayName);
 
-            var output = _productSearch.Run("get_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
+            var output = Run("get_product_set", ProjectId, RegionName, ProductSetId);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains(PRODUCT_SET_ID, output.Stdout);
+            Assert.Contains(ProductSetId, output.Stdout);
         }
 
         [Fact]
         public void TestDeleteProductSet()
         {
-            _productSearch.Run("create_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_SET_DISPLAY_NAME);
+            Run("create_product_set", ProjectId, RegionName, ProductSetId, ProductSetDisplayName);
 
-            var output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
-            Assert.Contains(PRODUCT_SET_ID, output.Stdout);
+            var output = Run("list_product_sets", ProjectId, RegionName);
+            Assert.Contains(ProductSetId, output.Stdout);
 
-            output = _productSearch.Run("delete_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
+            output = Run("delete_product_set", ProjectId, RegionName, ProductSetId);
             Assert.Equal(0, output.ExitCode);
 
-            output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
-            Assert.DoesNotContain(PRODUCT_SET_ID, output.Stdout);
+            output = Run("list_product_sets", ProjectId, RegionName);
+            Assert.DoesNotContain(ProductSetId, output.Stdout);
         }
 
         [Fact]
         public void TestCreateReferenceImage()
         {
-            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
 
-            var output = _productSearch.Run("list_ref_images", _projectId, REGION_NAME, PRODUCT_ID);
-            Assert.DoesNotContain(REF_IMAGE_ID, output.Stdout);
+            var output = Run("list_ref_images", ProjectId, RegionName, ProductId);
+            Assert.DoesNotContain(RefImageId, output.Stdout);
 
-            output = _productSearch.Run("create_ref_image", _projectId, REGION_NAME, PRODUCT_ID, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+            output = Run("create_ref_image", ProjectId, RegionName, ProductId, RefImageId, RefImageGcsUri);
             Assert.Equal(0, output.ExitCode);
 
-            output = _productSearch.Run("list_ref_images", _projectId, REGION_NAME, PRODUCT_ID);
-            Assert.Contains(REF_IMAGE_ID, output.Stdout);
+            output = Run("list_ref_images", ProjectId, RegionName, ProductId);
+            Assert.Contains(RefImageId, output.Stdout);
         }
 
 
         [Fact]
         public void TestGetReferenceImage()
         {
-            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
-            _productSearch.Run("create_ref_image", _projectId, REGION_NAME, PRODUCT_ID, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+            Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
+            Run("create_ref_image", ProjectId, RegionName, ProductId, RefImageId, RefImageGcsUri);
 
-            var output = _productSearch.Run("get_ref_image", _projectId, REGION_NAME, PRODUCT_ID, REF_IMAGE_ID);
+            var output = Run("get_ref_image", ProjectId, RegionName, ProductId, RefImageId);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains(REF_IMAGE_ID, output.Stdout);
+            Assert.Contains(RefImageId, output.Stdout);
         }
 
         [Fact]
         public void TestDeleteReferenceImage()
         {
-            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
-            _productSearch.Run("create_ref_image", _projectId, REGION_NAME, PRODUCT_ID, REF_IMAGE_ID, REF_IMAGE_GCS_URI);
+            Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
+            Run("create_ref_image", ProjectId, RegionName, ProductId, RefImageId, RefImageGcsUri);
 
-            var output = _productSearch.Run("list_ref_images", _projectId, REGION_NAME, PRODUCT_ID);
-            Assert.Contains(REF_IMAGE_ID, output.Stdout);
+            var output = Run("list_ref_images", ProjectId, RegionName, ProductId);
+            Assert.Contains(RefImageId, output.Stdout);
 
-            output = _productSearch.Run("delete_ref_image", _projectId, REGION_NAME, PRODUCT_ID, REF_IMAGE_ID);
+            output = Run("delete_ref_image", ProjectId, RegionName, ProductId, RefImageId);
             Assert.Equal(0, output.ExitCode);
 
-            output = _productSearch.Run("list_ref_images", _projectId, REGION_NAME, PRODUCT_ID);
-            Assert.DoesNotContain(REF_IMAGE_ID, output.Stdout);
-        }
-
-        [Fact]
-        public void TestImportProductSets()
-        {
-            var output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
-            Assert.DoesNotContain(PRODUCT_SET_ID, output.Stdout);
-
-            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.DoesNotContain(PRODUCT_ID, output.Stdout);
-            Assert.DoesNotContain(PRODUCT_ID_2, output.Stdout);
-
-            output = _productSearch.Run("import_product_set", _projectId, REGION_NAME, CSV_GCS_URI);
-            Assert.Equal(0, output.ExitCode);
-
-            output = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
-            Assert.Contains(PRODUCT_SET_ID, output.Stdout);
-
-            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.Contains(PRODUCT_ID, output.Stdout);
-            Assert.Contains(PRODUCT_ID_2, output.Stdout);
+            output = Run("list_ref_images", ProjectId, RegionName, ProductId);
+            Assert.DoesNotContain(RefImageId, output.Stdout);
         }
 
         [Fact]
         public void TestAddProductToSet()
         {
-            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
-            _productSearch.Run("create_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_SET_DISPLAY_NAME);
+            Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
+            Run("create_product_set", ProjectId, RegionName, ProductSetId, ProductSetDisplayName);
 
-            var output = _productSearch.Run("list_products_in_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
-            Assert.DoesNotContain(PRODUCT_ID, output.Stdout);
+            var output = Run("list_products_in_set", ProjectId, RegionName, ProductSetId);
+            Assert.DoesNotContain(ProductId, output.Stdout);
 
-            output = _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_SET_ID);
+            output = Run("add_product_to_set", ProjectId, RegionName, ProductId, ProductSetId);
             Assert.Equal(0, output.ExitCode);
 
-            output = _productSearch.Run("list_products_in_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
-            Assert.Contains(PRODUCT_ID, output.Stdout);
+            output = Run("list_products_in_set", ProjectId, RegionName, ProductSetId);
+            Assert.Contains(ProductId, output.Stdout);
         }
 
         [Fact]
         public void TestRemoveProductFromSet()
         {
-            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
-            _productSearch.Run("create_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_SET_DISPLAY_NAME);
-            _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_SET_ID);
+            Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
+            Run("create_product_set", ProjectId, RegionName, ProductSetId, ProductSetDisplayName);
+            Run("add_product_to_set", ProjectId, RegionName, ProductId, ProductSetId);
 
-            var output = _productSearch.Run("list_products_in_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
-            Assert.Contains(PRODUCT_ID, output.Stdout);
+            var output = Run("list_products_in_set", ProjectId, RegionName, ProductSetId);
+            Assert.Contains(ProductId, output.Stdout);
 
-            output = _productSearch.Run("remove_product_from_set", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_SET_ID);
+            output = Run("remove_product_from_set", ProjectId, RegionName, ProductId, ProductSetId);
             Assert.Equal(0, output.ExitCode);
 
-            output = _productSearch.Run("list_products_in_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
-            Assert.DoesNotContain(PRODUCT_ID, output.Stdout);
-        }
-
-        [Fact]
-        public void TestProductSearch()
-        {
-            var output = _productSearch.Run("get_similar_products", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, Path.Combine("data", IMAGE_URI_1), SEARCH_FILTER);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
-        }
-
-        [Fact]
-        public void TestProductSearchGcs()
-        {
-            var output = _productSearch.Run("get_similar_products_gcs", _projectId, REGION_NAME, INDEXED_PRODUCT_SET, PRODUCT_CATEGORY, REF_IMAGE_GCS_URI, SEARCH_FILTER);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains(INDEXED_PRODUCT_1, output.Stdout);
+            output = Run("list_products_in_set", ProjectId, RegionName, ProductSetId);
+            Assert.DoesNotContain(ProductId, output.Stdout);
         }
 
         [Fact]
         public void TestPurgeProductsInProductSet()
         {
-            var output = _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
+            var output = Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
             Assert.Equal(0, output.ExitCode);
 
-            _productSearch.Run("create_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID, PRODUCT_SET_DISPLAY_NAME);
-            _productSearch.Run("add_product_to_set", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_SET_ID);
+            Run("create_product_set", ProjectId, RegionName, ProductSetId, ProductSetDisplayName);
+            Run("add_product_to_set", ProjectId, RegionName, ProductId, ProductSetId);
 
-            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.Contains(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+            output = Run("list_products", ProjectId, RegionName);
+            Assert.Contains(String.Format("Product id: {0}", ProductId), output.Stdout);
 
-            _productSearch.Run("purge_products_in_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
-            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.DoesNotContain(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+            Run("purge_products_in_product_set", ProjectId, RegionName, ProductSetId);
+            output = Run("list_products", ProjectId, RegionName);
+            Assert.DoesNotContain(String.Format("Product id: {0}", ProductId), output.Stdout);
         }
 
         [Fact]
         public void TestPurgeOrphanProducts()
         {
-            _productSearch.Run("create_product", _projectId, REGION_NAME, PRODUCT_ID, PRODUCT_DISPLAY_NAME, PRODUCT_CATEGORY);
-            var output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.Contains(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+            Run("create_product", ProjectId, RegionName, ProductId, ProductDisplayName, ProductCategory);
+            var output = Run("list_products", ProjectId, RegionName);
+            Assert.Contains(String.Format("Product id: {0}", ProductId), output.Stdout);
 
-            _productSearch.Run("purge_orphan_products", _projectId, REGION_NAME);
+            Run("purge_orphan_products", ProjectId, RegionName);
 
-            output = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            Assert.DoesNotContain(String.Format("Product id: {0}", PRODUCT_ID), output.Stdout);
+            output = Run("list_products", ProjectId, RegionName);
+            Assert.DoesNotContain(String.Format("Product id: {0}", ProductId), output.Stdout);
+        }
+    }
+
+    // These tests all require products and indexes that live longer than the
+    // test.
+    public class ProductSearchCodependentTests : ProductSearchTestsBase
+    {
+        protected void CreateProductSet()
+        {
+            // Create a indexed product set for TestProductSearch() and TestProductSearchGcs()
+            // tests. These tests remain in the project after the test completes.
+            var output = Run("list_product_sets", ProjectId, RegionName);
+            if (!output.Stdout.Contains(IndexedProductSet))
+            {
+                Run("create_product_set", ProjectId, RegionName, IndexedProductSet, ProductSetDisplayName);
+            }
+
+            output = Run("list_products", ProjectId, RegionName);
+            if (!output.Stdout.Contains(IndexedProduct1))
+            {
+                Run("create_product", ProjectId, RegionName, IndexedProduct1, ProductDisplayName, ProductCategory);
+            }
+
+            output = Run("list_ref_images", ProjectId, RegionName, IndexedProduct1);
+            if (!output.Stdout.Contains(RefImageId))
+            {
+                Run("create_ref_image", ProjectId, RegionName, IndexedProduct1, RefImageId, RefImageGcsUri);
+            }
+
+            output = Run("list_products_in_set", ProjectId, RegionName, IndexedProductSet);
+            if (!output.Stdout.Contains(IndexedProduct1))
+            {
+                Run("add_product_to_set", ProjectId, RegionName, IndexedProduct1, IndexedProductSet);
+            }
+
+            output = Run("get_product", ProjectId, RegionName, IndexedProduct1);
+            if (!output.Stdout.Contains("style") || !output.Stdout.Contains("womens"))
+            {
+                Run("update_product_labels", ProjectId, RegionName, IndexedProduct1, "style,womens");
+            }
         }
 
-        public void Dispose()
+        [Fact]
+        public void TestProductSearch()
         {
-            var listRefImageOutput = _productSearch.Run("list_ref_images", _projectId, REGION_NAME, PRODUCT_ID);
-            if (listRefImageOutput.Stdout.Contains(REF_IMAGE_ID))
-            {
-                _productSearch.Run("delete_ref_image", _projectId, REGION_NAME, PRODUCT_ID, REF_IMAGE_ID);
-            }
+            CreateProductSet();
+            var output = Run("get_similar_products", ProjectId, RegionName, IndexedProductSet, ProductCategory, Path.Combine("data", ImageUri1), SearchFilter);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(IndexedProduct1, output.Stdout);
+        }
 
-            var listProductsOutput = _productSearch.Run("list_products", _projectId, REGION_NAME);
-            if (listProductsOutput.Stdout.Contains(PRODUCT_ID))
-            {
-                _productSearch.Run("delete_product", _projectId, REGION_NAME, PRODUCT_ID);
-            }
+        [Fact]
+        public void TestProductSearchGcs()
+        {
+            CreateProductSet();
+            var output = Run("get_similar_products_gcs", ProjectId, RegionName, IndexedProductSet, ProductCategory, RefImageGcsUri, SearchFilter);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(IndexedProduct1, output.Stdout);
+        }
 
-            if (listProductsOutput.Stdout.Contains(PRODUCT_ID_2))
-            {
-                _productSearch.Run("delete_product", _projectId, REGION_NAME, PRODUCT_ID_2);
-            }
+        [Fact]
+        public void TestImportProductSets()
+        {
+            var output = Run("import_product_set", ProjectId, RegionName, CsvGcsUri);
+            Assert.Equal(0, output.ExitCode);
 
-            var listProductSetsOutput = _productSearch.Run("list_product_sets", _projectId, REGION_NAME);
-            if (listProductSetsOutput.Stdout.Contains(PRODUCT_SET_ID))
-            {
-                _productSearch.Run("delete_product_set", _projectId, REGION_NAME, PRODUCT_SET_ID);
-            }
+            output = Run("list_product_sets", ProjectId, RegionName);
+            Assert.Contains(ProductSetId, output.Stdout);
+
+            output = Run("list_products", ProjectId, RegionName);
+            Assert.Contains(ProductId, output.Stdout);
+            Assert.Contains(ProductId2, output.Stdout);
         }
     }
 }

@@ -34,10 +34,12 @@ try {
     $groups = @(
         $false,  # 0: Everything.
         $false,  # 1: Everything not in another group.
-        @('video', 'applications')  # 2
+        @('video', 'applications'),  # 2
+        @('iam') # 3: Runs once every 24 hours to avoid bursting active roles limit of 300.
     )
 
-    $union = $groups[2..($groups.Length-1)] | Select-Object
+    $union = $groups[2..($groups.Length-1)] | `
+         % {$_} # Flatten the list
     $groups[0] = $allDirs
     $groups[1] = $allDirs | Where-Object { -not $union.Contains($_) }
 

@@ -118,13 +118,21 @@ namespace GoogleCloudSamples
         {
             var output = Run("landmarks", Path.Combine("data", "tower.jpg"));
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Eiffel", output.Stdout);
+            Assert.Matches(@".*(Eiffel|Mars).*", output.Stdout);
         }
 
         [Fact]
         public void DetectText()
         {
             var output = Run("text", Path.Combine("data", "bonito.gif"));
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("fermented", output.Stdout);
+        }
+
+        [Fact]
+        public void DetectTextWithMultiRegion()
+        {
+            var output = Run("text", Path.Combine("data", "bonito.gif"), "-m");
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("fermented", output.Stdout);
         }
@@ -142,7 +150,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("text", Path.Combine("data", "logo.jpg"));
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Google", output.Stdout);
+            Assert.Contains("google", output.Stdout.ToLower());
         }
 
         [Fact]
