@@ -16,7 +16,7 @@ namespace GoogleCloudSamples
                      DetectIntentFromStream(opts.ProjectId, opts.SessionId, opts.FilePath).Result);
         }
 
-        [Verb("detect-intent:streams", HelpText="Detect intent from stream")]
+        [Verb("detect-intent:streams", HelpText = "Detect intent from stream")]
         public class DetectIntentFromStreamOptions : OptionsWithProjectIdAndSessionId
         {
             [Value(0, MetaName = "file", HelpText = "Path to the audio file", Required = true)]
