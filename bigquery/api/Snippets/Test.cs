@@ -51,7 +51,7 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     {
         var snippet = new BigQueryAuthenticateServiceAccount();
         snippet.AuthenticateWithServiceAccount(_projectId, _jsonPath);
-        var outputLines = _stringOut.ToString().Trim().Split(new[] { '\n' });
+        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
         Assert.Equal(100, outputLines.Count());
     }
 
@@ -60,7 +60,7 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     {
         var snippet = new BigQueryBrowseTable();
         snippet.BrowseTable(_projectId);
-        var outputLines = _stringOut.ToString().Trim().Split(new[] { '\n' });
+        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
         Assert.Equal(10, outputLines.Count());
     }
 
@@ -227,7 +227,7 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     {
         var snippet = new BigQueryQuery();
         snippet.Query(_projectId);
-        var outputLines = _stringOut.ToString().Trim().Split(new[] { '\n' });
+        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
         Assert.Equal(100, outputLines.Count());
     }
 
@@ -236,7 +236,7 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     {
         var snippet = new BigQueryQueryLegacy();
         snippet.QueryLegacy(_projectId);
-        var outputLines = _stringOut.ToString().Trim().Split(new[] { '\n' });
+        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
         Assert.Equal(100, outputLines.Count());
     }
 
