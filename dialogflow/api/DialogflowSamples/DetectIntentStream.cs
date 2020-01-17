@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
         {
             verbMap
                 .Add((DetectIntentFromStreamOptions opts) =>
-                     DetectIntentFromStream(opts.ProjectId, opts.SessionId, opts.FilePath).Result);
+                     DetectIntentFromStreamAsync(opts.ProjectId, opts.SessionId, opts.FilePath).Result);
         }
 
         [Verb("detect-intent:streams", HelpText = "Detect intent from stream")]
