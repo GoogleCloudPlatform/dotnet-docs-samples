@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
+
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.BigQuery.V2;
 using System;
@@ -28,7 +29,8 @@ public class BigQueryAuthenticateServiceAccount
 
         // Use the client
         string query = @"
-            SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013`
+            SELECT name
+            FROM `bigquery-public-data.usa_names.usa_1910_2013`
             WHERE state = 'TX'
             LIMIT 100";
         BigQueryJob job = client.CreateQueryJob(
