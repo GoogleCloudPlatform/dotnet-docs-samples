@@ -15,6 +15,7 @@
 using Google.Apis.Storage.v1;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
+using Storage;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -86,15 +87,6 @@ namespace GoogleCloudSamples
             "  Storage enable-uniform-bucket-level-access bucket-name\n" +
             "  Storage disable-uniform-bucket-level-access bucket-name\n" +
             "  Storage get-uniform-bucket-level-access bucket-name\n";
-
-        // [START storage_create_bucket]
-        private void CreateBucket(string bucketName)
-        {
-            var storage = StorageClient.Create();
-            storage.CreateBucket(s_projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-        }
-        // [END storage_create_bucket]
 
         private void CreateRegionalBucket(string location, string bucketName)
         {
@@ -1242,7 +1234,7 @@ namespace GoogleCloudSamples
                 switch (args[0].ToLower())
                 {
                     case "create":
-                        CreateBucket(args.Length < 2 ? RandomBucketName() : args[1]);
+                        CreateNewBucket.CreateBucket(s_projectId, args.Length < 2 ? RandomBucketName() : args[1]);
                         break;
 
                     case "create-regional-bucket":
