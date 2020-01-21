@@ -12,14 +12,13 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
     public class DetectIntentTextsTest : DialogflowTest
     {
-        [Fact(Skip = "b/110877421")]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/935")]
         void TestDetectIntentFromTexts()
         {
             var texts = new[] { "hello", "book a meeting room", "Mountain View" };
