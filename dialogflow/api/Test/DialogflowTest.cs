@@ -13,14 +13,12 @@
 // the License.
 
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Xunit;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
-using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -64,12 +62,21 @@ namespace GoogleCloudSamples
             if (string.IsNullOrEmpty(displayName))
                 displayName = TestUtil.RandomName();
             Run("entity-types:create", displayName, kindName);
-            var outputPattern = new Regex(
-                $"Created EntityType: projects/{ProjectId}/agent/entityTypes/(?<entityTypeId>.*)"
-            );
-            string id = outputPattern.Match(Stdout).Groups["entityTypeId"].Value;
-            CleanupAfterTest("entities:delete", id);
+
+            return SetEntityTypeForCleanupAfterTest(Stdout);
+        }
+
+        public string SetEntityTypeForCleanupAfterTest(string stdout)
+        {
+            string id = GetEntityTypeIdFromStdout(stdout);
+            CleanupAfterTest("entity-types:delete", id);
             return id;
+        }
+
+        public string GetEntityTypeIdFromStdout(string stdout)
+        {
+            var outputPattern = new Regex($"Created EntityType: projects/{ProjectId}/agent/entityTypes/(?<entityTypeId>.*)");
+            return outputPattern.Match(stdout).Groups["entityTypeId"].Value;
         }
 
         public readonly CommandLineRunner _dialogflow = new CommandLineRunner()
