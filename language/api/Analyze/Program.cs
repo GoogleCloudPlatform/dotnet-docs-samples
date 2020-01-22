@@ -15,7 +15,6 @@
 using Google.Cloud.Language.V1;
 using System;
 using System.Collections.Generic;
-using static Google.Cloud.Language.V1.AnnotateTextRequest.Types;
 using Google.Protobuf.Collections;
 
 namespace GoogleCloudSamples
@@ -133,7 +132,7 @@ Where command is one of
                 GcsContentUri = gcsUri,
                 Type = Document.Types.Type.PlainText
             },
-            new Features() { ExtractSyntax = true });
+            new AnnotateTextRequest.Types.Features() { ExtractSyntax = true });
             WriteSentences(response.Sentences, response.Tokens);
         }
         // [END language_syntax_gcs]
@@ -147,7 +146,7 @@ Where command is one of
                 Content = text,
                 Type = Document.Types.Type.PlainText
             },
-            new Features() { ExtractSyntax = true });
+            new AnnotateTextRequest.Types.Features() { ExtractSyntax = true });
             WriteSentences(response.Sentences, response.Tokens);
         }
 
@@ -256,7 +255,7 @@ Where command is one of
                 Content = text,
                 Type = Document.Types.Type.PlainText
             },
-            new Features()
+            new AnnotateTextRequest.Types.Features()
             {
                 ExtractSyntax = true,
                 ExtractDocumentSentiment = true,
