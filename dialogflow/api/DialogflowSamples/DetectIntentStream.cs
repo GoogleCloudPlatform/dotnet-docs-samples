@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-// Copyright(c) 2020 Google Inc.
+﻿// Copyright(c) 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +14,8 @@ using System.Collections.Generic;
 
 using CommandLine;
 using Google.Cloud.Dialogflow.V2;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
