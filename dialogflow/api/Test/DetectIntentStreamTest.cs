@@ -20,7 +20,6 @@ namespace GoogleCloudSamples
 {
     public class DetectIntentStreamsTest : DialogflowTest
     {
-
         [Fact]
         void TestDetectIntentFromStream()
         {
