@@ -12,7 +12,6 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -41,10 +40,12 @@ namespace GoogleCloudSamples
             Assert.Contains(_entityTypeDisplayName, Stdout);
 
             _retryRobot.Eventually(() =>
-           {
-               RunWithSessionId("session-entity-types:list");
-               Assert.Contains(_entityTypeDisplayName, Stdout);
-           });
+            {
+                RunWithSessionId("session-entity-types:list");
+                Assert.Contains(_entityTypeDisplayName, Stdout);
+            });
+
+            CleanupAfterTest(() => RunWithSessionId("session-entity-types:delete", _entityTypeDisplayName));
         }
 
         [Fact]
