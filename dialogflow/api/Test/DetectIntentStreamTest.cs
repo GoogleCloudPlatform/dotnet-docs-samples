@@ -20,12 +20,13 @@ namespace GoogleCloudSamples
 {
     public class DetectIntentStreamsTest : DialogflowTest
     {
-        protected string _audioWavPath = Path.Combine("resources", "book_a_room.wav");
 
         [Fact]
         void TestDetectIntentFromStream()
         {
-            RunWithSessionId("detect-intent:stream", _audioWavPath);
+            var _audioWavPath = Path.Combine("resources", "book_a_room.wav");
+
+            RunWithSessionId("detect-intent:streams", _audioWavPath);
             Assert.Equal(0, ExitCode);
 
             Assert.Contains("book", Stdout);
