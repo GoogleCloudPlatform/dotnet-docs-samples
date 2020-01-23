@@ -230,7 +230,7 @@ namespace GoogleCloudSamples
         {
             return _manageIndexes.Run(args);
         }
-        
+
         readonly CommandLineRunner _distrubutedCounter = new CommandLineRunner()
         {
             VoidMain = DistributedCounter.Main,
@@ -840,7 +840,7 @@ namespace GoogleCloudSamples
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             RunPaginateData("multiple-cursor-conditions", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
         }
-        
+
         [Fact]
         public void RunDistributedCounterTest()
         {
