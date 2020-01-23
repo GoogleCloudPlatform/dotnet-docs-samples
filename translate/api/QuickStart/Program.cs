@@ -21,7 +21,7 @@ public class QuickStart
 {
     public static void Main(string[] args)
     {
-        Console.OutputEncoding = System.Text.Encoding.Unicode;
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         TranslationClient client = TranslationClient.Create();
         var response = client.TranslateText("Hello World.", "ru");
         Console.WriteLine(response.TranslatedText);
