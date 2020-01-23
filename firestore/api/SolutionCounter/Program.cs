@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2019 Google LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -64,7 +64,7 @@ namespace GoogleCloudSamples
     /// Defines the <see cref="DistributedCounter" />
     /// </summary>
     public class DistributedCounter
-    { 
+    {
         public static string Usage = @"Usage:
 C:\> dotnet run command YOUR_PROJECT_ID
 
