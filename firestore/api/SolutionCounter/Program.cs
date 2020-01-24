@@ -14,176 +14,93 @@
  * the License.
  */
 
+using Google.Api.Gax;
+using Google.Cloud.Firestore;
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Google.Cloud.Firestore;
 
 namespace GoogleCloudSamples
 {
-    // Counter is a collection of documents (shards)
-    // to realize counter with high frequency.
-
-    // [START counter_classes]
-
-    // counters/${ID}
     /// <summary>
-    /// Defines the <see cref="Counter" />
-    /// </summary>
-    [FirestoreData]
-    public class Counter
-    {
-        /// <summary>
-        /// Gets or sets the NumShards
-        /// </summary>
-        [FirestoreProperty]
-        public int NumShards { get; set; }
-    }
-
-    // Shard is a single counter, which is used in a group
-    // of other shards within Counter.
-
-    // counters/${ID}/shards/${NUM}
-    /// <summary>
-    /// Defines the <see cref="Shard" />
-    /// </summary>
-    [FirestoreData]
-    public class Shard
-    {
-        /// <summary>
-        /// Gets or sets the Count
-        /// </summary>
-        [FirestoreProperty]
-        public int Count { get; set; }
-    }
-
-    // [END fs_counter_classes]
-
-    /// <summary>
-    /// Defines the <see cref="DistributedCounter" />
+    /// To support more frequent counter updates, create a distributed counter.
+    /// Each counter is a document with a subcollection of "shards," and 
+    /// the value of the counter is the sum of the value of the shards.
     /// </summary>
     public class DistributedCounter
     {
-        public static string Usage = @"Usage:
+        private static Random s_rand = new Random();
+        private static object s_randLock = new object();
+        private const string Usage = @"Usage:
 C:\> dotnet run command YOUR_PROJECT_ID
 
 Where command is one of
-    run-distributed-counter
+    distributed-counter
 ";
+        // [START fs_counter_classes]
         /// <summary>
-        /// Gets or sets the FireStoreDb
+        /// Shard is a document that contains the count.
         /// </summary>
-        public static FirestoreDb FirestoreDb { get; set; }
-
-        /// <summary>
-        /// Gets or sets the ShardsCounter
-        /// </summary>
-        public static Counter ShardsCounter { get; set; }
-
-        /// <summary>
-        /// The InitFireStoreDb
-        /// </summary>
-        public static void InitFirestoreDb(string project)
+        [FirestoreData]
+        public class Shard
         {
-            var projectId = project;
-            if (string.IsNullOrEmpty(projectId))
-                throw new ArgumentException("ArgumentException: failed read Firestore Project ID");
-
-            FirestoreDb = FirestoreDb.Create(projectId: projectId);
-            Console.WriteLine($"Created Cloud Firestore client with project ID: {project}");
+            [FirestoreProperty(name: "count")]
+            public int Count { get; set; }
         }
-
-        /// <summary>
-        /// The InitShardsCounter
-        /// </summary>
-        /// <param name="numShards">The numShards<see cref="int"/></param>
-        public static void InitShardsCounter(int numShards)
-        {
-            // Initialize whole global count of shards
-            // in ShardsCounter property 
-            ShardsCounter = new Counter
-            {
-                NumShards = numShards
-            };
-        }
+        // [END fs_counter_classes]
 
         // [START fs_create_counter]
-
         /// <summary>
-        /// The InitCounterAsync creates a given number of shards as
-        /// sub collection of specified document.
+        /// Create a given number of shards as a
+        /// subcollection of specified document.
         /// </summary>
-        /// <param name="docRef">The docRef<see cref="DocumentReference"/></param>
+        /// <param name="docRef">The document reference <see cref="DocumentReference"/></param>
         /// <returns>The <see cref="Task"/></returns>
-        public static async Task InitCounterAsync(DocumentReference docRef)
+        private static async Task CreateCounterAsync(DocumentReference docRef, int numOfShards)
         {
             CollectionReference colRef = docRef.Collection("shards");
-
-            // Initialize each shard with count=0
-            for (var i = 0; i < ShardsCounter.NumShards; i++)
+            var tasks = new List<Task>();
+            // Initialize each shard with Count=0
+            for (var i = 0; i < numOfShards; i++)
             {
-                await colRef.Document(i.ToString()).SetAsync(new Shard { Count = 0 });
+                tasks.Add(colRef.Document(i.ToString()).SetAsync(new Shard() { Count = 0 }));
             }
+            await Task.WhenAll(tasks);
         }
-
         // [END fs_create_counter]
 
         // [START fs_increment_counter]
-
         /// <summary>
-        /// The IncrementCounterAsync increments a randomly picked shard.
+        /// Increment a randomly picked shard by 1.
         /// </summary>
-        /// <param name="docRef">The docRef<see cref="DocumentReference"/></param>
+        /// <param name="docRef">The document reference <see cref="DocumentReference"/></param>
         /// <returns>The <see cref="Task"/></returns>
-        public static async Task IncrementCounterAsync(DocumentReference docRef)
+        private static async Task IncrementCounterAsync(DocumentReference docRef, int numOfShards)
         {
-            var rand = new Random();
-            var docId = rand.Next(0, ShardsCounter.NumShards);
-            var shardRef = docRef.Collection("shards").Document(docId.ToString());
-            await shardRef.UpdateAsync("Count", FieldValue.Increment(1));
+            int documentId;
+            lock (s_randLock)
+            {
+                documentId = s_rand.Next(numOfShards);
+            }
+            var shardRef = docRef.Collection("shards").Document(documentId.ToString());
+            await shardRef.UpdateAsync("count", FieldValue.Increment(1));
         }
-
         // [END fs_increment_counter]
 
         // [START fs_get_count]
-
         /// <summary>
-        /// The GetCount returns a total count across all shards.
+        /// Get total count across all shards.
         /// </summary>
-        /// <param name="docRef">The docRef<see cref="DocumentReference"/></param>
+        /// <param name="docRef">The document reference <see cref="DocumentReference"/></param>
         /// <returns>The <see cref="int"/></returns>
-        public static int GetCount(DocumentReference docRef)
+        private static async Task<int> GetCountAsync(DocumentReference docRef)
         {
-            var snapshotList = docRef.Collection("shards").GetSnapshotAsync().Result;
-            return snapshotList.Sum(snap => snap.GetValue<int>("Count"));
+            var snapshotList = await docRef.Collection("shards").GetSnapshotAsync();
+            return snapshotList.Sum(shard => shard.GetValue<int>("count"));
         }
         // [END fs_get_count]
 
-        private static void RunCodeSample(string project)
-        {
-            InitFirestoreDb(project);
-            InitShardsCounter(5);
-
-            var docRef = FirestoreDb.Collection("counter_samples").Document("DCounter");
-
-            Console.WriteLine("Application start ...");
-            InitCounterAsync(docRef).Wait();
-            Console.WriteLine("Distributed counter initialized.");
-
-            IncrementCounterAsync(docRef).Wait();
-            Console.WriteLine("Distributed counter incremented.");
-
-            var countTotal = GetCount(docRef);
-
-            Console.WriteLine($"Total count: {countTotal}");
-            Console.WriteLine("Application stopped ...");
-        }
-
-        /// <summary>
-        /// The Main
-        /// </summary>
-        /// <param name="args">The args<see cref="string[]"/></param>
         public static void Main(string[] args)
         {
             if (args.Length < 2)
@@ -192,12 +109,23 @@ Where command is one of
                 return;
             }
             string command = args[0].ToLower();
-            string project = string.Join(" ",
+            string projectId = string.Join(" ",
                 new ArraySegment<string>(args, 1, args.Length - 1));
             switch (command)
             {
-                case "run-distributed-counter":
-                    RunCodeSample(project);
+                case "distributed-counter":
+                    FirestoreDb db = FirestoreDb.Create(projectId);
+                    const int numberOfShards = 5;
+                    var docRef = db.Collection("counter_samples").Document("DCounter");
+
+                    CreateCounterAsync(docRef, numberOfShards).Wait();
+                    Console.WriteLine("Distributed counter created.");
+
+                    IncrementCounterAsync(docRef, numberOfShards).Wait();
+                    Console.WriteLine("Distributed counter incremented.");
+
+                    var countTotal = Task.Run(() => GetCountAsync(docRef)).ResultWithUnwrappedExceptions();
+                    Console.WriteLine($"Total count: {countTotal}");
                     break;
 
                 default:

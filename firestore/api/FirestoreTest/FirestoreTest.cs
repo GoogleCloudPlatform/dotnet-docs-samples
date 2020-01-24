@@ -14,20 +14,13 @@
  * the License.
  */
 
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Firestore;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
-using Google.Cloud.Firestore;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using Newtonsoft.Json;
-
 
 namespace GoogleCloudSamples
 {
@@ -844,9 +837,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void RunDistributedCounterTest()
         {
-            var output = RunDistributedCounter("run-distributed-counter", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            Assert.Contains("Created Cloud Firestore client with project ID", output.Stdout);
-            Assert.Contains("Distributed counter initialized.", output.Stdout);
+            var output = RunDistributedCounter("distributed-counter", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Distributed counter created.", output.Stdout);
             Assert.Contains("Distributed counter incremented.", output.Stdout);
             Assert.DoesNotContain("Total count: 0", output.Stdout);
         }
