@@ -9,13 +9,15 @@ namespace GoogleCloudSamples
     public class ProductSearchTestsBase
     {
         protected string RegionName { get; private set; } = "us-west1";
-        protected string ProductId { get; private set; } = "fake_product_id_for_testing_1";
+        protected string ProductId { get; private set; } = "fake_product_id_for_testing_1" + TestUtil.RandomName();
         protected string ProductDisplayName { get; private set; } = "fake_product_display_name_for_testing";
         protected string ProductCategory { get; private set; } = "apparel";
-        protected string ProductId2 { get; private set; } = "fake_product_id_for_testing_2";
-        protected string ProductSetId { get; private set; } = "fake_product_set_id_for_testing";
+        protected string ProductId2 { get; private set; } = "fake_product_id_for_testing_2" + TestUtil.RandomName();
+        protected string ImportedProductSetId { get; private set; } = "fake_product_set_id_for_testing";
+        protected string ImportedProductId { get; private set; } = "fake_product_id_for_testing_1";
+        protected string ProductSetId { get; private set; } = "fake_product_set_id_for_testing" + TestUtil.RandomName();
         protected string ProductSetDisplayName { get; private set; } = "fake_product_set_display_name_for_testing";
-        protected string RefImageId { get; private set; } = "fake_ref_image_id";
+        protected string RefImageId { get; private set; } = "fake_ref_image_id" + TestUtil.RandomName();
         protected string RefImageGcsUri { get; private set; } = "gs://cloud-samples-data/vision/product_search/shoes_1.jpg";
         protected string CsvGcsUri { get; private set; } = "gs://cloud-samples-data/vision/product_search/product_sets.csv";
         protected string ImageUri1 { get; private set; } = "shoes_1.jpg";
@@ -357,11 +359,10 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
 
             output = Run("list_product_sets", ProjectId, RegionName);
-            Assert.Contains(ProductSetId, output.Stdout);
+            Assert.Contains(ImportedProductSetId, output.Stdout);
 
             output = Run("list_products", ProjectId, RegionName);
-            Assert.Contains(ProductId, output.Stdout);
-            Assert.Contains(ProductId2, output.Stdout);
+            Assert.Contains(ImportedProductId, output.Stdout);
         }
     }
 }

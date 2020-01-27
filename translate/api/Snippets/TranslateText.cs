@@ -21,6 +21,7 @@ public partial class TranslateSample
 {
     public string TranslateText()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         TranslationClient client = TranslationClient.Create();
         var response = client.TranslateText(
             text: "Hello World.",
