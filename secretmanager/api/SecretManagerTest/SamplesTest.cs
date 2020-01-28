@@ -30,6 +30,7 @@ namespace GoogleCloudSamples
     public class SampleTests : IClassFixture<SecretsFixture>
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        private static readonly string s_iamUser = $"user:sethvargo@google.com";
         private static readonly SecretManagerServiceClient s_client = SecretManagerServiceClient.Create();
 
         protected SecretsFixture secretsFixture;
@@ -154,6 +155,22 @@ namespace GoogleCloudSamples
             var name = secretsFixture.Secret.SecretName;
             var output = Run("get", name.ProjectId, name.SecretId);
             Assert.Contains($"Secret {name}, replication Automatic", output.Stdout);
+        }
+
+        [Fact]
+        public void TestIAMGrantAccess()
+        {
+            var name = secretsFixture.Secret.SecretName;
+            var output = Run("iam-grant-access", name.ProjectId, name.SecretId, $"{s_iamUser}");
+            Assert.Contains($"Updated IAM policy for {name.SecretId}", output.Stdout);
+        }
+
+        [Fact]
+        public void TestIAMRevokeAccess()
+        {
+            var name = secretsFixture.Secret.SecretName;
+            var output = Run("iam-revoke-access", name.ProjectId, name.SecretId, $"{s_iamUser}");
+            Assert.Contains($"Updated IAM policy for {name.SecretId}", output.Stdout);
         }
 
         [Fact]

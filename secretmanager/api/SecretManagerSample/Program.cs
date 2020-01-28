@@ -44,6 +44,18 @@ namespace GoogleCloudSamples
         public string SecretId { get; set; }
     }
 
+    class SecretIAMOptions
+    {
+        [Value(0, HelpText = "Project for the secret", Required = true)]
+        public string ProjectId { get; set; }
+
+        [Value(1, HelpText = "ID of the secret", Required = true)]
+        public string SecretId { get; set; }
+
+        [Value(2, HelpText = "Name of the member", Required = true)]
+        public string Member { get; set; }
+    }
+
     class SecretVersionOptions
     {
         [Value(0, HelpText = "Project for the secret", Required = true)]
@@ -88,6 +100,12 @@ namespace GoogleCloudSamples
 
     [Verb("get-version", HelpText = "Get secret version")]
     class GetSecretVersionOptions : SecretVersionOptions { }
+
+    [Verb("iam-grant-access", HelpText = "Grant IAM access")]
+    class IAMGrantAccessOptions : SecretIAMOptions { }
+
+    [Verb("iam-revoke-access", HelpText = "Revoke IAM access")]
+    class IAMRevokeAccessOptions : SecretIAMOptions { }
 
     [Verb("list-versions", HelpText = "List secret versions")]
     class ListSecretVersionsOptions : SecretOptions { }
@@ -362,6 +380,88 @@ namespace GoogleCloudSamples
         }
         // [END secretmanager_get_secret]
 
+        // [START secretmanager_iam_grant_access]
+        /// <summary>
+        /// Grant a user or account access to the secret.
+        /// </summary>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
+        /// <param name="member">IAM member to grant with user: or serviceAccount: prefix</param>
+        /// <example>
+        /// Grant a user or account access to the secret.
+        /// <code>IAMGrantAccess("my-project", "my-secret", "user:foo@example.com")</code>
+        /// </example>
+        public static void IAMGrantAccess(string projectId, string secretId, string member)
+        {
+            SecretManagerServiceClient client = SecretManagerServiceClient.Create();
+
+            // Create the request to get the current IAM policy.
+            var getRequest = new GetIamPolicyRequest
+            {
+                ResourceAsResourceName = new SecretName(projectId, secretId),
+            };
+
+            // Get the current IAM policy.
+            var policy = client.GetIamPolicy(getRequest);
+
+            // Add the user to the list of bindings.
+            policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
+
+            // Create the request to update the IAM policy.
+            var setRequest = new SetIamPolicyRequest
+            {
+                ResourceAsResourceName = new SecretName(projectId, secretId),
+                Policy = policy,
+            };
+
+            // Save the updated IAM policy.
+            client.SetIamPolicy(setRequest);
+
+            Console.WriteLine($"Updated IAM policy for {secretId}");
+        }
+        // [END secretmanager_iam_grant_access]
+
+        // [START secretmanager_iam_revoke_access]
+        /// <summary>
+        /// Revoke a user or account access to the secret.
+        /// </summary>
+        /// <param name="projectId">ID of the project where the secret resides.</param>
+        /// <param name="secretId">ID of the secret.</param>
+        /// <param name="member">IAM member to revoke with user: or serviceAccount: prefix</param>
+        /// <example>
+        /// Revoke a user or account access to the secret.
+        /// <code>IAMRevokeAccess("my-project", "my-secret", "user:foo@example.com")</code>
+        /// </example>
+        public static void IAMRevokeAccess(string projectId, string secretId, string member)
+        {
+            SecretManagerServiceClient client = SecretManagerServiceClient.Create();
+
+            // Create the request to get the current IAM policy.
+            var getRequest = new GetIamPolicyRequest
+            {
+                ResourceAsResourceName = new SecretName(projectId, secretId),
+            };
+
+            // Get the current IAM policy.
+            var policy = client.GetIamPolicy(getRequest);
+
+            // Remove the user to the list of bindings.
+            policy.RemoveRoleMember("roles/secretmanager.secretAccessor", member);
+
+            // Create the request to update the IAM policy.
+            var setRequest = new SetIamPolicyRequest
+            {
+                ResourceAsResourceName = new SecretName(projectId, secretId),
+                Policy = policy,
+            };
+
+            // Save the updated IAM policy.
+            client.SetIamPolicy(setRequest);
+
+            Console.WriteLine($"Updated IAM policy for {secretId}");
+        }
+        // [END secretmanager_iam_revoke_access]
+
         // [START secretmanager_list_secret_versions]
         /// <summary>
         /// List all secret versions for a secret.
@@ -464,6 +564,8 @@ namespace GoogleCloudSamples
                     typeof(DisableSecretVersionOptions),
                     typeof(GetSecretVersionOptions),
                     typeof(GetSecretOptions),
+                    typeof(IAMGrantAccessOptions),
+                    typeof(IAMRevokeAccessOptions),
                     typeof(ListSecretVersionsOptions),
                     typeof(ListSecretsOptions),
                     typeof(UpdateSecretOptions))
@@ -476,6 +578,8 @@ namespace GoogleCloudSamples
                 .WithParsed<EnableSecretVersionOptions>(opts => EnableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
                 .WithParsed<GetSecretVersionOptions>(opts => GetSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
                 .WithParsed<GetSecretOptions>(opts => GetSecret(opts.ProjectId, opts.SecretId))
+                .WithParsed<IAMGrantAccessOptions>(opts => IAMGrantAccess(opts.ProjectId, opts.SecretId, opts.Member))
+                .WithParsed<IAMRevokeAccessOptions>(opts => IAMRevokeAccess(opts.ProjectId, opts.SecretId, opts.Member))
                 .WithParsed<ListSecretVersionsOptions>(opts => ListSecretVersions(opts.ProjectId, opts.SecretId))
                 .WithParsed<ListSecretsOptions>(opts => ListSecrets(opts.ProjectId))
                 .WithParsed<UpdateSecretOptions>(opts => UpdateSecret(opts.ProjectId, opts.SecretId));

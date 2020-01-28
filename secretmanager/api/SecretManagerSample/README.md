@@ -28,33 +28,37 @@ This sample requires [.NET Core 3.0](
     ```text
     No verb selected.
 
-      access-version     Access the provided secret version
+      access-version       Access the provided secret version
 
-      add-version        Add a new version
+      add-version          Add a new version
 
-      create             Create a secret
+      create               Create a secret
 
-      destroy-version    Destroy secret version
+      destroy-version      Destroy secret version
 
-      delete             Delete secret
+      delete               Delete secret
 
-      enable-version     Enable secret version
+      enable-version       Enable secret version
 
-      disable-version    Disable secret version
+      disable-version      Disable secret version
 
-      get-version        Get secret version
+      get-version          Get secret version
 
-      get                Get secret
+      get                  Get secret
 
-      list-versions      List secret versions
+      iam-grant-access     Grant IAM access
 
-      list               List secrets
+      iam-revoke-access    Revoke IAM access
 
-      update             Update secret
+      list-versions        List secret versions
 
-      help               Display more information on a specific command.
+      list                 List secrets
 
-      version            Display version information.
+      update               Update secret
+
+      help                 Display more information on a specific command.
+
+      version              Display version information.
     ```
 
 ## Contributing changes
