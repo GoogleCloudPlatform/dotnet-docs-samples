@@ -30,8 +30,8 @@ namespace GoogleCloudSamples
     /// </summary>
     public class DistributedCounter
     {
-        private static Random s_rand = new Random();
-        private static object s_randLock = new object();
+        private static readonly Random s_rand = new Random();
+        private static readonly object s_randLock = new object();
         private const string Usage = @"Usage:
 C:\> dotnet run command YOUR_PROJECT_ID
 
