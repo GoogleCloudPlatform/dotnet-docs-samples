@@ -72,7 +72,6 @@ namespace GoogleCloudSamples
 
             // Instructs the speech recognizer how to process the audio content.
             // Note: hard coding audioEncoding, sampleRateHertz for simplicity.
-            // Audio encoding of the audio content sent in the query request.
             var queryInput = new QueryInput
             {
                 AudioConfig = new InputAudioConfig
