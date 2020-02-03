@@ -22,7 +22,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace GoogleCloudSamples
 {
@@ -87,14 +86,6 @@ namespace GoogleCloudSamples
             "  Storage enable-uniform-bucket-level-access bucket-name\n" +
             "  Storage disable-uniform-bucket-level-access bucket-name\n" +
             "  Storage get-uniform-bucket-level-access bucket-name\n";
-
-        private void CreateRegionalBucket(string location, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            Bucket bucket = new Bucket { Location = location, Name = bucketName };
-            storage.CreateBucket(s_projectId, bucket);
-            Console.WriteLine($"Created {bucketName}.");
-        }
 
         // [START storage_list_buckets]
         private void ListBuckets()
@@ -1239,7 +1230,7 @@ namespace GoogleCloudSamples
 
                     case "create-regional-bucket":
                         if (args.Length < 2 && PrintUsage()) return -1;
-                        CreateRegionalBucket(args[1], args.Length < 3 ? RandomBucketName() : args[2]);
+                        CreateNewBucket.CreateRegionalBucket(s_projectId, args[1], args.Length < 3 ? RandomBucketName() : args[2]);
                         break;
 
                     case "list":
