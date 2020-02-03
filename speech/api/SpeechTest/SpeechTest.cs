@@ -37,6 +37,24 @@ namespace GoogleCloudSamples
         }
     }
 
+    public class TranscribeContextClassesTests
+    {
+        private static readonly string s_AUDIO_FILE = "gs://cloud-samples-data/speech/commercial_mono.wav";
+        readonly CommandLineRunner _transcribeContextClasess = new CommandLineRunner()
+        {
+            VoidMain = TranscribeContext.Main,
+            Command = "Transcribe Context Classes"
+        };
+
+        [Fact]
+        public void TestTranscribeContext()
+        {
+            var output = _transcribeContextClasess.Run(s_AUDIO_FILE);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Transcript:", output.Stdout);
+        }
+    }
+
     public abstract class CommonRecognizeTests
     {
         protected readonly CommandLineRunner _recognize = new CommandLineRunner()
