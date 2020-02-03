@@ -29,7 +29,7 @@ namespace Storage
         }
         // [END storage_create_bucket]
 
-        // [START storage_create_bucket_with_location]
+        // [START storage_create_bucket_class_location]
         public static void CreateRegionalBucket(string projectId, string location, string bucketName)
         {
             var storage = StorageClient.Create();
@@ -37,6 +37,6 @@ namespace Storage
             storage.CreateBucket(projectId, bucket);
             Console.WriteLine($"Created {bucketName}.");
         }
-        // [END storage_create_bucket_with_location]
+        // [END storage_create_bucket_class_location]
     }
 }
