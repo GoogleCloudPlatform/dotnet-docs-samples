@@ -56,7 +56,6 @@ Where command is one of
         /// subcollection of specified document.
         /// </summary>
         /// <param name="docRef">The document reference <see cref="DocumentReference"/></param>
-        /// <returns>The <see cref="Task"/></returns>
         private static async Task CreateCounterAsync(DocumentReference docRef, int numOfShards)
         {
             CollectionReference colRef = docRef.Collection("shards");
@@ -118,10 +117,10 @@ Where command is one of
                     const int numberOfShards = 5;
                     var docRef = db.Collection("counter_samples").Document("DCounter");
 
-                    CreateCounterAsync(docRef, numberOfShards).Wait();
+                    Task.Run(() => CreateCounterAsync(docRef, numberOfShards)).WaitWithUnwrappedExceptions();
                     Console.WriteLine("Distributed counter created.");
 
-                    IncrementCounterAsync(docRef, numberOfShards).Wait();
+                    Task.Run(() => IncrementCounterAsync(docRef, numberOfShards)).WaitWithUnwrappedExceptions();
                     Console.WriteLine("Distributed counter incremented.");
 
                     var countTotal = Task.Run(() => GetCountAsync(docRef)).ResultWithUnwrappedExceptions();

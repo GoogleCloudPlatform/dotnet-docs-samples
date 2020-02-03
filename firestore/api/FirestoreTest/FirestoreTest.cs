@@ -840,7 +840,7 @@ namespace GoogleCloudSamples
             var output = RunDistributedCounter("distributed-counter", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             Assert.Contains("Distributed counter created.", output.Stdout);
             Assert.Contains("Distributed counter incremented.", output.Stdout);
-            Assert.DoesNotContain("Total count: 0", output.Stdout);
+            Assert.Contains("Total count: 1", output.Stdout);
         }
     }
 }
