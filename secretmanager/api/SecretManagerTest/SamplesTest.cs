@@ -30,7 +30,7 @@ namespace GoogleCloudSamples
     public class SampleTests : IClassFixture<SecretsFixture>
     {
         private static readonly string s_projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        private static readonly string s_iamUser = $"user:sethvargo@google.com";
+        private static readonly string s_iamUser = Environment.GetEnvironmentVariable("DOTNET_SECRETMANAGER_SAMPLES_IAM_USER");
         private static readonly SecretManagerServiceClient s_client = SecretManagerServiceClient.Create();
 
         protected SecretsFixture secretsFixture;
