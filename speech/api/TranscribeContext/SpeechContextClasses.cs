@@ -12,14 +12,14 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START speech_adaptation]
+// [START speech_context_classes]
 
-using System;
 using Google.Cloud.Speech.V1;
+using System;
 
 namespace GoogleCloudSamples
 {
-    public class TranscribeContextClass
+    public class SpeechContextClasses
     {
         /// <summary>
         /// Provides "hints" to the speech recognizer to favor specific classes of words in the results.
@@ -71,4 +71,4 @@ namespace GoogleCloudSamples
         }
     }
 }
-// [END speech_adaptation]
+// [END speech_context_classes]
