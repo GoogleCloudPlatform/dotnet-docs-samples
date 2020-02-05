@@ -39,7 +39,7 @@ namespace GoogleCloudSamples
 
     public class TranscribeContextClassesTests
     {
-        private static readonly string AUDIO_FILE = "gs://cloud-samples-data/speech/commercial_mono.wav";
+        private static readonly string s_AUDIO_FILE = "gs://cloud-samples-data/speech/commercial_mono.wav";
         readonly CommandLineRunner _transcribeContextClasess = new CommandLineRunner()
         {
             VoidMain = TranscribeContext.Main,
@@ -49,7 +49,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestTranscribeContext()
         {
-            var output = _transcribeContextClasess.Run(AUDIO_FILE);
+            var output = _transcribeContextClasess.Run(s_AUDIO_FILE);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Transcript:", output.Stdout);
         }
