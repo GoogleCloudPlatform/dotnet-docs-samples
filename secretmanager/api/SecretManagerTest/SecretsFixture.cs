@@ -19,6 +19,9 @@ using System.Text;
 using Xunit;
 
 using Google.Api.Gax.ResourceNames;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Iam.v1;
+using Google.Apis.Iam.v1.Data;
 using Google.Cloud.SecretManager.V1Beta1;
 using Google.Protobuf;
 
@@ -40,6 +43,7 @@ namespace GoogleCloudSamples
         public SecretVersion SecretVersionToDestroy { get; private set; }
         public SecretVersion SecretVersionToDisable { get; private set; }
         public SecretVersion SecretVersionToEnable { get; private set; }
+        public string ServiceAccountEmail { get; private set; }
 
         public SecretsFixture()
         {
@@ -51,13 +55,15 @@ namespace GoogleCloudSamples
             Secret = CreateSecret();
             SecretToDelete = CreateSecret();
             SecretWithVersions = CreateSecret();
-            SecretToCreateName = new SecretName(s_projectId, RandomSecretId());
+            SecretToCreateName = new SecretName(s_projectId, RandomId());
 
             SecretVersion = AddSecretVersion(SecretWithVersions);
             SecretVersionToDestroy = AddSecretVersion(SecretWithVersions);
             SecretVersionToDisable = AddSecretVersion(SecretWithVersions);
             SecretVersionToEnable = AddSecretVersion(SecretWithVersions);
             DisableSecretVersion(SecretVersionToEnable);
+
+            ServiceAccountEmail = CreateServiceAccount();
         }
 
         public void Dispose()
@@ -66,16 +72,17 @@ namespace GoogleCloudSamples
             DeleteSecret(SecretToCreateName);
             DeleteSecret(SecretToDelete.SecretName);
             DeleteSecret(SecretWithVersions.SecretName);
+            DeleteServiceAccount(ServiceAccountEmail);
         }
 
-        private String RandomSecretId()
+        private String RandomId()
         {
             return $"csharp-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
         }
 
         private Secret CreateSecret()
         {
-            var secretId = RandomSecretId();
+            var secretId = RandomId();
             var request = new CreateSecretRequest
             {
                 ParentAsProjectName = new ProjectName(s_projectId),
@@ -128,6 +135,46 @@ namespace GoogleCloudSamples
             {
                 SecretVersionName = version.SecretVersionName,
             });
+        }
+
+        private IamService TestIamService()
+        {
+            var credential = GoogleCredential.GetApplicationDefault()
+                .CreateScoped(IamService.Scope.CloudPlatform);
+
+            var service = new IamService(new IamService.Initializer
+            {
+                HttpClientInitializer = credential
+            });
+
+            return service;
+        }
+
+        private string CreateServiceAccount()
+        {
+            var service = TestIamService();
+
+            var request = new CreateServiceAccountRequest
+            {
+                AccountId = RandomId(),
+                ServiceAccount = new ServiceAccount
+                {
+                    DisplayName = "Test service account"
+                }
+            };
+
+            var serviceAccount = service.Projects.ServiceAccounts.Create(
+                request, $"projects/{s_projectId}").Execute();
+
+            return serviceAccount.Email;
+        }
+
+        private void DeleteServiceAccount(string email)
+        {
+            var service = TestIamService();
+
+            var resource = $"projects/-/serviceAccounts/{email}";
+            service.Projects.ServiceAccounts.Delete(resource).Execute();
         }
     }
 }
