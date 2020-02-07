@@ -18,6 +18,9 @@ using CommandLine;
 using System;
 using System.IO;
 using Google.Cloud.TextToSpeech.V1;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace GoogleCloudSamples
 {
@@ -50,6 +53,24 @@ namespace GoogleCloudSamples
         public string Text { get; set; }
     }
 
+    [Verb("filesynthesize", HelpText = "Synthesize a file to audio")]
+    class FileSynthesizeArgs : BaseTextToSpeechOptions
+    {
+        [Value(0, HelpText = "The file to synthesize",
+            Required = true)]
+        public string FileName { get; set; }
+
+        [Option('n', HelpText = "Num instances")]
+        public int NumInstances { get; set; }
+
+        [Option('l', HelpText = "Total lines")]
+        public int Lines { get; set; }
+
+        [Option('g', HelpText = "To use new guid or use text in file")]
+        public bool NewGuid { get; set; }
+    }
+
+
     [Verb("synthesize-with-profile",
           HelpText = "Synthesize text and optimize output for a device profile")]
     class SynthesizeWithEffectsArgs : SynthesizeFileArgs
@@ -67,7 +88,7 @@ namespace GoogleCloudSamples
         {
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             Parser.Default.ParseArguments<ListArgs, SynthesizeArgs,
-                SynthesizeFileArgs, SynthesizeWithEffectsArgs>(args).MapResult(
+                SynthesizeFileArgs, SynthesizeWithEffectsArgs, FileSynthesizeArgs>(args).MapResult(
                 (ListArgs largs) => largs.DesiredLanguage == null ?
                     ListVoices() : ListVoices(largs.DesiredLanguage),
                 (SynthesizeWithEffectsArgs sargs) =>
@@ -76,6 +97,7 @@ namespace GoogleCloudSamples
                                                    sargs.EffectsProfileId),
                 (SynthesizeArgs sargs) => Synthesize(sargs),
                 (SynthesizeFileArgs sfargs) => SynthesizeFile(sfargs),
+                (FileSynthesizeArgs sfargs) => FileSynthesizeText(sfargs),
                 errs => 1);
         }
 
@@ -204,6 +226,59 @@ namespace GoogleCloudSamples
             }
         }
         // [END tts_synthesize_ssml]
+
+        public static string GetOne()
+        {
+            lock (linelist)
+            {
+                if (linelist.Count > 0)
+                {
+                    string line = linelist[0];
+                    linelist.RemoveAt(0);
+                    return line;
+                }
+                return null;
+            }
+        }
+
+        public static List<string> linelist = new List<string>();
+        internal static int FileSynthesizeText(FileSynthesizeArgs args)
+        {
+            string[] lines = File.ReadAllLines(args.FileName);
+            for (int i = 0; i < args.Lines; i++)
+            {
+                if (args.NewGuid)
+                {
+                    linelist.Add(Guid.NewGuid().ToString());
+                }
+                else
+                {
+                    linelist.Add(lines[i % lines.Length]);
+                }
+            }
+            Console.WriteLine($"{linelist.Count} lines found");
+            List<Task> tlist = new List<Task>();
+            string testid = Guid.NewGuid().ToString();
+            Console.WriteLine($"Start at [{DateTime.Now}] with run id {testid}");
+            for (int i = 0; i < args.NumInstances; i++)
+            {
+                tlist.Add(Task.Run(new SynthesizeThread(testid).Synthesize));
+            }
+            Task.WaitAll(tlist.ToArray());
+            Console.WriteLine($"Avg FBL: {totalFirstSeconds / lineCount}, lines {lineCount}, rtf {totalFirstSeconds / totalAudioSeconds}");
+            Console.WriteLine("Done");
+            return 0;
+        }
+
+        static double totalFirstSeconds = 0;
+        static double totalAudioSeconds = 0;
+        static int lineCount = 0;
+        internal static void SumUp(int kount, double ts, double ats)
+        {
+            lineCount += kount;
+            totalFirstSeconds += ts;
+            totalAudioSeconds += ats;
+        }
 
         private static int SynthesizeFile(SynthesizeFileArgs args)
         {
