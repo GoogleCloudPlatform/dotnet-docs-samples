@@ -1,17 +1,17 @@
 ﻿using Google.Cloud.TextToSpeech.V1;
-using Google.Type;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace GoogleCloudSamples
 {
+    /// <summary>
+    /// synthesize thread to work one after another
+    /// </summary>
     class SynthesizeThread
     {
         private static int iD = 1;
-        private int id = iD++;
-        private string testId;
+        private readonly int id = iD++;
+        private readonly string testId;
 
         public SynthesizeThread(string testid)
         {
@@ -46,7 +46,7 @@ namespace GoogleCloudSamples
                 AudioConfig = audio
             });
 
-            string line = TextToSpeech.GetOne();
+            string line = TextToSpeech.GetOneSentence();
             int k = 0;
             double totalFirstTime = 0;
             double totalAudioTime = 0;
@@ -69,11 +69,13 @@ namespace GoogleCloudSamples
                 TimeSpan span = DateTime.Now - stime;
                 byte[] audioData = response.AudioContent.ToByteArray();
                 double audioLength = audioData.Length * 1.0 / 24000 / 2;
-                Console.WriteLine($"[{id}] FBL: {span.TotalSeconds}, audio length: {audioLength}.");
+
+                // FBL: first byte latency
+                Console.WriteLine($"[{id}] FBL: {span.TotalSeconds}, audio length: {audioLength}, RTF: {span.TotalSeconds / audioLength}.");
                 File.WriteAllBytes(testId + "_" + id + "_" + k + ".wav", audioData);
                 totalAudioTime += audioLength;
                 totalFirstTime += span.TotalSeconds;
-                line = TextToSpeech.GetOne();
+                line = TextToSpeech.GetOneSentence();
             }
 
             TextToSpeech.SumUp(k, totalFirstTime, totalAudioTime);
