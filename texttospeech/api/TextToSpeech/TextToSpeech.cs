@@ -270,7 +270,7 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Start at [{DateTime.Now}] with run id {testid}");
             for (int i = 0; i < args.NumInstances; i++)
             {
-                taskList.Add(Task.Run(new SynthesizeThread(testid).Synthesize));
+                taskList.Add(Task.Run(new Action(new SynthesizeThread(testid).Synthesize)));
             }
             Task.WaitAll(taskList.ToArray());
 
