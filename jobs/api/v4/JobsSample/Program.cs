@@ -14,9 +14,7 @@
  * the License.
  */
 
-using System;
 using CommandLine;
-using Google.Cloud.Talent.V4Beta1;
 
 namespace GoogleCloudSamples
 {
@@ -33,60 +31,60 @@ namespace GoogleCloudSamples
         public string TenantExternalId { get; set; }
     }
 
-    [Verb("createCompany", HelpText = "Create Tenant for scoping resources, e.g. companies and jobs.")]
+    [Verb("createCompany", HelpText = "Create Company.")]
     internal class CreateCompanyOptions : BaseOptions
     {
-        [Value(1, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(1, HelpText = "Your Tenant ID.", Required = true)]
         public string TenantId { get; set; }
-        [Value(2, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(2, HelpText = "Your Company Name.", Required = true)]
         public string DisplayName { get; set; }
-        [Value(3, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(3, HelpText = "Identifier of this company in my system.", Required = true)]
         public string CompanyExternalId { get; set; }
     }
 
-    [Verb("getTenant", HelpText = "Create Tenant for scoping resources, e.g. companies and jobs.")]
+    [Verb("getTenant", HelpText = "Retrieve Tenant by ID.")]
     internal class GetTenantOptions : BaseOptions
     {
-        [Value(1, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(1, HelpText = "Your Tenant ID.", Required = true)]
         public string TenantId { get; set; }
     }
 
 
-    [Verb("deleteTenant", HelpText = "Create Tenant for scoping resources, e.g. companies and jobs.")]
+    [Verb("deleteTenant", HelpText = "Delete Tenant by ID.")]
     internal class DeleteTenantOptions : BaseOptions
     {
-        [Value(1, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(1, HelpText = "Your Tenant ID.", Required = true)]
         public string TenantId { get; set; }
     }
 
-    [Verb("deleteCompany", HelpText = "Create Tenant for scoping resources, e.g. companies and jobs.")]
+    [Verb("deleteCompany", HelpText = "Delete Company by ID.")]
     internal class DeleteCompanyOptions : BaseOptions
     {
-        [Value(1, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(1, HelpText = "Your Tenant ID.", Required = true)]
         public string TenantId { get; set; }
-        [Value(2, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(2, HelpText = "Your Company ID", Required = true)]
         public string CompanyId { get; set; }
     }
 
-    [Verb("listTenants", HelpText = "Create Tenant for scoping resources, e.g. companies and jobs.")]
+    [Verb("listTenants", HelpText = "List Tenants in the project.")]
     internal class ListTenantsOptions : BaseOptions
     {
     }
 
-    [Verb("getCompany", HelpText = "Create Tenant for scoping resources, e.g. companies and jobs.")]
+    [Verb("getCompany", HelpText = "Retrieve a company by ID.")]
     internal class GetCommpanyOptions : BaseOptions
     {
-        [Value(1, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(1, HelpText = "Your Tenant ID.", Required = true)]
         public string TenantId { get; set; }
 
-        [Value(2, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(2, HelpText = "Your Company ID.", Required = true)]
         public string CompanyId { get; set; }
     }
 
-    [Verb("listCompanies", HelpText = "Create Tenant for scoping resources, e.g. companies and jobs.")]
+    [Verb("listCompanies", HelpText = "List Companies in the project.")]
     internal class ListCompaniesOptions : BaseOptions
     {
-        [Value(1, HelpText = "Your Unique Identifier for Tenant.", Required = true)]
+        [Value(1, HelpText = "Your Tenant ID.", Required = true)]
         public string TenantId { get; set; }
     }
 
