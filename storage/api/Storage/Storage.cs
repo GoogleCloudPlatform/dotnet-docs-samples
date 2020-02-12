@@ -1230,7 +1230,7 @@ namespace GoogleCloudSamples
 
                     case "create-regional-bucket":
                         if (args.Length < 2 && PrintUsage()) return -1;
-                        CreateNewBucket.CreateRegionalBucket(s_projectId, args[1], args.Length < 3 ? RandomBucketName() : args[2]);
+                        CreateRegionalBucket.StorageCreateRegionalBucket(s_projectId, args[1], args.Length < 3 ? RandomBucketName() : args[2]);
                         break;
 
                     case "list":
