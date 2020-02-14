@@ -22,4 +22,12 @@ public class QuickStartTest
         QuickStartAddMember.AddBinding(crmService, _project, _member, _role);
         QuickStartRemoveMember.RemoveMember(crmService, _project, _member, _role);
     }
+
+    [Fact]
+    public void TestMain()
+    {
+        // Main() will throw an exception on failure
+        QuickStart.Main(new string[] { });
+        Assert.True(true);
+    }
 }
