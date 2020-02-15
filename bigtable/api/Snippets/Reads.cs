@@ -208,6 +208,13 @@ namespace Reads
         }
         // [END bigtable_reads_filter]
 
+        // [START bigtable_reads_row]
+        // [START bigtable_reads_row_partial]
+        // [START bigtable_reads_rows]
+        // [START bigtable_reads_row_range]
+        // [START bigtable_reads_row_ranges]
+        // [START bigtable_reads_prefix]
+        // [START bigtable_reads_filter]
 
 
         public string printRow(Row row)
