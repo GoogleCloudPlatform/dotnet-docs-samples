@@ -80,7 +80,6 @@ namespace Reads
             RowFilter filter = RowFilters.ColumnQualifierExact("os_build");
             Row row = bigtableClient.ReadRow(tableName, rowkey, filter);
             return printRow(row);
-
         }
         // [END bigtable_reads_row_partial]
 
