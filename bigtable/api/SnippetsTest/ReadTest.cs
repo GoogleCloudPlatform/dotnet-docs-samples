@@ -76,7 +76,6 @@ namespace Reads_
                 };
 
             bigtableClient.MutateRows(tableName, entries);
-
         }
 
         public void Dispose()
@@ -156,8 +155,5 @@ namespace Reads_
 
             Snapshooter.Xunit.Snapshot.Match(readSnippets.readFilter(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
-
-
-
     }
 }
