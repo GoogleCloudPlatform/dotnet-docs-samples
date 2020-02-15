@@ -157,6 +157,24 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void TestIAMGrantAccess()
+        {
+            var name = secretsFixture.Secret.SecretName;
+            var email = $"serviceAccount:{secretsFixture.ServiceAccountEmail}";
+            var output = Run("iam-grant-access", name.ProjectId, name.SecretId, email);
+            Assert.Contains($"Updated IAM policy for {name.SecretId}", output.Stdout);
+        }
+
+        [Fact]
+        public void TestIAMRevokeAccess()
+        {
+            var name = secretsFixture.Secret.SecretName;
+            var email = $"serviceAccount:{secretsFixture.ServiceAccountEmail}";
+            var output = Run("iam-revoke-access", name.ProjectId, name.SecretId, email);
+            Assert.Contains($"Updated IAM policy for {name.SecretId}", output.Stdout);
+        }
+
+        [Fact]
         public void TestListSecretVersions()
         {
             var name = secretsFixture.SecretWithVersions.SecretName;
