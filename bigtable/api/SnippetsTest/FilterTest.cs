@@ -186,6 +186,5 @@ namespace Filter
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
             Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterComposingCondition(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
-
     }
 }
