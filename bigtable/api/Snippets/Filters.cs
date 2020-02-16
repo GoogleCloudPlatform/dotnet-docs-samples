@@ -238,7 +238,6 @@ namespace Filters
         public string filterLimitTimestampRange(
     String projectId, String instanceId, String tableId)
         {
-
             BigtableVersion timestamp_minus_hr = new BigtableVersion(new DateTime(2020, 1, 10, 13, 0, 0, DateTimeKind.Utc));
 
             // A filter that matches cells whose timestamp is from an hour ago or earlier
