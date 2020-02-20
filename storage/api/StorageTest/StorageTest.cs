@@ -614,28 +614,41 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestAddBucketIamMember()
         {
-            string member =
-               "230835935096-8io28ro0tvbbv612p5k6nstlaucmhnrq@developer.gserviceaccount.com";
-            string memberType = "serviceAccount";
-            string role = "roles/storage.objectViewer";
+            using (var iamTests = new BucketFixture())
+            {
+                string member =
+                   "230835935096-8io28ro0tvbbv612p5k6nstlaucmhnrq@developer.gserviceaccount.com";
+                string memberType = "serviceAccount";
+                string role = "roles/storage.objectViewer";
 
-            // Add the member.
-            var addedMember = Run("add-bucket-iam-member", _bucketName,
-                role, $"{memberType}:{member}");
-            AssertSucceeded(addedMember);
+                // Add the member.
+                var addedMember = Run("add-bucket-iam-member", iamTests.BucketName,
+                    role, $"{memberType}:{member}");
+                AssertSucceeded(addedMember);
 
-            // Make sure view-bucket-iam-members shows us the user.
-            var printedIamMembers = Run("view-bucket-iam-members", _bucketName);
-            AssertSucceeded(printedIamMembers);
-            Assert.Contains(member, printedIamMembers.Stdout);
+                // Make sure view-bucket-iam-members shows us the user.
+                var printedIamMembers = Run("view-bucket-iam-members", iamTests.BucketName);
+                AssertSucceeded(printedIamMembers);
+                Assert.Contains(member, printedIamMembers.Stdout);
 
-            // Remove the member.
-            var removedMember = Run("remove-bucket-iam-member", _bucketName,
-                role, $"{memberType}:{member}");
-            AssertSucceeded(removedMember);
-            printedIamMembers = Run("view-bucket-iam-members", _bucketName);
-            AssertSucceeded(printedIamMembers);
-            Assert.DoesNotContain(member, printedIamMembers.Stdout);
+                // Remove the member.
+                var removedMember = Run("remove-bucket-iam-member", _bucketiamTests.BucketNameName,
+                    role, $"{memberType}:{member}");
+                AssertSucceeded(removedMember);
+                printedIamMembers = Run("view-bucket-iam-members", iamTests.BucketName);
+                AssertSucceeded(printedIamMembers);
+                Assert.DoesNotContain(member, printedIamMembers.Stdout);
+
+                // Enable Uniform Bucket Level Access
+                var enableUniformBucketLevelAccess = Run("enable-uniform-bucket-level-access", iamTests.BucketName);
+                AssertSucceeded(enableUniformBucketLevelAccess);
+
+                // Add Conditional Binding
+                var addBucketConditionalIamBinding = Run("add-bucket-iam-conditional-binding", iamTests.BucketName,
+                    role, $"{memberType}:{member}", "title", "description",
+                    "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
+                AssertSucceeded(addBucketConditionalIamBinding);
+            }
         }
 
         [Fact]
