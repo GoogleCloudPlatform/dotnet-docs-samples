@@ -716,17 +716,17 @@ namespace GoogleCloudSamples
                 RequestedPolicyVersion = 3
             });
             policy.Version = 3;
-            policy.Bindings.ToList().ForEach(response =>
+            policy.Bindings.ToList().ForEach(binding =>
             {
-                if (response.Role == role && response.Condition == null)
+                if (binding.Role == role && binding.Condition == null)
                 {
                     // Remove the role/member combo from the IAM policy.
-                    response.Members = response.Members
-                        .Where(m => m != member).ToList();
+                    binding.Members = binding.Members
+                        .Where(memberInList => memberInList != member).ToList();
                     // Remove role if it contains no members.
-                    if (response.Members.Count == 0)
+                    if (binding.Members.Count == 0)
                     {
-                        policy.Bindings.Remove(response);
+                        policy.Bindings.Remove(binding);
                     }
                 }
             });
