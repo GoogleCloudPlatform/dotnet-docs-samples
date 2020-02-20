@@ -632,7 +632,7 @@ namespace GoogleCloudSamples
                 Assert.Contains(member, printedIamMembers.Stdout);
 
                 // Remove the member.
-                var removedMember = Run("remove-bucket-iam-member", _bucketiamTests.BucketNameName,
+                var removedMember = Run("remove-bucket-iam-member", iamTests.BucketName,
                     role, $"{memberType}:{member}");
                 AssertSucceeded(removedMember);
                 printedIamMembers = Run("view-bucket-iam-members", iamTests.BucketName);
