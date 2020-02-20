@@ -24,10 +24,10 @@ namespace GoogleCloudSamples
         public static object ListTenants(string projectId)
         {
             TenantServiceClient tenantServiceClient = TenantServiceClient.Create();
-            string parent = ProjectName.Format(projectId);
+            ProjectName parent = new ProjectName(projectId);
             ListTenantsRequest request = new ListTenantsRequest
             {
-                Parent = parent
+                ParentAsProjectName = parent
             };
             var tenants = tenantServiceClient.ListTenants(request);
             foreach (var tenant in tenants)
