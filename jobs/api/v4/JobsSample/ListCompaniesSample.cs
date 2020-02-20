@@ -23,11 +23,11 @@ namespace GoogleCloudSamples
         public static object ListCompanies(string projectId, string tenantId)
         {
             CompanyServiceClient companyServiceClient = CompanyServiceClient.Create();
-            string parent = TenantName.Format(projectId, tenantId);
-
+            TenantName tenantName = new TenantName(projectId, tenantId);
+            TenantOrProjectNameOneof parent = TenantOrProjectNameOneof.From(tenantName);
             ListCompaniesRequest request = new ListCompaniesRequest
             {
-                Parent = parent
+                ParentAsTenantOrProjectNameOneof = parent
             };
             var companies = companyServiceClient.ListCompanies(request);
             foreach (var company in companies)

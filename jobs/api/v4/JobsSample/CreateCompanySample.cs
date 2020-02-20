@@ -23,7 +23,8 @@ namespace GoogleCloudSamples
         public static object CreateCompany(string projectId, string tenantId, string displayName, string externalId)
         {
             CompanyServiceClient companyServiceClient = CompanyServiceClient.Create();
-            string parent = TenantName.Format(projectId, tenantId);
+            TenantName tenantName = new TenantName(projectId, tenantId);
+            TenantOrProjectNameOneof parent = TenantOrProjectNameOneof.From(tenantName);
             Company company = new Company
             {
                 DisplayName = displayName,
@@ -32,7 +33,7 @@ namespace GoogleCloudSamples
 
             CreateCompanyRequest request = new CreateCompanyRequest
             {
-                Parent = parent,
+                ParentAsTenantOrProjectNameOneof = parent,
                 Company = company
             };
 

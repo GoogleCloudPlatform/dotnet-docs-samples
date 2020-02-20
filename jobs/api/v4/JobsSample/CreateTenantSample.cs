@@ -28,10 +28,10 @@ namespace GoogleCloudSamples
             {
                 ExternalId = externalId,
             };
-            string parent = ProjectName.Format(projectId);
+            ProjectName parent = new ProjectName(projectId);
             CreateTenantRequest request = new CreateTenantRequest
             {
-                Parent = parent,
+                ParentAsProjectName = parent,
                 Tenant = tenant
             };
             Tenant response = tenantServiceClient.CreateTenant(request);
