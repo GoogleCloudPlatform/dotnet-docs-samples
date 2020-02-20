@@ -631,7 +631,8 @@ namespace GoogleCloudSamples
         private void ViewBucketIamMembers(string bucketName)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions(){
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
                 RequestedPolicyVersion = 3
             });
 
@@ -643,7 +644,8 @@ namespace GoogleCloudSamples
                 {
                     Console.WriteLine($"    {member}");
                 }
-                if (binding.Condition != null) {
+                if (binding.Condition != null)
+                {
                     Console.WriteLine($"Condition Title: {binding.Condition.Title}");
                     Console.WriteLine($"Condition Description: {binding.Condition.Description}");
                     Console.WriteLine($"Condition Expression: {binding.Condition.Expression}");
@@ -657,7 +659,8 @@ namespace GoogleCloudSamples
             string role, string member)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions(){
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
                 RequestedPolicyVersion = 3
             });
             policy.Version = 3;
@@ -679,7 +682,8 @@ namespace GoogleCloudSamples
             string role, string member, string title, string description, string expression)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions(){
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
                 RequestedPolicyVersion = 3
             });
             policy.Version = 3;
@@ -688,7 +692,8 @@ namespace GoogleCloudSamples
             bindingToAdd.Role = role;
             string[] members = { member };
             bindingToAdd.Members = members;
-            bindingToAdd.Condition = new Expr() {
+            bindingToAdd.Condition = new Expr()
+            {
                 Title = title,
                 Description = description,
                 Expression = expression
@@ -706,7 +711,8 @@ namespace GoogleCloudSamples
             string role, string member)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions(){
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
                 RequestedPolicyVersion = 3
             });
             policy.Version = 3;
