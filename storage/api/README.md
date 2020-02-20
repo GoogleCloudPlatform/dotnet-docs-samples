@@ -60,14 +60,24 @@ can use [this older sample](
     Storage download [-key encryption-key] bucket-name object-name [local-file-path]
     Storage download-byte-range bucket-name object-name range-begin range-end [local-file-path]
     Storage generate-signed-url bucket-name object-name
+    Storage generate-signed-get-url-v4 bucket-name object-name
+    Storage generate-signed-put-url-v4 bucket-name object-name
     Storage view-bucket-iam-members bucket-name
-    Storage add-bucket-iam-member bucket-name member
+    Storage add-bucket-iam-member bucket-name role member
+    Storage add-bucket-iam-conditional-binding bucket-name member
+                                role member cond-title cond-description cond-expression
     Storage remove-bucket-iam-member bucket-name role member
     Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name
     Storage upload-with-kms-key bucket-name key-location
                                 key-ring key-name local-file-path [object-name]
     Storage print-acl bucket-name
     Storage print-acl bucket-name object-name
+    Storage create-hmac-key service-account-email
+    Storage get-hmac-key access-id
+    Storage list-hmac-keys
+    Storage deactivate-hmac-key access-id
+    Storage activate-hmac-key access-id
+    Storage delete-hmac-key access-id
     Storage add-owner bucket-name user-email
     Storage add-owner bucket-name object-name user-email
     Storage add-default-owner bucket-name user-email
