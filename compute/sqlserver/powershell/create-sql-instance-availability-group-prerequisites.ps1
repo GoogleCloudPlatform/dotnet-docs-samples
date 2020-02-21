@@ -1,5 +1,5 @@
 ﻿#Requires -Version 5
-# Copyright(c) 2016 Google Inc.
+# Copyright(c) 2020 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -33,40 +33,49 @@
 # AUTHOR: Anibal Santiago - @SQLThinker
 ##############################################################################
 
-
+Set-Location $PSScriptRoot
 ################################################################################
 # Specify the parameters:
-# You can change these parameters to match your requirements. They are
-# pre-configured to match the instructions on:
-# "Configuring SQL Server Availability Groups (See URL listed above)
+# You can change these parameters to match your requirements.
 ################################################################################
-# Network configuration
+# Network names
 $network      = 'wsfcnet'      # Name of the Custom network
-$subnet1_name = 'wsfcsubnet1'  # Name of SubNet 1
-$subnet2_name = 'wsfcsubnet2'  # Name of SubNet 2
-$subnet3_name = 'wsfcsubnet3'  # Name of SubNet 3 (used for domain controller)
-$subnet1 = "10.0.0.0/24"
-$subnet2 = "10.1.0.0/24"
-$subnet3 = "10.2.0.0/24"
+$subnet1_name = 'wsfcsubnet1'  # Name of Subnet 1. Node 1 will reside here.
+$subnet2_name = 'wsfcsubnet2'  # Name of Subnet 2. Node 2 will reside here.
+$subnet3_name = 'wsfcsubnet3'  # Name of Subnet 3. The domain controller will reside here but it can also be one of the other 2 subnets.
+
+# Create 3 subnets. One for each node and the third one for the domain controller. Change as appropiate to match your network requirements.
+$subnet1 = "10.0.0.0/24" # Subnet1 netmask
+$subnet2 = "10.1.0.0/24" # Subnet2 netmask
+$subnet3 = "10.2.0.0/24" # Subnet3 netmask
+
+$region1 = "us-east1"    # Subnet1 region
+$region2 = "us-east1"    # Subnet2 region
+$region3 = "us-east4"    # Subnet3 region
+
 
 # AD Domain configuration
-$DomainName = "dbeng.com";
-$DomainMode = "Win2012R2";
-$ForestMode = "Win2012R2";
+$DomainName   = "dbeng.com";
+$DomainMode   = "Win2012R2";
+$ForestMode   = "Win2012R2";
 $DatabasePath = "C:\Windows\NTDS";
 $LogPath      = "C:\Windows\NTDS";
 $SysvolPath   = "C:\Windows\SYSVOL";
 
-# Domain controller/Zone/Region
-$domain_cntr    = "dc-windows" # Name of the Windows Domain controller
-$ip_domain_cntr = '10.2.0.100' # IP of the Windows Domain controller
-$zone   = "us-central1-f"
-$region = "us-central1"
+# Domain controller configuration
+$domain_cntr                = "dc-windows"      # Name of the Windows Domain controller
+$ip_domain_cntr             = '10.2.0.100'      # IP of the Windows Domain controller
+$zone_domain_cntr           = "us-east4-b"      # Zone for domain controller (needs to be within $region3)
+$machine_type_domain_cntr   = "n1-standard-1"   # Machine Type
+$boot_disk_type_domain_cntr = "pd-standard"     # Boot disk type (pd-ssd, pd-standard)
+$image_family_domain_cntr   = "windows-2012-r2" # Windows Server image family (windows-2012-r2, windows-2016)
+$boot_disk_size_domain_cntr = "200GB"           # Size of the boot disk
 
-
-# Get the passwords for Domain Admin
-if (!($admin_pwd)) {
-  $admin_pwd = Read-Host -AsSecureString "Password for Domain Administrator"
+# Get the password for Domain Admin
+if (!($domain_pwd)) {
+  $admin_pwd = Read-Host -AsSecureString "Password for Domain Administrator" }
+else {
+  $admin_pwd = ConvertTo-SecureString $domain_pwd -AsPlainText -Force
 }
 
 
@@ -78,7 +87,9 @@ $ErrorActionPreference = 'continue' #To skip non-error reported by PowerShell
 Invoke-Command -ScriptBlock {
 
   if ( !( Get-GceNetwork | Where Name -eq $network ) ) {
-    gcloud compute networks create $network --mode custom
+    gcloud compute networks create $network --subnet-mode custom
+    # Remove-GceNetwork -Name $network
+    # New-GceNetwork -Name $network -IPv4Range 10.0.0.0/22
   } else {
     Write-Host "  The network: $network already exist"
   }
@@ -88,7 +99,7 @@ Invoke-Command -ScriptBlock {
 
     gcloud compute networks subnets create $subnet1_name `
       --network $network `
-      --region $region `
+      --region $region1 `
       --range $subnet1
   } else {
      Write-Host "  The subnetwork: $subnet1_name already exist"
@@ -99,7 +110,7 @@ Invoke-Command -ScriptBlock {
 
     gcloud compute networks subnets create $subnet2_name `
       --network $network `
-      --region $region `
+      --region $region2 `
       --range $subnet2
   } else {
      Write-Host "  The subnetwork: $subnet2_name already exist"
@@ -110,7 +121,7 @@ Invoke-Command -ScriptBlock {
 
     gcloud compute networks subnets create $subnet3_name `
       --network $network `
-      --region $region `
+      --region $region3 `
       --range $subnet3
   } else {
      Write-Host "  The subnetwork: $subnet3_name already exist"
@@ -212,28 +223,29 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
 
   Invoke-Command -ScriptBlock {
     gcloud compute instances create $domain_cntr `
-      --machine-type n1-standard-1 `
-      --boot-disk-type pd-standard `
+      --machine-type $machine_type_domain_cntr `
+      --boot-disk-type $boot_disk_type_domain_cntr `
       --image-project windows-cloud `
-      --image-family windows-2012-r2 `
-      --boot-disk-size 200GB `
-      --zone $zone `
+      --image-family $image_family_domain_cntr `
+      --boot-disk-size $boot_disk_size_domain_cntr `
+      --zone $zone_domain_cntr `
       --subnet $subnet3_name `
-      --private-network-ip=$ip_domain_cntr; 
+      --private-network-ip $ip_domain_cntr;
   } 2> $null
 
   # Wait until the instance is configured
-  $creation_status = Get-GceInstance -zone $zone -Name $domain_cntr -SerialPortOutput | 
-    Select-String -Pattern 'Finished running startup scripts' -Quiet
+  # We wait for the text 'Instance setup finished' to show in the Serial Port
+  $creation_status = Get-GceInstance -zone $zone_domain_cntr -Name $domain_cntr -SerialPortOutput | 
+    Select-String -Pattern 'Instance setup finished' -Quiet
 
   while (!($creation_status)) {
-    Write-Host "$(Get-Date) Waiting for instance $domain_cntr to be created"
-    Start-Sleep -s 15
-    $creation_status = Get-GceInstance -zone $zone -Name $domain_cntr -SerialPortOutput |
-      Select-String -Pattern 'Finished running startup scripts' -Quiet
+    Write-Host "$(Get-Date) Waiting for instance $domain_cntr to be ready"
+    Start-Sleep -s 30
+    $creation_status = Get-GceInstance -zone $zone_domain_cntr -Name $domain_cntr -SerialPortOutput |
+      Select-String -Pattern 'Instance setup finished' -Quiet
   }
 
-  Write-Host "$(Get-Date) Instance $domain_cntr is now created"
+  Write-Host "$(Get-Date) Instance $domain_cntr is now ready"
 
 
   ################################################################################
@@ -243,8 +255,8 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
   $ErrorActionPreference = 'continue' #To skip non-error reported by PowerShell
 
   $results = Invoke-Command -ScriptBlock { 
-    gcloud compute reset-windows-password dc-windows `
-      --zone $zone `
+    gcloud compute reset-windows-password $domain_cntr `
+      --zone $zone_domain_cntr `
       --user "config.user" `
       --quiet 2> $null
   } | ConvertFrom-String
@@ -267,6 +279,24 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
 
 
   ################################################################################
+  # Enable the local Administrator account. It is needed to create a domain.
+  ################################################################################
+  Invoke-Command -Session $session -ScriptBlock {
+    Write-Host "$(Get-Date) Enabling the Administrator account"
+
+    $admin_user = ([ADSI]'WinNT://localhost/Administrator,user')
+    if ($admin_user.userflags.value -band "0x0002"){
+      $admin_user.userflags.value = $admin_user.userflags.value -bxor "0x0002"
+    }
+
+    # Generate a 36 characters random password
+    $password = -join(33..122 | %{[char]$_} | Get-Random -C 36)
+    $admin_user.SetPassword($password)
+    $admin_user.SetInfo()
+  }
+
+
+  ################################################################################ 
   # Create the Windows domain
   ################################################################################
   Write-Host "$(Get-Date) Promote $domain_cntr to a Domain Controller"
@@ -309,19 +339,20 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
 
   ################################################################################
   # Wait until the instance is restarted
+  # Notice we wait for the text 'Starting shutdown scripts' in Serial Console
   ################################################################################
-  $creation_status = Get-GceInstance -zone $zone -Name $domain_cntr -SerialPortOutput | 
-    Select-String -Pattern 'Finished running shutdown scripts' -Quiet
+  $creation_status = Get-GceInstance -zone $zone_domain_cntr -Name $domain_cntr -SerialPortOutput | 
+    Select-String -Pattern 'Starting shutdown scripts' -Quiet
   while (!($creation_status)) {
     Write-Host "$(Get-Date) Waiting for instance $domain_cntr to restart"
-    Start-Sleep -s 15
+    Start-Sleep -s 30
 
-    $creation_status = Get-GceInstance -zone $zone -Name $domain_cntr -SerialPortOutput | 
-      Select-String -Pattern 'Finished running shutdown scripts' -Quiet
+    $creation_status = Get-GceInstance -zone $zone_domain_cntr -Name $domain_cntr -SerialPortOutput | 
+      Select-String -Pattern 'Starting shutdown scripts' -Quiet
   }
 
-  # Wait a minute to make sure all AD services are running before we continue
-  Start-Sleep -s 60
+  # Wait 2 minutes to make sure all AD services are running before we continue
+  Start-Sleep -s 120
 
   ################################################################################
   # Create a remote session to the domain controller
@@ -335,16 +366,16 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
   ################################################################################
   # Change the password for the domain administrator
   ################################################################################
-  Write-Host "$(Get-Date) Change password for Administrator and sql.service"
+  Write-Host "$(Get-Date) Change password for Administrator"
   Invoke-Command -Session $session -ScriptBlock {
-    param($admin_pwd, $sql_pwd)
+    param($admin_pwd)
   
     Set-ADAccountPassword `
       -Identity "Administrator" `
       -Reset `
       -NewPassword $admin_pwd
 
-  } -ArgumentList $admin_pwd, $sql_pwd
+  } -ArgumentList $admin_pwd
 
 
   # Remove the session object
@@ -357,19 +388,17 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
 
 
 Write-Host " "
-Write-Host "IMPORTANT: You are now ready to run the script  create-sql-instance-availability-group.ps1"
-Write-Host "           It is recommended to run it from an instance that is a member of the domain: $DomainName"
-Write-Host "           if you want to automatically setup the SQL Server Availability Group."
+Write-Host "IMPORTANT: You are now ready to run the script: create-sql-instance-availability-group.ps1"
 
 
 # Remove firewall rules that allow current IP to RDP and WinRM
 # Uncomment if you don't want to keep those firewall rules
 <#
-if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-winrm-current-ip"} ) ) {
+if ( ( Get-GceFirewall | Where {$_.Name -eq "allow-winrm-current-ip"} ) ) {
   Remove-GceFirewall -FirewallName "allow-winrm-current-ip"
 }
 
-if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-rdp-current-ip"} ) ) {
+if ( ( Get-GceFirewall | Where {$_.Name -eq "allow-rdp-current-ip"} ) ) {
   Remove-GceFirewall -FirewallName "allow-rdp-current-ip"
 }
 #>
