@@ -250,8 +250,6 @@ namespace GoogleCloudSamples
                 SampleRateHertz = 8000,
                 LanguageCode = "en-US",
                 UseEnhanced = true,
-                // A model must be specified to use an enhanced model.
-                // Currently, only 'phone_call' is supported.
                 Model = "phone_call",
             }, RecognitionAudio.FromFile(filePath));
             foreach (var result in response.Results)
