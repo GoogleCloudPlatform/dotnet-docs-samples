@@ -1,5 +1,5 @@
 #Requires -Version 5
-# Copyright(c) 2016 Google Inc.
+# Copyright(c) 2020 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +16,7 @@
 ###############################################################################
 #.SYNOPSIS
 # Create two Windows instances and set up a SQL Server Availability Group
+# using Alias IPs
 #
 #.DESCRIPTION
 # This script will automate the steps described on:
@@ -23,42 +24,37 @@
 # https://cloud.google.com/compute/docs/instances/sql-server/configure-availability
 #
 # PREREQUISITES:
-# 1. Before running the script, create the two subnetworks as described in the
-#    document: "wsfcsubnet1", "wsfcsubnet2"
+# 1. Before running the script, create the three subnetworks:
+#    wsfcsubnet1, wsfcsubnet2, wsfcsubnet3 (Optional)
 # 2. A domain controller for a domain called "dbeng.com" must also exist.
-#    The IP for the domain controller is 10.2.0.100
+#    The IP for the domain controller is 10.2.0.100 and resides in wsfcsubnet3 (optional)
 #
-# Quick summary of the setup steps:
-# + Custom network "wsfcnet" with two subnetworks: "wsfcsubnet1", "wsfcsubnet2"
-#   - wsfcsubnet1: 10.0.0.0/24  -  Hosts Min/Max (10.0.0.1 - 10.0.0.254)
-#   - wsfcsubnet1: 10.1.0.0/24  -  Hosts Min/Max (10.1.0.1 - 10.1.0.254)
+# Quick summary of the configuration:
+# + Custom network "wsfcnet" with three subnetworks: wsfcsubnet1, wsfcsubnet2, wsfcsubnet3
+#   - wsfcsubnet1: 10.0.0.0/24
+#   - wsfcsubnet1: 10.1.0.0/24
+#   - wsfcsubnet3: 10.2.0.0/24
 #
 # + Two Nodes
 #   - cluster-sql1: 10.0.0.4 in wsfcsubnet1
+#     This node has two extra IP Aliases (10.0.0.5, 10.0.0.6)
+#      
 #   - cluster-sql2: 10.1.0.4 in wsfcsubnet1
-#
-# + The netmask in both nodes is later changed to /16 (255.255.0.0)
-#   This is critical when we choose IPs for WSFC and Listener
-#   - cluster-sql1 address range - Hosts Min/Max (10.0.0.1 - 10.0.255.254)
-#   - cluster-sql2 address range - Hosts Min/Max (10.1.0.1 - 10.1.255.254)
+#     This node has two extra IP Aliases (10.1.0.5, 10.1.0.6)
 #
 # + Windows Server Failover Cluster (WSFC)
 #   - Name: cluster-dbclus
-#   - Two IPs: 10.0.1.4, 10.1.1.4 - They are outside the two subnetworks but
-#     inside the two nodes address range.
+#   - Two IPs from the IP Aliases: 10.0.0.5, 10.1.0.5
 #
 # + Availability Group & Listener
 #   - Availability Group Name : cluster-ag
-#   - Listener Name           : cluster-listene
-#   - Listener IPs - 10.0.1.5, 10.1.1.5 - They are outside the two subnetworks
-#     but inside the two nodes address range.
+#   - Listener Name           : ag-listener
+#   - Two IPs from the IP Aliases: 10.0.0.6, 10.1.0.6
 #
-# + Create routes in GCP for the 2 IPs for the WSFC and the 2 IPs for the 
-#   listener. They are needed as those 4 IPs are outside the 2 subnetworks.
 #
-# You must have the 'Cloud SDK for Windows' which includes the Powershell 
+# You must have the 'Google Cloud SDK' which includes the Powershell 
 # CmdLets for Google Cloud. 
-# See https://googlecloudplatform.github.io/google-cloud-powershell
+# See https://cloud.google.com/tools/powershell/docs/
 #
 # The script expects the files parameters-config.ps1 and
 # create-sql-instance-availability-group.ps1 to exist in the same directory.
@@ -79,7 +75,7 @@ Set-Location $PSScriptRoot
 # Read the parameters for this script. They are found in the file 
 # parameters-config.ps1. We assume it is in the same folder as this script
 ################################################################################
-. ".\parameters-config.ps1"
+. "$PSScriptRoot\parameters-config.ps1"
 
 
 ################################################################################
@@ -109,66 +105,80 @@ if ( $force_delete -eq $true ) {
 ################################################################################
 # Create a boot disk based on the image family that we want to create
 ################################################################################
-$image_disk = Get-GceImage $image_project -Family $image_family
+$image_disk = Get-GceImage -Family $image_family
 
 Write-Host "$(Get-Date) Creating boot disk for instance $node1"
-$boot_disk1 = New-GceDisk -DiskName $node1 -DiskType pd-ssd -Image $image_disk `
+$boot_disk1 = New-GceDisk -DiskName $node1 -DiskType $disk_type -Image $image_disk `
   -SizeGb $size_gb -Zone $zone
 
 Write-Host "$(Get-Date) Creating boot disk for instance $node2"
-$boot_disk2 = New-GceDisk -DiskName $node2 -DiskType pd-ssd -Image $image_disk `
+$boot_disk2 = New-GceDisk -DiskName $node2 -DiskType $disk_type -Image $image_disk `
   -SizeGb $size_gb -Zone $zone
 
 
 ################################################################################
 # Create the instances
+# Add an IP alias with the Listener IP
 ################################################################################
+# Continue on errors as the gcloud command is reported as failed even when it 
+# was successful
 $ErrorActionPreference = 'continue'
 Write-Host "$(Get-Date) Creating instance $node1"
 Invoke-Command -ScriptBlock {
     gcloud compute instances create $node1 --machine-type $machine_type `
-      --zone $zone --subnet $subnet1_name --private-network-ip=$ip_node1 `
-      --can-ip-forward --disk="name=$node1,boot=yes,auto-delete=yes" --quiet 2> $null
+      --zone $zone `
+      --can-ip-forward `
+      --disk="name=$node1,boot=yes,auto-delete=yes" `
+      --network-interface subnet=$subnet1_name,private-network-ip=$ip_node1,aliases="$ip_wsfc1;$ip_ag_listener1" --quiet 2> $null
 }
 
 Write-Host "$(Get-Date) Creating instance $node2"
 Invoke-Command -ScriptBlock {
     gcloud compute instances create $node2 --machine-type $machine_type `
-      --zone $zone --subnet $subnet2_name --private-network-ip=$ip_node2 `
-      --can-ip-forward --disk="name=$node2,boot=yes,auto-delete=yes" --quiet 2> $null
+      --zone $zone `
+      --can-ip-forward `
+      --disk="name=$node2,boot=yes,auto-delete=yes" `
+      --network-interface subnet=$subnet2_name,private-network-ip=$ip_node2,aliases="$ip_wsfc2;$ip_ag_listener2" --quiet 2> $null
 }
+$ErrorActionPreference = 'stop'
 
 
 ################################################################################
 # Wait until the instances are configured
+# Note: We wait until the text 'Instance setup finished' shows in serial console
+#       If this text changes in the future we need to modify this script
 ################################################################################
 $creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput | 
-  Select-String -Pattern 'Finished running startup scripts' -Quiet
+    Select-String -Pattern 'Instance setup finished' -Quiet
 $n = 20
 while (!($creation_status)) {
-  Write-Host "$(Get-Date) Waiting for instance $node1 to be created"
-  Start-Sleep -s 15
+  Write-Host "$(Get-Date) Waiting for instance $node1 to be ready"
+  Start-Sleep -s 30
   $n -= 1
   if ($n -eq 0) {break}
 
   $creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput |
-    Select-String -Pattern 'Finished running startup scripts' -Quiet
+      Select-String -Pattern 'Instance setup finished' -Quiet
 }
-Write-Host "$(Get-Date) Instance $node1 is now created"
+Write-Host "$(Get-Date) Instance $node1 is now ready"
 
 $creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput | 
-  Select-String -Pattern 'Finished running startup scripts' -Quiet
+    Select-String -Pattern 'Instance setup finished' -Quiet
 $n = 20
 while (!($creation_status)) {
-  Write-Host "$(Get-Date) Waiting for instance $node2 to be created"
-  Start-Sleep -s 15
+  Write-Host "$(Get-Date) Waiting for instance $node2 to be ready"
+  Start-Sleep -s 30
   $n -= 1
-  if ($n -eq 0) {break} 
+  if ($n -eq 0) {break}
 
   $creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput | 
-    Select-String -Pattern 'Finished running startup scripts' -Quiet
+      Select-String -Pattern 'Instance setup finished' -Quiet
 }
-Write-Host "$(Get-Date) Instance $node2 is now created"
+Write-Host "$(Get-Date) Instance $node2 is now ready"
+
+
+# Wait 2 minutes before trying to connect to make sure the server is ready for connections
+Start-Sleep -s 120
 
 
 ################################################################################
@@ -178,23 +188,44 @@ Write-Host "$(Get-Date) Instance $node2 is now created"
 ################################################################################
 $ErrorActionPreference = 'continue'
 
-# Generate the password for Node 1
+# Generate the password for Node 1. We get a false error when running gcloud.exe
+# from PowerShell, so we ignore it.
 $results = $null
 $results = Invoke-Command -ScriptBlock { 
-  gcloud compute reset-windows-password $node1 --zone $zone --user $config_user `
-    --quiet 2> $null
+  gcloud compute reset-windows-password $node1 --zone $zone `
+    --user $config_user --quiet 2> $null
 } | ConvertFrom-String
+
+# If the command fails, run it again but this time show the error message
+if ( !($lastexitcode -eq 0)) {
+  Write-Host "An error ocurred when trying to generate a password for $node1"
+  Invoke-Command -ScriptBlock { 
+    gcloud compute reset-windows-password $node1 --zone $zone `
+      --user $config_user --quiet
+  }
+}
 
 # Grab the IP and Password from the results of the 'gcloud.exe' command
 $ip_address1 = $results.P2[0]
 $password1 = ConvertTo-SecureString -String $results.P2[1] -AsPlainText -Force
 
-# Generate the password for Node 2
+
+# Generate the password for Node 2. We get a false error when running gcloud.exe
+# from PowerShell, so we ignore it.
 $results = $null
 $results = Invoke-Command -ScriptBlock { 
-  gcloud compute reset-windows-password $node2 --zone $zone --user $config_user `
-    --quiet 2> $null 
+  gcloud compute reset-windows-password $node2 --zone $zone `
+    --user $config_user --quiet 2> $null
 } | ConvertFrom-String
+
+# If the command fails, run it again but this time show the error message
+if ( !($lastexitcode -eq 0)) {
+  Write-Host "An error ocurred when trying to generate a password for $node2"
+  Invoke-Command -ScriptBlock { 
+    gcloud compute reset-windows-password $node2 --zone $zone `
+      --user $config_user --quiet
+  }
+}
 
 # Grab the IP and Password from the results of the 'gcloud.exe' command
 $ip_address2 = $results.P2[0]
@@ -202,30 +233,6 @@ $password2 = ConvertTo-SecureString -String $results.P2[1] -AsPlainText -Force
 
 $results = $null
 $ErrorActionPreference = 'stop'
-
-
-################################################################################
-# Create some routes for the Windows Failover Cluster and Availability Group
-# These are the IPs for the WSFC and the AG listener. 2 IPs per subnet.
-# The IPs are outside the range of the GCP network and that's why the routes
-# need to be created.
-################################################################################
-Write-Host "$(Get-Date) Creating routes in GCP"
-$objNetwork = Get-GceNetwork -Name $network 
-$objNode1 = Get-GceInstance -Name $node1 -Zone $zone
-$objNode2 = Get-GceInstance -Name $node2 -Zone $zone
-Add-GceRoute -Name $node1-route-listener -Network $objNetwork `
-  -DestinationIpRange "$ip_ag_listener1/32" -NextHopInstance $objNode1 -Priority 1 | 
-    SELECT Name, DestRange | Format-Table
-Add-GceRoute -Name $node2-route-listener -Network $objNetwork `
-  -DestinationIpRange "$ip_ag_listener2/32" -NextHopInstance $objNode2 -Priority 1 | 
-    SELECT Name, DestRange | Format-Table
-Add-GceRoute -Name $node1-route -Network $objNetwork `
-  -DestinationIpRange "$ip_wsfc1/32" -NextHopInstance $objNode1 -Priority 1 | 
-    SELECT Name, DestRange | Format-Table
-Add-GceRoute -Name $node2-route -Network $objNetwork `
-  -DestinationIpRange "$ip_wsfc2/32" -NextHopInstance $objNode2 -Priority 1 | 
-    SELECT Name, DestRange | Format-Table
 
 
 ################################################################################
@@ -250,60 +257,21 @@ $session2 = New-PSSession -ComputerName $ip_address2 -UseSSL `
   -Credential $credential2 -SessionOption $session_options
 
 
-# The following commands run in both nodes. Change the IP to static and 
-# also change the Netmask. We assume the domain controller is Dns server.
-# It is important to change the Netmask to include a range of IPs
-# wider than the subnet where the node resides.
-# Expect an error after losing connection when changing to static IP.
-# Purposely tell PowerShell to ignore errors.
-$ErrorActionPreference = 'continue'
+# The following commands run in both nodes.
+# Change the DNS server to be the domain controller.
+# This makes it easier to add the nodes to the AD domain.
 Invoke-Command -Session $session1,$session2 -ScriptBlock {
-  param($ip_domain_cntr, $netmask)
+  param($ip_domain_cntr)
 
   $hostname = [System.Net.Dns]::GetHostName()
 
-  Write-Host "$(Get-Date) $hostname - Changing network adapter to static IP"
-  Write-Host "$(Get-Date) $hostname - Network connection will be lost"
+  Write-Host "$(Get-Date) $hostname - Changing DNS to domain controller: $ip_domain_cntr"
 
-  # Get the current configuration
-  $ipconfig = Get-NetIPConfiguration
-  $ipv4 = $ipconfig.IPv4Address.IPAddress
-  $gateway = $ipconfig.IPv4DefaultGateway.NextHop
+  # Change the Dns server
   $adapter = Get-NetAdapter -Name Ethernet
-
-  # Remove the IP address and gateway
-  $adapter | Remove-NetIPAddress -AddressFamily "IPv4" -Confirm:$false
-  $adapter | Remove-NetRoute -AddressFamily "IPv4" -Confirm:$false
-
-  # Specify the Dns server
   $adapter | Set-DnsClientServerAddress -ServerAddresses $ip_domain_cntr
 
-  # Setup the IP as static and with the new netmask
-  $adapter | New-NetIPAddress `
-    -AddressFamily "IPv4" `
-    -IPAddress $ipv4 `
-    -PrefixLength $netmask `
-    -DefaultGateway $gateway
-} -ArgumentList $ip_domain_cntr, $netmask 2>&1 | Out-Null
-
-$ErrorActionPreference = 'Stop'
-
-# Close the remote sessions
-# Changing the IP to Static will cause to lose the connection
-Remove-PSSession $session1
-Remove-Variable session1
-Remove-PSSession $session2
-Remove-Variable session2
-
-Start-Sleep -s 30
-# Create a remote session in each server again
-Write-Host "$(Get-Date) Creating remote session to $node1 - $ip_address1"
-$session1 = New-PSSession -ComputerName $ip_address1 -UseSSL `
-  -Credential $credential1 -SessionOption $session_options
-
-Write-Host "$(Get-Date) Creating remote session to $node2 - $ip_address2"
-$session2 = New-PSSession -ComputerName $ip_address2 -UseSSL `
-  -Credential $credential2 -SessionOption $session_options
+} -ArgumentList $ip_domain_cntr 2>&1 | Out-Null
 
 
 # The following commands run in both nodes. 
@@ -322,13 +290,25 @@ Invoke-Command -Session $session1,$session2 -ScriptBlock {
 } -ArgumentList $sql_data, $sql_log
 
 
+# The following commands run in node 1. 
+# Create a directory to run a PowerShell script locally.
+Invoke-Command -Session $session1 -ScriptBlock {
+
+  $hostname = [System.Net.Dns]::GetHostName()
+
+  # Create directory C:\Scripts
+  Write-Host "$(Get-Date) $hostname - Creating folder: C:\Scripts"
+  if (!(Test-Path -Path "C:\Scripts" )) { New-item -ItemType Directory "C:\Scripts" | 
+    Out-Null }
+}
+
+
 # The following code will run in both nodes. 
 # It has all other configurations that we want to do in the servers.
 Invoke-Command -Session $session1,$session2 -ScriptBlock {
   param($node1, $node2, $ip_domain_cntr, $domain, $cred, $sql_data, $sql_log)
 
   $hostname = [System.Net.Dns]::GetHostName()
-  Write-Host "$(Get-Date) Successfull remote session to $hostname"
   
   # Rename the SQL Server instance
   $query = "exec sp_dropserver @@servername; exec sp_addserver '$hostname', local"
@@ -337,7 +317,7 @@ Invoke-Command -Session $session1,$session2 -ScriptBlock {
   # Open firewall ports. Display output as table to save vertical space in the output.
   Write-Host "$(Get-Date) $hostname - Open firewall ports in $hostname"
   New-NetFirewallRule -DisplayName 'Open Port 5022 for Availability Groups' `
-    -Direction Inbound -Protocol TCP -LocalPort 5022 -Action allow |  
+    -Direction Inbound -Protocol TCP -LocalPort 5022 -Action allow | 
 	  SELECT DisplayName, Enabled, Direction, Action
   New-NetFirewallRule -DisplayName 'Open Port 1433 for SQL Server' `
     -Direction Inbound -Protocol TCP -LocalPort 1433 -Action allow | 
@@ -346,9 +326,9 @@ Invoke-Command -Session $session1,$session2 -ScriptBlock {
   # Enable clustering
   Write-Host "$(Get-Date) $hostname - Enable clustering"
   Install-WindowsFeature Failover-Clustering -IncludeManagementTools | 
-    Format-Table
+    Format-Table | Out-String
 
-  # Add computer do domain
+  # Add computer to domain
   Write-Host "$(Get-Date) $hostname - Adding the server to the Domain: $domain"
   Add-Computer -DomainName $domain -Credential $cred -ComputerName $hostname -Restart -Force
 
@@ -357,84 +337,157 @@ Invoke-Command -Session $session1,$session2 -ScriptBlock {
 } -ArgumentList $node1, $node2, $ip_domain_cntr, $domain, $cred, $sql_data, $sql_log
 
 
-
-################################################################################
-# Wait until the instances are restarted after joining them to the domain
-################################################################################
-$creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput | 
-  Select-String -Pattern 'Finished running shutdown scripts' -Quiet
-$n = 20
-while (!($creation_status)) {
-  Write-Host "$(Get-Date) Waiting for instance $node1 to restart"
-  Start-Sleep -s 15
-  $n -= 1
-  if ($n -eq 0) {break}
-
-  $creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput | 
-    Select-String -Pattern 'Finished running shutdown scripts' -Quiet
-}
-
-$creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput | 
-  Select-String -Pattern 'Finished running shutdown scripts' -Quiet
-$n = 20
-while (!($creation_status)) {
-  Write-Host "$(Get-Date) Waiting for instance $node2 to restart"
-  Start-Sleep -s 15
-  $n -= 1
-  if ($n -eq 0) {break}
-
-  $creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput | 
-    Select-String -Pattern 'Finished running shutdown scripts' -Quiet
-}
-
-# Close the remote sessions
+# Close the remote sessions. They need to be re-created after the restarts.
 Remove-PSSession $session1
 Remove-Variable session1
 Remove-PSSession $session2
 Remove-Variable session2
 
-# Get-PSSession
 
-# Wait a minute to make sure all services have started
-Start-Sleep -s 60
+##################################################################################
+# Wait until the instances are restarted after joining them to the domain
+# Note: We wait until the text 'Starting shutdown scripts' shows in serial console
+#       If this text changes in the future we need to modify this script
+##################################################################################
+$creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput | 
+    Select-String -Pattern 'Starting shutdown scripts' -Quiet
+$n = 20
+while (!($creation_status)) {
+  Write-Host "$(Get-Date) Waiting for instance $node1 to restart"
+  Start-Sleep -s 30
+  $n -= 1
+  if ($n -eq 0) {break}
+
+  $creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput | 
+      Select-String -Pattern 'Starting shutdown scripts' -Quiet
+}
+
+$creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput | 
+    Select-String -Pattern 'Starting shutdown scripts' -Quiet
+$n = 20
+while (!($creation_status)) {
+  Write-Host "$(Get-Date) Waiting for instance $node2 to restart"
+  Start-Sleep -s 30
+  $n -= 1
+  if ($n -eq 0) {break}
+
+  $creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput | 
+      Select-String -Pattern 'Starting shutdown scripts' -Quiet
+}
+
+# Wait 2 minutes to make sure all services have started
+Start-Sleep -s 120
 
 Write-Host "$(Get-Date) Ready now to create a Windows Failover Cluster (WSFC)"
 Write-Host "                    $node1 - $ip_address1"
 Write-Host "                    $node2 - $ip_address2"
 
 
-################################################################################
-# Create a Windows Failover Cluster (WSFC) and Availability Group
-# Needs to run from a computer member of the domain in order to use CredSSP
-################################################################################
-# We need RSAT-AD-PowerShell to check if the computer is member of domain
-Install-WindowsFeature RSAT-AD-PowerShell
-Import-Module ActiveDirectory
+# Create a remote session only to Node 1
+# If we are running the script from a computer in the same domain, we need to specify the FQDN
+# Note: If run from a computer in a different domain you may still get an error
+#       In that case just run create-availability-group.ps1 manually from one of the nodes
+Write-Host "$(Get-Date) Create a remote session to each server again"
 
-If ( Get-ADDomain | Where Forest -eq $domain ) {
+if ( (gwmi win32_computersystem).Domain.ToLower() -eq $domain.ToLower() ) {
+  $fqdn1="$node1.$env:USERDNSDOMAIN".ToLower()
 
-  # Only continue if SQL Server is installed
-  $node1_sql_server = Get-Service -ComputerName $node1 | 
-    Where Name -Like 'MSSQLSERVER*'
-  $node2_sql_server = Get-Service -ComputerName $node2 | 
-    Where Name -Like 'MSSQLSERVER*'
-
-  If (($node1_sql_server) -and ($node2_sql_server)) {
-
-    ############################################################################
-    # Create the Windows Cluster and Availability Group
-    # All the code is in another script for portability
-    ############################################################################
-    #. "C:\Powershell\create-availability-group.ps1""
-    . ".\create-availability-group.ps1"
-  }
-  else {
-    Write-Host "Please install SQL Server in both nodes in order to continue."
-    Write-Host "Then run the script 'create-availability-group.ps1.'"
-  }
+  Write-Host "$(Get-Date) Creating remote session to $fqdn1"
+  $session1 = New-PSSession -ComputerName $fqdn1 -UseSSL -SessionOption $session_options
 }
 else {
-    Write-Host "To automatically create a Windows Failover Cluster (WSFC) `
-	this Powershell script must be run from a computer that is a member of `
-	the domain: '$domain'. You will need to setup the WSFC manually."
+  Write-Host "$(Get-Date) Creating remote session to $node1 - $ip_address1"
+  $session1 = New-PSSession -ComputerName $ip_address1 -UseSSL `
+    -Credential $cred -SessionOption $session_options
 }
+
+##################################################################################
+# Create a Windows Failover Cluster (WSFC) and Availability Group
+##################################################################################
+# Copy the files create-availability-group.ps1 and parameters-config.ps1 to Node 1
+Write-Host "$(Get-Date) Copy PowerShell scripts to $node1"
+Copy-Item ".\create-availability-group.ps1" `
+  -Destination "C:\Scripts\" `
+  -ToSession $session1
+
+Copy-Item ".\parameters-config.ps1" `
+  -Destination "C:\Scripts\" `
+  -ToSession $session1
+
+# Do a remote session to Node 1 to create a scheduled job to setup the cluster.
+# Seting up the cluster requires connecting to more than one server which creates
+# a double-hop issue. We create a scheduled job to setup the cluster outside of
+# our WinRM connection to avoid this issue.
+Invoke-Command -Session $session1 -ScriptBlock {
+  param($cred)
+
+  $hostname = [System.Net.Dns]::GetHostName()
+  Write-Host "$(Get-Date) $hostname - Creating scheduled job to create Availability Group" -BackgroundColor Green -ForegroundColor Yellow
+
+  # Delete job if it exists
+  Get-ScheduledJob  | Where Name -eq 'Create-Availability-Group' | Unregister-ScheduledJob  -Confirm:$false
+
+  # Create a scheduled job to create the cluster and AG
+  # Just for this session bypass the execution policy to allow this Powershell script to run
+  Register-ScheduledJob -Name Create-Availability-Group `
+    -ScriptBlock { Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force; C:\Scripts\create-availability-group.ps1 -Verbose *> 'C:\Scripts\create-availability-group.log' } `
+    -Credential $Cred -RunNow
+
+  # Wait 30 seconds before checking if the job is running
+  Start-Sleep -s 30
+
+  # Wait until the scheduled job finish
+  $status = Get-Job | 
+    Where-Object { ($_.Name -eq 'Create-Availability-Group') -and ($_.State -eq 'Running') } |
+    SELECT State
+  $n = 40
+
+  while ($status) {
+    Write-Host "$(Get-Date) $hostname - Waiting for Availability Group to be ready"
+    Start-Sleep -s 30
+    $n -= 1
+    if ($n -eq 0) {break}
+
+    $status = Get-Job |
+      Where-Object { ($_.Name -eq 'Create-Availability-Group') -and ($_.State -eq 'Running') } |
+      SELECT State
+  }
+
+  Write-Host "$(Get-Date) $hostname - Scheduled job to create Availability Group finished"
+
+  # Display the contents of the log file created by the scheduled job
+  Write-Host "$(Get-Date) $hostname - Displaying the content of scheduled job log file" -BackgroundColor Green -ForegroundColor Yellow
+
+  Get-Content -Path 'C:\Scripts\create-availability-group.log'
+
+  Write-Host "$(Get-Date) $hostname - End of log file" -BackgroundColor Green -ForegroundColor Yellow
+
+  # Delete job if it exists
+#  Get-ScheduledJob  | Where Name -eq 'Create-Availability-Group' | Unregister-ScheduledJob  -Confirm:$false
+} -ArgumentList $cred
+
+
+# Verify that the AG was created. This only works if ran from a local node.
+# Left commented as an example for reference
+#Invoke-Command -Session $session1 -ScriptBlock {
+#  param($node1, $name_ag)
+
+  # Verify if the AG exists
+#  Import-Module SQLPS -DisableNameChecking
+#  if (Test-Path -Path "SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups\$($name_ag)")  {
+#    Write-Host "$(Get-Date) Verified that the Availability Group exists"
+#  } else {
+#    Throw "Unable to verify that the Availability Group exists"
+#  }
+
+#} -ArgumentList $node1, $name_ag
+
+
+# Close the remote sessions
+Remove-PSSession $session1
+Remove-Variable session1
+
+Write-Host "$(Get-Date) End of create-sql-instance-availability-group.ps1"
+
+
+# Get-PSSession

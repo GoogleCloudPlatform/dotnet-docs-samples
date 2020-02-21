@@ -1,5 +1,5 @@
 ﻿#Requires -Version 5
-# Copyright(c) 2016 Google Inc.
+# Copyright(c) 2020 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -21,9 +21,9 @@
 # This script will set up a two node Availability Group in SQL Server.
 # It would normally be called by the script
 # create-sql-instance-availability-group.ps1, but it can also be called by 
-# itself. Before running this script you must install 'Cloud SDK for Windows' 
-# which includes the Powershell CmdLet for Google Cloud.
-# See https://googlecloudplatform.github.io/google-cloud-powershell
+# itself. Before running this script you must install 'Google Cloud SDK' 
+# which includes the Powershell CmdLets for Google Cloud.
+# See https://cloud.google.com/tools/powershell/docs/
 # The script expects the file parameters-config.ps1 to exist in the same 
 # directory.
 #
@@ -34,109 +34,113 @@
 # create-availability-group.ps1
 # Before running the script make you need to modify the file 
 # parameters-config.ps1 with the parameters specific to your configuration
+#
+# Note: May need to run this command if server blocks PowerShell scripts from running
+#   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 ##############################################################################
 
 $ErrorActionPreference = 'Stop'
-Set-Location $PSScriptRoot
+
+# If we are not able to figure out $PSScriptRoot, assume the scripts are in C:\Scripts
+if ($PSScriptRoot -eq "") {
+  $script_path = "C:\Scripts"
+} else {
+  $script_path = $PSScriptRoot
+}
 
 ################################################################################
 # Read the parameters for this script. They are found in the file 
 # parameters-config.ps1. We assume it is in the same folder as this script
 ################################################################################
 if (!($cred)) {
-  . ".\parameters-config.ps1"
+  . "$script_path\parameters-config.ps1"
 }
 
-# Only continue if SQL Server is installed in both nodes
-$node1_sql_server = Get-Service -ComputerName $node1 | 
-  Where Name -Like 'MSSQLSERVER*'
-$node2_sql_server = Get-Service -ComputerName $node2 | 
-  Where Name -Like 'MSSQLSERVER*'
 
-If ( !($node1_sql_server) -Or !($node2_sql_server) ) {
-  Throw 'Need to install SQL Server in both nodes before running this script.'
+################################################################################
+# Create a file share witness
+################################################################################
+$session_option = New-CimSessionOption -ProxyAuthentication Kerberos -SkipCACheck -SkipCNCheck -UseSsl
+
+# Find the domain controller name
+$logonserver = $env:LOGONSERVER -replace "\\",""
+
+# If unable to figure out the logon server, use the name of the domain controller.
+if ($logonserver -eq "") {
+  $logonserver = $domain_cntr
+}
+$dcsession = New-CimSession -ComputerName $logonserver -SessionOption $session_option
+
+# Create shared folder if it does not exist
+if (!( Get-SmbShare -CimSession $dcsession | Where-Object Name -eq "QWitness" )) {
+  New-SmbShare -Name "QWitness" -Path "C:\QWitness" -Description "SQL File Share Witness" -CimSession $dcsession -FullAccess "$domain\Administrator"
 }
 
-# Only continue if script is ran from a computer that is member of the domain
-# Enable-WSManCredSSP will fail if the computer is not member of domain
-if ( !( Get-ADDomain | Where Forest -eq $domain ) ) {
-  Throw "Need to run script from a computer member of the '$domain' domain."
-}
+# Grant access to the shared folder to both nodes
+Grant-SmbShareAccess -Name "QWitness" -AccessRight Full -CimSession $dcsession -Force -AccountName "$node1`$","$node2`$"
 
-# We will refer to node1 and node2 with their full domain name
-$node1_fqdn = $node1 + "." + $domain
-$node2_fqdn = $node2 + "." + $domain
+# Remove-SmbShare -Name "QWitness" -CimSession $dcsession -Force
+
 
 ################################################################################
 # Create the test database in Node1
 ################################################################################
-Invoke-Command -ComputerName $node1_fqdn -Credential $cred -ScriptBlock { 
-  param($db_name, $sql_data, $sql_log, $log_size, $log_growth, $data_size, $data_growth)
+Import-Module SQLPS -DisableNameChecking
+$objServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server `
+  -ArgumentList 'localhost'
 
-  $hostname = [System.Net.Dns]::GetHostName()
+# Only continue if the database does not exist
+$objDB = $objServer.Databases[$db_name]
+if (!($objDB)) {
 
-  Import-Module SQLPS -DisableNameChecking
-  $objServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server `
-    -ArgumentList 'localhost'
+  Write-Host "$(Get-Date) $hostname - Creating the database $db_name"
+  $objDB = New-Object `
+    -TypeName Microsoft.SqlServer.Management.Smo.Database($objServer, $db_name)
 
-  # Only continue if the database does not exist
-  $objDB = $objServer.Databases[$db_name]
-  if (!($objDB)) {
+  # Create the primary file group and add it to the database
+  $objPrimaryFG = New-Object `
+    -TypeName Microsoft.SqlServer.Management.Smo.Filegroup($objDB, 'PRIMARY')
+  $objDB.Filegroups.Add($objPrimaryFG)
 
-    Write-Host "$(Get-Date) $hostname - Creating the database $db_name"
-    $objDB = New-Object `
-      -TypeName Microsoft.SqlServer.Management.Smo.Database($objServer, $db_name)
+  # Create a single data file and add it to the Primary filegroup
+  $dataFileName = $db_name + '_Data'
+  $objData = New-Object `
+    -TypeName Microsoft.SqlServer.Management.Smo.DataFile($objPrimaryFG, $dataFileName)
+  $objData.FileName = $sql_data + '\' + $dataFileName + '.mdf'
+  $objData.Size = ($data_size * 1024)
+  $objData.GrowthType = 'KB'
+  $objData.Growth = ($data_growth * 1024)
+  $objData.IsPrimaryFile = 'true'
+  $objPrimaryFG.Files.Add($objData)
 
-    # Create the primary file group and add it to the database
-    $objPrimaryFG = New-Object `
-      -TypeName Microsoft.SqlServer.Management.Smo.Filegroup($objDB, 'PRIMARY')
-    $objDB.Filegroups.Add($objPrimaryFG)
+  # Create the log file and add it to the database
+  $logName = $db_name + '_Log'
+  $objLog = New-Object Microsoft.SqlServer.Management.Smo.LogFile($objDB, $logName)
+  $objLog.FileName = $sql_log + '\' + $logName + '.ldf'
+  $objLog.Size = ($log_size * 1024)
+  $objLog.GrowthType = 'KB'
+  $objLog.Growth = ($log_growth * 1024)
+  $objDB.LogFiles.Add($objLog)
 
-    # Create a single data file and add it to the Primary filegroup
-    $dataFileName = $db_name + '_Data'
-    $objData = New-Object `
-      -TypeName Microsoft.SqlServer.Management.Smo.DataFile($objPrimaryFG, $dataFileName)
-    $objData.FileName = $sql_data + '\' + $dataFileName + '.mdf'
-    $objData.Size = ($data_size * 1024)
-    $objData.GrowthType = 'KB'
-    $objData.Growth = ($data_growth * 1024)
-    $objData.IsPrimaryFile = 'true'
-    $objPrimaryFG.Files.Add($objData)
-
-    # Create the log file and add it to the database
-    $logName = $db_name + '_Log'
-    $objLog = New-Object Microsoft.SqlServer.Management.Smo.LogFile($objDB, $logName)
-    $objLog.FileName = $sql_log + '\' + $logName + '.ldf'
-    $objLog.Size = ($log_size * 1024)
-    $objLog.GrowthType = 'KB'
-    $objLog.Growth = ($log_growth * 1024)
-    $objDB.LogFiles.Add($objLog)
-
-    # Create the database
-    $objDB.Script()  # Show a script with the command we are about to run
-    $objDB.Create()  # Create the database
-    $objDB.SetOwner('sa')  # Change the owner to sa
-  }
-  else {
-      Write-Host "$(Get-Date) $hostname - Skipping the creation of the $db_name DB"
-  }
-} -ArgumentList $db_name, $sql_data, $sql_log, $log_size, $log_growth, `
-  $data_size, $data_growth
-
+  # Create the database
+  $objDB.Script()  # Show a script with the command we are about to run
+  $objDB.Create()  # Create the database
+  $objDB.SetOwner('sa')  # Change the owner to sa
+}
+else {
+  Write-Host "$(Get-Date) $hostname - Skipping the creation of the $db_name DB"
+}
 
 
 ################################################################################
 # Create a shared folder for initial backup used by Availability Groups
 # We choose Node 2, but it can be any network share accesible by both nodes
 ################################################################################
-Invoke-Command -ComputerName $node2_fqdn -Credential $cred -ScriptBlock { 
-  param($sql_backup, $share_name, $domain, $svc_acct, $node1)
+Invoke-Command -ComputerName $node2 -ScriptBlock { 
+  param($sql_backup, $share_name, $node1)
 
-  $hostname = [System.Net.Dns]::GetHostName()
-  
   # Create folder for the backup in Node2.
   # For this demo script we just use one of the nodes for simplicity
-  Write-Host "$(Get-Date) $hostname - Creating folders: $sql_backup"
   if (!(Test-Path -Path $sql_backup )) { 
     New-item -ItemType Directory $sql_backup | Out-Null }
 
@@ -145,22 +149,7 @@ Invoke-Command -ComputerName $node2_fqdn -Credential $cred -ScriptBlock {
   Get-SmbShare | Where-Object -Property Name -eq $share_name | 
     Remove-SmbShare -Force
   New-SMBShare –Name $share_name –Path $sql_backup –FullAccess "$($node1)`$","NT SERVICE\MSSQLSERVER" | Out-Null
-} -ArgumentList $sql_backup, $share_name, $domain, $svc_acct, $node1
-
-
-# Enable CredSSP in local computer
-Write-Host "$(Get-Date) Enable CredSSP Client in local machine"
-Enable-WSManCredSSP Client -DelegateComputer * -Force | Out-Null
-
-# Wait 15 secs before enabling CredSSP in both servers
-# On ocassions got errors when running the command that follows without waiting
-Start-Sleep -s 15
-
-# Enable CredSSP Server in remote nodes
-Write-Host "$(Get-Date) Enable CredSSP Server nodes: $node1_fqdn, $node2_fqdn"
-Invoke-Command -ComputerName $node1_fqdn,$node2_fqdn -ScriptBlock { 
-  Enable-WSManCredSSP Server -Force 
-} -Credential $cred -SessionOption $session_options | Out-Null
+} -ArgumentList $sql_backup, $share_name, $node1
 
 
 # We may need to remove AD objects, so we will need the RSAT-AD-PowerShell
@@ -180,7 +169,7 @@ if (!( Get-Service -ComputerName $node1 -DisplayName 'Cluster Service' |
   Get-ADComputer -Filter 'Name -eq $name_wsfc' | 
     Set-ADObject -ProtectedFromAccidentalDeletion:$false -PassThru | 
       Remove-ADComputer -Confirm:$false
- 
+
   Get-ADComputer -Filter 'Name -eq $name_ag' | 
     Set-ADObject -ProtectedFromAccidentalDeletion:$false -PassThru | 
       Remove-ADComputer -Confirm:$false
@@ -189,45 +178,46 @@ if (!( Get-Service -ComputerName $node1 -DisplayName 'Cluster Service' |
     Set-ADObject -ProtectedFromAccidentalDeletion:$false -PassThru | 
       Remove-ADComputer -Confirm:$false
 
-
   Write-Host "$(Get-Date) Creating WSFC:$name_wsfc; Nodes($node1, $node2)"
-  Invoke-Command -ComputerName $node1_fqdn -Authentication Credssp `
-    -Credential $cred -ScriptBlock {
-    param($name_wsfc, $node1, $node2, $ip_wsfc1, $ip_wsfc2, $domain_cntr)
 
-    $hostname = [System.Net.Dns]::GetHostName()
+  # Enable clustering (just in case is  not already done)
+  Install-WindowsFeature Failover-Clustering -IncludeManagementTools | 
+    Format-Table | Out-String
 
-    # Enable clustering (just in case is  not already done)
-    Install-WindowsFeature Failover-Clustering -IncludeManagementTools | 
-      Format-Table
+  # Create the cluster
+  New-Cluster -Name $name_wsfc -Node $node1,$node2 -NoStorage `
+    -StaticAddress $ip_wsfc1,$ip_wsfc2 | Format-Table | Out-String
 
-    # Create the cluster
-    New-Cluster -Name $name_wsfc -Node $node1,$node2 -NoStorage `
-      -StaticAddress $ip_wsfc1,$ip_wsfc2 | Format-Table
+  # It is recommended to have a Witness in a 2-node cluster
+  # We use a file share called "quorum" in the domain controller
+  # Uncomment this command if using a fileshare witness
+  #Get-Cluster | Set-ClusterQuorum -NodeAndFileShareMajority "\\$ip_domain_cntr\quorum"
 
-    # It is recommended to have a Witness in a 2-node cluster
-    # We use a file share called "quorum" in the domain controller
-    # Uncomment this command if using a fileshare witness
-    #Get-Cluster | Set-ClusterQuorum -NodeAndFileShareMajority "\\$($domain_cntr)\quorum"
-
-    # Enable Always-On on both nodes
-    Enable-SqlAlwaysOn -ServerInstance $node1 -Force
-    Enable-SqlAlwaysOn -ServerInstance $node2 -Force
-  } -ArgumentList $name_wsfc, $node1_fqdn, $node2_fqdn, $ip_wsfc1, $ip_wsfc2, $domain_cntr
+  # Enable Always-On on both nodes
+  Enable-SqlAlwaysOn -ServerInstance $node1 -Force
+  Enable-SqlAlwaysOn -ServerInstance $node2 -Force
 }
 else {
   Write-Host "$(Get-Date) $hostname - Skipping the creation of the cluster"
 }
 
 
-
 ################################################################################
 # Create the SQL Server endpoints for the Availability Groups
 ################################################################################
-Invoke-Command -ComputerName $node1_fqdn,$node2_fqdn -Credential `
-  $cred -ScriptBlock { 
+# First remove the endpoints if they exist
+if (Test-Path -Path "SQLSERVER:SQL\$node1\DEFAULT\Endpoints\Hadr_endpoint")  {
+  Remove-Item -Path "SQLSERVER:SQL\$node1\DEFAULT\Endpoints\Hadr_endpoint"
+}
 
-  param($svc_acct, $domain_netbios, $node1, $node2)
+if (Test-Path -Path "SQLSERVER:SQL\$node2\DEFAULT\Endpoints\Hadr_endpoint")  {
+  Remove-Item -Path "SQLSERVER:SQL\$node2\DEFAULT\Endpoints\Hadr_endpoint"
+}
+
+# Create the endpoints in both nodes
+Invoke-Command -ComputerName $node1,$node2 -ScriptBlock { 
+
+  param($domain_netbios, $node1, $node2)
 
   $hostname = [System.Net.Dns]::GetHostName() 
   Write-Host "$(Get-Date) $hostname - Creating endpoint on node $hostname"
@@ -236,7 +226,7 @@ Invoke-Command -ComputerName $node1_fqdn,$node2_fqdn -Credential `
   if ( $hostname.ToLower() -eq $node1.ToLower() ) {
     $remote_node = "$($domain_netbios)\$($node2)`$"
   }
-  
+
   if ( $hostname.ToLower() -eq $node2.ToLower() ) {
     $remote_node = "$($domain_netbios)\$($node1)`$"
   }
@@ -266,123 +256,130 @@ Invoke-Command -ComputerName $node1_fqdn,$node2_fqdn -Credential `
   Write-Host "$(Get-Date) $hostname - Granting permission to endpoint"
   Write-Host $query
   Invoke-Sqlcmd -Query $query
-} -ArgumentList $svc_acct, $domain_netbios, $node1, $node2
+} -ArgumentList $domain_netbios, $node1, $node2
 
 
 ################################################################################
 # Create the Availability Group
 ################################################################################
 Write-Host "$(Get-Date) Creating the SQL Server Availability Group"
-Invoke-Command -ComputerName $node1_fqdn -Authentication Credssp -Credential `
-  $cred -ScriptBlock {
+$ErrorActionPreference = 'Stop'
+Import-Module SQLPS -DisableNameChecking
 
-  param($node1, $node2, $share_name, $db_name, $domain, $name_ag, `
-    $name_ag_listener, $ip_ag_listener1, $ip_ag_listener2)
+# Check if the AG is already setup
+$AG = Get-ChildItem SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups
 
-  $ErrorActionPreference = 'Stop'
-  Import-Module SQLPS -DisableNameChecking
+if ( !($AG) ) {
+  $hostname = [System.Net.Dns]::GetHostName()
 
-  # Check if the AG is already setup
-  $AG = Get-ChildItem SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups
+  # Backup my database and its log on the primary
+  Write-Host "$(Get-Date) $hostname - Creating backups of database $db_name"
+  $backupDB = "\\$node2\$share_name\$($db_name)_db.bak"
+  Backup-SqlDatabase `
+    -Database $db_name `
+    -BackupFile $backupDB `
+    -ServerInstance $node1 `
+    -Initialize
 
-  if ( !($AG) ) {
-    $hostname = [System.Net.Dns]::GetHostName()
+  $backupLog = "\\$node2\$share_name\$($db_name)_log.bak"
+  Backup-SqlDatabase `
+    -Database $db_name `
+    -BackupFile $backupLog `
+    -ServerInstance $node1 `
+    -BackupAction Log -Initialize
 
-    # Backup my database and its log on the primary
-    Write-Host "$(Get-Date) $hostname - Creating backups of database $db_name"
-    $backupDB = "\\$node2\$share_name\$($db_name)_db.bak"
-    Backup-SqlDatabase `
-      -Database $db_name `
-      -BackupFile $backupDB `
-      -ServerInstance $node1 `
-      -Initialize
+  # Restore the database and log on the secondary (using NO RECOVERY)
+  Write-Host "$(Get-Date) $hostname - Restoring backups of database in $node2"
+  Restore-SqlDatabase `
+    -Database $db_name `
+    -BackupFile $backupDB `
+    -ServerInstance $node2 `
+    -NoRecovery -ReplaceDatabase
+  Restore-SqlDatabase `
+    -Database $db_name `
+    -BackupFile $backupLog `
+    -ServerInstance $node2 `
+    -RestoreAction Log `
+    -NoRecovery
 
-    $backupLog = "\\$node2\$share_name\$($db_name)_log.bak"
-    Backup-SqlDatabase `
-      -Database $db_name `
-      -BackupFile $backupLog `
-      -ServerInstance $node1 `
-      -BackupAction Log -Initialize
+  # Find the version of SQL Server that Node 1 is running
+  $Srv = Get-Item SQLSERVER:\SQL\$($node1)\DEFAULT
+  $Version = ($Srv.Version)
 
-    # Restore the database and log on the secondary (using NO RECOVERY)
-    Write-Host "$(Get-Date) $hostname - Restoring backups of database in $node2"
-    Restore-SqlDatabase `
-      -Database $db_name `
-      -BackupFile $backupDB `
-      -ServerInstance $node2 `
-      -NoRecovery -ReplaceDatabase
-    Restore-SqlDatabase `
-      -Database $db_name `
-      -BackupFile $backupLog `
-      -ServerInstance $node2 `
-      -RestoreAction Log `
-      -NoRecovery
+  # Create an in-memory representation of the primary replica
+  $primaryReplica = New-SqlAvailabilityReplica `
+    -Name $node1 `
+    -EndpointURL "TCP://$($node1).$($domain):5022" `
+    -AvailabilityMode SynchronousCommit `
+    -FailoverMode Automatic `
+    -Version $Version `
+    -AsTemplate
 
-    # Find the version of SQL Server that Node 1 is running
-    $Srv = Get-Item SQLSERVER:\SQL\$($node1)\DEFAULT
-    $Version = ($Srv.Version)
+  # Create an in-memory representation of the secondary replica
+  $secondaryReplica = New-SqlAvailabilityReplica `
+    -Name $node2 `
+    -EndpointURL "TCP://$($node2).$($domain):5022" `
+    -AvailabilityMode SynchronousCommit `
+    -FailoverMode Automatic `
+    -Version $Version `
+    -AsTemplate
 
-    # Create an in-memory representation of the primary replica
-    $primaryReplica = New-SqlAvailabilityReplica `
-      -Name $node1 `
-      -EndpointURL "TCP://$($node1).$($domain):5022" `
-      -AvailabilityMode SynchronousCommit `
-      -FailoverMode Automatic `
-      -Version $Version `
-      -AsTemplate
+  # Create the availability group
+  Write-Host "$(Get-Date) $hostname - Create Availability Group $name_ag"
+  New-SqlAvailabilityGroup `
+    -Name $name_ag `
+    -Path "SQLSERVER:\SQL\$($node1)\DEFAULT" `
+    -AvailabilityReplica @($primaryReplica,$secondaryReplica) `
+    -Database $db_name
+
+  # Join the secondary replica to the availability group.
+  Write-Host "$(Get-Date) $hostname - Join $node2 to the Availability Group"
+  Join-SqlAvailabilityGroup `
+    -Path "SQLSERVER:\SQL\$($node2)\DEFAULT" `
+    -Name $name_ag
+
+
+  # Join the secondary database to the availability group.
+  Write-Host "$(Get-Date) $hostname - Join DB in $node2 to Availability Group"
+  #Add-SqlAvailabilityDatabase `
+  #  -Path "SQLSERVER:\SQL\$($node2)\DEFAULT\AvailabilityGroups\$($name_ag)" `
+  #  -Database $db_name
+
+  # In SQL Server 2017 the Add-SqlAvailabilityDatabase was failing so decided to run it as a query instead
+  Invoke-Command -ComputerName $node2 -ScriptBlock { 
+    param($db_name, $name_ag)
   
-    # Create an in-memory representation of the secondary replica
-    $secondaryReplica = New-SqlAvailabilityReplica `
-      -Name $node2 `
-      -EndpointURL "TCP://$($node2).$($domain):5022" `
-      -AvailabilityMode SynchronousCommit `
-      -FailoverMode Automatic `
-      -Version $Version `
-      -AsTemplate
+    $hostname = [System.Net.Dns]::GetHostName()
+    Write-Host "$(Get-Date) $hostname - Adding database [$db_name] to Availability Group [$name_ag]"
+  
+    $query = "ALTER DATABASE [$db_name] SET HADR AVAILABILITY GROUP = [$name_ag]"
+    Write-Host $query
+  
+    Invoke-Sqlcmd -Query $query
+  } -ArgumentList $db_name, $name_ag
 
-    # Create the availability group
-    Write-Host "$(Get-Date) $hostname - Create Availability Group $name_ag"
-    New-SqlAvailabilityGroup `
-      -Name $name_ag `
-      -Path "SQLSERVER:\SQL\$($node1)\DEFAULT" `
-      -AvailabilityReplica @($primaryReplica,$secondaryReplica) `
-      -Database $db_name
 
-    # Join the secondary replica to the availability group.
-    Write-Host "$(Get-Date) $hostname - Join $node2 to the Availability Group"
-    Join-SqlAvailabilityGroup `
-      -Path "SQLSERVER:\SQL\$($node2)\DEFAULT" `
-      -Name $name_ag
+  # Create the listener
+  # Notice we use /24 netmask. It should match the netmask of the IP address of the nodes.
+  Write-Host "$(Get-Date) $hostname - Create Listener ($ip_ag_listener1, $ip_ag_listener2)"
+  New-SqlAvailabilityGroupListener `
+    -Name $name_ag_listener `
+    -StaticIp "$($ip_ag_listener1)/255.255.255.0","$($ip_ag_listener2)/255.255.255.0" `
+    -Path SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups\$($name_ag) | 
+      Format-Table | Out-String
+}
+else {
+  Write-Host "$(Get-Date) $hostname - Skip creation of the Availability Group."
+  Write-Host "$(Get-Date) This node already member of the Availability Group"
+}
 
-    # Join the secondary database to the availability group.
-    Write-Host "$(Get-Date) $hostname - Join DB in $node2 to Availability Group"
-    Add-SqlAvailabilityDatabase `
-      -Path "SQLSERVER:\SQL\$($node2)\DEFAULT\AvailabilityGroups\$($name_ag)" `
-      -Database $db_name
-
-    # Create the listener
-    Write-Host "$(Get-Date) $hostname - Create Listener ($ip_ag_listener1, $ip_ag_listener2)"
-    New-SqlAvailabilityGroupListener `
-      -Name $name_ag_listener `
-      -StaticIp "$($ip_ag_listener1)/255.255.0.0","$($ip_ag_listener2)/255.255.0.0" `
-      -Path SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups\$($name_ag) | 
-        Format-Table
-  }
-  else {
-    Write-Host "$(Get-Date) $hostname - Skip creation of the Availability Group."
-    Write-Host "$(Get-Date) This node already member of the Availability Group"
-  }
-} -ArgumentList $node1, $node2, $share_name, $db_name, $domain, $name_ag, `
-  $name_ag_listener, $ip_ag_listener1, $ip_ag_listener2
-
-Write-Host "$(Get-Date) SQL Server Availability Group $name_ag is now created"
-
+Write-Host "$(Get-Date) SQL Server Availability Group $name_ag is now ready"
 
 
 ################################################################################
 # Remove the shared folder in Node 2 as it is no longer needed
 ################################################################################
-Invoke-Command -ComputerName $node2_fqdn -Credential $cred -ScriptBlock { 
+Invoke-Command -ComputerName $node2 -ScriptBlock { 
   param($sql_backup, $share_name)
 
   $hostname = [System.Net.Dns]::GetHostName()
@@ -399,19 +396,9 @@ Invoke-Command -ComputerName $node2_fqdn -Credential $cred -ScriptBlock {
 } -ArgumentList $sql_backup, $share_name, $domain, $svc_acct, $node1
 
 
-
-# Disable CredSSP Server in remote nodes
-Invoke-Command `
-  -ComputerName $node1, $node2 `
-  -Authentication Credssp `
-  -Credential $cred `
-  -ScriptBlock { Disable-WSManCredSSP -Role Server 
-} | Format-Table
-
-# Disable CredSSP in local computer
-Disable-WSManCredSSP -Role Client | Format-Table
-
-
 # Get-WSManCredSSP
-# Use this command to destroy the WSFC if you are re-doing the creation again
-# Invoke-Command -ComputerName $node1 -Authentication Credssp -Credential $cred -ScriptBlock { Remove-Cluster -Force -CleanupAD }
+# Use these commands to destroy the AG and WSFC if you are re-doing the creation again
+# Remove-SqlAvailabilityGroup -Path "SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups\$($name_ag)"
+# Remove-Cluster -Force -CleanupAD
+# Disable-SqlAlwaysOn -ServerInstance $node1 -Force
+# Disable-SqlAlwaysOn -ServerInstance $node2 -Force
