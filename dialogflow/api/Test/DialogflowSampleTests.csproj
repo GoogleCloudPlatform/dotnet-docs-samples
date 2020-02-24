@@ -21,4 +21,10 @@
   <ItemGroup>
     <Compile Remove="BaseTest.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\resources\book_a_room.wav">
+      <Link>resources\book_a_room.wav</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
