@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+     <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+        <StartupObject>GoogleCloudSamples.TranscribeContext</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.3.0" />
+    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.3.1" />
+  </ItemGroup>
+</Project>

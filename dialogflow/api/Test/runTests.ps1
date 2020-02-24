@@ -11,10 +11,12 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+
 import-module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 Set-TestTimeout 5000
 
 dotnet restore
 dotnet build
-dotnet test --test-adapter-path:. --logger:junit --no-build --no-restore -v n
+# TODO: https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/947
+# dotnet test --test-adapter-path:. --logger:junit --no-build --no-restore -v n
