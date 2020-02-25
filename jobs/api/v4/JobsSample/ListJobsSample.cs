@@ -32,7 +32,7 @@ namespace GoogleCloudSamples
             {
                 ParentAsTenantOrProjectNameOneof = parent,
 
-                Filter = $"companyName=\"projects/dotnet-docs-samples-tests/companies/3a079e50-6579-4c05-85bd-4f67f709fea5\""
+                Filter = filter
             };
             PagedEnumerable<ListJobsResponse, Job> jobs = jobServiceClient.ListJobs(request);
 
