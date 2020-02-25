@@ -26,6 +26,7 @@
 // [START bigtable_filters_limit_block_all]
 // [START bigtable_filters_limit_pass_all]
 // [START bigtable_filters_modify_strip_value]
+// [START bigtable_filters_modify_apply_label]
 // [START bigtable_filters_composing_chain]
 // [START bigtable_filters_composing_interleave]
 // [START bigtable_filters_composing_condition]
@@ -59,6 +60,7 @@ namespace Filters
         // [END bigtable_filters_limit_block_all]
         // [END bigtable_filters_limit_pass_all]
         // [END bigtable_filters_modify_strip_value]
+        // [END bigtable_filters_modify_apply_label]
         // [END bigtable_filters_composing_chain]
         // [END bigtable_filters_composing_interleave]
         // [END bigtable_filters_composing_condition]
@@ -294,6 +296,22 @@ namespace Filters
         }
         // [END bigtable_filters_modify_strip_value]
 
+        // [START bigtable_filters_modify_apply_label]
+        /// <summary>
+        /// /// Read using a strip value filter from an existing table.
+        ///</summary>
+        /// <param name="projectId">Your Google Cloud Project ID.</param>
+        /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
+        /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
+
+        public string filterModifyApplyLabel(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        {
+            // A filter that applies the given label to the outputted cell
+            RowFilter filter = new RowFilter { ApplyLabelTransformer = "labelled" };
+            return readFilter(projectId, instanceId, tableId, filter);
+        }
+        // [END bigtable_filters_modify_apply_label]
+
         // [START bigtable_filters_composing_chain]
         /// <summary>
         /// /// Read using a chain filter from an existing table.
@@ -341,8 +359,8 @@ namespace Filters
             // data_plan_10gb AND the value true, OTHERWISE applies the label filtered-out
             RowFilter filter = RowFilters.Condition(
                 RowFilters.Chain(RowFilters.ColumnQualifierExact("data_plan_10gb"), RowFilters.ValueExact("true")),
-                RowFilters.StripValueTransformer(),
-                RowFilters.PassAllFilter()
+                new RowFilter { ApplyLabelTransformer = "passed-filter" },
+                new RowFilter { ApplyLabelTransformer = "filtered-out" }
                 );
             return readFilter(projectId, instanceId, tableId, filter);
         }
@@ -362,6 +380,7 @@ namespace Filters
         // [START bigtable_filters_limit_block_all]
         // [START bigtable_filters_limit_pass_all]
         // [START bigtable_filters_modify_strip_value]
+        // [START bigtable_filters_modify_apply_label]
         // [START bigtable_filters_composing_chain]
         // [START bigtable_filters_composing_interleave]
         // [START bigtable_filters_composing_condition]
@@ -415,6 +434,7 @@ namespace Filters
 // [END bigtable_filters_limit_block_all]
 // [END bigtable_filters_limit_pass_all]
 // [END bigtable_filters_modify_strip_value]
+// [END bigtable_filters_modify_apply_label]
 // [END bigtable_filters_composing_chain]
 // [END bigtable_filters_composing_interleave]
 // [END bigtable_filters_composing_condition]
