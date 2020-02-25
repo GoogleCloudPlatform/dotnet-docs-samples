@@ -174,6 +174,13 @@ namespace Filter
         }
 
         [Fact]
+        public void TestFilterModifyApplyLabel()
+        {
+            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
+            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterModifyApplyLabel(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+        }
+
+        [Fact]
         public void TestFilterComposingChain()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
