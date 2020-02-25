@@ -47,7 +47,9 @@ namespace GoogleCloudSamples
             "  Storage generate-signed-get-url-v4 bucket-name object-name\n" +
             "  Storage generate-signed-put-url-v4 bucket-name object-name\n" +
             "  Storage view-bucket-iam-members bucket-name\n" +
-            "  Storage add-bucket-iam-member bucket-name member\n" +
+            "  Storage add-bucket-iam-member bucket-name role member\n" +
+            "  Storage add-bucket-iam-conditional-binding bucket-name member\n" +
+            "                              role member cond-title cond-description cond-expression\n" +
             "  Storage remove-bucket-iam-member bucket-name role member\n" +
             "  Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name\n" +
             "  Storage upload-with-kms-key bucket-name key-location\n" +
@@ -629,7 +631,11 @@ namespace GoogleCloudSamples
         private void ViewBucketIamMembers(string bucketName)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName);
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+
             foreach (var binding in policy.Bindings)
             {
                 Console.WriteLine($"  Role: {binding.Role}");
@@ -637,6 +643,12 @@ namespace GoogleCloudSamples
                 foreach (var member in binding.Members)
                 {
                     Console.WriteLine($"    {member}");
+                }
+                if (binding.Condition != null)
+                {
+                    Console.WriteLine($"Condition Title: {binding.Condition.Title}");
+                    Console.WriteLine($"Condition Description: {binding.Condition.Description}");
+                    Console.WriteLine($"Condition Expression: {binding.Condition.Expression}");
                 }
             }
         }
@@ -647,35 +659,74 @@ namespace GoogleCloudSamples
             string role, string member)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName);
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+
             Policy.BindingsData bindingToAdd = new Policy.BindingsData();
             bindingToAdd.Role = role;
             string[] members = { member };
             bindingToAdd.Members = members;
             policy.Bindings.Add(bindingToAdd);
+
             storage.SetBucketIamPolicy(bucketName, policy);
             Console.WriteLine($"Added {member} with role {role} "
                 + $"to {bucketName}");
         }
         // [END add_bucket_iam_member]
 
+        // [START storage_add_bucket_conditional_iam_binding]
+        private void AddBucketConditionalIamBinding(string bucketName,
+            string role, string member, string title, string description, string expression)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+
+            Policy.BindingsData bindingToAdd = new Policy.BindingsData();
+            bindingToAdd.Role = role;
+            string[] members = { member };
+            bindingToAdd.Members = members;
+            bindingToAdd.Condition = new Expr()
+            {
+                Title = title,
+                Description = description,
+                Expression = expression
+            };
+            policy.Bindings.Add(bindingToAdd);
+
+            storage.SetBucketIamPolicy(bucketName, policy);
+            Console.WriteLine($"Added {member} with role {role} "
+                + $"to {bucketName}");
+        }
+        // [END storage_add_bucket_conditional_iam_binding]
+
         // [START remove_bucket_iam_member]
         private void RemoveBucketIamMember(string bucketName,
             string role, string member)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName);
-            policy.Bindings.ToList().ForEach(response =>
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
             {
-                if (response.Role == role)
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+            policy.Bindings.ToList().ForEach(binding =>
+            {
+                if (binding.Role == role && binding.Condition == null)
                 {
                     // Remove the role/member combo from the IAM policy.
-                    response.Members = response.Members
-                        .Where(m => m != member).ToList();
+                    binding.Members = binding.Members
+                        .Where(memberInList => memberInList != member).ToList();
                     // Remove role if it contains no members.
-                    if (response.Members.Count == 0)
+                    if (binding.Members.Count == 0)
                     {
-                        policy.Bindings.Remove(response);
+                        policy.Bindings.Remove(binding);
                     }
                 }
             });
@@ -1232,7 +1283,7 @@ namespace GoogleCloudSamples
             string requesterPays;
             if (s_projectId == "YOUR-PROJECT" + "-ID")
             {
-                Console.WriteLine("Update program.cs and replace YOUR-PROJECT" +
+                Console.WriteLine("Update Storage.cs and replace YOUR-PROJECT" +
                     "-ID with your project id, and recompile.");
                 return -1;
             }
@@ -1430,6 +1481,11 @@ namespace GoogleCloudSamples
                     case "add-bucket-iam-member":
                         if (args.Length < 4 && PrintUsage()) return -1;
                         AddBucketIamMember(args[1], args[2], args[3]);
+                        break;
+
+                    case "add-bucket-iam-conditional-binding":
+                        if (args.Length < 7 && PrintUsage()) return -1;
+                        AddBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5], args[6]);
                         break;
 
                     case "remove-bucket-iam-member":
