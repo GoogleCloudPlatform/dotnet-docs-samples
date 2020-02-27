@@ -21,7 +21,7 @@ using System.Text;
 using CommandLine;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Iam.V1;
-using Google.Cloud.SecretManager.V1Beta1;
+using Google.Cloud.SecretManager.V1;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json;

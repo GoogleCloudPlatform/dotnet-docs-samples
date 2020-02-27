@@ -21,7 +21,7 @@ using Google.Api.Gax.ResourceNames;
 using Google.Protobuf;
 
 // Imports the Secret Manager client library
-using Google.Cloud.SecretManager.V1Beta1;
+using Google.Cloud.SecretManager.V1;
 
 namespace GoogleCloudSamples
 {
