@@ -10,7 +10,7 @@ public class QuickStartTest
     public QuickStartTest()
     {
         _project = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        _member = "user:yaraarryn.677500@gmail.com";
+        _member = "user:YaraArryn.677500@gmail.com";
         _role = "roles/logging.viewer";
     }
         

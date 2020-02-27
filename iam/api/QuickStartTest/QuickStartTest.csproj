@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\QuickStart\QuickStart.csproj" />
+    <ProjectReference Include="..\QuickStartAddMember\QuickStartAddMember.csproj" />
+    <ProjectReference Include="..\QuickStartRemoveMember\QuickStartRemoveMember.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
   
