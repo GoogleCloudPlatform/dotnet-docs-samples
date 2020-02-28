@@ -278,7 +278,7 @@ namespace GoogleCloudSamples
                 // Configure request to enable multiple channels
                 EnableSeparateRecognitionPerChannel = true,
                 AudioChannelCount = channelCount
-            // Note: Sample uses local file.
+                // Note: Sample uses local file.
             }, RecognitionAudio.FromFile(filePath));
 
             // Print out the results.
