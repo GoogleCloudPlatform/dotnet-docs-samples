@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Api.Gax;
 using Google.Cloud.Redis.V1;
 using System;
 using System.Linq;
@@ -22,7 +21,7 @@ namespace Redis
     public class ListInstance
     {
         /// <summary>
-        /// Lists all Redis instances owned by a project in either the specified
+        /// Lists all Redis instances owned by a project in with the specified
         /// location (region).
         /// </summary>
         public static void List(string projectId, string locationId)
@@ -42,7 +41,6 @@ namespace Redis
             {
                 Redis.PrintInstanceInfo(instance);
             }
-            Console.WriteLine("List Instance..");
         }
     }
 }

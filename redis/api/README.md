@@ -12,20 +12,20 @@ This sample requires [.NET Core 2.0](
 
 1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
-4.  Enable APIs for your project.
+2.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=redis.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Redis API.
 
-7.  Edit `Redis\Redis.cs`, and replace YOUR-PROJECT-ID with id
+3.  Edit `Redis\Redis.cs`, and replace YOUR-PROJECT-ID with id
     of the project you created in step 1. Also, update "LOCATION-ID"
     with the location id.
 
-9.  From a Powershell command line, run the QuickStart to create instance:
+4.  From a Powershell command line, run the CreateInstance to create instance:
     ```
     PS > dotnet run create instance-name
     ```
 
-10. And run the Redis sample to see a list of subcommands:
+5. And run the Redis sample to see a list of subcommands:
     ```
     PS C:\> dotnet run command
 
@@ -35,7 +35,11 @@ This sample requires [.NET Core 2.0](
 
       get                 Get the details of a specific Redis instance.
 
-      list                Lists all Redis instances owned by a project in with the specified location (region).
+      list                List all Redis instances owned by a project in with the specified location (region).
+
+      update              Updates the metadata and configuration of a specific Redis instance.
+
+      delete              Delete a specific Redis instance.
     ```
 
 ## Contributing changes

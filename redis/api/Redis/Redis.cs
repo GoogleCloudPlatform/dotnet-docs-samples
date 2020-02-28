@@ -19,13 +19,15 @@ namespace Redis
 {
     public class Redis
     {
-        public static readonly string s_projectId = "YOUR-PROJECT-ID";
-        public static readonly string s_locationId = "LOCATION-ID";
+        public static readonly string s_projectId = "grass-clump-479";
+        public static readonly string s_locationId = "us-central1";
         private static readonly string s_usage =
             "Usage: \n" +
             "  Redis create [instance-name]\n" +
             "  Redis get [instance-name]\n" +
-            "  Redis list\n";
+            "  Redis list\n" +
+            "  Redis update [instance-name]\n" +
+            "  Redis delete [instance-name]\n";
 
         public static int Main(string[] args)
         {
@@ -56,6 +58,13 @@ namespace Redis
                         break;
                     case "list":
                         ListInstance.List(s_projectId, s_locationId);
+                        break;
+                    case "update":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        UpdateInstance.Update(s_projectId, s_locationId, args[1]);
+                        break;
+                    case "delete":
+                        DeleteInstance.Delete(s_projectId, s_locationId, args[1]);
                         break;
                     default:
                         PrintUsage();
