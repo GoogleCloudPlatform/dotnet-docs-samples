@@ -241,6 +241,15 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     }
 
     [Fact]
+    public void TestQueryWithNamedParameters()
+    {
+        var snippet = new BigQueryQueryWithNamedParameters();
+        snippet.QueryWithNamedParameters(_projectId);
+        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
+        Assert.Equal(12, outputLines.Count());
+    }
+
+    [Fact]
     public void TestTableInsertRows()
     {
         var snippet = new BigQueryTableInsertRows();
