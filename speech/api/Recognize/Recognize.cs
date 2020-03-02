@@ -263,7 +263,7 @@ namespace GoogleCloudSamples
         }
         // [END speech_transcribe_enhanced_model]
 
-        // [START speech_transcribe_multichannel_beta]
+        // [START speech_transcribe_multichannel]
         static object SyncRecognizeMultipleChannels(string filePath, int channelCount)
         {
             var speech = SpeechClient.Create();
@@ -276,6 +276,7 @@ namespace GoogleCloudSamples
                 // Configure request to enable multiple channels
                 EnableSeparateRecognitionPerChannel = true,
                 AudioChannelCount = channelCount
+                // Note: Sample uses local file.
             }, RecognitionAudio.FromFile(filePath));
 
             // Print out the results.
@@ -289,7 +290,7 @@ namespace GoogleCloudSamples
             }
             return 0;
         }
-        // [END speech_transcribe_multichannel_beta]
+        // [END speech_transcribe_multichannel]
 
         // [START speech_transcribe_diarization]
         static object SyncRecognizeMultipleSpeakers(string filePath, int numberOfSpeakers)
