@@ -22,7 +22,7 @@ using Google.Api.Gax.ResourceNames;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Iam.v1;
 using Google.Apis.Iam.v1.Data;
-using Google.Cloud.SecretManager.V1Beta1;
+using Google.Cloud.SecretManager.V1;
 using Google.Protobuf;
 
 namespace GoogleCloudSamples
