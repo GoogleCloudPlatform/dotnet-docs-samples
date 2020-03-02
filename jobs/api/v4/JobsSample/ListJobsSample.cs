@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Google.Api.Gax;
 using Google.Cloud.Talent.V4Beta1;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -31,7 +30,6 @@ namespace GoogleCloudSamples
             ListJobsRequest request = new ListJobsRequest
             {
                 ParentAsTenantOrProjectNameOneof = parent,
-
                 Filter = filter
             };
             PagedEnumerable<ListJobsResponse, Job> jobs = jobServiceClient.ListJobs(request);
