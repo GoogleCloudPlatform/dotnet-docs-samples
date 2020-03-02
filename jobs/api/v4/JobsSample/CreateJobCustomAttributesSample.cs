@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Google.Cloud.Talent.V4Beta1;
-using static Google.Cloud.Talent.V4Beta1.Job.Types;
+using System;
 
 namespace GoogleCloudSamples
 {
     internal class CreateJobCustomAttributesSample
     {
         // [START job_search_create_job_custom_attributes]
-        public static object CreateJobCustomAttributes(string projectId,
-            string tenantId, string companyId, string requisitionId)
+        public static object CreateJobCustomAttributes(string projectId, string tenantId, string companyId, string requisitionId)
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
             TenantName tenantName = new TenantName(projectId, tenantId);

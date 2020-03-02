@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using static Google.Cloud.Talent.V4Beta1.JobEvent.Types;
+
 using Google.Cloud.Talent.V4Beta1;
 using Google.Protobuf.WellKnownTypes;
-using static Google.Cloud.Talent.V4Beta1.JobEvent.Types;
+using System;
 
 namespace GoogleCloudSamples
 {
     internal class CreateClientEventSample
     {
         // [START job_search_create_client_event]
-        public static object CreateClientEvent(string projectId,
-            string tenantId, string requestId, string eventId)
+        public static object CreateClientEvent(string projectId, string tenantId, string requestId, string eventId)
         {
             EventServiceClient eventServiceClient = EventServiceClient.Create();
 
@@ -38,10 +38,9 @@ namespace GoogleCloudSamples
             // The type of event attributed to the behavior of the end user.
             JobEventType type = JobEventType.View;
 
-
             // List of job names associated with this event.
-            string jobsElement = "projects/[Project ID]/tenants/[Tenant ID]/jobs/[Job ID]";
-            string jobsElement2 = "projects/[Project ID]/tenants/[Tenant ID]/jobs/[Job ID]";
+            string jobsElement = $"projects/{projectId}/tenants/{tenantId}/jobs/[Job ID]";
+            string jobsElement2 = $"projects/{projectId}/tenants/{tenantId}/jobs/[Job ID]";
 
             string[] jobs = { jobsElement, jobsElement2 };
 
@@ -58,7 +57,6 @@ namespace GoogleCloudSamples
                 CreateTime = createTime,
                 JobEvent = jobEvent
             };
-
 
             CreateClientEventRequest request = new CreateClientEventRequest
             {

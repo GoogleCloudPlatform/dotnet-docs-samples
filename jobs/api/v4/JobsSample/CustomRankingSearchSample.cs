@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Google.Cloud.Talent.V4Beta1;
 using static Google.Cloud.Talent.V4Beta1.SearchJobsRequest.Types;
 using static Google.Cloud.Talent.V4Beta1.SearchJobsRequest.Types.CustomRankingInfo.Types;
+
+using Google.Cloud.Talent.V4Beta1;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -40,10 +41,11 @@ namespace GoogleCloudSamples
             CustomRankingInfo customRankingInfo = new CustomRankingInfo
             {
                 ImportanceLevel = ImportanceLevel.Extreme,
+                // Custom ranking supports math operators, and Field name can be CPC or Freshness
+                // https://cloud.google.com/talent-solution/job-search/docs/custom-ranking#how_to_use
                 RankingExpression = "(someFieldLong + 25) * 0.25"
             };
             string orderBy = "custom_ranking desc";
-
 
             SearchJobsRequest request = new SearchJobsRequest
             {

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Google.Cloud.Talent.V4Beta1;
 using Google.Protobuf.WellKnownTypes;
 using Google.Type;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -36,7 +36,6 @@ namespace GoogleCloudSamples
                 SessionId = sessionId,
                 UserId = userId
             };
-
 
             CommuteMethod commuteMethod = CommuteMethod.Driving;
             long seconds = 3600L;
@@ -59,7 +58,6 @@ namespace GoogleCloudSamples
                 TravelDuration = travelDuration,
                 StartCoordinates = startCoordinates
             };
-
 
             JobQuery jobQuery = new JobQuery
             {
