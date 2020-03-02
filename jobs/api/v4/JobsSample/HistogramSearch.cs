@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Google.Cloud.Talent.V4Beta1;
+using System;
 
 namespace GoogleCloudSamples
 {
     internal class HistogramSearch
     {
         // [START job_search_histogram_search]
-        public static object HistogramSearchJobs(string projectId = "YOUR_PROJECT_ID",
-            string tenantId = "YOUR_TENANT_ID",
-            string query = "count(base_compensation, [bucket(12, 20)])")
+        public static object HistogramSearchJobs(string projectId, string tenantId, string query)
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
             TenantName name = new TenantName(projectId, tenantId);
@@ -37,6 +35,8 @@ namespace GoogleCloudSamples
                 UserId = userId
             };
 
+            // Examples and formats are explained in the following link:
+            // https://cloud.google.com/talent-solution/job-search/docs/reference/rest/v4beta1/projects.tenants.jobs/search#body.request_body.FIELDS.histogram_queries
             HistogramQuery histogramQuery = new HistogramQuery
             {
                 HistogramQuery_ = query
