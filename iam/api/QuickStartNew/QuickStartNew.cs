@@ -1,0 +1,161 @@
+// Copyright 2018 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// [START iam_quickstart]
+
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Iam.v1;
+using Google.Apis.CloudResourceManager.v1;
+using Google.Apis.CloudResourceManager.v1.Data;
+
+
+public class QuickStartNew
+{
+    public static void Main(string[] args)
+    {
+        //TODO: Replace with your project ID
+        var projectId = "your-project";
+        //TODO: Replace with a member ID in the form `user:member@example.com`
+        var member = "your-member";
+        //Role to be granted
+        var role = "roles/logging.logWriter";
+        //All permissions contained in the role to be granted
+        var rolePermissions = new List<string>() { "logging.logEntries.create" };
+        // Initialize service
+        var crmService = InitializeService();
+
+        // Grant your member the "Log writer" role for your project
+        AddBinding(crmService, projectId, member, role);
+        // Test if the member has the permissions granted by the role
+        var grantedPermissions = new List<string>(TestPermissions(crmService, projectId, member, rolePermissions));
+        // Print the permissios from the role permissions that the member actually has
+        foreach (var p in grantedPermissions)
+        {
+            Console.WriteLine(p.ToString());
+        }
+        // Remove member from the "Log writer" role
+        RemoveMember(crmService, projectId, member, role);
+    }
+
+    public static CloudResourceManagerService InitializeService()
+    {
+        // Get credentials
+        var credential = GoogleCredential.GetApplicationDefault()
+            .CreateScoped(IamService.Scope.CloudPlatform);
+
+        // Create the Cloud Resource Manager service object
+        var crmService = new CloudResourceManagerService(
+            new CloudResourceManagerService.Initializer
+            {
+                HttpClientInitializer = credential
+            });
+
+        return crmService;
+    }
+
+    public static void AddBinding(
+        CloudResourceManagerService crmService, string projectId, string member, string role)
+    {
+        // Get the project's policy by calling the
+        // Cloud Resource Manager Projects API
+        var policy = crmService.Projects.GetIamPolicy(
+            new GetIamPolicyRequest(),
+            projectId).Execute();
+
+        // Find binding in policy
+        var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
+
+        // If binding already exists, add member to binding
+        if (binding != null)
+        {
+            binding.Members.Add(member);
+
+            // If binding does not exist, add binding to policy
+        }
+        else
+        {
+            binding = new Binding
+            {
+                Role = role,
+                Members = new List<string> { member }
+            };
+            policy.Bindings.Add(binding);
+        }
+
+        // Set the project's policy by calling the
+        // Cloud Resource Manager Projects API
+        crmService.Projects.SetIamPolicy(
+           new SetIamPolicyRequest
+           {
+               Policy = policy
+           }, projectId).Execute();
+    }
+
+
+    public static IList<string> TestPermissions(
+        CloudResourceManagerService crmService, string projectId, string member, List<string> permissions)
+    {
+        TestIamPermissionsRequest requestBody = new TestIamPermissionsRequest();
+        requestBody.Permissions = new List<string>(permissions);
+        var returnedPermissions = crmService.Projects.TestIamPermissions(
+            requestBody, projectId).Execute().Permissions;
+
+        return returnedPermissions;
+    }
+
+    public static void RemoveMember(
+        CloudResourceManagerService crmService, string projectId, string member, string role)
+    {
+        // Get the project's policy by calling the
+        // Cloud Resource Manager Projects API
+        var policy = crmService.Projects.GetIamPolicy(
+            new GetIamPolicyRequest(),
+            projectId).Execute();
+
+        // Remove the member from the role
+        var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
+        if (binding == null)
+        {
+            Console.WriteLine("Role does not exist in policy.");
+        }
+        else
+        {
+            if (binding.Members.Contains(member))
+            {
+                binding.Members.Remove(member);
+            }
+            else
+            {
+                Console.WriteLine("The member has not been granted this role.");
+            }
+
+            if (binding.Members.Count == 0)
+            {
+                policy.Bindings.Remove(binding);
+            }
+        }
+
+        // Set the project's policy by calling the
+        // Cloud Resource Manager Projects API
+        crmService.Projects.SetIamPolicy(
+            new SetIamPolicyRequest
+            {
+                Policy = policy
+            }, projectId).Execute();
+    }
+}
+// [END iam_quickstart]
