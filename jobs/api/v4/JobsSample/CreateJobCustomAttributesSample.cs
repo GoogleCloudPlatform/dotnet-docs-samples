@@ -25,7 +25,7 @@ namespace GoogleCloudSamples
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
             TenantName tenantName = new TenantName(projectId, tenantId);
-            
+
             // Custom attribute can be string or numeric value, and can be filtered in search queries.
             // https://cloud.google.com/talent-solution/job-search/docs/custom-attributes
             CustomAttribute customAttributes = new CustomAttribute
@@ -35,7 +35,7 @@ namespace GoogleCloudSamples
             customAttributes.StringValues.Add("Internship");
             customAttributes.StringValues.Add("Intern");
             customAttributes.StringValues.Add("Apprenticeship");
-            
+
             Job job = new Job
             {
                 Company = companyId,
