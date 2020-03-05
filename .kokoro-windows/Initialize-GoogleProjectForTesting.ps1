@@ -80,6 +80,7 @@ roles/clouddebugger.user
 roles/cloudiot.admin
 roles/cloudkms.admin
 roles/cloudkms.cryptoKeyEncrypterDecrypter
+roles/cloudkms.cryptoKeySignerVerifier
 roles/cloudsql.client
 roles/cloudsql.editor
 roles/cloudtasks.admin

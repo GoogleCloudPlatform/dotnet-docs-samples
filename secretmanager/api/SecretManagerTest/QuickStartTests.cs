@@ -18,7 +18,7 @@ using System.Linq;
 using Xunit;
 
 using Google.Api.Gax.ResourceNames;
-using Google.Cloud.SecretManager.V1Beta1;
+using Google.Cloud.SecretManager.V1;
 
 namespace GoogleCloudSamples
 {
