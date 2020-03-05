@@ -18,7 +18,7 @@ using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-namespace Redis
+namespace GoogleCloudSamples
 {
     public class UpdateInstance
     {

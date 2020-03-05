@@ -17,7 +17,7 @@ using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-namespace Redis
+namespace GoogleCloudSamples
 {
     public class DeleteInstance
     {

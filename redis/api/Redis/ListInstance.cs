@@ -16,7 +16,7 @@ using Google.Cloud.Redis.V1;
 using System;
 using System.Linq;
 
-namespace Redis
+namespace GoogleCloudSamples
 {
     public class ListInstance
     {

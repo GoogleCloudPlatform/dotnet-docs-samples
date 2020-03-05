@@ -15,7 +15,7 @@
 using Google.Cloud.Redis.V1;
 using System;
 
-namespace Redis
+namespace GoogleCloudSamples
 {
     public class Redis
     {
@@ -72,10 +72,10 @@ namespace Redis
                 }
                 return 0;
             }
-            catch (Google.GoogleApiException e)
+            catch (Grpc.Core.RpcException e)
             {
                 Console.WriteLine(e.Message);
-                return null == e.Error ? -1 : e.Error.Code;
+                return (int)e.StatusCode;
             }
         }
 

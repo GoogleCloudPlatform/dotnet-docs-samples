@@ -16,7 +16,7 @@ using Google.Cloud.Redis.V1;
 using Google.LongRunning;
 using System;
 
-namespace Redis
+namespace GoogleCloudSamples
 {
     public class CreateInstance
     {

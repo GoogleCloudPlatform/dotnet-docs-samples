@@ -14,7 +14,7 @@
 
 using Google.Cloud.Redis.V1;
 
-namespace Redis
+namespace GoogleCloudSamples
 {
     public class GetInstance
     {
