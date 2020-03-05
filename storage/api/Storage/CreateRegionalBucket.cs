@@ -21,12 +21,13 @@ namespace Storage
     public class CreateRegionalBucket
     {
         // [START storage_create_bucket_class_location]
-        public static void StorageCreateRegionalBucket(string projectId, string location, string bucketName)
+        public static Bucket StorageCreateRegionalBucket(string projectId, string location, string bucketName)
         {
             var storage = StorageClient.Create();
             Bucket bucket = new Bucket { Location = location, Name = bucketName };
-            storage.CreateBucket(projectId, bucket);
+            var newlyCreatedBucket = storage.CreateBucket(projectId, bucket);
             Console.WriteLine($"Created {bucketName}.");
+            return newlyCreatedBucket;
         }
         // [END storage_create_bucket_class_location]
     }
