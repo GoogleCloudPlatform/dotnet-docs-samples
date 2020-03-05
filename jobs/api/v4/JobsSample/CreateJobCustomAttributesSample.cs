@@ -14,6 +14,7 @@
 
 using Google.Cloud.Talent.V4Beta1;
 using System;
+using System.Collections.Generic;
 
 namespace GoogleCloudSamples
 {
@@ -24,15 +25,26 @@ namespace GoogleCloudSamples
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
             TenantName tenantName = new TenantName(projectId, tenantId);
-
+            
+            // Custom attribute can be string or numeric value, and can be filtered in search queries.
+            // https://cloud.google.com/talent-solution/job-search/docs/custom-attributes
+            CustomAttribute customAttributes = new CustomAttribute
+            {
+                Filterable = true
+            };
+            customAttributes.StringValues.Add("Internship");
+            customAttributes.StringValues.Add("Intern");
+            customAttributes.StringValues.Add("Apprenticeship");
+            
             Job job = new Job
             {
                 Company = companyId,
                 RequisitionId = requisitionId,
-                Title = "Software Developer II",
+                Title = "Software Developer I",
                 Description = "This is a description of this <i>wonderful</i> job!",
                 LanguageCode = "en-US"
             };
+            job.CustomAttributes.Add("FOR_STUDENTS", customAttributes);
 
             CreateJobRequest request = new CreateJobRequest
             {
