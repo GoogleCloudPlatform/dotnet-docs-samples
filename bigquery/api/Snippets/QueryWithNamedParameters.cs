@@ -25,6 +25,8 @@ public class BigQueryQueryWithNamedParameters
     {
         var corpus = "romeoandjuliet";
         var minWordCount = 250;
+
+        // Note: Standard SQL is required to use query parameters.
         var query = @"
             SELECT word, word_count
             FROM `bigquery-public-data.samples.shakespeare`
@@ -32,7 +34,9 @@ public class BigQueryQueryWithNamedParameters
             AND word_count >= @min_word_count
             ORDER BY word_count DESC";
 
+        // Initialize client that will be used to send requests.
         var client = BigQueryClient.Create(projectId);
+
         var parameters = new BigQueryParameter[]
         {
             new BigQueryParameter("corpus", BigQueryDbType.String, corpus),
