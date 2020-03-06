@@ -241,28 +241,10 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     }
 
     [Fact]
-    public void TestQueryWithArrayParameters()
-    {
-        var snippet = new BigQueryQueryWithArrayParameters();
-        snippet.QueryWithArrayParameters(_projectId);
-        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
-        Assert.Equal(10, outputLines.Count());
-    }
-
-    [Fact]
     public void TestQueryWithNamedParameters()
     {
         var snippet = new BigQueryQueryWithNamedParameters();
         snippet.QueryWithNamedParameters(_projectId);
-        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
-        Assert.Equal(12, outputLines.Count());
-    }
-
-    [Fact]
-    public void TestQueryWithPositionalParameters()
-    {
-        var snippet = new BigQueryQueryWithPositionalParameters();
-        snippet.QueryWithPositionalParameters(_projectId);
         var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
         Assert.Equal(12, outputLines.Count());
     }
