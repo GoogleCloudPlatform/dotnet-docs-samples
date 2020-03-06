@@ -22,7 +22,8 @@ using Google.Cloud.BigQuery.V2;
 public class BigQueryQueryWithTimestampParameters
 {
     public void QueryWithTimestampParameters(
-        string projectId = "your-project-id")
+        string projectId = "your-project-id"
+    )
     {
         var timestamp = new DateTime(2016, 12, 7, 8, 0, 0, DateTimeKind.Utc);
 
