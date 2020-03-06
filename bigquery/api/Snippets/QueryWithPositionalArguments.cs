@@ -21,7 +21,8 @@ using Google.Cloud.BigQuery.V2;
 public class BigQueryQueryWithPositionalParameters
 {
     public void QueryWithPositionalParameters(
-        string projectId = "your-project-id")
+        string projectId = "your-project-id"
+    )
     {
         var corpus = "romeoandjuliet";
         var minWordCount = 250;

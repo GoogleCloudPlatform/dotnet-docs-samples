@@ -21,7 +21,8 @@ using Google.Cloud.BigQuery.V2;
 public class BigQueryQueryWithArrayParameters
 {
     public void QueryWithArrayParameters(
-        string projectId = "your-project-id")
+        string projectId = "your-project-id"
+    )
     {
         var gender = "M";
         string[] states = { "WA", "WI", "WV", "WY" };
