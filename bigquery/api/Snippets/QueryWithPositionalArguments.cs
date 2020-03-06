@@ -49,7 +49,8 @@ public class BigQueryQueryWithPositionalParameters
         var job = client.CreateQueryJob(
             sql: query,
             parameters: parameters,
-            options: new QueryOptions {
+            options: new QueryOptions
+            {
                 UseQueryCache = false,
                 ParameterMode = BigQueryParameterMode.Positional
             });
