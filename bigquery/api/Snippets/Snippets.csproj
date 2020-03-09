@@ -14,7 +14,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Google.Apis.Auth" Version="1.43.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.44.1" />
   </ItemGroup>
 
   <ItemGroup>
