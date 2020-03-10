@@ -43,9 +43,16 @@ namespace GoogleCloudSamples
             //_operationId = output.Stdout.Split("Training operation name: ")[1].Split("\n")[0];
             //// tear down
 
-            //AutoMlClient client = AutoMlClient.Create();
-            //    client.CreateModelOperationsClient.CancelOperation(_operationId);
+            AutoMlClient client = AutoMlClient.Create();
 
+            //WHICH ONE IS CHOOSE?
+            client.CreateModelOperationsClient.CancelOperation(_operationId);
+            client.CreateDatasetOperationsClient.CancelOperation(_operationId);
+            client.DeleteDatasetOperationsClient.CancelOperation(_operationId);
+            client.DeleteModelOperationsClient.CancelOperation(_operationId);
+
+            //......
+            //looks like they are all same operation client?>
         }
     }
 }
