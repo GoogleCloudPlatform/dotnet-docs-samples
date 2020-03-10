@@ -45,18 +45,15 @@ namespace GoogleCloudSamples
             // once, and can be reused for multiple requests.
             AutoMlClient client = AutoMlClient.Create();
 
+
             // Get the full path of the model.
-            string datasetFullId = DatasetName.Format(projectId, "us-central1", datasetId);
-            Dataset dataset = client.GetDataset(datasetFullId);
+            DatasetName datasetName = new DatasetName(projectId, "us-central1", datasetId);
+            Console.WriteLine(datasetName);
+            Dataset dataset = client.GetDataset(datasetName);
 
             // Display the dataset information
             Console.WriteLine($"Dataset name: {dataset.Name}");
-            // To get the dataset id, you have to parse it out of the `name` field. As dataset Ids are
-            // required for other methods.
-            // Name Form: `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`
-            string[] names = dataset.Name.Split("/");
-            string retrievedDatasetId = names[names.Length - 1];
-            Console.WriteLine($"Dataset id: {retrievedDatasetId}");
+            Console.WriteLine($"Dataset id: {dataset.DatasetName.DatasetId}");
             Console.WriteLine($"Dataset display name: { dataset.DisplayName}");
             Console.WriteLine("Dataset create time:");
             Console.WriteLine($"\tseconds: {dataset.CreateTime.Seconds}");
@@ -80,16 +77,16 @@ namespace GoogleCloudSamples
                 $"Text classification dataset metadata: {dataset.TextClassificationDatasetMetadata}");
             // [END automl_language_text_classification_get_dataset]
 
-            // [START automl_translate_get_dataset]
-            Console.WriteLine($"Translation dataset metadata:");
-            //TO-DO I do not know why i am Getting NullReference. It was working fine before. Commented out for now.
-
-            //Console.WriteLine(
-            //    $"\tSource language code: {dataset.TranslationDatasetMetadata.SourceLanguageCode}");
-            //Console.WriteLine(
-            //    $"\tTarget language code: {dataset.TranslationDatasetMetadata.TargetLanguageCode}");
-
-            // [END automl_translate_get_dataset]
+            if (dataset.TranslationDatasetMetadata != null)
+            {
+                // [START automl_translate_get_dataset]
+                Console.WriteLine($"Translation dataset metadata:");
+                Console.WriteLine(
+                    $"\tSource language code: {dataset.TranslationDatasetMetadata.SourceLanguageCode}");
+                Console.WriteLine(
+                    $"\tTarget language code: {dataset.TranslationDatasetMetadata.TargetLanguageCode}");
+                // [END automl_translate_get_dataset]
+            }
 
             // [START automl_vision_classification_get_dataset]
             Console.WriteLine(

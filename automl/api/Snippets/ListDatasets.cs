@@ -13,6 +13,7 @@
 // the License.
 
 using CommandLine;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.AutoML.V1;
 using System;
 
