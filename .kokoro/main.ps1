@@ -35,7 +35,10 @@ try {
         $false,  # 0: Everything.
         $false,  # 1: Everything not in another group.
         @('video', 'applications'),  # 2
-        @('iam') # 3: Runs once every 24 hours to avoid bursting active roles limit of 300.
+        @('iam'), # 3: Runs once every 24 hours to avoid bursting active roles limit of 300.
+        # 4: There's no shard 4, so this is effectively not currently running on Linux.
+        # Needed because of BouncyCastle and M2Mqtt dependecies that don't support .NET Core.
+        @('iot') 
     )
 
     $union = $groups[2..($groups.Length-1)] | `
