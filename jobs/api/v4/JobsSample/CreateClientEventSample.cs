@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
     internal class CreateClientEventSample
     {
         // [START job_search_create_client_event]
-        public static object CreateClientEvent(string projectId, string tenantId, string requestId, string eventId)
+        public static object CreateClientEvent(string projectId, string tenantId, string requestId, string eventId, params string[] jobIds)
         {
             EventServiceClient eventServiceClient = EventServiceClient.Create();
 
