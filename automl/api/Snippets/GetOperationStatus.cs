@@ -44,7 +44,7 @@ namespace GoogleCloudSamples
             // Get the latest state of a long-running operation.
             //TODO: I dont know why there is no 'GetOperationsClient'
             Operation operation = client.CreateModelOperationsClient.GetOperation(operationFullId);
-
+            
             // Display operation details.
             Console.WriteLine("Operation details:");
             Console.WriteLine($"\tName: {operation.Name}");

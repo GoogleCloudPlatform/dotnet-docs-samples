@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.AutoML.V1" Version="1.0.0-beta03" />
+    <PackageReference Include="Google.Cloud.AutoML.V1" Version="2.0.0-beta01" />
     <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
