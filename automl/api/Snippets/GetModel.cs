@@ -38,12 +38,7 @@ namespace GoogleCloudSamples
 
             // Display the model information.
             Console.WriteLine($"Model name: {model.Name}");
-            // To get the model id, you have to parse it out of the `name` field. As models Ids are
-            // required for other methods.
-            // Name Format: `projects/{project_id}/locations/{location_id}/models/{model_id}`
-            string[] names = model.Name.Split("/");
-            string retrievedModelId = names[names.Length - 1];
-            Console.WriteLine($"Model id: {retrievedModelId}");
+            Console.WriteLine($"Model id: {model.ModelName.ModelId}");
             Console.WriteLine($"Model display name: {model.DisplayName}");
             Console.WriteLine($"Model create time:");
             Console.WriteLine($"\tseconds: { model.CreateTime.Seconds}");
