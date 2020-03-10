@@ -17,13 +17,14 @@ using static Google.Cloud.Talent.V4Beta1.JobEvent.Types;
 using Google.Cloud.Talent.V4Beta1;
 using Google.Protobuf.WellKnownTypes;
 using System;
+using System.Collections.Generic;
 
 namespace GoogleCloudSamples
 {
     internal class CreateClientEventSample
     {
         // [START job_search_create_client_event]
-        public static object CreateClientEvent(string projectId, string tenantId, string requestId, string eventId, params string[] jobIds)
+        public static object CreateClientEvent(string projectId, string tenantId, string requestId, string eventId, IEnumerable<string> jobIds)
         {
             EventServiceClient eventServiceClient = EventServiceClient.Create();
 
@@ -39,10 +40,15 @@ namespace GoogleCloudSamples
             JobEventType type = JobEventType.View;
 
             // List of job names associated with this event.
-            string[] jobs = new string[jobIds.Length];
-            for (int i = 0; i < jobs.Length; i++)
+            List<string> jobs = new List<string>();
+            using (var jobEnum = jobIds.GetEnumerator())
             {
-                  jobs[i] = new JobAsJobName(...).ToString();
+                while (jobEnum.MoveNext())
+                {
+                    //build full path of job IDs
+                    JobName name = new JobName(projectId, tenantId, jobEnum.Current);
+                    jobs.Add(name.ToString());
+                }
             }
 
             JobEvent jobEvent = new JobEvent

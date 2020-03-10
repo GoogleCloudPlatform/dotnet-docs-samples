@@ -14,7 +14,6 @@
 
 using Google.Cloud.Talent.V4Beta1;
 using System;
-using System.Collections.Generic;
 
 namespace GoogleCloudSamples
 {
