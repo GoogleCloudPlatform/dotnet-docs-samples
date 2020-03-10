@@ -39,10 +39,11 @@ namespace GoogleCloudSamples
             JobEventType type = JobEventType.View;
 
             // List of job names associated with this event.
-            string jobsElement = $"projects/{projectId}/tenants/{tenantId}/jobs/[Job ID]";
-            string jobsElement2 = $"projects/{projectId}/tenants/{tenantId}/jobs/[Job ID]";
-
-            string[] jobs = { jobsElement, jobsElement2 };
+            string[] jobs = new string[jobIds.Length];
+            for (int i = 0; i < jobs.Length; i++)
+            {
+                  jobs[i] = new JobAsJobName(...).ToString();
+            }
 
             JobEvent jobEvent = new JobEvent
             {
