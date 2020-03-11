@@ -33,10 +33,11 @@ namespace GoogleCloudSamples
 
         private static string LoadProjectId()
         {
-            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            const string projectIdEnvVariable = "GOOGLE_PROJECT_ID");
+            string projectId = Environment.GetEnvironmentVariable(projectIdEnvVariable);
             if (String.IsNullOrEmpty(projectId))
             {
-                throw new ArgumentException("environment variable GOOGLE_PROJECT_ID is unset");
+                throw new ArgumentException($"environment variable {projectIdEnvVariable} is unset");
             }
             return projectId;
         }
@@ -311,7 +312,7 @@ namespace GoogleCloudSamples
             };
             CryptoKey key = client.CreateCryptoKey(keyRingName, cryptoKey, cryptoKeyToCreate);
 
-            CryptoKeyVersionName ckvName = CryptoKeyVersionName.Parse(key.Name + "/cryptoKeyVersions/1");
+            CryptoKeyVersionName ckvName = new CryptoKeyVersionName(key.Name, "1");
             CryptoKeyVersion ckv = client.GetCryptoKeyVersion(ckvName);
 
             // The version is generated asynchronously. Wait for it to be in state Enabled before
