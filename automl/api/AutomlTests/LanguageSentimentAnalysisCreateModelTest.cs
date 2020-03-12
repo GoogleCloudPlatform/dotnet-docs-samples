@@ -22,7 +22,7 @@ namespace GoogleCloudSamples
     {
         private readonly AutoMLFixture _fixture;
         private readonly string _datasetId;
-        private readonly string _operationId;
+        private string _operationId;
         public LanguageSentimentAnalysisCreateModelTest(AutoMLFixture fixture)
         {
             _fixture = fixture;
@@ -32,27 +32,16 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestCreateModel()
         {
-            //TODO: FIX --> cannot cancel long running operation in teardown, not sure calling it from right client library.
+            // create model
+            ConsoleOutput output = _fixture.SampleRunner.Run("create_model_language_sent_analysis",
+            _fixture.ProjectId, _fixture.DatasetName, _datasetId);
 
-            //// create dataset
-            //ConsoleOutput output = _fixture.SampleRunner.Run("create_model_language_sent_analysis",
-            //_fixture.ProjectId, _fixture.DatasetName, _datasetId);
+            Assert.Contains("Training started", output.Stdout);
 
-            //Assert.Contains("Training started", output.Stdout);
-
-            //_operationId = output.Stdout.Split("Training operation name: ")[1].Split("\n")[0];
-            //// tear down
-
+            _operationId = output.Stdout.Split("Training operation name: ")[1].Split("\n")[0];
+            // tear down
             AutoMlClient client = AutoMlClient.Create();
-
-            //WHICH ONE IS CHOOSE?
             client.CreateModelOperationsClient.CancelOperation(_operationId);
-            client.CreateDatasetOperationsClient.CancelOperation(_operationId);
-            client.DeleteDatasetOperationsClient.CancelOperation(_operationId);
-            client.DeleteModelOperationsClient.CancelOperation(_operationId);
-
-            //......
-            //looks like they are all same operation client?>
         }
     }
 }
