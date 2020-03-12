@@ -12,15 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1;
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.V1;
 using Storage;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Cryptography;
 
 namespace GoogleCloudSamples

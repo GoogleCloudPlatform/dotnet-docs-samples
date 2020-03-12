@@ -14,13 +14,14 @@
 
 using Google.Cloud.Storage.V1;
 using System;
+using static Google.Apis.Storage.v1.Data.Bucket;
 
 namespace Storage
 {
     public class GetRetentionPolicy
     {
         // [START storage_get_retention_policy]
-        public static void GetBucketRetentionPolicy(string bucketName)
+        public static RetentionPolicyData GetBucketRetentionPolicy(string bucketName)
         {
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
@@ -35,6 +36,7 @@ namespace Storage
                     isLockedOrNull.HasValue ? isLockedOrNull.Value : false;
                 Console.WriteLine("policy locked: {0}", isLocked);
             }
+            return bucket.RetentionPolicy;
         }
         // [END storage_get_retention_policy]
     }

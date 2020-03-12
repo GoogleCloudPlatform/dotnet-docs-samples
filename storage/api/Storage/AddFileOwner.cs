@@ -21,7 +21,7 @@ namespace Storage
     public class AddFileOwner
     {
         // [START storage_add_file_owner]
-        public static void AddObjectOwner(string bucketName, string objectName,
+        public static Object AddObjectOwner(string bucketName, string objectName,
             string userEmail)
         {
             var storage = StorageClient.Create();
@@ -42,6 +42,7 @@ namespace Storage
                 // Avoid race conditions.
                 IfMetagenerationMatch = storageObject.Metageneration,
             });
+            return updatedObject;
         }
         // [END storage_add_file_owner]
     }

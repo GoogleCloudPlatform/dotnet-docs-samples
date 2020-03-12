@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -20,7 +21,7 @@ namespace Storage
     public class HmacKeyCreate
     {
         // [START storage_create_hmac_key]
-        public static void CreateHmacKey(string projectId, string serviceAccountEmail)
+        public static HmacKey CreateHmacKey(string projectId, string serviceAccountEmail)
         {
             var storage = StorageClient.Create();
             var key = storage.CreateHmacKey(projectId, serviceAccountEmail);
@@ -39,6 +40,7 @@ namespace Storage
             Console.WriteLine($"Time Created: {metadata.TimeCreated}");
             Console.WriteLine($"Time Updated: {metadata.Updated}");
             Console.WriteLine($"ETag: {metadata.ETag}");
+            return key;
         }
         // [END storage_create_hmac_key]
     }

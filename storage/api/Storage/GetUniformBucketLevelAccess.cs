@@ -14,13 +14,14 @@
 
 using Google.Cloud.Storage.V1;
 using System;
+using static Google.Apis.Storage.v1.Data.Bucket.IamConfigurationData;
 
 namespace Storage
 {
     public class GetUniformBucketLevelAccess
     {
         // [START storage_get_uniform_bucket_level_access]
-        public static void StorageGetUniformBucketLevelAccess(string bucketName)
+        public static UniformBucketLevelAccessData StorageGetUniformBucketLevelAccess(string bucketName)
         {
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
@@ -39,6 +40,7 @@ namespace Storage
             {
                 Console.WriteLine($"Uniform bucket-level access is not enabled for {bucketName}.");
             }
+            return uniformBucketLevelAccess;
         }
         // [END storage_get_uniform_bucket_level_access]
     }

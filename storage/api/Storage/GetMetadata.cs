@@ -20,7 +20,7 @@ namespace Storage
     public class GetMetadata
     {
         // [START storage_get_metadata]
-        public static void StorageGetMetadata(string bucketName, string objectName)
+        public static Google.Apis.Storage.v1.Data.Object StorageGetMetadata(string bucketName, string objectName)
         {
             var storage = StorageClient.Create();
             var storageObject = storage.GetObject(bucketName, objectName);
@@ -54,6 +54,7 @@ namespace Storage
                 temporaryHoldOrNull.HasValue ? temporaryHoldOrNull.Value : false;
             Console.WriteLine("Temporary hold enabled? {0}", temporaryHold);
             Console.WriteLine($"RetentionExpirationTime\t{storageObject.RetentionExpirationTime}");
+            return storageObject;
         }
         // [END storage_get_metadata]
     }

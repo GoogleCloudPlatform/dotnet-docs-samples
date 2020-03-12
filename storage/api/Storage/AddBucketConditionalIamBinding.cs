@@ -21,7 +21,7 @@ namespace Storage
     public class AddBucketConditionalIamBinding
     {
         // [START storage_add_bucket_conditional_iam_binding]
-        public static void StorageAddBucketConditionalIamBinding(string bucketName,
+        public static Policy StorageAddBucketConditionalIamBinding(string bucketName,
             string role, string member, string title, string description, string expression)
         {
             var storage = StorageClient.Create();
@@ -43,9 +43,10 @@ namespace Storage
             };
             policy.Bindings.Add(bindingToAdd);
 
-            storage.SetBucketIamPolicy(bucketName, policy);
+            var bucketIamPolicy = storage.SetBucketIamPolicy(bucketName, policy);
             Console.WriteLine($"Added {member} with role {role} "
                 + $"to {bucketName}");
+            return bucketIamPolicy;
         }
         // [END storage_add_bucket_conditional_iam_binding]
     }

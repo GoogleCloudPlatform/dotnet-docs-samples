@@ -14,33 +14,39 @@
 
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Storage
 {
     public class ListFiles
     {
         // [START storage_list_files]
-        public static void GetFileList(string bucketName)
+        public static List<Google.Apis.Storage.v1.Data.Object> GetFileList(string bucketName)
         {
             var storage = StorageClient.Create();
-            foreach (var storageObject in storage.ListObjects(bucketName, ""))
+            var storageObjects = storage.ListObjects(bucketName, "").ToList();
+            foreach (var storageObject in storageObjects)
             {
                 Console.WriteLine(storageObject.Name);
             }
+
+            return storageObjects;
         }
         // [END storage_list_files]
 
         // [START storage_list_files_with_prefix]
-        public static void GetFileListWithPrefix(string bucketName, string prefix,
+        public static List<Google.Apis.Storage.v1.Data.Object> GetFileListWithPrefix(string bucketName, string prefix,
             string delimiter)
         {
             var storage = StorageClient.Create();
             var options = new ListObjectsOptions() { Delimiter = delimiter };
-            foreach (var storageObject in storage.ListObjects(
-                bucketName, prefix, options))
+            var storageObjects = storage.ListObjects(bucketName, prefix, options).ToList();
+            foreach (var storageObject in storageObjects)
             {
                 Console.WriteLine(storageObject.Name);
             }
+            return storageObjects;
         }
         // [END storage_list_files_with_prefix]
     }

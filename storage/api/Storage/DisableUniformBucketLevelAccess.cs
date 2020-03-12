@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -20,7 +21,7 @@ namespace Storage
     public class DisableUniformBucketLevelAccess
     {
         // [START storage_disable_uniform_bucket_level_access]
-        public static void StorageDisableUniformBucketLevelAccess(string bucketName)
+        public static Bucket StorageDisableUniformBucketLevelAccess(string bucketName)
         {
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
@@ -35,6 +36,7 @@ namespace Storage
             });
 
             Console.WriteLine($"Uniform bucket-level access was disabled for {bucketName}.");
+            return bucket;
         }
         // [END storage_disable_uniform_bucket_level_access]
     }

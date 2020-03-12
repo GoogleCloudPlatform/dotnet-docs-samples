@@ -21,7 +21,7 @@ namespace Storage
     public class AddBucketIamMember
     {
         // [START storage_add_bucket_iam_member]
-        public static void StorageAddBucketIamMember(string bucketName,
+        public static Policy StorageAddBucketIamMember(string bucketName,
             string role, string member)
         {
             var storage = StorageClient.Create();
@@ -31,9 +31,10 @@ namespace Storage
             string[] members = { member };
             bindingToAdd.Members = members;
             policy.Bindings.Add(bindingToAdd);
-            storage.SetBucketIamPolicy(bucketName, policy);
+            var bucketIamPolicy = storage.SetBucketIamPolicy(bucketName, policy);
             Console.WriteLine($"Added {member} with role {role} "
                 + $"to {bucketName}");
+            return bucketIamPolicy;
         }
         // [END storage_add_bucket_iam_member]
     }

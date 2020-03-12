@@ -22,7 +22,7 @@ namespace Storage
     public class GenerateV4UploadSignedUrl
     {
         // [START storage_generate_upload_signed_url_v4]
-        public static void GenerateV4SignedPutUrl(string bucketName, string objectName)
+        public static string GenerateV4SignedPutUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
                 .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
@@ -38,6 +38,7 @@ namespace Storage
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
             Console.WriteLine($"curl -X PUT -H 'Content-Type: text/plain' --upload-file my-file '{url}'");
+            return url;
         }
         // [END storage_generate_upload_signed_url_v4]
     }

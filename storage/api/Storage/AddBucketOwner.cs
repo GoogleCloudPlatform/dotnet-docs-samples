@@ -21,7 +21,7 @@ namespace Storage
     public class AddBucketOwner
     {
         // [START storage_add_bucket_owner]
-        public static void StorageAddBucketOwner(string bucketName, string userEmail)
+        public static Bucket StorageAddBucketOwner(string bucketName, string userEmail)
         {
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
@@ -43,6 +43,7 @@ namespace Storage
                 // Avoid race conditions.
                 IfMetagenerationMatch = bucket.Metageneration,
             });
+            return updatedBucket;
         }
         // [END storage_add_bucket_owner]
     }

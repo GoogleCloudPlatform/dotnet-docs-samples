@@ -12,21 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Storage
 {
     public class ListBuckets
     {
         // [START storage_list_buckets]
-        public static void GetBucketList(string projectId)
+        public static List<Bucket> GetBucketList(string projectId)
         {
             var storage = StorageClient.Create();
-            foreach (var bucket in storage.ListBuckets(projectId))
+            var buckets = storage.ListBuckets(projectId).ToList();
+            foreach (var bucket in buckets)
             {
                 Console.WriteLine(bucket.Name);
             }
+            return buckets;
         }
         // [END storage_list_buckets]
     }

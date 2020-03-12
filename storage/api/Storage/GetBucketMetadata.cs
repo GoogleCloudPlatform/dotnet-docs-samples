@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -20,7 +21,7 @@ namespace Storage
     public class GetBucketMetadata
     {
         // [START storage_get_bucket_metadata]
-        public static void StorageGetBucketMetadata(string bucketName)
+        public static Bucket StorageGetBucketMetadata(string bucketName)
         {
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName);
@@ -51,6 +52,7 @@ namespace Storage
             Console.WriteLine($"Updated:\t{bucket.Updated}");
             Console.WriteLine($"Versioning:\t{bucket.Versioning}");
             Console.WriteLine($"Website:\t{bucket.Website}");
+            return bucket;
         }
         // [END storage_get_bucket_metadata]
     }

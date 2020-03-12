@@ -15,13 +15,14 @@
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
+using static Google.Apis.Storage.v1.Data.Bucket;
 
 namespace Storage
 {
     public class SetRetentionPolicy
     {
         // [START storage_set_retention_policy]
-        public static void SetBucketRetentionPolicy(string bucketName,
+        public static RetentionPolicyData SetBucketRetentionPolicy(string bucketName,
             long retentionPeriod)
         {
             var storage = StorageClient.Create();
@@ -34,6 +35,7 @@ namespace Storage
             });
 
             Console.WriteLine($"Retention policy for {bucketName} was set to {retentionPeriod}");
+            return bucket.RetentionPolicy;
         }
         // [END storage_set_retention_policy]
     }

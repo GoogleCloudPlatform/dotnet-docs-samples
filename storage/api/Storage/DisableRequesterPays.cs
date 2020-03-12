@@ -20,7 +20,7 @@ namespace Storage
     public class DisableRequesterPays
     {
         // [START storage_disable_requester_pays]
-        public static void StorageDisableRequesterPays(string projectId, string bucketName)
+        public static Bucket StorageDisableRequesterPays(string projectId, string bucketName)
         {
             var storage = StorageClient.Create();
             var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
@@ -35,6 +35,7 @@ namespace Storage
                 IfMetagenerationMatch = bucket.Metageneration,
                 UserProject = projectId
             });
+            return bucket;
         }
         // [END storage_disable_requester_pays]
     }

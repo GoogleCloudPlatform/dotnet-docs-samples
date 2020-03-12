@@ -20,13 +20,14 @@ namespace Storage
     public class GenerateSignedUrl
     {
         // [START storage_generate_signed_url]
-        public static void StorageGenerateSignedUrl(string bucketName, string objectName)
+        public static string StorageGenerateSignedUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(Environment
                 .GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
             string url =
                 urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), null);
             Console.WriteLine(url);
+            return url;
         }
         // [END storage_generate_signed_url]
     }
