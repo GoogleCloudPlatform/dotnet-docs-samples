@@ -29,14 +29,11 @@ namespace GoogleCloudSamples
                 // Act
                 ConsoleOutput output = _fixture.SampleRunner.Run("batch_predict",
     _fixture.ProjectId, _modelId, inputUri, outputUri);
-
-                // Assert
-                Assert.Contains("The model is either not found or not supported for prediction yet.", output.Stdout);
             }
             catch (Exception ex) when (ex is ThreadInterruptedException ||
      ex is IOException || ex is RpcException || ex is AggregateException)
             {
-                Assert.Contains("The model is either not found or not supported for prediction yet.", ex.Message);
+                Assert.Contains("NotFound", ex.Message);
             }
         }
     }
