@@ -42,78 +42,12 @@ namespace GoogleCloudSamples
             public int LifespanCount { get; set; }
         }
 
-        // [START dialogflow_create_context]
-        public static int Create(string projectId,
-                                 string sessionId,
-                                 string contextId,
-                                 int lifespanCount = 1)
-        {
-            var client = ContextsClient.Create();
-
-            var context = new Context();
-            context.ContextName = new ContextName(projectId, sessionId, contextId);
-            context.LifespanCount = lifespanCount;
-
-            var newContext = client.CreateContext(
-                parent: new SessionName(projectId, sessionId),
-                context: context
-            );
-
-            Console.WriteLine($"Created Context: {newContext.Name}");
-
-            return 0;
-        }
-        // [END dialogflow_create_context]
-
-        [Verb("contexts:list", HelpText = "Print list of entities for given Context")]
-        public class ListOptions : OptionsWithProjectIdAndSessionId { }
-
-        // [START dialogflow_list_contexts]
-        public static int List(string projectId, string sessionId)
-        {
-            var client = ContextsClient.Create();
-
-            var contexts = client.ListContexts(
-                new SessionName(projectId, sessionId)
-            );
-
-            foreach (var context in contexts)
-            {
-                Console.WriteLine($"Context name: {context.Name}");
-                Console.WriteLine($"Context lifespan count: {context.LifespanCount}");
-                if (context.Parameters != null)
-                {
-                    Console.WriteLine("Fields:");
-                    foreach (var field in context.Parameters.Fields)
-                    {
-                        Console.WriteLine($"{field.Key}: {field.Value}");
-                    }
-                }
-            }
-
-            return 0;
-        }
-        // [END dialogflow_list_contexts]
-
         [Verb("contexts:delete", HelpText = "Delete specified Context")]
         public class DeleteOptions : OptionsWithProjectIdAndSessionId
         {
             [Value(0, MetaName = "contextId", HelpText = "ID of existing Context", Required = true)]
             public string ContextId { get; set; }
         }
-
-        // [START dialogflow_delete_context]
-        public static int Delete(string projectId, string sessionId, string contextId)
-        {
-            var client = ContextsClient.Create();
-
-            client.DeleteContext(new ContextName(projectId, sessionId, contextId));
-
-            Console.WriteLine($"Deleted Context: {contextId}");
-
-            return 0;
-        }
-        // [END dialogflow_delete_context]
 
         [Verb("contexts:delete-all", HelpText = "Delete specified Context")]
         public class DeleteAllOptions : OptionsWithProjectIdAndSessionId { }
