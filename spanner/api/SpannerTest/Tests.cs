@@ -558,6 +558,24 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Singers", output.Stdout);
         }
 
+        [Fact]
+        void TestQueryOptions()
+        {
+            ConsoleOutput readOutput = _spannerCmd.Run("createConnectionWithQueryOptions",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            Assert.Contains("4 Venue 4", readOutput.Stdout);
+            Assert.Contains("19 Venue 19", readOutput.Stdout);
+            Assert.Contains("42 Venue 42", readOutput.Stdout);
+
+            readOutput = _spannerCmd.Run("queryDataWithQueryOptions",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, readOutput.ExitCode);
+            Assert.Contains("4 Venue 4", readOutput.Stdout);
+            Assert.Contains("19 Venue 19", readOutput.Stdout);
+            Assert.Contains("42 Venue 42", readOutput.Stdout);
+        }
+
         /// <summary>
         /// Run a couple queries and verify the database contains the
         /// data inserted by insertSampleData.

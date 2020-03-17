@@ -520,6 +520,16 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    [Verb("createConnectionWithQueryOptions", HelpText = "Creates a connection with query options set and queries the 'Venues' table.")]
+    class CreateConnectionWithQueryOptionsOptions : DefaultOptions
+    {
+    }
+
+    [Verb("queryDataWithQueryOptions", HelpText = "Query 'Venues' table with query options set.")]
+    class QueryDataWithQueryOptionsOptions : DefaultOptions
+    {
+    }
+
     // [START spanner_retry_strategy]
     public class RetryRobot
     {
@@ -3508,6 +3518,88 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
+        public static object CreateConnectionWithQueryOptions(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = CreateConnectionWithQueryOptionsAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task CreateConnectionWithQueryOptionsAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_create_client_with_query_options]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                // Set query options on the connection.
+                connection.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName, LastUpdateTime FROM Venues");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine("VenueId : "
+                        + reader.GetFieldValue<string>("VenueId")
+                        + " VenueName : "
+                        + reader.GetFieldValue<string>("VenueName")
+                        + " LastUpdateTime : "
+                        + reader.GetFieldValue<string>("LastUpdateTime"));
+                    }
+                }
+            }
+            // [END spanner_create_client_with_query_options]
+        }
+
+        public static object QueryDataWithQueryOptions(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = QueryDataWithQueryOptionsAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task QueryDataWithQueryOptionsAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_query_options]
+            string connectionString =
+            $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT VenueId, VenueName, LastUpdateTime FROM Venues");
+                // Set query options just for this command.
+                cmd.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine("VenueId : "
+                        + reader.GetFieldValue<string>("VenueId")
+                        + " VenueName : "
+                        + reader.GetFieldValue<string>("VenueName")
+                        + " LastUpdateTime : "
+                        + reader.GetFieldValue<string>("LastUpdateTime"));
+                    }
+                }
+            }
+            // [END spanner_query_with_query_options]
+        }
+
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
@@ -3671,6 +3763,12 @@ namespace GoogleCloudSamples.Spanner
                 .Add((DropSampleTablesOptions opts) =>
                     DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result)
+                .Add((CreateConnectionWithQueryOptionsOptions opts) =>
+                    CreateConnectionWithQueryOptions(opts.projectId,
+                    opts.instanceId, opts.databaseId))
+                .Add((QueryDataWithQueryOptionsOptions opts) =>
+                    QueryDataWithQueryOptions(opts.projectId,
+                    opts.instanceId, opts.databaseId))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
