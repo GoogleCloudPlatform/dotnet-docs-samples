@@ -12,6 +12,6 @@
     <PackageReference Include="MSTest.TestFramework" Version="2.1.0"/>
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.0"/>
     <PackageReference Include="NUnitTestAdapter" Version="2.2.0"/>
-    <ProjectReference Include="../Snippets/Snippets.csproj"/>
+    <ProjectReference Include="../src/Snippets.csproj"/>
   </ItemGroup>
 </Project>
