@@ -736,12 +736,15 @@ namespace GoogleCloudSamples
                 && binding.Condition != null
                 && binding.Condition.Title == title
                 && binding.Condition.Description == description
-                && binding.Condition.Expression == expression) > 0) {
-              // Set the modified IAM policy to be the current IAM policy.
-              storage.SetBucketIamPolicy(bucketName, policy);
-              Console.WriteLine("Conditional Binding was removed.");
-            } else {
-              Console.WriteLine("No matching conditional binding found.");
+                && binding.Condition.Expression == expression) > 0)
+            {
+                // Set the modified IAM policy to be the current IAM policy.
+                storage.SetBucketIamPolicy(bucketName, policy);
+                Console.WriteLine("Conditional Binding was removed.");
+            }
+            else
+            {
+                Console.WriteLine("No matching conditional binding found.");
             }
         }
         // [END storage_remove_bucket_conditional_iam_binding]
