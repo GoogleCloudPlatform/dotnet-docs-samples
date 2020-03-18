@@ -19,12 +19,11 @@ using CommandLine;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Storage.v1;
-using Google.Cloud.Storage.V1;
-using System;
-using System.IO;
-using System.Net.Http;
 using Google.Cloud.Language.V1;
+using Google.Cloud.Storage.V1;
 using Grpc.Auth;
+using System;
+using System.Net.Http;
 
 namespace GoogleCloudSamples
 {

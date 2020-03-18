@@ -37,6 +37,24 @@ namespace GoogleCloudSamples
         }
     }
 
+    public class TranscribeContextClassesTests
+    {
+        private static readonly string s_AUDIO_FILE = "gs://cloud-samples-data/speech/commercial_mono.wav";
+        readonly CommandLineRunner _transcribeContextClasess = new CommandLineRunner()
+        {
+            VoidMain = TranscribeContext.Main,
+            Command = "Transcribe Context Classes"
+        };
+
+        [Fact]
+        public void TestTranscribeContext()
+        {
+            var output = _transcribeContextClasess.Run(s_AUDIO_FILE);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Transcript:", output.Stdout);
+        }
+    }
+
     public abstract class CommonRecognizeTests
     {
         protected readonly CommandLineRunner _recognize = new CommandLineRunner()
@@ -159,6 +177,22 @@ namespace GoogleCloudSamples
             var output = Run("sync", "-c", "2", _audioSteroPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Channel Tag: 2", output.Stdout);
+        }
+
+        [Fact]
+        public void TestSyncMultiSpeaker()
+        {
+            var output = Run("sync", "-s", "2", _audioWavPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Speaker: 1", output.Stdout);
+        }
+
+        [Fact]
+        public void TestSyncRecognitionMetadata()
+        {
+            var output = Run("sync", "-r", _audioFlacPath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Brooklyn", output.Stdout);
         }
     }
 

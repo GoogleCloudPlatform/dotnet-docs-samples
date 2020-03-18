@@ -33,7 +33,10 @@ namespace GoogleCloudSamples
                 "--project_id=" + _fixture.ProjectId,
                 "--text=Hello world",
                 "--target_language=sr-Latn");
-            Assert.True(output.Stdout.Contains("Zdravo svet") || output.Stdout.Contains("Pozdrav svijetu"));
+            Assert.True(
+                output.Stdout.Contains("Zdravo svet") ||
+                output.Stdout.Contains("Pozdrav svijetu") ||
+                output.Stdout.Contains("Zdravo svijete"));
         }
     }
 }

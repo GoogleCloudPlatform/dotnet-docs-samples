@@ -14,6 +14,7 @@
 
 // [START translate_v3_detect_language]
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Translate.V3;
 using System;
 

@@ -15,6 +15,7 @@
 // [START translate_v3_list_glossary]
 
 using Google.Api.Gax;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Translate.V3;
 using System;
 

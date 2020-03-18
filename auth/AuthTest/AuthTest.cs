@@ -14,10 +14,8 @@
  * the License.
  */
 
-using System;
-using System.Diagnostics;
-using System.IO;
 using Newtonsoft.Json.Linq;
+using System;
 using Xunit;
 
 namespace GoogleCloudSamples

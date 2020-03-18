@@ -12,7 +12,6 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -30,6 +29,8 @@ namespace GoogleCloudSamples
 
             Run("entity-types:create", _displayName, _kindName);
             Assert.Contains("Created EntityType:", Stdout);
+
+            SetEntityTypeForCleanupAfterTest(Stdout);
 
             _retryRobot.Eventually(() =>
             {
@@ -54,6 +55,7 @@ namespace GoogleCloudSamples
             Run("entity-types:delete", entityTypeId);
             Assert.Contains($"Deleted EntityType: {entityTypeId}", Stdout);
 
+            _retryRobot.MaxTryCount = _retryRobot.MaxTryCount * 2;
             _retryRobot.Eventually(() =>
             {
                 Run("entity-types:list");

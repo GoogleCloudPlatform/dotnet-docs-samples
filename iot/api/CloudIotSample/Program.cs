@@ -14,22 +14,16 @@
  * the License.
  */
 
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using System;
 using CommandLine;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.CloudIot.v1;
 using Google.Apis.CloudIot.v1.Data;
-using System.Linq;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using Google.Apis.Services;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
-using NodaTime;
-using uPLibrary.Networking.M2Mqtt;
-using uPLibrary.Networking.M2Mqtt.Messages;
-using uPLibrary.Networking.M2Mqtt.Exceptions;
 
 namespace GoogleCloudSamples
 {

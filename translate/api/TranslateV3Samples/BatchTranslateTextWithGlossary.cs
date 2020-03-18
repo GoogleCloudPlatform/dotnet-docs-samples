@@ -14,6 +14,7 @@
 
 // [START translate_v3_batch_translate_text_with_glossary]
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Translate.V3;
 using System;
 

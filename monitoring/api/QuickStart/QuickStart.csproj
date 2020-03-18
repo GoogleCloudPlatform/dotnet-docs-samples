@@ -4,6 +4,6 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Monitoring.V3" Version="1.1.0" />
+    <PackageReference Include="Google.Cloud.Monitoring.V3" Version="1.2.0" />
   </ItemGroup>
 </Project>
