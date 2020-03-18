@@ -63,6 +63,8 @@ can use [this older sample](
     Storage view-bucket-iam-members bucket-name
     Storage add-bucket-iam-member bucket-name member
     Storage remove-bucket-iam-member bucket-name role member
+    Storage remove-bucket-iam-conditional-binding bucket-name role
+                                 cond-title cond-description cond-expression
     Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name
     Storage upload-with-kms-key bucket-name key-location
                                 key-ring key-name local-file-path [object-name]

@@ -49,6 +49,8 @@ namespace GoogleCloudSamples
             "  Storage view-bucket-iam-members bucket-name\n" +
             "  Storage add-bucket-iam-member bucket-name member\n" +
             "  Storage remove-bucket-iam-member bucket-name role member\n" +
+            "  Storage remove-bucket-iam-conditional-binding bucket-name role\n" +
+            "                               cond-title cond-description cond-expression\n" +
             "  Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name\n" +
             "  Storage upload-with-kms-key bucket-name key-location\n" +
             "                              key-ring key-name local-file-path [object-name]\n" +
@@ -659,6 +661,35 @@ namespace GoogleCloudSamples
         }
         // [END add_bucket_iam_member]
 
+         // [START storage_add_bucket_conditional_iam_binding]
+        private void AddBucketConditionalIamBinding(string bucketName,
+            string role, string member, string title, string description, string expression)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+
+            Policy.BindingsData bindingToAdd = new Policy.BindingsData();
+            bindingToAdd.Role = role;
+            string[] members = { member };
+            bindingToAdd.Members = members;
+            bindingToAdd.Condition = new Expr()
+            {
+                Title = title,
+                Description = description,
+                Expression = expression
+            };
+            policy.Bindings.Add(bindingToAdd);
+
+            storage.SetBucketIamPolicy(bucketName, policy);
+            Console.WriteLine($"Added {member} with role {role} "
+                + $"to {bucketName}");
+        }
+        // [END storage_add_bucket_conditional_iam_binding]
+
         // [START remove_bucket_iam_member]
         private void RemoveBucketIamMember(string bucketName,
             string role, string member)
@@ -685,6 +716,30 @@ namespace GoogleCloudSamples
                 + $"to {bucketName}");
         }
         // [END remove_bucket_iam_member]
+
+        // [START storage_remove_bucket_conditional_iam_binding]
+        private void RemoveBucketConditionalIamBinding(string bucketName,
+            string role, string title, string description, string expression)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+            if (policy.Bindings.ToList().RemoveAll(binding => binding.Role == role
+                && binding.Condition != null
+                && binding.Condition.Title == title
+                && binding.Condition.Description == description
+                && binding.Condition.Expression == expression) > 0) {
+              // Set the modified IAM policy to be the current IAM policy.
+              storage.SetBucketIamPolicy(bucketName, policy);
+              Console.WriteLine("Conditional Binding was removed.");
+            } else {
+              Console.WriteLine("No matching conditional binding found.");
+            }
+        }
+        // [END storage_remove_bucket_conditional_iam_binding]
 
         // [START storage_set_bucket_default_kms_key]
         private void AddBucketDefaultKmsKey(string bucketName,
@@ -1430,6 +1485,16 @@ namespace GoogleCloudSamples
                     case "add-bucket-iam-member":
                         if (args.Length < 4 && PrintUsage()) return -1;
                         AddBucketIamMember(args[1], args[2], args[3]);
+                        break;
+
+                    case "add-bucket-iam-conditional-binding":
+                        if (args.Length < 7 && PrintUsage()) return -1;
+                        AddBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5], args[6]);
+                        break;
+
+                    case "remove-bucket-iam-conditional-binding":
+                        if (args.Length < 6 && PrintUsage()) return -1;
+                        RemoveBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5]);
                         break;
 
                     case "remove-bucket-iam-member":
