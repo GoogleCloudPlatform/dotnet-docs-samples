@@ -24,7 +24,9 @@ public class SecurityCenterTests
     public void CreateNotificationConfig_ShouldCreateConfig()
     {
         String configId = "csharp-create-config-test111";
-        Assert.NotNull(CreateNotificationConfigSnippet.createNotificationConfig(GetOrganizationId(), configId, GetProjectId(), GetTopic()));
+        Assert.NotNull(
+            CreateNotificationConfigSnippet.createNotificationConfig(
+                GetOrganizationId(), configId, GetProjectId(), GetTopic()));
         DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId);
         Assert.True(true);
     }
@@ -33,16 +35,20 @@ public class SecurityCenterTests
     public void DeleteNotificationConfig_ShouldDeleteConfig()
     {
         String configId = "csharp-delete-config-test111";
-        CreateNotificationConfigSnippet.createNotificationConfig(GetOrganizationId(), configId, GetProjectId(), GetTopic());
-        Assert.True(DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId));
+        CreateNotificationConfigSnippet.createNotificationConfig(
+            GetOrganizationId(), configId, GetProjectId(), GetTopic());
+        Assert.True(
+            DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId));
     }
 
     [Fact]
     public void ListNotificationConfig_ShouldReturnNonEmpty()
     {
         String configId = "csharp-list-config-test111";
-        CreateNotificationConfigSnippet.createNotificationConfig(GetOrganizationId(), configId, GetProjectId(), GetTopic());
-        Assert.NotNull(ListNotificationConfigSnippets.listNotificationConfigs(GetOrganizationId()));
+        CreateNotificationConfigSnippet.createNotificationConfig(
+            GetOrganizationId(), configId, GetProjectId(), GetTopic());
+        Assert.NotNull(
+            ListNotificationConfigSnippets.listNotificationConfigs(GetOrganizationId()));
         DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId);
     }
 
@@ -50,8 +56,10 @@ public class SecurityCenterTests
     public void GetNotificationConfig_ShouldReturnConfig()
     {
         String configId = "csharp-get-config-test111";
-        CreateNotificationConfigSnippet.createNotificationConfig(GetOrganizationId(), configId, GetProjectId(), GetTopic());
-        Assert.NotNull(GetNotificationConfigSnippets.getNotificationConfig(GetOrganizationId(), configId));
+        CreateNotificationConfigSnippet.createNotificationConfig(
+            GetOrganizationId(), configId, GetProjectId(), GetTopic());
+        Assert.NotNull(
+            GetNotificationConfigSnippets.getNotificationConfig(GetOrganizationId(), configId));
         DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId);
     }
 
@@ -59,8 +67,11 @@ public class SecurityCenterTests
     public void UpdateNotificationConfig_ShouldUpdateConfig()
     {
         String configId = "csharp-update-config-test111";
-        CreateNotificationConfigSnippet.createNotificationConfig(GetOrganizationId(), configId, GetProjectId(), GetTopic());
-        Assert.NotNull(UpdateNotificationConfigSnippets.updateNotificationConfig(GetOrganizationId(), configId, GetProjectId(), GetTopic()));
+        CreateNotificationConfigSnippet.createNotificationConfig(
+            GetOrganizationId(), configId, GetProjectId(), GetTopic());
+        Assert.NotNull(
+            UpdateNotificationConfigSnippets.updateNotificationConfig(
+                GetOrganizationId(), configId, GetProjectId(), GetTopic()));
         DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId);
     }
 

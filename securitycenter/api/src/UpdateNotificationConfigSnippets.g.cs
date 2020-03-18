@@ -14,57 +14,54 @@
  * limitations under the License.
  */
 
-namespace Snippets
-{
-    // [START scc_update_notification_config]
-    using Google.Cloud.SecurityCenter.V1;
-    using Google.Protobuf;
-    using Google.Protobuf.WellKnownTypes;
-    using Grpc.Core;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    // [END scc_update_notification_config]
+// [START scc_update_notification_config]
+using Google.Cloud.SecurityCenter.V1;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+// [END scc_update_notification_config]
 
 /** Snippets for UpdateNotificationConfig. */
-    public class UpdateNotificationConfigSnippets
+public class UpdateNotificationConfigSnippets
+{
+private UpdateNotificationConfigSnippets() {}
+
+    // [START scc_update_notification_config]
+    public static NotificationConfig updateNotificationConfig(
+        String organizationId, String notificationConfigId, String projectId, String topicName)
     {
-    private UpdateNotificationConfigSnippets() {}
+        // String organizationId = "{your-org-id}";
+        // String notificationConfigId = "{your-config-id}";
+        // String projectId = "{your-project}";
+        // String topicName = "{your-topic}";
 
-        // [START scc_update_notification_config]
-        public static NotificationConfig updateNotificationConfig(
-            String organizationId, String notificationConfigId, String projectId, String topicName)
+        String notificationConfigName =
+            String.Format(
+                "organizations/{0}/notificationConfigs/{1}", organizationId, notificationConfigId);
+
+        // Ensure this ServiceAccount has the "pubsub.topics.setIamPolicy" permission on the topic.
+        String pubsubTopic = String.Format("projects/{0}/topics/{1}", projectId, topicName);
+
+        NotificationConfig configToUpdate = new NotificationConfig
         {
-            // String organizationId = "{your-org-id}";
-            // String notificationConfigId = "{your-config-id}";
-            // String projectId = "{your-project}";
-            // String topicName = "{your-topic}";
+            Name=notificationConfigName,
+            Description="updated description",
+            PubsubTopic=pubsubTopic
+        };
 
-            String notificationConfigName =
-                String.Format(
-                    "organizations/{0}/notificationConfigs/{1}", organizationId, notificationConfigId);
+        FieldMask fieldMask = new FieldMask{Paths={"description", "pubsub_topic"}};
+        SecurityCenterClient client = SecurityCenterClient.Create();
+        NotificationConfig updatedConfig = client.UpdateNotificationConfig(configToUpdate, fieldMask);
 
-            // Ensure this ServiceAccount has the "pubsub.topics.setIamPolicy" permission on the topic.
-            String pubsubTopic = String.Format("projects/{0}/topics/{1}", projectId, topicName);
-
-            NotificationConfig configToUpdate = new NotificationConfig
-            {
-                Name=notificationConfigName,
-                Description="updated description",
-                PubsubTopic=pubsubTopic
-            };
-
-            FieldMask fieldMask = new FieldMask{Paths={"description", "pubsub_topic"}};
-            SecurityCenterClient client = SecurityCenterClient.Create();
-            NotificationConfig updatedConfig = client.UpdateNotificationConfig(configToUpdate, fieldMask);
-
-            Console.WriteLine(String.Format("Notification config updated: {0}", updatedConfig));
-            return updatedConfig;
-        }
+        Console.WriteLine(String.Format("Notification config updated: {0}", updatedConfig));
+        return updatedConfig;
     }
-    // [END scc_update_notification_config]
 }
+// [END scc_update_notification_config]

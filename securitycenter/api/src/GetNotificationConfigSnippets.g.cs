@@ -12,44 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Snippets
+// [START scc_get_notification_config]
+using Google.Cloud.SecurityCenter.V1;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+// [END scc_get_notification_config]
+
+/** Get NotificationConfig Snippet. */
+public class GetNotificationConfigSnippets
 {
+    private GetNotificationConfigSnippets(){}
+
+    /// <summary>Snippet for GetNotificationConfig</summary>
     // [START scc_get_notification_config]
-    using Google.Cloud.SecurityCenter.V1;
-    using Google.Protobuf;
-    using Google.Protobuf.WellKnownTypes;
-    using Grpc.Core;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    // [END scc_get_notification_config]
-
-    /** Get NotificationConfig Snippet. */
-    public class GetNotificationConfigSnippets
+    public static NotificationConfig getNotificationConfig(
+        String organizationId, String configId)
     {
-        private GetNotificationConfigSnippets(){}
+        // String organizationId = "{your-org-id}";
+        // String configId = "{config-id}";
 
-        /// <summary>Snippet for GetNotificationConfig</summary>
-        // [START scc_get_notification_config]
-        public static NotificationConfig getNotificationConfig(
-            String organizationId, String configId)
-        {
-            // String organizationId = "{your-org-id}";
-            // String configId = "{config-id}";
+        SecurityCenterClient client = SecurityCenterClient.Create();
 
-            SecurityCenterClient client = SecurityCenterClient.Create();
-
-            // ConfigName is in the format "organizations/{organization_id}/notificationConfigs/{config_id}";
-            GetNotificationConfigRequest request = new GetNotificationConfigRequest{
-                NotificationConfigName = new NotificationConfigName(organizationId, configId)};
-            NotificationConfig response = client.GetNotificationConfig(request);
-            Console.WriteLine(String.Format("Notification config: {0}", response));
-            return response;
-        }
-        // [END scc_get_notification_config]
+        // ConfigName is in the format "organizations/{org_id}/notificationConfigs/{config_id}";
+        GetNotificationConfigRequest request = new GetNotificationConfigRequest{
+            NotificationConfigName = new NotificationConfigName(organizationId, configId)};
+        NotificationConfig response = client.GetNotificationConfig(request);
+        Console.WriteLine(String.Format("Notification config: {0}", response));
+        return response;
     }
+    // [END scc_get_notification_config]
 }

@@ -42,8 +42,8 @@ public class ListNotificationConfigSnippets
         // String organizationId = "{your-org-id}";
         OrganizationName orgName = new OrganizationName(organizationId);
         SecurityCenterClient client = SecurityCenterClient.Create();
-        Google.Api.Gax.PagedEnumerable<Google.Cloud.SecurityCenter.V1.ListNotificationConfigsResponse, Google.Cloud.SecurityCenter.V1.NotificationConfig> response = client.ListNotificationConfigs(orgName);
-        ImmutableList<NotificationConfig> notificationConfigs = response.ReadPage(50).ToImmutableList();
+        ImmutableList<NotificationConfig> notificationConfigs =
+            client.ListNotificationConfigs(orgName).ReadPage(50).ToImmutableList();
 
         // Print Notification Configuration names.
         notificationConfigs.ForEach(config => Console.WriteLine(config.NotificationConfigName));

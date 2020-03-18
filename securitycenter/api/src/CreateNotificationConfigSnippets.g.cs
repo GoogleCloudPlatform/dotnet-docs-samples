@@ -14,60 +14,55 @@
  * limitations under the License.
  */
 
-namespace Snippets
+// [START scc_create_notification_config]
+using Google.Cloud.SecurityCenter.V1;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+// [END scc_create_notification_config]
+
+/** Create NotificationConfig Snippet. */
+public class CreateNotificationConfigSnippets
 {
+    private CreateNotificationConfigSnippets() {}
 
     // [START scc_create_notification_config]
-    using Google.Cloud.SecurityCenter.V1;
-    using Google.Protobuf;
-    using Google.Protobuf.WellKnownTypes;
-    using Grpc.Core;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    // [END scc_create_notification_config]
-
-    /** Create NotificationConfig Snippet. */
-    public class CreateNotificationConfigSnippets
+    public static NotificationConfig createNotificationConfig(
+        String organizationId, String notificationConfigId, String projectId, String topicName)
     {
-        private CreateNotificationConfigSnippets() {}
+        // String organizationId = "{your-org-id}";
+        // String notificationConfigId = {"your-unique-id"};
+        // String projectId = "{your-project}"";
+        // String topicName = "{your-topic}";
 
-        // [START scc_create_notification_config]
-        public static NotificationConfig createNotificationConfig(
-            String organizationId, String notificationConfigId, String projectId, String topicName)
+        String orgName = String.Format("organizations/{0}", organizationId);
+        // Ensure this ServiceAccount has the "pubsub.topics.setIamPolicy" permission on the topic.
+        String pubsubTopic = String.Format("projects/{0}/topics/{1}", projectId, topicName);
+
+        SecurityCenterClient client = SecurityCenterClient.Create();
+        CreateNotificationConfigRequest request = new CreateNotificationConfigRequest
         {
-            // String organizationId = "{your-org-id}";
-            // String notificationConfigId = {"your-unique-id"};
-            // String projectId = "{your-project}"";
-            // String topicName = "{your-topic}";
-
-            String orgName = String.Format("organizations/{0}", organizationId);
-
-            // Ensure this ServiceAccount has the "pubsub.topics.setIamPolicy" permission on the topic.
-            String pubsubTopic = String.Format("projects/{0}/topics/{1}", projectId, topicName);
-
-            SecurityCenterClient client = SecurityCenterClient.Create();
-            CreateNotificationConfigRequest request = new CreateNotificationConfigRequest
+            Parent=orgName,
+            ConfigId=notificationConfigId,
+            NotificationConfig=new NotificationConfig
             {
-                Parent=orgName,
-                ConfigId=notificationConfigId,
-                NotificationConfig=new NotificationConfig
-                {
-                    Description="Java notification config",
-                    PubsubTopic=pubsubTopic,
-                    // EventType=NotificationConfig.Types.Finding,
-                    StreamingConfig=new NotificationConfig.Types.StreamingConfig{Filter="state = \"ACTIVE\""}
-                }
-            };
+                Description="Java notification config",
+                PubsubTopic=pubsubTopic,
+                StreamingConfig=
+                    new NotificationConfig.Types.StreamingConfig{Filter="state = \"ACTIVE\""}
+            }
+        };
 
-                NotificationConfig response = client.CreateNotificationConfig(request);
-                Console.WriteLine(String.Format("Notification config was created: {0}", response));
-                return response;
-        }
-        // [END scc_create_notification_config]
+        NotificationConfig response = client.CreateNotificationConfig(request);
+        Console.WriteLine(String.Format("Notification config was created: {0}", response));
+        return response;
     }
+    // [END scc_create_notification_config]
 }
