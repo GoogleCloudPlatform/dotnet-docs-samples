@@ -520,12 +520,12 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("createConnectionWithQueryOptions", HelpText = "Creates a connection with query options set and queries the 'Venues' table.")]
+    [Verb("createConnectionWithQueryOptions", HelpText = "Creates a connection with query options set and queries the 'Singers' table.")]
     class CreateConnectionWithQueryOptionsOptions : DefaultOptions
     {
     }
 
-    [Verb("queryDataWithQueryOptions", HelpText = "Query 'Venues' table with query options set.")]
+    [Verb("queryDataWithQueryOptions", HelpText = "Query 'Singers' table with query options set.")]
     class QueryDataWithQueryOptionsOptions : DefaultOptions
     {
     }
@@ -3542,17 +3542,17 @@ namespace GoogleCloudSamples.Spanner
                 // Set query options on the connection.
                 connection.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
                 var cmd = connection.CreateSelectCommand(
-                    "SELECT VenueId, VenueName, LastUpdateTime FROM Venues");
+                    "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine("VenueId : "
-                        + reader.GetFieldValue<string>("VenueId")
-                        + " VenueName : "
-                        + reader.GetFieldValue<string>("VenueName")
-                        + " LastUpdateTime : "
-                        + reader.GetFieldValue<string>("LastUpdateTime"));
+                        Console.WriteLine("SingerId : "
+                        + reader.GetFieldValue<string>("SingerId")
+                        + " AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + " AlbumTitle : "
+                        + reader.GetFieldValue<string>("AlbumTitle"));
                     }
                 }
             }
@@ -3581,19 +3581,19 @@ namespace GoogleCloudSamples.Spanner
             using (var connection = new SpannerConnection(connectionString))
             {
                 var cmd = connection.CreateSelectCommand(
-                    "SELECT VenueId, VenueName, LastUpdateTime FROM Venues");
+                    "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
                 // Set query options just for this command.
                 cmd.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine("VenueId : "
-                        + reader.GetFieldValue<string>("VenueId")
-                        + " VenueName : "
-                        + reader.GetFieldValue<string>("VenueName")
-                        + " LastUpdateTime : "
-                        + reader.GetFieldValue<string>("LastUpdateTime"));
+                        Console.WriteLine("SingerId : "
+                        + reader.GetFieldValue<string>("SingerId")
+                        + " AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + " AlbumTitle : "
+                        + reader.GetFieldValue<string>("AlbumTitle"));
                     }
                 }
             }
