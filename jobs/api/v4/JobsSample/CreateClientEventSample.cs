@@ -45,7 +45,7 @@ namespace GoogleCloudSamples
             {
                 //build full path of job IDs
                 JobName name = new JobName(projectId, tenantId, jobId);
-                jobs.Add(name.ToString());                
+                jobs.Add(name.ToString());
             }
 
             JobEvent jobEvent = new JobEvent
