@@ -41,14 +41,11 @@ namespace GoogleCloudSamples
 
             // List of job names associated with this event.
             List<string> jobs = new List<string>();
-            using (var jobEnum = jobIds.GetEnumerator())
+            foreach (var jobId in jobIds)
             {
-                while (jobEnum.MoveNext())
-                {
-                    //build full path of job IDs
-                    JobName name = new JobName(projectId, tenantId, jobEnum.Current);
-                    jobs.Add(name.ToString());
-                }
+                //build full path of job IDs
+                JobName name = new JobName(projectId, tenantId, jobId);
+                jobs.Add(name.ToString());                
             }
 
             JobEvent jobEvent = new JobEvent
