@@ -20,8 +20,24 @@ using System;
 
 namespace GoogleCloudSamples
 {
+<<<<<<< HEAD
     public class LanguageSentimentAnalysisCreateModeloptions : CreateModelOptions
     {
+=======
+    [Verb("create_model_language_sent_analysis", HelpText = "Create a model for language sentiment analysis")]
+    public class LanguageSentimentAnalysisCreateModeloptions : CreateModelOptions
+    {
+    }
+
+    class AutoMLLanguageSentimentAnalysisCreateModel
+    {
+        // [START automl_language_sentiment_analysis_create_model]
+        /// <summary>
+        /// Demonstrates using the AutoML client to create a model.
+        /// </summary>
+        /// <param name="projectId">GCP Project ID.</param>
+        /// <param name="datasetId">the Id of the dataset.</param>
+>>>>>>> bf852969c16881044545310b8ef2beb11dd886fc
         public static object LanguageSentimentAnalysisCreateModel(string projectId = "YOUR-PROJECT-ID",
             string datasetId = "YOUR_DATASET_ID",
             string displayName = "YOUR_DATASET_NAME")
