@@ -12,39 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax;
 using Google.Cloud.Talent.V4Beta1;
 using System;
 
 namespace GoogleCloudSamples
 {
-    internal class CreateCompanySample
+    internal class ListJobsSample
     {
-        // [START job_search_create_company_beta]
-        public static object CreateCompany(string projectId, string tenantId, string displayName, string externalId)
+        // [START job_search_list_jobs]
+        public static object ListJobs(string projectId, string tenantId, string filter)
         {
-            CompanyServiceClient companyServiceClient = CompanyServiceClient.Create();
+            JobServiceClient jobServiceClient = JobServiceClient.Create();
+
             TenantName tenantName = new TenantName(projectId, tenantId);
             TenantOrProjectNameOneof parent = TenantOrProjectNameOneof.From(tenantName);
-            Company company = new Company
-            {
-                DisplayName = displayName,
-                ExternalId = externalId
-            };
-
-            CreateCompanyRequest request = new CreateCompanyRequest
+            ListJobsRequest request = new ListJobsRequest
             {
                 ParentAsTenantOrProjectNameOneof = parent,
-                Company = company
+                Filter = filter
             };
+            PagedEnumerable<ListJobsResponse, Job> jobs = jobServiceClient.ListJobs(request);
 
-            Company response = companyServiceClient.CreateCompany(request);
-
-            Console.WriteLine("Created Company");
-            Console.WriteLine($"Name: {response.Name}");
-            Console.WriteLine($"Display Name: {response.DisplayName}");
-            Console.WriteLine($"External ID: {response.ExternalId}");
+            foreach (var job in jobs)
+            {
+                Console.WriteLine($"Job name: {job.Name}");
+                Console.WriteLine($"Job requisition ID: {job.RequisitionId}");
+                Console.WriteLine($"Job title: {job.Title}");
+                Console.WriteLine($"Job description: {job.Description}");
+            }
             return 0;
         }
-        // [END job_search_create_company_beta]
+        // [END job_search_list_jobs]
     }
 }

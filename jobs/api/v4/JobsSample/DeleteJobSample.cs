@@ -17,23 +17,23 @@ using System;
 
 namespace GoogleCloudSamples
 {
-    internal class GetCompanySample
+    internal class DeleteJobSample
     {
-        // [START job_search_get_company_beta]
-        public static object GetCompany(string projectId, string tenantId, string companyId)
+        // [START job_search_delete_job_beta]
+        public static object DeleteJob(string projectId, string tenantId, string jobId)
         {
-            CompanyServiceClient companyServiceClient = CompanyServiceClient.Create();
-            CompanyName company = new CompanyName(projectId, tenantId, companyId);
-
-            GetCompanyRequest request = new GetCompanyRequest
+            JobServiceClient jobServiceClient = JobServiceClient.Create();
+            JobName name = new JobName(projectId, tenantId, jobId);
+            DeleteJobRequest request = new DeleteJobRequest
             {
-                CompanyNameOneof = CompanyNameOneof.From(company)
+                JobNameOneof = JobNameOneof.From(name)
             };
-            var response = companyServiceClient.GetCompany(request);
-            Console.WriteLine($"Company name: {response.Name}");
-            Console.WriteLine($"Display name: {response.DisplayName}");
+
+            jobServiceClient.DeleteJob(request);
+
+            Console.WriteLine("Deleted Job.");
             return 0;
         }
-        // [END job_search_get_company_beta]
+        // [END job_search_delete_job_beta]
     }
 }
