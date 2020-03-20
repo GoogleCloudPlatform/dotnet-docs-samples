@@ -14,10 +14,8 @@
 //
 // [START bigquery_query_params_timestamps]
 
-using System;
-using System.Globalization;
 using Google.Cloud.BigQuery.V2;
-
+using System;
 
 public class BigQueryQueryWithTimestampParameters
 {

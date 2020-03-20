@@ -14,15 +14,12 @@
 //
 // [START bigquery_query_params_named]
 
-using System;
 using Google.Cloud.BigQuery.V2;
-
+using System;
 
 public class BigQueryQueryWithNamedParameters
 {
-    public void QueryWithNamedParameters(
-        string projectId = "your-project-id"
-    )
+    public void QueryWithNamedParameters(string projectId = "your-project-id")
     {
         var corpus = "romeoandjuliet";
         var minWordCount = 250;

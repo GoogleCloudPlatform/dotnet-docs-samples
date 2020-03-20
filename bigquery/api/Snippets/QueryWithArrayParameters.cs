@@ -14,15 +14,12 @@
 //
 // [START bigquery_query_params_arrays]
 
-using System;
 using Google.Cloud.BigQuery.V2;
-
+using System;
 
 public class BigQueryQueryWithArrayParameters
 {
-    public void QueryWithArrayParameters(
-        string projectId = "your-project-id"
-    )
+    public void QueryWithArrayParameters(string projectId = "your-project-id")
     {
         var gender = "M";
         string[] states = { "WA", "WI", "WV", "WY" };
