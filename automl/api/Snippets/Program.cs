@@ -46,11 +46,7 @@ namespace GoogleCloudSamples
         public string DatasetID { get; set; }
     }
 
-<<<<<<< HEAD
     [Verb("get_model", HelpText = "Retrieve a model for AutoML")]
-=======
-    [Verb("get_model", HelpText = "")]
->>>>>>> 99a9e02a... added tests and reformatted
     public class GetModelOptions
     {
         [Value(0, HelpText = "Your project ID")]
@@ -75,15 +71,12 @@ namespace GoogleCloudSamples
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
-<<<<<<< HEAD
-<<<<<<< HEAD
             AutoMLBatchPredict.RegisterCommands(verbMap);
             AutoMLListModels.RegisterCommands(verbMap);
             AutoMLDeleteModel.RegisterCommands(verbMap);
             AutoMLDeleteDataset.RegisterCommands(verbMap);
             AutoMLDeployModel.RegisterCommands(verbMap);
             AutoMLLanguageSentimentAnalysisCreateDataset.RegisterCommands(verbMap);
-            AutoMLLanguageSentimentAnalysisCreateModel.RegisterCommands(verbMap);
             AutoMLLanguageSentimentAnalysisPredict.RegisterCommands(verbMap);
             AutoMLLanguageTextClassificationCreateDataset.RegisterCommands(verbMap);
             AutoMLLanguageTextClassificationCreateModel.RegisterCommands(verbMap);
@@ -100,9 +93,6 @@ namespace GoogleCloudSamples
             AutoMLGetModelEvaluation.RegisterCommands(verbMap);
             AutoMLGetModel.RegisterCommands(verbMap);
             AutoMLImportDataset.RegisterCommands(verbMap);
-=======
-            AutoMLDeleteModel.RegisterCommands(verbMap);
->>>>>>> 55c8601c... Adds DeleteModel code sample to AutoML samples
             AutoMLTranslationCreateDataset.RegisterCommands(verbMap);
             AutoMLTranslationCreateModel.RegisterCommands(verbMap);
             AutoMLTranslationPredict.RegisterCommands(verbMap);
@@ -115,7 +105,6 @@ namespace GoogleCloudSamples
             AutoMLVisionObjectDetectionCreateModel.RegisterCommands(verbMap);
             AutoMLVisionObjectDetectionPredict.RegisterCommands(verbMap);
             AutoMLVisionObjectDetectionDeployModelNodeCount.RegisterCommands(verbMap);
-=======
             AutoMLListModels.RegisterCommands(verbMap);
             AutoMLDeleteModel.RegisterCommands(verbMap);
             AutoMLDeleteDataset.RegisterCommands(verbMap);
@@ -137,9 +126,7 @@ namespace GoogleCloudSamples
             AutoMLTranslationCreateDataset.RegisterCommands(verbMap);
             AutoMLTranslationCreateModel.RegisterCommands(verbMap);
             AutoMLTranslationPredict.RegisterCommands(verbMap);
-            AutoMLLanguageSentimentAnalysisCreateModel.RegisterCommands(verbMap);
             AutoMLLanguageEntityExtractionCreateDataset.RegisterCommands(verbMap);
->>>>>>> 99a9e02a... added tests and reformatted
 
             verbMap.NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);

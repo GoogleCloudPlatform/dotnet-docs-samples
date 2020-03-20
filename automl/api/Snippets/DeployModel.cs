@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using CommandLine;
 using Google.Cloud.AutoML.V1;
 using System;
 using System.Threading.Tasks;
