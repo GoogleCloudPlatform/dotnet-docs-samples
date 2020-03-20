@@ -14,9 +14,8 @@
 //
 // [START bigquery_query_params_positional]
 
-using System;
 using Google.Cloud.BigQuery.V2;
-
+using System;
 
 public class BigQueryQueryWithPositionalParameters
 {
