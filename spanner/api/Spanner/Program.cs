@@ -520,13 +520,13 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("createConnectionWithQueryOptions", HelpText = "Creates a connection with query options set and queries the 'Singers' table.")]
+    [Verb("createConnectionWithQueryOptions", HelpText = "Creates a connection with query options set and queries the 'Albums' table.")]
     class CreateConnectionWithQueryOptionsOptions : DefaultOptions
     {
     }
 
-    [Verb("queryDataWithQueryOptions", HelpText = "Query 'Singers' table with query options set.")]
-    class QueryDataWithQueryOptionsOptions : DefaultOptions
+    [Verb("runCommandWithQueryOptions", HelpText = "Query 'Albums' table with query options set.")]
+    class RunCommandWithQueryOptionsOptions : DefaultOptions
     {
     }
 
@@ -3518,26 +3518,16 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object CreateConnectionWithQueryOptions(
-            string projectId, string instanceId, string databaseId)
-        {
-            var response = CreateConnectionWithQueryOptionsAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        private static async Task CreateConnectionWithQueryOptionsAsync(
+        public static async Task<object> CreateConnectionWithQueryOptionsAsync(
             string projectId, string instanceId, string databaseId)
         {
             // [START spanner_create_client_with_query_options]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
+            var builder = new SpannerConnectionStringBuilder
+            {
+                DataSource = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}"
+            };
             // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
+            using (var connection = new SpannerConnection(builder))
             {
                 // Set query options on the connection.
                 connection.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
@@ -3557,28 +3547,19 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             // [END spanner_create_client_with_query_options]
+            return 0;
         }
 
-        public static object QueryDataWithQueryOptions(
-            string projectId, string instanceId, string databaseId)
-        {
-            var response = QueryDataWithQueryOptionsAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        private static async Task QueryDataWithQueryOptionsAsync(
+        public static async Task<object> RunCommandWithQueryOptionsAsync(
             string projectId, string instanceId, string databaseId)
         {
             // [START spanner_query_with_query_options]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
+            var builder = new SpannerConnectionStringBuilder
+            {
+                DataSource = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}"
+            };
             // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
+            using (var connection = new SpannerConnection(builder))
             {
                 var cmd = connection.CreateSelectCommand(
                     "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
@@ -3598,6 +3579,7 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             // [END spanner_query_with_query_options]
+            return 0;
         }
 
         public static int Main(string[] args)
@@ -3764,11 +3746,11 @@ namespace GoogleCloudSamples.Spanner
                     DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result)
                 .Add((CreateConnectionWithQueryOptionsOptions opts) =>
-                    CreateConnectionWithQueryOptions(opts.projectId,
-                    opts.instanceId, opts.databaseId))
-                .Add((QueryDataWithQueryOptionsOptions opts) =>
-                    QueryDataWithQueryOptions(opts.projectId,
-                    opts.instanceId, opts.databaseId))
+                    CreateConnectionWithQueryOptionsAsync(opts.projectId,
+                    opts.instanceId, opts.databaseId).Result)
+                .Add((RunCommandWithQueryOptionsOptions opts) =>
+                    RunCommandWithQueryOptionsAsync(opts.projectId,
+                    opts.instanceId, opts.databaseId).Result)
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
