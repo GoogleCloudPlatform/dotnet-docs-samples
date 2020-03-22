@@ -559,15 +559,19 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
-        void TestQueryOptions()
+        void TestConnectionWithQueryOptions()
         {
             ConsoleOutput output = _spannerCmd.Run("createConnectionWithQueryOptions",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
 
-            output = _spannerCmd.Run("queryDataWithQueryOptions",
+        [Fact]
+        void TestRunCommandWithQueryOptions()
+        {
+            ConsoleOutput output = _spannerCmd.Run("runCommandWithQueryOptions",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
