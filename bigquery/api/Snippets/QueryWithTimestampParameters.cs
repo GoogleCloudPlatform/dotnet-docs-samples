@@ -19,9 +19,7 @@ using System;
 
 public class BigQueryQueryWithTimestampParameters
 {
-    public void QueryWithTimestampParameters(
-        string projectId = "your-project-id"
-    )
+    public void QueryWithTimestampParameters(string projectId = "project-id")
     {
         var timestamp = new DateTime(2016, 12, 7, 8, 0, 0, DateTimeKind.Utc);
 
