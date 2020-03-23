@@ -15,13 +15,13 @@
 using Google.Apis.Storage.v1;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
+using Storage;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace GoogleCloudSamples
 {
@@ -51,6 +51,8 @@ namespace GoogleCloudSamples
             "  Storage add-bucket-iam-conditional-binding bucket-name member\n" +
             "                              role member cond-title cond-description cond-expression\n" +
             "  Storage remove-bucket-iam-member bucket-name role member\n" +
+            "  Storage remove-bucket-iam-conditional-binding bucket-name role\n" +
+            "                               cond-title cond-description cond-expression\n" +
             "  Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name\n" +
             "  Storage upload-with-kms-key bucket-name key-location\n" +
             "                              key-ring key-name local-file-path [object-name]\n" +
@@ -88,23 +90,6 @@ namespace GoogleCloudSamples
             "  Storage enable-uniform-bucket-level-access bucket-name\n" +
             "  Storage disable-uniform-bucket-level-access bucket-name\n" +
             "  Storage get-uniform-bucket-level-access bucket-name\n";
-
-        // [START storage_create_bucket]
-        private void CreateBucket(string bucketName)
-        {
-            var storage = StorageClient.Create();
-            storage.CreateBucket(s_projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-        }
-        // [END storage_create_bucket]
-
-        private void CreateRegionalBucket(string location, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            Bucket bucket = new Bucket { Location = location, Name = bucketName };
-            storage.CreateBucket(s_projectId, bucket);
-            Console.WriteLine($"Created {bucketName}.");
-        }
 
         // [START storage_list_buckets]
         private void ListBuckets()
@@ -737,6 +722,33 @@ namespace GoogleCloudSamples
         }
         // [END remove_bucket_iam_member]
 
+        // [START storage_remove_bucket_conditional_iam_binding]
+        private void RemoveBucketConditionalIamBinding(string bucketName,
+            string role, string title, string description, string expression)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+            if (policy.Bindings.ToList().RemoveAll(binding => binding.Role == role
+                && binding.Condition != null
+                && binding.Condition.Title == title
+                && binding.Condition.Description == description
+                && binding.Condition.Expression == expression) > 0)
+            {
+                // Set the modified IAM policy to be the current IAM policy.
+                storage.SetBucketIamPolicy(bucketName, policy);
+                Console.WriteLine("Conditional Binding was removed.");
+            }
+            else
+            {
+                Console.WriteLine("No matching conditional binding found.");
+            }
+        }
+        // [END storage_remove_bucket_conditional_iam_binding]
+
         // [START storage_set_bucket_default_kms_key]
         private void AddBucketDefaultKmsKey(string bucketName,
             string keyLocation, string kmsKeyRing, string kmsKeyName)
@@ -1293,12 +1305,12 @@ namespace GoogleCloudSamples
                 switch (args[0].ToLower())
                 {
                     case "create":
-                        CreateBucket(args.Length < 2 ? RandomBucketName() : args[1]);
+                        CreateBucket.StorageCreateBucket(s_projectId, args.Length < 2 ? RandomBucketName() : args[1]);
                         break;
 
                     case "create-regional-bucket":
                         if (args.Length < 2 && PrintUsage()) return -1;
-                        CreateRegionalBucket(args[1], args.Length < 3 ? RandomBucketName() : args[2]);
+                        CreateRegionalBucket.StorageCreateRegionalBucket(s_projectId, args[1], args.Length < 3 ? RandomBucketName() : args[2]);
                         break;
 
                     case "list":
@@ -1486,6 +1498,11 @@ namespace GoogleCloudSamples
                     case "add-bucket-iam-conditional-binding":
                         if (args.Length < 7 && PrintUsage()) return -1;
                         AddBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5], args[6]);
+                        break;
+
+                    case "remove-bucket-iam-conditional-binding":
+                        if (args.Length < 6 && PrintUsage()) return -1;
+                        RemoveBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5]);
                         break;
 
                     case "remove-bucket-iam-member":

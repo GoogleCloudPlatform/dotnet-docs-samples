@@ -8,6 +8,6 @@
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Language.V1" Version="1.4.0" />
+    <PackageReference Include="Google.Cloud.Language.V1" Version="2.0.0" />
   </ItemGroup>
 </Project>

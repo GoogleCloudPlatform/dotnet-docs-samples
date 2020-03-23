@@ -1,0 +1,29 @@
+﻿Reading data for phone#4c410523#20190501
+Column Family cell_plan
+	data_plan_01gb: false @1578664800000000 [ ]
+	data_plan_01gb: true @1578661200000000 [ ]
+
+Reading data for phone#4c410523#20190502
+Column Family cell_plan
+	data_plan_05gb: true @1578664800000000 [ ]
+Column Family stats_summary
+	connected_cell: 1 @1578664800000000 [ ]
+
+Reading data for phone#4c410523#20190505
+Column Family cell_plan
+	data_plan_05gb: true @1578664800000000 [ ]
+Column Family stats_summary
+	connected_cell: 0 @1578664800000000 [ ]
+
+Reading data for phone#5c10102#20190501
+Column Family cell_plan
+	data_plan_10gb: true @1578664800000000 [ ]
+Column Family stats_summary
+	connected_cell: 1 @1578664800000000 [ ]
+
+Reading data for phone#5c10102#20190502
+Column Family cell_plan
+	data_plan_10gb: true @1578664800000000 [ ]
+Column Family stats_summary
+	connected_cell: 1 @1578664800000000 [ ]
+
