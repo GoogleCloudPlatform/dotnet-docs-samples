@@ -19,9 +19,7 @@ using System;
 
 public class BigQueryQueryWithPositionalParameters
 {
-    public void QueryWithPositionalParameters(
-        string projectId = "your-project-id"
-    )
+    public void QueryWithPositionalParameters(string projectId = "project-id")
     {
         var corpus = "romeoandjuliet";
         var minWordCount = 250;
