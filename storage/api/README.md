@@ -44,7 +44,7 @@ can use [this older sample](
 
 10. From the command line, run Storage to see a list of commands:
 
-    ```ps1
+```ps1
     PS > dotnet run --project .\Storage\Storage.csproj
   Usage:
     Storage create [new-bucket-name]
