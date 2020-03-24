@@ -6,9 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Google.Cloud.Spanner.Data" Version="3.0.0-beta02" />
     <PackageReference Include="Google.Cloud.Spanner.V1" Version="3.0.0-beta02" />
   </ItemGroup>
