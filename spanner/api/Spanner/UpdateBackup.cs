@@ -14,13 +14,14 @@
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Protobuf.WellKnownTypes;
+using System;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class UpdateBackup
     {
         // [START spanner_update_backup]
-        public static Backup SpannerUpdateBackup(Backup backup)
+        public static Backup SpannerUpdateBackup(string projectId, string instanceId, string backupId)
         {
             // Create the Database Admin Client instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
@@ -34,8 +35,13 @@ namespace GoogleCloudSamples.Spanner
                         "expire_time"
                     }
                 },
-                Backup = backup
+                Backup = new Backup
+                {
+                    ExpireTime = DateTime.UtcNow.AddDays(1).ToTimestamp(),
+                    BackupName = new BackupName(projectId, instanceId, backupId),
+                }
             };
+
             // Make the UpdateBackup requests.
             var updatedBackup = databaseAdminClient.UpdateBackup(backupUpdateRequest);
             return updatedBackup;

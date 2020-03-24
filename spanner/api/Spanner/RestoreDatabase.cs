@@ -27,7 +27,8 @@ namespace GoogleCloudSamples.Spanner
             // Create the Database Admin Client instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            RestoreDatabaseRequest restoreRequest = new RestoreDatabaseRequest
+            //Create restore database request instance.
+            RestoreDatabaseRequest restoreDatabaseRequest = new RestoreDatabaseRequest
             {
                 Parent = destinationInstanceId,
                 Backup = backupId,
@@ -36,7 +37,7 @@ namespace GoogleCloudSamples.Spanner
 
             // Make the RestoreDatabase request.
             Operation<Database, RestoreDatabaseMetadata> response =
-                databaseAdminClient.RestoreDatabase(restoreRequest);
+                databaseAdminClient.RestoreDatabase(restoreDatabaseRequest);
 
             Console.WriteLine("Waiting for the operation to finish");
 

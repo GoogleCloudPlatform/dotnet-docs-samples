@@ -30,14 +30,14 @@ namespace GoogleCloudSamples.Spanner
 
             var filter = "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.OptimizeRestoredDatabaseMetadata)";
 
-            ListDatabaseOperationsRequest request = new ListDatabaseOperationsRequest
+            ListDatabaseOperationsRequest listDatabaseOperationsRequest = new ListDatabaseOperationsRequest
             {
                 Filter = filter,
                 Parent = InstanceName.Format(projectId, instanceId).ToString()
             };
 
             // Make the ListDatabaseOperations request
-            var operations = databaseAdminClient.ListDatabaseOperations(request).ToList();
+            var operations = databaseAdminClient.ListDatabaseOperations(listDatabaseOperationsRequest).ToList();
             return operations;
         }
         // [END spanner_get_database_operations]

@@ -22,15 +22,15 @@ namespace GoogleCloudSamples.Spanner
         // [START spanner_cancel_backup_operation]
         public static object SpannerCancelBackupOperation(string operationName)
         {
-            // Create the OperationsClient instance with endpoint and execute CancelOperation.
             OperationsClient operationsClient = OperationsClient.Create();
 
-            var cancelRequest = new CancelOperationRequest
+            // Initialize Cancel operation Request instance
+            var cancelOperationRequest = new CancelOperationRequest
             {
                 Name = operationName
             };
 
-            operationsClient.CancelOperation(cancelRequest);
+            operationsClient.CancelOperation(cancelOperationRequest);
 
             return ExitCode.Success;
         }

@@ -24,14 +24,15 @@ namespace GoogleCloudSamples.Spanner
             // Create the Database Admin Client instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            GetBackupRequest backupRequest = new GetBackupRequest
+            //Create get backup request instance.
+            GetBackupRequest getBackupRequest = new GetBackupRequest
             {
                 BackupName = new BackupName(projectId, instanceId, backupId)
             };
 
             // Make the GetBackup request.
-            Backup resultBackup = databaseAdminClient.GetBackup(backupRequest);
-            return resultBackup;
+            Backup backup = databaseAdminClient.GetBackup(getBackupRequest);
+            return backup;
         }
         // [END spanner_get_backup]
     }

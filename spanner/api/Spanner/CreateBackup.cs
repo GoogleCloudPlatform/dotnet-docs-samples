@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using Google.Cloud.Spanner.Admin.Database.V1;
+using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
+using Google.Protobuf.WellKnownTypes;
 using System;
 
 namespace GoogleCloudSamples.Spanner
@@ -21,7 +23,8 @@ namespace GoogleCloudSamples.Spanner
     public class CreateBackup
     {
         // [START spanner_create_backup]
-        public static Backup SpannerCreateBackup(Backup backup, string backupId, string parentInstanceId)
+        public static Backup SpannerCreateBackup(string projectId, string instanceId, string databaseId,
+            string backupId, string parentInstanceId)
         {
             // Create the Database Admin Client instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
@@ -29,9 +32,13 @@ namespace GoogleCloudSamples.Spanner
             // Initialize Create Backup Request instance.
             var backupRequest = new CreateBackupRequest
             {
-                Backup = backup,
+                Backup = new Backup
+                {
+                    Database = DatabaseName.Format(projectId, instanceId, databaseId),
+                    ExpireTime = DateTime.UtcNow.AddDays(1).ToTimestamp()
+                },
                 BackupId = backupId,
-                Parent = parentInstanceId
+                Parent = InstanceName.Format(projectId, parentInstanceId)
             };
 
             // Make the CreateBackup request.

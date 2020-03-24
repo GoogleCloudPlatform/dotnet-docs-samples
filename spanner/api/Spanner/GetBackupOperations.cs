@@ -30,7 +30,7 @@ namespace GoogleCloudSamples.Spanner
 
             var filter = $"(metadata.database:{databaseId}) AND (metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata)";
 
-            // Make the List backup operation request instance.
+            // Create List backup operation request instance.
             ListBackupOperationsRequest request = new ListBackupOperationsRequest
             {
                 Parent = InstanceName.Format(projectId, instanceId),
