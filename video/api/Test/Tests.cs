@@ -115,6 +115,30 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Contains("Cat", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
         }
 
+        [Fact]
+        void TestDetectLogo()
+        {
+            ConsoleOutput output = _analyze.Run("logo-detect",
+                DownloadGcsObject(GoogleWorkShortMp4));
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Description", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Confidence", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Start Time Offset", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("End Time Offset", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        [Fact]
+        void TestDetectLogoGcs()
+        {
+            ConsoleOutput output = _analyze.Run("logo-detect",
+                GoogleWorkShortMp4);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Description", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Confidence", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Start Time Offset", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("End Time Offset", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+        }
+
         void TestFaces()
         {
             ConsoleOutput output =
