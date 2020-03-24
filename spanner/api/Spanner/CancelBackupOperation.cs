@@ -12,30 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Admin.Database.V1;
+using Google.LongRunning;
 using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
-    public class DeleteBackup
+    public class CancelBackupOperation
     {
-        // [START spanner_delete_backup]
-        public static object SpannerDeleteBackup(string backupName)
+        // [START spanner_cancel_backup_operation]
+        public static object SpannerCancelBackupOperation(string operationName)
         {
-            // Create the Database Admin Client instance.
-            DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+            // Create the OperationsClient instance with endpoint and execute CancelOperation.
+            OperationsClient operationsClient = OperationsClient.Create();
 
-            //Delete backup Request
-            var deleteBackupRequest = new DeleteBackupRequest()
+            var cancelRequest = new CancelOperationRequest
             {
-                Name = backupName
+                Name = operationName
             };
 
-            // Make the DeleteBackup request.
-            databaseAdminClient.DeleteBackup(deleteBackupRequest);
+            operationsClient.CancelOperation(cancelRequest);
 
             return ExitCode.Success;
         }
-        // [END spanner_delete_backup]
+        // [END spanner_cancel_backup_operation]
     }
 }

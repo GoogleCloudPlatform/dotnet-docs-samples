@@ -13,29 +13,33 @@
 // limitations under the License.
 
 using Google.Cloud.Spanner.Admin.Database.V1;
-using static GoogleCloudSamples.Spanner.Program;
+using Google.Cloud.Spanner.Common.V1;
+using Google.LongRunning;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GoogleCloudSamples.Spanner
 {
-    public class DeleteBackup
+    public class GetDatabaseOperations
     {
-        // [START spanner_delete_backup]
-        public static object SpannerDeleteBackup(string backupName)
+        // [START spanner_get_database_operations]
+        public static List<Operation> SpannerGetDatabaseOperations(string projectId, string instanceId)
         {
             // Create the Database Admin Client instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            //Delete backup Request
-            var deleteBackupRequest = new DeleteBackupRequest()
+            var filter = "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.OptimizeRestoredDatabaseMetadata)";
+
+            ListDatabaseOperationsRequest request = new ListDatabaseOperationsRequest
             {
-                Name = backupName
+                Filter = filter,
+                Parent = InstanceName.Format(projectId, instanceId).ToString()
             };
 
-            // Make the DeleteBackup request.
-            databaseAdminClient.DeleteBackup(deleteBackupRequest);
-
-            return ExitCode.Success;
+            // Make the ListDatabaseOperations request
+            var operations = databaseAdminClient.ListDatabaseOperations(request).ToList();
+            return operations;
         }
-        // [END spanner_delete_backup]
+        // [END spanner_get_database_operations]
     }
 }

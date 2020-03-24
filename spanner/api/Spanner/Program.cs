@@ -520,6 +520,49 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    class DefaultBackupOptions : DefaultOptions
+    {
+        [Value(3, HelpText = "The ID of the backup to create.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("createBackup", HelpText = "Create backup of Spanner Database.")]
+    class CreateBackupOptions : DefaultBackupOptions { }
+
+    [Verb("restoreDatabase", HelpText = "Restore Spanner Database from backup.")]
+    class RestoreBackupOptions : DefaultBackupOptions { }
+
+    [Verb("cancelBackupOperation", HelpText = "Cancel Spanner Database backup operation.")]
+    class CancelBackupOptions : DefaultBackupOptions { }
+
+    [Verb("getBackupOperations", HelpText = "List Spanner Database backup operations.")]
+    class GetBackupOperationOptions : DefaultOptions { }
+
+    [Verb("getBackups", HelpText = "Get list of Spanner Database backups.")]
+    class GetBackupsOptions : DefaultBackupOptions { }
+
+    [Verb("deleteBackup", HelpText = "Delete Spanner Database backup.")]
+    class DeleteBackupOptions : DefaultBackupOptions { }
+
+    [Verb("updateBackup", HelpText = "Update Spanner Database backup")]
+    class UpdateBackupOptions : DefaultBackupOptions { }
+
+    [Verb("getDatabaseOperations", HelpText = "List Spanner Database operations")]
+    class GetDatabaseOperationOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample data resides.", Required = true)]
+        public string instanceId { get; set; }
+    }
+
+    [Verb("getBackup", HelpText = "Get Spanner Database backup metadata")]
+    class GetBackupOptions : GetDatabaseOperationOptions
+    {
+        [Value(3, HelpText = "The ID of the backup to create.", Required = true)]
+        public string backupId { get; set; }
+    }
+
     // [START spanner_retry_strategy]
     public class RetryRobot
     {
@@ -562,7 +605,7 @@ namespace GoogleCloudSamples.Spanner
         static readonly ILog s_logger = LogManager.GetLogger(typeof(Program));
         private static readonly string s_netCorePlatform = "netcore";
 
-        enum ExitCode : int
+        public enum ExitCode : int
         {
             Success = 0,
             InvalidParameter = 1,
