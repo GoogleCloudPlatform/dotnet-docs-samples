@@ -3518,7 +3518,18 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static async Task<object> CreateConnectionWithQueryOptionsAsync(
+        public static object CreateConnectionWithQueryOptions(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = CreateConnectionWithQueryOptionsAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task CreateConnectionWithQueryOptionsAsync(
             string projectId, string instanceId, string databaseId)
         {
             // [START spanner_create_client_with_query_options]
@@ -3547,10 +3558,20 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             // [END spanner_create_client_with_query_options]
-            return 0;
         }
 
-        public static async Task<object> RunCommandWithQueryOptionsAsync(
+        public static object RunCommandWithQueryOptions(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = RunCommandWithQueryOptionsAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task RunCommandWithQueryOptionsAsync(
             string projectId, string instanceId, string databaseId)
         {
             // [START spanner_query_with_query_options]
@@ -3579,7 +3600,6 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             // [END spanner_query_with_query_options]
-            return 0;
         }
 
         public static int Main(string[] args)
@@ -3746,11 +3766,11 @@ namespace GoogleCloudSamples.Spanner
                     DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result)
                 .Add((CreateConnectionWithQueryOptionsOptions opts) =>
-                    CreateConnectionWithQueryOptionsAsync(opts.projectId,
-                    opts.instanceId, opts.databaseId).Result)
+                    CreateConnectionWithQueryOptions(opts.projectId,
+                    opts.instanceId, opts.databaseId))
                 .Add((RunCommandWithQueryOptionsOptions opts) =>
-                    RunCommandWithQueryOptionsAsync(opts.projectId,
-                    opts.instanceId, opts.databaseId).Result)
+                    RunCommandWithQueryOptions(opts.projectId,
+                    opts.instanceId, opts.databaseId))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
