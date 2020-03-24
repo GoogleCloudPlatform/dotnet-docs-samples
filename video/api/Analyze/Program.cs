@@ -260,36 +260,36 @@ namespace GoogleCloudSamples.VideoIntelligence
                     // Video segment of a track.
                     var startTimeOffset = track.Segment.StartTimeOffset;
                     Console.WriteLine(
-                        $"\n\tStart Time Offset: {startTimeOffset.Seconds}.{startTimeOffset.Nanos}\n");
+                        $"Start Time Offset: {startTimeOffset.Seconds}.{startTimeOffset.Nanos}");
                     var endTimeOffset = track.Segment.EndTimeOffset;
                     Console.WriteLine(
-                        $"\tEnd Time Offset: {endTimeOffset.Seconds}.{endTimeOffset.Seconds}");
-                    Console.WriteLine($"\tConfidence: {track.Confidence}");
+                        $"End Time Offset: {endTimeOffset.Seconds}.{endTimeOffset.Seconds}");
+                    Console.WriteLine($"Confidence: {track.Confidence}");
 
                     // The object with timestamp and attributes per frame in the track.
                     foreach (var timestampedObject in track.TimestampedObjects)
                     {
                         // Normalized Bounding box in a frame, where the object is located.
                         var normalizedBoundingBox = timestampedObject.NormalizedBoundingBox;
-                        Console.WriteLine($"\n\t\tLeft: {normalizedBoundingBox.Left}");
-                        Console.WriteLine($"\t\tTop: {normalizedBoundingBox.Top}");
-                        Console.WriteLine($"\t\tRight: {normalizedBoundingBox.Right}");
-                        Console.WriteLine($"\t\tBottom: {normalizedBoundingBox.Bottom}");
+                        Console.WriteLine($"Left: {normalizedBoundingBox.Left}");
+                        Console.WriteLine($"Top: {normalizedBoundingBox.Top}");
+                        Console.WriteLine($"Right: {normalizedBoundingBox.Right}");
+                        Console.WriteLine($"Bottom: {normalizedBoundingBox.Bottom}");
 
                         // Optional. The attributes of the object in the bounding box.
                         foreach (var attribute in timestampedObject.Attributes)
                         {
-                            Console.WriteLine($"\n\t\t\tName: {attribute.Name}");
-                            Console.WriteLine($"\t\t\tConfidence: {attribute.Confidence}");
-                            Console.WriteLine($"\t\t\tValue: {attribute.Value}");
+                            Console.WriteLine($"Name: {attribute.Name}");
+                            Console.WriteLine($"Confidence: {attribute.Confidence}");
+                            Console.WriteLine($"Value: {attribute.Value}");
                         }
 
                         // Optional. Attributes in the track level.
                         foreach (var trackAttribute in track.Attributes)
                         {
-                            Console.WriteLine($"\n\t\tName : {trackAttribute.Name}");
-                            Console.WriteLine($"\t\tConfidence : {trackAttribute.Confidence}");
-                            Console.WriteLine($"\t\tValue : {trackAttribute.Value}");
+                            Console.WriteLine($"Name : {trackAttribute.Name}");
+                            Console.WriteLine($"Confidence : {trackAttribute.Confidence}");
+                            Console.WriteLine($"Value : {trackAttribute.Value}");
                         }
                     }
 
@@ -298,9 +298,9 @@ namespace GoogleCloudSamples.VideoIntelligence
                     foreach (var segment in logoRecognitionAnnotation.Segments)
                     {
                         Console.WriteLine(
-                            $"\n\tStart Time Offset : {segment.StartTimeOffset.Seconds}.{segment.StartTimeOffset.Nanos}");
+                            $"Start Time Offset : {segment.StartTimeOffset.Seconds}.{segment.StartTimeOffset.Nanos}");
                         Console.WriteLine(
-                            $"\tEnd Time Offset : {segment.EndTimeOffset.Seconds}.{segment.EndTimeOffset.Nanos}");
+                            $"End Time Offset : {segment.EndTimeOffset.Seconds}.{segment.EndTimeOffset.Nanos}");
                     }
                 }
             }
@@ -340,10 +340,10 @@ namespace GoogleCloudSamples.VideoIntelligence
                     // Video segment of a track.
                     var startTimeOffset = track.Segment.StartTimeOffset;
                     Console.WriteLine(
-                        $"\n\tStart Time Offset: {startTimeOffset.Seconds}.{startTimeOffset.Nanos}\n");
+                        $"Start Time Offset: {startTimeOffset.Seconds}.{startTimeOffset.Nanos}");
                     var endTimeOffset = track.Segment.EndTimeOffset;
                     Console.WriteLine(
-                        $"\tEnd Time Offset: {endTimeOffset.Seconds}.{endTimeOffset.Seconds}");
+                        $"End Time Offset: {endTimeOffset.Seconds}.{endTimeOffset.Seconds}");
                     Console.WriteLine($"\tConfidence: {track.Confidence}");
 
                     // The object with timestamp and attributes per frame in the track.
@@ -351,25 +351,25 @@ namespace GoogleCloudSamples.VideoIntelligence
                     {
                         // Normalized Bounding box in a frame, where the object is located.
                         var normalizedBoundingBox = timestampedObject.NormalizedBoundingBox;
-                        Console.WriteLine($"\n\t\tLeft: {normalizedBoundingBox.Left}");
-                        Console.WriteLine($"\t\tTop: {normalizedBoundingBox.Top}");
-                        Console.WriteLine($"\t\tRight: {normalizedBoundingBox.Right}");
-                        Console.WriteLine($"\t\tBottom: {normalizedBoundingBox.Bottom}");
+                        Console.WriteLine($"Left: {normalizedBoundingBox.Left}");
+                        Console.WriteLine($"Top: {normalizedBoundingBox.Top}");
+                        Console.WriteLine($"Right: {normalizedBoundingBox.Right}");
+                        Console.WriteLine($"Bottom: {normalizedBoundingBox.Bottom}");
 
                         // Optional. The attributes of the object in the bounding box.
                         foreach (var attribute in timestampedObject.Attributes)
                         {
-                            Console.WriteLine($"\n\t\t\tName: {attribute.Name}");
-                            Console.WriteLine($"\t\t\tConfidence: {attribute.Confidence}");
-                            Console.WriteLine($"\t\t\tValue: {attribute.Value}");
+                            Console.WriteLine($"Name: {attribute.Name}");
+                            Console.WriteLine($"Confidence: {attribute.Confidence}");
+                            Console.WriteLine($"Value: {attribute.Value}");
                         }
 
                         // Optional. Attributes in the track level.
                         foreach (var trackAttribute in track.Attributes)
                         {
-                            Console.WriteLine($"\n\t\tName : {trackAttribute.Name}");
-                            Console.WriteLine($"\t\tConfidence : {trackAttribute.Confidence}");
-                            Console.WriteLine($"\t\tValue : {trackAttribute.Value}");
+                            Console.WriteLine($"Name : {trackAttribute.Name}");
+                            Console.WriteLine($"Confidence : {trackAttribute.Confidence}");
+                            Console.WriteLine($"Value : {trackAttribute.Value}");
                         }
                     }
 
@@ -378,9 +378,9 @@ namespace GoogleCloudSamples.VideoIntelligence
                     foreach (var segment in logoRecognitionAnnotation.Segments)
                     {
                         Console.WriteLine(
-                            $"\n\tStart Time Offset : {segment.StartTimeOffset.Seconds}.{segment.StartTimeOffset.Nanos}");
+                            $"Start Time Offset : {segment.StartTimeOffset.Seconds}.{segment.StartTimeOffset.Nanos}");
                         Console.WriteLine(
-                            $"\tEnd Time Offset : {segment.EndTimeOffset.Seconds}.{segment.EndTimeOffset.Nanos}");
+                            $"End Time Offset : {segment.EndTimeOffset.Seconds}.{segment.EndTimeOffset.Nanos}");
                     }
                 }
             }
