@@ -63,6 +63,10 @@ namespace GoogleCloudSamples.VideoIntelligence
     class TrackObjectOptions : VideoOptions
     { }
 
+    [Verb("logo-detect", HelpText = "Detect logos in a video")]
+    class DetectLogoOptions : VideoOptions
+    { }
+
     public class Analyzer
     {
         // [START video_analyze_shots]
@@ -223,6 +227,166 @@ namespace GoogleCloudSamples.VideoIntelligence
             return 0;
         }
         // [END video_speech_transcription_gcs]
+
+        // [START video_detect_logo]
+        public static object DetectLogo(string filePath)
+        {
+            var client = VideoIntelligenceServiceClient.Create();
+            var request = new AnnotateVideoRequest()
+            {
+                InputContent = Google.Protobuf.ByteString.CopyFrom(File.ReadAllBytes(filePath)),
+                Features = { Feature.LogoRecognition }
+            };
+
+            Console.WriteLine("\nWaiting for operation to complete...");
+            var op = client.AnnotateVideo(request).PollUntilCompleted();
+
+            // The first result is retrieved because a single video was processed.
+            var annotationResults = op.Result.AnnotationResults[0];
+
+            // Annotations for list of logos detected, tracked and recognized in video.
+            foreach (var logoRecognitionAnnotation in annotationResults.LogoRecognitionAnnotations)
+            {
+                var entity = logoRecognitionAnnotation.Entity;
+                // Opaque entity ID. Some IDs may be available in
+                // [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph/).
+                Console.WriteLine($"Entity ID :{entity.EntityId}");
+                Console.WriteLine($"Description :{entity.Description}");
+
+                // All logo tracks where the recognized logo appears. Each track corresponds to one logo
+                // instance appearing in consecutive frames.
+                foreach (var track in logoRecognitionAnnotation.Tracks)
+                {
+                    // Video segment of a track.
+                    var startTimeOffset = track.Segment.StartTimeOffset;
+                    Console.WriteLine(
+                        $"\n\tStart Time Offset: {startTimeOffset.Seconds}.{startTimeOffset.Nanos}\n");
+                    var endTimeOffset = track.Segment.EndTimeOffset;
+                    Console.WriteLine(
+                        $"\tEnd Time Offset: {endTimeOffset.Seconds}.{endTimeOffset.Seconds}");
+                    Console.WriteLine($"\tConfidence: {track.Confidence}");
+
+                    // The object with timestamp and attributes per frame in the track.
+                    foreach (var timestampedObject in track.TimestampedObjects)
+                    {
+                        // Normalized Bounding box in a frame, where the object is located.
+                        var normalizedBoundingBox = timestampedObject.NormalizedBoundingBox;
+                        Console.WriteLine($"\n\t\tLeft: {normalizedBoundingBox.Left}");
+                        Console.WriteLine($"\t\tTop: {normalizedBoundingBox.Top}");
+                        Console.WriteLine($"\t\tRight: {normalizedBoundingBox.Right}");
+                        Console.WriteLine($"\t\tBottom: {normalizedBoundingBox.Bottom}");
+
+                        // Optional. The attributes of the object in the bounding box.
+                        foreach (var attribute in timestampedObject.Attributes)
+                        {
+                            Console.WriteLine($"\n\t\t\tName: {attribute.Name}");
+                            Console.WriteLine($"\t\t\tConfidence: {attribute.Confidence}");
+                            Console.WriteLine($"\t\t\tValue: {attribute.Value}");
+                        }
+
+                        // Optional. Attributes in the track level.
+                        foreach (var trackAttribute in track.Attributes)
+                        {
+                            Console.WriteLine($"\n\t\tName : {trackAttribute.Name}");
+                            Console.WriteLine($"\t\tConfidence : {trackAttribute.Confidence}");
+                            Console.WriteLine($"\t\tValue : {trackAttribute.Value}");
+                        }
+                    }
+
+                    // All video segments where the recognized logo appears. There might be multiple instances
+                    // of the same logo class appearing in one VideoSegment.
+                    foreach (var segment in logoRecognitionAnnotation.Segments)
+                    {
+                        Console.WriteLine(
+                            $"\n\tStart Time Offset : {segment.StartTimeOffset.Seconds}.{segment.StartTimeOffset.Nanos}");
+                        Console.WriteLine(
+                            $"\tEnd Time Offset : {segment.EndTimeOffset.Seconds}.{segment.EndTimeOffset.Nanos}");
+                    }
+                }
+            }
+            return 0;
+        }
+        // [END video_detect_logo]
+
+        // [START video_detect_logo_gcs]
+        public static object DetectLogoGcs(string gcsUri)
+        {
+            var client = VideoIntelligenceServiceClient.Create();
+            var request = new AnnotateVideoRequest()
+            {
+                InputUri = gcsUri,
+                Features = { Feature.LogoRecognition }
+            };
+
+            Console.WriteLine("\nWaiting for operation to complete...");
+            var op = client.AnnotateVideo(request).PollUntilCompleted();
+
+            // The first result is retrieved because a single video was processed.
+            var annotationResults = op.Result.AnnotationResults[0];
+
+            // Annotations for list of logos detected, tracked and recognized in video.
+            foreach (var logoRecognitionAnnotation in annotationResults.LogoRecognitionAnnotations)
+            {
+                var entity = logoRecognitionAnnotation.Entity;
+                // Opaque entity ID. Some IDs may be available in
+                // [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph/).
+                Console.WriteLine($"Entity ID :{entity.EntityId}");
+                Console.WriteLine($"Description :{entity.Description}");
+
+                // All logo tracks where the recognized logo appears. Each track corresponds to one logo
+                // instance appearing in consecutive frames.
+                foreach (var track in logoRecognitionAnnotation.Tracks)
+                {
+                    // Video segment of a track.
+                    var startTimeOffset = track.Segment.StartTimeOffset;
+                    Console.WriteLine(
+                        $"\n\tStart Time Offset: {startTimeOffset.Seconds}.{startTimeOffset.Nanos}\n");
+                    var endTimeOffset = track.Segment.EndTimeOffset;
+                    Console.WriteLine(
+                        $"\tEnd Time Offset: {endTimeOffset.Seconds}.{endTimeOffset.Seconds}");
+                    Console.WriteLine($"\tConfidence: {track.Confidence}");
+
+                    // The object with timestamp and attributes per frame in the track.
+                    foreach (var timestampedObject in track.TimestampedObjects)
+                    {
+                        // Normalized Bounding box in a frame, where the object is located.
+                        var normalizedBoundingBox = timestampedObject.NormalizedBoundingBox;
+                        Console.WriteLine($"\n\t\tLeft: {normalizedBoundingBox.Left}");
+                        Console.WriteLine($"\t\tTop: {normalizedBoundingBox.Top}");
+                        Console.WriteLine($"\t\tRight: {normalizedBoundingBox.Right}");
+                        Console.WriteLine($"\t\tBottom: {normalizedBoundingBox.Bottom}");
+
+                        // Optional. The attributes of the object in the bounding box.
+                        foreach (var attribute in timestampedObject.Attributes)
+                        {
+                            Console.WriteLine($"\n\t\t\tName: {attribute.Name}");
+                            Console.WriteLine($"\t\t\tConfidence: {attribute.Confidence}");
+                            Console.WriteLine($"\t\t\tValue: {attribute.Value}");
+                        }
+
+                        // Optional. Attributes in the track level.
+                        foreach (var trackAttribute in track.Attributes)
+                        {
+                            Console.WriteLine($"\n\t\tName : {trackAttribute.Name}");
+                            Console.WriteLine($"\t\tConfidence : {trackAttribute.Confidence}");
+                            Console.WriteLine($"\t\tValue : {trackAttribute.Value}");
+                        }
+                    }
+
+                    // All video segments where the recognized logo appears. There might be multiple instances
+                    // of the same logo class appearing in one VideoSegment.
+                    foreach (var segment in logoRecognitionAnnotation.Segments)
+                    {
+                        Console.WriteLine(
+                            $"\n\tStart Time Offset : {segment.StartTimeOffset.Seconds}.{segment.StartTimeOffset.Nanos}");
+                        Console.WriteLine(
+                            $"\tEnd Time Offset : {segment.EndTimeOffset.Seconds}.{segment.EndTimeOffset.Nanos}");
+                    }
+                }
+            }
+            return 0;
+        }
+        // [END video_detect_logo_gcs]
 
         // [START video_detect_text_gcs]
         public static object DetectTextGcs(string gcsUri)
@@ -449,6 +613,7 @@ namespace GoogleCloudSamples.VideoIntelligence
                 .Add((TranscribeOptions opts) => TranscribeVideo(opts.Uri))
                 .Add((DetectTextOptions opts) => IsStorageUri(opts.Uri) ? DetectTextGcs(opts.Uri) : DetectText(opts.Uri))
                 .Add((TrackObjectOptions opts) => IsStorageUri(opts.Uri) ? TrackObjectGcs(opts.Uri) : TrackObject(opts.Uri))
+                .Add((DetectLogoOptions opts) => IsStorageUri(opts.Uri) ? DetectLogoGcs(opts.Uri) : DetectLogo(opts.Uri))
                 .SetNotParsedFunc((errs) => 1);
             verbMap.Run(args);
         }
