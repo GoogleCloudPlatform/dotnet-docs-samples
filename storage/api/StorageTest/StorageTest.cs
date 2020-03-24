@@ -648,6 +648,13 @@ namespace GoogleCloudSamples
                     role, $"{memberType}:{member}", "title", "description",
                     "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
                 AssertSucceeded(addBucketConditionalIamBinding);
+
+                // Remove Conditional Binding
+                var removeBucketConditionalIamBinding = Run("remove-bucket-iam-conditional-binding", iamTests.BucketName,
+                    role, "title", "description",
+                    "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
+                Assert.Contains("Conditional Binding was removed.", removeBucketConditionalIamBinding.Stdout);
+                AssertSucceeded(removeBucketConditionalIamBinding);
             }
         }
 

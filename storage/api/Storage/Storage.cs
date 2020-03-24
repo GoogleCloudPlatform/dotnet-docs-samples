@@ -46,6 +46,8 @@ namespace GoogleCloudSamples
             "  Storage add-bucket-iam-conditional-binding bucket-name member\n" +
             "                              role member cond-title cond-description cond-expression\n" +
             "  Storage remove-bucket-iam-member bucket-name role member\n" +
+            "  Storage remove-bucket-iam-conditional-binding bucket-name role\n" +
+            "                               cond-title cond-description cond-expression\n" +
             "  Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name\n" +
             "  Storage upload-with-kms-key bucket-name key-location\n" +
             "                              key-ring key-name local-file-path [object-name]\n" +
@@ -332,6 +334,11 @@ namespace GoogleCloudSamples
                     case "add-bucket-iam-conditional-binding":
                         if (args.Length < 7 && PrintUsage()) return -1;
                         AddBucketConditionalIamBinding.StorageAddBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5], args[6]);
+                        break;
+
+                    case "remove-bucket-iam-conditional-binding":
+                        if (args.Length < 6 && PrintUsage()) return -1;
+                        RemoveBucketConditionalIamBinding.StorageRemoveBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5]);
                         break;
 
                     case "remove-bucket-iam-member":
