@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Asset.V1" Version="1.1.0" />
+    <PackageReference Include="Google.Cloud.Asset.V1" Version="2.0.0-beta02" />
   </ItemGroup>
 
 </Project>
