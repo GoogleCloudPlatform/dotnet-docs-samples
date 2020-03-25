@@ -151,8 +151,8 @@ namespace Sudokumb
                 };
                 long count = 0;
                 var lazyResults = _datastore.RunQueryLazilyAsync(query,
-                    callSettings: callSettings).GetEnumerator();
-                while (await lazyResults.MoveNext())
+                    callSettings: callSettings).GetAsyncEnumerator(cancellationToken);
+                while (await lazyResults.MoveNextAsync())
                 {
                     Entity entity = lazyResults.Current;
                     if (!entity.Key.Path.First().Name.StartsWith(key))
@@ -184,8 +184,8 @@ namespace Sudokumb
                 Projection = { "__key__" }
             };
             var lazyResults = _datastore.RunQueryLazilyAsync(query,
-                callSettings: callSettings).GetEnumerator();
-            while (await lazyResults.MoveNext())
+                callSettings: callSettings).GetAsyncEnumerator(cancellationToken);
+            while (await lazyResults.MoveNextAsync())
             {
                 oldKeys.Add(lazyResults.Current.Key.Path.Last().Name);
             }
