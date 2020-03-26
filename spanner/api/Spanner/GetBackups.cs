@@ -39,7 +39,8 @@ namespace GoogleCloudSamples.Spanner
             // Make the ListBackups requests.
             var backups = databaseAdminClient.ListBackups(listBackupRequest).ToList();
 
-            backups.ForEach(backup => {
+            backups.ForEach(backup =>
+            {
                 s_logger.Info($"Backup Name : {backup.Name}");
                 s_logger.Info($"Backup Created Time : {backup.CreateTime}");
                 s_logger.Info($"Backup Databasee : {backup.Database}");
