@@ -15,10 +15,9 @@
  */
 // [START bigquerydatatransfer_quickstart]
 
-using System;
-using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.BigQuery.DataTransfer.V1;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -32,8 +31,8 @@ namespace GoogleCloudSamples
             // Your Google Cloud Platform project ID
             string projectId = "YOUR-PROJECT-ID";
 
-            ProjectName project = new ProjectName(projectId);
-            var sources = client.ListDataSources(ParentNameOneof.From(project));
+            ProjectName project = ProjectName.FromProject(projectId);
+            var sources = client.ListDataSources(project);
             Console.WriteLine("Supported Data Sources:");
             foreach (DataSource source in sources)
             {
