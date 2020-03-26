@@ -41,7 +41,7 @@ private UpdateNotificationConfigSnippets() {}
                $"organizations/{organizationId}/notificationConfigs/{notificationConfigId}";
 
         // Ensure this ServiceAccount has the "pubsub.topics.setIamPolicy" permission on the topic.
-        string pubsubTopic = $"projects/{projectId}/topics/{topicName}";
+        string pubsubTopic = TopicName.Format(projectId, topicName);
 
         NotificationConfig configToUpdate = new NotificationConfig
         {
