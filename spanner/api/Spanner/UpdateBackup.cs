@@ -14,14 +14,18 @@
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Protobuf.WellKnownTypes;
+using log4net;
 using System;
+using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class UpdateBackup
     {
+        static readonly ILog s_logger = LogManager.GetLogger(typeof(UpdateBackup));
+
         // [START spanner_update_backup]
-        public static Backup SpannerUpdateBackup(string projectId, string instanceId, string backupId)
+        public static object SpannerUpdateBackup(string projectId, string instanceId, string backupId)
         {
             // Create the Database Admin Client instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
@@ -37,14 +41,18 @@ namespace GoogleCloudSamples.Spanner
                 },
                 Backup = new Backup
                 {
-                    ExpireTime = DateTime.UtcNow.AddDays(1).ToTimestamp(),
+                    ExpireTime = DateTime.UtcNow.AddDays(30).ToTimestamp(), // Set expire time to 30 days.
                     BackupName = new BackupName(projectId, instanceId, backupId),
                 }
             };
 
             // Make the UpdateBackup requests.
             var updatedBackup = databaseAdminClient.UpdateBackup(backupUpdateRequest);
-            return updatedBackup;
+
+            s_logger.Info("Backup Updated successfully.");
+            s_logger.Info($"Updated Backup ExireTime: {updatedBackup.ExpireTime}");
+
+            return ExitCode.Success;
         }
         // [END spanner_update_backup]
     }

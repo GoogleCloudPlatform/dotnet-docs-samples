@@ -20,6 +20,8 @@ using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Sdk;
 using Grpc.Core;
+using Google.Cloud.Spanner.Admin.Database.V1;
+using Google.Cloud.Spanner.Common.V1;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -50,8 +52,12 @@ namespace GoogleCloudSamples.Spanner
                     Main = Program.Main,
                     Command = "Spanner"
                 };
+                runner.Run("deleteBackup",
+                    ProjectId, InstanceId, BackupId);
                 runner.Run("deleteDatabase",
                     ProjectId, InstanceId, DatabaseId);
+                runner.Run("deleteDatabase",
+                    ProjectId, InstanceId, RestoredDatabaseId);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
         }
@@ -63,8 +69,14 @@ namespace GoogleCloudSamples.Spanner
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
         private static readonly string s_randomDatabaseName = "my-db-"
             + TestUtil.RandomName();
+        private static readonly string s_randomBackupName = "my-backup-"
+            + TestUtil.RandomName();
+        private static readonly string s_randomRestoredDatabaseName = "my-db-"
+            + TestUtil.RandomName();
         public string DatabaseId =
             Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
+        public string BackupId = s_randomBackupName;
+        public string RestoredDatabaseId = s_randomRestoredDatabaseName;
         public bool s_initializedDatabase { get; set; } = false;
     }
 
@@ -105,6 +117,8 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("addIndex",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            _spannerCmd.Run("createBackup",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, _fixture.BackupId, _fixture.InstanceId);
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
@@ -570,6 +584,48 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
+
+        [Fact]
+        void TestGetBackup()
+        {
+            ConsoleOutput createBackupResponse = _spannerCmd.Run("getBackup",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
+            Assert.Equal(0, createBackupResponse.ExitCode);
+        }
+
+        [Fact]
+        void TestGetBackupOperations()
+        {
+            ConsoleOutput createBackupResponse = _spannerCmd.Run("getBackupOperations",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, createBackupResponse.ExitCode);
+        }
+
+        [Fact]
+        void TestGetBackups()
+        {
+            ConsoleOutput createBackupResponse = _spannerCmd.Run("getBackups",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
+            Assert.Equal(0, createBackupResponse.ExitCode);
+        }
+
+        [Fact]
+        void TestRestoreDatabase()
+        {
+            var backupId = BackupName.Format(_fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
+            var destinationInstanceId = InstanceName.Format(_fixture.ProjectId, _fixture.InstanceId);
+            ConsoleOutput createBackupResponse = _spannerCmd.Run("restoreDatabase",
+                backupId, destinationInstanceId, _fixture.RestoredDatabaseId);
+            Assert.Equal(0, createBackupResponse.ExitCode);
+        }
+
+        [Fact]
+        void TestUpdateBackup()
+        {
+            ConsoleOutput createBackupResponse = _spannerCmd.Run("updateBackup",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
+            Assert.Equal(0, createBackupResponse.ExitCode);
         }
     }
 }

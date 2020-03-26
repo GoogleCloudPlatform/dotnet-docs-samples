@@ -16,14 +16,18 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
+using log4net;
 using System;
+using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class CreateBackup
     {
+        static readonly ILog s_logger = LogManager.GetLogger(typeof(CreateBackup));
+
         // [START spanner_create_backup]
-        public static Backup SpannerCreateBackup(string projectId, string instanceId, string databaseId,
+        public static object SpannerCreateBackup(string projectId, string instanceId, string databaseId,
             string backupId, string parentInstanceId)
         {
             // Create the Database Admin Client instance.
@@ -45,13 +49,22 @@ namespace GoogleCloudSamples.Spanner
             Operation<Backup, CreateBackupMetadata> response =
                 databaseAdminClient.CreateBackup(backupRequest);
 
-            Console.WriteLine("Waiting for the operation to finish");
+            s_logger.Info("Waiting for the operation to finish.");
 
             // Poll until the returned long-running operation is complete.
             Operation<Backup, CreateBackupMetadata> completedResponse =
                 response.PollUntilCompleted();
 
-            return completedResponse.Result;
+            if (!completedResponse.IsFaulted)
+            {
+                s_logger.Info($"Backup Created Successfully.");
+                return ExitCode.Success;
+            }
+            else
+            {
+                s_logger.Error($"Error while creating backup: {completedResponse.Exception}");
+                return ExitCode.InvalidParameter;
+            }
         }
         // [END spanner_create_backup]
     }

@@ -14,16 +14,18 @@
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
-using Google.LongRunning;
-using System.Collections.Generic;
+using log4net;
 using System.Linq;
+using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class GetBackupOperations
     {
+        static readonly ILog s_logger = LogManager.GetLogger(typeof(GetBackupOperations));
+
         // [START spanner_get_backup_operations]
-        public static List<Operation> SpannerGetBackupOperations(string projectId, string instanceId, string databaseId)
+        public static object SpannerGetBackupOperations(string projectId, string instanceId, string databaseId)
         {
             // Create the Database Admin Client instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
@@ -39,7 +41,14 @@ namespace GoogleCloudSamples.Spanner
 
             // List the create backup operations on the database.
             var backupOperations = databaseAdminClient.ListBackupOperations(request).ToList();
-            return backupOperations;
+
+            backupOperations.ForEach(operation =>
+            {
+                s_logger.Info($"Name: {operation.Name}");
+                s_logger.Info($"Is completed: {operation.Done}");
+            });
+
+            return ExitCode.Success;
         }
         // [END spanner_get_backup_operations]
     }

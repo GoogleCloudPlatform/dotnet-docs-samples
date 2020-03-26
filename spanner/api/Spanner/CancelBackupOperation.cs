@@ -13,13 +13,16 @@
 // limitations under the License.
 
 using Google.LongRunning;
+using log4net;
 using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class CancelBackupOperation
     {
-        // [START spanner_cancel_backup_operation]
+        static readonly ILog s_logger = LogManager.GetLogger(typeof(CancelBackupOperation));
+
+        // [START spanner_cancel_backup_create]
         public static object SpannerCancelBackupOperation(string operationName)
         {
             OperationsClient operationsClient = OperationsClient.Create();
@@ -32,8 +35,10 @@ namespace GoogleCloudSamples.Spanner
 
             operationsClient.CancelOperation(cancelOperationRequest);
 
+            s_logger.Info($"operation {operationName} canceled.");
+
             return ExitCode.Success;
         }
-        // [END spanner_cancel_backup_operation]
+        // [END spanner_cancel_backup_create]
     }
 }

@@ -534,13 +534,18 @@ namespace GoogleCloudSamples.Spanner
     }
 
     [Verb("restoreDatabase", HelpText = "Restore Spanner Database from backup.")]
-    class RestoreDatabaseOptions : DefaultBackupOptions { }
+    class RestoreDatabaseOptions
+    {
+        [Value(0, HelpText = "The ID of the backup to restore.", Required = true)]
+        public string backupId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
+        public string instanceId { get; set; }
+        [Value(2, HelpText = "The ID of the database to create.", Required = true)]
+        public string databaseId { get; set; }
+    }
 
     [Verb("getBackupOperations", HelpText = "List Spanner Database backup operations.")]
     class GetBackupOperationOptions : DefaultOptions { }
-
-    [Verb("updateBackup", HelpText = "Update Spanner Database backup")]
-    class UpdateBackupOptions : DefaultBackupOptions { }
 
     [Verb("getDatabaseOperations", HelpText = "List Spanner Database operations")]
     class GetDatabaseOperationOptions
@@ -549,6 +554,13 @@ namespace GoogleCloudSamples.Spanner
         public string projectId { get; set; }
         [Value(1, HelpText = "The ID of the instance where the sample data resides.", Required = true)]
         public string instanceId { get; set; }
+    }
+
+    [Verb("updateBackup", HelpText = "Update Spanner Database backup")]
+    class UpdateBackupOptions : GetDatabaseOperationOptions
+    {
+        [Value(3, HelpText = "The ID of the backup to create.", Required = true)]
+        public string backupId { get; set; }
     }
 
     [Verb("getBackup", HelpText = "Get Spanner Database backup metadata")]
@@ -3732,7 +3744,7 @@ namespace GoogleCloudSamples.Spanner
                 .Add((GetBackupsOptions opts) =>
                     GetBackups.SpannerGetBackups(opts.projectId, opts.instanceId, opts.backupId))
                 .Add((RestoreDatabaseOptions opts) =>
-                    RestoreDatabase.SpannerRestoreDatabase(opts.projectId, opts.instanceId, opts.backupId))
+                    RestoreDatabase.SpannerRestoreDatabase(opts.backupId, opts.instanceId, opts.databaseId))
                 .Add((UpdateBackupOptions opts) =>
                     UpdateBackup.SpannerUpdateBackup(opts.projectId, opts.instanceId, opts.backupId))
                 .Add((GetDatabaseOperationOptions opts) =>

@@ -13,19 +13,22 @@
 // limitations under the License.
 
 using Google.Cloud.Spanner.Admin.Database.V1;
+using log4net;
 using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class DeleteBackup
     {
+        static readonly ILog s_logger = LogManager.GetLogger(typeof(DeleteBackup));
+
         // [START spanner_delete_backup]
         public static object SpannerDeleteBackup(string projectId, string instanceId, string backupId)
         {
             // Create the Database Admin Client instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            // Create Delete backup Request
+            // Create Delete backup Request instance
             var deleteBackupRequest = new DeleteBackupRequest()
             {
                 Name = BackupName.Format(projectId, instanceId, backupId)
@@ -33,6 +36,8 @@ namespace GoogleCloudSamples.Spanner
 
             // Make the DeleteBackup request.
             databaseAdminClient.DeleteBackup(deleteBackupRequest);
+
+            s_logger.Info("Backup deleted successfully.");
 
             return ExitCode.Success;
         }

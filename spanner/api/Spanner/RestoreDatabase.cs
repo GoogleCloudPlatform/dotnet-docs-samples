@@ -14,14 +14,18 @@
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.LongRunning;
+using log4net;
 using System;
+using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class RestoreDatabase
     {
+        static readonly ILog s_logger = LogManager.GetLogger(typeof(RestoreDatabase));
+
         // [START spanner_restore_database]
-        public static RestoreInfo SpannerRestoreDatabase(string backupId, string destinationInstanceId,
+        public static object SpannerRestoreDatabase(string backupId, string destinationInstanceId,
             string destinationDatabaseId)
         {
             // Create the Database Admin Client instance.
@@ -44,7 +48,16 @@ namespace GoogleCloudSamples.Spanner
             // Poll until the returned long-running operation is complete.
             var completedResponse = response.PollUntilCompleted();
 
-            return completedResponse.Result.RestoreInfo;
+            if (!completedResponse.IsFaulted)
+            {
+                s_logger.Info("Database Restore Successfully.");
+                return ExitCode.Success;
+            }
+            else
+            {
+                s_logger.Error($"Database Restore Failed: {completedResponse.Exception}");
+                return ExitCode.InvalidParameter;
+            }
         }
         // [END spanner_restore_database]
     }
