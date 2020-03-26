@@ -17,6 +17,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnippetsTest", "SnippetsTes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snippets", "Snippets\Snippets.csproj", "{F146B528-BFAF-44FD-BC1E-FBAC59FA2969}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigtableTest", "BigtableTest\BigtableTest.csproj", "{873226A7-8526-4012-8182-FF0DB755FEE7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "testutil", "..\..\testutil\testutil.csproj", "{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,14 @@ Global
 		{F146B528-BFAF-44FD-BC1E-FBAC59FA2969}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F146B528-BFAF-44FD-BC1E-FBAC59FA2969}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F146B528-BFAF-44FD-BC1E-FBAC59FA2969}.Release|Any CPU.Build.0 = Release|Any CPU
+		{873226A7-8526-4012-8182-FF0DB755FEE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{873226A7-8526-4012-8182-FF0DB755FEE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{873226A7-8526-4012-8182-FF0DB755FEE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{873226A7-8526-4012-8182-FF0DB755FEE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
