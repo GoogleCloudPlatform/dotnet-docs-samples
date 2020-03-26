@@ -48,7 +48,7 @@ namespace GoogleCloudSamples
     }
 
     // TODO reconcile these with the "simple" tests below
-    public partial class DlpTest : IClassFixture<DlpTestFixture>
+    public partial class DlpTest : IClassFixture<DlpTestFixture>, IDisposable
     {
         private const string phone = "(223) 456-7890";
         private const string email = "gary@somedomain.org";
@@ -204,7 +204,7 @@ namespace GoogleCloudSamples
             Assert.Contains(data, reidOutput.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1006")]
         public void TestTriggers()
         {
             string triggerId = $"my-csharp-test-trigger-{Guid.NewGuid()}";
