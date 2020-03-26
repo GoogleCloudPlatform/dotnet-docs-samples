@@ -29,7 +29,7 @@ public class NotificationReceiver
     private NotificationReceiver() {}
 
     public static async Task<object> ReceiveMessageAsync(
-        String projectId, String subscriptionId, bool acknowledge)
+        string projectId, string subscriptionId, bool acknowledge)
     {
         var subscriptionName = new SubscriptionName(projectId, subscriptionId);
 

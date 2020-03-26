@@ -34,11 +34,9 @@
       private DeleteNotificationConfigSnippets(){}
 
       // [START scc_delete_notification_config]
-      public static Boolean deleteNotificationConfig(
-        String organizationId, String notificationConfigId)
+      public static Boolean DeleteNotificationConfig(
+        string organizationId, string notificationConfigId)
       {
-        // String organizationId = "{your-org-id}";
-        // String notificationConfigId = "{config-id}";
 
         NotificationConfigName notificationConfigName =
           new NotificationConfigName(organizationId, notificationConfigId);
@@ -46,12 +44,11 @@
         DeleteNotificationConfigRequest request =
           new DeleteNotificationConfigRequest
             {
-              NotificationConfigName= notificationConfigName
+              NotificationConfigName = notificationConfigName
             };
 
         client.DeleteNotificationConfig(request);
-        Console.WriteLine(
-          String.Format("Deleted Notification config: {0}", notificationConfigName));
+        Console.WriteLine($"Deleted Notification config: {notificationConfigName}");
         return true;
       }
         // [END] scc_delete_notification_config]

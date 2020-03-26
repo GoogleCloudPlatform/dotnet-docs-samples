@@ -34,33 +34,27 @@ public class UpdateNotificationConfigSnippets
 private UpdateNotificationConfigSnippets() {}
 
     // [START scc_update_notification_config]
-    public static NotificationConfig updateNotificationConfig(
-        String organizationId, String notificationConfigId, String projectId, String topicName)
+    public static NotificationConfig UpdateNotificationConfig(
+        string organizationId, string notificationConfigId, string projectId, string topicName)
     {
-        // String organizationId = "{your-org-id}";
-        // String notificationConfigId = "{your-config-id}";
-        // String projectId = "{your-project}";
-        // String topicName = "{your-topic}";
-
-        String notificationConfigName =
-            String.Format(
-                "organizations/{0}/notificationConfigs/{1}", organizationId, notificationConfigId);
+        string notificationConfigName =
+               $"organizations/{organizationId}/notificationConfigs/{notificationConfigId}";
 
         // Ensure this ServiceAccount has the "pubsub.topics.setIamPolicy" permission on the topic.
-        String pubsubTopic = String.Format("projects/{0}/topics/{1}", projectId, topicName);
+        string pubsubTopic = $"projects/{projectId}/topics/{topicName}";
 
         NotificationConfig configToUpdate = new NotificationConfig
         {
-            Name=notificationConfigName,
-            Description="updated description",
-            PubsubTopic=pubsubTopic
+            Name = notificationConfigName,
+            Description = "updated description",
+            PubsubTopic = pubsubTopic
         };
 
         FieldMask fieldMask = new FieldMask{Paths={"description", "pubsub_topic"}};
         SecurityCenterClient client = SecurityCenterClient.Create();
         NotificationConfig updatedConfig = client.UpdateNotificationConfig(configToUpdate, fieldMask);
 
-        Console.WriteLine(String.Format("Notification config updated: {0}", updatedConfig));
+        Console.WriteLine($"Notification config updated: {updatedConfig}");
         return updatedConfig;
     }
 }

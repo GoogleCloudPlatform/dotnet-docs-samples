@@ -23,67 +23,67 @@ public class SecurityCenterTests
     [Fact]
     public void CreateNotificationConfig_ShouldCreateConfig()
     {
-        String configId = "csharp-create-config-test111";
+        string configId = "csharp-create-config-test111";
         Assert.NotNull(
-            CreateNotificationConfigSnippet.createNotificationConfig(
+            CreateNotificationConfigSnippets.CreateNotificationConfig(
                 GetOrganizationId(), configId, GetProjectId(), GetTopic()));
-        DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId);
+        DeleteNotificationConfigSnippets.DeleteNotificationConfig(GetOrganizationId(), configId);
         Assert.True(true);
     }
 
     [Fact]
     public void DeleteNotificationConfig_ShouldDeleteConfig()
     {
-        String configId = "csharp-delete-config-test111";
-        CreateNotificationConfigSnippet.createNotificationConfig(
+        string configId = "csharp-delete-config-test111";
+        CreateNotificationConfigSnippets.CreateNotificationConfig(
             GetOrganizationId(), configId, GetProjectId(), GetTopic());
         Assert.True(
-            DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId));
+            DeleteNotificationConfigSnippets.DeleteNotificationConfig(GetOrganizationId(), configId));
     }
 
     [Fact]
     public void ListNotificationConfig_ShouldReturnNonEmpty()
     {
-        String configId = "csharp-list-config-test111";
-        CreateNotificationConfigSnippet.createNotificationConfig(
+        string configId = "csharp-list-config-test111";
+        CreateNotificationConfigSnippets.CreateNotificationConfig(
             GetOrganizationId(), configId, GetProjectId(), GetTopic());
         Assert.NotNull(
-            ListNotificationConfigSnippets.listNotificationConfigs(GetOrganizationId()));
-        DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId);
+            ListNotificationConfigSnippets.ListNotificationConfigs(GetOrganizationId()));
+        DeleteNotificationConfigSnippets.DeleteNotificationConfig(GetOrganizationId(), configId);
     }
 
     [Fact]
     public void GetNotificationConfig_ShouldReturnConfig()
     {
-        String configId = "csharp-get-config-test111";
-        CreateNotificationConfigSnippet.createNotificationConfig(
+        string configId = "csharp-get-config-test111";
+        CreateNotificationConfigSnippets.CreateNotificationConfig(
             GetOrganizationId(), configId, GetProjectId(), GetTopic());
         Assert.NotNull(
-            GetNotificationConfigSnippets.getNotificationConfig(GetOrganizationId(), configId));
-        DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId);
+            GetNotificationConfigSnippets.GetNotificationConfig(GetOrganizationId(), configId));
+        DeleteNotificationConfigSnippets.DeleteNotificationConfig(GetOrganizationId(), configId);
     }
 
     [Fact]
     public void UpdateNotificationConfig_ShouldUpdateConfig()
     {
-        String configId = "csharp-update-config-test111";
-        CreateNotificationConfigSnippet.createNotificationConfig(
+        string configId = "csharp-update-config-test111";
+        CreateNotificationConfigSnippets.CreateNotificationConfig(
             GetOrganizationId(), configId, GetProjectId(), GetTopic());
         Assert.NotNull(
-            UpdateNotificationConfigSnippets.updateNotificationConfig(
+            UpdateNotificationConfigSnippets.UpdateNotificationConfig(
                 GetOrganizationId(), configId, GetProjectId(), GetTopic()));
-        DeleteNotificationConfigSnippets.deleteNotificationConfig(GetOrganizationId(), configId);
+        DeleteNotificationConfigSnippets.DeleteNotificationConfig(GetOrganizationId(), configId);
     }
 
-    private String GetOrganizationId() {
+    private string GetOrganizationId() {
         return "1081635000895";
     }
 
-    private String GetProjectId() {
+    private string GetProjectId() {
         return "project-a-id";
     }
 
-    private String GetTopic() {
+    private string GetTopic() {
         return "notifications-sample-topic";
     }
 }

@@ -35,11 +35,9 @@ public class ListNotificationConfigSnippets
 {
     private ListNotificationConfigSnippets() {}
 
-    public static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // [START scc_list_notification_configs]
-    public static ImmutableList<NotificationConfig> listNotificationConfigs(String organizationId)
+    public static ImmutableList<NotificationConfig> ListNotificationConfigs(string organizationId)
     {
-        // String organizationId = "{your-org-id}";
         OrganizationName orgName = new OrganizationName(organizationId);
         SecurityCenterClient client = SecurityCenterClient.Create();
         ImmutableList<NotificationConfig> notificationConfigs =
