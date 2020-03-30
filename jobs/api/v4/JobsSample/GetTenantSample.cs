@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
         public static object GetTenant(string projectId, string tenantId)
         {
             TenantServiceClient tenantServiceClient = TenantServiceClient.Create();
-            TenantName name = new TenantName(projectId, tenantId);
+            TenantName name = TenantName.FromProjectTenant(projectId, tenantId);
             GetTenantRequest request = new GetTenantRequest
             {
                 TenantName = name

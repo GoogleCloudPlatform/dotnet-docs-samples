@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
         public static object HistogramSearchJobs(string projectId, string tenantId, string query)
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
-            TenantName name = new TenantName(projectId, tenantId);
+            TenantName name = TenantName.FromProjectTenant(projectId, tenantId);
 
             string domain = "www.example.com";
             string sessionId = "Hashed session identifier";
@@ -44,7 +44,7 @@ namespace GoogleCloudSamples
 
             SearchJobsRequest request = new SearchJobsRequest
             {
-                ParentAsTenantOrProjectNameOneof = TenantOrProjectNameOneof.From(name),
+                ParentAsTenantName = name,
                 RequestMetadata = requestMetadata,
             };
             request.HistogramQueries.Add(histogramQuery);
