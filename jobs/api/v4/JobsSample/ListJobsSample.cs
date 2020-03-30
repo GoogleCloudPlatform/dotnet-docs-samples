@@ -25,11 +25,10 @@ namespace GoogleCloudSamples
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
 
-            TenantName tenantName = new TenantName(projectId, tenantId);
-            TenantOrProjectNameOneof parent = TenantOrProjectNameOneof.From(tenantName);
+            TenantName tenantName = TenantName.FromProjectTenant(projectId, tenantId);
             ListJobsRequest request = new ListJobsRequest
             {
-                ParentAsTenantOrProjectNameOneof = parent,
+                ParentAsTenantName = tenantName,
                 Filter = filter
             };
             PagedEnumerable<ListJobsResponse, Job> jobs = jobServiceClient.ListJobs(request);

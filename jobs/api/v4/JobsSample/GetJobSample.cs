@@ -23,10 +23,10 @@ namespace GoogleCloudSamples
         public static object GetJob(string projectId, string tenantId, string jobId)
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
-            JobName job = new JobName(projectId, tenantId, jobId);
+            JobName jobName = JobName.FromProjectTenantJob(projectId, tenantId, jobId);
             GetJobRequest request = new GetJobRequest
             {
-                JobNameOneof = JobNameOneof.From(job)
+                JobName = jobName
             };
             var response = jobServiceClient.GetJob(request);
 
