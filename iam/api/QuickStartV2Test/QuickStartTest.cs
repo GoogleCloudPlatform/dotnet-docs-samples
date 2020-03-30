@@ -1,18 +1,39 @@
-using System;
-using System.Collections.Generic;
+// Copyright 2020 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Iam.v1;
 using Google.Apis.Iam.v1.Data;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
-public class QuickStartNewTest : IDisposable
+public class QuickStartTest : IDisposable
 {
-    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private readonly string projectId;
     private ServiceAccount serviceAccount;
     private IamService iamService;
 
     public QuickStartNewTest()
     {
+        // Check for _projectId and throw exception if empty
+        projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        if(projectId == null)
+        {
+            throw new System.ArgumentNullException("GOOGLE_PROJECT_ID", "Environment variable not set");
+        }
+
         // Create service account for test
         var credential = GoogleCredential.GetApplicationDefault()
             .CreateScoped(IamService.Scope.CloudPlatform);
@@ -24,7 +45,7 @@ public class QuickStartNewTest : IDisposable
 
         var request = new CreateServiceAccountRequest
         {
-            AccountId = "iam-test-account",
+            AccountId = "iam-test-account" + DateTime.UtcNow.ToBinary(),
             ServiceAccount = new ServiceAccount
             {
                 DisplayName = "iamTestAccount"
@@ -46,7 +67,7 @@ public class QuickStartNewTest : IDisposable
     public void TestQuickStartNew()
     {
         var role = "roles/logging.logWriter";
-        var rolePermissions = new List<string>() { "logging.logEntries.create" };
+        var rolePermissions = new List<string> { "logging.logEntries.create" };
         var member = "serviceAccount:" + serviceAccount.Email;
 
         // Initialize service
@@ -56,7 +77,7 @@ public class QuickStartNewTest : IDisposable
         QuickStartNew.AddBinding(crmService, _projectId, member, role);
 
         // Test permissions in role
-        var grantedPermissions = new List<string>(QuickStartNew.TestPermissions(crmService, _projectId, member, rolePermissions));
+        var grantedPermissions = QuickStartNew.TestPermissions(crmService, _projectId, member, rolePermissions);
 
         // Verify that all permissions in role were granted to member
         foreach (var p in rolePermissions)
