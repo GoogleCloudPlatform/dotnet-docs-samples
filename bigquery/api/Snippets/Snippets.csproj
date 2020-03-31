@@ -5,11 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
     <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.4.1" />
-=======
-    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.4.0" />
->>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
+
     <PackageReference Include="Google.Cloud.Storage.V1" Version="2.5.0" />
     <PackageReference Include="JUnitTestLogger" Version="0.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />

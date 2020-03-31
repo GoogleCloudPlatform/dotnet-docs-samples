@@ -6,11 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-<<<<<<< HEAD
     <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
-=======
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.7.0" />
->>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
     <PackageReference Include="Google.Cloud.Storage.V1" Version="2.5.0" />
   </ItemGroup>
   <ItemGroup>
