@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Monitoring.V3;
 using Google.Protobuf.WellKnownTypes;
 using System;

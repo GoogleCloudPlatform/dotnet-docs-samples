@@ -18,16 +18,10 @@ using CommandLine;
 using Google.Api;
 using Google.Api.Gax;
 using Google.Api.Gax.Grpc;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Monitoring.V3;
 using Google.Protobuf.WellKnownTypes;
-using Newtonsoft.Json.Linq;
-using static Google.Api.MetricDescriptor.Types;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
 {
@@ -109,10 +103,14 @@ namespace GoogleCloudSamples
             };
             // Create a client.
             var client = UptimeCheckServiceClient.Create();
-            string projectName = new ProjectName(projectId).ToString();
+            ProjectName projectName = new ProjectName(projectId);
             // Create the config.
-            var newConfig = client.CreateUptimeCheckConfig(projectName, config,
-                CallSettings.FromCallTiming(CallTiming.FromTimeout(TimeSpan.FromMinutes(2))));
+            var newConfig = client.CreateUptimeCheckConfig(
+                projectName,
+                config,
+                CallSettings.FromExpiration(
+                    Expiration.FromTimeout(
+                        TimeSpan.FromMinutes(2))));
             Console.WriteLine(newConfig.Name);
             return 0;
         }
@@ -133,8 +131,7 @@ namespace GoogleCloudSamples
         public static object ListUptimeCheckConfigs(string projectId)
         {
             var client = UptimeCheckServiceClient.Create();
-            var configs = client.ListUptimeCheckConfigs(
-                new ProjectName(projectId).ToString());
+            var configs = client.ListUptimeCheckConfigs(new ProjectName(projectId));
             foreach (UptimeCheckConfig config in configs)
             {
                 Console.WriteLine(config.Name);
