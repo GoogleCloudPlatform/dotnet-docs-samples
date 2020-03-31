@@ -21,17 +21,16 @@
  */
 
 using CommandLine;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Monitoring.V3;
-using System;
-using System.IO;
-using System.Text;
-using System.Linq;
-using Google.Protobuf.WellKnownTypes;
 using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace GoogleCloudSamples
 {
