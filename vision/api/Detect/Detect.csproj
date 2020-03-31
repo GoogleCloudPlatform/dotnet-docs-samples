@@ -8,7 +8,11 @@
     <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
     <PackageReference Include="Google.Cloud.Storage.V1" Version="2.5.0" />
+<<<<<<< HEAD
     <PackageReference Include="Google.Api.Gax.Grpc" Version="3.0.0" />
+=======
+    <PackageReference Include="Google.Api.Gax.Grpc" Version="2.10.0" />
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
   </ItemGroup>
   <ItemGroup>
     <None Remove="HelloWorld.exe" />

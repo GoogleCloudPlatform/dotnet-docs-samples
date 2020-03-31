@@ -6,7 +6,11 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
+<<<<<<< HEAD
     <PackageReference Include="Google.Cloud.Talent.V4Beta1" Version="2.0.0-beta02" />
+=======
+    <PackageReference Include="Google.Cloud.Talent.V4Beta1" Version="2.0.0-beta01" />
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
     <ProjectReference Include="..\..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
   </ItemGroup>
 </Project>

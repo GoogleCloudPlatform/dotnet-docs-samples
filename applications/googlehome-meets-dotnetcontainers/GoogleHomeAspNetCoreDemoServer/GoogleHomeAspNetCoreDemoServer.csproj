@@ -21,8 +21,13 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.1" />
     <PackageReference Include="Grpc.Auth" Version="2.27.0" />
     <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.44.1.1369" />
+<<<<<<< HEAD
     <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.4.1" />
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.0.0" />
+=======
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.4.0" />
+    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="3.0.0" />
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
   </ItemGroup>
 
   <ItemGroup>

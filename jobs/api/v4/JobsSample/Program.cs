@@ -15,7 +15,10 @@
  */
 
 using CommandLine;
+<<<<<<< HEAD
 using System.Collections.Generic;
+=======
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
 
 namespace GoogleCloudSamples
 {
@@ -25,6 +28,7 @@ namespace GoogleCloudSamples
         public string ProjectId { get; set; }
     }
 
+<<<<<<< HEAD
     [Verb("autoCompleteJobTitle", HelpText = "Complete job title given partial text (autocomplete).")]
     internal class AutoCompleteJobTitleOptions : BaseOptions
     {
@@ -35,6 +39,8 @@ namespace GoogleCloudSamples
     }
 
 
+=======
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
     [Verb("createTenant", HelpText = "Create Tenant for scoping resources, e.g. companies and jobs.")]
     internal class CreateTenantOptions : BaseOptions
     {
@@ -42,7 +48,11 @@ namespace GoogleCloudSamples
         public string TenantExternalId { get; set; }
     }
 
+<<<<<<< HEAD
     [Verb("createCompany", HelpText = "Create a Company.")]
+=======
+    [Verb("createCompany", HelpText = "Create Company.")]
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
     internal class CreateCompanyOptions : BaseOptions
     {
         [Value(1, HelpText = "Your Tenant ID.", Required = true)]
@@ -53,6 +63,7 @@ namespace GoogleCloudSamples
         public string CompanyExternalId { get; set; }
     }
 
+<<<<<<< HEAD
     [Verb("createClientEvent", HelpText = "Create a client event.")]
     internal class CreateClientEventOptions : BaseOptions
     {
@@ -111,6 +122,8 @@ namespace GoogleCloudSamples
         public string TenantId { get; set; }
     }
 
+=======
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
     [Verb("getTenant", HelpText = "Retrieve Tenant by ID.")]
     internal class GetTenantOptions : BaseOptions
     {
@@ -118,6 +131,7 @@ namespace GoogleCloudSamples
         public string TenantId { get; set; }
     }
 
+<<<<<<< HEAD
     [Verb("getJob", HelpText = "Retrieve Job by ID.")]
     internal class GetJobOptions : BaseOptions
     {
@@ -127,6 +141,8 @@ namespace GoogleCloudSamples
         public string JobId { get; set; }
     }
 
+=======
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
 
     [Verb("deleteTenant", HelpText = "Delete Tenant by ID.")]
     internal class DeleteTenantOptions : BaseOptions
@@ -144,6 +160,7 @@ namespace GoogleCloudSamples
         public string CompanyId { get; set; }
     }
 
+<<<<<<< HEAD
     [Verb("deleteJob", HelpText = "Delete Job by ID.")]
     internal class DeleteJobOptions : BaseOptions
     {
@@ -153,6 +170,8 @@ namespace GoogleCloudSamples
         public string JobId { get; set; }
     }
 
+=======
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
     [Verb("listTenants", HelpText = "List Tenants in the project.")]
     internal class ListTenantsOptions : BaseOptions
     {
@@ -168,6 +187,7 @@ namespace GoogleCloudSamples
         public string CompanyId { get; set; }
     }
 
+<<<<<<< HEAD
     [Verb("histogramSearchJobs", HelpText = "Search Jobs with histogram queries.")]
     internal class HistogramSearchJobsOptions : BaseOptions
     {
@@ -178,6 +198,8 @@ namespace GoogleCloudSamples
         public string Query { get; set; }
     }
 
+=======
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
     [Verb("listCompanies", HelpText = "List Companies in the project.")]
     internal class ListCompaniesOptions : BaseOptions
     {
@@ -185,6 +207,7 @@ namespace GoogleCloudSamples
         public string TenantId { get; set; }
     }
 
+<<<<<<< HEAD
 
     [Verb("listJobs", HelpText = "List Jobs in the project.")]
     internal class ListJobsOptions : BaseOptions
@@ -196,6 +219,8 @@ namespace GoogleCloudSamples
         public string Filter { get; set; }
     }
 
+=======
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
     public class JobSearch
     {
         public static int Main(string[] args)
@@ -212,6 +237,7 @@ namespace GoogleCloudSamples
                 .Add((GetTenantOptions opts) => GetTenantSample.GetTenant(opts.ProjectId, opts.TenantId))
                 .Add((DeleteTenantOptions opts) => DeleteTenantSample.DeleteTenant(opts.ProjectId, opts.TenantId))
                 .Add((DeleteCompanyOptions opts) => DeleteCompanySample.DeleteCompany(opts.ProjectId, opts.TenantId, opts.CompanyId))
+<<<<<<< HEAD
                 .Add((CreateJobOptions opts) => CreateJobSample.CreateJob(opts.ProjectId, opts.TenantId, opts.CompanyId, opts.RequisitionId, opts.JobApplicationUrl))
                 .Add((ListJobsOptions opts) => ListJobsSample.ListJobs(opts.ProjectId, opts.TenantId, opts.Filter))
                 .Add((GetJobOptions opts) => GetJobSample.GetJob(opts.ProjectId, opts.TenantId, opts.JobId))
@@ -222,6 +248,8 @@ namespace GoogleCloudSamples
                 .Add((CommuteSearchJobsOptions opts) => CommuteSearchJobsSample.CommuteSearchJobs(opts.ProjectId, opts.TenantId))
                 .Add((HistogramSearchJobsOptions opts) => HistogramSearch.HistogramSearchJobs(opts.ProjectId, opts.TenantId, opts.Query))
                 .Add((AutoCompleteJobTitleOptions opts) => AutoCompleteJobTitleSample.CompleteQuery(opts.ProjectId, opts.TenantId, opts.Query))
+=======
+>>>>>>> 8abacdfaba62df07bc3749642014fd30b63c95a6
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
