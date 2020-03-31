@@ -38,8 +38,7 @@ namespace GoogleCloudSamples
             LogEntry logEntry = new LogEntry();
             string logId = "my-log";
             LogName logName = new LogName(projectId, logId);
-            LogNameOneof logNameToWrite = LogNameOneof.From(logName);
-            logEntry.LogName = logName.ToString();
+            logEntry.LogNameAsLogName = logName;
             logEntry.Severity = LogSeverity.Info;
 
             // Create log entry message.
@@ -56,8 +55,10 @@ namespace GoogleCloudSamples
             // This sample uses resource type 'global' causing log entries to appear in the 
             // "Global" resource list of the Developers Console Logs Viewer:
             //  https://console.cloud.google.com/logs/viewer
-            MonitoredResource resource = new MonitoredResource();
-            resource.Type = "global";
+            MonitoredResource resource = new MonitoredResource
+            {
+                Type = "global"
+            };
 
             // Create dictionary object to add custom labels to the log entry.
             IDictionary<string, string> entryLabels = new Dictionary<string, string>();
@@ -68,7 +69,7 @@ namespace GoogleCloudSamples
             IEnumerable<LogEntry> logEntries = new LogEntry[] { logEntry };
 
             // Write new log entry.
-            client.WriteLogEntries(logNameToWrite, resource, entryLabels, logEntries);
+            client.WriteLogEntries(logName, resource, entryLabels, logEntries);
 
             Console.WriteLine("Log Entry created.");
         }
