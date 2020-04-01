@@ -6,8 +6,7 @@
     <StartupObject>GoogleCloudSamples.TranslateV3Samples</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.6.0" />
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="Google.Cloud.Translate.V3" Version="2.0.0" />
-    <!--<PackageReference Include="Translate.V3" Version="1.0.0-beta02" />-->
   </ItemGroup>
 </Project>
