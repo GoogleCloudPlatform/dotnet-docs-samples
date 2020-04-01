@@ -573,11 +573,7 @@ namespace GoogleCloudSamples.Spanner
     class GetBackupsOptions : GetBackupOptions { }
 
     [Verb("cancelBackupOperation", HelpText = "Cancel Spanner Database backup operation.")]
-    class CancelBackupOperationOptions
-    {
-        [Value(0, HelpText = "The name of the operation resource to be cancelled.", Required = true)]
-        public string operationName { get; set; }
-    }
+    class CancelBackupOperationOptions : CreateBackupOptions { }
 
     // [START spanner_retry_strategy]
     public class RetryRobot
@@ -3735,7 +3731,9 @@ namespace GoogleCloudSamples.Spanner
                         opts.projectId, opts.instanceId, opts.databaseId,
                         opts.backupId))
                 .Add((CancelBackupOperationOptions opts) =>
-                    CancelBackupOperation.SpannerCancelBackupOperation(opts.operationName))
+                    CancelBackupOperation.SpannerCancelBackupOperation(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
                 .Add((GetBackupOptions opts) =>
                     GetBackup.SpannerGetBackup(opts.projectId, opts.instanceId, opts.backupId))
                 .Add((GetBackupsOptions opts) =>

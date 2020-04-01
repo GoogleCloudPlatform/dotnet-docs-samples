@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Admin.Database.V1;
+using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
+using Google.Protobuf.WellKnownTypes;
 using log4net;
+using System;
 using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
@@ -23,20 +27,42 @@ namespace GoogleCloudSamples.Spanner
         static readonly ILog s_logger = LogManager.GetLogger(typeof(CancelBackupOperation));
 
         // [START spanner_cancel_backup_create]
-        public static object SpannerCancelBackupOperation(string operationName)
+        public static object SpannerCancelBackupOperation(
+            string projectId, string instanceId, string databaseId, string backupId)
         {
-            OperationsClient operationsClient = OperationsClient.Create();
+            // Create the DatabaseAdminClient instance.
+            DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            // Initialize Cancel operation Request instance
-            var cancelOperationRequest = new CancelOperationRequest
+            // Initialize request parameters.
+            Backup backup = new Backup
             {
-                Name = operationName
+                Database = DatabaseName.Format(projectId, instanceId, databaseId),
+                ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp()
             };
+            string parent = InstanceName.Format(projectId, instanceId);
 
-            operationsClient.CancelOperation(cancelOperationRequest);
+            // Make the CreateBackup request.
+            Operation<Backup, CreateBackupMetadata> response =
+                databaseAdminClient.CreateBackup(parent, backup, backupId);
 
-            s_logger.Info($"operation {operationName} canceled.");
+            // Create the OperationsClient instance and execute CancelOperation.
+            OperationsClient operationsClient = OperationsClient.Create();
+            operationsClient.CancelOperation(response.Name);
 
+            s_logger.Info("Waiting for the operation to finish.");
+
+            // Poll until the long-running operation is complete. It will
+            // either complete or be cancelled.
+            Operation<Backup, CreateBackupMetadata> completedResponse =
+                response.PollUntilCompleted();
+
+            if (!completedResponse.IsFaulted)
+            {
+                s_logger.Info("Delete backup because it completed before it could be cancelled.");
+                databaseAdminClient.DeleteBackup(BackupName.Format(projectId, instanceId, backupId));
+            }
+
+            s_logger.Info($"Operation {response.Name} canceled.");
             return ExitCode.Success;
         }
         // [END spanner_cancel_backup_create]
