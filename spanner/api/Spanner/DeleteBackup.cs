@@ -25,17 +25,11 @@ namespace GoogleCloudSamples.Spanner
         // [START spanner_delete_backup]
         public static object SpannerDeleteBackup(string projectId, string instanceId, string backupId)
         {
-            // Create the Database Admin Client instance.
+            // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            // Create Delete backup Request instance
-            var deleteBackupRequest = new DeleteBackupRequest()
-            {
-                Name = BackupName.Format(projectId, instanceId, backupId)
-            };
-
             // Make the DeleteBackup request.
-            databaseAdminClient.DeleteBackup(deleteBackupRequest);
+            databaseAdminClient.DeleteBackup(BackupName.Format(projectId, instanceId, backupId));
 
             s_logger.Info("Backup deleted successfully.");
 
