@@ -97,7 +97,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Contains("End Time Offset", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1002")]
         void TestLabels()
         {
             ConsoleOutput output = _analyze.Run("labels",
@@ -185,7 +185,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Contains("Confidence:", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1002")]
         void TestObjectTracking()
         {
             ConsoleOutput output =

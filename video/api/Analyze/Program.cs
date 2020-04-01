@@ -98,7 +98,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             var request = new AnnotateVideoRequest()
             {
                 InputContent = Google.Protobuf.ByteString.CopyFrom(File.ReadAllBytes(path)),
-                Features = { Feature.LabelDetection }
+                Features = { Feature.LabelDetection },
             };
             var op = client.AnnotateVideo(request).PollUntilCompleted();
             foreach (var result in op.Result.AnnotationResults)
