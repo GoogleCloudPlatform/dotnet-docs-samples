@@ -14,16 +14,16 @@
  * the License.
  */
 
+using CommandLine;
+using Google.Cloud.Spanner.Data;
+using log4net;
 using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using System.Linq;
-using Google.Cloud.Spanner.Data;
-using CommandLine;
-using log4net;
 
 namespace GoogleCloudSamples.Spanner
 {
