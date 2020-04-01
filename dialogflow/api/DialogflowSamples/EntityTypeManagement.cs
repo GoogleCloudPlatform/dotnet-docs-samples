@@ -55,7 +55,7 @@ namespace GoogleCloudSamples
             entityType.Kind = kind;
 
             var createdEntityType = client.CreateEntityType(
-                parent: new ProjectAgentName(projectId),
+                parent: new AgentName(projectId),
                 entityType: entityType
             );
 
@@ -73,7 +73,7 @@ namespace GoogleCloudSamples
         {
             var client = EntityTypesClient.Create();
             var response = client.ListEntityTypes(
-                parent: new ProjectAgentName(projectId)
+                parent: new AgentName(projectId)
             );
 
             foreach (var entityType in response)
@@ -119,8 +119,12 @@ namespace GoogleCloudSamples
             var client = EntityTypesClient.Create();
             var entityTypeNames = entityTypeIds.Select(
                 id => new EntityTypeName(projectId, id).ToString());
-            client.BatchDeleteEntityTypes(new ProjectAgentName(projectId),
-                entityTypeNames);
+            var batchDeleteEntityTypesRequest = new BatchDeleteEntityTypesRequest
+            {
+                ParentAsAgentName = AgentName.FromProject(projectId)
+            };
+            batchDeleteEntityTypesRequest.EntityTypeNames.Add(entityTypeNames);
+            client.BatchDeleteEntityTypes(batchDeleteEntityTypesRequest);
             return 0;
         }
     }
