@@ -527,11 +527,7 @@ namespace GoogleCloudSamples.Spanner
     }
 
     [Verb("createBackup", HelpText = "Create backup of Spanner Database.")]
-    class CreateBackupOptions : DefaultBackupOptions
-    {
-        [Value(4, HelpText = "The Id of the instance in which the backup will be created.", Required = true)]
-        public string parentInstanceId { get; set; }
-    }
+    class CreateBackupOptions : DefaultBackupOptions { }
 
     [Verb("restoreDatabase", HelpText = "Restore Spanner Database from backup.")]
     class RestoreDatabaseOptions
@@ -3735,8 +3731,9 @@ namespace GoogleCloudSamples.Spanner
                     DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result)
                 .Add((CreateBackupOptions opts) =>
-                    CreateBackup.SpannerCreateBackup(opts.projectId, opts.instanceId, opts.databaseId,
-                    opts.backupId, opts.parentInstanceId))
+                    CreateBackup.SpannerCreateBackup(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
                 .Add((CancelBackupOperationOptions opts) =>
                     CancelBackupOperation.SpannerCancelBackupOperation(opts.operationName))
                 .Add((GetBackupOptions opts) =>

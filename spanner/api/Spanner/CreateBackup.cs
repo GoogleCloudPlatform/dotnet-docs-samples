@@ -27,27 +27,23 @@ namespace GoogleCloudSamples.Spanner
         static readonly ILog s_logger = LogManager.GetLogger(typeof(CreateBackup));
 
         // [START spanner_create_backup]
-        public static object SpannerCreateBackup(string projectId, string instanceId, string databaseId,
-            string backupId, string parentInstanceId)
+        public static object SpannerCreateBackup(
+            string projectId, string instanceId, string databaseId, string backupId)
         {
-            // Create the Database Admin Client instance.
+            // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            // Initialize Create Backup Request instance.
-            var backupRequest = new CreateBackupRequest
+            // Initialize request parameters.
+            Backup backup = new Backup
             {
-                Backup = new Backup
-                {
-                    Database = DatabaseName.Format(projectId, instanceId, databaseId),
-                    ExpireTime = DateTime.UtcNow.AddDays(1).ToTimestamp()
-                },
-                BackupId = backupId,
-                Parent = InstanceName.Format(projectId, parentInstanceId)
+                Database = DatabaseName.Format(projectId, instanceId, databaseId),
+                ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp()
             };
+            string parent = InstanceName.Format(projectId, instanceId);
 
             // Make the CreateBackup request.
             Operation<Backup, CreateBackupMetadata> response =
-                databaseAdminClient.CreateBackup(backupRequest);
+                databaseAdminClient.CreateBackup(parent, backup, backupId);
 
             s_logger.Info("Waiting for the operation to finish.");
 
@@ -55,16 +51,14 @@ namespace GoogleCloudSamples.Spanner
             Operation<Backup, CreateBackupMetadata> completedResponse =
                 response.PollUntilCompleted();
 
-            if (!completedResponse.IsFaulted)
-            {
-                s_logger.Info($"Backup Created Successfully.");
-                return ExitCode.Success;
-            }
-            else
+            if (completedResponse.IsFaulted)
             {
                 s_logger.Error($"Error while creating backup: {completedResponse.Exception}");
                 return ExitCode.InvalidParameter;
             }
+
+            s_logger.Info($"Backup created successfully.");
+            return ExitCode.Success;
         }
         // [END spanner_create_backup]
     }

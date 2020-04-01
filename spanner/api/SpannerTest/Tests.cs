@@ -118,7 +118,7 @@ namespace GoogleCloudSamples.Spanner
             _spannerCmd.Run("addIndex",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("createBackup",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, _fixture.BackupId, _fixture.InstanceId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, _fixture.BackupId);
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
