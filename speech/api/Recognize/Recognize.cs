@@ -15,13 +15,10 @@
  */
 
 using CommandLine;
-using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Speech.V1;
-using Grpc.Auth;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace GoogleCloudSamples
@@ -404,15 +401,11 @@ namespace GoogleCloudSamples
 
         static object SyncRecognizeWithCredentials(string filePath, string credentialsFilePath)
         {
-            GoogleCredential googleCredential;
-            using (Stream m = new FileStream(credentialsFilePath, FileMode.Open))
+            SpeechClientBuilder builder = new SpeechClientBuilder
             {
-                googleCredential = GoogleCredential.FromStream(m);
-            }
-
-            var channel = new Grpc.Core.Channel(SpeechClient.DefaultEndpoint.Host,
-                googleCredential.ToChannelCredentials());
-            var speech = SpeechClient.Create(channel);
+                CredentialsPath = credentialsFilePath
+            };
+            SpeechClient speech = builder.Build();
             var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
@@ -555,13 +548,13 @@ namespace GoogleCloudSamples
             // Print responses as they arrive.
             Task printResponses = Task.Run(async () =>
             {
-                while (await streamingCall.ResponseStream.MoveNext(
-                    default(CancellationToken)))
+                var responseStream = streamingCall.GetResponseStream();
+                while (await responseStream.MoveNextAsync())
                 {
-                    foreach (var result in streamingCall.ResponseStream
-                        .Current.Results)
+                    StreamingRecognizeResponse response = responseStream.Current;
+                    foreach (StreamingRecognitionResult result in response.Results)
                     {
-                        foreach (var alternative in result.Alternatives)
+                        foreach (SpeechRecognitionAlternative alternative in result.Alternatives)
                         {
                             Console.WriteLine(alternative.Transcript);
                         }
@@ -616,13 +609,13 @@ namespace GoogleCloudSamples
             // Print responses as they arrive.
             Task printResponses = Task.Run(async () =>
             {
-                while (await streamingCall.ResponseStream.MoveNext(
-                    default(CancellationToken)))
+                var responseStream = streamingCall.GetResponseStream();
+                while (await responseStream.MoveNextAsync())
                 {
-                    foreach (var result in streamingCall.ResponseStream
-                        .Current.Results)
+                    StreamingRecognizeResponse response = responseStream.Current;
+                    foreach (StreamingRecognitionResult result in response.Results)
                     {
-                        foreach (var alternative in result.Alternatives)
+                        foreach (SpeechRecognitionAlternative alternative in result.Alternatives)
                         {
                             Console.WriteLine(alternative.Transcript);
                         }
