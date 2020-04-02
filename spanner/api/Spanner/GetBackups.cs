@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax;
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using log4net;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using static GoogleCloudSamples.Spanner.Program;
 
@@ -25,28 +28,80 @@ namespace GoogleCloudSamples.Spanner
         static readonly ILog s_logger = LogManager.GetLogger(typeof(GetBackups));
 
         // [START spanner_get_backups]
-        public static object SpannerGetBackups(string projectId, string instanceId, string backupId)
+        public static object SpannerGetBackups(
+            string projectId, string instanceId, string databaseId, string backupId)
         {
             // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            var listBackupRequest = new ListBackupsRequest
+            string parent = InstanceName.Format(projectId, instanceId);
+
+            Action<List<Backup>> printBackups = backups =>
             {
-                Parent = InstanceName.Format(projectId, instanceId),
-                Filter = $"name:{backupId}"
+                backups.ForEach(backup =>
+                {
+                    s_logger.Info($"Backup Name : {backup.Name}");
+                });
             };
 
-            // Make the ListBackups requests.
-            var backups = databaseAdminClient.ListBackups(listBackupRequest).ToList();
+            // List all backups.
+            s_logger.Info("All backups:");
+            var allBackups = databaseAdminClient.ListBackups(parent).ToList();
+            printBackups(allBackups);
 
-            backups.ForEach(backup =>
+            // List backups containing backup name.
+            s_logger.Info($"Backups with backup name containing {backupId}:");
+            var backupsWithName = databaseAdminClient.ListBackups(
+                parent, $"name:{backupId}").ToList();
+            printBackups(backupsWithName);
+
+            // List backups on a database containing name.
+            s_logger.Info($"Backups with database name containing {databaseId}:");
+            var backupsWithDatabaseName = databaseAdminClient.ListBackups(
+                parent, $"database:{backupId}").ToList();
+            printBackups(backupsWithDatabaseName);
+
+            // List backups that expire within 30 days.
+            s_logger.Info("Backups expiring within 30 days:");
+            var expireTime = DateTime.UtcNow.AddDays(30);
+            var expiringBackups = databaseAdminClient.ListBackups(
+                parent, $"expire_time < {expireTime.ToString("O")}").ToList();
+            printBackups(expiringBackups);
+
+            // List backups with a size greater than 100 bytes.
+            s_logger.Info("Backups with size > 100 bytes:");
+            var backupsWithSize = databaseAdminClient.ListBackups(
+                parent, "size_bytes > 100").ToList();
+            printBackups(backupsWithSize);
+
+            // List backups created in the last day that are ready.
+            s_logger.Info("Backups created within last day that are ready:");
+            var createTime = DateTime.UtcNow.AddDays(-1);
+            var recentReadyBackups = databaseAdminClient.ListBackups(
+                parent, $"create_time >= {createTime.ToString("O")} AND state:READY").ToList();
+            printBackups(recentReadyBackups);
+
+            // List backups in pages.
+            s_logger.Info("Backups in batches of 2:");
+            int pageSize = 2;
+            string nextPageToken = string.Empty;
+            do
             {
-                s_logger.Info($"Backup Name : {backup.Name}");
-                s_logger.Info($"Backup Created Time : {backup.CreateTime}");
-                s_logger.Info($"Backup Databasee : {backup.Database}");
-                s_logger.Info($"Backup ExpireTime : {backup.ExpireTime}");
-                s_logger.Info($"Backup State : {backup.State}");
-            });
+                var request = new ListBackupsRequest
+                {
+                    Parent = parent,
+                    PageToken = nextPageToken,
+                };
+                var response = databaseAdminClient.ListBackups(request);
+
+                Page<Backup> currentPage = response.ReadPage(pageSize);
+                foreach (Backup backup in currentPage)
+                {
+                    s_logger.Info($"Backup Name : {backup.Name}");
+                }
+
+                nextPageToken = currentPage.NextPageToken;
+            } while (!string.IsNullOrEmpty(nextPageToken));
 
             return ExitCode.Success;
         }
