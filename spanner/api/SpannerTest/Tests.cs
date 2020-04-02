@@ -587,14 +587,6 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
-        void TestGetBackup()
-        {
-            ConsoleOutput createBackupResponse = _spannerCmd.Run("getBackup",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
-            Assert.Equal(0, createBackupResponse.ExitCode);
-        }
-
-        [Fact]
         void TestGetBackupOperations()
         {
             ConsoleOutput createBackupResponse = _spannerCmd.Run("getBackupOperations",

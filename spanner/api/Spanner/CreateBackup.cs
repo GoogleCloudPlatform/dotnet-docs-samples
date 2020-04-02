@@ -58,6 +58,13 @@ namespace GoogleCloudSamples.Spanner
             }
 
             s_logger.Info($"Backup created successfully.");
+
+            // GetBackup to get more information about the created backup.
+            backup = databaseAdminClient.GetBackup(BackupName.Format(projectId, instanceId, backupId));
+            s_logger.Info($"Backup {backup.Name} of size {backup.SizeBytes} bytes " +
+                          $"was created at {backup.CreateTime} from {backup.Database} " +
+                          $"and is in state {backup.State}");
+
             return ExitCode.Success;
         }
         // [END spanner_create_backup]

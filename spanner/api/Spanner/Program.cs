@@ -559,18 +559,11 @@ namespace GoogleCloudSamples.Spanner
         public string backupId { get; set; }
     }
 
-    [Verb("getBackup", HelpText = "Get Spanner Database backup metadata")]
-    class GetBackupOptions : GetDatabaseOperationOptions
-    {
-        [Value(3, HelpText = "The ID of the backup to create.", Required = true)]
-        public string backupId { get; set; }
-    }
-
     [Verb("deleteBackup", HelpText = "Delete Spanner Database backup.")]
-    class DeleteBackupOptions : GetBackupOptions { }
+    class DeleteBackupOptions : UpdateBackupOptions { }
 
     [Verb("getBackups", HelpText = "Get list of Spanner Database backups.")]
-    class GetBackupsOptions : GetBackupOptions { }
+    class GetBackupsOptions : UpdateBackupOptions { }
 
     [Verb("cancelBackupOperation", HelpText = "Cancel Spanner Database backup operation.")]
     class CancelBackupOperationOptions : CreateBackupOptions { }
@@ -3734,8 +3727,6 @@ namespace GoogleCloudSamples.Spanner
                     CancelBackupOperation.SpannerCancelBackupOperation(
                         opts.projectId, opts.instanceId, opts.databaseId,
                         opts.backupId))
-                .Add((GetBackupOptions opts) =>
-                    GetBackup.SpannerGetBackup(opts.projectId, opts.instanceId, opts.backupId))
                 .Add((GetBackupsOptions opts) =>
                     GetBackups.SpannerGetBackups(opts.projectId, opts.instanceId, opts.backupId))
                 .Add((RestoreDatabaseOptions opts) =>
