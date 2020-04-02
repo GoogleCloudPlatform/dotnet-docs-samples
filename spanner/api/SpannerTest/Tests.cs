@@ -156,7 +156,6 @@ namespace GoogleCloudSamples.Spanner
             QuerySampleData();
         }
 
-	/*
         [Fact]
         void TestQueryTransaction()
         {
@@ -572,7 +571,6 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Albums", output.Stdout);
             Assert.Contains("Singers", output.Stdout);
         }
-	*/
 
         /// <summary>
         /// Run a couple queries and verify the database contains the
