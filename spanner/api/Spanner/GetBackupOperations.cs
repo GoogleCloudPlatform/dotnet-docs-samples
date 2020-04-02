@@ -14,6 +14,7 @@
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
+using Google.LongRunning;
 using log4net;
 using System.Linq;
 using static GoogleCloudSamples.Spanner.Program;
@@ -27,25 +28,24 @@ namespace GoogleCloudSamples.Spanner
         // [START spanner_get_backup_operations]
         public static object SpannerGetBackupOperations(string projectId, string instanceId, string databaseId)
         {
-            // Create the Database Admin Client instance.
+            // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            var filter = $"(metadata.database:{databaseId}) AND (metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata)";
-
-            // Create List backup operation request instance.
-            ListBackupOperationsRequest request = new ListBackupOperationsRequest
-            {
-                Parent = InstanceName.Format(projectId, instanceId),
-                Filter = filter
-            };
+            string parent = InstanceName.Format(projectId, instanceId);
+            var filter =
+                $"(metadata.database:{databaseId}) AND " +
+                "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata)";
 
             // List the create backup operations on the database.
-            var backupOperations = databaseAdminClient.ListBackupOperations(request).ToList();
+            var backupOperations = databaseAdminClient.ListBackupOperations(parent, filter).ToList();
 
-            backupOperations.ForEach(operation =>
+	    backupOperations.ForEach(operation =>
             {
-                s_logger.Info($"Name: {operation.Name}");
-                s_logger.Info($"Is completed: {operation.Done}");
+                CreateBackupMetadata metadata = operation.Metadata.Unpack<CreateBackupMetadata>();
+                s_logger.Info(
+                    $"Backup {metadata.Name} on " +
+                    $"database {metadata.Database} is " +
+                    $"{metadata.Progress.ProgressPercent}% complete");
             });
 
             return ExitCode.Success;
