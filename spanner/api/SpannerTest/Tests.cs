@@ -605,10 +605,8 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestRestoreDatabase()
         {
-            var backupId = BackupName.Format(_fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
-            var destinationInstanceId = InstanceName.Format(_fixture.ProjectId, _fixture.InstanceId);
             ConsoleOutput createBackupResponse = _spannerCmd.Run("restoreDatabase",
-                backupId, destinationInstanceId, _fixture.RestoredDatabaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.RestoredDatabaseId, _fixture.BackupId);
             Assert.Equal(0, createBackupResponse.ExitCode);
         }
 

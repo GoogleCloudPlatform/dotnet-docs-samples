@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.Spanner.Admin.Database.V1;
+using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
 using log4net;
 using System;
@@ -25,39 +26,35 @@ namespace GoogleCloudSamples.Spanner
         static readonly ILog s_logger = LogManager.GetLogger(typeof(RestoreDatabase));
 
         // [START spanner_restore_database]
-        public static object SpannerRestoreDatabase(string backupId, string destinationInstanceId,
-            string destinationDatabaseId)
+        public static object SpannerRestoreDatabase(
+            string projectId, string instanceId, string databaseId, string backupId)
         {
-            // Create the Database Admin Client instance.
+            // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            //Create restore database request instance.
-            RestoreDatabaseRequest restoreDatabaseRequest = new RestoreDatabaseRequest
-            {
-                Parent = destinationInstanceId,
-                Backup = backupId,
-                DatabaseId = destinationDatabaseId,
-            };
+            string parent = InstanceName.Format(projectId, instanceId);
+            string backupName = BackupName.Format(projectId, instanceId, backupId);
 
             // Make the RestoreDatabase request.
             Operation<Database, RestoreDatabaseMetadata> response =
-                databaseAdminClient.RestoreDatabase(restoreDatabaseRequest);
+                databaseAdminClient.RestoreDatabase(parent, databaseId, backupName);
 
             Console.WriteLine("Waiting for the operation to finish");
 
             // Poll until the returned long-running operation is complete.
             var completedResponse = response.PollUntilCompleted();
 
-            if (!completedResponse.IsFaulted)
-            {
-                s_logger.Info("Database Restore Successfully.");
-                return ExitCode.Success;
-            }
-            else
+            if (completedResponse.IsFaulted)
             {
                 s_logger.Error($"Database Restore Failed: {completedResponse.Exception}");
                 return ExitCode.InvalidParameter;
             }
+
+            RestoreInfo restoreInfo = completedResponse.Result.RestoreInfo;
+            s_logger.Info($"Database {restoreInfo.BackupInfo.SourceDatabase} " +
+                          $"restored from backup {restoreInfo.BackupInfo.Backup}");
+
+            return ExitCode.Success;
         }
         // [END spanner_restore_database]
     }
