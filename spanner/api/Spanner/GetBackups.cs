@@ -27,7 +27,7 @@ namespace GoogleCloudSamples.Spanner
         // [START spanner_get_backups]
         public static object SpannerGetBackups(string projectId, string instanceId, string backupId)
         {
-            // Create the Database Admin Client instance.
+            // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
             var listBackupRequest = new ListBackupsRequest

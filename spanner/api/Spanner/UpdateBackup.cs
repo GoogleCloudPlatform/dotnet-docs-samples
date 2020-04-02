@@ -27,8 +27,15 @@ namespace GoogleCloudSamples.Spanner
         // [START spanner_update_backup]
         public static object SpannerUpdateBackup(string projectId, string instanceId, string backupId)
         {
-            // Create the Database Admin Client instance.
+            // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+
+            // Retrieve existing backup.
+            string backupName = BackupName.Format(projectId, instanceId, backupId);
+            Backup backup = databaseAdminClient.GetBackup(backupName);
+
+            // Add 30 days to the existing ExpireTime.
+            backup.ExpireTime = backup.ExpireTime.ToDateTime().AddDays(30).ToTimestamp();
 
             UpdateBackupRequest backupUpdateRequest = new UpdateBackupRequest
             {
@@ -39,11 +46,7 @@ namespace GoogleCloudSamples.Spanner
                         "expire_time"
                     }
                 },
-                Backup = new Backup
-                {
-                    ExpireTime = DateTime.UtcNow.AddDays(30).ToTimestamp(), // Set expire time to 30 days.
-                    BackupName = new BackupName(projectId, instanceId, backupId),
-                }
+                Backup = backup
             };
 
             // Make the UpdateBackup requests.
