@@ -520,44 +520,70 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    class DefaultBackupOptions : DefaultOptions
-    {
+    [Verb("createBackup", HelpText = "Create a backup of a Spanner database.")]
+    class CreateBackupOptions : DefaultOptions {
         [Value(3, HelpText = "The ID of the backup to create.", Required = true)]
         public string backupId { get; set; }
     }
 
-    [Verb("createBackup", HelpText = "Create backup of Spanner Database.")]
-    class CreateBackupOptions : DefaultBackupOptions { }
-
-    [Verb("restoreDatabase", HelpText = "Restore Spanner Database from backup.")]
-    class RestoreDatabaseOptions : DefaultBackupOptions { }
-
-    [Verb("getBackupOperations", HelpText = "List Spanner Database backup operations.")]
-    class GetBackupOperationOptions : DefaultOptions { }
-
-    [Verb("getDatabaseOperations", HelpText = "List Spanner Database operations")]
-    class GetDatabaseOperationOptions
+    class DefaultBackupOptions
     {
         [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
         public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample data resides.", Required = true)]
+        [Value(1, HelpText = "The ID of the instance where the backups reside.", Required = true)]
         public string instanceId { get; set; }
     }
 
-    [Verb("updateBackup", HelpText = "Update Spanner Database backup")]
-    class UpdateBackupOptions : GetDatabaseOperationOptions
+
+    [Verb("restoreDatabase", HelpText = "Restore a Spanner database from a backup.")]
+    class RestoreDatabaseOptions : DefaultBackupOptions
     {
-        [Value(3, HelpText = "The ID of the backup to create.", Required = true)]
+        [Value(2, HelpText = "The ID of the database to create.", Required = true)]
+        public string databaseId { get; set; }
+        [Value(3, HelpText = "The ID of the backup to restore from.", Required = true)]
         public string backupId { get; set; }
     }
 
-    [Verb("deleteBackup", HelpText = "Delete Spanner Database backup.")]
-    class DeleteBackupOptions : UpdateBackupOptions { }
+    [Verb("getBackupOperations", HelpText = "Get a list of Spanner database backup operations.")]
+    class GetBackupOperationsOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the database to filter backups on.", Required = true)]
+        public string databaseId { get; set; }
+    }
 
-    [Verb("getBackups", HelpText = "Get list of Spanner Database backups.")]
-    class GetBackupsOptions : UpdateBackupOptions { }
+    [Verb("getDatabaseOperations", HelpText = "Get a list of Spanner database operations.")]
+    class GetDatabaseOperationsOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the operations reside.", Required = true)]
+        public string instanceId { get; set; }
+    }
 
-    [Verb("cancelBackupOperation", HelpText = "Cancel Spanner Database backup operation.")]
+    [Verb("updateBackup", HelpText = "Update a Spanner database backup.")]
+    class UpdateBackupOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the backup to update.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("deleteBackup", HelpText = "Delete a Spanner database backup.")]
+    class DeleteBackupOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the backup to delete.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("getBackups", HelpText = "Get a list of Spanner database backups.")]
+    class GetBackupsOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the database to filter backups on.", Required = true)]
+        public string databaseId { get; set; }
+        [Value(3, HelpText = "The ID of the backup to filter backups on.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("cancelBackupOperation", HelpText = "Cancel a Spanner database backup creation operation.")]
     class CancelBackupOperationOptions : CreateBackupOptions { }
 
     // [START spanner_retry_strategy]
@@ -3720,19 +3746,24 @@ namespace GoogleCloudSamples.Spanner
                         opts.projectId, opts.instanceId, opts.databaseId,
                         opts.backupId))
                 .Add((GetBackupsOptions opts) =>
-                    GetBackups.SpannerGetBackups(opts.projectId, opts.instanceId, opts.backupId))
+                    GetBackups.SpannerGetBackups(
+                        opts.projectId, opts.instanceId, opts.backupId))
                 .Add((RestoreDatabaseOptions opts) =>
                     RestoreDatabase.SpannerRestoreDatabase(
                         opts.projectId, opts.instanceId, opts.databaseId,
                         opts.backupId))
                 .Add((UpdateBackupOptions opts) =>
-                    UpdateBackup.SpannerUpdateBackup(opts.projectId, opts.instanceId, opts.backupId))
-                .Add((GetDatabaseOperationOptions opts) =>
-                    GetDatabaseOperations.SpannerGetDatabaseOperations(opts.projectId, opts.instanceId))
-                .Add((GetBackupOperationOptions opts) =>
-                    GetBackupOperations.SpannerGetBackupOperations(opts.projectId, opts.instanceId, opts.databaseId))
+                    UpdateBackup.SpannerUpdateBackup(
+                        opts.projectId, opts.instanceId, opts.backupId))
+                .Add((GetDatabaseOperationsOptions opts) =>
+                    GetDatabaseOperations.SpannerGetDatabaseOperations(
+                        opts.projectId, opts.instanceId))
+                .Add((GetBackupOperationsOptions opts) =>
+                    GetBackupOperations.SpannerGetBackupOperations(
+                        opts.projectId, opts.instanceId, opts.databaseId))
                 .Add((DeleteBackupOptions opts) =>
-                    DeleteBackup.SpannerDeleteBackup(opts.projectId, opts.instanceId, opts.backupId))
+                    DeleteBackup.SpannerDeleteBackup(
+                        opts.projectId, opts.instanceId, opts.backupId))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
