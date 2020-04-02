@@ -39,7 +39,7 @@ namespace GoogleCloudSamples.Spanner
             // List the create backup operations on the database.
             var backupOperations = databaseAdminClient.ListBackupOperations(parent, filter).ToList();
 
-	    backupOperations.ForEach(operation =>
+            backupOperations.ForEach(operation =>
             {
                 CreateBackupMetadata metadata = operation.Metadata.Unpack<CreateBackupMetadata>();
                 s_logger.Info(
