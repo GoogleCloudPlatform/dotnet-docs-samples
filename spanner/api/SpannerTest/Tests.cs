@@ -156,6 +156,7 @@ namespace GoogleCloudSamples.Spanner
             QuerySampleData();
         }
 
+	/*
         [Fact]
         void TestQueryTransaction()
         {
@@ -571,6 +572,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Albums", output.Stdout);
             Assert.Contains("Singers", output.Stdout);
         }
+	*/
 
         /// <summary>
         /// Run a couple queries and verify the database contains the
@@ -591,6 +593,7 @@ namespace GoogleCloudSamples.Spanner
         {
             ConsoleOutput createBackupResponse = _spannerCmd.Run("getBackupOperations",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Contains("blah", createBackupResponse.Stdout);
             Assert.Equal(0, createBackupResponse.ExitCode);
         }
 
