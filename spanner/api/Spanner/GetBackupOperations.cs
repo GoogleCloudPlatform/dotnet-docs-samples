@@ -31,13 +31,17 @@ namespace GoogleCloudSamples.Spanner
             // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            string parent = InstanceName.Format(projectId, instanceId);
             var filter =
                 $"(metadata.database:{databaseId}) AND " +
                 "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata)";
+            ListBackupOperationsRequest request = new ListBackupOperationsRequest
+            {
+                Parent = InstanceName.Format(projectId, instanceId),
+                Filter = filter
+            };
 
             // List the create backup operations on the database.
-            var backupOperations = databaseAdminClient.ListBackupOperations(parent, filter).ToList();
+            var backupOperations = databaseAdminClient.ListBackupOperations(request).ToList();
 
             backupOperations.ForEach(operation =>
             {

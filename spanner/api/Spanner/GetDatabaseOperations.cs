@@ -31,11 +31,16 @@ namespace GoogleCloudSamples.Spanner
             // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            string parent = InstanceName.Format(projectId, instanceId);
             var filter = "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.OptimizeRestoredDatabaseMetadata)";
 
+            ListDatabaseOperationsRequest request = new ListDatabaseOperationsRequest
+            {
+                Parent = InstanceName.Format(projectId, instanceId),
+                Filter = filter
+            };
+
             // List the optimize restored databases operations on the instance.
-            var operations = databaseAdminClient.ListDatabaseOperations(parent, filter).ToList();
+            var operations = databaseAdminClient.ListDatabaseOperations(request).ToList();
 
             operations.ForEach(operation =>
             {
