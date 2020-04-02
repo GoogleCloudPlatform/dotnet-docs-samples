@@ -591,34 +591,33 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestGetBackupOperations()
         {
-            ConsoleOutput createBackupResponse = _spannerCmd.Run("getBackupOperations",
+            ConsoleOutput getBackupOperationsResponse = _spannerCmd.Run("getBackupOperations",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Contains("blah", createBackupResponse.Stdout);
-            Assert.Equal(0, createBackupResponse.ExitCode);
+            Assert.Equal(0, getBackupOperationsResponse.ExitCode);
         }
 
         [Fact]
         void TestGetBackups()
         {
-            ConsoleOutput createBackupResponse = _spannerCmd.Run("getBackups",
+            ConsoleOutput getBackupsResponse = _spannerCmd.Run("getBackups",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, _fixture.BackupId);
-            Assert.Equal(0, createBackupResponse.ExitCode);
+            Assert.Equal(0, getBackupsResponse.ExitCode);
         }
 
         [Fact]
         void TestRestoreDatabase()
         {
-            ConsoleOutput createBackupResponse = _spannerCmd.Run("restoreDatabase",
+            ConsoleOutput restoreDatabaseResponse = _spannerCmd.Run("restoreDatabase",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.RestoredDatabaseId, _fixture.BackupId);
-            Assert.Equal(0, createBackupResponse.ExitCode);
+            Assert.Equal(0, restoreDatabaseResponse.ExitCode);
         }
 
         [Fact]
         void TestUpdateBackup()
         {
-            ConsoleOutput createBackupResponse = _spannerCmd.Run("updateBackup",
+            ConsoleOutput updateBackupResponse = _spannerCmd.Run("updateBackup",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
-            Assert.Equal(0, createBackupResponse.ExitCode);
+            Assert.Equal(0, updateBackupResponse.ExitCode);
         }
     }
 }
