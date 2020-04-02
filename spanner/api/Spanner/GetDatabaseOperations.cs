@@ -14,6 +14,7 @@
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
+using Google.LongRunning;
 using log4net;
 using System.Linq;
 using static GoogleCloudSamples.Spanner.Program;
@@ -27,24 +28,22 @@ namespace GoogleCloudSamples.Spanner
         // [START spanner_get_database_operations]
         public static object SpannerGetDatabaseOperations(string projectId, string instanceId)
         {
-            // Create the Database Admin Client instance.
+            // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
+            string parent = InstanceName.Format(projectId, instanceId);
             var filter = "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.OptimizeRestoredDatabaseMetadata)";
 
-            ListDatabaseOperationsRequest listDatabaseOperationsRequest = new ListDatabaseOperationsRequest
-            {
-                Filter = filter,
-                Parent = InstanceName.Format(projectId, instanceId).ToString()
-            };
-
-            // Make the ListDatabaseOperations request
-            var operations = databaseAdminClient.ListDatabaseOperations(listDatabaseOperationsRequest).ToList();
+            // List the optimize restored databases operations on the instance.
+            var operations = databaseAdminClient.ListDatabaseOperations(parent, filter).ToList();
 
             operations.ForEach(operation =>
             {
-                s_logger.Info($"Name: {operation.Name}");
-                s_logger.Info($"Is completed: {operation.Done}");
+                OptimizeRestoredDatabaseMetadata metadata =
+                    operation.Metadata.Unpack<OptimizeRestoredDatabaseMetadata>();
+                s_logger.Info(
+                    $"Database {metadata.Name} restored from backup is " +
+                    $"{metadata.Progress.ProgressPercent}% optimized");
             });
 
             return ExitCode.Success;
