@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.44.1.1888" />
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.45.0.1905" />
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
   </ItemGroup>
 </Project>
