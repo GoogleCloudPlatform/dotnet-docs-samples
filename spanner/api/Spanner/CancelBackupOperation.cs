@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_cancel_backup_create]
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
-using log4net;
 using System;
-using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class CancelBackupOperation
     {
-        static readonly ILog s_logger = LogManager.GetLogger(typeof(CancelBackupOperation));
-
-        // [START spanner_cancel_backup_create]
         public static object SpannerCancelBackupOperation(
             string projectId, string instanceId, string databaseId, string backupId)
         {
@@ -49,7 +45,7 @@ namespace GoogleCloudSamples.Spanner
             OperationsClient operationsClient = OperationsClient.Create();
             operationsClient.CancelOperation(response.Name);
 
-            s_logger.Info("Waiting for the operation to finish.");
+            Console.WriteLine("Waiting for the operation to finish.");
 
             // Poll until the long-running operation is complete. It will
             // either complete or be cancelled.
@@ -58,13 +54,13 @@ namespace GoogleCloudSamples.Spanner
 
             if (!completedResponse.IsFaulted)
             {
-                s_logger.Info("Delete backup because it completed before it could be cancelled.");
+                Console.WriteLine("Delete backup because it completed before it could be cancelled.");
                 databaseAdminClient.DeleteBackup(BackupName.Format(projectId, instanceId, backupId));
             }
 
-            s_logger.Info($"Operation {response.Name} canceled.");
-            return ExitCode.Success;
+            Console.WriteLine($"Operation {response.Name} canceled.");
+            return 0;
         }
-        // [END spanner_cancel_backup_create]
     }
 }
+// [END spanner_cancel_backup_create]

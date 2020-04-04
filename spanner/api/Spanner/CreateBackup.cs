@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_create_backup]
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
-using log4net;
 using System;
-using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class CreateBackup
     {
-        static readonly ILog s_logger = LogManager.GetLogger(typeof(CreateBackup));
-
-        // [START spanner_create_backup]
         public static object SpannerCreateBackup(
             string projectId, string instanceId, string databaseId, string backupId)
         {
@@ -45,7 +41,7 @@ namespace GoogleCloudSamples.Spanner
             Operation<Backup, CreateBackupMetadata> response =
                 databaseAdminClient.CreateBackup(parent, backup, backupId);
 
-            s_logger.Info("Waiting for the operation to finish.");
+            Console.WriteLine("Waiting for the operation to finish.");
 
             // Poll until the returned long-running operation is complete.
             Operation<Backup, CreateBackupMetadata> completedResponse =
@@ -53,20 +49,20 @@ namespace GoogleCloudSamples.Spanner
 
             if (completedResponse.IsFaulted)
             {
-                s_logger.Error($"Error while creating backup: {completedResponse.Exception}");
-                return ExitCode.InvalidParameter;
+                Console.WriteLine($"Error while creating backup: {completedResponse.Exception}");
+                return 1;
             }
 
-            s_logger.Info($"Backup created successfully.");
+            Console.WriteLine($"Backup created successfully.");
 
             // GetBackup to get more information about the created backup.
             backup = databaseAdminClient.GetBackup(BackupName.Format(projectId, instanceId, backupId));
-            s_logger.Info($"Backup {backup.Name} of size {backup.SizeBytes} bytes " +
+            Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes " +
                           $"was created at {backup.CreateTime} from {backup.Database} " +
                           $"and is in state {backup.State}");
 
-            return ExitCode.Success;
+            return 0;
         }
-        // [END spanner_create_backup]
     }
 }
+// [END spanner_create_backup]

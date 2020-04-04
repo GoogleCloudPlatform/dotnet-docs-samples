@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_restore_database]
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
-using log4net;
 using System;
-using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class RestoreDatabase
     {
-        static readonly ILog s_logger = LogManager.GetLogger(typeof(RestoreDatabase));
-
-        // [START spanner_restore_database]
         public static object SpannerRestoreDatabase(
             string projectId, string instanceId, string databaseId, string backupId)
         {
@@ -46,16 +42,16 @@ namespace GoogleCloudSamples.Spanner
 
             if (completedResponse.IsFaulted)
             {
-                s_logger.Error($"Database Restore Failed: {completedResponse.Exception}");
-                return ExitCode.InvalidParameter;
+                Console.WriteLine($"Database Restore Failed: {completedResponse.Exception}");
+                return 1;
             }
 
             RestoreInfo restoreInfo = completedResponse.Result.RestoreInfo;
-            s_logger.Info($"Database {restoreInfo.BackupInfo.SourceDatabase} " +
+            Console.WriteLine($"Database {restoreInfo.BackupInfo.SourceDatabase} " +
                           $"restored from backup {restoreInfo.BackupInfo.Backup}");
 
-            return ExitCode.Success;
+            return 0;
         }
-        // [END spanner_restore_database]
     }
 }
+// [END spanner_restore_database]

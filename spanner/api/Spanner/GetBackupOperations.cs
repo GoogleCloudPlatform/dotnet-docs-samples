@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_get_backup_operations]
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
-using Google.LongRunning;
-using log4net;
+using System;
 using System.Linq;
-using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class GetBackupOperations
     {
-        static readonly ILog s_logger = LogManager.GetLogger(typeof(GetBackupOperations));
-
-        // [START spanner_get_backup_operations]
         public static object SpannerGetBackupOperations(string projectId, string instanceId, string databaseId)
         {
             // Create the DatabaseAdminClient instance.
@@ -46,14 +42,14 @@ namespace GoogleCloudSamples.Spanner
             backupOperations.ForEach(operation =>
             {
                 CreateBackupMetadata metadata = operation.Metadata.Unpack<CreateBackupMetadata>();
-                s_logger.Info(
+                Console.WriteLine(
                     $"Backup {metadata.Name} on " +
                     $"database {metadata.Database} is " +
                     $"{metadata.Progress.ProgressPercent}% complete");
             });
 
-            return ExitCode.Success;
+            return 0;
         }
-        // [END spanner_get_backup_operations]
     }
 }
+// [END spanner_get_backup_operations]

@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_update_backup]
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Protobuf.WellKnownTypes;
-using log4net;
 using System;
-using static GoogleCloudSamples.Spanner.Program;
 
 namespace GoogleCloudSamples.Spanner
 {
     public class UpdateBackup
     {
-        static readonly ILog s_logger = LogManager.GetLogger(typeof(UpdateBackup));
-
-        // [START spanner_update_backup]
         public static object SpannerUpdateBackup(string projectId, string instanceId, string backupId)
         {
             // Create the DatabaseAdminClient instance.
@@ -52,11 +48,11 @@ namespace GoogleCloudSamples.Spanner
             // Make the UpdateBackup requests.
             var updatedBackup = databaseAdminClient.UpdateBackup(backupUpdateRequest);
 
-            s_logger.Info("Backup Updated successfully.");
-            s_logger.Info($"Updated Backup ExireTime: {updatedBackup.ExpireTime}");
+            Console.WriteLine("Backup Updated successfully.");
+            Console.WriteLine($"Updated Backup ExireTime: {updatedBackup.ExpireTime}");
 
-            return ExitCode.Success;
+            return 0;
         }
-        // [END spanner_update_backup]
     }
 }
+// [END spanner_update_backup]
