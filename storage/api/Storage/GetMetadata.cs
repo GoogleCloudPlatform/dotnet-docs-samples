@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_get_metadata]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class GetMetadata
     {
-        // [START storage_get_metadata]
         public static Google.Apis.Storage.v1.Data.Object StorageGetMetadata(string bucketName, string objectName)
         {
             var storage = StorageClient.Create();
@@ -56,6 +56,6 @@ namespace Storage
             Console.WriteLine($"RetentionExpirationTime\t{storageObject.RetentionExpirationTime}");
             return storageObject;
         }
-        // [END storage_get_metadata]
     }
 }
+// [END storage_get_metadata]

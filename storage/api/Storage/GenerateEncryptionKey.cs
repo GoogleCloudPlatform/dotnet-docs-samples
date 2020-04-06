@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_generate_encryption_key]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,11 +20,10 @@ namespace Storage
 {
     public class GenerateEncryptionKey
     {
-        // [START storage_generate_encryption_key]
         public static void StorageGenerateEncryptionKey()
         {
             Console.Write(EncryptionKey.Generate().Base64Key);
         }
-        // [END storage_generate_encryption_key]
     }
 }
+// [END storage_generate_encryption_key]

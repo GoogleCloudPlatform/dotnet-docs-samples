@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_generate_upload_signed_url_v4]
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,6 @@ namespace Storage
 {
     public class GenerateV4UploadSignedUrl
     {
-        // [START storage_generate_upload_signed_url_v4]
         public static string GenerateV4SignedPutUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
@@ -40,6 +40,6 @@ namespace Storage
             Console.WriteLine($"curl -X PUT -H 'Content-Type: text/plain' --upload-file my-file '{url}'");
             return url;
         }
-        // [END storage_generate_upload_signed_url_v4]
     }
 }
+// [END storage_generate_upload_signed_url_v4]

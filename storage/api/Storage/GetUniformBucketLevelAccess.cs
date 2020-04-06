@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_get_uniform_bucket_level_access]
 using Google.Cloud.Storage.V1;
 using System;
 using static Google.Apis.Storage.v1.Data.Bucket.IamConfigurationData;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class GetUniformBucketLevelAccess
     {
-        // [START storage_get_uniform_bucket_level_access]
         public static UniformBucketLevelAccessData StorageGetUniformBucketLevelAccess(string bucketName)
         {
             var storage = StorageClient.Create();
@@ -42,6 +42,6 @@ namespace Storage
             }
             return uniformBucketLevelAccess;
         }
-        // [END storage_get_uniform_bucket_level_access]
     }
 }
+// [END storage_get_uniform_bucket_level_access]

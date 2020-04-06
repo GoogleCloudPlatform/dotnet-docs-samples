@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_add_bucket_owner]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System.Collections.Generic;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class AddBucketOwner
     {
-        // [START storage_add_bucket_owner]
         public static Bucket StorageAddBucketOwner(string bucketName, string userEmail)
         {
             var storage = StorageClient.Create();
@@ -45,6 +45,6 @@ namespace Storage
             });
             return updatedBucket;
         }
-        // [END storage_add_bucket_owner]
     }
 }
+// [END storage_add_bucket_owner]

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_upload_with_kms_key]
 using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class UploadFileWithKmsKey
     {
-        // [START storage_upload_with_kms_key]
         public static void UploadEncryptedFileWithKmsKey(string projectId, string bucketName,
             string keyLocation, string kmsKeyRing, string kmsKeyName,
             string localPath, string objectName = null)
@@ -41,6 +41,6 @@ namespace Storage
                 Console.WriteLine($"Uploaded {objectName}.");
             }
         }
-        // [END storage_upload_with_kms_key]
     }
 }
+// [END storage_upload_with_kms_key]

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_make_public]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
@@ -21,7 +22,6 @@ namespace Storage
 {
     public class MakePublic
     {
-        // [START storage_make_public]
         public static void StorageMakePublic(string bucketName, string objectName)
         {
             var storage = StorageClient.Create();
@@ -34,6 +34,6 @@ namespace Storage
             Console.WriteLine(objectName + " is now public and can be fetched from " +
                 storageObject.MediaLink);
         }
-        // [END storage_make_public]
     }
 }
+// [END storage_make_public]

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_disable_requester_pays]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class DisableRequesterPays
     {
-        // [START storage_disable_requester_pays]
         public static Bucket StorageDisableRequesterPays(string projectId, string bucketName)
         {
             var storage = StorageClient.Create();
@@ -37,6 +37,6 @@ namespace Storage
             });
             return bucket;
         }
-        // [END storage_disable_requester_pays]
     }
 }
+// [END storage_disable_requester_pays]

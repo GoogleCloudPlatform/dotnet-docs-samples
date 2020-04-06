@@ -153,7 +153,7 @@ namespace GoogleCloudSamples
                         else if (args.Length < 3)
                             ListFiles.GetFileList(args[1]);
                         else
-                            ListFiles.GetFileListWithPrefix(args[1], args[2],
+                            ListFilesWithPrefix.GetFileListWithPrefix(args[1], args[2],
                                 args.Length < 4 ? null : args[3]);
                         break;
 

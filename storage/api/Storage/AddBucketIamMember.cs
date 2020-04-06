@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_add_bucket_iam_member]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class AddBucketIamMember
     {
-        // [START storage_add_bucket_iam_member]
         public static Policy StorageAddBucketIamMember(string bucketName,
             string role, string member)
         {
@@ -36,6 +36,6 @@ namespace Storage
                 + $"to {bucketName}");
             return bucketIamPolicy;
         }
-        // [END storage_add_bucket_iam_member]
     }
 }
+// [END storage_add_bucket_iam_member]

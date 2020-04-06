@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_list_files]
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,6 @@ namespace Storage
 {
     public class ListFiles
     {
-        // [START storage_list_files]
         public static List<Google.Apis.Storage.v1.Data.Object> GetFileList(string bucketName)
         {
             var storage = StorageClient.Create();
@@ -33,21 +33,6 @@ namespace Storage
 
             return storageObjects;
         }
-        // [END storage_list_files]
-
-        // [START storage_list_files_with_prefix]
-        public static List<Google.Apis.Storage.v1.Data.Object> GetFileListWithPrefix(string bucketName, string prefix,
-            string delimiter)
-        {
-            var storage = StorageClient.Create();
-            var options = new ListObjectsOptions() { Delimiter = delimiter };
-            var storageObjects = storage.ListObjects(bucketName, prefix, options).ToList();
-            foreach (var storageObject in storageObjects)
-            {
-                Console.WriteLine(storageObject.Name);
-            }
-            return storageObjects;
-        }
-        // [END storage_list_files_with_prefix]
     }
 }
+// [END storage_list_files]

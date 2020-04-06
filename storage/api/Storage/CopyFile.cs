@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_copy_file]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class CopyFile
     {
-        // [START storage_copy_file]
         public static void CopyObject(string sourceBucketName, string sourceObjectName,
             string destBucketName, string destObjectName)
         {
@@ -29,6 +29,6 @@ namespace Storage
             Console.WriteLine($"Copied {sourceBucketName}/{sourceObjectName} to "
                 + $"{destBucketName}/{destObjectName}.");
         }
-        // [END storage_copy_file]
     }
 }
+// [END storage_copy_file]

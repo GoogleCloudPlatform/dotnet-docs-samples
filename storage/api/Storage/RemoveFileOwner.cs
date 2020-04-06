@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_remove_file_owner]
 using Google.Cloud.Storage.V1;
 using System.Linq;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class RemoveFileOwner
     {
-        // [START storage_remove_file_owner]
         public static void RemoveObjectOwner(string bucketName, string objectName,
             string userEmail)
         {
@@ -37,6 +37,6 @@ namespace Storage
                 IfMetagenerationMatch = storageObject.Metageneration,
             });
         }
-        // [END storage_remove_file_owner]
     }
 }
+// [END storage_remove_file_owner]

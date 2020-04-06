@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_lock_retention_policy]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class LockRetentionPolicy
     {
-        // [START storage_lock_retention_policy]
         public static void LockBucketRetentionPolicy(string bucketName)
         {
             var storage = StorageClient.Create();
@@ -30,6 +30,6 @@ namespace Storage
             Console.WriteLine($"Retention policy for {bucketName} is now locked");
             Console.WriteLine($"Retention policy effective as of {bucket.RetentionPolicy.EffectiveTime}");
         }
-        // [END storage_lock_retention_policy]
     }
 }
+// [END storage_lock_retention_policy]

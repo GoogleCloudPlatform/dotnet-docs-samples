@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_download_byte_range]
 using Google.Apis.Storage.v1;
 using Google.Cloud.Storage.V1;
 using System;
@@ -22,7 +23,6 @@ namespace Storage
 {
     public class DownloadByteRange
     {
-        // [START storage_download_byte_range]
         public static void StorageDownloadByteRange(string bucketName, string objectName,
             long firstByte, long lastByte, string localPath = null)
         {
@@ -47,6 +47,6 @@ namespace Storage
                 Console.WriteLine($"downloaded {objectName} to {localPath}.");
             }
         }
-        // [END storage_download_byte_range]
     }
 }
+// [END storage_download_byte_range]

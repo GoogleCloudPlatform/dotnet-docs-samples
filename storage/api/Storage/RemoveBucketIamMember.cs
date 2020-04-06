@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_remove_bucket_iam_member]
 using Google.Cloud.Storage.V1;
 using System;
 using System.Linq;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class RemoveBucketIamMember
     {
-        // [START storage_remove_bucket_iam_member]
         public static void StorageRemoveBucketIamMember(string bucketName,
             string role, string member)
         {
@@ -45,6 +45,6 @@ namespace Storage
             Console.WriteLine($"Removed {member} with role {role} "
                 + $"to {bucketName}");
         }
-        // [END storage_remove_bucket_iam_member]
     }
 }
+// [END storage_remove_bucket_iam_member]

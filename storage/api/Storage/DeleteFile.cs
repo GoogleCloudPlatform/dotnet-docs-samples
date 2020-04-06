@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_delete_file]
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class DeleteFile
     {
-        // [START storage_delete_file]
         public static void StorageDeleteFile(string bucketName, IEnumerable<string> objectNames)
         {
             var storage = StorageClient.Create();
@@ -30,6 +30,6 @@ namespace Storage
                 Console.WriteLine($"Deleted {objectName}.");
             }
         }
-        // [END storage_delete_file]
     }
 }
+// [END storage_delete_file]

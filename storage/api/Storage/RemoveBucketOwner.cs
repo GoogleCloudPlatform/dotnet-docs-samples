@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_remove_bucket_owner]
 using Google.Cloud.Storage.V1;
 using System.Linq;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class RemoveBucketOwner
     {
-        // [START storage_remove_bucket_owner]
         public static void StorageRemoveBucketOwner(string bucketName, string userEmail)
         {
             var storage = StorageClient.Create();
@@ -38,6 +38,6 @@ namespace Storage
                 IfMetagenerationMatch = bucket.Metageneration,
             });
         }
-        // [END storage_remove_bucket_owner]
     }
 }
+// [END storage_remove_bucket_owner]

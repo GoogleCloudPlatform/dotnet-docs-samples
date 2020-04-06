@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_print_bucket_acl_for_user]
 using Google.Cloud.Storage.V1;
 using System;
 using System.Linq;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class PrintBucketAclForUser
     {
-        // [START storage_print_bucket_acl_for_user]
         public static void StoragePrintBucketAclForUser(string bucketName, string userEmail)
         {
             var storage = StorageClient.Create();
@@ -35,6 +35,6 @@ namespace Storage
                     Console.WriteLine($"{acl.Role}:{acl.Entity}");
                 }
         }
-        // [END storage_print_bucket_acl_for_user]
     }
 }
+// [END storage_print_bucket_acl_for_user]

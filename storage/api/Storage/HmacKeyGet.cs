@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_get_hmac_key]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class HmacKeyGet
     {
-        // [START storage_get_hmac_key]
         public static HmacKeyMetadata GetHmacKey(string projectId, string accessId)
         {
             var storage = StorageClient.Create();
@@ -37,6 +37,6 @@ namespace Storage
             Console.WriteLine($"ETag: {metadata.ETag}");
             return metadata;
         }
-        // [END storage_get_hmac_key]
     }
 }
+// [END storage_get_hmac_key]

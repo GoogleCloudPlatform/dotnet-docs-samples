@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_list_buckets]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
@@ -22,7 +23,6 @@ namespace Storage
 {
     public class ListBuckets
     {
-        // [START storage_list_buckets]
         public static List<Bucket> GetBucketList(string projectId)
         {
             var storage = StorageClient.Create();
@@ -33,6 +33,6 @@ namespace Storage
             }
             return buckets;
         }
-        // [END storage_list_buckets]
     }
 }
+// [END storage_list_buckets]

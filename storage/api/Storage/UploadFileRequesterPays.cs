@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_upload_requester_pays]
 using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
@@ -37,3 +38,4 @@ namespace Storage
         }
     }
 }
+// [END storage_upload_requester_pays]

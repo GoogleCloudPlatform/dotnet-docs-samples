@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_generate_signed_url_v4]
 using Google.Cloud.Storage.V1;
 using System;
 using System.Net.Http;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class GenerateV4ReadSignedUrl
     {
-        // [START storage_generate_signed_url_v4]
         public static string StorageGenerateV4SignedReadUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
@@ -33,6 +33,6 @@ namespace Storage
             Console.WriteLine($"curl '{url}'");
             return url;
         }
-        // [END storage_generate_signed_url_v4]
     }
 }
+// [END storage_generate_signed_url_v4]

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_set_bucket_default_kms_key]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class EnableDefaultKMSKey
     {
-        // [START storage_set_bucket_default_kms_key]
         public static Bucket AddBucketDefaultKmsKey(string projectId, string bucketName,
             string keyLocation, string kmsKeyRing, string kmsKeyName)
         {
@@ -42,6 +42,6 @@ namespace Storage
             });
             return updatedBucket;
         }
-        // [END storage_set_bucket_default_kms_key]
     }
 }
+// [END storage_set_bucket_default_kms_key]

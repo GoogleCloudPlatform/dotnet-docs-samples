@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_remove_bucket_conditional_iam_binding]
 using Google.Cloud.Storage.V1;
 using System;
 using System.Linq;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class RemoveBucketConditionalIamBinding
     {
-        // [START storage_remove_bucket_conditional_iam_binding]
         public static void StorageRemoveBucketConditionalIamBinding(string bucketName,
             string role, string title, string description, string expression)
         {
@@ -45,6 +45,6 @@ namespace Storage
                 Console.WriteLine("No matching conditional binding found.");
             }
         }
-        // [END storage_remove_bucket_conditional_iam_binding]
     }
 }
+// [END storage_remove_bucket_conditional_iam_binding]

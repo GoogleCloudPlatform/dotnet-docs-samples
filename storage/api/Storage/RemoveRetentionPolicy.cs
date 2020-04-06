@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_remove_retention_policy]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class RemoveRetentionPolicy
     {
-        // [START storage_remove_retention_policy]
         public static void RemoveBucketRetentionPolicy(string bucketName)
         {
             var storage = StorageClient.Create();
@@ -43,6 +43,6 @@ namespace Storage
                 Console.WriteLine($"Retention period for {bucketName} has been removed.");
             }
         }
-        // [END storage_remove_retention_policy]
     }
 }
+// [END storage_remove_retention_policy]

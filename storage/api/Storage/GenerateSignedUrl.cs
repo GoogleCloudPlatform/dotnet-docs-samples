@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_generate_signed_url]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class GenerateSignedUrl
     {
-        // [START storage_generate_signed_url]
         public static string StorageGenerateSignedUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(Environment
@@ -29,6 +29,6 @@ namespace Storage
             Console.WriteLine(url);
             return url;
         }
-        // [END storage_generate_signed_url]
     }
 }
+// [END storage_generate_signed_url]

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_set_temporary_hold]
 using Google.Cloud.Storage.V1;
 
 namespace Storage
 {
     public class SetTemporarydHold
     {
-        // [START storage_set_temporary_hold]
         public static void SetObjectTemporaryHold(string bucketName,
             string objectName)
         {
@@ -31,6 +31,6 @@ namespace Storage
                 IfMetagenerationMatch = storageObject.Metageneration,
             });
         }
-        // [END storage_set_temporary_hold]
     }
 }
+// [END storage_set_temporary_hold]

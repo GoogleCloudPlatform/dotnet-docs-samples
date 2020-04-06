@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_activate_hmac_key]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class HmacKeyActivate
     {
-        // [START storage_activate_hmac_key]
         public static HmacKeyMetadata ActivateHmacKey(string projectId, string accessId)
         {
             var storage = StorageClient.Create();
@@ -40,6 +40,6 @@ namespace Storage
             Console.WriteLine($"ETag: {updatedMetadata.ETag}");
             return updatedMetadata;
         }
-        // [END storage_activate_hmac_key]
     }
 }
+// [END storage_activate_hmac_key]

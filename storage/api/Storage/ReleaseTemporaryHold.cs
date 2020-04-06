@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_release_temporary_hold]
 using Google.Cloud.Storage.V1;
 
 namespace Storage
 {
     public class ReleaseTemporaryHold
     {
-        // [START storage_release_temporary_hold]
         public static void ReleaseObjectTemporaryHold(string bucketName,
             string objectName)
         {
@@ -31,6 +31,6 @@ namespace Storage
                 IfMetagenerationMatch = storageObject.Metageneration,
             });
         }
-        // [END storage_release_temporary_hold]
     }
 }
+// [END storage_release_temporary_hold]

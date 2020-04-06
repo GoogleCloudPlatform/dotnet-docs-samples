@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_upload_file]
 using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class UploadFile
     {
-        // [START storage_upload_file]
         public static void StorageUploadFile(string bucketName, string localPath,
             string objectName = null)
         {
@@ -32,6 +32,6 @@ namespace Storage
                 Console.WriteLine($"Uploaded {objectName}.");
             }
         }
-        // [END storage_upload_file]
     }
 }
+// [END storage_upload_file]

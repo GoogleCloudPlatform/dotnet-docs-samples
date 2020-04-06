@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_print_file_acl]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class PrintFileAcl
     {
-        // [START storage_print_file_acl]
         public static void PrintObjectAcl(string bucketName, string objectName)
         {
             var storage = StorageClient.Create();
@@ -33,6 +33,6 @@ namespace Storage
                 }
             }
         }
-        // [END storage_print_file_acl]
     }
 }
+// [END storage_print_file_acl]

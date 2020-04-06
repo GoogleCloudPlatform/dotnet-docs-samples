@@ -12,28 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_view_bucket_iam_members]
+// [START storage_list_files_with_prefix]
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Storage
 {
-    public class StorageViewBucketIamMembers
+    public class ListFilesWithPrefix
     {
-        public static void ViewBucketIamMembers(string bucketName)
+        public static List<Google.Apis.Storage.v1.Data.Object> GetFileListWithPrefix(string bucketName,
+            string prefix, string delimiter)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName);
-            foreach (var binding in policy.Bindings)
+            var options = new ListObjectsOptions() { Delimiter = delimiter };
+            var storageObjects = storage.ListObjects(bucketName, prefix, options).ToList();
+            foreach (var storageObject in storageObjects)
             {
-                Console.WriteLine($"  Role: {binding.Role}");
-                Console.WriteLine("  Members:");
-                foreach (var member in binding.Members)
-                {
-                    Console.WriteLine($"    {member}");
-                }
+                Console.WriteLine(storageObject.Name);
             }
+            return storageObjects;
         }
     }
 }
-// [END storage_view_bucket_iam_members]
+// [END storage_list_files_with_prefix]

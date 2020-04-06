@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_get_retention_policy]
 using Google.Cloud.Storage.V1;
 using System;
 using static Google.Apis.Storage.v1.Data.Bucket;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class GetRetentionPolicy
     {
-        // [START storage_get_retention_policy]
         public static RetentionPolicyData GetBucketRetentionPolicy(string bucketName)
         {
             var storage = StorageClient.Create();
@@ -38,6 +38,6 @@ namespace Storage
             }
             return bucket.RetentionPolicy;
         }
-        // [END storage_get_retention_policy]
     }
 }
+// [END storage_get_retention_policy]

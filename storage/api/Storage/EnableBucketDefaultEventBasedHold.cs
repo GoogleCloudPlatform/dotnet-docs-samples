@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_enable_default_event_based_hold]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class EnableBucketDefaultEventBasedHold
     {
-        // [START storage_enable_default_event_based_hold]
         public static Bucket StorageEnableBucketDefaultEventBasedHold(string bucketName)
         {
             var storage = StorageClient.Create();
@@ -34,6 +34,6 @@ namespace Storage
             Console.WriteLine($"Default event-based hold was enabled for {bucketName}");
             return bucket;
         }
-        // [END storage_enable_default_event_based_hold]
     }
 }
+// [END storage_enable_default_event_based_hold]

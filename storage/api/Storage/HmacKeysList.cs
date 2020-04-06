@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_list_hmac_keys]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class HmacKeysList
     {
-        // [START storage_list_hmac_keys]
         public static void ListHmacKeys(string projectId)
         {
             var storage = StorageClient.Create();
@@ -31,6 +31,6 @@ namespace Storage
                 Console.WriteLine($"Access ID: {metadata.AccessId}");
             }
         }
-        // [END storage_list_hmac_keys]
     }
 }
+// [END storage_list_hmac_keys]

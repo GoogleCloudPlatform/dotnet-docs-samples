@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_upload_encrypted_file]
 using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class UploadEncryptedFile
     {
-        // [START storage_upload_encrypted_file]
         public static void StorageUploadEncryptedFile(string key, string bucketName,
             string localPath, string objectName = null)
         {
@@ -37,6 +37,6 @@ namespace Storage
                 Console.WriteLine($"Uploaded {objectName}.");
             }
         }
-        // [END storage_upload_encrypted_file]
     }
 }
+// [END storage_upload_encrypted_file]

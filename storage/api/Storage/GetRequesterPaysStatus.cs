@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_get_requester_pays_status]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class GetRequesterPaysStatus
     {
-        // [START storage_get_requester_pays_status]
         public static bool GetRequesterPays(string projectId, string bucketName)
         {
             var storage = StorageClient.Create();
@@ -33,6 +33,6 @@ namespace Storage
             Console.WriteLine("RequesterPays: {0}", requesterPays);
             return requesterPays;
         }
-        // [END storage_get_requester_pays_status]
     }
 }
+// [END storage_get_requester_pays_status]

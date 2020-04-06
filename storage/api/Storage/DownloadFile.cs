@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_download_file]
 using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class DownloadFile
     {
-        // [START storage_download_file]
         public static void StorageDownloadFile(string bucketName, string objectName,
             string localPath = null)
         {
@@ -32,6 +32,6 @@ namespace Storage
             }
             Console.WriteLine($"downloaded {objectName} to {localPath}.");
         }
-        // [END storage_download_file]
     }
 }
+// [END storage_download_file]

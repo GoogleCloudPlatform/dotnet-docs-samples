@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_add_bucket_conditional_iam_binding]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
@@ -20,7 +21,6 @@ namespace Storage
 {
     public class AddBucketConditionalIamBinding
     {
-        // [START storage_add_bucket_conditional_iam_binding]
         public static Policy StorageAddBucketConditionalIamBinding(string bucketName,
             string role, string member, string title, string description, string expression)
         {
@@ -48,6 +48,6 @@ namespace Storage
                 + $"to {bucketName}");
             return bucketIamPolicy;
         }
-        // [END storage_add_bucket_conditional_iam_binding]
     }
 }
+// [END storage_add_bucket_conditional_iam_binding]

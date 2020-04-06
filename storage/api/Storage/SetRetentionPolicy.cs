@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_set_retention_policy]
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
@@ -21,7 +22,6 @@ namespace Storage
 {
     public class SetRetentionPolicy
     {
-        // [START storage_set_retention_policy]
         public static RetentionPolicyData SetBucketRetentionPolicy(string bucketName,
             long retentionPeriod)
         {
@@ -37,6 +37,6 @@ namespace Storage
             Console.WriteLine($"Retention policy for {bucketName} was set to {retentionPeriod}");
             return bucket.RetentionPolicy;
         }
-        // [END storage_set_retention_policy]
     }
 }
+// [END storage_set_retention_policy]

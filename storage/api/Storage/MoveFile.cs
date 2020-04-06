@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_move_file]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class MoveFile
     {
-        // [START storage_move_file]
         public static void MoveObject(string bucketName, string sourceObjectName,
             string destObjectName)
         {
@@ -29,6 +29,6 @@ namespace Storage
             storage.DeleteObject(bucketName, sourceObjectName);
             Console.WriteLine($"Moved {sourceObjectName} to {destObjectName}.");
         }
-        // [END storage_move_file]
     }
 }
+// [END storage_move_file]

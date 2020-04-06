@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_deactivate_hmac_key]
 using Google.Cloud.Storage.V1;
 using System;
 
@@ -19,7 +20,6 @@ namespace Storage
 {
     public class HmacKeyDeactivate
     {
-        // [START storage_deactivate_hmac_key]
         public static void DeactivateHmacKey(string projectId, string accessId)
         {
             var storage = StorageClient.Create();
@@ -38,6 +38,6 @@ namespace Storage
             Console.WriteLine($"Time Updated: {updatedMetadata.Updated}");
             Console.WriteLine($"ETag: {updatedMetadata.ETag}");
         }
-        // [END storage_deactivate_hmac_key]
     }
 }
+// [END storage_deactivate_hmac_key]
