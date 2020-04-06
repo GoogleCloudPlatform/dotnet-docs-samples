@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.45.0.1905" />
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.45.0.1915" />
     <PackageReference Include="M2Mqtt" Version="4.3.0" />
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
     <PackageReference Include="jose-jwt" Version="2.4.0" />
