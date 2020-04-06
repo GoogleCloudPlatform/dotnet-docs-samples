@@ -271,13 +271,23 @@ namespace GoogleCloudSamples
             // [START pubsub_publisher_batch_settings]
             // PublisherClient collects messages into appropriately sized
             // batches.
+            // [START pubsub_publish]
             var publishTasks =
-                messageTexts.Select(text => publisher.PublishAsync(text));
-            foreach (Task<string> task in publishTasks)
-            {
-                string message = await task;
-                await Console.Out.WriteLineAsync($"Published message {message}");
-            }
+                messageTexts.Select(async text =>
+                {
+                    try
+                    {
+                        string message = await publisher.PublishAsync(text);
+                        await Console.Out.WriteLineAsync($"Published message {message}");
+                    }
+                    catch (Exception exception)
+                    {
+                        await Console.Out.WriteLineAsync($"An error ocurred when publishing message {text}:");
+                        await Console.Out.WriteLineAsync(exception.Message);
+                    }
+                });
+            await Task.WhenAll(publishTasks);
+            // [END pubsub_publish]
             // [END pubsub_publisher_batch_settings]
             // [END pubsub_quickstart_publisher]
             return 0;
