@@ -98,7 +98,7 @@ namespace GoogleCloudSamples
             return Storage.Run(args);
         }
 
-        string PullFlag(string flag, ref string[] args, bool requiresValue)
+        private string PullFlag(string flag, ref string[] args, bool requiresValue)
         {
             string value = null;
             var newArgs = new List<string>();

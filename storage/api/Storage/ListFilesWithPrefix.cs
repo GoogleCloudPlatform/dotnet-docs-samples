@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_list_files_with_prefix]
+
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,22 @@ namespace Storage
 {
     public class ListFilesWithPrefix
     {
+        // Prefixes and delimiters can be used to emulate directory listings.
+        // Prefixes can be used filter objects starting with prefix.
+        // The delimiter argument can be used to restrict the results to only the
+        // objects in the given "directory". Without the delimiter, the entire  tree
+        // under the prefix is returned.
+        //
+        // For example, given these blobs:
+        //   /a/1.txt
+        //   /a/b/2.txt
+        //
+        // If you just specify prefix="a/", you'll get back:
+        //   /a/1.txt
+        //   /a/b/2.txt
+        //
+        // However, if you specify prefix="a/" and delim="/", you'll get back:
+        //   /a/1.txt
         public static List<Google.Apis.Storage.v1.Data.Object> GetFileListWithPrefix(string bucketName,
             string prefix, string delimiter)
         {

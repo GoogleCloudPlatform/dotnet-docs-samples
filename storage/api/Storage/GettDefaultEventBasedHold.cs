@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_get_default_event_based_hold]
+
 using Google.Cloud.Storage.V1;
 using System;
 

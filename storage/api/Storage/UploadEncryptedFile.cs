@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_upload_encrypted_file]
+
 using Google.Cloud.Storage.V1;
 using System;
 using System.IO;

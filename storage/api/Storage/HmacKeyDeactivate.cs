@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_deactivate_hmac_key]
+
 using Google.Cloud.Storage.V1;
 using System;
 

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_get_requester_pays_status]
+
 using Google.Cloud.Storage.V1;
 using System;
 

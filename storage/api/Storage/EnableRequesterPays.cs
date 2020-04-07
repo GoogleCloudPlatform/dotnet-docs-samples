@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_enable_requester_pays]
+
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 

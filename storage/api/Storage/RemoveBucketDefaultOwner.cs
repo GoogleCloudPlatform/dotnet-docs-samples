@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_remove_bucket_default_owner]
+
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System.Collections.Generic;

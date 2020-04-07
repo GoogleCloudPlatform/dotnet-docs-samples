@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_get_metadata]
+
 using Google.Cloud.Storage.V1;
 using System;
 

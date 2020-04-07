@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_remove_file_owner]
+
 using Google.Cloud.Storage.V1;
 using System.Linq;
 

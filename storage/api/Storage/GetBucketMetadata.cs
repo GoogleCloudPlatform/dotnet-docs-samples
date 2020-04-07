@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_get_bucket_metadata]
+
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
