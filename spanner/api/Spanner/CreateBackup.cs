@@ -35,11 +35,11 @@ namespace GoogleCloudSamples.Spanner
                 Database = DatabaseName.Format(projectId, instanceId, databaseId),
                 ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp()
             };
-            string parent = InstanceName.Format(projectId, instanceId);
+            InstanceName parentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId);
 
             // Make the CreateBackup request.
             Operation<Backup, CreateBackupMetadata> response =
-                databaseAdminClient.CreateBackup(parent, backup, backupId);
+                databaseAdminClient.CreateBackup(parentAsInstanceName, backup, backupId);
 
             Console.WriteLine("Waiting for the operation to finish.");
 
@@ -56,7 +56,9 @@ namespace GoogleCloudSamples.Spanner
             Console.WriteLine($"Backup created successfully.");
 
             // GetBackup to get more information about the created backup.
-            backup = databaseAdminClient.GetBackup(BackupName.Format(projectId, instanceId, backupId));
+            BackupName backupName =
+                BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
+            backup = databaseAdminClient.GetBackup(backupName);
             Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes " +
                           $"was created at {backup.CreateTime} from {backup.Database} " +
                           $"and is in state {backup.State}");

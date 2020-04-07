@@ -27,7 +27,8 @@ namespace GoogleCloudSamples.Spanner
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
             // Retrieve existing backup.
-            string backupName = BackupName.Format(projectId, instanceId, backupId);
+            BackupName backupName =
+                BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
             Backup backup = databaseAdminClient.GetBackup(backupName);
 
             // Add 30 days to the existing ExpireTime.

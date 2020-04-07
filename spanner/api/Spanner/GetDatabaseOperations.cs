@@ -31,7 +31,7 @@ namespace GoogleCloudSamples.Spanner
 
             ListDatabaseOperationsRequest request = new ListDatabaseOperationsRequest
             {
-                Parent = InstanceName.Format(projectId, instanceId),
+                ParentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
                 Filter = filter
             };
 

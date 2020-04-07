@@ -26,7 +26,9 @@ namespace GoogleCloudSamples.Spanner
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
             // Make the DeleteBackup request.
-            databaseAdminClient.DeleteBackup(BackupName.Format(projectId, instanceId, backupId));
+            BackupName backupAsBackupName =
+                BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
+            databaseAdminClient.DeleteBackup(backupAsBackupName);
 
             Console.WriteLine("Backup deleted successfully.");
 

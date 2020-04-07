@@ -35,11 +35,11 @@ namespace GoogleCloudSamples.Spanner
                 Database = DatabaseName.Format(projectId, instanceId, databaseId),
                 ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp()
             };
-            string parent = InstanceName.Format(projectId, instanceId);
+            InstanceName parentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId);
 
             // Make the CreateBackup request.
             Operation<Backup, CreateBackupMetadata> response =
-                databaseAdminClient.CreateBackup(parent, backup, backupId);
+                databaseAdminClient.CreateBackup(parentAsInstanceName, backup, backupId);
 
             // Create the OperationsClient instance and execute CancelOperation.
             OperationsClient operationsClient = OperationsClient.Create();
@@ -55,7 +55,9 @@ namespace GoogleCloudSamples.Spanner
             if (!completedResponse.IsFaulted)
             {
                 Console.WriteLine("Delete backup because it completed before it could be cancelled.");
-                databaseAdminClient.DeleteBackup(BackupName.Format(projectId, instanceId, backupId));
+                BackupName backupAsBackupName =
+                    BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
+                databaseAdminClient.DeleteBackup(backupAsBackupName);
             }
 
             Console.WriteLine($"Operation {response.Name} canceled.");

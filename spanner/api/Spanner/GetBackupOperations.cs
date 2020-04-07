@@ -32,7 +32,7 @@ namespace GoogleCloudSamples.Spanner
                 "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata)";
             ListBackupOperationsRequest request = new ListBackupOperationsRequest
             {
-                Parent = InstanceName.Format(projectId, instanceId),
+                ParentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
                 Filter = filter
             };
 

@@ -28,12 +28,15 @@ namespace GoogleCloudSamples.Spanner
             // Create the DatabaseAdminClient instance.
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            string parent = InstanceName.Format(projectId, instanceId);
-            string backupName = BackupName.Format(projectId, instanceId, backupId);
+            InstanceName parentAsInstanceName =
+                InstanceName.FromProjectInstance(projectId, instanceId);
+            BackupName backupAsBackupName =
+                BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
 
             // Make the RestoreDatabase request.
             Operation<Database, RestoreDatabaseMetadata> response =
-                databaseAdminClient.RestoreDatabase(parent, databaseId, backupName);
+                databaseAdminClient.RestoreDatabase(
+                    parentAsInstanceName, databaseId, backupAsBackupName);
 
             Console.WriteLine("Waiting for the operation to finish");
 
