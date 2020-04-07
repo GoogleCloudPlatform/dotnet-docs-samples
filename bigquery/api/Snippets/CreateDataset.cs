@@ -14,8 +14,8 @@
 //
 // [START bigquery_create_dataset]
 
+using Google.Apis.Bigquery.v2.Data;
 using Google.Cloud.BigQuery.V2;
-using System;
 
 public class BigQueryCreateDataset
 {
@@ -25,14 +25,14 @@ public class BigQueryCreateDataset
     )
     {
         BigQueryClient client = BigQueryClient.Create(projectId);
-        var createDatasetOptions = new CreateDatasetOptions()
+        var dataset = new Dataset
         {
             // Specify the geographic location where the dataset should reside.
             Location = location
         };
         // Create the dataset
         return client.CreateDataset(
-            datasetId: "your_new_dataset_id", options: createDatasetOptions);
+            datasetId: "your_new_dataset_id", dataset);
     }
 }
 // [END bigquery_create_dataset]

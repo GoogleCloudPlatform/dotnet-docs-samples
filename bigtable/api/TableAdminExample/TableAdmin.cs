@@ -634,12 +634,12 @@ namespace GoogleCloudSamples.Bigtable
 
         public static int Main(string[] args)
         {
-            if (projectId == "YOUR-PROJECT" + "-ID")
+            if (projectId == "YOUR-PROJECT-ID")
             {
                 Console.WriteLine("Edit TableAdmin.cs and replace YOUR-PROJECT-ID with your project id.");
                 return -1;
             }
-            if (instanceId == "YOUR-INSTANCE" + "-ID")
+            if (instanceId == "YOUR-INSTANCE-ID")
             {
                 Console.WriteLine("Edit TableAdmin.cs and replace YOUR-INSTANCE-ID with your instance id.");
                 return -1;

@@ -14,18 +14,15 @@
  * the License.
  */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using CommandLine;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Iam.V1;
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace GoogleCloudSamples
 {
@@ -401,7 +398,7 @@ namespace GoogleCloudSamples
             CryptoKeyName cryptoKeyName =
                 new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
 
-            Policy result = client.GetIamPolicy(KeyNameOneof.From(cryptoKeyName));
+            Policy result = client.GetIamPolicy(cryptoKeyName);
 
             foreach (Binding binding in result.Bindings)
             {
@@ -422,14 +419,14 @@ namespace GoogleCloudSamples
             CryptoKeyName cryptoKeyName =
                 new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
 
-            Policy policy = client.GetIamPolicy(KeyNameOneof.From(cryptoKeyName));
+            Policy policy = client.GetIamPolicy(cryptoKeyName);
             policy.Bindings.Add(new Binding
             {
                 Role = role,
                 Members = { member }
             });
 
-            Policy updateResult = client.SetIamPolicy(KeyNameOneof.From(cryptoKeyName), policy);
+            Policy updateResult = client.SetIamPolicy(cryptoKeyName, policy);
 
             foreach (Binding bindingResult in updateResult.Bindings)
             {
@@ -450,14 +447,14 @@ namespace GoogleCloudSamples
             CryptoKeyName cryptoKeyName =
                 new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
 
-            Policy policy = client.GetIamPolicy(KeyNameOneof.From(cryptoKeyName));
+            Policy policy = client.GetIamPolicy(cryptoKeyName);
 
             foreach (Binding binding in policy.Bindings.Where(b => b.Role == role))
             {
                 binding.Members.Remove(member);
             }
 
-            Policy updateResult = client.SetIamPolicy(KeyNameOneof.From(cryptoKeyName), policy);
+            Policy updateResult = client.SetIamPolicy(cryptoKeyName, policy);
 
             foreach (Binding bindingResult in updateResult.Bindings)
             {
@@ -476,7 +473,7 @@ namespace GoogleCloudSamples
             KeyManagementServiceClient client = KeyManagementServiceClient.Create();
             KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
 
-            Policy result = client.GetIamPolicy(KeyNameOneof.From(keyRingName));
+            Policy result = client.GetIamPolicy(keyRingName);
 
             foreach (Binding binding in result.Bindings)
             {
@@ -496,14 +493,14 @@ namespace GoogleCloudSamples
             KeyManagementServiceClient client = KeyManagementServiceClient.Create();
             KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
 
-            Policy policy = client.GetIamPolicy(KeyNameOneof.From(keyRingName));
+            Policy policy = client.GetIamPolicy(keyRingName);
             policy.Bindings.Add(new Binding
             {
                 Role = role,
                 Members = { member }
             });
 
-            Policy updateResult = client.SetIamPolicy(KeyNameOneof.From(keyRingName), policy);
+            Policy updateResult = client.SetIamPolicy(keyRingName, policy);
 
             foreach (Binding bindingResult in updateResult.Bindings)
             {
@@ -525,8 +522,7 @@ string plaintextFile, string ciphertextFile)
                 new CryptoKeyName(projectId, locationId, keyRingId, cryptoKeyId);
 
             byte[] plaintext = File.ReadAllBytes(plaintextFile);
-            CryptoKeyPathName pathName = CryptoKeyPathName.Parse(cryptoKeyName.ToString());
-            EncryptResponse result = client.Encrypt(pathName, ByteString.CopyFrom(plaintext));
+            EncryptResponse result = client.Encrypt(cryptoKeyName, ByteString.CopyFrom(plaintext));
 
             // Output encrypted data to a file.
             File.WriteAllBytes(ciphertextFile, result.Ciphertext.ToByteArray());

@@ -14,13 +14,12 @@
 
 // [START bigtable_hw_imports]
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
+using Google.Cloud.Bigtable.V2;
 using Grpc.Core;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 // [END bigtable_hw_imports]
 
 namespace GoogleCloudSamples.Bigtable
@@ -196,12 +195,15 @@ namespace GoogleCloudSamples.Bigtable
 
                 async Task PrintReadRowsAsync()
                 {
-                    await responseRead.ForEachAsync(row =>
+                    var responseEnumerator = responseRead.GetAsyncEnumerator(default);
+                    while (await responseEnumerator.MoveNextAsync())
                     {
-                        Console.WriteLine($"\tRow key: {row.Key.ToStringUtf8()} " +
-                                          $"  -- Value: {row.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
-                                          $"  -- Time Stamp: {row.Families[0].Columns[0].Cells[0].TimestampMicros}");
-                    });
+                        Row row = responseEnumerator.Current;
+                        Console.WriteLine(
+                            $"\tRow key: {row.Key.ToStringUtf8()} " +
+                            $"  -- Value: {row.Families[0].Columns[0].Cells[0].Value.ToStringUtf8(),-16} " +
+                            $"  -- Time Stamp: {row.Families[0].Columns[0].Cells[0].TimestampMicros}");
+                    }
                 }
                 // [END bigtable_hw_scan_with_filter]
 
@@ -247,12 +249,12 @@ namespace GoogleCloudSamples.Bigtable
 
         public static int Main(string[] args)
         {
-            if (projectId == "YOUR-PROJECT" + "-ID")
+            if (projectId == "YOUR-PROJECT-ID")
             {
                 Console.WriteLine("Edit HelloWorld.cs and replace YOUR-PROJECT-ID with your project ID.");
                 return -1;
             }
-            if (instanceId == "YOUR-INSTANCE" + "-ID")
+            if (instanceId == "YOUR-INSTANCE-ID")
             {
                 Console.WriteLine("Edit HelloWorld.cs and replace YOUR-INSTANCE-ID with your instance ID.");
                 return -1;

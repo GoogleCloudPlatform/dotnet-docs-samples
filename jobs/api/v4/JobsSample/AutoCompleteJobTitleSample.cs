@@ -23,11 +23,10 @@ namespace GoogleCloudSamples
         public static object CompleteQuery(string projectId, string tenantId, string query)
         {
             CompletionClient completionClient = CompletionClient.Create();
-            TenantName tenant = new TenantName(projectId, tenantId);
-            TenantOrProjectNameOneof parent = TenantOrProjectNameOneof.From(tenant);
+            TenantName tenant = TenantName.FromProjectTenant(projectId, tenantId);
             CompleteQueryRequest request = new CompleteQueryRequest
             {
-                ParentAsTenantOrProjectNameOneof = parent,
+                ParentAsTenantName = tenant,
                 Query = query, // partial text for job title
                 PageSize = 5, // limit for number of results
                 LanguageCodes = { "en-US" } // language code

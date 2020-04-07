@@ -24,9 +24,8 @@ namespace Storage
         public static string StorageGenerateV4SignedReadUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
-                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-                .WithSigningVersion(SigningVersion.V4);
-            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
+                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
+            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get, SigningVersion.V4);
             Console.WriteLine("Generated GET signed URL:");
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");

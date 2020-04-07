@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Vision.V1;
 using Google.LongRunning;
 using System;

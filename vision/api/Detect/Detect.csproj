@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <StartupObject>GoogleCloudSamples.DetectProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
-    <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="Google.Cloud.Storage.V1" Version="2.5.0" />
-    <PackageReference Include="Google.Api.Gax.Grpc" Version="3.0.0" />
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="3.0.0-beta02" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="HelloWorld.exe" />

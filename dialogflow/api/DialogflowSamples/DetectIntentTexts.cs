@@ -53,7 +53,7 @@ namespace GoogleCloudSamples
             foreach (var text in texts)
             {
                 var response = client.DetectIntent(
-                    session: new SessionName(projectId, sessionId),
+                    session: SessionName.FromProjectSession(projectId, sessionId),
                     queryInput: new QueryInput()
                     {
                         Text = new TextInput()

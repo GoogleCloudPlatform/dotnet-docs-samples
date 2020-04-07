@@ -25,8 +25,8 @@ namespace GoogleCloudSamples
         public static object CreateJob(string projectId, string tenantId, string companyId, string requisitionId, string jobApplicationUrl)
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
-            TenantName tenantName = new TenantName(projectId, tenantId);
-            TenantOrProjectNameOneof parent = TenantOrProjectNameOneof.From(tenantName);
+            TenantName tenantName = TenantName.FromProjectTenant(projectId, tenantId);
+
             ApplicationInfo applicationInfo = new ApplicationInfo();
             applicationInfo.Uris.Add(jobApplicationUrl);
 
@@ -44,7 +44,7 @@ namespace GoogleCloudSamples
 
             CreateJobRequest request = new CreateJobRequest
             {
-                ParentAsTenantOrProjectNameOneof = parent,
+                ParentAsTenantName = tenantName,
                 Job = job
             };
 

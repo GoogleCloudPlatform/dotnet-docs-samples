@@ -60,7 +60,7 @@ namespace GoogleCloudSamples
             }
 
             var createdSessionEntityType = client.CreateSessionEntityType(
-                parent: new SessionName(projectId, sessionId),
+                parent: SessionName.FromProjectSession(projectId, sessionId).ToString(),
                 sessionEntityType: sessionEntityType
             );
 
@@ -78,7 +78,7 @@ namespace GoogleCloudSamples
         {
             var client = SessionEntityTypesClient.Create();
             var response = client.ListSessionEntityTypes(
-                parent: new SessionName(projectId, sessionId)
+                parent: SessionName.FromProjectSession(projectId, sessionId).ToString()
             );
 
             foreach (var sessionEntityType in response)
@@ -111,9 +111,10 @@ namespace GoogleCloudSamples
         {
             var client = SessionEntityTypesClient.Create();
 
-            client.DeleteSessionEntityType(new SessionEntityTypeName(
-                projectId, sessionId, entityTypeDisplayName
-            ));
+            client.DeleteSessionEntityType(
+                SessionEntityTypeName
+                .FromProjectSessionEntityType(projectId, sessionId, entityTypeDisplayName)
+                .ToString());
 
             Console.WriteLine($"Deleted SessionEntityType: {entityTypeDisplayName}");
 

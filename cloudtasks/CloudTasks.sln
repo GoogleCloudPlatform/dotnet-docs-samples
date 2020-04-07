@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TasksSample", "api\TasksSample\TasksSample.csproj", "{4D5A0A19-E8C3-449A-8DBD-61B3D5CA41F2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudTasks", "appengine\CloudTasks.csproj", "{0CD11059-6B8F-441D-A65D-C7691446F22B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D5A0A19-E8C3-449A-8DBD-61B3D5CA41F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D5A0A19-E8C3-449A-8DBD-61B3D5CA41F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D5A0A19-E8C3-449A-8DBD-61B3D5CA41F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D5A0A19-E8C3-449A-8DBD-61B3D5CA41F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CD11059-6B8F-441D-A65D-C7691446F22B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CD11059-6B8F-441D-A65D-C7691446F22B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CD11059-6B8F-441D-A65D-C7691446F22B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CD11059-6B8F-441D-A65D-C7691446F22B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5F0C2614-8DCF-444C-96CC-7BFD43DBFC46}
+	EndGlobalSection
+EndGlobal
