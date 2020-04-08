@@ -521,7 +521,8 @@ namespace GoogleCloudSamples.Spanner
     }
 
     [Verb("createBackup", HelpText = "Create a backup of a Spanner database.")]
-    class CreateBackupOptions : DefaultOptions {
+    class CreateBackupOptions : DefaultOptions
+    {
         [Value(3, HelpText = "The ID of the backup to create.", Required = true)]
         public string backupId { get; set; }
     }
