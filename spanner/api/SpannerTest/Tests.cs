@@ -52,12 +52,15 @@ namespace GoogleCloudSamples.Spanner
                     Main = Program.Main,
                     Command = "Spanner"
                 };
-                runner.Run("deleteBackup",
-                    ProjectId, InstanceId, BackupId);
                 runner.Run("deleteDatabase",
                     ProjectId, InstanceId, DatabaseId);
                 runner.Run("deleteDatabase",
                     ProjectId, InstanceId, RestoredDatabaseId);
+                // Backup needs to be deleted after RestoredDatabaseId is deleted.
+                // Otherwise a FailedPrecondition error can be returned if the restored
+                // database is still being optimized.
+                runner.Run("deleteBackup",
+                    ProjectId, InstanceId, BackupId);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
         }
@@ -71,11 +74,14 @@ namespace GoogleCloudSamples.Spanner
             + TestUtil.RandomName();
         private static readonly string s_randomBackupName = "my-backup-"
             + TestUtil.RandomName();
+        private static readonly string s_randomToBeCancelledBackupName = "my-backup-"
+            + TestUtil.RandomName();
         private static readonly string s_randomRestoredDatabaseName = "my-db-"
             + TestUtil.RandomName();
         public string DatabaseId =
             Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
         public string BackupId = s_randomBackupName;
+        public string ToBeCancelledBackupId = s_randomToBeCancelledBackupName;
         public string RestoredDatabaseId = s_randomRestoredDatabaseName;
         public bool s_initializedDatabase { get; set; } = false;
     }
@@ -607,35 +613,55 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
+        void TestCancelBackup()
+        {
+            ConsoleOutput output = _spannerCmd.Run("cancelBackupOperation",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId,
+                _fixture.ToBeCancelledBackupId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Create backup operation cancelled", output.Stdout);
+        }
+
+        [Fact]
         void TestGetBackupOperations()
         {
-            ConsoleOutput getBackupOperationsResponse = _spannerCmd.Run("getBackupOperations",
+            ConsoleOutput output = _spannerCmd.Run("getBackupOperations",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Equal(0, getBackupOperationsResponse.ExitCode);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(_fixture.BackupId, output.Stdout);
+            Assert.Contains(_fixture.DatabaseId, output.Stdout);
+            Assert.Contains("100% complete", output.Stdout);
         }
 
         [Fact]
         void TestGetBackups()
         {
-            ConsoleOutput getBackupsResponse = _spannerCmd.Run("getBackups",
+            ConsoleOutput output = _spannerCmd.Run("getBackups",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, _fixture.BackupId);
-            Assert.Equal(0, getBackupsResponse.ExitCode);
+            Assert.Equal(0, output.ExitCode);
+            // BackupId should be a result of each of the 7 ListBackups calls and
+            // once in a filter that is printed.
+            Assert.Equal(8, Regex.Matches(output.Stdout, _fixture.BackupId).Count);
         }
 
         [Fact]
         void TestRestoreDatabase()
         {
-            ConsoleOutput restoreDatabaseResponse = _spannerCmd.Run("restoreDatabase",
+            ConsoleOutput output = _spannerCmd.Run("restoreDatabase",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.RestoredDatabaseId, _fixture.BackupId);
-            Assert.Equal(0, restoreDatabaseResponse.ExitCode);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(_fixture.BackupId, output.Stdout);
+            Assert.Contains(_fixture.RestoredDatabaseId, output.Stdout);
+            Assert.Contains($"was restored to {_fixture.DatabaseId} from backup", output.Stdout);
         }
 
         [Fact]
         void TestUpdateBackup()
         {
-            ConsoleOutput updateBackupResponse = _spannerCmd.Run("updateBackup",
+            ConsoleOutput output = _spannerCmd.Run("updateBackup",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
-            Assert.Equal(0, updateBackupResponse.ExitCode);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Updated Backup ExireTime", output.Stdout);
         }
     }
 }
