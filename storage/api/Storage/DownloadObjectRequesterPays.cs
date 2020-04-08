@@ -36,7 +36,7 @@ namespace Storage
                     });
             }
             Console.WriteLine(
-                $"downloaded {objectName} to {localPath} paid by {projectId}.");
+                $"Downloaded {objectName} to {localPath} paid by {projectId}.");
         }
     }
 }

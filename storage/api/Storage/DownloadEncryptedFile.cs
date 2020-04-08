@@ -36,7 +36,7 @@ namespace Storage
                             Convert.FromBase64String(key))
                     });
             }
-            Console.WriteLine($"downloaded {objectName} to {localPath}.");
+            Console.WriteLine($"Downloaded {objectName} to {localPath}.");
         }
     }
 }

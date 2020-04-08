@@ -27,7 +27,7 @@ namespace Storage
                 .GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
             string url =
                 urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), null);
-            Console.WriteLine(url);
+            Console.WriteLine($"The signed url for {objectName} is {url}.");
             return url;
         }
     }

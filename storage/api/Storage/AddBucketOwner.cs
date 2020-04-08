@@ -16,6 +16,7 @@
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
+using System;
 using System.Collections.Generic;
 
 namespace Storage
@@ -44,6 +45,7 @@ namespace Storage
                 // Avoid race conditions.
                 IfMetagenerationMatch = bucket.Metageneration,
             });
+            Console.WriteLine($"Added user { userEmail} as an owner on bucket { bucketName}.");
             return updatedBucket;
         }
     }

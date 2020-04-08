@@ -28,6 +28,7 @@ namespace Storage
         {
             var storage = StorageClient.Create();
             var buckets = storage.ListBuckets(projectId).ToList();
+            Console.WriteLine("Buckets:");
             foreach (var bucket in buckets)
             {
                 Console.WriteLine(bucket.Name);

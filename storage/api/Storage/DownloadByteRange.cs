@@ -45,7 +45,7 @@ namespace Storage
                 // all the authentication headers we need.
                 var response = storage.HttpClient.SendAsync(request).Result;
                 response.Content.CopyToAsync(outputFile, null).Wait();
-                Console.WriteLine($"downloaded {objectName} to {localPath}.");
+                Console.WriteLine($"Downloaded {objectName} to {localPath}.");
             }
         }
     }

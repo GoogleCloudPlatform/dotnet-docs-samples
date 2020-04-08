@@ -16,6 +16,7 @@
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
+using System;
 
 namespace Storage
 {
@@ -36,6 +37,7 @@ namespace Storage
                 IfMetagenerationMatch = bucket.Metageneration,
                 UserProject = projectId
             });
+            Console.WriteLine($"Requester pays requests have been enabled for bucket {bucketName}.");
             return bucket;
         }
     }

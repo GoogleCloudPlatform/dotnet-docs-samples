@@ -16,13 +16,14 @@
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
+using System;
 using System.Collections.Generic;
 
 namespace Storage
 {
     public class AddFileOwner
     {
-        public static Object AddObjectOwner(string bucketName, string objectName,
+        public static Google.Apis.Storage.v1.Data.Object AddObjectOwner(string bucketName, string objectName,
             string userEmail)
         {
             var storage = StorageClient.Create();
@@ -43,6 +44,7 @@ namespace Storage
                 // Avoid race conditions.
                 IfMetagenerationMatch = storageObject.Metageneration,
             });
+            Console.WriteLine($"Added user { userEmail} as an owner on file { objectName}.");
             return updatedObject;
         }
     }

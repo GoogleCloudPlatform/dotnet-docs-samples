@@ -31,7 +31,7 @@ namespace Storage
             {
                 storage.DownloadObject(bucketName, objectName, outputFile);
             }
-            Console.WriteLine($"downloaded {objectName} to {localPath}.");
+            Console.WriteLine($"Downloaded {objectName} to {localPath}.");
         }
     }
 }

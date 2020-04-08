@@ -23,7 +23,7 @@ namespace Storage
     {
         public static void StorageGenerateEncryptionKey()
         {
-            Console.Write(EncryptionKey.Generate().Base64Key);
+            Console.Write($"Base 64 encoded encryption key: {EncryptionKey.Generate().Base64Key}");
         }
     }
 }

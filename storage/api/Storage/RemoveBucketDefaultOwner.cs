@@ -16,6 +16,7 @@
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,6 +45,7 @@ namespace Storage
                 // Avoid race conditions.
                 IfMetagenerationMatch = bucket.Metageneration,
             });
+            Console.WriteLine($"Removed user {userEmail} from bucket {bucketName}.");
         }
     }
 }

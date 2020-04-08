@@ -16,6 +16,7 @@
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
+using System;
 
 namespace Storage
 {
@@ -41,6 +42,7 @@ namespace Storage
                 // Avoid race conditions.
                 IfMetagenerationMatch = bucket.Metageneration,
             });
+            Console.WriteLine($"Default KMS key for {bucketName} was set to {kmsKeyName}.");
             return updatedBucket;
         }
     }

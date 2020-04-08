@@ -31,6 +31,7 @@ namespace Storage
                 // Use IfMetagenerationMatch to avoid race conditions.
                 IfMetagenerationMatch = storageObject.Metageneration,
             });
+            System.Console.WriteLine($"Temporary hold was set for {objectName}.");
         }
     }
 }

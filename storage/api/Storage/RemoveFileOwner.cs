@@ -15,6 +15,7 @@
 // [START storage_remove_file_owner]
 
 using Google.Cloud.Storage.V1;
+using System;
 using System.Linq;
 
 namespace Storage
@@ -37,6 +38,7 @@ namespace Storage
                 // Avoid race conditions.
                 IfMetagenerationMatch = storageObject.Metageneration,
             });
+            Console.WriteLine($"Removed user {userEmail} from file {objectName}.");
         }
     }
 }

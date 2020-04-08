@@ -30,12 +30,12 @@ namespace Storage
             if (bucket.RetentionPolicy != null)
             {
                 Console.WriteLine("Retention policy:");
-                Console.WriteLine($"period: {bucket.RetentionPolicy.RetentionPeriod}");
-                Console.WriteLine($"effective time: {bucket.RetentionPolicy.EffectiveTime}");
+                Console.WriteLine($"Period: {bucket.RetentionPolicy.RetentionPeriod}");
+                Console.WriteLine($"Effective time: {bucket.RetentionPolicy.EffectiveTime}");
                 bool? isLockedOrNull = bucket?.RetentionPolicy.IsLocked;
                 bool isLocked =
                     isLockedOrNull.HasValue ? isLockedOrNull.Value : false;
-                Console.WriteLine("policy locked: {0}", isLocked);
+                Console.WriteLine("Policy locked: {0}", isLocked);
             }
             return bucket.RetentionPolicy;
         }

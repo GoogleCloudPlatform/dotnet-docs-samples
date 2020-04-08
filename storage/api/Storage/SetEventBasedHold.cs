@@ -15,6 +15,7 @@
 // [START storage_set_event_based_hold]
 
 using Google.Cloud.Storage.V1;
+using System;
 
 namespace Storage
 {
@@ -31,6 +32,7 @@ namespace Storage
                 // Use IfMetagenerationMatch to avoid race conditions.
                 IfMetagenerationMatch = storageObject.Metageneration
             });
+            Console.WriteLine($"Event-based hold was set for {objectName}.");
         }
     }
 }
