@@ -50,8 +50,9 @@ namespace GoogleCloudSamples.Spanner
             }
 
             RestoreInfo restoreInfo = completedResponse.Result.RestoreInfo;
-            Console.WriteLine($"Database {restoreInfo.BackupInfo.SourceDatabase} " +
-                          $"restored from backup {restoreInfo.BackupInfo.Backup}");
+            Console.WriteLine(
+                $"Database {restoreInfo.BackupInfo.Backup} was restored " +
+                $"to {databaseId} from backup {restoreInfo.BackupInfo.SourceDatabase}");
 
             return 0;
         }

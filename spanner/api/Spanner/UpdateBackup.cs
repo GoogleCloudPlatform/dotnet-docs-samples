@@ -49,7 +49,6 @@ namespace GoogleCloudSamples.Spanner
             // Make the UpdateBackup requests.
             var updatedBackup = databaseAdminClient.UpdateBackup(backupUpdateRequest);
 
-            Console.WriteLine("Backup Updated successfully.");
             Console.WriteLine($"Updated Backup ExireTime: {updatedBackup.ExpireTime}");
 
             return 0;

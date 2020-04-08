@@ -45,10 +45,9 @@ namespace GoogleCloudSamples.Spanner
             OperationsClient operationsClient = OperationsClient.Create();
             operationsClient.CancelOperation(response.Name);
 
+            // Poll until the long-running operation is complete since the backup wasn't
+            // cancelled before it was created.
             Console.WriteLine("Waiting for the operation to finish.");
-
-            // Poll until the long-running operation is complete. It will
-            // either complete or be cancelled.
             Operation<Backup, CreateBackupMetadata> completedResponse =
                 response.PollUntilCompleted();
 
@@ -60,7 +59,7 @@ namespace GoogleCloudSamples.Spanner
                 databaseAdminClient.DeleteBackup(backupAsBackupName);
             }
 
-            Console.WriteLine($"Operation {response.Name} canceled.");
+            Console.WriteLine($"Create backup operation cancelled: {response.Name}");
             return 0;
         }
     }
