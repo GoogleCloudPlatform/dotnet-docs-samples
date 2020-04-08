@@ -28,7 +28,7 @@ namespace GoogleCloudSamples
         {
             EventServiceClient eventServiceClient = EventServiceClient.Create();
 
-            TenantName parent = new TenantName(projectId, tenantId);
+            TenantName tenantName = TenantName.FromProjectTenant(projectId, tenantId);
 
             long seconds = 1L;
             Timestamp createTime = new Timestamp
@@ -44,7 +44,7 @@ namespace GoogleCloudSamples
             foreach (var jobId in jobIds)
             {
                 //build full path of job IDs
-                JobName name = new JobName(projectId, tenantId, jobId);
+                JobName name = JobName.FromProjectTenantJob(projectId, tenantId, jobId);
                 jobs.Add(name.ToString());
             }
 
@@ -64,7 +64,7 @@ namespace GoogleCloudSamples
 
             CreateClientEventRequest request = new CreateClientEventRequest
             {
-                ParentAsTenantOrProjectNameOneof = TenantOrProjectNameOneof.From(parent),
+                ParentAsTenantName = tenantName,
                 ClientEvent = clientEvent
             };
 

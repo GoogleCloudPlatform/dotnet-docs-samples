@@ -23,10 +23,10 @@ namespace GoogleCloudSamples
         public static object DeleteCompany(string projectId, string tenantId, string companyId)
         {
             CompanyServiceClient companyServiceClient = CompanyServiceClient.Create();
-            string companyName = CompanyName.Format(projectId, tenantId, companyId);
+            CompanyName companyName = CompanyName.FromProjectTenantCompany(projectId, tenantId, companyId);
             DeleteCompanyRequest request = new DeleteCompanyRequest
             {
-                Name = companyName
+                CompanyName = companyName
             };
 
             companyServiceClient.DeleteCompany(request);

@@ -23,10 +23,10 @@ namespace GoogleCloudSamples
         public static object DeleteJob(string projectId, string tenantId, string jobId)
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
-            JobName name = new JobName(projectId, tenantId, jobId);
+            JobName jobName = JobName.FromProjectTenantJob(projectId, tenantId, jobId);
             DeleteJobRequest request = new DeleteJobRequest
             {
-                JobNameOneof = JobNameOneof.From(name)
+                JobName = jobName
             };
 
             jobServiceClient.DeleteJob(request);

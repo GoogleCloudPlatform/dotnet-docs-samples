@@ -54,7 +54,7 @@ namespace GoogleCloudSamples
 
             LogEntry logEntry = new LogEntry
             {
-                LogName = logName.ToString(),
+                LogNameAsLogName = logName,
                 Severity = LogSeverity.Info,
                 SourceLocation = sourceLocation,
                 TextPayload = msg
@@ -69,7 +69,7 @@ namespace GoogleCloudSamples
             TryAddGitRevisionId(entryLabels);
 
             client.WriteLogEntries(
-                logName: LogNameOneof.From(logName),
+                logName: logName,
                 resource: resource,
                 labels: entryLabels,
                 entries: new[] { logEntry },

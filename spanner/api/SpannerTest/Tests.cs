@@ -447,7 +447,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("1 3 20000", readOutput.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1007")]
         void TestDatatypes()
         {
             // Create a new table that includes supported datatypes.

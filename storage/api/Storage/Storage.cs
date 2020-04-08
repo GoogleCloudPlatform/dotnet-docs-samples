@@ -890,9 +890,8 @@ namespace GoogleCloudSamples
         private void GenerateV4SignedGetUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
-                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-                .WithSigningVersion(SigningVersion.V4);
-            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
+                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
+            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get, SigningVersion.V4);
             Console.WriteLine("Generated GET signed URL:");
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
@@ -904,15 +903,23 @@ namespace GoogleCloudSamples
         private void GenerateV4SignedPutUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
-                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-                .WithSigningVersion(SigningVersion.V4);
+                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
 
             var contentHeaders = new Dictionary<string, IEnumerable<string>>
             {
                 { "Content-Type", new[] { "text/plain" } }
             };
 
-            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Put, contentHeaders);
+            UrlSigner.Options options = UrlSigner.Options
+                .FromDuration(TimeSpan.FromHours(1))
+                .WithSigningVersion(SigningVersion.V4);
+            UrlSigner.RequestTemplate template = UrlSigner.RequestTemplate
+                .FromBucket(bucketName)
+                .WithObjectName(objectName)
+                .WithHttpMethod(HttpMethod.Put)
+                .WithContentHeaders(contentHeaders);
+
+            string url = urlSigner.Sign(template, options);
             Console.WriteLine("Generated PUT signed URL:");
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");

@@ -54,10 +54,13 @@ namespace GoogleCloudSamples
             context.ContextName = new ContextName(projectId, sessionId, contextId);
             context.LifespanCount = lifespanCount;
 
-            var newContext = client.CreateContext(
-                parent: new SessionName(projectId, sessionId),
-                context: context
-            );
+            var createContextRequest = new CreateContextRequest
+            {
+                Parent = SessionName.FromProjectSession(projectId, sessionId).ToString(),
+                Context = context
+            };
+
+            var newContext = client.CreateContext(createContextRequest);
 
             Console.WriteLine($"Created Context: {newContext.Name}");
 
@@ -73,9 +76,7 @@ namespace GoogleCloudSamples
         {
             var client = ContextsClient.Create();
 
-            var contexts = client.ListContexts(
-                new SessionName(projectId, sessionId)
-            );
+            var contexts = client.ListContexts(SessionName.FromProjectSession(projectId, sessionId).ToString());
 
             foreach (var context in contexts)
             {
@@ -107,7 +108,12 @@ namespace GoogleCloudSamples
         {
             var client = ContextsClient.Create();
 
-            client.DeleteContext(new ContextName(projectId, sessionId, contextId));
+            var deletedContextRequest = new DeleteContextRequest
+            {
+                ContextName = ContextName.FromProjectSessionContext(projectId, sessionId, contextId)
+            };
+
+            client.DeleteContext(deletedContextRequest);
 
             Console.WriteLine($"Deleted Context: {contextId}");
 
@@ -121,7 +127,11 @@ namespace GoogleCloudSamples
         public static int DeleteAllContexts(string projectId, string sessionId)
         {
             var client = ContextsClient.Create();
-            client.DeleteAllContexts(new SessionName(projectId, sessionId));
+            var deleteAllContextsRequests = new DeleteAllContextsRequest
+            {
+                Parent = SessionName.FromProjectSession(projectId, sessionId).ToString()
+            };
+            client.DeleteAllContexts(deleteAllContextsRequests);
             return 0;
         }
     }

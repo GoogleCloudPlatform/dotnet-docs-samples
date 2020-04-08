@@ -45,7 +45,7 @@ namespace TranslateWorker
                 FirestoreDb.Create(GetFirestoreProjectId()));
             services.AddSingleton<Google.Cloud.Translation.V2.TranslationClient>(
                 Google.Cloud.Translation.V2.TranslationClient.Create());
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

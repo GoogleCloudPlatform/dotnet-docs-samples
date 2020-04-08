@@ -13,9 +13,9 @@
 // the License.
 
 using Google.Cloud.Language.V1;
+using Google.Protobuf.Collections;
 using System;
 using System.Collections.Generic;
-using Google.Protobuf.Collections;
 
 namespace GoogleCloudSamples
 {

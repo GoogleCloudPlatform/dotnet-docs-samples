@@ -29,7 +29,7 @@ public class ExportAssets
         AssetServiceClient client = AssetServiceClient.Create();
         ExportAssetsRequest request = new ExportAssetsRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            ParentAsResourceName = ProjectName.FromProject(projectId),
             OutputConfig = new OutputConfig
             {
                 GcsDestination = new GcsDestination { Uri = assetDumpFile }
