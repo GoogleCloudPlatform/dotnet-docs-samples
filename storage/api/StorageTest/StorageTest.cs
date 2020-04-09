@@ -249,7 +249,7 @@ namespace GoogleCloudSamples
             {
                 var listed = Run("list", _bucketName);
                 AssertSucceeded(listed);
-                Assert.Equal("", listed.Stdout);
+                Assert.Equal("Files:\r\n", listed.Stdout);
             });
 
             var uploaded = Run("upload", _bucketName, "Hello.txt", Collect("HelloListObjectsTest.txt"));
@@ -276,7 +276,7 @@ namespace GoogleCloudSamples
             {
                 var listed = Run("list", _bucketName);
                 AssertSucceeded(listed);
-                Assert.Equal("", listed.Stdout);
+                Assert.Equal("Files:\r\n", listed.Stdout);
             });
 
             // Upload 4 files.
@@ -298,7 +298,7 @@ namespace GoogleCloudSamples
                     "a/1.txt",
                     "a/2.txt",
                     "a/b/3.txt"
-                }, SplitOutput(listed.Stdout));
+                }, SplitOutput(listed.Stdout.Replace("Files:\r\n", "")));
 
                 // With a delimeter, we should see only direct contents.
                 listed = Run("list", _bucketName, "a/", "/");
@@ -306,7 +306,7 @@ namespace GoogleCloudSamples
                 Assert.Equal(new string[] {
                     "a/1.txt",
                     "a/2.txt",
-                }, SplitOutput(listed.Stdout));
+                }, SplitOutput(listed.Stdout.Replace("Files:\r\n", "")));
             });
         }
 
@@ -701,7 +701,7 @@ namespace GoogleCloudSamples
                 AssertSucceeded(setRetentionPolicy);
                 var getRetentionPolicy = Run("get-bucket-retention-policy", bucketLock.BucketName);
                 AssertSucceeded(getRetentionPolicy);
-                Assert.Contains($"period: {retentionPeriod}", getRetentionPolicy.Stdout);
+                Assert.Contains($"Period: {retentionPeriod}", getRetentionPolicy.Stdout);
                 var enableBucketDefaultEventBasedHold = Run("enable-bucket-default-event-based-hold", _bucketName);
                 AssertSucceeded(enableBucketDefaultEventBasedHold);
                 var getBucketDefaultEventBasedHold = Run("get-bucket-default-event-based-hold", _bucketName);
@@ -716,7 +716,7 @@ namespace GoogleCloudSamples
                 AssertSucceeded(setRetentionPolicy);
                 getRetentionPolicy = Run("get-bucket-retention-policy", bucketLock.BucketName);
                 AssertSucceeded(getRetentionPolicy);
-                Assert.DoesNotContain($"period:", getRetentionPolicy.Stdout);
+                Assert.DoesNotContain($"Period:", getRetentionPolicy.Stdout);
                 setRetentionPolicy = Run("set-bucket-retention-policy", bucketLock.BucketName, retentionPeriod);
                 AssertSucceeded(setRetentionPolicy);
                 var lockRetentionPolicy = Run("lock-bucket-retention-policy", bucketLock.BucketName);
@@ -799,7 +799,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("generate-encryption-key");
             AssertSucceeded(output);
-            string key = output.Stdout.Trim();
+            string key = output.Stdout.Trim().Replace("Base 64 encoded encryption key:", "");
             output = Run("upload", "-key", key, _bucketName,
                 "Hello.txt", Collect("HelloEncryptUploadAndDownload.txt"));
             AssertSucceeded(output);
