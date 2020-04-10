@@ -16,8 +16,6 @@
 
 using Xunit;
 
-using Google.Cloud.Kms.V1;
-
 [Collection(nameof(KmsFixture))]
 public class UpdateKeySetPrimaryTest
 {

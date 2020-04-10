@@ -15,12 +15,12 @@
  */
 
 // [START kms_encrypt_symmetric]
+
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
 
 public class EncryptSymmetricSample
 {
-
     public byte[] EncryptSymmetric(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key",
       string plaintext = "Sample message")

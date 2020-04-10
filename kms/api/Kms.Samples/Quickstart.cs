@@ -15,10 +15,10 @@
  */
 
 // [START kms_quickstart]
-using System;
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Kms.V1;
+using System;
 
 public class QuickstartSample
 {
@@ -30,7 +30,7 @@ public class QuickstartSample
         // Build the request to list key rings.
         var request = new ListKeyRingsRequest
         {
-          ParentAsLocationName = new LocationName(projectId, locationId),
+            ParentAsLocationName = new LocationName(projectId, locationId),
         };
 
         // Iterate over and print each key ring name;

@@ -15,11 +15,11 @@
  */
 
 // [START kms_update_key_set_primary]
+
 using Google.Cloud.Kms.V1;
 
 public class UpdateKeySetPrimarySample
 {
-
     public CryptoKey UpdateKeySetPrimary(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key",
       string keyVersionId = "123")

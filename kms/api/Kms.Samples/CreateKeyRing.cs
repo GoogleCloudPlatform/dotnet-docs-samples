@@ -15,12 +15,12 @@
  */
 
 // [START kms_create_key_ring]
+
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Kms.V1;
 
 public class CreateKeyRingSample
 {
-
     public KeyRing CreateKeyRing(
       string projectId = "my-project", string locationId = "us-east1",
       string id = "my-key-ring")

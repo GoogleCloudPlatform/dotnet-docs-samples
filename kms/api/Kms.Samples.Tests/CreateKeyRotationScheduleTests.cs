@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-using Xunit;
-
 using Google.Cloud.Kms.V1;
+using Xunit;
 
 [Collection(nameof(KmsFixture))]
 public class CreateKeyRotationScheduleTest

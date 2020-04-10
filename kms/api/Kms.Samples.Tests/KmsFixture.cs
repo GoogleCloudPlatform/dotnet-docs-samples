@@ -15,13 +15,12 @@
  */
 
 
-using System;
-using System.Threading;
-using Xunit;
-
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Kms.V1;
 using Google.Protobuf.WellKnownTypes;
+using System;
+using System.Threading;
+using Xunit;
 
 [CollectionDefinition(nameof(KmsFixture))]
 public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>

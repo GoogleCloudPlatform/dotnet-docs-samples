@@ -15,12 +15,12 @@
  */
 
 // [START kms_update_key_update_labels]
+
 using Google.Cloud.Kms.V1;
 using Google.Protobuf.WellKnownTypes;
 
 public class UpdateKeyUpdateLabelsSample
 {
-
     public CryptoKey UpdateKeyUpdateLabels(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {
         // Create the client.

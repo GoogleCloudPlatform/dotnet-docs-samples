@@ -15,13 +15,12 @@
  */
 
 // [START kms_get_key_labels]
-using System;
 
 using Google.Cloud.Kms.V1;
+using System;
 
 public class GetKeyLabelsSample
 {
-
     public CryptoKey GetKeyLabels(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {
         // Create the client.

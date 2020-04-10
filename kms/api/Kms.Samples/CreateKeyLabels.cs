@@ -15,11 +15,11 @@
  */
 
 // [START kms_create_key_labels]
+
 using Google.Cloud.Kms.V1;
 
 public class CreateKeyLabelsSample
 {
-
     public CryptoKey CreateKeyLabels(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring",
       string id = "my-asymmetric-encrypt-key")
