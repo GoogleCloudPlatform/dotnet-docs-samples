@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-using System;
-using System.Text;
-using System.Security.Cryptography;
-using Xunit;
-
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
+using System.Security.Cryptography;
+using System.Text;
+using Xunit;
 
 [Collection(nameof(KmsFixture))]
 public class VerifyAsymmetricSignEc

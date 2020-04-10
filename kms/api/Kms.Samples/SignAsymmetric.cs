@@ -15,15 +15,14 @@
  */
 
 // [START kms_sign_asymmetric]
-using System.Security.Cryptography;
-using System.Text;
 
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
+using System.Security.Cryptography;
+using System.Text;
 
 public class SignAsymmetricSample
 {
-
     public byte[] SignAsymmetric(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string keyVersionId = "123",
       string message = "Sample message")

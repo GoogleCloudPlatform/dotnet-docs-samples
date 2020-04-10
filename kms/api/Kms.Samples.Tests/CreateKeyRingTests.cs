@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+using Google.Cloud.Kms.V1;
 using System;
 using Xunit;
-
-using Google.Cloud.Kms.V1;
 
 [Collection(nameof(KmsFixture))]
 public class CreateKeyRingTest : IDisposable
@@ -35,7 +34,7 @@ public class CreateKeyRingTest : IDisposable
 
     public void Dispose()
     {
-        _fixture.DisposeKeyRing(this._keyRingId);
+        _fixture.DisposeKeyRing(_keyRingId);
     }
 
     [Fact]
@@ -44,7 +43,7 @@ public class CreateKeyRingTest : IDisposable
         // Run the sample code.
         var result = _sample.CreateKeyRing(
           projectId: _fixture.ProjectId, locationId: _fixture.LocationId,
-          id: this._keyRingId);
+          id: _keyRingId);
 
         // Get the key ring.
         var client = KeyManagementServiceClient.Create();
@@ -53,6 +52,6 @@ public class CreateKeyRingTest : IDisposable
             KeyRingName = result.KeyRingName,
         });
 
-        Assert.Contains(this._keyRingId, keyRing.Name);
+        Assert.Contains(_keyRingId, keyRing.Name);
     }
 }

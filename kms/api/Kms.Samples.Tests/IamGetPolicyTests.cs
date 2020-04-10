@@ -16,8 +16,6 @@
 
 using Xunit;
 
-using Google.Cloud.Iam.V1;
-
 [Collection(nameof(KmsFixture))]
 public class IamGetPolicyTest
 {

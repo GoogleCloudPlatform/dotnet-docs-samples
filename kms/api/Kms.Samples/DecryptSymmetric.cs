@@ -15,12 +15,12 @@
  */
 
 // [START kms_decrypt_symmetric]
-using Google.Protobuf;
+
 using Google.Cloud.Kms.V1;
+using Google.Protobuf;
 
 public class DecryptSymmetricSample
 {
-
     public string DecryptSymmetric(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key",
       byte[] ciphertext = null)

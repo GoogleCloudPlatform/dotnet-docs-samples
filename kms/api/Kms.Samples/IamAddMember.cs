@@ -15,14 +15,12 @@
  */
 
 // [START kms_iam_add_member]
-using System;
 
 using Google.Cloud.Iam.V1;
 using Google.Cloud.Kms.V1;
 
 public class IamAddMemberSample
 {
-
     public Policy IamAddMember(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key",
       string member = "user:foo@example.com")

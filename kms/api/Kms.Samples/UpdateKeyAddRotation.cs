@@ -15,14 +15,13 @@
  */
 
 // [START kms_update_key_add_rotation_schedule]
-using System;
 
 using Google.Cloud.Kms.V1;
 using Google.Protobuf.WellKnownTypes;
+using System;
 
 public class UpdateKeyAddRotationSample
 {
-
     public CryptoKey UpdateKeyAddRotation(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {
         // Create the client.

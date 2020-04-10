@@ -15,15 +15,14 @@
  */
 
 // [START kms_verify_asymmetric_signature_rsa]
-using System;
-using System.Text;
-using System.Security.Cryptography;
 
 using Google.Cloud.Kms.V1;
+using System;
+using System.Security.Cryptography;
+using System.Text;
 
 public class VerifyAsymmetricSignatureRsaSample
 {
-
     public bool VerifyAsymmetricSignatureRsa(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string keyVersionId = "123",
       string message = "my message",

@@ -15,11 +15,11 @@
  */
 
 // [START kms_create_key_symmetric_encrypt_decrypt]
+
 using Google.Cloud.Kms.V1;
 
 public class CreateKeySymmetricEncryptDecryptSample
 {
-
     public CryptoKey CreateKeySymmetricEncryptDecrypt(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring",
       string id = "my-symmetric-encryption-key")

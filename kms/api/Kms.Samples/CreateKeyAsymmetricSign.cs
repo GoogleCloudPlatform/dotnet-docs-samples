@@ -15,11 +15,11 @@
  */
 
 // [START kms_create_key_asymmetric_sign]
+
 using Google.Cloud.Kms.V1;
 
 public class CreateKeyAsymmetricSignSample
 {
-
     public CryptoKey CreateKeyAsymmetricSign(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring",
       string id = "my-asymmetric-signing-key")

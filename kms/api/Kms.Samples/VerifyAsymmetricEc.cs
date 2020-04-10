@@ -15,11 +15,11 @@
  */
 
 // [START kms_verify_asymmetric_signature_ec]
+
 using Google.Cloud.Kms.V1;
 
 public class VerifyAsymmetricSignatureEcSample
 {
-
     public bool VerifyAsymmetricSignatureEc(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string keyVersionId = "123",
       string message = "my message",

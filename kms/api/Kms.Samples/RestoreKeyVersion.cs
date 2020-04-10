@@ -15,11 +15,11 @@
  */
 
 // [START kms_restore_key_version]
+
 using Google.Cloud.Kms.V1;
 
 public class RestoreKeyVersionSample
 {
-
     public CryptoKeyVersion RestoreKeyVersion(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string keyVersionId = "123")
     {
         // Create the client.

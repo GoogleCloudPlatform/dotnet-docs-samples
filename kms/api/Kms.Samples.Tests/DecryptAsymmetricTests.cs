@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
+using Google.Cloud.Kms.V1;
 using System;
 using System.Security.Cryptography;
 using System.Text;
 using Xunit;
-
-using Google.Cloud.Kms.V1;
 
 [Collection(nameof(KmsFixture))]
 public class DecryptAsymmetricTest

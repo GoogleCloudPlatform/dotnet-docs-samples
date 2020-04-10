@@ -15,11 +15,11 @@
  */
 
 // [START kms_create_key_hsm]
+
 using Google.Cloud.Kms.V1;
 
 public class CreateKeyHsmSample
 {
-
     public CryptoKey CreateKeyHsm(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring",
       string id = "my-hsm-encryption-key")

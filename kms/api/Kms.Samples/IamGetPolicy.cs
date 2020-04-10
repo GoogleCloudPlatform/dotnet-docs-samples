@@ -15,14 +15,13 @@
  */
 
 // [START kms_iam_get_policy]
-using System;
 
 using Google.Cloud.Iam.V1;
 using Google.Cloud.Kms.V1;
+using System;
 
 public class IamGetPolicySample
 {
-
     public Policy IamGetPolicy(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {

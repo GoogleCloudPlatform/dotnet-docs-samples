@@ -15,11 +15,11 @@
  */
 
 // [START kms_create_key_version]
+
 using Google.Cloud.Kms.V1;
 
 public class CreateKeyVersionSample
 {
-
     public CryptoKeyVersion CreateKeyVersion(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {
         // Create the client.
