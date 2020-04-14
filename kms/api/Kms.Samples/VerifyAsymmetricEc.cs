@@ -15,24 +15,14 @@
  */
 
 // [START kms_verify_asymmetric_signature_ec]
-using Google.Cloud.Kms.V1;
-
 public class VerifyAsymmetricSignatureEcSample
 {
-    public bool VerifyAsymmetricSignatureEc(
-      string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string keyVersionId = "123",
-      string message = "my message",
-      byte[] signature = null)
-    {
-        // Cloud KMS returns signatures in a DER-encoded format. .NET requires
-        // signatures to be in IEEE 1363 format, and converting between these
-        // formats is a few hundred lines of code.
-        //
-        // https://github.com/dotnet/runtime/pull/1612 exposes these helpers,
-        // but will not be available until .NET 5. Until then, you will need to
-        // use an external library or package to validate signatures.
-
-        return false;
-    }
+  // Cloud KMS returns signatures in a DER-encoded format. .NET requires
+  // signatures to be in IEEE 1363 format, and converting between these formats
+  // is a few hundred lines of code.
+  //
+  // https://github.com/dotnet/runtime/pull/1612 exposes these helpers, but will
+  // not be available until .NET 5. Until then, you will need to use an external
+  // library or package to validate signatures.
 }
 // [END kms_verify_asymmetric_signature_ec]
