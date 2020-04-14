@@ -65,8 +65,9 @@ namespace GoogleCloudSamples.Spanner
 
             // List backups that expire within 30 days.
             Console.WriteLine("Backups expiring within 30 days:");
-            var expireTime = DateTime.UtcNow.AddDays(30);
-            request.Filter = $"expire_time < {expireTime.ToString("O")}";
+            string expireTime = DateTime.UtcNow.AddDays(30).ToString("O");
+            request.Filter = $"expire_time < \"{expireTime}\"";
+            Console.WriteLine(request.Filter);
             var expiringBackups = databaseAdminClient.ListBackups(request).ToList();
             printBackups(expiringBackups);
 
@@ -78,14 +79,14 @@ namespace GoogleCloudSamples.Spanner
 
             // List backups created in the last day that are ready.
             Console.WriteLine("Backups created within last day that are ready:");
-            var createTime = DateTime.UtcNow.AddDays(-1);
-            request.Filter = $"create_time >= {createTime.ToString("O")} AND state:READY";
+            string createTime = DateTime.UtcNow.AddDays(-1).ToString("O");
+            request.Filter = $"create_time >= \"{createTime}\" AND state:READY";
             var recentReadyBackups = databaseAdminClient.ListBackups(request).ToList();
             printBackups(recentReadyBackups);
 
             // List backups in pages.
-            Console.WriteLine("Backups in batches of 2:");
-            int pageSize = 2;
+            Console.WriteLine("Backups in batches of 5:");
+            int pageSize = 5;
             string nextPageToken = string.Empty;
             do
             {
