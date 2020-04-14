@@ -37,8 +37,8 @@ public class EncryptAsymmetricTest
 
         // Run the sample code.
         var ciphertext = _sample.EncryptAsymmetric(
-          projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId, keyVersionId: "1",
-          plaintext: plaintext);
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId, keyVersionId: "1",
+            plaintext: plaintext);
 
         // Decrypt result.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();

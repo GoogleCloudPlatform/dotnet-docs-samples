@@ -39,8 +39,8 @@ public class SignAsymmetricTest
 
         // Run the sample code.
         var signature = _sample.SignAsymmetric(
-          projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricSignRsaKeyId, keyVersionId: "1",
-          message: message);
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricSignRsaKeyId, keyVersionId: "1",
+            message: message);
 
         // Calculate the hash of the message.
         var sha256 = SHA256.Create();

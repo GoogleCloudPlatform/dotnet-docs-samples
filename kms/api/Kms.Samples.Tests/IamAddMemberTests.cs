@@ -34,8 +34,8 @@ public class IamAddMemberTest
     {
         // Run the sample code.
         var result = _sample.IamAddMember(
-          projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId,
-          member: "group:test@google.com");
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId,
+            member: "group:test@google.com");
 
         // Verify result.
         Binding role = null;

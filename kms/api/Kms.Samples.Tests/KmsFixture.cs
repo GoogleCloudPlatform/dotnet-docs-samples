@@ -25,63 +25,63 @@ using Xunit;
 [CollectionDefinition(nameof(KmsFixture))]
 public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 {
-    public readonly string ProjectId;
-    public readonly ProjectName ProjectName;
+    public string ProjectId { get; }
+    public ProjectName ProjectName { get; }
 
-    public readonly string LocationId;
-    public readonly LocationName LocationName;
+    public string LocationId { get; }
+    public LocationName LocationName { get; }
 
-    public readonly string KeyRingId;
-    public readonly KeyRingName KeyRingName;
+    public string KeyRingId { get; }
+    public KeyRingName KeyRingName { get; }
 
-    public readonly string AsymmetricDecryptKeyId;
-    public readonly CryptoKeyName AsymmetricDecryptKeyName;
+    public string AsymmetricDecryptKeyId { get; }
+    public CryptoKeyName AsymmetricDecryptKeyName { get; }
 
-    public readonly string AsymmetricSignEcKeyId;
-    public readonly CryptoKeyName AsymmetricSignEcKeyName;
+    public string AsymmetricSignEcKeyId { get; }
+    public CryptoKeyName AsymmetricSignEcKeyName { get; }
 
-    public readonly string AsymmetricSignRsaKeyId;
-    public readonly CryptoKeyName AsymmetricSignRsaKeyName;
+    public string AsymmetricSignRsaKeyId { get; }
+    public CryptoKeyName AsymmetricSignRsaKeyName { get; }
 
-    public readonly string SymmetricKeyId;
-    public readonly CryptoKeyName SymmetricKeyName;
+    public string SymmetricKeyId { get; }
+    public CryptoKeyName SymmetricKeyName { get; }
 
     public KmsFixture()
     {
-        this.ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        if (string.IsNullOrEmpty(this.ProjectId))
+        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        if (string.IsNullOrEmpty(ProjectId))
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
-        this.ProjectName = new ProjectName(this.ProjectId);
+        ProjectName = new ProjectName(ProjectId);
 
-        this.LocationId = "us-east1";
-        this.LocationName = new LocationName(this.ProjectId, this.LocationId);
+        LocationId = "us-east1";
+        LocationName = new LocationName(ProjectId, LocationId);
 
-        this.KeyRingId = this.RandomId();
-        this.KeyRingName = new KeyRingName(this.ProjectId, this.LocationId, this.KeyRingId);
-        this.CreateKeyRing(this.KeyRingId);
+        KeyRingId = RandomId();
+        KeyRingName = new KeyRingName(ProjectId, LocationId, KeyRingId);
+        CreateKeyRing(KeyRingId);
 
-        this.AsymmetricDecryptKeyId = this.RandomId();
-        this.AsymmetricDecryptKeyName = new CryptoKeyName(this.ProjectId, this.LocationId, this.KeyRingId, this.AsymmetricDecryptKeyId);
-        this.CreateAsymmetricDecryptKey(this.AsymmetricDecryptKeyId);
+        AsymmetricDecryptKeyId = RandomId();
+        AsymmetricDecryptKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, AsymmetricDecryptKeyId);
+        CreateAsymmetricDecryptKey(AsymmetricDecryptKeyId);
 
-        this.AsymmetricSignEcKeyId = this.RandomId();
-        this.AsymmetricSignEcKeyName = new CryptoKeyName(this.ProjectId, this.LocationId, this.KeyRingId, this.AsymmetricSignEcKeyId);
-        this.CreateAsymmetricSignEcKey(this.AsymmetricSignEcKeyId);
+        AsymmetricSignEcKeyId = RandomId();
+        AsymmetricSignEcKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, AsymmetricSignEcKeyId);
+        CreateAsymmetricSignEcKey(AsymmetricSignEcKeyId);
 
-        this.AsymmetricSignRsaKeyId = this.RandomId();
-        this.AsymmetricSignRsaKeyName = new CryptoKeyName(this.ProjectId, this.LocationId, this.KeyRingId, this.AsymmetricSignRsaKeyId);
-        this.CreateAsymmetricSignRsaKey(this.AsymmetricSignRsaKeyId);
+        AsymmetricSignRsaKeyId = RandomId();
+        AsymmetricSignRsaKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, AsymmetricSignRsaKeyId);
+        CreateAsymmetricSignRsaKey(AsymmetricSignRsaKeyId);
 
-        this.SymmetricKeyId = this.RandomId();
-        this.SymmetricKeyName = new CryptoKeyName(this.ProjectId, this.LocationId, this.KeyRingId, this.SymmetricKeyId);
-        this.CreateSymmetricKey(this.SymmetricKeyId);
+        SymmetricKeyId = RandomId();
+        SymmetricKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, SymmetricKeyId);
+        CreateSymmetricKey(SymmetricKeyId);
     }
 
     public void Dispose()
     {
-        DisposeKeyRing(this.KeyRingId);
+        DisposeKeyRing(KeyRingId);
     }
 
     public void DisposeKeyRing(string keyRingId)
@@ -90,7 +90,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
         var listKeysRequest = new ListCryptoKeysRequest
         {
-            ParentAsKeyRingName = new KeyRingName(this.ProjectId, this.LocationId, keyRingId),
+            ParentAsKeyRingName = new KeyRingName(ProjectId, LocationId, keyRingId),
         };
 
         foreach (var key in client.ListCryptoKeys(listKeysRequest))
@@ -138,7 +138,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         return client.CreateKeyRing(new CreateKeyRingRequest
         {
-            ParentAsLocationName = this.LocationName,
+            ParentAsLocationName = LocationName,
             KeyRingId = keyRingId,
         });
     }
@@ -149,7 +149,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
         var request = new CreateCryptoKeyRequest
         {
-            ParentAsKeyRingName = this.KeyRingName,
+            ParentAsKeyRingName = KeyRingName,
             CryptoKeyId = keyId,
             CryptoKey = new CryptoKey
             {
@@ -172,7 +172,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
         var request = new CreateCryptoKeyRequest
         {
-            ParentAsKeyRingName = this.KeyRingName,
+            ParentAsKeyRingName = KeyRingName,
             CryptoKeyId = keyId,
             CryptoKey = new CryptoKey
             {
@@ -195,7 +195,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
         var request = new CreateCryptoKeyRequest
         {
-            ParentAsKeyRingName = this.KeyRingName,
+            ParentAsKeyRingName = KeyRingName,
             CryptoKeyId = keyId,
             CryptoKey = new CryptoKey
             {
@@ -218,7 +218,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
         var request = new CreateCryptoKeyRequest
         {
-            ParentAsKeyRingName = this.KeyRingName,
+            ParentAsKeyRingName = KeyRingName,
             CryptoKeyId = keyId,
             CryptoKey = new CryptoKey
             {
@@ -241,7 +241,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
         var result = client.CreateCryptoKeyVersion(new CreateCryptoKeyVersionRequest
         {
-            ParentAsCryptoKeyName = new CryptoKeyName(this.ProjectId, this.LocationId, this.KeyRingId, keyId),
+            ParentAsCryptoKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, keyId),
         });
 
         for (var i = 1; i <= 5; i++)

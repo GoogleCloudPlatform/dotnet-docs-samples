@@ -32,7 +32,8 @@ public class GetKeyLabelsTest
     public void GetsLabels()
     {
         // Run the sample code.
-        var result = _sample.GetKeyLabels(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId);
+        var result = _sample.GetKeyLabels(
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId);
 
         Assert.Equal("zap", result.Labels["zip"]);
         Assert.Equal("bar", result.Labels["foo"]);

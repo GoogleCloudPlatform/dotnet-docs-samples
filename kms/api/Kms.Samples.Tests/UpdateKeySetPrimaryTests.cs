@@ -38,8 +38,8 @@ public class UpdateKeySetPrimaryTest
 
         // Run the sample code.
         var result = _sample.UpdateKeySetPrimary(
-          projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId,
-          keyVersionId: name.CryptoKeyVersionId);
+            projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId,
+            keyVersionId: name.CryptoKeyVersionId);
 
         Assert.NotNull(result.Primary);
         Assert.Equal(createdVersion.CryptoKeyVersionName, result.Primary.CryptoKeyVersionName);

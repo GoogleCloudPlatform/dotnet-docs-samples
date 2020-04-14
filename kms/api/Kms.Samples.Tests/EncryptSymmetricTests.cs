@@ -37,8 +37,8 @@ public class EncryptSymmetricTest
 
         // Run the sample code.
         var result = _sample.EncryptSymmetric(
-          projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId,
-          plaintext: plaintext);
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId,
+            plaintext: plaintext);
 
         // Attempt to decrypt to verify success.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();

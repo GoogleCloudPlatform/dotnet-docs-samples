@@ -42,8 +42,8 @@ public class CreateKeyRingTest : IDisposable
     {
         // Run the sample code.
         var result = _sample.CreateKeyRing(
-          projectId: _fixture.ProjectId, locationId: _fixture.LocationId,
-          id: _keyRingId);
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId,
+            id: _keyRingId);
 
         // Get the key ring.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();

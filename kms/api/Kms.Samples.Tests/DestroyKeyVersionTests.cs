@@ -38,7 +38,8 @@ public class DestroyKeyVersionTest
 
         // Run the sample code.
         var name = keyVersion.CryptoKeyVersionName;
-        var response = _sample.DestroyKeyVersion(projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId, keyVersionId: name.CryptoKeyVersionId);
+        var response = _sample.DestroyKeyVersion(
+            projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId, keyVersionId: name.CryptoKeyVersionId);
 
         // Verify marked for deletion.
         var acceptableStates = new CryptoKeyVersion.Types.CryptoKeyVersionState[]

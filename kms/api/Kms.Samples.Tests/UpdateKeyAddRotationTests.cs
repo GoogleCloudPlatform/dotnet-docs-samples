@@ -33,7 +33,8 @@ public class UpdateKeyAddRotationTest
     public void AddRotation()
     {
         // Run the sample code.
-        var result = _sample.UpdateKeyAddRotation(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId);
+        var result = _sample.UpdateKeyAddRotation(
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId);
 
         // Get the key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
