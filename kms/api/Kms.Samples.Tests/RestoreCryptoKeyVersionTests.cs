@@ -37,7 +37,7 @@ public class RestoreKeyVersionTest
         var keyVersion = _fixture.CreateKeyVersion(key.CryptoKeyName.CryptoKeyId);
 
         // Destroy the key.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         client.DestroyCryptoKeyVersion(new DestroyCryptoKeyVersionRequest
         {
             CryptoKeyVersionName = keyVersion.CryptoKeyVersionName,

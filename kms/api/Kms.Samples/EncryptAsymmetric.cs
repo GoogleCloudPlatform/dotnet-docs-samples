@@ -15,7 +15,6 @@
  */
 
 // [START kms_encrypt_asymmetric]
-
 using Google.Cloud.Kms.V1;
 using System;
 using System.Security.Cryptography;
@@ -28,24 +27,24 @@ public class EncryptAsymmetricSample
       string plaintext = "Sample message")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Get the public key.
-        var publicKey = client.GetPublicKey(new GetPublicKeyRequest
+        PublicKey publicKey = client.GetPublicKey(new GetPublicKeyRequest
         {
             CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
         });
 
         // Split the key into blocks and base64-decode the PEM parts.
-        var blocks = publicKey.Pem.Split("-", StringSplitOptions.RemoveEmptyEntries);
-        var pem = Convert.FromBase64String(blocks[1]);
+        string[] blocks = publicKey.Pem.Split("-", StringSplitOptions.RemoveEmptyEntries);
+        byte[] pem = Convert.FromBase64String(blocks[1]);
 
         // Create a new RSA key.
-        var rsa = RSA.Create();
+        RSA rsa = RSA.Create();
         rsa.ImportSubjectPublicKeyInfo(pem, out _);
 
         // Encrypt the data.
-        var ciphertext = rsa.Encrypt(Encoding.UTF8.GetBytes(plaintext), RSAEncryptionPadding.OaepSHA256);
+        byte[] ciphertext = rsa.Encrypt(Encoding.UTF8.GetBytes(plaintext), RSAEncryptionPadding.OaepSHA256);
         return ciphertext;
     }
 }

@@ -15,7 +15,6 @@
  */
 
 // [START kms_verify_asymmetric_signature_rsa]
-
 using Google.Cloud.Kms.V1;
 using System;
 using System.Security.Cryptography;
@@ -29,26 +28,26 @@ public class VerifyAsymmetricSignatureRsaSample
       byte[] signature = null)
     {
         // Calculate the digest of the message.
-        var sha256 = SHA256.Create();
-        var digest = sha256.ComputeHash(Encoding.UTF8.GetBytes(message));
+        SHA256 sha256 = SHA256.Create();
+        byte[] digest = sha256.ComputeHash(Encoding.UTF8.GetBytes(message));
 
         // Get the public key.
-        var client = KeyManagementServiceClient.Create();
-        var publicKey = client.GetPublicKey(new GetPublicKeyRequest
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+        PublicKey publicKey = client.GetPublicKey(new GetPublicKeyRequest
         {
             CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
         });
 
         // Split the key into blocks and base64-decode the PEM parts.
-        var blocks = publicKey.Pem.Split("-", StringSplitOptions.RemoveEmptyEntries);
-        var pem = Convert.FromBase64String(blocks[1]);
+        string[] blocks = publicKey.Pem.Split("-", StringSplitOptions.RemoveEmptyEntries);
+        byte[] pem = Convert.FromBase64String(blocks[1]);
 
         // Create a new RSA key.
-        var rsa = RSA.Create();
+        RSA rsa = RSA.Create();
         rsa.ImportSubjectPublicKeyInfo(pem, out _);
 
         // Verify the signature.
-        var verified = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+        bool verified = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
 
         // Return the result.
         return verified;

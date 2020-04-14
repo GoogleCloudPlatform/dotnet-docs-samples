@@ -15,7 +15,6 @@
  */
 
 // [START kms_sign_asymmetric]
-
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
 using System.Security.Cryptography;
@@ -28,17 +27,17 @@ public class SignAsymmetricSample
       string message = "Sample message")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Calculate the message digest.
-        var sha256 = SHA256.Create();
-        var digest = sha256.ComputeHash(Encoding.UTF8.GetBytes(message));
+        SHA256 sha256 = SHA256.Create();
+        byte[] digest = sha256.ComputeHash(Encoding.UTF8.GetBytes(message));
 
         // Build the request.
         //
         // Note: Key algorithms will require a varying hash function. For
         // example, EC_SIGN_P384_SHA384 requires SHA-384.
-        var request = new AsymmetricSignRequest
+        AsymmetricSignRequest request = new AsymmetricSignRequest
         {
             CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
             Digest = new Digest
@@ -48,7 +47,7 @@ public class SignAsymmetricSample
         };
 
         // Call the API.
-        var result = client.AsymmetricSign(request);
+        AsymmetricSignResponse result = client.AsymmetricSign(request);
 
         // Return the result.
         return result.Signature.ToByteArray();

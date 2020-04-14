@@ -15,7 +15,6 @@
  */
 
 // [START kms_quickstart]
-
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Kms.V1;
 using System;
@@ -25,16 +24,16 @@ public class QuickstartSample
     public void Quickstart(string projectId = "my-project", string locationId = "us-east1")
     {
         // Create a Cloud KMS client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request to list key rings.
-        var request = new ListKeyRingsRequest
+        ListKeyRingsRequest request = new ListKeyRingsRequest
         {
             ParentAsLocationName = new LocationName(projectId, locationId),
         };
 
         // Iterate over and print each key ring name;
-        foreach (var keyRing in client.ListKeyRings(request))
+        foreach (KeyRing keyRing in client.ListKeyRings(request))
         {
             Console.WriteLine(keyRing.Name);
         }

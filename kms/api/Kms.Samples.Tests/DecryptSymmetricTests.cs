@@ -36,7 +36,7 @@ public class DecryptSymmetricTest
         var plaintext = "testing1234";
 
         // Create some ciphertext.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         var result = client.Encrypt(new EncryptRequest
         {
             ResourceName = new CryptoKeyName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.SymmetricKeyId),

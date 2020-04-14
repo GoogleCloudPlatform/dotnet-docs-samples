@@ -15,7 +15,6 @@
  */
 
 // [START kms_iam_get_policy]
-
 using Google.Cloud.Iam.V1;
 using Google.Cloud.Kms.V1;
 using System;
@@ -26,28 +25,28 @@ public class IamGetPolicySample
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Construct the resource name.
-        var resourceName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
+        CryptoKeyName resourceName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
 
         // The resource name could also be a Cloud KMS key ring.
         // var resourceName = new KeyRingName(projectId, locationId, keyRingId);
 
         // Build the request.
-        var getRequest = new GetIamPolicyRequest
+        GetIamPolicyRequest getRequest = new GetIamPolicyRequest
         {
             ResourceAsResourceName = resourceName,
         };
 
         // Get the current IAM policy.
-        var policy = client.GetIamPolicy(getRequest);
+        Policy policy = client.GetIamPolicy(getRequest);
 
         // Print the policy.
-        foreach (var b in policy.Bindings)
+        foreach (Binding b in policy.Bindings)
         {
             Console.WriteLine(b.Role);
-            foreach (var m in b.Members)
+            foreach (string m in b.Members)
             {
                 Console.WriteLine($"  {m}");
             }

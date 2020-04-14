@@ -15,7 +15,6 @@
  */
 
 // [START kms_update_key_set_primary]
-
 using Google.Cloud.Kms.V1;
 
 public class UpdateKeySetPrimarySample
@@ -25,17 +24,17 @@ public class UpdateKeySetPrimarySample
       string keyVersionId = "123")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new UpdateCryptoKeyPrimaryVersionRequest
+        UpdateCryptoKeyPrimaryVersionRequest request = new UpdateCryptoKeyPrimaryVersionRequest
         {
             CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
             CryptoKeyVersionId = keyVersionId,
         };
 
         // Call the API.
-        var result = client.UpdateCryptoKeyPrimaryVersion(request);
+        CryptoKey result = client.UpdateCryptoKeyPrimaryVersion(request);
 
         // Return the updated key.
         return result;

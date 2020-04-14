@@ -25,10 +25,10 @@ public class CreateKeySymmetricEncryptDecryptSample
       string id = "my-symmetric-encryption-key")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new CreateCryptoKeyRequest
+        CreateCryptoKeyRequest request = new CreateCryptoKeyRequest
         {
             ParentAsKeyRingName = new KeyRingName(projectId, locationId, keyRingId),
             CryptoKeyId = id,
@@ -43,7 +43,7 @@ public class CreateKeySymmetricEncryptDecryptSample
         };
 
         // Call the API.
-        var result = client.CreateCryptoKey(request);
+        CryptoKey result = client.CreateCryptoKey(request);
 
         // Return the result.
         return result;

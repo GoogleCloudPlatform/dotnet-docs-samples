@@ -15,7 +15,6 @@
  */
 
 // [START kms_create_key_version]
-
 using Google.Cloud.Kms.V1;
 
 public class CreateKeyVersionSample
@@ -23,16 +22,16 @@ public class CreateKeyVersionSample
     public CryptoKeyVersion CreateKeyVersion(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new CreateCryptoKeyVersionRequest
+        CreateCryptoKeyVersionRequest request = new CreateCryptoKeyVersionRequest
         {
             ParentAsCryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
         };
 
         // Call the API.
-        var result = client.CreateCryptoKeyVersion(request);
+        CryptoKeyVersion result = client.CreateCryptoKeyVersion(request);
 
         // Return the result.
         return result;

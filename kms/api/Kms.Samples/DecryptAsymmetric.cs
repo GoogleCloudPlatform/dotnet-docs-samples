@@ -15,7 +15,6 @@
  */
 
 // [START kms_decrypt_asymmetric]
-
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
 
@@ -26,17 +25,17 @@ public class DecryptAsymmetricSample
       byte[] ciphertext = null)
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new AsymmetricDecryptRequest
+        AsymmetricDecryptRequest request = new AsymmetricDecryptRequest
         {
             CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
             Ciphertext = ByteString.CopyFrom(ciphertext),
         };
 
         // Call the API.
-        var result = client.AsymmetricDecrypt(request);
+        AsymmetricDecryptResponse result = client.AsymmetricDecrypt(request);
 
         // Return the result.
         return result.Plaintext.ToStringUtf8();

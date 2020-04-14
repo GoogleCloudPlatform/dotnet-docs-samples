@@ -38,7 +38,7 @@ public class DecryptAsymmetricTest
         var plaintext = "testing1234";
 
         // Get the public key.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         var publicKey = client.GetPublicKey(new GetPublicKeyRequest
         {
             CryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricDecryptKeyId, "1"),
