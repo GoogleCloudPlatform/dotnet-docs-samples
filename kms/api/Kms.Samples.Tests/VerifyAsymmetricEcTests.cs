@@ -35,30 +35,6 @@ public class VerifyAsymmetricSignEc
     [Fact(Skip = ".NET lacks support for EC keys")]
     public void VerifiesData()
     {
-        var message = "testing1234";
-
-        // Calculate the message digest.
-        var sha256 = SHA256.Create();
-        var digest = sha256.ComputeHash(Encoding.UTF8.GetBytes(message));
-
-        // Sign the data
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var result = client.AsymmetricSign(new AsymmetricSignRequest
-        {
-            CryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricSignEcKeyId, "1"),
-            Digest = new Digest
-            {
-                Sha256 = ByteString.CopyFrom(digest),
-            },
-        });
-
-        // Run the sample.
-        var verified = _sample.VerifyAsymmetricSignatureEc(
-            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricSignEcKeyId, keyVersionId: "1",
-            message: message,
-            signature: result.Signature.ToByteArray());
-
-        // Verify result.
-        Assert.True(verified);
+        Assert.True(false);
     }
 }
