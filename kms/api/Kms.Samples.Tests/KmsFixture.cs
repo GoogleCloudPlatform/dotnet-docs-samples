@@ -86,7 +86,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
     public void DisposeKeyRing(string keyRingId)
     {
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         var listKeysRequest = new ListCryptoKeysRequest
         {
@@ -135,7 +135,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
     public KeyRing CreateKeyRing(string keyRingId)
     {
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         return client.CreateKeyRing(new CreateKeyRingRequest
         {
             ParentAsLocationName = this.LocationName,
@@ -145,7 +145,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
     public CryptoKey CreateAsymmetricDecryptKey(string keyId)
     {
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         var request = new CreateCryptoKeyRequest
         {
@@ -168,7 +168,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
     public CryptoKey CreateAsymmetricSignEcKey(string keyId)
     {
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         var request = new CreateCryptoKeyRequest
         {
@@ -191,7 +191,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
     public CryptoKey CreateAsymmetricSignRsaKey(string keyId)
     {
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         var request = new CreateCryptoKeyRequest
         {
@@ -214,7 +214,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
     public CryptoKey CreateSymmetricKey(string keyId)
     {
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         var request = new CreateCryptoKeyRequest
         {
@@ -237,7 +237,7 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
     public CryptoKeyVersion CreateKeyVersion(string keyId)
     {
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         var result = client.CreateCryptoKeyVersion(new CreateCryptoKeyVersionRequest
         {

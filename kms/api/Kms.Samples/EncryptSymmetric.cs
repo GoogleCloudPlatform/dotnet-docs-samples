@@ -15,7 +15,6 @@
  */
 
 // [START kms_encrypt_symmetric]
-
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
 
@@ -26,17 +25,17 @@ public class EncryptSymmetricSample
       string plaintext = "Sample message")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new EncryptRequest
+        EncryptRequest request = new EncryptRequest
         {
             ResourceName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
             Plaintext = ByteString.CopyFromUtf8(plaintext),
         };
 
         // Call the API.
-        var result = client.Encrypt(request);
+        EncryptResponse result = client.Encrypt(request);
 
         // Return the ciphertext.
         return result.Ciphertext.ToByteArray();

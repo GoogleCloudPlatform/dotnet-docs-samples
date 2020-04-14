@@ -15,7 +15,6 @@
  */
 
 // [START kms_verify_asymmetric_signature_ec]
-
 using Google.Cloud.Kms.V1;
 
 public class VerifyAsymmetricSignatureEcSample

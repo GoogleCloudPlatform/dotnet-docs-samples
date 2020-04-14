@@ -15,7 +15,6 @@
  */
 
 // [START kms_update_key_add_rotation_schedule]
-
 using Google.Cloud.Kms.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -25,10 +24,10 @@ public class UpdateKeyAddRotationSample
     public CryptoKey UpdateKeyAddRotation(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new UpdateCryptoKeyRequest
+        UpdateCryptoKeyRequest request = new UpdateCryptoKeyRequest
         {
             CryptoKey = new CryptoKey
             {
@@ -54,7 +53,7 @@ public class UpdateKeyAddRotationSample
         };
 
         // Call the API.
-        var result = client.UpdateCryptoKey(request);
+        CryptoKey result = client.UpdateCryptoKey(request);
 
         // Return the updated key.
         return result;

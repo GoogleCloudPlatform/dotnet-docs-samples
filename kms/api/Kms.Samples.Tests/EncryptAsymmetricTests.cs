@@ -41,7 +41,7 @@ public class EncryptAsymmetricTest
           plaintext: plaintext);
 
         // Decrypt result.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         var result = client.AsymmetricDecrypt(new AsymmetricDecryptRequest
         {
             CryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricDecryptKeyId, "1"),

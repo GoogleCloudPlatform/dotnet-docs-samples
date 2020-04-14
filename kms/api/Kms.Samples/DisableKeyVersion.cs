@@ -15,7 +15,6 @@
  */
 
 // [START kms_disable_key_version]
-
 using Google.Cloud.Kms.V1;
 using Google.Protobuf.WellKnownTypes;
 
@@ -24,10 +23,10 @@ public class DisableKeyVersionSample
     public CryptoKeyVersion DisableKeyVersion(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string keyVersionId = "123")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new UpdateCryptoKeyVersionRequest
+        UpdateCryptoKeyVersionRequest request = new UpdateCryptoKeyVersionRequest
         {
             CryptoKeyVersion = new CryptoKeyVersion
             {
@@ -41,7 +40,7 @@ public class DisableKeyVersionSample
         };
 
         // Call the API.
-        var result = client.UpdateCryptoKeyVersion(request);
+        CryptoKeyVersion result = client.UpdateCryptoKeyVersion(request);
 
         // Return the result.
         return result;

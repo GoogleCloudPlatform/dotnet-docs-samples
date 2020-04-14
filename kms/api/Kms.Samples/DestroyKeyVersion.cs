@@ -15,7 +15,6 @@
  */
 
 // [START kms_destroy_key_version]
-
 using Google.Cloud.Kms.V1;
 
 public class DestroyKeyVersionSample
@@ -23,16 +22,16 @@ public class DestroyKeyVersionSample
     public CryptoKeyVersion DestroyKeyVersion(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string keyVersionId = "123")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new DestroyCryptoKeyVersionRequest
+        DestroyCryptoKeyVersionRequest request = new DestroyCryptoKeyVersionRequest
         {
             CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
         };
 
         // Call the API.
-        var result = client.DestroyCryptoKeyVersion(request);
+        CryptoKeyVersion result = client.DestroyCryptoKeyVersion(request);
 
         // Return the result.
         return result;

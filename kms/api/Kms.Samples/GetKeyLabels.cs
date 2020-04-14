@@ -15,7 +15,6 @@
  */
 
 // [START kms_get_key_labels]
-
 using Google.Cloud.Kms.V1;
 using System;
 
@@ -24,20 +23,19 @@ public class GetKeyLabelsSample
     public CryptoKey GetKeyLabels(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new GetCryptoKeyRequest
+        GetCryptoKeyRequest request = new GetCryptoKeyRequest
         {
             CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
         };
 
         // Call the API.
-        var result = client.GetCryptoKey(request);
+        CryptoKey result = client.GetCryptoKey(request);
 
         // Extract and print labels.
-        var labels = result.Labels;
-        foreach (var item in labels)
+        foreach (var item in result.Labels)
         {
             Console.WriteLine($"{item.Key}={item.Value}");
         }

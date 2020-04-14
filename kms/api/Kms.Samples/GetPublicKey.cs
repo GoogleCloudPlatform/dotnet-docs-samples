@@ -15,28 +15,23 @@
  */
 
 // [START kms_get_public_key]
-
 using Google.Cloud.Kms.V1;
-using System;
 
 public class GetPublicKeySample
 {
     public PublicKey GetPublicKey(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string keyVersionId = "123")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new GetPublicKeyRequest
+        GetPublicKeyRequest request = new GetPublicKeyRequest
         {
             CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
         };
 
         // Call the API.
-        var result = client.GetPublicKey(request);
-
-        // Extract and print the public key in PEM format.
-        Console.WriteLine(result.Pem);
+        PublicKey result = client.GetPublicKey(request);
 
         // Return the ciphertext.
         return result;

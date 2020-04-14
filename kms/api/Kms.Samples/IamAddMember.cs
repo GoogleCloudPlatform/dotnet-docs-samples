@@ -15,7 +15,6 @@
  */
 
 // [START kms_iam_add_member]
-
 using Google.Cloud.Iam.V1;
 using Google.Cloud.Kms.V1;
 
@@ -26,35 +25,35 @@ public class IamAddMemberSample
       string member = "user:foo@example.com")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Construct the resource name.
-        var resourceName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
+        CryptoKeyName resourceName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
 
         // The resource name could also be a Cloud KMS key ring.
         // var resourceName = new KeyRingName(projectId, locationId, keyRingId);
 
         // Build the request.
-        var getRequest = new GetIamPolicyRequest
+        GetIamPolicyRequest getRequest = new GetIamPolicyRequest
         {
             ResourceAsResourceName = resourceName,
         };
 
         // Get the current IAM policy.
-        var policy = client.GetIamPolicy(getRequest);
+        Policy policy = client.GetIamPolicy(getRequest);
 
         // Add the member to the policy.
         policy.AddRoleMember("roles/cloudkms.cryptoKeyEncrypterDecrypter", member);
 
         // Build the request to update the policy.
-        var setRequest = new SetIamPolicyRequest
+        SetIamPolicyRequest setRequest = new SetIamPolicyRequest
         {
             ResourceAsResourceName = resourceName,
             Policy = policy,
         };
 
         // Save the updated IAM policy.
-        var result = client.SetIamPolicy(setRequest);
+        Policy result = client.SetIamPolicy(setRequest);
 
         // Return the resulting policy.
         return result;

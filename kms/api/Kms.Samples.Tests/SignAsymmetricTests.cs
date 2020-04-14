@@ -47,7 +47,7 @@ public class SignAsymmetricTest
         var digest = sha256.ComputeHash(Encoding.UTF8.GetBytes(message));
 
         // Get the public key.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         var publicKey = client.GetPublicKey(new GetPublicKeyRequest
         {
             CryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricSignRsaKeyId, "1"),

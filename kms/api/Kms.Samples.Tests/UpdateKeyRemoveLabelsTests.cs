@@ -40,7 +40,7 @@ public class UpdateKeyRemoveLabelsTest
         var result = _sample.UpdateKeyRemoveLabels(projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId);
 
         // Get the key.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         var key = client.GetCryptoKey(new GetCryptoKeyRequest
         {
             CryptoKeyName = result.CryptoKeyName,

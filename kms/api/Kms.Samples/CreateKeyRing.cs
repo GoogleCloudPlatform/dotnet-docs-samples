@@ -26,17 +26,17 @@ public class CreateKeyRingSample
       string id = "my-key-ring")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new CreateKeyRingRequest
+        CreateKeyRingRequest request = new CreateKeyRingRequest
         {
             ParentAsLocationName = new LocationName(projectId, locationId),
             KeyRingId = id,
         };
 
         // Call the API.
-        var result = client.CreateKeyRing(request);
+        KeyRing result = client.CreateKeyRing(request);
 
         // Return the result.
         return result;

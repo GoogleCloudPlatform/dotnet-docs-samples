@@ -15,7 +15,6 @@
  */
 
 // [START kms_create_key_asymmetric_decrypt]
-
 using Google.Cloud.Kms.V1;
 
 public class CreateKeyAsymmetricDecryptSample
@@ -25,10 +24,10 @@ public class CreateKeyAsymmetricDecryptSample
       string id = "my-asymmetric-encrypt-key")
     {
         // Create the client.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
         // Build the request.
-        var request = new CreateCryptoKeyRequest
+        CreateCryptoKeyRequest request = new CreateCryptoKeyRequest
         {
             ParentAsKeyRingName = new KeyRingName(projectId, locationId, keyRingId),
             CryptoKeyId = id,
@@ -43,7 +42,7 @@ public class CreateKeyAsymmetricDecryptSample
         };
 
         // Call the API.
-        var result = client.CreateCryptoKey(request);
+        CryptoKey result = client.CreateCryptoKey(request);
 
         // Return the result.
         return result;

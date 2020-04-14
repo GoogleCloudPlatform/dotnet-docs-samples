@@ -38,7 +38,7 @@ public class CreateKeyAsymmetricSignTest
           id: _fixture.RandomId());
 
         // Get the key.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         var key = client.GetCryptoKey(new GetCryptoKeyRequest
         {
             CryptoKeyName = result.CryptoKeyName,

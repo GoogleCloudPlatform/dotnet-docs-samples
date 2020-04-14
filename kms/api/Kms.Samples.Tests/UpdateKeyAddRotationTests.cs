@@ -36,7 +36,7 @@ public class UpdateKeyAddRotationTest
         var result = _sample.UpdateKeyAddRotation(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId);
 
         // Get the key.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         var key = client.GetCryptoKey(new GetCryptoKeyRequest
         {
             CryptoKeyName = result.CryptoKeyName,

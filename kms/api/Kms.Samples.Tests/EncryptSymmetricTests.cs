@@ -41,7 +41,7 @@ public class EncryptSymmetricTest
           plaintext: plaintext);
 
         // Attempt to decrypt to verify success.
-        var client = KeyManagementServiceClient.Create();
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         var response = client.Decrypt(new DecryptRequest
         {
             CryptoKeyName = _fixture.SymmetricKeyName,
