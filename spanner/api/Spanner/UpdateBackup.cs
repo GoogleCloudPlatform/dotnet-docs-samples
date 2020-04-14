@@ -32,8 +32,8 @@ namespace GoogleCloudSamples.Spanner
                 BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
             Backup backup = databaseAdminClient.GetBackup(backupName);
 
-            // Add 30 days to the existing ExpireTime.
-            backup.ExpireTime = backup.ExpireTime.ToDateTime().AddDays(30).ToTimestamp();
+            // Add 14 days to the existing ExpireTime.
+            backup.ExpireTime = backup.ExpireTime.ToDateTime().AddDays(14).ToTimestamp();
 
             UpdateBackupRequest backupUpdateRequest = new UpdateBackupRequest
             {
@@ -50,7 +50,7 @@ namespace GoogleCloudSamples.Spanner
             // Make the UpdateBackup requests.
             var updatedBackup = databaseAdminClient.UpdateBackup(backupUpdateRequest);
 
-            Console.WriteLine($"Updated Backup ExireTime: {updatedBackup.ExpireTime}");
+            Console.WriteLine($"Updated Backup ExpireTime: {updatedBackup.ExpireTime}");
 
             return 0;
         }

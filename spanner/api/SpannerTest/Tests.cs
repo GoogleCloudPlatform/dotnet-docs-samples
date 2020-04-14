@@ -661,7 +661,7 @@ namespace GoogleCloudSamples.Spanner
             ConsoleOutput output = _spannerCmd.Run("updateBackup",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Updated Backup ExireTime", output.Stdout);
+            Assert.Contains("Updated Backup ExpireTime", output.Stdout);
         }
     }
 }
