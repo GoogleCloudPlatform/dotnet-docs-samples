@@ -67,7 +67,6 @@ namespace GoogleCloudSamples.Spanner
             Console.WriteLine("Backups expiring within 30 days:");
             string expireTime = DateTime.UtcNow.AddDays(30).ToString("O");
             request.Filter = $"expire_time < \"{expireTime}\"";
-            Console.WriteLine(request.Filter);
             var expiringBackups = databaseAdminClient.ListBackups(request).ToList();
             printBackups(expiringBackups);
 
