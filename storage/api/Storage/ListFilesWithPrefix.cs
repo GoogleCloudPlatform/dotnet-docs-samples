@@ -45,7 +45,6 @@ namespace Storage
             var storage = StorageClient.Create();
             var options = new ListObjectsOptions() { Delimiter = delimiter };
             var storageObjects = storage.ListObjects(bucketName, prefix, options).ToList();
-            Console.WriteLine("Files:");
             foreach (var storageObject in storageObjects)
             {
                 Console.WriteLine(storageObject.Name);

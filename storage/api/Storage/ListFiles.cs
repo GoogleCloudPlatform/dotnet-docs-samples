@@ -27,7 +27,6 @@ namespace Storage
         {
             var storage = StorageClient.Create();
             var storageObjects = storage.ListObjects(bucketName, "").ToList();
-            Console.WriteLine("Files:");
             foreach (var storageObject in storageObjects)
             {
                 Console.WriteLine(storageObject.Name);

@@ -249,7 +249,7 @@ namespace GoogleCloudSamples
             {
                 var listed = Run("list", _bucketName);
                 AssertSucceeded(listed);
-                Assert.Equal("Files:\r\n", listed.Stdout);
+                Assert.Equal("", listed.Stdout);
             });
 
             var uploaded = Run("upload", _bucketName, "Hello.txt", Collect("HelloListObjectsTest.txt"));
@@ -276,7 +276,7 @@ namespace GoogleCloudSamples
             {
                 var listed = Run("list", _bucketName);
                 AssertSucceeded(listed);
-                Assert.Equal("Files:\r\n", listed.Stdout);
+                Assert.Equal("", listed.Stdout);
             });
 
             // Upload 4 files.
@@ -298,7 +298,7 @@ namespace GoogleCloudSamples
                     "a/1.txt",
                     "a/2.txt",
                     "a/b/3.txt"
-                }, SplitOutput(listed.Stdout.Replace("Files:\r\n", "")));
+                }, SplitOutput(listed.Stdout));
 
                 // With a delimeter, we should see only direct contents.
                 listed = Run("list", _bucketName, "a/", "/");
@@ -306,7 +306,7 @@ namespace GoogleCloudSamples
                 Assert.Equal(new string[] {
                     "a/1.txt",
                     "a/2.txt",
-                }, SplitOutput(listed.Stdout.Replace("Files:\r\n", "")));
+                }, SplitOutput(listed.Stdout));
             });
         }
 
