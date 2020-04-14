@@ -54,9 +54,9 @@ public class VerifyAsymmetricSignRsa
 
         // Run the sample.
         var verified = _sample.VerifyAsymmetricSignatureRsa(
-          projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricSignRsaKeyId, keyVersionId: "1",
-          message: message,
-          signature: result.Signature.ToByteArray());
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricSignRsaKeyId, keyVersionId: "1",
+            message: message,
+            signature: result.Signature.ToByteArray());
 
         // Verify result.
         Assert.True(verified);

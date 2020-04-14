@@ -37,7 +37,8 @@ public class UpdateKeyRemoveLabelsTest
         var name = createdKey.CryptoKeyName;
 
         // Run the sample code.
-        var result = _sample.UpdateKeyRemoveLabels(projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId);
+        var result = _sample.UpdateKeyRemoveLabels(
+            projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId);
 
         // Get the key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();

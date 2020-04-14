@@ -38,7 +38,8 @@ public class EnableKeyVersionTest
 
         // Run the sample code.
         var name = keyVersion.CryptoKeyVersionName;
-        var response = _sample.EnableKeyVersion(projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId, keyVersionId: name.CryptoKeyVersionId);
+        var response = _sample.EnableKeyVersion(
+            projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId, keyVersionId: name.CryptoKeyVersionId);
 
         // Verify enabled.
         Assert.Equal(CryptoKeyVersion.Types.CryptoKeyVersionState.Enabled, response.State);

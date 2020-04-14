@@ -1,7 +1,7 @@
 # .NET Cloud Key Management Service (KMS) Samples
 
-These samples demonstrate how to interact with the [Cloud KMS][kms] using the
-Cloud KMS API using .NET in C#.
+These samples demonstrate how to interact with the [Cloud KMS][kms] using C# and
+the .NET client libraries to call the Cloud KMS API.
 
 The samples require [.NET Core 3.1][net-core] or later.
 

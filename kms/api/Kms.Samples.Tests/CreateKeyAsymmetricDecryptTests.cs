@@ -34,8 +34,8 @@ public class CreateKeyAsymmetricDecryptTest
     {
         // Run the sample code.
         var result = _sample.CreateKeyAsymmetricDecrypt(
-          projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId,
-          id: _fixture.RandomId());
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId,
+            id: _fixture.RandomId());
 
         // Get the key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();

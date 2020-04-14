@@ -32,7 +32,9 @@ public class GetPublicKeyTest
     public void GetsPublicKey()
     {
         // Run the sample code.
-        var result = _sample.GetPublicKey(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId, "1");
+        var result = _sample.GetPublicKey
+          (projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId, "1");
+
         Assert.NotNull(result);
     }
 }

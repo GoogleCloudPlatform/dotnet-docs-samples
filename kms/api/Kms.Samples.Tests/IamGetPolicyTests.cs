@@ -33,7 +33,7 @@ public class IamGetPolicyTest
     {
         // Run the sample code.
         var result = _sample.IamGetPolicy(
-          projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId);
+            projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId);
 
         // Verify result/
         Assert.NotNull(result);

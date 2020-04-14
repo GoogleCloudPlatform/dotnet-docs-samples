@@ -36,7 +36,8 @@ public class UpdateKeyUpdateLabelsTest
         var name = createdKey.CryptoKeyName;
 
         // Run the sample code.
-        var result = _sample.UpdateKeyUpdateLabels(projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId);
+        var result = _sample.UpdateKeyUpdateLabels(
+            projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId);
 
         Assert.NotEmpty(result.Labels);
         Assert.Equal("new_value", result.Labels["new_label"]);
