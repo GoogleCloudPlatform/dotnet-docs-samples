@@ -639,7 +639,7 @@ namespace GoogleCloudSamples.Spanner
         static readonly ILog s_logger = LogManager.GetLogger(typeof(Program));
         private static readonly string s_netCorePlatform = "netcore";
 
-        public enum ExitCode : int
+        enum ExitCode : int
         {
             Success = 0,
             InvalidParameter = 1,
