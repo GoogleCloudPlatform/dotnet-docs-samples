@@ -3842,7 +3842,8 @@ namespace GoogleCloudSamples.Spanner
                         opts.backupId))
                 .Add((GetBackupsOptions opts) =>
                     GetBackups.SpannerGetBackups(
-                        opts.projectId, opts.instanceId, opts.databaseId, opts.backupId))
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
                 .Add((RestoreDatabaseOptions opts) =>
                     RestoreDatabase.SpannerRestoreDatabase(
                         opts.projectId, opts.instanceId, opts.databaseId,
