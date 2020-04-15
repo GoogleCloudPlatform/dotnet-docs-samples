@@ -15,6 +15,7 @@
  */
 
 // [START kms_get_key_labels]
+
 using Google.Cloud.Kms.V1;
 using System;
 
@@ -34,10 +35,12 @@ public class GetKeyLabelsSample
         // Call the API.
         CryptoKey result = client.GetCryptoKey(request);
 
-        // Extract and print labels.
+        // Example of iterating over labels.
         foreach (var item in result.Labels)
         {
-            Console.WriteLine($"{item.Key}={item.Value}");
+            String key = item.Key;
+            String value = item.Value;
+            // ...
         }
 
         // Return the ciphertext.

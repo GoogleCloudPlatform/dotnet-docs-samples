@@ -15,6 +15,7 @@
  */
 
 // [START kms_destroy_key_version]
+
 using Google.Cloud.Kms.V1;
 
 public class DestroyKeyVersionSample

@@ -15,9 +15,9 @@
  */
 
 // [START kms_quickstart]
+
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Kms.V1;
-using System;
 
 public class QuickstartSample
 {
@@ -35,7 +35,7 @@ public class QuickstartSample
         // Iterate over and print each key ring name;
         foreach (KeyRing keyRing in client.ListKeyRings(request))
         {
-            Console.WriteLine(keyRing.Name);
+            // ... (e.g. keyRing.Name)
         }
     }
 }

@@ -15,6 +15,7 @@
  */
 
 // [START kms_sign_asymmetric]
+
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
 using System.Security.Cryptography;

@@ -15,6 +15,7 @@
  */
 
 // [START kms_update_key_remove_labels]
+
 using Google.Cloud.Kms.V1;
 using Google.Protobuf.WellKnownTypes;
 

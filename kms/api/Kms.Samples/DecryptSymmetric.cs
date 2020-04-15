@@ -15,6 +15,7 @@
  */
 
 // [START kms_decrypt_symmetric]
+
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
 

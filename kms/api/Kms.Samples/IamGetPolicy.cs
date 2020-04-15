@@ -15,6 +15,7 @@
  */
 
 // [START kms_iam_get_policy]
+
 using Google.Cloud.Iam.V1;
 using Google.Cloud.Kms.V1;
 using System;
@@ -45,10 +46,11 @@ public class IamGetPolicySample
         // Print the policy.
         foreach (Binding b in policy.Bindings)
         {
-            Console.WriteLine(b.Role);
-            foreach (string m in b.Members)
+            String role = b.Role;
+
+            foreach (String member in b.Members)
             {
-                Console.WriteLine($"  {m}");
+                // ...
             }
         }
 
