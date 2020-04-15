@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using Google.Cloud.Monitoring.V3;
 using Google.Protobuf.WellKnownTypes;
 using Google.Api;
+using Google.Api.Gax.ResourceNames;
 
 namespace GoogleCloudSamples
 {
@@ -37,33 +38,47 @@ namespace GoogleCloudSamples
             // Initialize request argument(s).
             ProjectName name = new ProjectName(projectId);
 
-            // Prepare a data point. 
-            Point dataPoint = new Point();
-            TypedValue salesTotal = new TypedValue();
-            salesTotal.DoubleValue = 123.45;
-            dataPoint.Value = salesTotal;
+            // Prepare a data point.
+            TypedValue salesTotal = new TypedValue
+            {
+                DoubleValue = 123.45
+            };
+            Point dataPoint = new Point
+            {
+                Value = salesTotal
+            };
             // Sets data point's interval end time to current time.
-            Timestamp timeStamp = new Timestamp();
             DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            timeStamp.Seconds = (long)(DateTime.UtcNow - UnixEpoch).TotalSeconds;
-            TimeInterval interval = new TimeInterval();
-            interval.EndTime = timeStamp;
+            Timestamp timeStamp = new Timestamp
+            {
+                Seconds = (long)(DateTime.UtcNow - UnixEpoch).TotalSeconds
+            };
+            TimeInterval interval = new TimeInterval
+            {
+                EndTime = timeStamp
+            };
             dataPoint.Interval = interval;
 
             // Prepare custom metric.
-            Metric metric = new Metric();
-            metric.Type = "custom.googleapis.com/shops/daily_sales";
+            Metric metric = new Metric
+            {
+                Type = "custom.googleapis.com/shops/daily_sales"
+            };
             metric.Labels.Add("store_id", "Pittsburgh");
 
             // Prepare monitored resource.
-            MonitoredResource resource = new MonitoredResource();
-            resource.Type = "global";
+            MonitoredResource resource = new MonitoredResource
+            {
+                Type = "global"
+            };
             resource.Labels.Add("project_id", projectId);
 
             // Create a new time series using inputs.
-            TimeSeries timeSeriesData = new TimeSeries();
-            timeSeriesData.Metric = metric;
-            timeSeriesData.Resource = resource;
+            TimeSeries timeSeriesData = new TimeSeries
+            {
+                Metric = metric,
+                Resource = resource
+            };
             timeSeriesData.Points.Add(dataPoint);
 
             // Add newly created time series to list of time series to be written.

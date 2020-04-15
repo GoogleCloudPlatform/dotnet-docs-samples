@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
         public static object DeleteTenant(string projectId, string tenantId)
         {
             TenantServiceClient tenantServiceClient = TenantServiceClient.Create();
-            TenantName tenantName = new TenantName(projectId, tenantId);
+            TenantName tenantName = TenantName.FromProjectTenant(projectId, tenantId);
             DeleteTenantRequest request = new DeleteTenantRequest
             {
                 TenantName = tenantName

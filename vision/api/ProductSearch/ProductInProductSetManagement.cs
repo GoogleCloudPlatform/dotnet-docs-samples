@@ -3,6 +3,7 @@ using Google.Cloud.Vision.V1;
 using CommandLine;
 using System.Linq;
 using Google.Protobuf.WellKnownTypes;
+using Google.Api.Gax.ResourceNames;
 
 namespace GoogleCloudSamples
 {

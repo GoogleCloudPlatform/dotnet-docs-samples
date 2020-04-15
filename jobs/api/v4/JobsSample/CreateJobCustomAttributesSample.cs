@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
         public static object CreateJobCustomAttributes(string projectId, string tenantId, string companyId, string requisitionId)
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
-            TenantName tenantName = new TenantName(projectId, tenantId);
+            TenantName tenantName = TenantName.FromProjectTenant(projectId, tenantId);
 
             // Custom attribute can be string or numeric value, and can be filtered in search queries.
             // https://cloud.google.com/talent-solution/job-search/docs/custom-attributes
@@ -47,7 +47,7 @@ namespace GoogleCloudSamples
 
             CreateJobRequest request = new CreateJobRequest
             {
-                ParentAsTenantOrProjectNameOneof = TenantOrProjectNameOneof.From(tenantName),
+                ParentAsTenantName = tenantName,
                 Job = job
             };
 

@@ -152,28 +152,21 @@ namespace GoogleCloudSamples
         /// <returns>
         /// A CallSettings instance.
         /// </returns>
-        CallSettings newRetryCallSettings(int tryCount,
-            params StatusCode[] finalStatusCodes)
-        {
+        private CallSettings NewRetryCallSettings(int tryCount, params StatusCode[] finalStatusCodes) =>
             // Initialize values for backoff settings to be used
             // by the CallSettings for RPC retries
-            var backoff = new BackoffSettings(
-                delay: TimeSpan.FromSeconds(3),
-                maxDelay: TimeSpan.FromSeconds(10), delayMultiplier: 2);
-            var timeout = new BackoffSettings(
-                delay: TimeSpan.FromSeconds(10),
-                maxDelay: TimeSpan.FromSeconds(30), delayMultiplier: 1.5);
-
-            return new CallSettings(null, null,
-                CallTiming.FromRetry(new RetrySettings(backoff, timeout,
-                Google.Api.Gax.Expiration.None,
-                  (RpcException e) => (
-                        StatusCode.OK != e.Status.StatusCode
-                        && !finalStatusCodes.Contains(e.Status.StatusCode)
-                        && --tryCount > 0),
-                    RetrySettings.NoJitter)),
-                metadata => metadata.Add("ClientVersion", "1.0.0"), null, null);
-        }
+            CallSettings.FromRetry(
+                RetrySettings.FromExponentialBackoff(
+                    maxAttempts: tryCount,
+                    initialBackoff: TimeSpan.FromSeconds(3),
+                    maxBackoff: TimeSpan.FromSeconds(10),
+                    backoffMultiplier: 2,
+                    retryFilter: ex =>
+                        ex is RpcException rpcEx &&
+                        rpcEx.StatusCode != StatusCode.OK &&
+                        !finalStatusCodes.Contains(rpcEx.StatusCode),
+                    backoffJitter: RetrySettings.NoJitter))
+                .WithHeader("ClientVersion", "2.0.0-beta02");
 
         public PubsubTest()
         {
@@ -247,7 +240,7 @@ namespace GoogleCloudSamples
             {
                 // This may fail if the Topic already exists.
                 // Don't retry in that case.
-                publisher.CreateTopic(topicName, newRetryCallSettings(3,
+                publisher.CreateTopic(topicName, NewRetryCallSettings(3,
                     StatusCode.AlreadyExists));
             }
             catch (RpcException e)
@@ -262,7 +255,7 @@ namespace GoogleCloudSamples
                 // retry, because a retry would fail the same way.
                 subscriber.CreateSubscription(subscriptionName, topicName,
                     pushConfig: null, ackDeadlineSeconds: 60,
-                    callSettings: newRetryCallSettings(3,
+                    callSettings: NewRetryCallSettings(3,
                         StatusCode.AlreadyExists));
             }
             catch (RpcException e)

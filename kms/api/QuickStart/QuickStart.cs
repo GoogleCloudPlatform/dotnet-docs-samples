@@ -18,6 +18,7 @@
 
 using System;
 using System.Linq;
+using Google.Api.Gax.ResourceNames;
 // Imports the Google Cloud KMS client library
 using Google.Cloud.Kms.V1;
 

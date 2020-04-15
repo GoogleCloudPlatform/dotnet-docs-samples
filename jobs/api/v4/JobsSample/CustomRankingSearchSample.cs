@@ -26,7 +26,7 @@ namespace GoogleCloudSamples
         public static object CustomRankingSearch(string projectId, string tenantId)
         {
             JobServiceClient jobServiceClient = JobServiceClient.Create();
-            TenantName name = new TenantName(projectId, tenantId);
+            TenantName name = TenantName.FromProjectTenant(projectId, tenantId);
 
             string domain = "www.example.com";
             string sessionId = "Hashed session identifier";
@@ -49,7 +49,7 @@ namespace GoogleCloudSamples
 
             SearchJobsRequest request = new SearchJobsRequest
             {
-                ParentAsTenantOrProjectNameOneof = TenantOrProjectNameOneof.From(name),
+                ParentAsTenantName = name,
                 CustomRankingInfo = customRankingInfo,
                 RequestMetadata = requestMetadata,
                 OrderBy = orderBy
