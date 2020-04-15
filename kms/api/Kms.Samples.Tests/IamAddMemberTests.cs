@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using Google.Cloud.Iam.V1;
 using Xunit;
 
 [Collection(nameof(KmsFixture))]
@@ -37,18 +36,7 @@ public class IamAddMemberTest
             projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId,
             member: "group:test@google.com");
 
-        // Verify result.
-        Binding role = null;
-        foreach (var b in result.Bindings)
-        {
-            if (b.Role == "roles/cloudkms.cryptoKeyEncrypterDecrypter")
-            {
-                role = b;
-                break;
-            }
-        }
-
-        Assert.NotNull(role);
-        Assert.Contains("group:test@google.com", role.Members);
+        Assert.Contains(result.Bindings,
+            binding => binding.Role == "roles/cloudkms.cryptoKeyEncrypterDecrypter" && binding.Members.Contains("group:test@google.com"));
     }
 }

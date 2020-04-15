@@ -15,6 +15,7 @@
  */
 
 // [START kms_disable_key_version]
+
 using Google.Cloud.Kms.V1;
 using Google.Protobuf.WellKnownTypes;
 

@@ -15,6 +15,7 @@
  */
 
 // [START kms_update_key_set_primary]
+
 using Google.Cloud.Kms.V1;
 
 public class UpdateKeySetPrimarySample

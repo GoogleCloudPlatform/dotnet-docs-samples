@@ -15,6 +15,7 @@
  */
 
 // [START kms_encrypt_asymmetric]
+
 using Google.Cloud.Kms.V1;
 using System;
 using System.Security.Cryptography;

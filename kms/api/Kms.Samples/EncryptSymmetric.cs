@@ -15,6 +15,7 @@
  */
 
 // [START kms_encrypt_symmetric]
+
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
 

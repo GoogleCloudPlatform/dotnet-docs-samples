@@ -15,14 +15,15 @@
  */
 
 // [START kms_verify_asymmetric_signature_ec]
+
 public class VerifyAsymmetricSignatureEcSample
 {
-  // Cloud KMS returns signatures in a DER-encoded format. .NET requires
-  // signatures to be in IEEE 1363 format, and converting between these formats
-  // is a few hundred lines of code.
-  //
-  // https://github.com/dotnet/runtime/pull/1612 exposes these helpers, but will
-  // not be available until .NET 5. Until then, you will need to use an external
-  // library or package to validate signatures.
+    // Cloud KMS returns signatures in a DER-encoded format. .NET requires
+    // signatures to be in IEEE 1363 format, and converting between these formats
+    // is a few hundred lines of code.
+    //
+    // https://github.com/dotnet/runtime/pull/1612 exposes these helpers, but will
+    // not be available until .NET 5. Until then, you will need to use an external
+    // library or package to validate signatures.
 }
 // [END kms_verify_asymmetric_signature_ec]

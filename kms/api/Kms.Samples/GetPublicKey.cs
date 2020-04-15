@@ -15,6 +15,7 @@
  */
 
 // [START kms_get_public_key]
+
 using Google.Cloud.Kms.V1;
 
 public class GetPublicKeySample

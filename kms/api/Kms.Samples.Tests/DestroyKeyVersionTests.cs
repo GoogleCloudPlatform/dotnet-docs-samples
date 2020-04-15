@@ -44,8 +44,8 @@ public class DestroyKeyVersionTest
         // Verify marked for deletion.
         var acceptableStates = new CryptoKeyVersion.Types.CryptoKeyVersionState[]
         {
-          CryptoKeyVersion.Types.CryptoKeyVersionState.DestroyScheduled,
-          CryptoKeyVersion.Types.CryptoKeyVersionState.Destroyed,
+            CryptoKeyVersion.Types.CryptoKeyVersionState.DestroyScheduled,
+            CryptoKeyVersion.Types.CryptoKeyVersionState.Destroyed,
         };
         Assert.Contains(response.State, acceptableStates);
     }
