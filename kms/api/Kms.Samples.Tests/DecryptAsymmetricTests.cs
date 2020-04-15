@@ -60,7 +60,6 @@ public class DecryptAsymmetricTest
             projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId, keyVersionId: "1",
             ciphertext: ciphertext);
 
-        // Attempt to decrypt to verify success.
         Assert.Equal(plaintext, result);
     }
 }
