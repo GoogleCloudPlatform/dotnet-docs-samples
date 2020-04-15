@@ -61,7 +61,6 @@ public class SignAsymmetricTest
         var rsa = RSA.Create();
         rsa.ImportSubjectPublicKeyInfo(pem, out _);
 
-        // Verify the signature.
         var verified = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
         Assert.True(verified);
     }

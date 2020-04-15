@@ -58,7 +58,6 @@ public class VerifyAsymmetricSignRsa
             message: message,
             signature: result.Signature.ToByteArray());
 
-        // Verify result.
         Assert.True(verified);
     }
 }

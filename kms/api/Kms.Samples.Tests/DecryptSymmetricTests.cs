@@ -48,7 +48,6 @@ public class DecryptSymmetricTest
             projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId,
             ciphertext: result.Ciphertext.ToByteArray());
 
-        // Attempt to decrypt to verify success.
         Assert.Equal(plaintext, response);
     }
 }

@@ -41,7 +41,6 @@ public class DisableKeyVersionTest
         var response = _sample.DisableKeyVersion(
             projectId: name.ProjectId, locationId: name.LocationId, keyRingId: name.KeyRingId, keyId: name.CryptoKeyId, keyVersionId: name.CryptoKeyVersionId);
 
-        // Verify disabled.
         Assert.Equal(CryptoKeyVersion.Types.CryptoKeyVersionState.Disabled, response.State);
     }
 }

@@ -48,7 +48,6 @@ public class EncryptAsymmetricTest
             Ciphertext = ByteString.CopyFrom(ciphertext),
         });
 
-        // Attempt to decrypt to verify success.
         Assert.Equal(plaintext, result.Plaintext.ToStringUtf8());
     }
 }
