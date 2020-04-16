@@ -17,6 +17,9 @@ using Xunit;
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
+using Reads;
+using System.Threading.Tasks;
+using Google.Api.Gax;
 
 namespace Reads_
 {
@@ -93,65 +96,63 @@ namespace Reads_
 
         [Fact]
         public void TestReadRow()
-
         {
-            Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
-
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRow(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = ReadRow.BigtableReadRow(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId);
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestReadRowPartial()
-
         {
-            Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
-
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRowPartial(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = ReadRowPartial.BigtableReadRowPartial(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId);
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestReadRows()
-
         {
-            Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
-
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRows(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => ReadRows.BigtableReadRows(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestReadRowRange()
-
         {
-            Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
-
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRowRange(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => ReadRowRange.BigtableReadRowRange(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestReadRowRanges()
-
         {
-            Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
-
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRowRanges(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => ReadRowRanges.BigtableReadRowRanges(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestReadPrefix()
-
         {
-            Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
-
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readPrefix(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => ReadPrefix.BigtableReadPrefix(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestReadFilter()
-
         {
-            Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
-
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readFilter(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => ReadFilter.BigtableReadFilter(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
     }
 }
