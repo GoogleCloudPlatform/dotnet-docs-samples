@@ -19,8 +19,8 @@ namespace GoogleCloudSamples
 {
     public class Redis
     {
-        public static readonly string s_projectId = "grass-clump-479";
-        public static readonly string s_locationId = "us-central1";
+        public static readonly string s_projectId = "YOUR-PROJECT-ID";
+        public static readonly string s_locationId = "LOCATION-ID";
         private static readonly string s_usage =
             "Usage: \n" +
             "  Redis create [instance-name]\n" +
