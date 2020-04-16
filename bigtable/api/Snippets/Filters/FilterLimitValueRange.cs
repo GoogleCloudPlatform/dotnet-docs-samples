@@ -22,12 +22,13 @@ namespace Filters
     public class FilterLimitValueRange
     {
         /// <summary>
-        /// /// Read using a value range filter from an existing table.
+        /// Read using a value range filter from an existing table.
         ///</summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
-        public static Task<string> BigtableFilterLimitValueRange(string projectId = "YOUR-PROJECT-ID",
+        public static Task<string> BigtableFilterLimitValueRange(
+            string projectId = "YOUR-PROJECT-ID",
             string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             // A filter that matches cells whose values are between the given values

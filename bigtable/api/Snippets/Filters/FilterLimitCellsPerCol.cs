@@ -22,12 +22,14 @@ namespace Filters
     public class FilterLimitCellsPerCol
     {
         /// <summary>
-        /// /// Read using a cells per column filter from an existing table.
+        /// Read using a cells per column filter from an existing table.
         ///</summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
-        public static Task<string> BigtableFilterLimitCellsPerCol(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        public static Task<string> BigtableFilterLimitCellsPerCol(
+            string projectId = "YOUR-PROJECT-ID",
+            string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             // A filter that matches only the most recent 2 cells within each column
             RowFilter filter = RowFilters.CellsPerColumnLimit(2);

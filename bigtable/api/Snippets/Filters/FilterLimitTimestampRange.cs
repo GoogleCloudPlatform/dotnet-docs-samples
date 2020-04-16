@@ -23,7 +23,7 @@ namespace Filters
     public class FilterLimitTimestampRange
     {
         /// <summary>
-        /// /// Read using a timestamp range filter from an existing table.
+        /// Read using a timestamp range filter from an existing table.
         ///</summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>

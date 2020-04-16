@@ -22,12 +22,14 @@ namespace Filters
     public class FilterLimitRowRegex
     {
         /// <summary>
-        /// /// Read using a row regex filter from an existing table.
+        /// Read using a row regex filter from an existing table.
         ///</summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
-        public static Task<string> BigtableFilterLimitRowRegex(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        public static Task<string> BigtableFilterLimitRowRegex(
+            string projectId = "YOUR-PROJECT-ID",
+            string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             // A filter that matches cells from rows whose keys satisfy the given regex
             RowFilter filter = RowFilters.RowKeyRegex(".*#20190501$");

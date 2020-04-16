@@ -27,7 +27,8 @@ namespace Filters
         /// <param name="instanceId">The instance identifier.</param>
         /// <param name="tableId">The table identifier.</param>
         /// <param name="filter">The filter.</param>
-        public static async Task<string> BigtableReadFilter(string projectId, string instanceId, string tableId, RowFilter filter)
+        public static async Task<string> BigtableReadFilter(string projectId,
+            string instanceId, string tableId, RowFilter filter)
         {
             BigtableClient bigtableClient = BigtableClient.Create();
             TableName tableName = new TableName(projectId, instanceId, tableId);

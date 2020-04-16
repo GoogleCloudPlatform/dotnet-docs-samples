@@ -22,12 +22,14 @@ namespace Filters
     public class FilterLimitBlockAll
     {
         /// <summary>
-        /// /// Read using a block all filter from an existing table.
+        /// Read using a block all filter from an existing table.
         ///</summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
-        public static Task<string> BigtableFilterLimitBlockAll(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        public static Task<string> BigtableFilterLimitBlockAll(
+            string projectId = "YOUR-PROJECT-ID",
+            string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             // A filter that does not match any cells
             RowFilter filter = RowFilters.BlockAllFilter();

@@ -23,12 +23,14 @@ namespace Filters
     public class FilterComposingChain
     {
         /// <summary>
-        /// /// Read using a chain filter from an existing table.
+        /// Read using a chain filter from an existing table.
         ///</summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
-        public static Task<string> BigtableFilterComposingChain(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        public static Task<string> BigtableFilterComposingChain(
+            string projectId = "YOUR-PROJECT-ID",
+            string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             // A filter that selects one cell per column AND within the column family cell_plan
             RowFilter filter = RowFilters.Chain(RowFilters.CellsPerColumnLimit(1), RowFilters.FamilyNameExact("cell_plan"));

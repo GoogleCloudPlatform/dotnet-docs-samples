@@ -28,7 +28,8 @@ namespace Reads
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
-        public static async Task<string> BigtableReadPrefix(string projectId = "YOUR-PROJECT-ID",
+        public static async Task<string> BigtableReadPrefix(
+            string projectId = "YOUR-PROJECT-ID",
             string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             BigtableClient bigtableClient = BigtableClient.Create();

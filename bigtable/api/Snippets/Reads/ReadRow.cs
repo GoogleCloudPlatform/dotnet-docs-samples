@@ -28,8 +28,8 @@ namespace Reads
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
         public static string BigtableReadRow(
-            string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID",
-            string tableId = "YOUR-TABLE-ID")
+            string projectId = "YOUR-PROJECT-ID",
+            string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             BigtableClient bigtableClient = BigtableClient.Create();
             TableName tableName = new TableName(projectId, instanceId, tableId);

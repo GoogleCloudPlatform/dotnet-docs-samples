@@ -63,20 +63,20 @@ namespace Writes
         public void TestWriteSimpleIncrementConditional()
         {
             Writes.WriteSimple writeSimple = new Writes.WriteSimple();
-            Assert.Contains("Successfully wrote row", writeSimple.writeSimple(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Assert.Contains("Successfully wrote row", writeSimple.BigtableWriteSimple(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
 
             Writes.WriteIncrement writeIncrement = new Writes.WriteIncrement();
-            Assert.Contains("Successfully updated row", writeIncrement.writeIncrement(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Assert.Contains("Successfully updated row", writeIncrement.BigtableWriteIncrement(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
 
             Writes.WriteConditional writeConditional = new Writes.WriteConditional();
-            Assert.Contains("Successfully updated row's os_name: True", writeConditional.writeConditional(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Assert.Contains("Successfully updated row's os_name: True", writeConditional.BigtableWriteConditional(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
         public void TestWriteBatch()
         {
             Writes.WriteBatch writeBatch = new Writes.WriteBatch();
-            Assert.Contains("Successfully wrote 2 rows", writeBatch.writeBatch(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Assert.Contains("Successfully wrote 2 rows", writeBatch.BigtableWriteBatch(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
     }
 }

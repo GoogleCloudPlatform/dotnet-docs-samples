@@ -22,7 +22,7 @@ namespace Filters
     public class FilterLimitCellsPerRowOffset
     {
         /// <summary>
-        /// /// Read using a cells per row offset filter from an existing table.
+        /// Read using a cells per row offset filter from an existing table.
         ///</summary>
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
