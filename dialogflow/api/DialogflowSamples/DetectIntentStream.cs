@@ -44,7 +44,7 @@ namespace GoogleCloudSamples
             string filePath)
         {
             var sessionsClient = SessionsClient.Create();
-            var sessionName = SessionName.Format(projectId, sessionId);
+            var sessionName = SessionName.FromProjectSession(projectId, sessionId).ToString();
 
             // Initialize streaming call, retrieving the stream object
             var streamingDetectIntent = sessionsClient.StreamingDetectIntent();
@@ -52,8 +52,8 @@ namespace GoogleCloudSamples
             // Define a task to process results from the API
             var responseHandlerTask = Task.Run(async () =>
             {
-                var responseStream = streamingDetectIntent.ResponseStream;
-                while (await responseStream.MoveNext())
+                var responseStream = streamingDetectIntent.GetResponseStream();
+                while (await responseStream.MoveNextAsync())
                 {
                     var response = responseStream.Current;
                     var queryResult = response.QueryResult;

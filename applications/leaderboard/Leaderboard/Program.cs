@@ -14,12 +14,12 @@
  * the License.
  */
 
+using CommandLine;
+using Google.Cloud.Spanner.Data;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using Google.Cloud.Spanner.Data;
-using CommandLine;
-using System.Threading;
 
 namespace GoogleCloudSamples.Leaderboard
 {

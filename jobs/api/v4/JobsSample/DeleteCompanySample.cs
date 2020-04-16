@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Google.Cloud.Talent.V4Beta1;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -23,10 +23,10 @@ namespace GoogleCloudSamples
         public static object DeleteCompany(string projectId, string tenantId, string companyId)
         {
             CompanyServiceClient companyServiceClient = CompanyServiceClient.Create();
-            string companyName = CompanyName.Format(projectId, tenantId, companyId);
+            CompanyName companyName = CompanyName.FromProjectTenantCompany(projectId, tenantId, companyId);
             DeleteCompanyRequest request = new DeleteCompanyRequest
             {
-                Name = companyName
+                CompanyName = companyName
             };
 
             companyServiceClient.DeleteCompany(request);

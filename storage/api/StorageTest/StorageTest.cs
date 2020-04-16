@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,9 +21,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading;
-using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Storage.V1;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -166,7 +165,7 @@ namespace GoogleCloudSamples
         private string CollectRegionalObject(string objectName)
             => Collect(_bucketName1, objectName);
 
-        public static void DeleteBucket(string bucketName)
+        internal static void DeleteBucket(string bucketName)
         {
             Eventually(() => AssertSucceeded(Run("delete", bucketName)));
         }
@@ -176,7 +175,7 @@ namespace GoogleCloudSamples
             DeleteGarbage();
         }
 
-        public void DeleteGarbage()
+        internal void DeleteGarbage()
         {
             foreach (var bucket in _garbage)
             {
@@ -648,6 +647,13 @@ namespace GoogleCloudSamples
                     role, $"{memberType}:{member}", "title", "description",
                     "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
                 AssertSucceeded(addBucketConditionalIamBinding);
+
+                // Remove Conditional Binding
+                var removeBucketConditionalIamBinding = Run("remove-bucket-iam-conditional-binding", iamTests.BucketName,
+                    role, "title", "description",
+                    "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
+                Assert.Contains("Conditional Binding was removed.", removeBucketConditionalIamBinding.Stdout);
+                AssertSucceeded(removeBucketConditionalIamBinding);
             }
         }
 

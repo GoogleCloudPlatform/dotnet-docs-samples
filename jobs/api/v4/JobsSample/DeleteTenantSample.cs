@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Google.Cloud.Talent.V4Beta1;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
         public static object DeleteTenant(string projectId, string tenantId)
         {
             TenantServiceClient tenantServiceClient = TenantServiceClient.Create();
-            TenantName tenantName = new TenantName(projectId, tenantId);
+            TenantName tenantName = TenantName.FromProjectTenant(projectId, tenantId);
             DeleteTenantRequest request = new DeleteTenantRequest
             {
                 TenantName = tenantName

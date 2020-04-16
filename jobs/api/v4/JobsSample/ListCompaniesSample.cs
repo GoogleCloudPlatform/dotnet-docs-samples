@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Google.Cloud.Talent.V4Beta1;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -23,11 +23,11 @@ namespace GoogleCloudSamples
         public static object ListCompanies(string projectId, string tenantId)
         {
             CompanyServiceClient companyServiceClient = CompanyServiceClient.Create();
-            TenantName tenantName = new TenantName(projectId, tenantId);
-            TenantOrProjectNameOneof parent = TenantOrProjectNameOneof.From(tenantName);
+            TenantName tenantName = TenantName.FromProjectTenant(projectId, tenantId);
+
             ListCompaniesRequest request = new ListCompaniesRequest
             {
-                ParentAsTenantOrProjectNameOneof = parent
+                ParentAsTenantName = tenantName
             };
             var companies = companyServiceClient.ListCompanies(request);
             foreach (var company in companies)

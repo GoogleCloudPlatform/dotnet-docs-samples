@@ -30,11 +30,11 @@ public class BatchGetAssetsHistory
 
         BatchGetAssetsHistoryRequest request = new BatchGetAssetsHistoryRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            ParentAsResourceName = ProjectName.FromProject(projectId),
             ContentType = ContentType.Resource,
             ReadTimeWindow = new TimeWindow
             {
-                StartTime = Timestamp.FromDateTime(System.DateTime.UtcNow)
+                StartTime = Timestamp.FromDateTime(DateTime.UtcNow)
             }
         };
         request.AssetNames.AddRange(assetNames);

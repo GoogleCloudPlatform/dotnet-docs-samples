@@ -51,6 +51,8 @@ namespace GoogleCloudSamples
             "  Storage add-bucket-iam-conditional-binding bucket-name member\n" +
             "                              role member cond-title cond-description cond-expression\n" +
             "  Storage remove-bucket-iam-member bucket-name role member\n" +
+            "  Storage remove-bucket-iam-conditional-binding bucket-name role\n" +
+            "                               cond-title cond-description cond-expression\n" +
             "  Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name\n" +
             "  Storage upload-with-kms-key bucket-name key-location\n" +
             "                              key-ring key-name local-file-path [object-name]\n" +
@@ -720,6 +722,33 @@ namespace GoogleCloudSamples
         }
         // [END remove_bucket_iam_member]
 
+        // [START storage_remove_bucket_conditional_iam_binding]
+        private void RemoveBucketConditionalIamBinding(string bucketName,
+            string role, string title, string description, string expression)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+            if (policy.Bindings.ToList().RemoveAll(binding => binding.Role == role
+                && binding.Condition != null
+                && binding.Condition.Title == title
+                && binding.Condition.Description == description
+                && binding.Condition.Expression == expression) > 0)
+            {
+                // Set the modified IAM policy to be the current IAM policy.
+                storage.SetBucketIamPolicy(bucketName, policy);
+                Console.WriteLine("Conditional Binding was removed.");
+            }
+            else
+            {
+                Console.WriteLine("No matching conditional binding found.");
+            }
+        }
+        // [END storage_remove_bucket_conditional_iam_binding]
+
         // [START storage_set_bucket_default_kms_key]
         private void AddBucketDefaultKmsKey(string bucketName,
             string keyLocation, string kmsKeyRing, string kmsKeyName)
@@ -861,9 +890,8 @@ namespace GoogleCloudSamples
         private void GenerateV4SignedGetUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
-                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-                .WithSigningVersion(SigningVersion.V4);
-            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
+                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
+            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get, SigningVersion.V4);
             Console.WriteLine("Generated GET signed URL:");
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
@@ -875,15 +903,23 @@ namespace GoogleCloudSamples
         private void GenerateV4SignedPutUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
-                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-                .WithSigningVersion(SigningVersion.V4);
+                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
 
             var contentHeaders = new Dictionary<string, IEnumerable<string>>
             {
                 { "Content-Type", new[] { "text/plain" } }
             };
 
-            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Put, contentHeaders);
+            UrlSigner.Options options = UrlSigner.Options
+                .FromDuration(TimeSpan.FromHours(1))
+                .WithSigningVersion(SigningVersion.V4);
+            UrlSigner.RequestTemplate template = UrlSigner.RequestTemplate
+                .FromBucket(bucketName)
+                .WithObjectName(objectName)
+                .WithHttpMethod(HttpMethod.Put)
+                .WithContentHeaders(contentHeaders);
+
+            string url = urlSigner.Sign(template, options);
             Console.WriteLine("Generated PUT signed URL:");
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
@@ -1469,6 +1505,11 @@ namespace GoogleCloudSamples
                     case "add-bucket-iam-conditional-binding":
                         if (args.Length < 7 && PrintUsage()) return -1;
                         AddBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5], args[6]);
+                        break;
+
+                    case "remove-bucket-iam-conditional-binding":
+                        if (args.Length < 6 && PrintUsage()) return -1;
+                        RemoveBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5]);
                         break;
 
                     case "remove-bucket-iam-member":

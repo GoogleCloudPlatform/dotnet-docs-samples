@@ -24,6 +24,7 @@ namespace GoogleCloudSamples
         public readonly string CompanyId;
         public readonly string CompanyDisplayName;
         public readonly string CompanyExternalID;
+        public readonly string JobId;
 
         readonly CommandLineRunner _commandLineRunner = new CommandLineRunner
         {
@@ -40,6 +41,7 @@ namespace GoogleCloudSamples
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             TenantId = Environment.GetEnvironmentVariable("TEST_JOB_SEARCH_TENANT_ID");
             TenantExtId = "TENANT_EXT_ID" + TestUtil.RandomName();
+            JobId = Environment.GetEnvironmentVariable("TEST_JOB_SEARCH_JOB_ID");
             CompanyId = Environment.GetEnvironmentVariable("TEST_JOB_SEARCH_COMPANY_ID");
             CompanyDisplayName = "Google Cloud DevRel";
             CompanyExternalID = $"COMPANY_EXT_ID_" + TestUtil.RandomName();

@@ -44,7 +44,7 @@ can use [this older sample](
 
 10. From the command line, run Storage to see a list of commands:
 
-    ```ps1
+```ps1
     PS > dotnet run --project .\Storage\Storage.csproj
   Usage:
     Storage create [new-bucket-name]
@@ -67,6 +67,8 @@ can use [this older sample](
     Storage add-bucket-iam-conditional-binding bucket-name member
                                 role member cond-title cond-description cond-expression
     Storage remove-bucket-iam-member bucket-name role member
+    Storage remove-bucket-iam-conditional-binding bucket-name role
+                                 cond-title cond-description cond-expression
     Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name
     Storage upload-with-kms-key bucket-name key-location
                                 key-ring key-name local-file-path [object-name]

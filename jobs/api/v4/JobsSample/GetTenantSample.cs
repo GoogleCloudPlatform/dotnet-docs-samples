@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Google.Cloud.Talent.V4Beta1;
+using System;
 
 namespace GoogleCloudSamples
 {
@@ -23,7 +23,7 @@ namespace GoogleCloudSamples
         public static object GetTenant(string projectId, string tenantId)
         {
             TenantServiceClient tenantServiceClient = TenantServiceClient.Create();
-            TenantName name = new TenantName(projectId, tenantId);
+            TenantName name = TenantName.FromProjectTenant(projectId, tenantId);
             GetTenantRequest request = new GetTenantRequest
             {
                 TenantName = name

@@ -13,13 +13,12 @@
 // the License.
 
 using Google.Cloud.Spanner.Data;
+using Grpc.Core;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using Xunit;
-using Xunit.Sdk;
-using Grpc.Core;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -104,6 +103,12 @@ namespace GoogleCloudSamples.Spanner
             _spannerCmd.Run("addCommitTimestamp",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("addIndex",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            // Create a new table that includes supported datatypes.
+            _spannerCmd.Run("createTableWithDatatypes",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            // Write data to the new table.
+            _spannerCmd.Run("writeDatatypesData",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
         }
 
@@ -428,16 +433,8 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
-        void TestDatatypes()
+        void TestQueryWithArray()
         {
-            // Create a new table that includes supported datatypes.
-            ConsoleOutput createOutput = _spannerCmd.Run("createTableWithDatatypes",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Equal(0, createOutput.ExitCode);
-            // Write data to the new table.
-            ConsoleOutput writeOutput = _spannerCmd.Run("writeDatatypesData",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Equal(0, writeOutput.ExitCode);
             // Query records using an array parameter.
             ConsoleOutput readOutput = _spannerCmd.Run("queryWithArray",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
@@ -445,47 +442,82 @@ namespace GoogleCloudSamples.Spanner
             // Confirm expected result in output.
             Assert.Contains("19 Venue 19 2020-11-01", readOutput.Stdout);
             Assert.Contains("42 Venue 42 2020-10-01", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithBool()
+        {
             // Query records using an bool parameter.
-            readOutput = _spannerCmd.Run("queryWithBool",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithBool",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("19 Venue 19 True", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithBytes()
+        {
             // Query records using an bytes parameter.
-            readOutput = _spannerCmd.Run("queryWithBytes",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithBytes",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("4 Venue 4", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithDate()
+        {
             // Query records using an date parameter.
-            readOutput = _spannerCmd.Run("queryWithDate",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithDate",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("4 Venue 4 2018-09-02", readOutput.Stdout);
             Assert.Contains("42 Venue 42 2018-10-01", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithFloat()
+        {
             // Query records using an float64 parameter.
-            readOutput = _spannerCmd.Run("queryWithFloat",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithFloat",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("4 Venue 4 0.8", readOutput.Stdout);
             Assert.Contains("19 Venue 19 0.9", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithInt()
+        {
             // Query records using an int64 parameter.
-            readOutput = _spannerCmd.Run("queryWithInt",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithInt",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("19 Venue 19 6300", readOutput.Stdout);
             Assert.Contains("42 Venue 42 3000", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithString()
+        {
             // Query records using an string parameter.
-            readOutput = _spannerCmd.Run("queryWithString",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithString",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("42 Venue 42", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithTimestamp()
+        {
             // Query records using a timestamp parameter.
-            readOutput = _spannerCmd.Run("queryWithTimestamp",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithTimestamp",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm output includes valid timestamps.
@@ -556,6 +588,26 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Albums", output.Stdout);
             Assert.Contains("Singers", output.Stdout);
+        }
+
+        [Fact]
+        void TestConnectionWithQueryOptions()
+        {
+            ConsoleOutput output = _spannerCmd.Run("createConnectionWithQueryOptions",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
+            Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
+
+        [Fact]
+        void TestRunCommandWithQueryOptions()
+        {
+            ConsoleOutput output = _spannerCmd.Run("runCommandWithQueryOptions",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
+            Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
         }
 
         /// <summary>

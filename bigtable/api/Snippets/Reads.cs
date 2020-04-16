@@ -20,14 +20,10 @@
 // [START bigtable_reads_prefix]
 // [START bigtable_reads_filter]
 
+using Google.Cloud.Bigtable.Common.V2;
+using Google.Cloud.Bigtable.V2;
 using System;
 using System.Linq;
-
-using Google.Cloud.Bigtable.V2;
-using Google.Cloud.Bigtable.Common.V2;
-using Google.Cloud.Bigtable.Admin.V2;
-using System.Collections.Generic;
-using Grpc.Core;
 
 
 
