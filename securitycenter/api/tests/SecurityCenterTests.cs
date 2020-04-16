@@ -77,16 +77,4 @@ public class SecurityCenterTests
 
         DeleteNotificationConfigSnippets.DeleteNotificationConfig(_fixture.OrganizationId, configId);
     }
-
-    // private string GetOrganizationId() {
-    //     return "1081635000895";
-    // }
-
-    // private string GetProjectId() {
-    //     return "project-a-id";
-    // }
-
-    // private string GetTopic() {
-    //     return "notifications-sample-topic";
-    // }
 }
