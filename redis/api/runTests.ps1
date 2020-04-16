@@ -19,7 +19,7 @@ BackupAndEdit-TextFile @("Redis\Redis.cs") `
 {
     dotnet restore
     dotnet build
-    dotnet test --test-adapter-path:. --logger:junit --no-build .\Redis\RedisTest.csproj
+    dotnet test --test-adapter-path:. --logger:junit --no-build .\RedisTest\RedisTest.csproj
     if ($LASTEXITCODE -ne 0) { throw "FAILED" }
 }
 
