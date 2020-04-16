@@ -26,31 +26,20 @@
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
-  // [END scc_get_notification_config]
 
   /** Get NotificationConfig Snippet. */
   public class DeleteNotificationConfigSnippets
   {
-      private DeleteNotificationConfigSnippets(){}
-
-      // [START scc_delete_notification_config]
-      public static Boolean DeleteNotificationConfig(
-        string organizationId, string notificationConfigId)
+      public static bool DeleteNotificationConfig(string organizationId, string notificationConfigId)
       {
 
-        NotificationConfigName notificationConfigName =
-          new NotificationConfigName(organizationId, notificationConfigId);
+        NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, notificationConfigId);
         SecurityCenterClient client = SecurityCenterClient.Create();
-        DeleteNotificationConfigRequest request =
-          new DeleteNotificationConfigRequest
-            {
-              NotificationConfigName = notificationConfigName
-            };
+        DeleteNotificationConfigRequest request = new DeleteNotificationConfigRequest{NotificationConfigName = notificationConfigName};
 
         client.DeleteNotificationConfig(request);
         Console.WriteLine($"Deleted Notification config: {notificationConfigName}");
         return true;
       }
-        // [END] scc_delete_notification_config]
-
   }
+  // [END] scc_delete_notification_config]

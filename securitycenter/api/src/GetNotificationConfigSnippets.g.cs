@@ -24,26 +24,19 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-// [END scc_get_notification_config]
 
 /** Get NotificationConfig Snippet. */
 public class GetNotificationConfigSnippets
 {
-    private GetNotificationConfigSnippets(){}
 
     /// <summary>Snippet for GetNotificationConfig</summary>
-    // [START scc_get_notification_config]
-    public static NotificationConfig GetNotificationConfig(
-        string organizationId, string configId)
+    public static NotificationConfig GetNotificationConfig(string organizationId, string configId)
     {
         SecurityCenterClient client = SecurityCenterClient.Create();
-
-        // ConfigName is in the format "organizations/{org_id}/notificationConfigs/{config_id}";
-        GetNotificationConfigRequest request = new GetNotificationConfigRequest{
-            NotificationConfigName = new NotificationConfigName(organizationId, configId)};
+        GetNotificationConfigRequest request = new GetNotificationConfigRequest{NotificationConfigName = new NotificationConfigName(organizationId, configId)};
         NotificationConfig response = client.GetNotificationConfig(request);
         Console.WriteLine($"Notification config: {response}");
         return response;
     }
-    // [END scc_get_notification_config]
 }
+// [END scc_get_notification_config]

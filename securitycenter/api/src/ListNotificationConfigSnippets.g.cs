@@ -15,8 +15,8 @@
  */
 
 // [START scc_list_notification_configs]
-using Google.Cloud.SecurityCenter.V1;
 using Google.Api.Gax.ResourceNames;
+using Google.Cloud.SecurityCenter.V1;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -28,24 +28,19 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-// [END scc_list_notification_configs]
 
 /** Snippets for how to ListNotificationConfig. */
 public class ListNotificationConfigSnippets
 {
-    private ListNotificationConfigSnippets() {}
-
-    // [START scc_list_notification_configs]
     public static ImmutableList<NotificationConfig> ListNotificationConfigs(string organizationId)
     {
         OrganizationName orgName = new OrganizationName(organizationId);
         SecurityCenterClient client = SecurityCenterClient.Create();
-        ImmutableList<NotificationConfig> notificationConfigs =
-            client.ListNotificationConfigs(orgName).ReadPage(50).ToImmutableList();
+        ImmutableList<NotificationConfig> notificationConfigs = client.ListNotificationConfigs(orgName).ReadPage(50).ToImmutableList();
 
         // Print Notification Configuration names.
         notificationConfigs.ForEach(config => Console.WriteLine(config.NotificationConfigName));
         return notificationConfigs;
-        }
+    }
 }
 // [END scc_list_notification_configs]

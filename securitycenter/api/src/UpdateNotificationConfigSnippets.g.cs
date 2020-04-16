@@ -15,6 +15,7 @@
  */
 
 // [START scc_update_notification_config]
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecurityCenter.V1;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -26,28 +27,23 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-// [END scc_update_notification_config]
 
 /** Snippets for UpdateNotificationConfig. */
 public class UpdateNotificationConfigSnippets
 {
-private UpdateNotificationConfigSnippets() {}
-
-    // [START scc_update_notification_config]
     public static NotificationConfig UpdateNotificationConfig(
         string organizationId, string notificationConfigId, string projectId, string topicName)
     {
-        string notificationConfigName =
-               $"organizations/{organizationId}/notificationConfigs/{notificationConfigId}";
+        NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId,notificationConfigId);
 
         // Ensure this ServiceAccount has the "pubsub.topics.setIamPolicy" permission on the topic.
-        string pubsubTopic = TopicName.Format(projectId, topicName);
+        TopicName pubsubTopic = new TopicName(projectId, topicName);
 
         NotificationConfig configToUpdate = new NotificationConfig
         {
-            Name = notificationConfigName,
+            NotificationConfigName = notificationConfigName,
             Description = "updated description",
-            PubsubTopic = pubsubTopic
+            PubsubTopicAsTopicName = pubsubTopic
         };
 
         FieldMask fieldMask = new FieldMask{Paths={"description", "pubsub_topic"}};
