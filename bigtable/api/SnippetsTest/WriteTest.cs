@@ -13,7 +13,6 @@
 // the License.
 
 using System;
-using System.Linq;
 using Xunit;
 using Google.Cloud.Bigtable.Admin.V2;
 

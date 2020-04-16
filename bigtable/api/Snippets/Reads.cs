@@ -23,9 +23,7 @@
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using System;
-using System.Linq;
-
-
+using System.Threading.Tasks;
 
 namespace Reads
 {
@@ -54,7 +52,7 @@ namespace Reads
             TableName tableName = new TableName(projectId, instanceId, tableId);
             Row row = bigtableClient.ReadRow(tableName, rowKey: "phone#4c410523#20190501");
 
-            return printRow(row);
+            return PrintRow.Print(row);
         }
         // [END bigtable_reads_row]
 
@@ -75,7 +73,7 @@ namespace Reads
             String rowkey = "phone#4c410523#20190501";
             RowFilter filter = RowFilters.ColumnQualifierExact("os_build");
             Row row = bigtableClient.ReadRow(tableName, rowkey, filter);
-            return printRow(row);
+            return PrintRow.Print(row);
         }
         // [END bigtable_reads_row_partial]
 
@@ -88,7 +86,7 @@ namespace Reads
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
-        public string readRows(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        public async Task<string> readRows(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             BigtableClient bigtableClient = BigtableClient.Create();
             TableName tableName = new TableName(projectId, instanceId, tableId);
@@ -96,8 +94,14 @@ namespace Reads
             RowSet rowSet = RowSet.FromRowKeys("phone#4c410523#20190501", "phone#4c410523#20190502");
             ReadRowsStream readRowsStream = bigtableClient.ReadRows(tableName, rowSet);
 
+            var enumerator = readRowsStream.GetAsyncEnumerator(default);
+
             string result = "";
-            readRowsStream.ForEach(row => result += printRow(row));
+            while (await enumerator.MoveNextAsync())
+            {
+                var row = enumerator.Current;
+                result += PrintRow.Print(row);
+            }
 
             return result;
         }
@@ -112,7 +116,7 @@ namespace Reads
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
 
-        public string readRowRange(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        public async Task<string> readRowRange(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             String start = "phone#4c410523#20190501";
             String end = "phone#4c410523#201906201";
@@ -122,8 +126,14 @@ namespace Reads
             RowSet rowSet = RowSet.FromRowRanges(RowRange.ClosedOpen(start, end));
             ReadRowsStream readRowsStream = bigtableClient.ReadRows(tableName, rowSet);
 
+            var enumerator = readRowsStream.GetAsyncEnumerator(default);
+
             string result = "";
-            readRowsStream.ForEach(row => result += printRow(row));
+            while (await enumerator.MoveNextAsync())
+            {
+                var row = enumerator.Current;
+                result += PrintRow.Print(row);
+            }
 
             return result;
         }
@@ -138,7 +148,7 @@ namespace Reads
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
 
-        public string readRowRanges(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        public async Task<string> readRowRanges(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             BigtableClient bigtableClient = BigtableClient.Create();
             TableName tableName = new TableName(projectId, instanceId, tableId);
@@ -146,8 +156,14 @@ namespace Reads
             RowRange.ClosedOpen("phone#5c10102#20190501", "phone#5c10102#20190601"));
             ReadRowsStream readRowsStream = bigtableClient.ReadRows(tableName, rowSet);
 
+            var enumerator = readRowsStream.GetAsyncEnumerator(default);
+
             string result = "";
-            readRowsStream.ForEach(row => result += printRow(row));
+            while (await enumerator.MoveNextAsync())
+            {
+                var row = enumerator.Current;
+                result += PrintRow.Print(row);
+            }
 
             return result;
         }
@@ -161,20 +177,25 @@ namespace Reads
         /// <param name="projectId">Your Google Cloud Project ID.</param>
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
-        public string readPrefix(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        public async Task<string> readPrefix(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             BigtableClient bigtableClient = BigtableClient.Create();
             TableName tableName = new TableName(projectId, instanceId, tableId);
 
-            String prefix = "phone";
-            Char prefixEndChar = prefix[prefix.Length - 1];
+            string prefix = "phone";
+            var prefixEndChar = prefix[prefix.Length - 1];
             prefixEndChar++;
-            String end = prefix.Substring(0, prefix.Length - 1) + prefixEndChar;
+            string end = prefix.Substring(0, prefix.Length - 1) + prefixEndChar;
             RowSet rowSet = RowSet.FromRowRanges(RowRange.Closed(prefix, end));
             ReadRowsStream readRowsStream = bigtableClient.ReadRows(tableName, rowSet);
+            var enumerator = readRowsStream.GetAsyncEnumerator(default);
 
             string result = "";
-            readRowsStream.ForEach(row => result += printRow(row));
+            while (await enumerator.MoveNextAsync())
+            {
+                var row = enumerator.Current;
+                result += PrintRow.Print(row);
+            }
 
             return result;
         }
@@ -189,7 +210,7 @@ namespace Reads
         /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
         /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
 
-        public string readFilter(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
+        public async Task<string> readFilter(string projectId = "YOUR-PROJECT-ID", string instanceId = "YOUR-INSTANCE-ID", string tableId = "YOUR-TABLE-ID")
         {
             BigtableClient bigtableClient = BigtableClient.Create();
             TableName tableName = new TableName(projectId, instanceId, tableId);
@@ -197,8 +218,14 @@ namespace Reads
             RowFilter filter = RowFilters.ValueRegex("PQ2A.*");
 
             ReadRowsStream readRowsStream = bigtableClient.ReadRows(tableName, filter: filter);
+            var enumerator = readRowsStream.GetAsyncEnumerator(default);
+
             string result = "";
-            readRowsStream.ForEach(row => result += printRow(row));
+            while (await enumerator.MoveNextAsync())
+            {
+                var row = enumerator.Current;
+                result += PrintRow.Print(row);
+            }
 
             return result;
         }
@@ -213,25 +240,7 @@ namespace Reads
         // [START bigtable_reads_filter]
 
 
-        public string printRow(Row row)
-        {
-            String result = $"Reading data for {row.Key.ToStringUtf8()}\n";
-            foreach (Family family in row.Families)
-            {
-                result += $"Column Family {family.Name}\n";
 
-                foreach (Column column in family.Columns)
-                {
-                    foreach (Cell cell in column.Cells)
-                    {
-                        result += $"\t{column.Qualifier.ToStringUtf8()}: {cell.Value.ToStringUtf8()} @{cell.TimestampMicros} {cell.Labels}\n";
-                    }
-                }
-            }
-            result += "\n";
-            Console.WriteLine(result);
-            return result;
-        }
     }
 }
 // [END bigtable_reads_row]

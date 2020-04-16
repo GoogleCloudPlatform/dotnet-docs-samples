@@ -13,12 +13,13 @@
 // the License.
 
 using System;
-using System.Linq;
 using Xunit;
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
-using Snapshooter;
+using Filters;
+using System.Threading.Tasks;
+using Google.Api.Gax;
 
 namespace Filter
 {
@@ -106,92 +107,118 @@ namespace Filter
         [Fact]
         public void TestFilterLimitRowSample()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Assert.Contains("Reading data for", filterSnippets.filterLimitRowSample(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterLimitRowSample.BigtableFilterLimitRowSample(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Assert.Contains("Reading data for", result);
         }
 
         [Fact]
         public void TestFilterLimitRowRegex()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitRowRegex(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterLimitRowRegex.BigtableFilterLimitRowRegex(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterLimitCellsPerCol()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitCellsPerCol(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterLimitCellsPerCol.BigtableFilterLimitCellsPerCol(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterLimitCellsPerRow()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitCellsPerRow(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterLimitCellsPerRow.BigtableFilterLimitCellsPerRow(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterLimitColRange()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitColRange(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterLimitColRange.BigtableFilterLimitColRange(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterLimitValueRange()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitValueRange(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterLimitValueRange.BigtableFilterLimitValueRange(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterLimitValueRegex()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitValueRegex(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterLimitValueRegex.BigtableFilterLimitValueRegex(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterLimitBlockAll()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitBlockAll(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterLimitBlockAll.BigtableFilterLimitBlockAll(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterLimitPassAll()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitPassAll(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterLimitPassAll.BigtableFilterLimitPassAll(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterModifyStripValue()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterModifyStripValue(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterModifyStripValue.BigtbleFilterModifyStripValue(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterModifyApplyLabel()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterModifyApplyLabel(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterModifyApplyLabel.BigtableFilterModifyApplyLabel(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterComposingChain()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterComposingChain(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterComposingChain.BigtableFilterComposingChain(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
 
         [Fact]
         public void TestFilterComposingCondition()
         {
-            Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterComposingCondition(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            var result = Task.Run(() => FilterComposingCondition.BigtableFilterComposingCondition(
+                _fixture.projectId, _fixture.instanceId, _fixture.tableId))
+                .ResultWithUnwrappedExceptions();
+            Snapshooter.Xunit.Snapshot.Match(result);
         }
     }
 }

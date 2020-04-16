@@ -13,12 +13,10 @@
 // the License.
 
 using System;
-using System.Linq;
 using Xunit;
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
-using Snapshooter;
 
 namespace Reads_
 {
