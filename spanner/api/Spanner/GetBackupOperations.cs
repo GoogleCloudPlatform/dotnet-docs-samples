@@ -17,7 +17,6 @@
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using System;
-using System.Linq;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -38,16 +37,16 @@ namespace GoogleCloudSamples.Spanner
             };
 
             // List the create backup operations on the database.
-            var backupOperations = databaseAdminClient.ListBackupOperations(request).ToList();
+            var backupOperations = databaseAdminClient.ListBackupOperations(request);
 
-            backupOperations.ForEach(operation =>
+            foreach (var operation in backupOperations)
             {
                 CreateBackupMetadata metadata = operation.Metadata.Unpack<CreateBackupMetadata>();
                 Console.WriteLine(
                     $"Backup {metadata.Name} on " +
                     $"database {metadata.Database} is " +
                     $"{metadata.Progress.ProgressPercent}% complete");
-            });
+            }
 
             return 0;
         }

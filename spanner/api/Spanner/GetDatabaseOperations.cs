@@ -17,7 +17,6 @@
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using System;
-using System.Linq;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -37,16 +36,16 @@ namespace GoogleCloudSamples.Spanner
             };
 
             // List the optimize restored databases operations on the instance.
-            var operations = databaseAdminClient.ListDatabaseOperations(request).ToList();
+            var operations = databaseAdminClient.ListDatabaseOperations(request);
 
-            operations.ForEach(operation =>
+            foreach (var operation in operations)
             {
                 OptimizeRestoredDatabaseMetadata metadata =
                     operation.Metadata.Unpack<OptimizeRestoredDatabaseMetadata>();
                 Console.WriteLine(
                     $"Database {metadata.Name} restored from backup is " +
                     $"{metadata.Progress.ProgressPercent}% optimized");
-            });
+            }
 
             return 0;
         }
