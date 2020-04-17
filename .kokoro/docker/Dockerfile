@@ -13,6 +13,7 @@ RUN apt-get -y install apt-transport-https
 RUN apt-get -y update
 RUN apt-get -y install dotnet-dev-1.1
 RUN apt-get -y install dotnet-sdk-2.2
+RUN apt-get -y install dotnet-sdk-3.1
 
 # install phantomjs
 # steps from https://www.vultr.com/docs/how-to-install-phantomjs-on-ubuntu-16-04
