@@ -34,11 +34,11 @@ namespace GoogleCloudSamples
                 ParentAsLocationName = LocationName.FromProjectLocation(projectId, locationId),
             };
             // Make the ListInstances request
-            var instances = cloudRedisClient.ListInstances(listInstancesRequest).ToList();
+            var instances = cloudRedisClient.ListInstances(listInstancesRequest);
 
-            Console.WriteLine($"{"Instance Count:",-30}{instances.Count} instances in project {projectId}");
+            Console.WriteLine("Instances: ");
 
-            foreach (Instance instance in instances)
+            foreach (var instance in instances)
             {
                 Redis.PrintInstanceInfo(instance);
             }

@@ -37,10 +37,10 @@ namespace GoogleCloudSamples
 
         public int Run(string[] args)
         {
-            if (s_projectId == "YOUR-PROJECT-ID" || s_locationId == "LOCATION-ID")
+            if (s_projectId == "YOUR-PROJECT" + "-ID" || s_locationId == "LOCATION" + "-ID")
             {
                 Console.WriteLine("Update Redis.cs and replace YOUR-PROJECT" +
-                    "-ID with your project id and LOCATION-ID with location id, and recompile.");
+                    "-ID with your project id and LOCATION" + "-ID with location id, and recompile.");
                 return -1;
             }
             if (args.Length < 1 && PrintUsage()) return -1;
