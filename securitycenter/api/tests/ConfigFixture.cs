@@ -15,6 +15,9 @@
  */
  
  using System;
+ using System.Collections.Generic;
+ using Google.Cloud.PubSub.V1;
+ using Grpc.Core;
  using Xunit;
 
 [CollectionDefinition(nameof(ConfigFixture))]
@@ -23,15 +26,56 @@
      public string OrganizationId { get; }
      public string ProjectId { get; }
      public string Topic { get; }
+     private List<string> CleanupItems = new List<string>();
+     public string DefaultNotificationConfigId {get; }
+
      public ConfigFixture()
      {
-         OrganizationId = Environment.GetEnvironmentVariable("GOOGLE_ORGANIZATION_ID");
-         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-         Topic = Environment.GetEnvironmentVariable("GOOGLE_TOPIC");
+        OrganizationId = Environment.GetEnvironmentVariable("GOOGLE_ORGANIZATION_ID");
+        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        Topic = Environment.GetEnvironmentVariable("GOOGLE_TOPIC");
+        DefaultNotificationConfigId = CreateNotificationConfig(RandomId());
      }
 
      public void Dispose()
      {
-        Console.WriteLine("Dispose ConfigFixture called");
+        foreach (var configId in CleanupItems)
+        {
+            DeleteNotificationConfigSnippets.DeleteNotificationConfig(OrganizationId, configId);
+        }
+     }
+
+    // Returns epoch time as ID
+     public string RandomId()
+     {
+        return DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
+     }
+
+    // Delete assets when fixture is disposed.
+     public void MarkForDeletion(string id) 
+     {
+         CleanupItems.Add(id);
+     }
+
+    public string CreateNotificationConfig(string configId) 
+    {
+        CreateNotificationConfigSnippets.CreateNotificationConfig(OrganizationId, configId, ProjectId, Topic);
+        CleanupItems.Add(configId);
+        return configId;
+    }
+     private string CreateTopic(string projectId, string topicId) 
+     {
+        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
+        TopicName topicName = new TopicName(projectId, topicId);
+        try
+        {
+            publisher.CreateTopic(topicName);
+        }
+        catch (RpcException e)
+        when (e.Status.StatusCode == StatusCode.AlreadyExists)
+        {
+            // Already exists.  That's fine.
+        }
+        return topicId;
      }
  }

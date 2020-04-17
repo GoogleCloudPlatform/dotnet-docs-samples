@@ -17,21 +17,12 @@
 // [START scc_create_notification_config]
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecurityCenter.V1;
-using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-/** Create NotificationConfig Snippet. */
+///<summary> Create NotificationConfig Snippet. </summary>
 public class CreateNotificationConfigSnippets
 {
-    static void Main(){}
+    public static void Main(){}
     public static NotificationConfig CreateNotificationConfig(
         string organizationId, string notificationConfigId, string projectId, string topicName)
     {

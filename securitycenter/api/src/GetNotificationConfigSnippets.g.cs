@@ -14,22 +14,11 @@
 
 // [START scc_get_notification_config]
 using Google.Cloud.SecurityCenter.V1;
-using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-/** Get NotificationConfig Snippet. */
+/// <summary>Snippet for GetNotificationConfig</summary>
 public class GetNotificationConfigSnippets
 {
-
-    /// <summary>Snippet for GetNotificationConfig</summary>
     public static NotificationConfig GetNotificationConfig(string organizationId, string configId)
     {
         SecurityCenterClient client = SecurityCenterClient.Create();

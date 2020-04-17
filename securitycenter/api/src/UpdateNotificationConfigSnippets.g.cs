@@ -15,28 +15,17 @@
  */
 
 // [START scc_update_notification_config]
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecurityCenter.V1;
-using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-/** Snippets for UpdateNotificationConfig. */
+/// <summary>Snippet for UpdateNotificationConfig</summary>
 public class UpdateNotificationConfigSnippets
 {
     public static NotificationConfig UpdateNotificationConfig(
         string organizationId, string notificationConfigId, string projectId, string topicName)
     {
         NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId,notificationConfigId);
-
-        // Ensure this ServiceAccount has the "pubsub.topics.setIamPolicy" permission on the topic.
         TopicName pubsubTopic = new TopicName(projectId, topicName);
 
         NotificationConfig configToUpdate = new NotificationConfig

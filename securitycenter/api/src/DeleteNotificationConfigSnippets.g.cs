@@ -14,32 +14,23 @@
  * limitations under the License.
  */
 
-  // [START scc_get_notification_config]
-  using Google.Cloud.SecurityCenter.V1;
-  using Google.Protobuf;
-  using Google.Protobuf.WellKnownTypes;
-  using Grpc.Core;
-  using System;
-  using System.Collections;
-  using System.Collections.Generic;
-  using System.Collections.ObjectModel;
-  using System.Linq;
-  using System.Threading;
-  using System.Threading.Tasks;
+// [START scc_get_notification_config]
+using Google.Cloud.SecurityCenter.V1;
+using System;
 
-  /** Get NotificationConfig Snippet. */
-  public class DeleteNotificationConfigSnippets
-  {
-      public static bool DeleteNotificationConfig(string organizationId, string notificationConfigId)
-      {
+/// <summary>Snippet for DeleteNotificationConfig</summary>
+public class DeleteNotificationConfigSnippets
+{
+    public static bool DeleteNotificationConfig(string organizationId, string notificationConfigId)
+    {
 
-        NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, notificationConfigId);
-        SecurityCenterClient client = SecurityCenterClient.Create();
-        DeleteNotificationConfigRequest request = new DeleteNotificationConfigRequest{NotificationConfigName = notificationConfigName};
+      NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, notificationConfigId);
+      SecurityCenterClient client = SecurityCenterClient.Create();
+      DeleteNotificationConfigRequest request = new DeleteNotificationConfigRequest{NotificationConfigName = notificationConfigName};
 
-        client.DeleteNotificationConfig(request);
-        Console.WriteLine($"Deleted Notification config: {notificationConfigName}");
-        return true;
-      }
-  }
-  // [END] scc_delete_notification_config]
+      client.DeleteNotificationConfig(request);
+      Console.WriteLine($"Deleted Notification config: {notificationConfigName}");
+      return true;
+    }
+}
+// [END] scc_delete_notification_config]

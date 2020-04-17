@@ -29,17 +29,18 @@ public class SecurityCenterTests
     [Fact]
     public void CreateNotificationConfig_ShouldCreateConfig()
     {
-        string configId = "csharp-create-config-test111";
+        string configId = _fixture.RandomId();
 
         Assert.NotNull(CreateNotificationConfigSnippets.CreateNotificationConfig(_fixture.OrganizationId, configId, _fixture.ProjectId, _fixture.Topic));
 
-        DeleteNotificationConfigSnippets.DeleteNotificationConfig(_fixture.OrganizationId, configId);
+        _fixture.MarkForDeletion(configId);
     }
 
     [Fact]
     public void DeleteNotificationConfig_ShouldDeleteConfig()
     {
-        string configId = "csharp-delete-config-test111";
+        string configId = _fixture.RandomId();
+
         CreateNotificationConfigSnippets.CreateNotificationConfig(_fixture.OrganizationId, configId, _fixture.ProjectId, _fixture.Topic);
 
         Assert.True(DeleteNotificationConfigSnippets.DeleteNotificationConfig(_fixture.OrganizationId, configId));
@@ -48,33 +49,18 @@ public class SecurityCenterTests
     [Fact]
     public void ListNotificationConfig_ShouldReturnNonEmpty()
     {
-        string configId = "csharp-list-config-test111";
-        CreateNotificationConfigSnippets.CreateNotificationConfig(_fixture.OrganizationId, configId, _fixture.ProjectId, _fixture.Topic);
-
-        Assert.NotNull(ListNotificationConfigSnippets.ListNotificationConfigs(_fixture.OrganizationId));
-        
-        DeleteNotificationConfigSnippets.DeleteNotificationConfig(_fixture.OrganizationId, configId);
+        Assert.NotEmpty(ListNotificationConfigSnippets.ListNotificationConfigs(_fixture.OrganizationId));
     }
 
     [Fact]
     public void GetNotificationConfig_ShouldReturnConfig()
     {
-        string configId = "csharp-get-config-test111";
-        CreateNotificationConfigSnippets.CreateNotificationConfig(_fixture.OrganizationId, configId, _fixture.ProjectId, _fixture.Topic);
-
-        Assert.NotNull(GetNotificationConfigSnippets.GetNotificationConfig(_fixture.OrganizationId, configId));
-        
-        DeleteNotificationConfigSnippets.DeleteNotificationConfig(_fixture.OrganizationId, configId);
+        Assert.NotNull(GetNotificationConfigSnippets.GetNotificationConfig(_fixture.OrganizationId, _fixture.DefaultNotificationConfigId));
     }
 
     [Fact]
     public void UpdateNotificationConfig_ShouldUpdateConfig()
     {
-        string configId = "csharp-update-config-test111";
-        CreateNotificationConfigSnippets.CreateNotificationConfig(_fixture.OrganizationId, configId, _fixture.ProjectId, _fixture.Topic);
-
-        Assert.NotNull(UpdateNotificationConfigSnippets.UpdateNotificationConfig(_fixture.OrganizationId, configId, _fixture.ProjectId, _fixture.Topic));
-
-        DeleteNotificationConfigSnippets.DeleteNotificationConfig(_fixture.OrganizationId, configId);
+        Assert.NotNull(UpdateNotificationConfigSnippets.UpdateNotificationConfig(_fixture.OrganizationId, _fixture.DefaultNotificationConfigId, _fixture.ProjectId, _fixture.Topic));
     }
 }

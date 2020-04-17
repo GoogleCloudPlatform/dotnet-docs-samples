@@ -296,8 +296,8 @@ namespace GoogleCloudSamples
         static async Task<object> PullMessagesAsync(string projectId,
             string subscriptionId, bool acknowledge)
         {
-            // [START pubsub_subscriber_async_pull]
-	    // [START scc_receive_notifications]
+            // [START pubsub_subscriber_async_pull]i
+	     // [START scc_receive_notifications]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
             SubscriberClient subscriber = await SubscriberClient.CreateAsync(
@@ -318,7 +318,7 @@ namespace GoogleCloudSamples
             await Task.Delay(3000);
             await subscriber.StopAsync(CancellationToken.None);
             // [END pubsub_subscriber_async_pull]
-	    // [END scc_receive_notifications]
+	     // [END scc_receive_notifications]
             return 0;
         }
 
