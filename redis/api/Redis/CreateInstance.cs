@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Redis.V1;
 using Google.LongRunning;
 using System;
@@ -29,7 +30,7 @@ namespace GoogleCloudSamples
             CloudRedisClient cloudRedisClient = CloudRedisClient.Create();
             CreateInstanceRequest createInstanceRequest = new CreateInstanceRequest
             {
-                ParentAsLocationName = new LocationName(projectId, locationId),
+                ParentAsLocationName = LocationName.FromProjectLocation(projectId, locationId),
                 InstanceId = instanceId,
                 Instance = new Instance()
                 {
