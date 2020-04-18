@@ -33,6 +33,10 @@ namespace GoogleCloudSamples
     public class ListRealmsOptions : BaseOptions
     { };
 
+    [Verb("get_realm", HelpText = "Get realm in project")]
+    public class GetRealmOptions : RealmOptions
+    { };
+
     [Verb("delete_realm", HelpText = "Delete a realm")]
     public class DeleteRealmOptions : RealmOptions
     { }
@@ -44,6 +48,7 @@ namespace GoogleCloudSamples
             verbMap
                 .Add((CreateRealmOptions opts) => CreateRealm(opts.ProjectID, opts.Location, opts.RealmId))
                 .Add((ListRealmsOptions opts) => ListRealms(opts.ProjectID, opts.Location))
+                .Add((GetRealmOptions opts) => GetRealms(opts.ProjectID, opts.Location, opts.RealmId))
                 .Add((DeleteRealmOptions opts) => DeleteRealm(opts.ProjectID, opts.Location, opts.RealmId));
         }
 
@@ -90,9 +95,28 @@ namespace GoogleCloudSamples
 
             foreach (var realm in response)
             {
-                Console.WriteLine(realm.RealmName);
+                Console.WriteLine($"Realm name: {realm.Name}");
+                Console.WriteLine($"Realm description: {realm.Description}"
+                    + Environment.NewLine);
             }
             return 0;
+        }
+
+        private static int GetRealms(object projectId, object location, object realmId)
+        {
+            var client = RealmsServiceClient.Create();
+            var request = new GetRealmRequest
+            {
+                Name = $"projects/{projectId}/locations/{location}/realms/{realmId}"
+            };
+            var realm = client.GetRealm(request);
+
+            Console.WriteLine($"Realm name: {realm.Name}");
+            Console.WriteLine($"Realm description: {realm.Description}");
+            Console.WriteLine($"Realm time zone: {realm.TimeZone}");
+
+            return 0;
+
         }
 
         public static object DeleteRealm(string projectId, string location, string realmId)
