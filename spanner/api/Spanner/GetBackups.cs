@@ -35,7 +35,7 @@ namespace GoogleCloudSamples.Spanner
             // List all backups.
             Console.WriteLine("All backups:");
             var allBackups = databaseAdminClient.ListBackups(parentAsInstanceName);
-            PrinBackups(allBackups);
+            PrintBackups(allBackups);
 
             ListBackupsRequest request = new ListBackupsRequest
             {
@@ -46,33 +46,33 @@ namespace GoogleCloudSamples.Spanner
             Console.WriteLine($"Backups with backup name containing {backupId}:");
             request.Filter = $"name:{backupId}";
             var backupsWithName = databaseAdminClient.ListBackups(request);
-            PrinBackups(backupsWithName);
+            PrintBackups(backupsWithName);
 
             // List backups on a database containing name.
             Console.WriteLine($"Backups with database name containing {databaseId}:");
             request.Filter = $"database:{databaseId}";
             var backupsWithDatabaseName = databaseAdminClient.ListBackups(request);
-            PrinBackups(backupsWithDatabaseName);
+            PrintBackups(backupsWithDatabaseName);
 
             // List backups that expire within 30 days.
             Console.WriteLine("Backups expiring within 30 days:");
             string expireTime = DateTime.UtcNow.AddDays(30).ToString("O");
             request.Filter = $"expire_time < \"{expireTime}\"";
             var expiringBackups = databaseAdminClient.ListBackups(request);
-            PrinBackups(expiringBackups);
+            PrintBackups(expiringBackups);
 
             // List backups with a size greater than 100 bytes.
             Console.WriteLine("Backups with size > 100 bytes:");
             request.Filter = "size_bytes > 100";
             var backupsWithSize = databaseAdminClient.ListBackups(request);
-            PrinBackups(backupsWithSize);
+            PrintBackups(backupsWithSize);
 
             // List backups created in the last day that are ready.
             Console.WriteLine("Backups created within last day that are ready:");
             string createTime = DateTime.UtcNow.AddDays(-1).ToString("O");
             request.Filter = $"create_time >= \"{createTime}\" AND state:READY";
             var recentReadyBackups = databaseAdminClient.ListBackups(request);
-            PrinBackups(recentReadyBackups);
+            PrintBackups(recentReadyBackups);
 
             // List backups in pages.
             Console.WriteLine("Backups in batches of 5:");
@@ -81,20 +81,15 @@ namespace GoogleCloudSamples.Spanner
             do
             {
                 var response = databaseAdminClient.ListBackups(parentAsInstanceName, nextPageToken);
-
                 Page<Backup> currentPage = response.ReadPage(pageSize);
-                foreach (Backup backup in currentPage)
-                {
-                    Console.WriteLine($"Backup Name : {backup.Name}");
-                }
-
+                PrintBackups(currentPage);
                 nextPageToken = currentPage.NextPageToken;
             } while (!string.IsNullOrEmpty(nextPageToken));
 
             return 0;
         }
 
-        private static void PrinBackups(IEnumerable<Backup> backups)
+        private static void PrintBackups(IEnumerable<Backup> backups)
         {
             foreach (Backup backup in backups)
             {
