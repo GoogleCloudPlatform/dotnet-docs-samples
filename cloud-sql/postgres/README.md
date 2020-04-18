@@ -38,8 +38,10 @@ with a PostgreSQL database when running in Google App Engine Flexible Environmen
     3.  Click **CREATE**.
 
 
-8.  Edit [appsettings.json](appsettings.json).  Update the connection string
-    with the "User name" and "Password" you previously created on the Cloud SQL instance.
+8.  Edit [appsettings.json](appsettings.json).  
+    1. Update the connection string
+       with the "User name" and "Password" you previously created on the Cloud SQL instance.
+    2. Replace `your-project-id` with your Google Cloud Project's project id.
 
 ## ![PowerShell](../.resources/powershell.png) Using PowerShell
 
@@ -55,6 +57,62 @@ with a PostgreSQL database when running in Google App Engine Flexible Environmen
     PS > dotnet restore
     PS > dotnet run
     ```
+
+### Deploy to Cloud Run
+
+1.  Edit [appsettings.json](appsettings.json).  Update the connection string to be in the following
+    form:
+        
+        `Server=/cloudsql/your-project-id:us-central1:instance-name;Uid=aspnetuser;Pwd=;Database=votes`
+    
+    replacing `your-project-id` and `instance-name` with your Google Cloud Project's project id and 
+    the name of the Cloud SQL instance you created in a previous step. Also replace the values for
+    `Uid` and `Pwd` with the "User name" and "Password" you previously created on the Cloud SQL instance.
+
+2.  Run the following command in powershell to build the container image that you will deploy as a Cloud Run service:
+
+    ```psm1    
+        gcloud builds submit --tag gcr.io/your-project-id/postgresql
+    ```
+    where `your-project-id` is your Google Cloud Project's project id.
+
+3.  In the [Cloud Run](https://console.cloud.google.com/run) section of the Google Cloud Console
+    click the "CREATE SERVICE" Button.
+    1.  For "Service settings : Deployment platform" select "Cloud Run (fully managed)".
+
+    2.  Set the "Region" to be the same "Region" you chose when you created your Cloud SQL instance.
+
+    3.  Enter a name of your choice for your service in the "Service name" text box.
+
+    4.  For "Authentication" select "Allow unauthenticated invocations".
+
+    5.  Click the "NEXT" Button
+
+    6.  For "Configure the service's first revision" click the "SELECT" button and select the container image
+        you just built in a previous  step.
+
+    7.  Click "SHOW ADVANCED SETTINGS" and then select the "CONNECTIONS" tab.
+
+    8.  Click the "ADD CONNECTION" button and choose the Cloud SQL instance you created in a previous step.
+
+    9.  Click the "CREATE" button to create the Cloud Run service.
+
+Once your service is created, visit your running app by clicking the service's URL displayed at the top of the page.
+
+To update your deployed Cloud Run service, update your app then run the following commands in powershell
+(replacing `your-project-id` with your Google Cloud Project's project id):
+1.  Re-run the `gcloud builds submit` command to update your container image:
+
+    ```psm1    
+        gcloud builds submit --tag gcr.io/your-project-id/postgresql
+    ```
+
+2. Run the `gcloud run deploy` command to update your deployed Cloud Run service:
+
+    ```psm1
+         gcloud run deploy --image gcr.io/your-project-id/postgresql --platform managed
+    ```
+
 
 ### Deploy to App Engine Flexible
 
