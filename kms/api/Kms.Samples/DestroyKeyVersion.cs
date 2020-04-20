@@ -26,14 +26,11 @@ public class DestroyKeyVersionSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        DestroyCryptoKeyVersionRequest request = new DestroyCryptoKeyVersionRequest
-        {
-            CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
-        };
+        // Build the key version name.
+        CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId);
 
         // Call the API.
-        CryptoKeyVersion result = client.DestroyCryptoKeyVersion(request);
+        CryptoKeyVersion result = client.DestroyCryptoKeyVersion(keyVersionName);
 
         // Return the result.
         return result;

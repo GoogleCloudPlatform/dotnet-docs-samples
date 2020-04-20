@@ -26,14 +26,11 @@ public class QuickstartSample
         // Create a Cloud KMS client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request to list key rings.
-        ListKeyRingsRequest request = new ListKeyRingsRequest
-        {
-            ParentAsLocationName = new LocationName(projectId, locationId),
-        };
+        // Build the parent location name.
+        LocationName locationName = new LocationName(projectId, locationId);
 
         // Iterate over and print each key ring name;
-        foreach (KeyRing keyRing in client.ListKeyRings(request))
+        foreach (KeyRing keyRing in client.ListKeyRings(locationName))
         {
             // ... (e.g. keyRing.Name)
         }

@@ -16,7 +16,6 @@
 
 // [START kms_create_key_symmetric_encrypt_decrypt]
 
-
 using Google.Cloud.Kms.V1;
 
 public class CreateKeySymmetricEncryptDecryptSample
@@ -28,23 +27,21 @@ public class CreateKeySymmetricEncryptDecryptSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        CreateCryptoKeyRequest request = new CreateCryptoKeyRequest
+        // Build the parent key ring name.
+        KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
+
+        // Build the key.
+        CryptoKey key = new CryptoKey
         {
-            ParentAsKeyRingName = new KeyRingName(projectId, locationId, keyRingId),
-            CryptoKeyId = id,
-            CryptoKey = new CryptoKey
+            Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
+            VersionTemplate = new CryptoKeyVersionTemplate
             {
-                Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
-                VersionTemplate = new CryptoKeyVersionTemplate
-                {
-                    Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption,
-                }
+                Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption,
             }
         };
 
         // Call the API.
-        CryptoKey result = client.CreateCryptoKey(request);
+        CryptoKey result = client.CreateCryptoKey(keyRingName, id, key);
 
         // Return the result.
         return result;

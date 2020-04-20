@@ -30,29 +30,28 @@ public class SignAsymmetricSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
+        // Build the key version name.
+        CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId);
+
         // Convert the message into bytes. Cryptographic plaintexts and
         // ciphertexts are always byte arrays.
         byte[] plaintext = Encoding.UTF8.GetBytes(message);
 
-        // Calculate the message digest.
+        // Calculate the digest.
         SHA256 sha256 = SHA256.Create();
-        byte[] digest = sha256.ComputeHash(plaintext);
+        byte[] hash = sha256.ComputeHash(plaintext);
 
-        // Build the request.
+        // Build the digest.
         //
         // Note: Key algorithms will require a varying hash function. For
         // example, EC_SIGN_P384_SHA384 requires SHA-384.
-        AsymmetricSignRequest request = new AsymmetricSignRequest
+        Digest digest = new Digest
         {
-            CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
-            Digest = new Digest
-            {
-                Sha256 = ByteString.CopyFrom(digest),
-            },
+            Sha256 = ByteString.CopyFrom(hash),
         };
 
         // Call the API.
-        AsymmetricSignResponse result = client.AsymmetricSign(request);
+        AsymmetricSignResponse result = client.AsymmetricSign(keyVersionName, digest);
 
         // Get the signature.
         byte[] signature = result.Signature.ToByteArray();

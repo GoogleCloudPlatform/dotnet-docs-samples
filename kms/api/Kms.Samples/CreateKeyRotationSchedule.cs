@@ -29,35 +29,33 @@ public class CreateKeyRotationScheduleSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        CreateCryptoKeyRequest request = new CreateCryptoKeyRequest
+        // Build the parent key ring name.
+        KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
+
+        // Build the key.
+        CryptoKey key = new CryptoKey
         {
-            ParentAsKeyRingName = new KeyRingName(projectId, locationId, keyRingId),
-            CryptoKeyId = id,
-            CryptoKey = new CryptoKey
+            Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
+            VersionTemplate = new CryptoKeyVersionTemplate
             {
-                Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
-                VersionTemplate = new CryptoKeyVersionTemplate
-                {
-                    Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption,
-                },
+                Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption,
+            },
 
-                // Rotate the key every 30 days.
-                RotationPeriod = new Duration
-                {
-                    Seconds = 60 * 60 * 24 * 30, // 30 days
-                },
+            // Rotate the key every 30 days.
+            RotationPeriod = new Duration
+            {
+                Seconds = 60 * 60 * 24 * 30, // 30 days
+            },
 
-                // Start the first rotation in 24 hours.
-                NextRotationTime = new Timestamp
-                {
-                    Seconds = new DateTimeOffset(DateTime.UtcNow.AddHours(24)).ToUnixTimeSeconds(),
-                }
+            // Start the first rotation in 24 hours.
+            NextRotationTime = new Timestamp
+            {
+                Seconds = new DateTimeOffset(DateTime.UtcNow.AddHours(24)).ToUnixTimeSeconds(),
             }
         };
 
         // Call the API.
-        CryptoKey result = client.CreateCryptoKey(request);
+        CryptoKey result = client.CreateCryptoKey(keyRingName, id, key);
 
         // Return the result.
         return result;

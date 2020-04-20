@@ -29,15 +29,11 @@ public class DecryptAsymmetricSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        AsymmetricDecryptRequest request = new AsymmetricDecryptRequest
-        {
-            CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
-            Ciphertext = ByteString.CopyFrom(ciphertext),
-        };
+        // Build the key version name.
+        CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId);
 
         // Call the API.
-        AsymmetricDecryptResponse result = client.AsymmetricDecrypt(request);
+        AsymmetricDecryptResponse result = client.AsymmetricDecrypt(keyVersionName, ByteString.CopyFrom(ciphertext));
 
         // Get the plaintext. Cryptographic plaintexts and ciphertexts are
         // always byte arrays.

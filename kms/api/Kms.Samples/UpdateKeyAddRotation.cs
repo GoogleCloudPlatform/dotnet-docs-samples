@@ -27,34 +27,33 @@ public class UpdateKeyAddRotationSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        UpdateCryptoKeyRequest request = new UpdateCryptoKeyRequest
+        // Build the key.
+        CryptoKey key = new CryptoKey
         {
-            CryptoKey = new CryptoKey
-            {
-                // Provide the name of the key to update.
-                CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
+            // Provide the name of the key to update.
+            CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
 
-                // Rotate the key every 30 days.
-                RotationPeriod = new Duration
-                {
-                    Seconds = 60 * 60 * 24 * 30, // 30 days
-                },
-
-                // Start the first rotation in 24 hours.
-                NextRotationTime = new Timestamp
-                {
-                    Seconds = new DateTimeOffset(DateTime.UtcNow.AddHours(24)).ToUnixTimeSeconds(),
-                }
-            },
-            UpdateMask = new FieldMask
+            // Rotate the key every 30 days.
+            RotationPeriod = new Duration
             {
-                Paths = { "rotation_period", "next_rotation_time" },
+                Seconds = 60 * 60 * 24 * 30, // 30 days
             },
+
+            // Start the first rotation in 24 hours.
+            NextRotationTime = new Timestamp
+            {
+                Seconds = new DateTimeOffset(DateTime.UtcNow.AddHours(24)).ToUnixTimeSeconds(),
+            }
+        };
+
+        // Build the update mask.
+        FieldMask fieldMask = new FieldMask
+        {
+            Paths = { "rotation_period", "next_rotation_time" },
         };
 
         // Call the API.
-        CryptoKey result = client.UpdateCryptoKey(request);
+        CryptoKey result = client.UpdateCryptoKey(key, fieldMask);
 
         // Return the updated key.
         return result;

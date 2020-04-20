@@ -26,22 +26,21 @@ public class DisableKeyVersionSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        UpdateCryptoKeyVersionRequest request = new UpdateCryptoKeyVersionRequest
+        // Build the key version.
+        CryptoKeyVersion keyVersion = new CryptoKeyVersion
         {
-            CryptoKeyVersion = new CryptoKeyVersion
-            {
-                CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
-                State = CryptoKeyVersion.Types.CryptoKeyVersionState.Disabled,
-            },
-            UpdateMask = new FieldMask
-            {
-                Paths = { "state" },
-            }
+            CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
+            State = CryptoKeyVersion.Types.CryptoKeyVersionState.Disabled,
+        };
+
+        // Build the update mask.
+        FieldMask fieldMask = new FieldMask
+        {
+            Paths = { "state" },
         };
 
         // Call the API.
-        CryptoKeyVersion result = client.UpdateCryptoKeyVersion(request);
+        CryptoKeyVersion result = client.UpdateCryptoKeyVersion(keyVersion, fieldMask);
 
         // Return the result.
         return result;

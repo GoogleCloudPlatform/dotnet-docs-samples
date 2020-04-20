@@ -38,10 +38,7 @@ public class CreateKeyVersionTest
 
         // Get the key version.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var response = client.GetCryptoKeyVersion(new GetCryptoKeyVersionRequest
-        {
-            CryptoKeyVersionName = result.CryptoKeyVersionName,
-        });
+        var response = client.GetCryptoKeyVersion(result.CryptoKeyVersionName);
 
         Assert.NotNull(response.CryptoKeyVersionName.CryptoKeyVersionId);
     }

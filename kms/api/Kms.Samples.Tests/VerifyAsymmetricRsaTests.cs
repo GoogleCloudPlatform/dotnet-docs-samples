@@ -43,13 +43,10 @@ public class VerifyAsymmetricSignRsa
 
         // Sign the data
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var result = client.AsymmetricSign(new AsymmetricSignRequest
+        CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricSignRsaKeyId, "1");
+        var result = client.AsymmetricSign(keyVersionName, new Digest
         {
-            CryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricSignRsaKeyId, "1"),
-            Digest = new Digest
-            {
-                Sha256 = ByteString.CopyFrom(digest),
-            },
+            Sha256 = ByteString.CopyFrom(digest),
         });
 
         // Run the sample.

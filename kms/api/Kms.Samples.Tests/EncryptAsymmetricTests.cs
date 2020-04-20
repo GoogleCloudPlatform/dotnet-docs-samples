@@ -42,11 +42,8 @@ public class EncryptAsymmetricTest
 
         // Decrypt result.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var result = client.AsymmetricDecrypt(new AsymmetricDecryptRequest
-        {
-            CryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricDecryptKeyId, "1"),
-            Ciphertext = ByteString.CopyFrom(ciphertext),
-        });
+        CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricDecryptKeyId, "1");
+        var result = client.AsymmetricDecrypt(keyVersionName, ByteString.CopyFrom(ciphertext));
 
         Assert.Equal(message, result.Plaintext.ToStringUtf8());
     }

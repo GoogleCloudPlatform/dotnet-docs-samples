@@ -39,10 +39,7 @@ public class CreateKeyLabelsTest
 
         // Get the key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(new GetCryptoKeyRequest
-        {
-            CryptoKeyName = result.CryptoKeyName,
-        });
+        var key = client.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal("alpha", key.Labels["team"]);
         Assert.Equal("cc1234", key.Labels["cost_center"]);

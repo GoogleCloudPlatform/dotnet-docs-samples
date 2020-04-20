@@ -29,15 +29,11 @@ public class DecryptSymmetricSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        DecryptRequest request = new DecryptRequest
-        {
-            CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
-            Ciphertext = ByteString.CopyFrom(ciphertext),
-        };
+        // Build the key name.
+        CryptoKeyName keyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
 
         // Call the API.
-        DecryptResponse result = client.Decrypt(request);
+        DecryptResponse result = client.Decrypt(keyName, ByteString.CopyFrom(ciphertext));
 
         // Get the plaintext. Cryptographic plaintexts and ciphertexts are
         // always byte arrays.

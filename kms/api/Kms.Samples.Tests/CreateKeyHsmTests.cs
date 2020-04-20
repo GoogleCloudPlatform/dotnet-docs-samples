@@ -39,10 +39,7 @@ public class CreateKeyHsmTest
 
         // Get the key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(new GetCryptoKeyRequest
-        {
-            CryptoKeyName = result.CryptoKeyName,
-        });
+        var key = client.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal(ProtectionLevel.Hsm, key.VersionTemplate.ProtectionLevel);
     }

@@ -28,20 +28,14 @@ public class IamGetPolicySample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Construct the resource name.
+        // Build the resource name.
         CryptoKeyName resourceName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
 
-        // The resource name could also be a Cloud KMS key ring.
+        // The resource name could also be a key ring.
         // var resourceName = new KeyRingName(projectId, locationId, keyRingId);
 
-        // Build the request.
-        GetIamPolicyRequest getRequest = new GetIamPolicyRequest
-        {
-            ResourceAsResourceName = resourceName,
-        };
-
         // Get the current IAM policy.
-        Policy policy = client.GetIamPolicy(getRequest);
+        Policy policy = client.GetIamPolicy(resourceName);
 
         // Print the policy.
         foreach (Binding b in policy.Bindings)
