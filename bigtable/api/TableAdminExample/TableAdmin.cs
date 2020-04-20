@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using CommandLine;
 using Google.Api.Gax;
-using Google.LongRunning;
 using Google.Cloud.Bigtable.Admin.V2;
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GoogleCloudSamples.Bigtable
 {

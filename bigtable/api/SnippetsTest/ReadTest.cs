@@ -12,14 +12,14 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
-using Xunit;
+using Google.Api.Gax;
+using Google.Cloud.Bigtable.Admin.V2;
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
-using Google.Cloud.Bigtable.Admin.V2;
 using Reads;
+using System;
 using System.Threading.Tasks;
-using Google.Api.Gax;
+using Xunit;
 
 namespace Reads_
 {

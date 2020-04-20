@@ -12,9 +12,9 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Bigtable.Admin.V2;
 using System;
 using Xunit;
-using Google.Cloud.Bigtable.Admin.V2;
 
 namespace Writes
 {

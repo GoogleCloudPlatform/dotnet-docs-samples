@@ -12,10 +12,9 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Grpc.Core;
 using System;
 using Xunit;
-using Google.Cloud.Bigtable.V2;
-using Grpc.Core;
 
 namespace GoogleCloudSamples.Bigtable
 {
