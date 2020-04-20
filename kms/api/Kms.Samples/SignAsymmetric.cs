@@ -30,9 +30,13 @@ public class SignAsymmetricSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
+        // Convert the message into bytes. Cryptographic plaintexts and
+        // ciphertexts are always byte arrays.
+        byte[] plaintext = Encoding.UTF8.GetBytes(message);
+
         // Calculate the message digest.
         SHA256 sha256 = SHA256.Create();
-        byte[] digest = sha256.ComputeHash(Encoding.UTF8.GetBytes(message));
+        byte[] digest = sha256.ComputeHash(plaintext);
 
         // Build the request.
         //
@@ -50,8 +54,11 @@ public class SignAsymmetricSample
         // Call the API.
         AsymmetricSignResponse result = client.AsymmetricSign(request);
 
+        // Get the signature.
+        byte[] signature = result.Signature.ToByteArray();
+
         // Return the result.
-        return result.Signature.ToByteArray();
+        return signature;
     }
 }
 // [END kms_sign_asymmetric]

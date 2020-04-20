@@ -25,7 +25,7 @@ public class EncryptAsymmetricSample
 {
     public byte[] EncryptAsymmetric(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string keyVersionId = "123",
-      string plaintext = "Sample message")
+      string message = "Sample message")
     {
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
@@ -44,8 +44,12 @@ public class EncryptAsymmetricSample
         RSA rsa = RSA.Create();
         rsa.ImportSubjectPublicKeyInfo(pem, out _);
 
+        // Convert the message into bytes. Cryptographic plaintexts and
+        // ciphertexts are always byte arrays.
+        byte[] plaintext = Encoding.UTF8.GetBytes(message);
+
         // Encrypt the data.
-        byte[] ciphertext = rsa.Encrypt(Encoding.UTF8.GetBytes(plaintext), RSAEncryptionPadding.OaepSHA256);
+        byte[] ciphertext = rsa.Encrypt(plaintext, RSAEncryptionPadding.OaepSHA256);
         return ciphertext;
     }
 }
