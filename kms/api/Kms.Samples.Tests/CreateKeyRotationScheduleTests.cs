@@ -39,10 +39,7 @@ public class CreateKeyRotationScheduleTest
 
         // Get the key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(new GetCryptoKeyRequest
-        {
-            CryptoKeyName = result.CryptoKeyName,
-        });
+        var key = client.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal(2_592_000, key.RotationPeriod.Seconds);
         Assert.NotNull(key.NextRotationTime);

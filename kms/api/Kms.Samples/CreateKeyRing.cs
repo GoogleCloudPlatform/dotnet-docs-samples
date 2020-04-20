@@ -16,7 +16,6 @@
 
 // [START kms_create_key_ring]
 
-
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Kms.V1;
 
@@ -29,15 +28,14 @@ public class CreateKeyRingSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        CreateKeyRingRequest request = new CreateKeyRingRequest
-        {
-            ParentAsLocationName = new LocationName(projectId, locationId),
-            KeyRingId = id,
-        };
+        // Build the parent location name.
+        LocationName locationName = new LocationName(projectId, locationId);
+
+        // Build the key ring.
+        KeyRing keyRing = new KeyRing { };
 
         // Call the API.
-        KeyRing result = client.CreateKeyRing(request);
+        KeyRing result = client.CreateKeyRing(locationName, id, keyRing);
 
         // Return the result.
         return result;

@@ -26,14 +26,11 @@ public class GetKeyLabelsSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        GetCryptoKeyRequest request = new GetCryptoKeyRequest
-        {
-            CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
-        };
+        // Build the key name.
+        CryptoKeyName keyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
 
         // Call the API.
-        CryptoKey result = client.GetCryptoKey(request);
+        CryptoKey result = client.GetCryptoKey(keyName);
 
         // Example of iterating over labels.
         foreach (var item in result.Labels)

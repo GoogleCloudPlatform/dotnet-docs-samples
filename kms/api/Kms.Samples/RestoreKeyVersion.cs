@@ -25,14 +25,11 @@ public class RestoreKeyVersionSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        RestoreCryptoKeyVersionRequest request = new RestoreCryptoKeyVersionRequest
-        {
-            CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
-        };
+        // Build the key version name.
+        CryptoKeyVersionName cryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId);
 
         // Call the API.
-        CryptoKeyVersion result = client.RestoreCryptoKeyVersion(request);
+        CryptoKeyVersion result = client.RestoreCryptoKeyVersion(cryptoKeyVersionName);
 
         // Return the result.
         return result;

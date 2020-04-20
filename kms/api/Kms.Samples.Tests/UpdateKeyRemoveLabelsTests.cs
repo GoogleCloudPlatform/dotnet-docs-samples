@@ -42,10 +42,7 @@ public class UpdateKeyRemoveLabelsTest
 
         // Get the key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(new GetCryptoKeyRequest
-        {
-            CryptoKeyName = result.CryptoKeyName,
-        });
+        var key = client.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Empty(key.Labels);
     }

@@ -27,23 +27,21 @@ public class CreateKeyAsymmetricDecryptSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        CreateCryptoKeyRequest request = new CreateCryptoKeyRequest
+        // Build the parent key ring name.
+        KeyRingName keyRingName = new KeyRingName(projectId, locationId, keyRingId);
+
+        // Build the key.
+        CryptoKey key = new CryptoKey
         {
-            ParentAsKeyRingName = new KeyRingName(projectId, locationId, keyRingId),
-            CryptoKeyId = id,
-            CryptoKey = new CryptoKey
+            Purpose = CryptoKey.Types.CryptoKeyPurpose.AsymmetricDecrypt,
+            VersionTemplate = new CryptoKeyVersionTemplate
             {
-                Purpose = CryptoKey.Types.CryptoKeyPurpose.AsymmetricDecrypt,
-                VersionTemplate = new CryptoKeyVersionTemplate
-                {
-                    Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.RsaDecryptOaep2048Sha256,
-                }
+                Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.RsaDecryptOaep2048Sha256,
             }
         };
 
         // Call the API.
-        CryptoKey result = client.CreateCryptoKey(request);
+        CryptoKey result = client.CreateCryptoKey(keyRingName, id, key);
 
         // Return the result.
         return result;

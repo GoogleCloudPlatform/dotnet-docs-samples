@@ -29,19 +29,15 @@ public class EncryptSymmetricSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
+        // Build the key name.
+        CryptoKeyName keyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
+
         // Convert the message into bytes. Cryptographic plaintexts and
         // ciphertexts are always byte arrays.
         byte[] plaintext = Encoding.UTF8.GetBytes(message);
 
-        // Build the request.
-        EncryptRequest request = new EncryptRequest
-        {
-            ResourceName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
-            Plaintext = ByteString.CopyFrom(plaintext),
-        };
-
         // Call the API.
-        EncryptResponse result = client.Encrypt(request);
+        EncryptResponse result = client.Encrypt(keyName, ByteString.CopyFrom(plaintext));
 
         // Return the ciphertext.
         return result.Ciphertext.ToByteArray();

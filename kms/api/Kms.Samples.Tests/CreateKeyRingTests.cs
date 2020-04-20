@@ -47,10 +47,7 @@ public class CreateKeyRingTest : IDisposable
 
         // Get the key ring.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var keyRing = client.GetKeyRing(new GetKeyRingRequest
-        {
-            KeyRingName = result.KeyRingName,
-        });
+        var keyRing = client.GetKeyRing(result.KeyRingName);
 
         Assert.Contains(_keyRingId, keyRing.Name);
     }

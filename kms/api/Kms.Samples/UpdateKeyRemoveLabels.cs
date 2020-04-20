@@ -26,21 +26,20 @@ public class UpdateKeyRemoveLabelsSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        UpdateCryptoKeyRequest request = new UpdateCryptoKeyRequest
+        // Build the key.
+        CryptoKey key = new CryptoKey
         {
-            CryptoKey = new CryptoKey
-            {
-                CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
-            },
-            UpdateMask = new FieldMask
-            {
-                Paths = { "labels" },
-            },
+            CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
+        };
+
+        // Build the update mask.
+        FieldMask fieldMask = new FieldMask
+        {
+            Paths = { "labels" },
         };
 
         // Call the API.
-        CryptoKey result = client.UpdateCryptoKey(request);
+        CryptoKey result = client.UpdateCryptoKey(key, fieldMask);
 
         // Return the updated key.
         return result;

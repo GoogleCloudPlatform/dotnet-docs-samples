@@ -27,18 +27,15 @@ public class UpdateKeyUpdateLabelsSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
+        // Build the key name.
+        CryptoKeyName keyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
+
         //
         // Step 1 - get the current set of labels on the key
         //
 
-        // Build the request to get the current key.
-        GetCryptoKeyRequest getRequest = new GetCryptoKeyRequest
-        {
-            CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
-        };
-
         // Get the current key.
-        CryptoKey key = client.GetCryptoKey(getRequest);
+        CryptoKey key = client.GetCryptoKey(keyName);
 
 
         //
@@ -48,18 +45,14 @@ public class UpdateKeyUpdateLabelsSample
         // Add a new label
         key.Labels["new_label"] = "new_value";
 
-        // Build the request to update the key.
-        UpdateCryptoKeyRequest updateRequest = new UpdateCryptoKeyRequest
+        // Build the update mask.
+        FieldMask fieldMask = new FieldMask
         {
-            CryptoKey = key,
-            UpdateMask = new FieldMask
-            {
-                Paths = { "labels" }
-            }
+            Paths = { "labels" }
         };
 
         // Call the API.
-        CryptoKey result = client.UpdateCryptoKey(updateRequest);
+        CryptoKey result = client.UpdateCryptoKey(key, fieldMask);
 
         // Return the updated key.
         return result;

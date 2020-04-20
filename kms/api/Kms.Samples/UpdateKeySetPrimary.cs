@@ -27,15 +27,11 @@ public class UpdateKeySetPrimarySample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        UpdateCryptoKeyPrimaryVersionRequest request = new UpdateCryptoKeyPrimaryVersionRequest
-        {
-            CryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
-            CryptoKeyVersionId = keyVersionId,
-        };
+        // Build the key name.
+        CryptoKeyName keyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
 
         // Call the API.
-        CryptoKey result = client.UpdateCryptoKeyPrimaryVersion(request);
+        CryptoKey result = client.UpdateCryptoKeyPrimaryVersion(keyName, keyVersionId);
 
         // Return the updated key.
         return result;

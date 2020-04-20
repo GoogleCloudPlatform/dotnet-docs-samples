@@ -28,16 +28,16 @@ public class VerifyAsymmetricSignatureRsaSample
       string message = "my message",
       byte[] signature = null)
     {
+        // Build the key version name.
+        CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId);
+
         // Calculate the digest of the message.
         SHA256 sha256 = SHA256.Create();
         byte[] digest = sha256.ComputeHash(Encoding.UTF8.GetBytes(message));
 
         // Get the public key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        PublicKey publicKey = client.GetPublicKey(new GetPublicKeyRequest
-        {
-            CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
-        });
+        PublicKey publicKey = client.GetPublicKey(keyVersionName);
 
         // Split the key into blocks and base64-decode the PEM parts.
         string[] blocks = publicKey.Pem.Split("-", StringSplitOptions.RemoveEmptyEntries);

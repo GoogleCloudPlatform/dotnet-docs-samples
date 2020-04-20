@@ -38,10 +38,7 @@ public class RestoreKeyVersionTest
 
         // Destroy the key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        client.DestroyCryptoKeyVersion(new DestroyCryptoKeyVersionRequest
-        {
-            CryptoKeyVersionName = keyVersion.CryptoKeyVersionName,
-        });
+        client.DestroyCryptoKeyVersion(keyVersion.CryptoKeyVersionName);
 
         // Run the sample code.
         var name = keyVersion.CryptoKeyVersionName;

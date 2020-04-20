@@ -30,11 +30,11 @@ public class EncryptAsymmetricSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
+        // Build the key version name.
+        CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId);
+
         // Get the public key.
-        PublicKey publicKey = client.GetPublicKey(new GetPublicKeyRequest
-        {
-            CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
-        });
+        PublicKey publicKey = client.GetPublicKey(keyVersionName);
 
         // Split the key into blocks and base64-decode the PEM parts.
         string[] blocks = publicKey.Pem.Split("-", StringSplitOptions.RemoveEmptyEntries);

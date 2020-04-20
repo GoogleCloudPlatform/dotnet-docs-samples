@@ -39,10 +39,7 @@ public class CreateKeyAsymmetricSignTest
 
         // Get the key.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(new GetCryptoKeyRequest
-        {
-            CryptoKeyName = result.CryptoKeyName,
-        });
+        var key = client.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal(CryptoKey.Types.CryptoKeyPurpose.AsymmetricSign, key.Purpose);
         Assert.Equal(CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.RsaSignPkcs12048Sha256, key.VersionTemplate.Algorithm);

@@ -28,33 +28,20 @@ public class IamRemoveMemberSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Construct the resource name.
+        // Build the resource name.
         CryptoKeyName resourceName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
 
-        // The resource name could also be a Cloud KMS key ring.
+        // The resource name could also be a key ring.
         // var resourceName = new KeyRingName(projectId, locationId, keyRingId);
 
-        // Build the request.
-        GetIamPolicyRequest getRequest = new GetIamPolicyRequest
-        {
-            ResourceAsResourceName = resourceName,
-        };
-
         // Get the current IAM policy.
-        Policy policy = client.GetIamPolicy(getRequest);
+        Policy policy = client.GetIamPolicy(resourceName);
 
         // Add the member to the policy.
         policy.RemoveRoleMember("roles/cloudkms.cryptoKeyEncrypterDecrypter", member);
 
-        // Build the request to update the policy.
-        SetIamPolicyRequest setRequest = new SetIamPolicyRequest
-        {
-            ResourceAsResourceName = resourceName,
-            Policy = policy,
-        };
-
         // Save the updated IAM policy.
-        Policy result = client.SetIamPolicy(setRequest);
+        Policy result = client.SetIamPolicy(resourceName, policy);
 
         // Return the resulting policy.
         return result;

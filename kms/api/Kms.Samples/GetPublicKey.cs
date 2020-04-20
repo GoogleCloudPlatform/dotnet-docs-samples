@@ -25,14 +25,11 @@ public class GetPublicKeySample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        GetPublicKeyRequest request = new GetPublicKeyRequest
-        {
-            CryptoKeyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId),
-        };
+        // Build the key version name.
+        CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, keyVersionId);
 
         // Call the API.
-        PublicKey result = client.GetPublicKey(request);
+        PublicKey result = client.GetPublicKey(keyVersionName);
 
         // Return the ciphertext.
         return result;

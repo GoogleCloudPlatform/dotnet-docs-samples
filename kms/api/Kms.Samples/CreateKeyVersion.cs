@@ -25,14 +25,14 @@ public class CreateKeyVersionSample
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
 
-        // Build the request.
-        CreateCryptoKeyVersionRequest request = new CreateCryptoKeyVersionRequest
-        {
-            ParentAsCryptoKeyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
-        };
+        // Build the parent key name.
+        CryptoKeyName keyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
+
+        // Build the key version.
+        CryptoKeyVersion keyVersion = new CryptoKeyVersion { };
 
         // Call the API.
-        CryptoKeyVersion result = client.CreateCryptoKeyVersion(request);
+        CryptoKeyVersion result = client.CreateCryptoKeyVersion(keyName, keyVersion);
 
         // Return the result.
         return result;
