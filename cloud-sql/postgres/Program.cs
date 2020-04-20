@@ -14,15 +14,14 @@
  * the License.
  */
 
-using System;
-using System.IO;
+using CloudSql.Settings;
+using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
-using Google.Cloud.Diagnostics.AspNetCore;
-using CloudSql.Settings;
-
+using System;
+using System.IO;
 
 namespace CloudSql
 {
@@ -40,7 +39,7 @@ namespace CloudSql
             ReadAppSettings();
 
             string port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            string hostingUrl = String.Concat("http://0.0.0.0:", port);
+            string hostingUrl = $"http://0.0.0.0:{port}";
             string localhostUrl = "http://localhost:5567";
             string urls = $"{localhostUrl};{hostingUrl}";
             return WebHost.CreateDefaultBuilder(args)

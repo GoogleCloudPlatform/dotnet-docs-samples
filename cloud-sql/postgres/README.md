@@ -63,10 +63,11 @@ with a PostgreSQL database when running in Google App Engine Flexible Environmen
 1.  Edit [appsettings.json](appsettings.json).  Update the connection string to be in the following
     form:
         
-        `Server=/cloudsql/your-project-id:us-central1:instance-name;Uid=aspnetuser;Pwd=;Database=votes`
+        "Server=/cloudsql/your-project-id:us-central1:instance-name;Uid=aspnetuser;Pwd=;Database=votes"
     
-    replacing `your-project-id` and `instance-name` with your Google Cloud Project's project id and 
-    the name of the Cloud SQL instance you created in a previous step. Also replace the values for
+    replacing `your-project-id`, `us-central1` and `instance-name` with your Google Cloud Project's
+    project id and the [location/region](https://cloud.google.com/compute/docs/regions-zones) and name
+    of the Cloud SQL instance you created in a previous step. Also replace the values for
     `Uid` and `Pwd` with the "User name" and "Password" you previously created on the Cloud SQL instance.
 
 2.  Run the following command in powershell to build the container image that you will deploy as a Cloud Run service:
