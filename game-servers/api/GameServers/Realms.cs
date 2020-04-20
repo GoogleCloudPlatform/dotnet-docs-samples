@@ -31,11 +31,11 @@ namespace GoogleCloudSamples
 
     [Verb("list_realms", HelpText = "List realms in project")]
     public class ListRealmsOptions : BaseOptions
-    { };
+    { }
 
     [Verb("get_realm", HelpText = "Get realm in project")]
     public class GetRealmOptions : RealmOptions
-    { };
+    { }
 
     [Verb("delete_realm", HelpText = "Delete a realm")]
     public class DeleteRealmOptions : RealmOptions
