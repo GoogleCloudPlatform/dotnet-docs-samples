@@ -18,21 +18,26 @@
 
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
+using System.Text;
 
 public class EncryptSymmetricSample
 {
     public byte[] EncryptSymmetric(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key",
-      string plaintext = "Sample message")
+      string message = "Sample message")
     {
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+        // Convert the message into bytes. Cryptographic plaintexts and
+        // ciphertexts are always byte arrays.
+        byte[] plaintext = Encoding.UTF8.GetBytes(message);
 
         // Build the request.
         EncryptRequest request = new EncryptRequest
         {
             ResourceName = new CryptoKeyName(projectId, locationId, keyRingId, keyId),
-            Plaintext = ByteString.CopyFromUtf8(plaintext),
+            Plaintext = ByteString.CopyFrom(plaintext),
         };
 
         // Call the API.

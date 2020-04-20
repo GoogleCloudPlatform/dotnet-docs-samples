@@ -33,12 +33,12 @@ public class EncryptAsymmetricTest
     [Fact]
     public void EncryptsData()
     {
-        var plaintext = "testing1234";
+        var message = "testing1234";
 
         // Run the sample code.
         var ciphertext = _sample.EncryptAsymmetric(
             projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.AsymmetricDecryptKeyId, keyVersionId: "1",
-            plaintext: plaintext);
+            message: message);
 
         // Decrypt result.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
@@ -48,6 +48,6 @@ public class EncryptAsymmetricTest
             Ciphertext = ByteString.CopyFrom(ciphertext),
         });
 
-        Assert.Equal(plaintext, result.Plaintext.ToStringUtf8());
+        Assert.Equal(message, result.Plaintext.ToStringUtf8());
     }
 }

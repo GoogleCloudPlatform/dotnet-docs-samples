@@ -33,12 +33,12 @@ public class EncryptSymmetricTest
     [Fact]
     public void EncryptsData()
     {
-        var plaintext = "testing1234";
+        var message = "testing1234";
 
         // Run the sample code.
         var result = _sample.EncryptSymmetric(
             projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId,
-            plaintext: plaintext);
+            message: message);
 
         // Attempt to decrypt to verify success.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
@@ -48,6 +48,6 @@ public class EncryptSymmetricTest
             Ciphertext = ByteString.CopyFrom(result),
         });
 
-        Assert.Equal(plaintext, response.Plaintext.ToStringUtf8());
+        Assert.Equal(message, response.Plaintext.ToStringUtf8());
     }
 }

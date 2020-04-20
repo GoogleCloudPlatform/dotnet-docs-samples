@@ -18,6 +18,7 @@
 
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
+using System.Text;
 
 public class DecryptSymmetricSample
 {
@@ -38,8 +39,12 @@ public class DecryptSymmetricSample
         // Call the API.
         DecryptResponse result = client.Decrypt(request);
 
+        // Get the plaintext. Cryptographic plaintexts and ciphertexts are
+        // always byte arrays.
+        byte[] plaintext = result.Plaintext.ToByteArray();
+
         // Return the result.
-        return result.Plaintext.ToStringUtf8();
+        return Encoding.UTF8.GetString(plaintext);
     }
 }
 // [END kms_decrypt_symmetric]
