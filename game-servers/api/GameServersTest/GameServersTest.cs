@@ -12,6 +12,8 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Gaming.V1Beta;
+using Google.Api.Gax.ResourceNames;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,55 +24,69 @@ namespace GoogleCloudSamples
 {
     public class GameServersTestsBase
     {
+        protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        protected string GKEClusterId { get; private set; } = Environment.GetEnvironmentVariable("SAMPLE_CLUSTER_NAME");
         protected string RegionName { get; private set; } = "us-central1";
         protected string RealmId { get; private set; } = "fake-realm-for-test";
         protected string GameServerClusterId { get; private set; } = "fake-cluster-for-test";
 
-        private readonly CommandLineRunner _productSearch = new CommandLineRunner()
+        private readonly CommandLineRunner _gameServers = new CommandLineRunner()
         {
             Main = GameServersProgram.Main,
             Command = "Game Servers"
         };
 
-        // Keep a list of all the things created while running tests.
-        private readonly List<string[]> _createCommands = new List<string[]>();
-
-        /// <summary>
-        ///  Run the command and track all cloud assets that were created.
-        /// </summary>
-        /// <param name="arguments">The command arguments.</param>
         public ConsoleOutput Run(params string[] arguments)
         {
-            if (arguments[0].StartsWith("create_"))
-            {
-                _createCommands.Add(arguments);
-            }
-            return _productSearch.Run(arguments);
+            return _gameServers.Run(arguments);
         }
 
         /// <summary>
-        /// Delete all the things created in Run() commands.
+        /// Delete all realms and clusters created by tests.
         /// </summary>
-        protected void DeleteCreations()
+        protected void DeleteAllResources()
         {
-            // Clean up everything the test created.
-            List<string[]> commands = new List<string[]>(_createCommands);
-            _createCommands.Clear();
-            commands.Reverse();
-
+            var realmClient = RealmsServiceClient.Create();
+            var clusterClient = GameServerClustersServiceClient.Create();
             var exceptions = new List<Exception>();
-            foreach (string[] command in commands)
+
+            var listOfClusters = clusterClient.ListGameServerClusters(new ListGameServerClustersRequest
             {
-                command[0] = command[0].Replace("create_", "delete_");
-                try
+                ParentAsRealmName = new RealmName(ProjectId, RegionName, RealmId)
+            });
+
+            try
+            {
+                foreach (var cluster in listOfClusters)
                 {
-                    Run(command);
-                }
-                catch (Exception e)
-                {
-                    exceptions.Add(e);
+                    var output = Run("delete_cluster", ProjectId, RegionName, RealmId, cluster.Name);
                 }
             }
+            catch (Exception e)
+            {
+                exceptions.Add(e);
+            }
+
+            var listOfRealms = realmClient.ListRealms(new ListRealmsRequest
+            {
+                ParentAsLocationName = new LocationName(ProjectId, RegionName)
+            });
+
+            try
+            {
+                foreach (var realm in listOfRealms)
+                {
+                    if (realm.RealmName.RealmId.Contains(RealmId))
+                    {
+                        Run("delete_realm", ProjectId, RegionName, RealmId);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                exceptions.Add(e);
+            }
+
             if (exceptions.Count > 0)
             {
                 throw new AggregateException(exceptions);
@@ -97,9 +113,77 @@ namespace GoogleCloudSamples
             RandomizeIds();
         }
 
+        [Fact]
+        public void TestCreateRealm()
+        {
+            var output = Run("create_realm", ProjectId, RegionName, RealmId);
+            Assert.Contains("Realm name", output.Stdout);
+        }
+
+        [Fact]
+        public void TestListRealms()
+        {
+            Run("create_realm", ProjectId, RegionName, RealmId);
+
+            var output = Run("list_realms", ProjectId, RegionName);
+            Assert.Contains("Realm name", output.Stdout);
+        }
+
+        [Fact]
+        public void TestGetRealm()
+        {
+            Run("create_realm", ProjectId, RegionName, RealmId);
+
+            var output = Run("get_realm", ProjectId, RegionName, RealmId);
+            Assert.Contains("Realm name", output.Stdout);
+        }
+
+        [Fact]
+        public void TestDeleteRealm()
+        {
+            Run("create_realm", ProjectId, RegionName, RealmId);
+
+            var output = Run("delete_realm", ProjectId, RegionName, RealmId);
+            Assert.Contains("Realm deleted", output.Stdout);
+        }
+
+        [Fact]
+        public void TestCreateGameServerCluster()
+        {
+            var output = Run("create_cluster", ProjectId, RegionName, RealmId, GameServerClusterId, GKEClusterId);
+            Assert.Contains("Cluster name", output.Stdout);
+        }
+
+        [Fact]
+        public void TestListGameServerClusters()
+        {
+            Run("create_cluster", ProjectId, RegionName, RealmId, GameServerClusterId, GKEClusterId);
+
+            var output = Run("list_clusters", ProjectId, RegionName, RealmId);
+            Assert.Contains("Cluster name", output.Stdout);
+        }
+
+        [Fact]
+        public void TestGetGameServerCluster()
+        {
+            Run("create_cluster", ProjectId, RegionName, RealmId, GameServerClusterId, GKEClusterId);
+
+            var output = Run("list_clusters", ProjectId, RegionName, RealmId, GameServerClusterId);
+            Assert.Contains("Cluster name", output.Stdout);
+        }
+
+        [Fact]
+        public void TestDeleteGameServerCluster()
+        {
+            Run("create_cluster", ProjectId, RegionName, RealmId, GameServerClusterId, GKEClusterId);
+
+            var output = Run("delete_cluster", ProjectId, RegionName, RealmId, GameServerClusterId);
+            Assert.Contains("Cluster deleted", output.Stdout);
+        }
+
         public void Dispose()
         {
-            DeleteCreations();
+            DeleteAllResources();
         }
     }
 }

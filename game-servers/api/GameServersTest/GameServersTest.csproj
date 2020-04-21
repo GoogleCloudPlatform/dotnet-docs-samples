@@ -10,6 +10,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Google.Cloud.Gaming.V1Beta" Version="1.0.0-beta01" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
