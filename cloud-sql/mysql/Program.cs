@@ -14,21 +14,56 @@
  * the License.
  */
 
+using CloudSql.Settings;
+using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using System;
+using System.IO;
 
 namespace CloudSql
 {
     public class Program
     {
+        
+        public static AppSettings AppSettings { get; private set; }
+
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            BuildWebHost(args).Build().Run();
+        }
+        
+        public static IWebHostBuilder BuildWebHost(string[] args)
+        {
+            ReadAppSettings();
+
+            string port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            string hostingUrl = $"http://0.0.0.0:{port}";
+            string localhostUrl = "http://localhost:5567";
+            string urls = $"{localhostUrl};{hostingUrl}";
+            return WebHost.CreateDefaultBuilder(args)
+                .UseGoogleDiagnostics(
+                    AppSettings.GoogleCloudSettings.ProjectId,
+                    AppSettings.GoogleCloudSettings.ServiceName,
+                    AppSettings.GoogleCloudSettings.Version)
+                .UseStartup<Startup>().UseUrls(urls);
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
+        /// <summary>
+        /// Read application settings from appsettings.json. 
+        /// </summary>
+        private static void ReadAppSettings()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
                 .Build();
+
+            // Read json config into AppSettings.
+            AppSettings = new AppSettings();
+            config.Bind(AppSettings);
+        }
     }
 }
