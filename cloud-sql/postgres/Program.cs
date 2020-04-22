@@ -39,7 +39,12 @@ namespace CloudSql
             ReadAppSettings();
 
             string port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            // hostingUrl is for hosting by Cloud Run and App Engine.
             string hostingUrl = $"http://0.0.0.0:{port}";
+            // localhostUrl is for running locally and running tests.
+            // localhostUrl port should be different from hostingUrl port
+            // to prevent "Address already in use" error when deploying
+            // to Cloud Run or App Engine.
             string localhostUrl = "http://localhost:5567";
             string urls = $"{localhostUrl};{hostingUrl}";
             return WebHost.CreateDefaultBuilder(args)
