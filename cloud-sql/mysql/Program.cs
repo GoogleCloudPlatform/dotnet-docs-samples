@@ -27,14 +27,13 @@ namespace CloudSql
 {
     public class Program
     {
-        
         public static AppSettings AppSettings { get; private set; }
 
         public static void Main(string[] args)
         {
             BuildWebHost(args).Build().Run();
         }
-        
+
         public static IWebHostBuilder BuildWebHost(string[] args)
         {
             ReadAppSettings();
