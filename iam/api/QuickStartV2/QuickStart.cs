@@ -35,6 +35,7 @@ public class QuickStart
         var role = "roles/logging.logWriter";
         // All permissions contained in the role to be granted
         var rolePermissions = new List<string> { "logging.logEntries.create" };
+
         // Initialize service
         CloudResourceManagerService crmService = InitializeService();
 
