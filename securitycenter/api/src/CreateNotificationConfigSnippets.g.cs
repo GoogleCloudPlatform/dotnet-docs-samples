@@ -22,7 +22,6 @@ using System;
 ///<summary> Create NotificationConfig Snippet. </summary>
 public class CreateNotificationConfigSnippets
 {
-    public static void Main(){}
     public static NotificationConfig CreateNotificationConfig(
         string organizationId, string notificationConfigId, string projectId, string topicName)
     {
