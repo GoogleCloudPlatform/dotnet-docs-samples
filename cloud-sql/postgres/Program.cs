@@ -38,20 +38,12 @@ namespace CloudSql
         {
             ReadAppSettings();
 
-            string port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            // hostingUrl is for hosting by Cloud Run and App Engine.
-            string hostingUrl = $"http://0.0.0.0:{port}";
-            // localhostUrl is for running locally and running tests.
-            // localhostUrl port should be different from hostingUrl port
-            // to prevent "Address already in use" error when deploying
-            // to Cloud Run or App Engine.
-            string localhostUrl = "http://localhost:5567";
-            string urls = $"{localhostUrl};{hostingUrl}";
             return WebHost.CreateDefaultBuilder(args)
                 .UseGoogleDiagnostics(AppSettings.GoogleCloudSettings.ProjectId,
                         AppSettings.GoogleCloudSettings.ServiceName,
                         AppSettings.GoogleCloudSettings.Version)
-                .UseStartup<Startup>().UseUrls(urls);
+                .UseStartup<Startup>()
+                .UsePortEnvironmentVariable();
         }
 
         /// <summary>
@@ -67,6 +59,22 @@ namespace CloudSql
             // Read json config into AppSettings.
             AppSettings = new AppSettings();
             config.Bind(AppSettings);
+        }
+    }
+
+    static class ProgramExtensions
+    {
+        // Google Cloud Run sets the PORT environment variable to tell this
+        // process which port to listen to.
+        public static IWebHostBuilder UsePortEnvironmentVariable(
+            this IWebHostBuilder builder)
+        {
+            string port = Environment.GetEnvironmentVariable("PORT");
+            if (!string.IsNullOrEmpty(port))
+            {
+                builder.UseUrls($"http://0.0.0.0:{port}");
+            }
+            return builder;
         }
     }
 }
