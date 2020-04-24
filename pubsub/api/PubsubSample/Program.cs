@@ -117,7 +117,7 @@ namespace GoogleCloudSamples
         public string projectId { get; set; }
         [Value(1, HelpText = "The topic to set the IAM Policy details for.", Required = true)]
         public string topicId { get; set; }
-        [Value(2, HelpText = @"The role to set IAM policy for: 
+        [Value(2, HelpText = @"The role to set IAM policy for:
         ""pubsub.viewer"" or ""pubsub.editor""", Required = true)]
         public string role { get; set; }
         [Value(3, HelpText = @"The member to add to the topic's IAM policy:
@@ -140,7 +140,7 @@ namespace GoogleCloudSamples
         public string projectId { get; set; }
         [Value(1, HelpText = "The subscription to set the IAM Policy details for.", Required = true)]
         public string subscriptionId { get; set; }
-        [Value(2, HelpText = @"The role to set IAM policy for: 
+        [Value(2, HelpText = @"The role to set IAM policy for:
         ""pubsub.viewer"" or ""pubsub.editor""", Required = true)]
         public string role { get; set; }
         [Value(3, HelpText = @"The member to add to the subscription's IAM policy:
@@ -297,7 +297,7 @@ namespace GoogleCloudSamples
             string subscriptionId, bool acknowledge)
         {
             // [START pubsub_subscriber_async_pull]i
-	     // [START scc_receive_notifications]
+	        // [START scc_receive_notifications]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
             SubscriberClient subscriber = await SubscriberClient.CreateAsync(
@@ -318,7 +318,7 @@ namespace GoogleCloudSamples
             await Task.Delay(3000);
             await subscriber.StopAsync(CancellationToken.None);
             // [END pubsub_subscriber_async_pull]
-	     // [END scc_receive_notifications]
+	        // [END scc_receive_notifications]
             return 0;
         }
 
