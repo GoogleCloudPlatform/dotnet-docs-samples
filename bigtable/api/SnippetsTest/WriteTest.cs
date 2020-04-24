@@ -17,64 +17,67 @@ using System.Linq;
 using Xunit;
 using Google.Cloud.Bigtable.Admin.V2;
 
-public class BigtableClientFixture : IDisposable
+namespace Writes
 {
-    public readonly string projectId =
-        Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    public readonly string instanceId =
-        Environment.GetEnvironmentVariable("TEST_BIGTABLE_INSTANCE");
-    public readonly string tableId = $"mobile-time-series-{Guid.NewGuid().ToString().Substring(0, 8)}";
-
-    private readonly BigtableTableAdminClient _bigtableTableAdminClient;
-
-    public BigtableClientFixture()
+    public class BigtableClientFixture : IDisposable
     {
-        _bigtableTableAdminClient = BigtableTableAdminClient.Create();
-        Table table = new Table
+        public readonly string projectId =
+            Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public readonly string instanceId =
+            Environment.GetEnvironmentVariable("TEST_BIGTABLE_INSTANCE");
+        public readonly string tableId = $"mobile-time-series-{Guid.NewGuid().ToString().Substring(0, 8)}";
+
+        private readonly BigtableTableAdminClient _bigtableTableAdminClient;
+
+        public BigtableClientFixture()
         {
-            Granularity = Table.Types.TimestampGranularity.Millis
-        };
-        table.ColumnFamilies.Add("stats_summary", new ColumnFamily());
-        CreateTableRequest createTableRequest = new CreateTableRequest
+            _bigtableTableAdminClient = BigtableTableAdminClient.Create();
+            Table table = new Table
+            {
+                Granularity = Table.Types.TimestampGranularity.Millis
+            };
+            table.ColumnFamilies.Add("stats_summary", new ColumnFamily());
+            CreateTableRequest createTableRequest = new CreateTableRequest
+            {
+                ParentAsInstanceName = new InstanceName(projectId, instanceId),
+                Table = table,
+                TableId = tableId,
+            };
+            _bigtableTableAdminClient.CreateTable(createTableRequest);
+        }
+
+        public void Dispose()
         {
-            ParentAsInstanceName = new InstanceName(projectId, instanceId),
-            Table = table,
-            TableId = tableId,
-        };
-        _bigtableTableAdminClient.CreateTable(createTableRequest);
+            _bigtableTableAdminClient.DeleteTable(new Google.Cloud.Bigtable.Common.V2.TableName(projectId, instanceId, tableId));
+        }
     }
-
-    public void Dispose()
+    public class WriteSnippetsTest : IClassFixture<BigtableClientFixture>
     {
-        _bigtableTableAdminClient.DeleteTable(new Google.Cloud.Bigtable.Common.V2.TableName(projectId, instanceId, tableId));
-    }
-}
-public class WriteSnippetsTest : IClassFixture<BigtableClientFixture>
-{
-    private readonly BigtableClientFixture _fixture;
+        private readonly BigtableClientFixture _fixture;
 
-    public WriteSnippetsTest(BigtableClientFixture fixture)
-    {
-        _fixture = fixture;
-    }
+        public WriteSnippetsTest(BigtableClientFixture fixture)
+        {
+            _fixture = fixture;
+        }
 
-    [Fact]
-    public void TestWriteSimpleIncrementConditional()
-    {
-        Writes.WriteSimple writeSimple = new Writes.WriteSimple();
-        Assert.Contains("Successfully wrote row", writeSimple.writeSimple(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+        [Fact]
+        public void TestWriteSimpleIncrementConditional()
+        {
+            Writes.WriteSimple writeSimple = new Writes.WriteSimple();
+            Assert.Contains("Successfully wrote row", writeSimple.writeSimple(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
 
-        Writes.WriteIncrement writeIncrement = new Writes.WriteIncrement();
-        Assert.Contains("Successfully updated row", writeIncrement.writeIncrement(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Writes.WriteIncrement writeIncrement = new Writes.WriteIncrement();
+            Assert.Contains("Successfully updated row", writeIncrement.writeIncrement(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
 
-        Writes.WriteConditional writeConditional = new Writes.WriteConditional();
-        Assert.Contains("Successfully updated row's os_name: True", writeConditional.writeConditional(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
-    }
+            Writes.WriteConditional writeConditional = new Writes.WriteConditional();
+            Assert.Contains("Successfully updated row's os_name: True", writeConditional.writeConditional(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+        }
 
-    [Fact]
-    public void TestWriteBatch()
-    {
-        Writes.WriteBatch writeBatch = new Writes.WriteBatch();
-        Assert.Contains("Successfully wrote 2 rows", writeBatch.writeBatch(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+        [Fact]
+        public void TestWriteBatch()
+        {
+            Writes.WriteBatch writeBatch = new Writes.WriteBatch();
+            Assert.Contains("Successfully wrote 2 rows", writeBatch.writeBatch(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+        }
     }
 }

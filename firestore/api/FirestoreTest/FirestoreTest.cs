@@ -14,20 +14,13 @@
  * the License.
  */
 
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Firestore;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
-using Google.Cloud.Firestore;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using Newtonsoft.Json;
-
 
 namespace GoogleCloudSamples
 {
@@ -229,6 +222,17 @@ namespace GoogleCloudSamples
         protected ConsoleOutput RunManageIndexes(params string[] args)
         {
             return _manageIndexes.Run(args);
+        }
+
+        readonly CommandLineRunner _distrubutedCounter = new CommandLineRunner()
+        {
+            VoidMain = DistributedCounter.Main,
+            Command = "dotnet run"
+        };
+
+        protected ConsoleOutput RunDistributedCounter(params string[] args)
+        {
+            return _distrubutedCounter.Run(args);
         }
 
         // QUICKSTART TESTS
@@ -828,6 +832,15 @@ namespace GoogleCloudSamples
             Assert.Contains("Index creation completed!", manageIndexesOutput.Stdout);
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
             RunPaginateData("multiple-cursor-conditions", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+        }
+
+        [Fact]
+        public void RunDistributedCounterTest()
+        {
+            var output = RunDistributedCounter("distributed-counter", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Distributed counter created.", output.Stdout);
+            Assert.Contains("Distributed counter incremented.", output.Stdout);
+            Assert.Contains("Total count: 1", output.Stdout);
         }
     }
 }

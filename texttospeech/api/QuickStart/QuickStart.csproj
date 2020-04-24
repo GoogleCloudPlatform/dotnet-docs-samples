@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,9 +10,8 @@
 
   <ItemGroup>
     <None Remove="sample.mp3" />
-    <None Remove="sample.mp3" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="1.1.0" />
+    <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="2.0.0" />
   </ItemGroup>
 </Project>

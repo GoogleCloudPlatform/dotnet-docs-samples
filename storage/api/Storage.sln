@@ -8,6 +8,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage", "Storage\Storage.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageTest", "StorageTest\StorageTest.csproj", "{22A2AE8E-6635-496E-A52A-EAA63361EEAA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "testutil", "..\..\testutil\testutil.csproj", "{C0736C40-22CC-467A-8020-A965AD16AF9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,18 @@ Global
 		{22A2AE8E-6635-496E-A52A-EAA63361EEAA}.Release|x64.Build.0 = Release|Any CPU
 		{22A2AE8E-6635-496E-A52A-EAA63361EEAA}.Release|x86.ActiveCfg = Release|Any CPU
 		{22A2AE8E-6635-496E-A52A-EAA63361EEAA}.Release|x86.Build.0 = Release|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Debug|x64.Build.0 = Debug|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Debug|x86.Build.0 = Debug|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Release|x64.ActiveCfg = Release|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Release|x64.Build.0 = Release|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Release|x86.ActiveCfg = Release|Any CPU
+		{C0736C40-22CC-467A-8020-A965AD16AF9B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

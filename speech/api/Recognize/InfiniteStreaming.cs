@@ -70,7 +70,7 @@ namespace GoogleCloudSamples
         /// reached the end of the stream. (The task will complete in either case, with a result
         /// of True if it's moved to another response, or False at the end of the stream.)
         /// </summary>
-        private Task<bool> _serverResponseAvailableTask;
+        private ValueTask<bool> _serverResponseAvailableTask;
 
         private InfiniteStreaming()
         {
@@ -123,7 +123,7 @@ namespace GoogleCloudSamples
             _rpcStream = _client.StreamingRecognize();
             _rpcStreamDeadline = now + s_streamTimeLimit;
             _processingBufferStart = TimeSpan.Zero;
-            _serverResponseAvailableTask = _rpcStream.ResponseStream.MoveNext();
+            _serverResponseAvailableTask = _rpcStream.GetResponseStream().MoveNextAsync();
             await _rpcStream.WriteAsync(new StreamingRecognizeRequest
             {
                 StreamingConfig = new StreamingRecognitionConfig
@@ -154,8 +154,8 @@ namespace GoogleCloudSamples
         {
             while (_serverResponseAvailableTask.IsCompleted && _serverResponseAvailableTask.Result)
             {
-                var response = _rpcStream.ResponseStream.Current;
-                _serverResponseAvailableTask = _rpcStream.ResponseStream.MoveNext();
+                var response = _rpcStream.GetResponseStream().Current;
+                _serverResponseAvailableTask = _rpcStream.GetResponseStream().MoveNextAsync();
                 // Uncomment this to see the details of interim results.
                 // Console.WriteLine($"Response: {response}");
 

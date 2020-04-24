@@ -12,20 +12,16 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using Google.Cloud.Iam.V1;
+using Google.Apis.CloudIot.v1.Data;
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
-using Xunit;
 using System;
-using Google.Api;
-using System.IO;
-using Xunit.Abstractions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using Google.Apis.CloudIot.v1.Data;
-using Policy = Google.Cloud.Iam.V1.Policy;
+using System.IO;
+using Xunit;
+using Xunit.Abstractions;
 using Binding = Google.Cloud.Iam.V1.Binding;
+using Policy = Google.Cloud.Iam.V1.Policy;
 using SetIamPolicyRequest = Google.Cloud.Iam.V1.SetIamPolicyRequest;
 
 namespace GoogleCloudSamples

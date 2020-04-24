@@ -12,26 +12,26 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System;
-using uPLibrary.Networking.M2Mqtt;
-using System.Security.Cryptography;
-using Org.BouncyCastle.OpenSsl;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Crypto;
-using System.IO;
-using System.Collections.Generic;
-using System.Text;
-using System.Security.Cryptography.X509Certificates;
 using CommandLine;
-using uPLibrary.Networking.M2Mqtt.Messages;
-using uPLibrary.Networking.M2Mqtt.Exceptions;
-using NodaTime;
-using Google.Apis.CloudIot.v1;
 using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
+using Google.Apis.CloudIot.v1;
 using Google.Apis.CloudIot.v1.Data;
+using Google.Apis.Services;
+using NodaTime;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Security;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using uPLibrary.Networking.M2Mqtt;
+using uPLibrary.Networking.M2Mqtt.Exceptions;
+using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace GoogleCloudSamples
 {

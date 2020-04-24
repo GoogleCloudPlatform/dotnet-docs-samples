@@ -2,12 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Logging.Type" Version="2.1.0" />
-    <PackageReference Include="Google.Cloud.Logging.V2" Version="2.3.0" />
+    <PackageReference Include="Google.Cloud.Logging.V2" Version="3.0.0" />
   </ItemGroup>
 
 </Project>

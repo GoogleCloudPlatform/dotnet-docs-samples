@@ -4,17 +4,13 @@ bigquery/   @jsimonweb
 bigtable/   @jsimonweb
 datastore/  @jsimonweb
 firestore/  @jsimonweb
-spanner/    @jsimonweb
 storage/    @jsimonweb
 applications/leaderboard/   @jsimonweb
 
-dialogflow/ @beccasaurus
-language/   @beccasaurus
-pubsub/     @beccasaurus
-speech/     @beccasaurus
-translate/  @beccasaurus
-video/      @beccasaurus
-vision/     @beccasaurus
+spanner/       @skuruppu
+
+kms/           @sethvargo
+secretmanager/ @sethvargo
 
 applications/liftAndShiftPetshop/   @simonz130
 

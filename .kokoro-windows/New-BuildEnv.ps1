@@ -26,8 +26,8 @@ if (-not $chocoPackages.Contains('Microsoft .NET Core SDK - 2.1.4')) {
     choco install -y --sxs dotnetcore-sdk --version 2.2.203
 }
 
-if (-not $chocoPackages.Contains('.NET Core SDK 1.1.')) {
-    choco install -y --sxs dotnetcore-sdk --version 1.1.2    
+if (-not $chocoPackages.Contains('.NET Core SDK 3.1.')) {
+    choco install -y --sxs dotnetcore-sdk --version 3.1.201
 }
 
 dotnet --info

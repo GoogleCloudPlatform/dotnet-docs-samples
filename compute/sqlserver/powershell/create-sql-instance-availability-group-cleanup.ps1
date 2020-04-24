@@ -1,5 +1,5 @@
 #Requires -Version 5
-# Copyright(c) 2016 Google Inc.
+# Copyright(c) 2020 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -41,19 +41,23 @@
 $ErrorActionPreference = 'continue'
 
 # Delete instances
-Get-GceInstance -Zone "us-central1-f" | Where Name -EQ "dc-windows"   | Remove-GceInstance
-Get-GceInstance -Zone "us-central1-f" | Where Name -EQ "cluster-sql1" | Remove-GceInstance
-Get-GceInstance -Zone "us-central1-f" | Where Name -EQ "cluster-sql2" | Remove-GceInstance
+Get-GceInstance | Where Name -EQ "dc-windows"   | Remove-GceInstance
+Get-GceInstance | Where Name -EQ "cluster-sql1" | Remove-GceInstance
+Get-GceInstance | Where Name -EQ "cluster-sql2" | Remove-GceInstance
 
-# Delete the 3 subnetworks
-Invoke-Command -ScriptBlock { gcloud compute networks subnets delete wsfcsubnet1 --quiet 2> $null }
-Invoke-Command -ScriptBlock { gcloud compute networks subnets delete wsfcsubnet2 --quiet 2> $null }
-Invoke-Command -ScriptBlock { gcloud compute networks subnets delete wsfcsubnet3 --quiet 2> $null }
+# Delete the subnets by finding all the subnets under the network 'wsfcnet'
+$results = Invoke-Command -ScriptBlock { gcloud compute networks subnets list --filter="network:wsfcnet" 2> $null } | ConvertFrom-String
 
-# Delete the firewall rules, routes and custom network
+If ( $results.count -gt 0 ) {
+  $results | Select-Object -skip 1 | ForEach {
+    Write-Host("Removing subnet: $($_.P1) on region: $($_.P2)")
+    Invoke-Command -ScriptBlock { gcloud compute networks subnets delete $_.P1 --region  $_.P2 --quiet 2> $null }
+  }
+}
+
+# Delete the firewall rules, routes and the network 'wsfcnet'
 Get-GceFirewall | Where-Object Network -Like "*wsfcnet" | Remove-GceFirewall
 Get-GceRoute | Where-Object Network -Like "*wsfcnet" | Remove-GceRoute
 Invoke-Command -ScriptBlock { gcloud compute networks delete wsfcnet --quiet 2> $null }
 
 #>
-

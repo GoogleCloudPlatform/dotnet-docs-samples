@@ -1,13 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Firestore" Version="1.1.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -25,6 +23,7 @@
     <ProjectReference Include="..\TransactionsAndBatchedWrites\TransactionsAndBatchedWrites.csproj" />
     <ProjectReference Include="..\PaginateData\PaginateData.csproj" />
     <ProjectReference Include="..\ManageIndexes\ManageIndexes.csproj" />
+    <ProjectReference Include="..\SolutionCounter\SolutionCounter.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
 </Project>
