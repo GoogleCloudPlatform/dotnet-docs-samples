@@ -14,13 +14,12 @@
  * the License.
  */
 
-using System;
 using Google.Cloud.Logging.V2;
-using Xunit;
-using System.Diagnostics;
-using System.Collections.Generic;
 using Grpc.Core;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using Xunit;
 
 namespace GoogleCloudSamples
 {
@@ -126,7 +125,7 @@ namespace GoogleCloudSamples
                 });
             }
 
-            [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1010")]
+            [Fact]
             public void TestListEntries()
             {
                 string logId = "logForTestListEntries" + RandomName();
