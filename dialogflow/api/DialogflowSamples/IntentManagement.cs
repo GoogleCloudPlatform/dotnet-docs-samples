@@ -83,7 +83,7 @@ namespace GoogleCloudSamples
             intent.TrainingPhrases.Add(trainingPhrase);
 
             var newIntent = client.CreateIntent(
-                parent: new ProjectAgentName(projectId),
+                parent: new AgentName(projectId),
                 intent: intent
             );
 
@@ -101,7 +101,7 @@ namespace GoogleCloudSamples
         {
             var client = IntentsClient.Create();
 
-            var intents = client.ListIntents(new ProjectAgentName(projectId));
+            var intents = client.ListIntents(new AgentName(projectId));
 
             foreach (var intent in intents)
             {
@@ -177,7 +177,7 @@ namespace GoogleCloudSamples
             {
                 Name = new IntentName(projectId, id).ToString()
             });
-            client.BatchDeleteIntents(new ProjectAgentName(projectId), intents);
+            client.BatchDeleteIntents(new AgentName(projectId), intents);
             return 0;
         }
     }

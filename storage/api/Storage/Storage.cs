@@ -15,13 +15,13 @@
 using Google.Apis.Storage.v1;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
+using Storage;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace GoogleCloudSamples
 {
@@ -47,8 +47,12 @@ namespace GoogleCloudSamples
             "  Storage generate-signed-get-url-v4 bucket-name object-name\n" +
             "  Storage generate-signed-put-url-v4 bucket-name object-name\n" +
             "  Storage view-bucket-iam-members bucket-name\n" +
-            "  Storage add-bucket-iam-member bucket-name member\n" +
+            "  Storage add-bucket-iam-member bucket-name role member\n" +
+            "  Storage add-bucket-iam-conditional-binding bucket-name member\n" +
+            "                              role member cond-title cond-description cond-expression\n" +
             "  Storage remove-bucket-iam-member bucket-name role member\n" +
+            "  Storage remove-bucket-iam-conditional-binding bucket-name role\n" +
+            "                               cond-title cond-description cond-expression\n" +
             "  Storage add-bucket-default-kms-key bucket-name key-location key-ring key-name\n" +
             "  Storage upload-with-kms-key bucket-name key-location\n" +
             "                              key-ring key-name local-file-path [object-name]\n" +
@@ -86,23 +90,6 @@ namespace GoogleCloudSamples
             "  Storage enable-uniform-bucket-level-access bucket-name\n" +
             "  Storage disable-uniform-bucket-level-access bucket-name\n" +
             "  Storage get-uniform-bucket-level-access bucket-name\n";
-
-        // [START storage_create_bucket]
-        private void CreateBucket(string bucketName)
-        {
-            var storage = StorageClient.Create();
-            storage.CreateBucket(s_projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-        }
-        // [END storage_create_bucket]
-
-        private void CreateRegionalBucket(string location, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            Bucket bucket = new Bucket { Location = location, Name = bucketName };
-            storage.CreateBucket(s_projectId, bucket);
-            Console.WriteLine($"Created {bucketName}.");
-        }
 
         // [START storage_list_buckets]
         private void ListBuckets()
@@ -629,7 +616,11 @@ namespace GoogleCloudSamples
         private void ViewBucketIamMembers(string bucketName)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName);
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+
             foreach (var binding in policy.Bindings)
             {
                 Console.WriteLine($"  Role: {binding.Role}");
@@ -637,6 +628,12 @@ namespace GoogleCloudSamples
                 foreach (var member in binding.Members)
                 {
                     Console.WriteLine($"    {member}");
+                }
+                if (binding.Condition != null)
+                {
+                    Console.WriteLine($"Condition Title: {binding.Condition.Title}");
+                    Console.WriteLine($"Condition Description: {binding.Condition.Description}");
+                    Console.WriteLine($"Condition Expression: {binding.Condition.Expression}");
                 }
             }
         }
@@ -647,35 +644,74 @@ namespace GoogleCloudSamples
             string role, string member)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName);
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+
             Policy.BindingsData bindingToAdd = new Policy.BindingsData();
             bindingToAdd.Role = role;
             string[] members = { member };
             bindingToAdd.Members = members;
             policy.Bindings.Add(bindingToAdd);
+
             storage.SetBucketIamPolicy(bucketName, policy);
             Console.WriteLine($"Added {member} with role {role} "
                 + $"to {bucketName}");
         }
         // [END add_bucket_iam_member]
 
+        // [START storage_add_bucket_conditional_iam_binding]
+        private void AddBucketConditionalIamBinding(string bucketName,
+            string role, string member, string title, string description, string expression)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+
+            Policy.BindingsData bindingToAdd = new Policy.BindingsData();
+            bindingToAdd.Role = role;
+            string[] members = { member };
+            bindingToAdd.Members = members;
+            bindingToAdd.Condition = new Expr()
+            {
+                Title = title,
+                Description = description,
+                Expression = expression
+            };
+            policy.Bindings.Add(bindingToAdd);
+
+            storage.SetBucketIamPolicy(bucketName, policy);
+            Console.WriteLine($"Added {member} with role {role} "
+                + $"to {bucketName}");
+        }
+        // [END storage_add_bucket_conditional_iam_binding]
+
         // [START remove_bucket_iam_member]
         private void RemoveBucketIamMember(string bucketName,
             string role, string member)
         {
             var storage = StorageClient.Create();
-            var policy = storage.GetBucketIamPolicy(bucketName);
-            policy.Bindings.ToList().ForEach(response =>
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
             {
-                if (response.Role == role)
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+            policy.Bindings.ToList().ForEach(binding =>
+            {
+                if (binding.Role == role && binding.Condition == null)
                 {
                     // Remove the role/member combo from the IAM policy.
-                    response.Members = response.Members
-                        .Where(m => m != member).ToList();
+                    binding.Members = binding.Members
+                        .Where(memberInList => memberInList != member).ToList();
                     // Remove role if it contains no members.
-                    if (response.Members.Count == 0)
+                    if (binding.Members.Count == 0)
                     {
-                        policy.Bindings.Remove(response);
+                        policy.Bindings.Remove(binding);
                     }
                 }
             });
@@ -685,6 +721,33 @@ namespace GoogleCloudSamples
                 + $"to {bucketName}");
         }
         // [END remove_bucket_iam_member]
+
+        // [START storage_remove_bucket_conditional_iam_binding]
+        private void RemoveBucketConditionalIamBinding(string bucketName,
+            string role, string title, string description, string expression)
+        {
+            var storage = StorageClient.Create();
+            var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+            {
+                RequestedPolicyVersion = 3
+            });
+            policy.Version = 3;
+            if (policy.Bindings.ToList().RemoveAll(binding => binding.Role == role
+                && binding.Condition != null
+                && binding.Condition.Title == title
+                && binding.Condition.Description == description
+                && binding.Condition.Expression == expression) > 0)
+            {
+                // Set the modified IAM policy to be the current IAM policy.
+                storage.SetBucketIamPolicy(bucketName, policy);
+                Console.WriteLine("Conditional Binding was removed.");
+            }
+            else
+            {
+                Console.WriteLine("No matching conditional binding found.");
+            }
+        }
+        // [END storage_remove_bucket_conditional_iam_binding]
 
         // [START storage_set_bucket_default_kms_key]
         private void AddBucketDefaultKmsKey(string bucketName,
@@ -827,9 +890,8 @@ namespace GoogleCloudSamples
         private void GenerateV4SignedGetUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
-                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-                .WithSigningVersion(SigningVersion.V4);
-            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
+                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
+            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get, SigningVersion.V4);
             Console.WriteLine("Generated GET signed URL:");
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
@@ -841,15 +903,23 @@ namespace GoogleCloudSamples
         private void GenerateV4SignedPutUrl(string bucketName, string objectName)
         {
             UrlSigner urlSigner = UrlSigner
-                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"))
-                .WithSigningVersion(SigningVersion.V4);
+                .FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
 
             var contentHeaders = new Dictionary<string, IEnumerable<string>>
             {
                 { "Content-Type", new[] { "text/plain" } }
             };
 
-            string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Put, contentHeaders);
+            UrlSigner.Options options = UrlSigner.Options
+                .FromDuration(TimeSpan.FromHours(1))
+                .WithSigningVersion(SigningVersion.V4);
+            UrlSigner.RequestTemplate template = UrlSigner.RequestTemplate
+                .FromBucket(bucketName)
+                .WithObjectName(objectName)
+                .WithHttpMethod(HttpMethod.Put)
+                .WithContentHeaders(contentHeaders);
+
+            string url = urlSigner.Sign(template, options);
             Console.WriteLine("Generated PUT signed URL:");
             Console.WriteLine(url);
             Console.WriteLine("You can use this URL with any user agent, for example:");
@@ -1232,7 +1302,7 @@ namespace GoogleCloudSamples
             string requesterPays;
             if (s_projectId == "YOUR-PROJECT" + "-ID")
             {
-                Console.WriteLine("Update program.cs and replace YOUR-PROJECT" +
+                Console.WriteLine("Update Storage.cs and replace YOUR-PROJECT" +
                     "-ID with your project id, and recompile.");
                 return -1;
             }
@@ -1242,12 +1312,12 @@ namespace GoogleCloudSamples
                 switch (args[0].ToLower())
                 {
                     case "create":
-                        CreateBucket(args.Length < 2 ? RandomBucketName() : args[1]);
+                        CreateBucket.StorageCreateBucket(s_projectId, args.Length < 2 ? RandomBucketName() : args[1]);
                         break;
 
                     case "create-regional-bucket":
                         if (args.Length < 2 && PrintUsage()) return -1;
-                        CreateRegionalBucket(args[1], args.Length < 3 ? RandomBucketName() : args[2]);
+                        CreateRegionalBucket.StorageCreateRegionalBucket(s_projectId, args[1], args.Length < 3 ? RandomBucketName() : args[2]);
                         break;
 
                     case "list":
@@ -1430,6 +1500,16 @@ namespace GoogleCloudSamples
                     case "add-bucket-iam-member":
                         if (args.Length < 4 && PrintUsage()) return -1;
                         AddBucketIamMember(args[1], args[2], args[3]);
+                        break;
+
+                    case "add-bucket-iam-conditional-binding":
+                        if (args.Length < 7 && PrintUsage()) return -1;
+                        AddBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5], args[6]);
+                        break;
+
+                    case "remove-bucket-iam-conditional-binding":
+                        if (args.Length < 6 && PrintUsage()) return -1;
+                        RemoveBucketConditionalIamBinding(args[1], args[2], args[3], args[4], args[5]);
                         break;
 
                     case "remove-bucket-iam-member":

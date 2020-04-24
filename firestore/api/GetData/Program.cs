@@ -204,9 +204,11 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_get_collections]
             DocumentReference cityRef = db.Collection("cities").Document("SF");
-            IList<CollectionReference> subcollections = await cityRef.ListCollectionsAsync().ToList();
-            foreach (CollectionReference subcollectionRef in subcollections)
+            IAsyncEnumerable<CollectionReference> subcollections = cityRef.ListCollectionsAsync();
+            IAsyncEnumerator<CollectionReference> subcollectionsEnumerator = subcollections.GetAsyncEnumerator(default);
+            while (await subcollectionsEnumerator.MoveNextAsync())
             {
+                CollectionReference subcollectionRef = subcollectionsEnumerator.Current;
                 Console.WriteLine("Found subcollection with ID: {0}", subcollectionRef.Id);
             }
             // [END fs_get_collections]

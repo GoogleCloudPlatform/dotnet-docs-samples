@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <StartupObject>GoogleCloudSamples.DetectFaces</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.7.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
   </ItemGroup>
 </Project>

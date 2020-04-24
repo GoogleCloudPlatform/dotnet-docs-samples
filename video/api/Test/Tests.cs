@@ -97,7 +97,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Contains("End Time Offset", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1002")]
         void TestLabels()
         {
             ConsoleOutput output = _analyze.Run("labels",
@@ -113,6 +113,30 @@ namespace GoogleCloudSamples.VideoIntelligence
                 @CatMp4);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Cat", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        [Fact]
+        void TestDetectLogo()
+        {
+            ConsoleOutput output = _analyze.Run("logo-detect",
+                DownloadGcsObject(GoogleWorkShortMp4));
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Description", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Confidence", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Start Time Offset", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("End Time Offset", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        [Fact]
+        void TestDetectLogoGcs()
+        {
+            ConsoleOutput output = _analyze.Run("logo-detect",
+                GoogleWorkShortMp4);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Description", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Confidence", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("Start Time Offset", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("End Time Offset", output.Stdout, StringComparison.InvariantCultureIgnoreCase);
         }
 
         void TestFaces()
@@ -161,7 +185,7 @@ namespace GoogleCloudSamples.VideoIntelligence
             Assert.Contains("Confidence:", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1002")]
         void TestObjectTracking()
         {
             ConsoleOutput output =

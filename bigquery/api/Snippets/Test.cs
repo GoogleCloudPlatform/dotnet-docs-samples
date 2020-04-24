@@ -23,6 +23,7 @@ using GoogleCloudSamples;
 using Xunit;
 using System.Text.RegularExpressions;
 using System.Linq;
+using Google.Apis.Bigquery.v2.Data;
 
 public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
 {
@@ -122,7 +123,7 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
         var snippet = new BigQueryDeleteTable();
         string datasetId = CreateTempDataset();
         string tableId = TestUtil.RandomName();
-        _client.CreateTable(datasetId, tableId, null);
+        _client.CreateTable(datasetId, tableId, new Table());
         snippet.DeleteTable(_projectId, datasetId, tableId);
         var output = _stringOut.ToString();
         Assert.Contains($"{tableId} deleted", output);
@@ -241,6 +242,42 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     }
 
     [Fact]
+    public void TestQueryWithArrayParameters()
+    {
+        var snippet = new BigQueryQueryWithArrayParameters();
+        snippet.QueryWithArrayParameters(_projectId);
+        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
+        Assert.Equal(10, outputLines.Count());
+    }
+
+    [Fact]
+    public void TestQueryWithNamedParameters()
+    {
+        var snippet = new BigQueryQueryWithNamedParameters();
+        snippet.QueryWithNamedParameters(_projectId);
+        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
+        Assert.Equal(12, outputLines.Count());
+    }
+
+    [Fact]
+    public void TestQueryWithPositionalParameters()
+    {
+        var snippet = new BigQueryQueryWithPositionalParameters();
+        snippet.QueryWithPositionalParameters(_projectId);
+        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
+        Assert.Equal(12, outputLines.Length);
+    }
+
+    [Fact]
+    public void TestQueryWithTimestampParameters()
+    {
+        var snippet = new BigQueryQueryWithTimestampParameters();
+        snippet.QueryWithTimestampParameters(_projectId);
+        var outputLines = _stringOut.ToString().Trim().Split(Environment.NewLine);
+        Assert.Single(outputLines);
+    }
+
+    [Fact]
     public void TestTableInsertRows()
     {
         var snippet = new BigQueryTableInsertRows();
@@ -253,7 +290,7 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     {
         string datasetId = TestUtil.RandomName();
         BigQueryDataset tempDataset = _client.CreateDataset(
-            datasetId, new CreateDatasetOptions() { Location = "US" });
+            datasetId, new Dataset { Location = "US" });
         _tempDatasets.Add(tempDataset);
         return datasetId;
     }
@@ -261,7 +298,7 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     public string CreateTempEmptyTable(string datasetId)
     {
         string tableId = TestUtil.RandomName();
-        BigQueryTable table = _client.CreateTable(datasetId, tableId, null);
+        _client.CreateTable(datasetId, tableId, new Table());
         return tableId;
     }
 

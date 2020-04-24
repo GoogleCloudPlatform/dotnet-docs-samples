@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StaticContent", "StaticContent\StaticContent.csproj", "{AA79AC27-079E-4145-96E8-449A219B9527}"
 EndProject
@@ -30,6 +30,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialAuth", "SocialAuth\SocialAuth.csproj", "{9F39AD2D-594A-4905-A834-74C7F5C48640}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld", "HelloWorld\HelloWorld.csproj", "{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AntiForgery", "AntiForgery\AntiForgery.csproj", "{B7B77EE8-60C8-49C3-83D2-AD907B882332}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "F#", "F#\F#.fsproj", "{C55A9BF5-F4FA-4E94-845C-302CBA878946}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -185,6 +189,30 @@ Global
 		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x64.Build.0 = Release|Any CPU
 		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x86.ActiveCfg = Release|Any CPU
 		{ACAB62AF-DA19-4A09-9C70-1F4605817D9A}.Release|x86.Build.0 = Release|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Debug|x64.Build.0 = Debug|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Debug|x86.Build.0 = Debug|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Release|x64.ActiveCfg = Release|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Release|x64.Build.0 = Release|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Release|x86.ActiveCfg = Release|Any CPU
+		{B7B77EE8-60C8-49C3-83D2-AD907B882332}.Release|x86.Build.0 = Release|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Debug|x64.Build.0 = Debug|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Debug|x86.Build.0 = Debug|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Release|x64.ActiveCfg = Release|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Release|x64.Build.0 = Release|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Release|x86.ActiveCfg = Release|Any CPU
+		{C55A9BF5-F4FA-4E94-845C-302CBA878946}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

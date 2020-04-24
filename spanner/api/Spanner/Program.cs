@@ -14,16 +14,16 @@
  * the License.
  */
 
+using CommandLine;
+using Google.Cloud.Spanner.Data;
+using log4net;
 using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using System.Linq;
-using Google.Cloud.Spanner.Data;
-using CommandLine;
-using log4net;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -518,6 +518,16 @@ namespace GoogleCloudSamples.Spanner
         public string instanceId { get; set; }
         [Value(2, HelpText = "The ID of the database to delete.", Required = true)]
         public string databaseId { get; set; }
+    }
+
+    [Verb("createConnectionWithQueryOptions", HelpText = "Creates a connection with query options set and queries the 'Albums' table.")]
+    class CreateConnectionWithQueryOptionsOptions : DefaultOptions
+    {
+    }
+
+    [Verb("runCommandWithQueryOptions", HelpText = "Query 'Albums' table with query options set.")]
+    class RunCommandWithQueryOptionsOptions : DefaultOptions
+    {
     }
 
     // [START spanner_retry_strategy]
@@ -3508,6 +3518,90 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
+        public static object CreateConnectionWithQueryOptions(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = CreateConnectionWithQueryOptionsAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task CreateConnectionWithQueryOptionsAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_create_client_with_query_options]
+            var builder = new SpannerConnectionStringBuilder
+            {
+                DataSource = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}"
+            };
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(builder))
+            {
+                // Set query options on the connection.
+                connection.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine("SingerId : "
+                        + reader.GetFieldValue<string>("SingerId")
+                        + " AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + " AlbumTitle : "
+                        + reader.GetFieldValue<string>("AlbumTitle"));
+                    }
+                }
+            }
+            // [END spanner_create_client_with_query_options]
+        }
+
+        public static object RunCommandWithQueryOptions(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = RunCommandWithQueryOptionsAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task RunCommandWithQueryOptionsAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_query_options]
+            var builder = new SpannerConnectionStringBuilder
+            {
+                DataSource = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}"
+            };
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(builder))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
+                // Set query options just for this command.
+                cmd.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine("SingerId : "
+                        + reader.GetFieldValue<string>("SingerId")
+                        + " AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + " AlbumTitle : "
+                        + reader.GetFieldValue<string>("AlbumTitle"));
+                    }
+                }
+            }
+            // [END spanner_query_with_query_options]
+        }
+
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
@@ -3671,6 +3765,12 @@ namespace GoogleCloudSamples.Spanner
                 .Add((DropSampleTablesOptions opts) =>
                     DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result)
+                .Add((CreateConnectionWithQueryOptionsOptions opts) =>
+                    CreateConnectionWithQueryOptions(opts.projectId,
+                    opts.instanceId, opts.databaseId))
+                .Add((RunCommandWithQueryOptionsOptions opts) =>
+                    RunCommandWithQueryOptions(opts.projectId,
+                    opts.instanceId, opts.databaseId))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }

@@ -1,14 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Bigtable.Admin.V2" Version="1.1.0" />
-    <PackageReference Include="Google.Cloud.Bigtable.Common.V2" Version="1.1.0" />
     <PackageReference Include="Google.Cloud.Bigtable.V2" Version="1.1.0" />
   </ItemGroup>
 
