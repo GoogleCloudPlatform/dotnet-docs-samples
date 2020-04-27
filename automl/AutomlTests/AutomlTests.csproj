@@ -16,7 +16,7 @@
   </ItemGroup>
     <ItemGroup>
     <ProjectReference Include="..\Snippets\Snippets.csproj" />
-    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
+    <!--<ProjectReference Include="..\..\..\testutil\testutil.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>

@@ -12,19 +12,14 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using CommandLine;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.AutoML.V1;
 using Google.LongRunning;
 using System;
+using System.Collections.Generic;
 
 namespace GoogleCloudSamples
 {
-    [Verb("list_operation_status", HelpText = "List operations")]
-    public class ListOperationStatusOption : BaseOptions
-    {
-    }
-
     public class AutoMLListOperationStatus
     {
         // [START automl_list_operation_status]
@@ -32,7 +27,7 @@ namespace GoogleCloudSamples
         /// Demonstrates using the AutoML client to list operations.
         /// </summary>
         /// <param name="projectId">GCP Project ID.</param>
-        public static object ListOperationStatus(string projectId = "YOUR-PROJECT-ID")
+        public IEnumerable<Operation> ListOperationStatus(string projectId = "YOUR-PROJECT-ID")
         {
             // Initialize the client that will be used to send requests. This client only needs to be created
             // once, and can be reused for multiple requests.
@@ -47,35 +42,14 @@ namespace GoogleCloudSamples
                 Name = projectLocation
             };
 
-            // List all the operations names available in the region by applying filter.
-            foreach (Operation operation in
-              client.CreateModelOperationsClient.ListOperations(listrequest))
-            {
-                Console.WriteLine($"Operation details:");
-                Console.WriteLine($"\tName: {operation.Name}");
-                Console.WriteLine($"\tMetadata Type Url: { operation.Metadata.TypeUrl}");
-                Console.WriteLine($"\tDone: {operation.Done}");
-                if (operation.Response != null)
-                {
-                    Console.WriteLine($"\tResponse Type Url: {operation.Response.TypeUrl}");
-                }
-                if (operation.Error != null)
-                {
-                    Console.WriteLine("\tResponse:");
-                    Console.WriteLine($"\t\tError code: {operation.Error.Code}");
-                    Console.WriteLine($"\t\tError message: {operation.Error.Message}");
-                }
-            }
 
-            return 0;
+            // Call the API.
+            IEnumerable<Operation> listOperations = client.CreateModelOperationsClient.ListOperations(listrequest);
+
+            // Return the result.
+            return listOperations;
         }
 
         // [END automl_list_operation_status]
-
-        public static void RegisterCommands(VerbMap<object> verbMap)
-        {
-            verbMap.Add((ListOperationStatusOption opts) =>
-                     AutoMLListOperationStatus.ListOperationStatus(opts.ProjectID));
-        }
     }
 }

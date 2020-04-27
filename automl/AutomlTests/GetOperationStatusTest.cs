@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Grpc.Core;
-using System;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading;
+using Google.LongRunning;
+using System.Collections.Generic;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -25,28 +22,30 @@ namespace GoogleCloudSamples
     public class GetOperationStatusTest
     {
         private readonly AutoMLFixture _fixture;
-        private string _operationId;
+        private readonly AutoMLGetOperationStatus _sample;
         public GetOperationStatusTest(AutoMLFixture fixture)
         {
             _fixture = fixture;
+            _sample = new AutoMLGetOperationStatus();
         }
 
         [Fact]
         public void TestOperationStatus()
         {
             // Get operation ID
-            ConsoleOutput output = _fixture.SampleRunner.Run("list_operation_status",
-_fixture.ProjectId);
+            var listOperSample = new AutoMLListOperationStatus();
 
-            _operationId = "" + output.Stdout.Split("\n")[1].Split(":")[1].Trim();
-
+            Operation firstOper;
+            using (IEnumerator<Operation> iter = listOperSample.ListOperationStatus(_fixture.ProjectId).GetEnumerator())
+            {
+                iter.MoveNext();
+                firstOper = iter.Current;
+            }
             // Act
-            output = _fixture.SampleRunner.Run("get_operation_status",
-                _operationId);
+            Operation result = _sample.GetOperationStatus(firstOper.Name);
 
             // Assert 
-            Assert.Contains("Operation details", output.Stdout);
-            Assert.Contains(_operationId, output.Stdout);
+            Assert.Contains(firstOper.Name, result.Name);
         }
     }
 }
