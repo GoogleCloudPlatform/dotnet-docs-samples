@@ -90,7 +90,13 @@ namespace CloudSql
             // [START cloud_sql_mysql_dotnet_ado_connection]
             var connectionString = new MySqlConnectionStringBuilder(
                 Configuration["CloudSql:ConnectionString"])
-            // ConnectionString set in appsetings.json formatted as:
+            // ConnectionString is set in appsettings.json formatted as follows
+            // depending upon where your app is running:
+            // Running Locally ConnectionString: 
+            // "Uid=aspnetuser;Pwd=;Host=127.0.0.1;Database=votes"
+            // Cloud Run ConnectionString: 
+            // "Server=/cloudsql/your-project-id:us-central1:instance-name;Database=votes;User=;Password=;Protocol=unix"
+            // App Engine ConnectionString: 
             // "Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes"
             {
                 // Connecting to a local proxy that does not support ssl.
