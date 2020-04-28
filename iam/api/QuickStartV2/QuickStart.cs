@@ -46,7 +46,7 @@ public class QuickStart
                                                            projectId,
                                                            member,
                                                            rolePermissions);
-        // Print the permissions from the role permissions that the member actually has
+        // Print the role permissions held by the member
         foreach (var p in grantedPermissions)
         {
             Console.WriteLine(p);
@@ -90,9 +90,8 @@ public class QuickStart
         if (binding != null)
         {
             binding.Members.Add(member);
-
-            // If binding does not exist, add binding to policy
         }
+        // If binding does not exist, add binding to policy
         else
         {
             binding = new Binding
@@ -119,6 +118,8 @@ public class QuickStart
         string member,
         List<string> permissions)
     {
+        //Test the member's permissions by calling the
+        //Cloud Resource Manager Projects API
         TestIamPermissionsRequest requestBody = new TestIamPermissionsRequest()
         {
             permissions = permissions

@@ -25,11 +25,11 @@ public class QuickStartTest : IDisposable
     private ServiceAccount serviceAccount;
     private IamService iamService;
 
-    public QuickStartNewTest()
+    public QuickStartTest()
     {
         // Check for _projectId and throw exception if empty
         projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        if(projectId == null)
+        if (projectId == null)
         {
             throw new System.ArgumentNullException("GOOGLE_PROJECT_ID", "Environment variable not set");
         }
@@ -64,20 +64,20 @@ public class QuickStartTest : IDisposable
     }
 
     [Fact]
-    public void TestQuickStartNew()
+    public void TestQuickStart()
     {
         var role = "roles/logging.logWriter";
         var rolePermissions = new List<string> { "logging.logEntries.create" };
         var member = "serviceAccount:" + serviceAccount.Email;
 
         // Initialize service
-        var crmService = QuickStartNew.InitializeService();
+        var crmService = QuickStart.InitializeService();
 
         // Add member to role
-        QuickStartNew.AddBinding(crmService, _projectId, member, role);
+        QuickStart.AddBinding(crmService, _projectId, member, role);
 
         // Test permissions in role
-        var grantedPermissions = QuickStartNew.TestPermissions(crmService, _projectId, member, rolePermissions);
+        var grantedPermissions = QuickStart.TestPermissions(crmService, _projectId, member, rolePermissions);
 
         // Verify that all permissions in role were granted to member
         foreach (var p in rolePermissions)
@@ -86,6 +86,6 @@ public class QuickStartTest : IDisposable
         }
 
         // Remove member
-        QuickStartNew.RemoveMember(crmService, _projectId, member, role);
+        QuickStart.RemoveMember(crmService, _projectId, member, role);
     }
 }
