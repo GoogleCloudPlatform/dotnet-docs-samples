@@ -1416,7 +1416,7 @@ namespace GoogleCloudSamples.Spanner
                 await connection.OpenAsync();
 
                 SpannerCommand cmd = connection.CreateDmlCommand(
-                   "DELETE Singers WHERE FirstName = 'Alice'");
+                   "DELETE FROM Singers WHERE FirstName = 'Alice'");
                 int rowCount = await cmd.ExecuteNonQueryAsync();
                 Console.WriteLine($"{rowCount} row(s) deleted...");
             }
@@ -1712,7 +1712,7 @@ namespace GoogleCloudSamples.Spanner
                 await connection.OpenAsync();
 
                 SpannerCommand cmd = connection.CreateDmlCommand(
-                    "DELETE Singers WHERE SingerId > 10"
+                    "DELETE FROM Singers WHERE SingerId > 10"
                 );
                 long rowCount = await cmd.ExecutePartitionedUpdateAsync();
                 Console.WriteLine($"{rowCount} row(s) deleted...");

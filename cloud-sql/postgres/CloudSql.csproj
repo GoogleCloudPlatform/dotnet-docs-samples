@@ -18,9 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Dockerfile;app.yaml;client.pfx">
+    <None Update="app.yaml;client.pfx">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
+    <Content Update="Dockerfile" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
 </Project>
