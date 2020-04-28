@@ -19,7 +19,6 @@ using Google.Api.Gax.ResourceNames;
 using Google.Api.Gax;
 using Google.Cloud.SecurityCenter.V1;
 using System;
-using System.Collections.Immutable;
 
 /// <summary>Snippet for ListNotificationConfig</summary>
 public class ListNotificationConfigSnippets

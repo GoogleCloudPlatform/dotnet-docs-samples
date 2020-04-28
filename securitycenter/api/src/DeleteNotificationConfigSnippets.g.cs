@@ -23,12 +23,10 @@ public class DeleteNotificationConfigSnippets
 {
     public static bool DeleteNotificationConfig(string organizationId, string notificationConfigId)
     {
-
       NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, notificationConfigId);
       SecurityCenterClient client = SecurityCenterClient.Create();
-      DeleteNotificationConfigRequest request = new DeleteNotificationConfigRequest{NotificationConfigName = notificationConfigName};
 
-      client.DeleteNotificationConfig(request);
+      client.DeleteNotificationConfig(notificationConfigName);
       Console.WriteLine($"Deleted Notification config: {notificationConfigName}");
       return true;
     }

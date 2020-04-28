@@ -14,53 +14,59 @@
  * limitations under the License.
  */
  
- using System;
- using System.Collections.Generic;
  using Google.Cloud.PubSub.V1;
  using Grpc.Core;
+ using System;
+ using System.Collections.Generic;
  using Xunit;
 
 [CollectionDefinition(nameof(ConfigFixture))]
  public class ConfigFixture : IDisposable, ICollectionFixture<ConfigFixture>
  {
+     private readonly List<string> _cleanupItems = new List<string>();
+     
      public string OrganizationId { get; }
      public string ProjectId { get; }
      public string Topic { get; }
-     private List<string> CleanupItems = new List<string>();
      public string DefaultNotificationConfigId {get; }
 
      public ConfigFixture()
      {
-        OrganizationId = Environment.GetEnvironmentVariable("GOOGLE_ORGANIZATION_ID");
-        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        Topic = Environment.GetEnvironmentVariable("GOOGLE_TOPIC");
+        OrganizationId = "1081635000895";
+        ProjectId = "project-a-id";
+        Topic = "notifications-sample-topic";
         DefaultNotificationConfigId = CreateNotificationConfig(RandomId());
      }
 
      public void Dispose()
      {
-        foreach (var configId in CleanupItems)
+        foreach (var configId in _cleanupItems)
         {
             DeleteNotificationConfigSnippets.DeleteNotificationConfig(OrganizationId, configId);
         }
+        _cleanupItems.Clear();
      }
 
-    // Returns epoch time as ID
+    /// <summary>
+    /// Returns epoch time as ID
+    /// </summary>
      public string RandomId()
      {
         return DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
      }
 
-    // Delete assets when fixture is disposed.
+    /// <summary>
+    /// Delete assets when fixture is disposed.
+    /// </summary>
      public void MarkForDeletion(string id) 
      {
-         CleanupItems.Add(id);
+         _cleanupItems.Add(id);
      }
 
     public string CreateNotificationConfig(string configId) 
     {
         CreateNotificationConfigSnippets.CreateNotificationConfig(OrganizationId, configId, ProjectId, Topic);
-        CleanupItems.Add(configId);
+        _cleanupItems.Add(configId);
         return configId;
     }
      private string CreateTopic(string projectId, string topicId) 
@@ -71,8 +77,7 @@
         {
             publisher.CreateTopic(topicName);
         }
-        catch (RpcException e)
-        when (e.Status.StatusCode == StatusCode.AlreadyExists)
+        catch (RpcException e) when (e.Status.StatusCode == StatusCode.AlreadyExists)
         {
             // Already exists.  That's fine.
         }

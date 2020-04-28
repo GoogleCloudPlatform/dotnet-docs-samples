@@ -22,8 +22,9 @@ public class GetNotificationConfigSnippets
     public static NotificationConfig GetNotificationConfig(string organizationId, string configId)
     {
         SecurityCenterClient client = SecurityCenterClient.Create();
-        GetNotificationConfigRequest request = new GetNotificationConfigRequest{NotificationConfigName = new NotificationConfigName(organizationId, configId)};
-        NotificationConfig response = client.GetNotificationConfig(request);
+        NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, configId);
+
+        NotificationConfig response = client.GetNotificationConfig(notificationConfigName);
         Console.WriteLine($"Notification config: {response}");
         return response;
     }

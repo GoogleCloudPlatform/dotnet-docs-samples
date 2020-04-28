@@ -26,7 +26,6 @@ public class CreateNotificationConfigSnippets
         string organizationId, string notificationConfigId, string projectId, string topicName)
     {
         OrganizationName orgName = new OrganizationName(organizationId);
-        // Ensure this ServiceAccount has the "pubsub.topics.setIamPolicy" permission on the topic.
         TopicName pubsubTopic = new TopicName(projectId, topicName);
 
         SecurityCenterClient client = SecurityCenterClient.Create();
