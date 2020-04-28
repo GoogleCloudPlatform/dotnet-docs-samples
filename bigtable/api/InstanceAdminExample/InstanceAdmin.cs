@@ -482,7 +482,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static int Main(string[] args)
         {
-            if (projectId == "YOUR-PROJECT" + "-ID")
+            if (projectId == "YOUR-PROJECT-ID")
             {
                 Console.WriteLine("Edit InstanceAdmin.cs and replace YOUR-PROJECT-ID with your project id.");
                 return -1;
