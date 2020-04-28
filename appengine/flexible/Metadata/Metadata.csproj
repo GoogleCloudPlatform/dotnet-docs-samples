@@ -6,7 +6,6 @@
     <AssemblyName>Metadata</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>Metadata</PackageId>
-    <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
