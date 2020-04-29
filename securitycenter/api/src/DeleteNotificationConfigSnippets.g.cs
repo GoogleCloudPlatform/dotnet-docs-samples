@@ -15,6 +15,7 @@
  */
 
 // [START scc_get_notification_config]
+
 using Google.Cloud.SecurityCenter.V1;
 using System;
 
@@ -23,12 +24,12 @@ public class DeleteNotificationConfigSnippets
 {
     public static bool DeleteNotificationConfig(string organizationId, string notificationConfigId)
     {
-      NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, notificationConfigId);
-      SecurityCenterClient client = SecurityCenterClient.Create();
+    	NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, notificationConfigId);
+      	SecurityCenterClient client = SecurityCenterClient.Create();
 
-      client.DeleteNotificationConfig(notificationConfigName);
-      Console.WriteLine($"Deleted Notification config: {notificationConfigName}");
-      return true;
+    	client.DeleteNotificationConfig(notificationConfigName);
+    	Console.WriteLine($"Deleted Notification config: {notificationConfigName}");
+    	return true;
     }
 }
 // [END] scc_delete_notification_config]

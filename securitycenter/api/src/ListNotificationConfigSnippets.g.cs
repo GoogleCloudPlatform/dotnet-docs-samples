@@ -15,6 +15,7 @@
  */
 
 // [START scc_list_notification_configs]
+
 using Google.Api.Gax.ResourceNames;
 using Google.Api.Gax;
 using Google.Cloud.SecurityCenter.V1;

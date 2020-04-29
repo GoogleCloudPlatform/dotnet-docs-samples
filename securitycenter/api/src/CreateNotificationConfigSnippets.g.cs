@@ -15,6 +15,7 @@
  */
 
 // [START scc_create_notification_config]
+
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecurityCenter.V1;
 using System;
@@ -37,7 +38,7 @@ public class CreateNotificationConfigSnippets
             {
                 Description = ".Net notification config",
                 PubsubTopicAsTopicName = pubsubTopic,
-                StreamingConfig = new NotificationConfig.Types.StreamingConfig{Filter="state = \"ACTIVE\""}
+                StreamingConfig = new NotificationConfig.Types.StreamingConfig { Filter = "state = \"ACTIVE\"" }
             }
         };
 

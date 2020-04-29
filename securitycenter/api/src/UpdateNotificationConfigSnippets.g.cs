@@ -15,6 +15,7 @@
  */
 
 // [START scc_update_notification_config]
+
 using Google.Cloud.SecurityCenter.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -25,7 +26,7 @@ public class UpdateNotificationConfigSnippets
     public static NotificationConfig UpdateNotificationConfig(
         string organizationId, string notificationConfigId, string projectId, string topicName)
     {
-        NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId,notificationConfigId);
+        NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, notificationConfigId);
         TopicName pubsubTopic = new TopicName(projectId, topicName);
 
         NotificationConfig configToUpdate = new NotificationConfig
@@ -35,7 +36,7 @@ public class UpdateNotificationConfigSnippets
             PubsubTopicAsTopicName = pubsubTopic
         };
 
-        FieldMask fieldMask = new FieldMask{Paths={"description", "pubsub_topic"}};
+        FieldMask fieldMask = new FieldMask { Paths = { "description", "pubsub_topic" } };
         SecurityCenterClient client = SecurityCenterClient.Create();
         NotificationConfig updatedConfig = client.UpdateNotificationConfig(configToUpdate, fieldMask);
 
