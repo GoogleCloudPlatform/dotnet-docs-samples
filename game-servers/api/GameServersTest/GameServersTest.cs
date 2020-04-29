@@ -77,7 +77,10 @@ namespace GoogleCloudSamples
             {
                 foreach (var cluster in listOfClusters)
                 {
-                    var output = Run("delete_cluster", ProjectId, RegionName, RealmId, cluster.Name);
+                    if (cluster.Name.Contains(GameServerClusterId))
+                    {
+                        var output = Run("delete_cluster", ProjectId, RegionName, RealmId, GameServerClusterId);
+                    }
                 }
             }
             catch (Exception e)
