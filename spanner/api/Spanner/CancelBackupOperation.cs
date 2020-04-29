@@ -33,7 +33,8 @@ namespace GoogleCloudSamples.Spanner
             // Initialize request parameters.
             Backup backup = new Backup
             {
-                Database = DatabaseName.Format(projectId, instanceId, databaseId),
+                DatabaseAsDatabaseName =
+                    DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId),
                 ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp()
             };
             InstanceName parentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId);

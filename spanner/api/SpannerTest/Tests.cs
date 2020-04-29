@@ -684,7 +684,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, output.ExitCode);
             Assert.Contains(_fixture.BackupId, output.Stdout);
             Assert.Contains(_fixture.RestoredDatabaseId, output.Stdout);
-            Assert.Contains($"was restored to {_fixture.DatabaseId} from backup", output.Stdout);
+            Assert.Contains($"was restored to {_fixture.RestoredDatabaseId} from backup", output.Stdout);
         }
 
         [Fact]
