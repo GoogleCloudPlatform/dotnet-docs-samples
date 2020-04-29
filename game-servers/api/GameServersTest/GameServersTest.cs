@@ -77,10 +77,7 @@ namespace GoogleCloudSamples
             {
                 foreach (var cluster in listOfClusters)
                 {
-                    if (cluster.Name.Contains(GameServerClusterId))
-                    {
-                        var output = Run("delete_cluster", ProjectId, RegionName, RealmId, GameServerClusterId);
-                    }
+                    var output = Run("delete_cluster", ProjectId, RegionName, RealmId, cluster.Name);
                 }
             }
             catch (Exception e)
@@ -189,7 +186,7 @@ namespace GoogleCloudSamples
         {
             Run("create_cluster", ProjectId, RegionName, RealmId, GameServerClusterId, GKEClusterId);
 
-            var output = Run("list_clusters", ProjectId, RegionName, RealmId, GameServerClusterId);
+            var output = Run("get_cluster", ProjectId, RegionName, RealmId, GameServerClusterId);
             Assert.Contains("Cluster name", output.Stdout);
         }
 
