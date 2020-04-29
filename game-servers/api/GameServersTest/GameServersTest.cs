@@ -77,7 +77,7 @@ namespace GoogleCloudSamples
             {
                 foreach (var cluster in listOfClusters)
                 {
-                    var output = Run("delete_cluster", ProjectId, RegionName, RealmId, cluster.Name);
+                    Run("delete_cluster", ProjectId, RegionName, RealmId, cluster.GameServerClusterName.ClusterId);
                 }
             }
             catch (Exception e)
@@ -168,6 +168,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestCreateGameServerCluster()
         {
+            Run("create_realm", ProjectId, RegionName, RealmId);
+
             var output = Run("create_cluster", ProjectId, RegionName, RealmId, GameServerClusterId, GKEClusterId);
             Assert.Contains("Cluster name", output.Stdout);
         }
@@ -175,6 +177,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestListGameServerClusters()
         {
+            Run("create_realm", ProjectId, RegionName, RealmId);
             Run("create_cluster", ProjectId, RegionName, RealmId, GameServerClusterId, GKEClusterId);
 
             var output = Run("list_clusters", ProjectId, RegionName, RealmId);
@@ -184,6 +187,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestGetGameServerCluster()
         {
+            Run("create_realm", ProjectId, RegionName, RealmId);
             Run("create_cluster", ProjectId, RegionName, RealmId, GameServerClusterId, GKEClusterId);
 
             var output = Run("get_cluster", ProjectId, RegionName, RealmId, GameServerClusterId);
@@ -193,6 +197,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestDeleteGameServerCluster()
         {
+            Run("create_realm", ProjectId, RegionName, RealmId);
             Run("create_cluster", ProjectId, RegionName, RealmId, GameServerClusterId, GKEClusterId);
 
             var output = Run("delete_cluster", ProjectId, RegionName, RealmId, GameServerClusterId);

@@ -16,9 +16,9 @@ using CommandLine;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1Beta;
 using System;
+
 namespace GoogleCloudSamples
 {
-
     public class RealmOptions : BaseOptions
     {
         [Value(2, HelpText = "ID for the realm")]
@@ -116,7 +116,6 @@ namespace GoogleCloudSamples
             Console.WriteLine($"Realm time zone: {realm.TimeZone}");
 
             return 0;
-
         }
 
         public static object DeleteRealm(string projectId, string location, string realmId)
