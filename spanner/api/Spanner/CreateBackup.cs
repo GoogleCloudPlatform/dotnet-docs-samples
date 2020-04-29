@@ -18,6 +18,7 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using System;
 
 namespace GoogleCloudSamples.Spanner
@@ -27,44 +28,50 @@ namespace GoogleCloudSamples.Spanner
         public static object SpannerCreateBackup(
             string projectId, string instanceId, string databaseId, string backupId)
         {
-            // Create the DatabaseAdminClient instance.
-            DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
-
-            // Initialize request parameters.
-            Backup backup = new Backup
+            try
             {
-                DatabaseAsDatabaseName =
-                    DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId),
-                ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp()
-            };
-            InstanceName parentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId);
+                // Create the DatabaseAdminClient instance.
+                DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-            // Make the CreateBackup request.
-            Operation<Backup, CreateBackupMetadata> response =
-                databaseAdminClient.CreateBackup(parentAsInstanceName, backup, backupId);
+                // Initialize request parameters.
+                Backup backup = new Backup
+                {
+                    DatabaseAsDatabaseName =
+                        DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId),
+                    ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp()
+                };
+                InstanceName parentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId);
 
-            Console.WriteLine("Waiting for the operation to finish.");
+                // Make the CreateBackup request.
+                Operation<Backup, CreateBackupMetadata> response =
+                    databaseAdminClient.CreateBackup(parentAsInstanceName, backup, backupId);
 
-            // Poll until the returned long-running operation is complete.
-            Operation<Backup, CreateBackupMetadata> completedResponse =
-                response.PollUntilCompleted();
+                Console.WriteLine("Waiting for the operation to finish.");
 
-            if (completedResponse.IsFaulted)
-            {
-                Console.WriteLine($"Error while creating backup: {completedResponse.Exception}");
-                return 1;
+                // Poll until the returned long-running operation is complete.
+                Operation<Backup, CreateBackupMetadata> completedResponse =
+                    response.PollUntilCompleted();
+
+                if (completedResponse.IsFaulted)
+                {
+                    Console.WriteLine($"Error while creating backup: {completedResponse.Exception}");
+                    return 1;
+                }
+
+                Console.WriteLine($"Backup created successfully.");
+
+                // GetBackup to get more information about the created backup.
+                BackupName backupName =
+                    BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
+                backup = databaseAdminClient.GetBackup(backupName);
+                Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes " +
+                              $"was created at {backup.CreateTime} from {backup.Database} " +
+                              $"and is in state {backup.State}");
             }
-
-            Console.WriteLine($"Backup created successfully.");
-
-            // GetBackup to get more information about the created backup.
-            BackupName backupName =
-                BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
-            backup = databaseAdminClient.GetBackup(backupName);
-            Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes " +
-                          $"was created at {backup.CreateTime} from {backup.Database} " +
-                          $"and is in state {backup.State}");
-
+            catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
+            {
+                // Backup Already Exists.
+            }
             return 0;
         }
     }

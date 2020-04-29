@@ -55,11 +55,6 @@ namespace GoogleCloudSamples.Spanner
                     ProjectId, InstanceId, DatabaseId);
                 runner.Run("deleteDatabase",
                     ProjectId, InstanceId, RestoredDatabaseId);
-                // Backup needs to be deleted after RestoredDatabaseId is deleted.
-                // Otherwise a FailedPrecondition error can be returned if the restored
-                // database is still being optimized.
-                runner.Run("deleteBackup",
-                    ProjectId, InstanceId, BackupId);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
         }
@@ -71,15 +66,14 @@ namespace GoogleCloudSamples.Spanner
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
         private static readonly string s_randomDatabaseName = "my-db-"
             + TestUtil.RandomName();
-        private static readonly string s_randomBackupName = "my-backup-"
-            + TestUtil.RandomName();
         private static readonly string s_randomToBeCancelledBackupName = "my-backup-"
             + TestUtil.RandomName();
         private static readonly string s_randomRestoredDatabaseName = "my-db-"
             + TestUtil.RandomName();
         public string DatabaseId =
             Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
-        public string BackupId = s_randomBackupName;
+        public string BackupDatabaseId = "my-test-database";
+        public string BackupId = "my-test-database-backup";
         public string ToBeCancelledBackupId = s_randomToBeCancelledBackupName;
         public string RestoredDatabaseId = s_randomRestoredDatabaseName;
         public bool s_initializedDatabase { get; set; } = false;
@@ -128,8 +122,11 @@ namespace GoogleCloudSamples.Spanner
             // Write data to the new table.
             _spannerCmd.Run("writeDatatypesData",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            //Sample Database for Backup and Restore Test.
+            _spannerCmd.Run("createDatabase",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
             _spannerCmd.Run("createBackup",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, _fixture.BackupId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId, _fixture.BackupId);
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
@@ -648,7 +645,7 @@ namespace GoogleCloudSamples.Spanner
         void TestCancelBackup()
         {
             ConsoleOutput output = _spannerCmd.Run("cancelBackupOperation",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId,
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId,
                 _fixture.ToBeCancelledBackupId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Create backup operation cancelled", output.Stdout);
@@ -658,10 +655,10 @@ namespace GoogleCloudSamples.Spanner
         void TestGetBackupOperations()
         {
             ConsoleOutput output = _spannerCmd.Run("getBackupOperations",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains(_fixture.BackupId, output.Stdout);
-            Assert.Contains(_fixture.DatabaseId, output.Stdout);
+            Assert.Contains(_fixture.BackupDatabaseId, output.Stdout);
             Assert.Contains("100% complete", output.Stdout);
         }
 
@@ -669,11 +666,11 @@ namespace GoogleCloudSamples.Spanner
         void TestGetBackups()
         {
             ConsoleOutput output = _spannerCmd.Run("getBackups",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, _fixture.BackupId);
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId, _fixture.BackupId);
             Assert.Equal(0, output.ExitCode);
-            // BackupId should be a result of each of the 7 ListBackups calls and
+            // BackupId should be a result of each of the 6 or more ListBackups calls and
             // once in a filter that is printed.
-            Assert.Equal(8, Regex.Matches(output.Stdout, _fixture.BackupId).Count);
+            Assert.True(Regex.Matches(output.Stdout, _fixture.BackupId).Count >= 6);
         }
 
         [Fact]
