@@ -1,7 +1,7 @@
-# Google Cloud SQL with MySQL and Google App Engine Flexible Environment
+# Google Cloud SQL with MySQL Sample for Cloud Run and Google App Engine Flexible Environment
 
 This sample application demonstrates how to store data in Google Cloud SQL
-with a MySQL database when running in Google App Engine Flexible Environment.
+with a MySQL database when running in Cloud Run or Google App Engine Flexible Environment.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ with a MySQL database when running in Google App Engine Flexible Environment.
     or newer.
 
 4.  [Create a second generation Google Cloud SQL MySQL instance](
-    https://cloud.google.com/sql/docs/postgres/create-instance).
+    https://cloud.google.com/sql/docs/mysql/create-instance).
 
 6.  Under the instance's "USERS" tab, create a new user. Note the "User name" and "Password".
 
@@ -38,8 +38,10 @@ with a MySQL database when running in Google App Engine Flexible Environment.
     3.  Click **CREATE**.
 
 
-8.  Edit [appsettings.json](appsettings.json).  Update the connection string
-    with the "User name" and "Password" you previously created on the Cloud SQL instance.
+8.  Edit [appsettings.json](appsettings.json).  
+    1. Update the connection string
+       with the "User name" and "Password" you previously created on the Cloud SQL instance.
+    2. Replace `your-project-id` with your Google Cloud Project's project id.
 
 ## ![PowerShell](../.resources/powershell.png) Using PowerShell
 
@@ -54,6 +56,62 @@ with a MySQL database when running in Google App Engine Flexible Environment.
     ```psm1
     PS > dotnet restore
     PS > dotnet run
+    ```
+
+### Deploy to Cloud Run
+
+1.  Edit [appsettings.json](appsettings.json).  Update the connection string to be in the following
+    form:
+
+        "Server=/cloudsql/your-project-id:us-central1:instance-name;Database=votes;User=;Password=;Protocol=unix"
+
+    replacing `your-project-id`, `us-central1` and `instance-name` with your Google Cloud Project's
+    project id and the [location/region](https://cloud.google.com/compute/docs/regions-zones) and name
+    of the Cloud SQL instance you created in a previous step. Also set the values for
+    `User` and `Password` to be the "User name" and "Password" you previously created on the Cloud SQL instance.
+
+2.  Run the following command in powershell to build the container image that you will deploy as a Cloud Run service:
+
+    ```psm1    
+        gcloud builds submit --tag gcr.io/your-project-id/mysql
+    ```
+    where `your-project-id` is your Google Cloud Project's project id.
+
+3.  In the [Cloud Run](https://console.cloud.google.com/run) section of the Google Cloud Console
+    click the "CREATE SERVICE" Button.
+    1.  For "Service settings : Deployment platform" select "Cloud Run (fully managed)".
+
+    2.  Set the "Region" to be the same "Region" you chose when you created your Cloud SQL instance.
+
+    3.  Enter a name of your choice for your service in the "Service name" text box.
+
+    4.  For "Authentication" select "Allow unauthenticated invocations".
+
+    5.  Click the "NEXT" Button
+
+    6.  For "Configure the service's first revision" click the "SELECT" button and select the container image
+        you just built in a previous  step.
+
+    7.  Click "SHOW ADVANCED SETTINGS" and then select the "CONNECTIONS" tab.
+
+    8.  Click the "ADD CONNECTION" button and choose the Cloud SQL instance you created in a previous step.
+
+    9.  Click the "CREATE" button to create the Cloud Run service.
+
+Once your service is created, visit your running app by clicking the service's URL displayed at the top of the page.
+
+To update your deployed Cloud Run service, update your app then run the following commands in powershell
+(replacing `your-project-id` with your Google Cloud Project's project id):
+1.  Re-run the `gcloud builds submit` command to update your container image:
+
+    ```psm1    
+        gcloud builds submit --tag gcr.io/your-project-id/mysql
+    ```
+
+2. Run the `gcloud run deploy` command to update your deployed Cloud Run service:
+
+    ```psm1
+         gcloud run deploy --image gcr.io/your-project-id/mysql --platform managed
     ```
 
 ### Deploy to App Engine Flexible
