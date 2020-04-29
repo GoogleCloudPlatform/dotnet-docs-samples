@@ -36,6 +36,24 @@ namespace GoogleCloudSamples
             Command = "Game Servers"
         };
 
+        public GameServersTestsBase()
+        {
+            var exceptions = new List<Exception>();
+            if (string.IsNullOrEmpty(this.ProjectId))
+            {
+                exceptions.Add(new Exception("GOOGLE_PROJECT_ID environment variable not set."));
+            }
+            if (string.IsNullOrEmpty(this.GKEClusterId))
+            {
+                exceptions.Add(new Exception("SAMPLE_CLUSTER_NAME environment variable not set."));
+            }
+
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException(exceptions);
+            }
+        }
+
         public ConsoleOutput Run(params string[] arguments)
         {
             return _gameServers.Run(arguments);
