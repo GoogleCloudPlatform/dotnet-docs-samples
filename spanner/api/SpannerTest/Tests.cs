@@ -138,7 +138,7 @@ namespace GoogleCloudSamples.Spanner
             catch (Exception e)
             {
                 // We intentionally keep an existing database around to reduce the
-		// the likelihood of test timetouts when creating a backup so
+                // the likelihood of test timetouts when creating a backup so
                 // it's ok to get an AlreadyExists error.
                 if (e.ToString().Contains("Database already exists"))
                 {
@@ -146,7 +146,7 @@ namespace GoogleCloudSamples.Spanner
                 }
                 else
                 {
-                   throw;
+                    throw;
                 }
             }
             try
@@ -158,7 +158,7 @@ namespace GoogleCloudSamples.Spanner
             catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
             {
                 // We intentionally keep an existing backup around to reduce the
-		// the likelihood of test timetouts when creating a backup so
+                // the likelihood of test timetouts when creating a backup so
                 // it's ok to get an AlreadyExists error.
                 if (e.ToString().Contains("Backup already exists"))
                 {
@@ -166,7 +166,7 @@ namespace GoogleCloudSamples.Spanner
                 }
                 else
                 {
-                   throw;
+                    throw;
                 }
             }
         }
