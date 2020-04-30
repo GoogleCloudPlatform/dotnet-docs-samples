@@ -693,14 +693,7 @@ namespace GoogleCloudSamples.Spanner
             {
                 string createStatement = $"CREATE DATABASE `{databaseId}`";
                 var cmd = connection.CreateDdlCommand(createStatement);
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
-                {
-                    // OK.
-                }
+                await cmd.ExecuteNonQueryAsync();
             }
             // Update connection string with Database ID for table creation.
             connectionString = connectionString + $"/databases/{databaseId}";
