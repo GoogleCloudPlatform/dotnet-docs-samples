@@ -97,6 +97,7 @@ namespace GoogleCloudSamples.Spanner
                 {
                     _fixture.s_initializedDatabase = true;
                     InitializeDatabase();
+                    InitializeBackup();
                 }
             }
         }
@@ -122,11 +123,52 @@ namespace GoogleCloudSamples.Spanner
             // Write data to the new table.
             _spannerCmd.Run("writeDatatypesData",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            //Sample Database for Backup and Restore Test.
-            _spannerCmd.Run("createDatabase",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
-            _spannerCmd.Run("createBackup",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId, _fixture.BackupId);
+        }
+
+        void InitializeBackup()
+        {
+            // Sample database for backup and restore tests.
+            try
+            {
+                _spannerCmd.Run("createSampleDatabase",
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
+                _spannerCmd.Run("insertSampleData",
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
+            }
+            catch (Exception e)
+            {
+                // We intentionally keep an existing database around to reduce the
+		// the likelihood of test timetouts when creating a backup so
+                // it's ok to get an AlreadyExists error.
+                if (e.ToString().Contains("Database already exists"))
+                {
+                    Console.WriteLine($"Database {_fixture.BackupDatabaseId} already exists.");
+                }
+                else
+                {
+                   throw;
+                }
+            }
+            try
+            {
+                _spannerCmd.Run("createBackup",
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId,
+                    _fixture.BackupId);
+            }
+            catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
+            {
+                // We intentionally keep an existing backup around to reduce the
+		// the likelihood of test timetouts when creating a backup so
+                // it's ok to get an AlreadyExists error.
+                if (e.ToString().Contains("Backup already exists"))
+                {
+                    Console.WriteLine($"Backup {_fixture.BackupId} already exists.");
+                }
+                else
+                {
+                   throw;
+                }
+            }
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
@@ -668,9 +710,11 @@ namespace GoogleCloudSamples.Spanner
             ConsoleOutput output = _spannerCmd.Run("getBackups",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId, _fixture.BackupId);
             Assert.Equal(0, output.ExitCode);
-            // BackupId should be a result of each of the 6 or more ListBackups calls and
-            // once in a filter that is printed.
-            Assert.True(Regex.Matches(output.Stdout, _fixture.BackupId).Count >= 6);
+            // BackupId should be a result of each of the 7 ListBackups calls and
+            // once in a filter that is printed. But since we create a backup and
+            // reuse it across runs, the filter on create_time may not capture this
+            // backup so the check is for >= 7.
+            Assert.True(Regex.Matches(output.Stdout, _fixture.BackupId).Count >= 7);
         }
 
         [Fact]
