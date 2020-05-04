@@ -29,8 +29,9 @@ public class QuickStart
     {
         // TODO: Replace with your project ID
         var projectId = "your-project";
-        // TODO: Replace with a member ID in the form `user:member@example.com`
-        var member = "your-member";
+        // TODO: Replace with the ID of the service account used in this quickstart in
+        // the form "serviceAccount:[service-account-id]@[project-id].iam.gserviceaccount.com"
+        var member = "your-service-account";
         // Role to be granted
         var role = "roles/logging.logWriter";
         // All permissions contained in the role to be granted
@@ -44,7 +45,6 @@ public class QuickStart
         // Test if the member has the permissions granted by the role
         IList<string> grantedPermissions = TestPermissions(crmService,
                                                            projectId,
-                                                           member,
                                                            rolePermissions);
         // Print the role permissions held by the member
         foreach (var p in grantedPermissions)
@@ -115,7 +115,6 @@ public class QuickStart
     public static IList<string> TestPermissions(
         CloudResourceManagerService crmService,
         string projectId,
-        string member,
         List<string> permissions)
     {
         //Test the member's permissions by calling the

@@ -77,7 +77,7 @@ public class QuickStartTest : IDisposable
         QuickStart.AddBinding(crmService, _projectId, member, role);
 
         // Test permissions in role
-        var grantedPermissions = QuickStart.TestPermissions(crmService, _projectId, member, rolePermissions);
+        var grantedPermissions = QuickStart.TestPermissions(crmService, _projectId, rolePermissions);
 
         // Verify that all permissions in role were granted to member
         foreach (var p in rolePermissions)
