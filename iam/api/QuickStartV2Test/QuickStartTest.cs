@@ -17,9 +17,9 @@ using Google.Apis.Iam.v1;
 using Google.Apis.Iam.v1.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
-using System.Linq;
 
 namespace GoogleCloudSamples
 {
@@ -79,7 +79,7 @@ namespace GoogleCloudSamples
             // Add member to role
             QuickStart.AddBinding(crmService, _projectId, member, role);
 
-            // Get the project's policy confirm that the member is in the policy
+            // Get the project's policy and confirm that the member is in the policy
             var policy = QuickStart.GetPolicy(crmService, _projectId);
             var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
             Assert.Contains(member, binding.Members);
