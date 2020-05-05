@@ -24,8 +24,45 @@ using Google.Cloud.Spanner.Common.V1;
 
 namespace GoogleCloudSamples.Spanner
 {
-    public class QuickStartTests
+    public class QuickStartFixture : IDisposable
     {
+        public string ProjectId { get; private set; } =
+            Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public string InstanceId { get; private set; } = "my-instance";
+        public string DatabaseId { get; private set; } = "my-database";
+
+        public void Dispose()
+        {
+            try
+            {
+                // Delete database created from running the tests.
+                CommandLineRunner runner = new CommandLineRunner()
+                {
+                    Main = Program.Main,
+                    Command = "Spanner"
+                };
+                runner.Run("deleteDatabase",
+                    ProjectId, InstanceId, DatabaseId);
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
+        }
+    }
+    public class QuickStartTests : IClassFixture<QuickStartFixture>
+    {
+        readonly QuickStartFixture _fixture;
+        readonly CommandLineRunner _spannerCmd = new CommandLineRunner()
+        {
+            Main = Program.Main,
+            Command = "Spanner"
+        };
+
+        public QuickStartTests(QuickStartFixture fixture)
+        {
+            _fixture = fixture;
+            _spannerCmd.Run("createDatabase",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+        }
+
         [Fact]
         public void TestQuickStart()
         {
@@ -629,7 +666,7 @@ namespace GoogleCloudSamples.Spanner
                 foreach (var innerException in e.InnerExceptions)
                 {
                     SpannerException spannerException = innerException as SpannerException;
-                    if (spannerException != null && spannerException.Message.ToLower().Contains("duplicate"))
+                    if (spannerException != null && spannerException.ErrorCode == ErrorCode.AlreadyExists)
                     {
                         Console.WriteLine($"Database {_fixture.DatabaseId} already exists.");
                         rethrow = false;
