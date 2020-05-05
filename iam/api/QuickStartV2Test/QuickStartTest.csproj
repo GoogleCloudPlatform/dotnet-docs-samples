@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\QuickStartv2\QuickStart.csproj" />
+    <ProjectReference Include="..\QuickStartV2\QuickStart.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
   </ItemGroup>
   

@@ -19,73 +19,80 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-public class QuickStartTest : IDisposable
+using System.Linq;
+
+namespace GoogleCloudSamples
 {
-    private readonly string projectId;
-    private ServiceAccount serviceAccount;
-    private IamService iamService;
-
-    public QuickStartTest()
+    public class QuickStartTest : IDisposable
     {
-        // Check for _projectId and throw exception if empty
-        projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        if (projectId == null)
-        {
-            throw new System.ArgumentNullException("GOOGLE_PROJECT_ID", "Environment variable not set");
-        }
+        private readonly string _projectId;
+        private ServiceAccount serviceAccount;
+        private IamService iamService;
 
-        // Create service account for test
-        var credential = GoogleCredential.GetApplicationDefault()
-            .CreateScoped(IamService.Scope.CloudPlatform);
-        iamService = new IamService(
-            new IamService.Initializer
-            {
-                HttpClientInitializer = credential
-            });
-
-        var request = new CreateServiceAccountRequest
+        public QuickStartTest()
         {
-            AccountId = "iam-test-account" + DateTime.UtcNow.ToBinary(),
-            ServiceAccount = new ServiceAccount
+            // Check for _projectId and throw exception if empty
+            _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            if (_projectId == null)
             {
-                DisplayName = "iamTestAccount"
+                throw new System.ArgumentNullException("GOOGLE_PROJECT_ID", "Environment variable not set");
             }
-        };
-        serviceAccount = iamService.Projects.ServiceAccounts.Create(
-            request, "projects/" + _projectId).Execute();
-    }
 
-    public void Dispose()
-    {
-        // Delete service account
-        string resource = "projects/-/serviceAccounts/" + serviceAccount.Email;
-        iamService.Projects.ServiceAccounts.Delete(resource).Execute();
+            // Create service account for test
+            var credential = GoogleCredential.GetApplicationDefault()
+                .CreateScoped(IamService.Scope.CloudPlatform);
+            iamService = new IamService(
+                new IamService.Initializer
+                {
+                    HttpClientInitializer = credential
+                });
 
-    }
-
-    [Fact]
-    public void TestQuickStart()
-    {
-        var role = "roles/logging.logWriter";
-        var rolePermissions = new List<string> { "logging.logEntries.create" };
-        var member = "serviceAccount:" + serviceAccount.Email;
-
-        // Initialize service
-        var crmService = QuickStart.InitializeService();
-
-        // Add member to role
-        QuickStart.AddBinding(crmService, _projectId, member, role);
-
-        // Test permissions in role
-        var grantedPermissions = QuickStart.TestPermissions(crmService, _projectId, rolePermissions);
-
-        // Verify that all permissions in role were granted to member
-        foreach (var p in rolePermissions)
-        {
-            Assert.Contains(p, grantedPermissions);
+            var request = new CreateServiceAccountRequest
+            {
+                AccountId = "iam-test-account" + DateTime.UtcNow.Millisecond,
+                ServiceAccount = new ServiceAccount
+                {
+                    DisplayName = "iamTestAccount"
+                }
+            };
+            serviceAccount = iamService.Projects.ServiceAccounts.Create(
+                request, "projects/" + _projectId).Execute();
         }
 
-        // Remove member
-        QuickStart.RemoveMember(crmService, _projectId, member, role);
+        public void Dispose()
+        {
+            // Delete service account
+            string resource = "projects/-/serviceAccounts/" + serviceAccount.Email;
+            iamService.Projects.ServiceAccounts.Delete(resource).Execute();
+
+        }
+
+        [Fact]
+        public void TestQuickStart()
+        {
+            var role = "roles/logging.logWriter";
+            var member = "serviceAccount:" + serviceAccount.Email;
+
+            // Initialize service
+            var crmService = QuickStart.InitializeService();
+
+            // Add member to role
+            QuickStart.AddBinding(crmService, _projectId, member, role);
+
+            // Get the project's policy confirm that the member is in the policy
+            var policy = QuickStart.GetPolicy(crmService, _projectId);
+            var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
+            Assert.Contains(member, binding.Members);
+
+            // Remove member
+            QuickStart.RemoveMember(crmService, _projectId, member, role);
+            // Confirm that the member has been removed
+            policy = QuickStart.GetPolicy(crmService, _projectId);
+            binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
+            if (binding != null)
+            {
+                Assert.DoesNotContain(member, binding.Members);
+            }
+        }
     }
 }

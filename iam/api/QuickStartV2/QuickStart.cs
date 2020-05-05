@@ -28,29 +28,29 @@ public class QuickStart
     public static void Main(string[] args)
     {
         // TODO: Replace with your project ID
-        var projectId = "your-project";
-        // TODO: Replace with the ID of the service account used in this quickstart in
-        // the form "serviceAccount:[service-account-id]@[project-id].iam.gserviceaccount.com"
-        var member = "your-service-account";
+        var projectId = "test-project-1000092";
+        // TODO: Replace with the ID of your member in the form "member:user@example.com"
+        var member = "user:melaniedejong@google.com";
         // Role to be granted
         var role = "roles/logging.logWriter";
-        // All permissions contained in the role to be granted
-        var rolePermissions = new List<string> { "logging.logEntries.create" };
 
         // Initialize service
         CloudResourceManagerService crmService = InitializeService();
 
         // Grant your member the "Log writer" role for your project
         AddBinding(crmService, projectId, member, role);
-        // Test if the member has the permissions granted by the role
-        IList<string> grantedPermissions = TestPermissions(crmService,
-                                                           projectId,
-                                                           rolePermissions);
-        // Print the role permissions held by the member
-        foreach (var p in grantedPermissions)
+
+        // Get the project's policy and print all members with the the "Log Writer" role
+        var policy = GetPolicy(crmService, projectId);
+        var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
+        Console.WriteLine("Role: " + binding.Role);
+        Console.Write("Members: ");
+        foreach (var m in binding.Members)
         {
-            Console.WriteLine(p);
+            Console.Write("[" + m + "] ");
         }
+        Console.WriteLine();
+
         // Remove member from the "Log writer" role
         RemoveMember(crmService, projectId, member, role);
     }
@@ -71,17 +71,35 @@ public class QuickStart
         return crmService;
     }
 
-    public static void AddBinding(
-        CloudResourceManagerService crmService,
-        string projectId,
-        string member,
-        string role)
+    public static Policy GetPolicy(CloudResourceManagerService crmService, String projectId)
     {
         // Get the project's policy by calling the
         // Cloud Resource Manager Projects API
         var policy = crmService.Projects.GetIamPolicy(
             new GetIamPolicyRequest(),
             projectId).Execute();
+        return policy;
+    }
+
+    public static void SetPolicy(CloudResourceManagerService crmService, String projectId, Policy policy)
+    {
+        // Set the project's policy by calling the
+        // Cloud Resource Manager Projects API
+        crmService.Projects.SetIamPolicy(
+           new SetIamPolicyRequest
+           {
+               Policy = policy
+           }, projectId).Execute();
+    }
+
+    public static void AddBinding(
+        CloudResourceManagerService crmService,
+        string projectId,
+        string member,
+        string role)
+    {
+        // Get the project's policy
+        var policy = GetPolicy(crmService, projectId);
 
         // Find binding in policy
         var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
@@ -102,31 +120,8 @@ public class QuickStart
             policy.Bindings.Add(binding);
         }
 
-        // Set the project's policy by calling the
-        // Cloud Resource Manager Projects API
-        crmService.Projects.SetIamPolicy(
-           new SetIamPolicyRequest
-           {
-               Policy = policy
-           }, projectId).Execute();
-    }
-
-
-    public static IList<string> TestPermissions(
-        CloudResourceManagerService crmService,
-        string projectId,
-        List<string> permissions)
-    {
-        //Test the member's permissions by calling the
-        //Cloud Resource Manager Projects API
-        TestIamPermissionsRequest requestBody = new TestIamPermissionsRequest()
-        {
-            permissions = permissions
-        };
-        var returnedPermissions = crmService.Projects.TestIamPermissions(
-            requestBody, projectId).Execute().Permissions;
-
-        return returnedPermissions;
+        // Set the updated policy
+        SetPolicy(crmService, projectId, policy);
     }
 
     public static void RemoveMember(
@@ -135,11 +130,8 @@ public class QuickStart
         string member,
         string role)
     {
-        // Get the project's policy by calling the
-        // Cloud Resource Manager Projects API
-        var policy = crmService.Projects.GetIamPolicy(
-            new GetIamPolicyRequest(),
-            projectId).Execute();
+        // Get the project's policy 
+        var policy = GetPolicy(crmService, projectId);
 
         // Remove the member from the role
         var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
@@ -164,13 +156,8 @@ public class QuickStart
             }
         }
 
-        // Set the project's policy by calling the
-        // Cloud Resource Manager Projects API
-        crmService.Projects.SetIamPolicy(
-            new SetIamPolicyRequest
-            {
-                Policy = policy
-            }, projectId).Execute();
+        // Set the updated policy
+        SetPolicy(crmService, projectId, policy);
     }
 }
 // [END iam_quickstart_v2]
