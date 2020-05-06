@@ -43,6 +43,9 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
     public string AsymmetricSignRsaKeyId { get; }
     public CryptoKeyName AsymmetricSignRsaKeyName { get; }
 
+    public string HsmKeyId { get; }
+    public CryptoKeyName HsmKeyName { get; }
+
     public string SymmetricKeyId { get; }
     public CryptoKeyName SymmetricKeyName { get; }
 
@@ -73,6 +76,10 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         AsymmetricSignRsaKeyId = RandomId();
         AsymmetricSignRsaKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, AsymmetricSignRsaKeyId);
         CreateAsymmetricSignRsaKey(AsymmetricSignRsaKeyId);
+
+        HsmKeyId = RandomId();
+        HsmKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, HsmKeyId);
+        CreateHsmKey(HsmKeyId);
 
         SymmetricKeyId = RandomId();
         SymmetricKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, SymmetricKeyId);
@@ -203,6 +210,30 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
                 VersionTemplate = new CryptoKeyVersionTemplate
                 {
                     Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.RsaSignPss2048Sha256,
+                },
+            },
+        };
+        request.CryptoKey.Labels["foo"] = "bar";
+        request.CryptoKey.Labels["zip"] = "zap";
+
+        return client.CreateCryptoKey(request);
+    }
+
+    public CryptoKey CreateHsmKey(string keyId)
+    {
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+        var request = new CreateCryptoKeyRequest
+        {
+            ParentAsKeyRingName = KeyRingName,
+            CryptoKeyId = keyId,
+            CryptoKey = new CryptoKey
+            {
+                Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
+                VersionTemplate = new CryptoKeyVersionTemplate
+                {
+                    Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption,
+                    ProtectionLevel = ProtectionLevel.Hsm,
                 },
             },
         };
