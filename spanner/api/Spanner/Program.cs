@@ -520,6 +520,73 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    [Verb("createBackup", HelpText = "Create a backup of a Spanner database.")]
+    class CreateBackupOptions : DefaultOptions
+    {
+        [Value(3, HelpText = "The ID of the backup to create.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    class DefaultBackupOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the backups reside.", Required = true)]
+        public string instanceId { get; set; }
+    }
+
+
+    [Verb("restoreDatabase", HelpText = "Restore a Spanner database from a backup.")]
+    class RestoreDatabaseOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the database to create.", Required = true)]
+        public string databaseId { get; set; }
+        [Value(3, HelpText = "The ID of the backup to restore from.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("getBackupOperations", HelpText = "Get a list of Spanner database backup operations.")]
+    class GetBackupOperationsOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the database to filter backups on.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("getDatabaseOperations", HelpText = "Get a list of Spanner database operations.")]
+    class GetDatabaseOperationsOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the operations reside.", Required = true)]
+        public string instanceId { get; set; }
+    }
+
+    [Verb("updateBackup", HelpText = "Update a Spanner database backup.")]
+    class UpdateBackupOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the backup to update.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("deleteBackup", HelpText = "Delete a Spanner database backup.")]
+    class DeleteBackupOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the backup to delete.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("getBackups", HelpText = "Get a list of Spanner database backups.")]
+    class GetBackupsOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the database to filter backups on.", Required = true)]
+        public string databaseId { get; set; }
+        [Value(3, HelpText = "The ID of the backup to filter backups on.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("cancelBackupOperation", HelpText = "Cancel a Spanner database backup creation operation.")]
+    class CancelBackupOperationOptions : CreateBackupOptions { }
+
     [Verb("createConnectionWithQueryOptions", HelpText = "Creates a connection with query options set and queries the 'Albums' table.")]
     class CreateConnectionWithQueryOptionsOptions : DefaultOptions
     {
@@ -626,14 +693,7 @@ namespace GoogleCloudSamples.Spanner
             {
                 string createStatement = $"CREATE DATABASE `{databaseId}`";
                 var cmd = connection.CreateDdlCommand(createStatement);
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
-                {
-                    // OK.
-                }
+                await cmd.ExecuteNonQueryAsync();
             }
             // Update connection string with Database ID for table creation.
             connectionString = connectionString + $"/databases/{databaseId}";
@@ -1814,7 +1874,14 @@ namespace GoogleCloudSamples.Spanner
             {
                 string createStatement = $"CREATE DATABASE `{databaseId}`";
                 var cmd = connection.CreateDdlCommand(createStatement);
-                await cmd.ExecuteNonQueryAsync();
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
+                {
+                    // Database Already Exists.
+                }
             }
             // [END spanner_create_custom_database]
         }
@@ -3765,6 +3832,34 @@ namespace GoogleCloudSamples.Spanner
                 .Add((DropSampleTablesOptions opts) =>
                     DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result)
+                .Add((CreateBackupOptions opts) =>
+                    CreateBackup.SpannerCreateBackup(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
+                .Add((CancelBackupOperationOptions opts) =>
+                    CancelBackupOperation.SpannerCancelBackupOperation(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
+                .Add((GetBackupsOptions opts) =>
+                    GetBackups.SpannerGetBackups(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
+                .Add((RestoreDatabaseOptions opts) =>
+                    RestoreDatabase.SpannerRestoreDatabase(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
+                .Add((UpdateBackupOptions opts) =>
+                    UpdateBackup.SpannerUpdateBackup(
+                        opts.projectId, opts.instanceId, opts.backupId))
+                .Add((GetDatabaseOperationsOptions opts) =>
+                    GetDatabaseOperations.SpannerGetDatabaseOperations(
+                        opts.projectId, opts.instanceId))
+                .Add((GetBackupOperationsOptions opts) =>
+                    GetBackupOperations.SpannerGetBackupOperations(
+                        opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((DeleteBackupOptions opts) =>
+                    DeleteBackup.SpannerDeleteBackup(
+                        opts.projectId, opts.instanceId, opts.backupId))
                 .Add((CreateConnectionWithQueryOptionsOptions opts) =>
                     CreateConnectionWithQueryOptions(opts.projectId,
                     opts.instanceId, opts.databaseId))
