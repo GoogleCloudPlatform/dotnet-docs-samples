@@ -4,7 +4,7 @@ bigquery/   @jsimonweb
 bigtable/   @jsimonweb
 datastore/  @jsimonweb
 firestore/  @jsimonweb
-storage/    @jsimonweb
+storage/    @GoogleCloudPlatform/storage-dpe
 applications/leaderboard/   @jsimonweb
 
 spanner/       @skuruppu
