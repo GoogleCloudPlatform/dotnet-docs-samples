@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-
 namespace GoogleCloudSamples
 {
     public class QuickStartTest : IDisposable
@@ -35,7 +34,7 @@ namespace GoogleCloudSamples
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             if (_projectId == null)
             {
-                throw new System.ArgumentNullException("GOOGLE_PROJECT_ID", "Environment variable not set");
+                throw new ArgumentNullException("GOOGLE_PROJECT_ID", "Environment variable not set");
             }
 
             // Create service account for test

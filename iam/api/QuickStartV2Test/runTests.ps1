@@ -14,4 +14,4 @@
 import-module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
-dotnet test
+dotnet test --logger:junit

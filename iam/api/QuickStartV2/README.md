@@ -3,7 +3,7 @@
 This sample demonstrates how to get started using the Google Cloud IAM APIs
 in C#.
 
-This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or
+This sample requires [.NET Core 2.1](https://www.microsoft.com/net/core) or
 later.  That means using [Visual Studio 2017](https://www.visualstudio.com/), 
 or the command line. 
 

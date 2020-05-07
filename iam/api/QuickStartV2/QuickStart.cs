@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-
 public class QuickStart
 {
     public static void Main(string[] args)
@@ -37,7 +36,7 @@ public class QuickStart
         // Initialize service
         CloudResourceManagerService crmService = InitializeService();
 
-        // Grant your member the "Log writer" role for your project
+        // Grant your member the "Log Writer" role for your project
         AddBinding(crmService, projectId, member, role);
 
         // Get the project's policy and print all members with the the "Log Writer" role
@@ -51,7 +50,7 @@ public class QuickStart
         }
         Console.WriteLine();
 
-        // Remove member from the "Log writer" role
+        // Remove member from the "Log Writer" role
         RemoveMember(crmService, projectId, member, role);
     }
 
