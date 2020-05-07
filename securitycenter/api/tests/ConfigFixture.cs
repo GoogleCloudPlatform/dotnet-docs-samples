@@ -13,64 +13,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- using Google.Cloud.PubSub.V1;
- using Grpc.Core;
- using System;
- using System.Collections.Generic;
- using Xunit;
+
+using Google.Cloud.PubSub.V1;
+using Grpc.Core;
+using System;
+using System.Collections.Generic;
+using Xunit;
 
 [CollectionDefinition(nameof(ConfigFixture))]
- public class ConfigFixture : IDisposable, ICollectionFixture<ConfigFixture>
- {
-     private readonly List<string> _cleanupItems = new List<string>();
-     
-     public string OrganizationId { get; }
-     public string ProjectId { get; }
-     public string Topic { get; }
-     public string DefaultNotificationConfigId {get; }
+public class ConfigFixture : IDisposable, ICollectionFixture<ConfigFixture>
+{
+    private readonly List<string> _cleanupItems = new List<string>();
 
-     public ConfigFixture()
-     {
+    public string OrganizationId { get; }
+    public string ProjectId { get; }
+    public string Topic { get; }
+    public string DefaultNotificationConfigId { get; }
+
+    public ConfigFixture()
+    {
         OrganizationId = "1081635000895";
         ProjectId = "project-a-id";
         Topic = "notifications-sample-topic";
         DefaultNotificationConfigId = CreateNotificationConfig(RandomId());
-     }
+    }
 
-     public void Dispose()
-     {
+    public void Dispose()
+    {
         foreach (var configId in _cleanupItems)
         {
             DeleteNotificationConfigSnippets.DeleteNotificationConfig(OrganizationId, configId);
         }
         _cleanupItems.Clear();
-     }
+    }
 
     /// <summary>
     /// Returns epoch time as ID
     /// </summary>
-     public string RandomId()
-     {
+    public string RandomId()
+    {
         return DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
-     }
+    }
 
     /// <summary>
     /// Delete assets when fixture is disposed.
     /// </summary>
-     public void MarkForDeletion(string id) 
-     {
-         _cleanupItems.Add(id);
-     }
+    public void MarkForDeletion(string id)
+    {
+        _cleanupItems.Add(id);
+    }
 
-    public string CreateNotificationConfig(string configId) 
+    public string CreateNotificationConfig(string configId)
     {
         CreateNotificationConfigSnippets.CreateNotificationConfig(OrganizationId, configId, ProjectId, Topic);
         _cleanupItems.Add(configId);
         return configId;
     }
-     private string CreateTopic(string projectId, string topicId) 
-     {
+    private string CreateTopic(string projectId, string topicId)
+    {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         TopicName topicName = new TopicName(projectId, topicId);
         try
@@ -82,5 +82,5 @@
             // Already exists.  That's fine.
         }
         return topicId;
-     }
- }
+    }
+}
