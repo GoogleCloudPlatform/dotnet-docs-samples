@@ -42,5 +42,5 @@ This is enforced using [CodeFormatter](https://github.com/dotnet/codeformatter).
 
 ### Starting a new sample
 When starting a new sample, match the file and directory layout in the
-[DLP Snippets](dlp/api/Snippets) and [DLP Tests](dlp/api/DlpTest).  That sample is the canonical example
-of how a new sample should be structured.
+[KMS Samples](kms/api/Kms.Samples) and [KMS Samples Tests](kms/api/Kms.Samples.Tests). KMS samples and tests are
+the canonical example of how samples in this repo should be structured.
