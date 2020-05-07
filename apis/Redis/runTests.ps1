@@ -13,13 +13,5 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
-BackupAndEdit-TextFile @("Redis\Redis.cs") `
-    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID;
-    "LOCATION-ID" = 'us-central1';} `
-{
-    dotnet restore
-    dotnet build
-    dotnet test --test-adapter-path:. --logger:junit --no-build .\RedisTest\RedisTest.csproj
-    if ($LASTEXITCODE -ne 0) { throw "FAILED" }
-}
-
+dotnet restore
+dotnet test --test-adapter-path:. --logger:junit
