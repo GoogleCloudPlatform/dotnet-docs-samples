@@ -24,6 +24,7 @@ namespace GoogleCloudSamples
 {
     public class GameServersTestsBase
     {
+        protected string TEST_CLUSTER_ID = "game-servers-samples";
         protected string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         protected string GKEClusterId { get; private set; } = Environment.GetEnvironmentVariable("SAMPLE_CLUSTER_NAME");
         protected string RegionName { get; private set; } = "us-central1";
@@ -45,7 +46,7 @@ namespace GoogleCloudSamples
             }
             if (string.IsNullOrEmpty(this.GKEClusterId))
             {
-                exceptions.Add(new Exception("SAMPLE_CLUSTER_NAME environment variable not set."));
+                GKEClusterId = $"projects/{ProjectId}/locations/us-central1a/clusters/{TEST_CLUSTER_ID}";
             }
 
             if (exceptions.Count > 0)
