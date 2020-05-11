@@ -749,9 +749,9 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, output.ExitCode);
             // BackupId should be a result of each of the 7 ListBackups calls and
             // once in a filter that is printed. But since we create a backup and
-            // reuse it across runs, the filter on create_time may not capture this
-            // backup so the check is for >= 7.
-            Assert.True(Regex.Matches(output.Stdout, _fixture.BackupId).Count >= 7);
+            // reuse it across runs, the filter on create_time and expire_time may not capture this
+            // backup so the check is for >= 5.
+            Assert.True(Regex.Matches(output.Stdout, _fixture.BackupId).Count >= 5);
         }
 
         [Fact]
