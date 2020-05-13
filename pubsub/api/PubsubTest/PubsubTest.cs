@@ -327,7 +327,7 @@ namespace GoogleCloudSamples
                 topicId, subscriptionId);
             var messageCreateOutput = Run("publishMessages", _projectId,
                 topicId, message);
-            // Pull and acknowldge the messages
+            // Pull and acknowledge the messages
             List<string> cmdArgs = new[] {"pullMessages", "-a", _projectId,
                     subscriptionId }.ToList();
             if (customFlow)
