@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_delete_subscription]
+using Xunit;
 
-using Google.Cloud.PubSub.V1;
-using System;
-
-public class DeleteSubscriptionSample
+[Collection(nameof(PubsubFixture))]
+public class QuickStartTest
 {
-    public void DeleteSubscription(string projectId,
-    string subscriptionId)
+    private readonly PubsubFixture _pubsubFixture;
+    private readonly QuickStartSample _quickStartSample;
+    public QuickStartTest(PubsubFixture pubsubFixture)
     {
-        SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
-        SubscriptionName subscriptionName = new SubscriptionName(projectId,
-            subscriptionId);
-        subscriber.DeleteSubscription(subscriptionName);
-        Console.WriteLine("Subscription deleted.");
+        _pubsubFixture = pubsubFixture;
+        _quickStartSample = new QuickStartSample();
+    }
+
+    [Fact]
+    public void QuickStart()
+    {
+        var topicId = _quickStartSample.QuickStart(_pubsubFixture._projectId);
+        Assert.Equal("my-new-topic", topicId);
     }
 }
-// [END pubsub_delete_subscription]

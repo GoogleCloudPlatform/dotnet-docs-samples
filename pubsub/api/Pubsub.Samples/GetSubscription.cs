@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START pubsub_get_subscription]
+
 using Google.Cloud.PubSub.V1;
 
 public class GetSubscriptionSample
@@ -26,3 +28,4 @@ public class GetSubscriptionSample
         return subscriber.GetSubscription(subscriptionName);
     }
 }
+// [END pubsub_get_subscription]

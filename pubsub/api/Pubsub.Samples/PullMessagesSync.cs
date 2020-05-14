@@ -21,7 +21,7 @@ using System.Text;
 
 public class PullMessagesSyncSample
 {
-    public static object PullMessagesSync(string projectId,
+    public static void PullMessagesSync(string projectId,
     string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = new SubscriptionName(projectId,
@@ -44,7 +44,6 @@ public class PullMessagesSyncSample
             subscriberClient.Acknowledge(subscriptionName,
                 response.ReceivedMessages.Select(msg => msg.AckId));
         }
-        return 0;
     }
 }
 // [END pubsub_subscriber_sync_pull]

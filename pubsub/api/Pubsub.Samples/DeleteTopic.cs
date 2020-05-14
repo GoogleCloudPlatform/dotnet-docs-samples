@@ -15,17 +15,14 @@
 // [START pubsub_delete_topic]
 
 using Google.Cloud.PubSub.V1;
-using System;
 
 public class DeleteTopicSample
 {
-    public object DeleteTopic(string projectId, string topicId)
+    public void DeleteTopic(string projectId, string topicId)
     {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         TopicName topicName = new TopicName(projectId, topicId);
         publisher.DeleteTopic(topicName);
-        Console.WriteLine("Topic deleted.");
-        return 0;
     }
 }
 // [END pubsub_delete_topic]

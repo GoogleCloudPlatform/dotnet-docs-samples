@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START pubsub_get_topic]
+
 using Google.Cloud.PubSub.V1;
 
 public class GetTopicSample
@@ -23,3 +25,4 @@ public class GetTopicSample
         return publisher.GetTopic(topicName);
     }
 }
+// [END pubsub_get_topic]

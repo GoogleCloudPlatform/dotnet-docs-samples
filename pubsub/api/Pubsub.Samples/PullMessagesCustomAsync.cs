@@ -55,7 +55,7 @@ public class PullMessagesCustomAsyncSample
                 return acknowledge ? SubscriberClient.Reply.Ack
                     : SubscriberClient.Reply.Nack;
             });
-        // Run for 3 seconds.
+        // Run for 5 seconds.
         await Task.Delay(5000);
         await subscriber.StopAsync(CancellationToken.None);
         // [END pubsub_subscriber_flow_settings]

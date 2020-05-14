@@ -26,10 +26,10 @@ using Xunit;
 public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
 {
     public readonly string _projectId;
-    private readonly PublisherServiceApiClient _publisher;
-    private readonly SubscriberServiceApiClient _subscriber;
-    private readonly List<string> _tempTopicIds = new List<string>();
-    private readonly List<string> _tempSubscriptionIds = new List<string>();
+    public readonly PublisherServiceApiClient _publisher;
+    public readonly SubscriberServiceApiClient _subscriber;
+    public readonly List<string> _tempTopicIds = new List<string>();
+    public readonly List<string> _tempSubscriptionIds = new List<string>();
 
     public PubsubFixture()
     {
