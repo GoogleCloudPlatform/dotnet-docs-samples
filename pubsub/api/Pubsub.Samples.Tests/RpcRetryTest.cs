@@ -33,13 +33,13 @@ public class RpcRetryTest
         string topicId = "testTopicForRpcRetry" + _pubsubFixture.RandomName();
         string subscriptionId = "testSubscriptionForRpcRetry" + _pubsubFixture.RandomName();
 
-        _pubsubFixture._tempTopicIds.Add(topicId);
-        _pubsubFixture._tempSubscriptionIds.Add(subscriptionId);
+        _pubsubFixture.TempTopicIds.Add(topicId);
+        _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
 
         _pubsubFixture.Eventually(() =>
         {
-            RpcRetry(topicId, subscriptionId, _pubsubFixture._publisher, _pubsubFixture._subscriber);
-            var topicDetails = _getTopicSample.GetTopic(_pubsubFixture._projectId, topicId);
+            RpcRetry(topicId, subscriptionId, _pubsubFixture.Publisher, _pubsubFixture.Subscriber);
+            var topicDetails = _getTopicSample.GetTopic(_pubsubFixture.ProjectId, topicId);
             Assert.Equal(topicId, topicDetails.TopicName.TopicId);
         });
     }
@@ -47,9 +47,9 @@ public class RpcRetryTest
     internal void RpcRetry(string topicId, string subscriptionId,
             PublisherServiceApiClient publisher, SubscriberServiceApiClient subscriber)
     {
-        TopicName topicName = new TopicName(_pubsubFixture._projectId, topicId);
+        TopicName topicName = new TopicName(_pubsubFixture.ProjectId, topicId);
         // Create Subscription.
-        SubscriptionName subscriptionName = new SubscriptionName(_pubsubFixture._projectId,
+        SubscriptionName subscriptionName = new SubscriptionName(_pubsubFixture.ProjectId,
             subscriptionId);
         // Create Topic
         try

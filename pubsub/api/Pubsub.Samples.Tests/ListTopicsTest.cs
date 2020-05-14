@@ -39,7 +39,7 @@ public class ListTopicsTest
         _pubsubFixture.Eventually(() =>
         {
             var listProjectTopicsOutput = _listProjectTopicsSample
-            .ListProjectTopics(PublisherServiceApiClient.Create(), _pubsubFixture._projectId);
+            .ListProjectTopics(PublisherServiceApiClient.Create(), _pubsubFixture.ProjectId);
             Assert.Contains(listProjectTopicsOutput, c => c.Contains(topicId));
         });
     }
@@ -57,7 +57,7 @@ public class ListTopicsTest
             .CreatePublisherWithServiceCredentials(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
 
             var listProjectTopicsOutput = _listProjectTopicsSample
-            .ListProjectTopics(publisher, _pubsubFixture._projectId);
+            .ListProjectTopics(publisher, _pubsubFixture.ProjectId);
 
             Assert.Contains(listProjectTopicsOutput, c => c.Contains(topicId));
         });

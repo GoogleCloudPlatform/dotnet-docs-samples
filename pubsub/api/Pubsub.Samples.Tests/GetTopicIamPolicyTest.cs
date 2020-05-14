@@ -33,7 +33,7 @@ public class GetTopicIamPolicyTest
 
         _pubsubFixture.CreateTopic(topicId);
 
-        var policy = _getTopicIamPolicySample.GetTopicIamPolicy(_pubsubFixture._projectId, topicId);
+        var policy = _getTopicIamPolicySample.GetTopicIamPolicy(_pubsubFixture.ProjectId, topicId);
         Assert.NotNull(policy);
     }
 }

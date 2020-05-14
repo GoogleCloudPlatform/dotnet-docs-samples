@@ -29,7 +29,7 @@ public class CreateTopicTest
     {
         string topicId = "testTopicForTopicCreation" + _pubsubFixture.RandomName();
         var newlyCreatedTopic = _pubsubFixture.CreateTopic(topicId);
-        var topic = _getTopicSample.GetTopic(_pubsubFixture._projectId, topicId);
+        var topic = _getTopicSample.GetTopic(_pubsubFixture.ProjectId, topicId);
         Assert.Equal(newlyCreatedTopic, topic);
     }
 }

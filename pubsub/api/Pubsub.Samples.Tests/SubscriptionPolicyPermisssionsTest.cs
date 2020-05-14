@@ -42,14 +42,14 @@ public class SubscriptionPolicyPermisssionsTest
 
         _pubsubFixture.Eventually(() =>
         {
-            _setSubscriptionIamPolicySample.SetSubscriptionIamPolicy(_pubsubFixture._projectId,
+            _setSubscriptionIamPolicySample.SetSubscriptionIamPolicy(_pubsubFixture.ProjectId,
                 subscriptionId, testRoleValueToConfirm, testMemberValueToConfirm);
         });
 
         _pubsubFixture.Eventually(() =>
         {
             var response = testSubscriptionIamPermissionsSample
-            .TestSubscriptionIamPermissionsResponse(_pubsubFixture._projectId,
+            .TestSubscriptionIamPermissionsResponse(_pubsubFixture.ProjectId,
             subscriptionId, PublisherServiceApiClient.Create());
             Assert.NotEmpty(response.ToString());
         });

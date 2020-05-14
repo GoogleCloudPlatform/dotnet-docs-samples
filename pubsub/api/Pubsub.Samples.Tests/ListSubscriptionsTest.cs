@@ -37,7 +37,7 @@ public class ListSubscriptionsTest
 
         _pubsubFixture.Eventually(() =>
         {
-            var subscriptions = listSubscriptionsSample.ListSubscriptions(_pubsubFixture._projectId);
+            var subscriptions = listSubscriptionsSample.ListSubscriptions(_pubsubFixture.ProjectId);
 
             Assert.Contains(subscriptions.Select(s => s.SubscriptionName.SubscriptionId), c => c.Contains(subscriptionId));
         });

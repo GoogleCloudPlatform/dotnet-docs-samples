@@ -20,11 +20,11 @@ public class DeleteTopicTest
         string topicId = "testTopicForDeleteTopic" + _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);
-        _deleteTopicSample.DeleteTopic(_pubsubFixture._projectId, topicId);
+        _deleteTopicSample.DeleteTopic(_pubsubFixture.ProjectId, topicId);
 
-        _pubsubFixture._tempTopicIds.Remove(topicId);  // We already deleted it.
+        _pubsubFixture.TempTopicIds.Remove(topicId);  // We already deleted it.
         
         Exception ex = Assert.Throws<Grpc.Core.RpcException>(() =>
-            _getTopicSample.GetTopic(_pubsubFixture._projectId,topicId));
+            _getTopicSample.GetTopic(_pubsubFixture.ProjectId,topicId));
     }
 }

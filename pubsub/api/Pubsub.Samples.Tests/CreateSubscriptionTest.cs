@@ -34,7 +34,7 @@ public class CreateSubscriptionTest
         _pubsubFixture.CreateTopic(topicId);
         var newlyCreatedSubscription = _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        var subscription = _getSubscriptionSampleObject.GetSubscription(_pubsubFixture._projectId, subscriptionId);
+        var subscription = _getSubscriptionSampleObject.GetSubscription(_pubsubFixture.ProjectId, subscriptionId);
 
         Assert.Equal(newlyCreatedSubscription, subscription);
     }

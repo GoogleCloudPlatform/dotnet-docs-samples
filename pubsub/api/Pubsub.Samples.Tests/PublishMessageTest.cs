@@ -54,13 +54,13 @@ public class PublishMessageTest
         if (customBatch)
         {
             publisher = Task.Run(() =>
-                 _getCustomPublisherAsyncSample.GetCustomPublisherAsync(_pubsubFixture._projectId, topicId))
+                 _getCustomPublisherAsyncSample.GetCustomPublisherAsync(_pubsubFixture.ProjectId, topicId))
                 .ResultWithUnwrappedExceptions();
         }
         else
         {
             publisher = Task.Run(() =>
-            _getPublisherAsyncSample.GetPublisherAsync(_pubsubFixture._projectId, topicId))
+            _getPublisherAsyncSample.GetPublisherAsync(_pubsubFixture.ProjectId, topicId))
                 .ResultWithUnwrappedExceptions();
         }
 
@@ -75,7 +75,7 @@ public class PublishMessageTest
         _pubsubFixture.Eventually(() =>
         {
             var result = Task.Run(() =>
-            _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture._projectId, subscriptionId, false))
+            _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false))
             .ResultWithUnwrappedExceptions();
             Assert.True(result.Count > 0);
         });

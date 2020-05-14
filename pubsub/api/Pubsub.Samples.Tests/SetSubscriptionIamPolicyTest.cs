@@ -39,11 +39,11 @@ public class SetSubscriptionIamPolicyTest
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         var policy = _setSubscriptionIamPolicySample.SetSubscriptionIamPolicy(
-            _pubsubFixture._projectId, subscriptionId, testRoleValueToConfirm,
+            _pubsubFixture.ProjectId, subscriptionId, testRoleValueToConfirm,
             testMemberValueToConfirm);
 
         var policyOutput = _getSubscriptionIamPolicySample.GetSubscriptionIamPolicy(
-            _pubsubFixture._projectId, subscriptionId);
+            _pubsubFixture.ProjectId, subscriptionId);
 
         Assert.Equal(policy, policyOutput);
     }

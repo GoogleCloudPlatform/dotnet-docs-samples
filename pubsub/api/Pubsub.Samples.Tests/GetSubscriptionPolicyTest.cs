@@ -34,7 +34,7 @@ public class GetSubscriptionPolicyTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        var policy = _getSubscriptionIamPolicySample.GetSubscriptionIamPolicy(_pubsubFixture._projectId, subscriptionId);
+        var policy = _getSubscriptionIamPolicySample.GetSubscriptionIamPolicy(_pubsubFixture.ProjectId, subscriptionId);
 
         Assert.NotNull(policy);
     }

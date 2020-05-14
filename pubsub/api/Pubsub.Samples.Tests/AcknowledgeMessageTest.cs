@@ -48,7 +48,7 @@ public class AcknowledgeMessageTest
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         var publisher = Task.Run(() =>
-        _getPublisherAsyncSample.GetPublisherAsync(_pubsubFixture._projectId, topicId))
+        _getPublisherAsyncSample.GetPublisherAsync(_pubsubFixture.ProjectId, topicId))
             .ResultWithUnwrappedExceptions();
 
         Task.Run(() =>
@@ -75,12 +75,12 @@ public class AcknowledgeMessageTest
         if (customFlow)
         {
             return Task.Run(() => _pullMessagesCustomAsyncSample.PullMessagesCustomAsync(
-                  _pubsubFixture._projectId, subscriptionId, true))
+                  _pubsubFixture.ProjectId, subscriptionId, true))
                   .ResultWithUnwrappedExceptions();
         }
         else
         {
-            return Task.Run(() => _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture._projectId,
+            return Task.Run(() => _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId,
                      subscriptionId, true)).ResultWithUnwrappedExceptions();
         }
     }

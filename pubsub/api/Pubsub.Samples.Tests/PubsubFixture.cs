@@ -25,32 +25,32 @@ using Xunit;
 [CollectionDefinition(nameof(PubsubFixture))]
 public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
 {
-    public readonly string _projectId;
-    public readonly PublisherServiceApiClient _publisher;
-    public readonly SubscriberServiceApiClient _subscriber;
-    public readonly List<string> _tempTopicIds = new List<string>();
-    public readonly List<string> _tempSubscriptionIds = new List<string>();
+    public readonly string ProjectId;
+    public readonly PublisherServiceApiClient Publisher;
+    public readonly SubscriberServiceApiClient Subscriber;
+    public readonly List<string> TempTopicIds = new List<string>();
+    public readonly List<string> TempSubscriptionIds = new List<string>();
 
     public PubsubFixture()
     {
-        _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        _publisher = PublisherServiceApiClient.Create();
-        _subscriber = SubscriberServiceApiClient.Create();
+        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        Publisher = PublisherServiceApiClient.Create();
+        Subscriber = SubscriberServiceApiClient.Create();
     }
 
     public void Dispose()
     {
         var deleteTopicSampleObject = new DeleteTopicSample();
         var deleteSubscriptionSampleObject = new DeleteSubscriptionSample();
-        foreach (string subscriptionId in _tempSubscriptionIds)
+        foreach (string subscriptionId in TempSubscriptionIds)
         {
             Eventually(HandleDeleteRace(() =>
-                deleteSubscriptionSampleObject.DeleteSubscription(_projectId, subscriptionId)));
+                deleteSubscriptionSampleObject.DeleteSubscription(ProjectId, subscriptionId)));
         }
-        foreach (string topicId in _tempTopicIds)
+        foreach (string topicId in TempTopicIds)
         {
             Eventually(HandleDeleteRace(() =>
-                deleteTopicSampleObject.DeleteTopic(_projectId, topicId)));
+                deleteTopicSampleObject.DeleteTopic(ProjectId, topicId)));
         }
     }
 
@@ -155,16 +155,16 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public Topic CreateTopic(string topicId)
     {
         var createTopicSampleObject = new CreateTopicSample();
-        var topic = createTopicSampleObject.CreateTopic(_projectId, topicId);
-        _tempTopicIds.Add(topicId);
+        var topic = createTopicSampleObject.CreateTopic(ProjectId, topicId);
+        TempTopicIds.Add(topicId);
         return topic;
     }
 
     public Subscription CreateSubscription(string topicId, string subscriptionId)
     {
         var createSubscriptionSampleObject = new CreateSubscriptionSample();
-        var subscription = createSubscriptionSampleObject.CreateSubscription(_projectId, topicId, subscriptionId);
-        _tempSubscriptionIds.Add(subscriptionId);
+        var subscription = createSubscriptionSampleObject.CreateSubscription(ProjectId, topicId, subscriptionId);
+        TempSubscriptionIds.Add(subscriptionId);
         return subscription;
     }
 

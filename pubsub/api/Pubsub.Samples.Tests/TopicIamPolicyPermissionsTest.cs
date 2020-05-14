@@ -39,11 +39,11 @@ public class TopicIamPolicyPermissionsTest
         _pubsubFixture.CreateTopic(topicId);
 
         _setTopicIamPolicySample.SetTopicIamPolicy(
-            _pubsubFixture._projectId, topicId, testRoleValueToConfirm,
+            _pubsubFixture.ProjectId, topicId, testRoleValueToConfirm,
             testMemberValueToConfirm);
 
         var response =
-            _testTopicIamPermissionsSample.TestTopicIamPermissions(_pubsubFixture._projectId,
+            _testTopicIamPermissionsSample.TestTopicIamPermissions(_pubsubFixture.ProjectId,
             topicId, PublisherServiceApiClient.Create());
         Assert.NotEmpty(response.ToString());
     }

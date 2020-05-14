@@ -36,11 +36,11 @@ public class SetTopicIamPolicyTest
 
         _pubsubFixture.CreateTopic(topicId);
 
-        var policy = _setTopicIamPolicySample.SetTopicIamPolicy(_pubsubFixture._projectId,
+        var policy = _setTopicIamPolicySample.SetTopicIamPolicy(_pubsubFixture.ProjectId,
              topicId, testRoleValueToConfirm, testMemberValueToConfirm);
 
         var policyOutput = _getTopicIamPolicySample.GetTopicIamPolicy(
-            _pubsubFixture._projectId, topicId);
+            _pubsubFixture.ProjectId, topicId);
 
         Assert.Equal(policy, policyOutput);
     }

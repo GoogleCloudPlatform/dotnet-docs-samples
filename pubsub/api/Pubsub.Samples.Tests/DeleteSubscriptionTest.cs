@@ -23,11 +23,11 @@ public class DeleteSubscriptionTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        _deleteSubscriptionSample.DeleteSubscription(_pubsubFixture._projectId, subscriptionId);
+        _deleteSubscriptionSample.DeleteSubscription(_pubsubFixture.ProjectId, subscriptionId);
 
-        _pubsubFixture._tempSubscriptionIds.Remove(subscriptionId);  // We already deleted it.
+        _pubsubFixture.TempSubscriptionIds.Remove(subscriptionId);  // We already deleted it.
 
         Exception e = Assert.Throws<Grpc.Core.RpcException>(() =>
-            _getSubscriptionSample.GetSubscription(_pubsubFixture._projectId,subscriptionId));
+            _getSubscriptionSample.GetSubscription(_pubsubFixture.ProjectId,subscriptionId));
     }
 }

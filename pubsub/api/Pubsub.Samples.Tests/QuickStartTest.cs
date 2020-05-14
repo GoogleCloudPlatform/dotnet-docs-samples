@@ -28,7 +28,7 @@ public class QuickStartTest
     [Fact]
     public void QuickStart()
     {
-        var topicId = _quickStartSample.QuickStart(_pubsubFixture._projectId);
+        var topicId = _quickStartSample.QuickStart(_pubsubFixture.ProjectId);
         Assert.Equal("my-new-topic", topicId);
     }
 }
