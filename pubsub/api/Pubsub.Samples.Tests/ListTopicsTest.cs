@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ public class ListTopicsTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly ListProjectTopicsSample _listProjectTopicsSample;
-    private readonly CreatePublisherWithServiceCredentialsSample createPublisherWithServiceCredentialsSample;
+    private readonly CreatePublisherWithServiceCredentialsSample _createPublisherWithServiceCredentialsSample;
     public ListTopicsTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _listProjectTopicsSample = new ListProjectTopicsSample();
-        createPublisherWithServiceCredentialsSample =
+        _createPublisherWithServiceCredentialsSample =
             new CreatePublisherWithServiceCredentialsSample();
     }
 
@@ -53,7 +53,7 @@ public class ListTopicsTest
 
         _pubsubFixture.Eventually(() =>
         {
-            var publisher = createPublisherWithServiceCredentialsSample
+            var publisher = _createPublisherWithServiceCredentialsSample
             .CreatePublisherWithServiceCredentials(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
 
             var listProjectTopicsOutput = _listProjectTopicsSample

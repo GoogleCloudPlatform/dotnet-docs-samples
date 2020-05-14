@@ -28,6 +28,6 @@ public class DeleteSubscriptionTest
         _pubsubFixture.TempSubscriptionIds.Remove(subscriptionId);  // We already deleted it.
 
         Exception e = Assert.Throws<Grpc.Core.RpcException>(() =>
-            _getSubscriptionSample.GetSubscription(_pubsubFixture.ProjectId,subscriptionId));
+            _getSubscriptionSample.GetSubscription(_pubsubFixture.ProjectId, subscriptionId));
     }
 }

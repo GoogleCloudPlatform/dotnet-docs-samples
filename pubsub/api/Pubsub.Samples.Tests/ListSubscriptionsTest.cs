@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ using Xunit;
 public class ListSubscriptionsTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly ListSubscriptionsSample listSubscriptionsSample;
+    private readonly ListSubscriptionsSample _listSubscriptionsSample;
     public ListSubscriptionsTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        listSubscriptionsSample = new ListSubscriptionsSample();
+        _listSubscriptionsSample = new ListSubscriptionsSample();
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class ListSubscriptionsTest
 
         _pubsubFixture.Eventually(() =>
         {
-            var subscriptions = listSubscriptionsSample.ListSubscriptions(_pubsubFixture.ProjectId);
+            var subscriptions = _listSubscriptionsSample.ListSubscriptions(_pubsubFixture.ProjectId);
 
             Assert.Contains(subscriptions.Select(s => s.SubscriptionName.SubscriptionId), c => c.Contains(subscriptionId));
         });

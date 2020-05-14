@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ public class SubscriptionPolicyPermisssionsTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly SetSubscriptionIamPolicySample _setSubscriptionIamPolicySample;
-    private readonly TestSubscriptionIamPermissionsSample testSubscriptionIamPermissionsSample;
+    private readonly TestSubscriptionIamPermissionsSample _testSubscriptionIamPermissionsSample;
 
     public SubscriptionPolicyPermisssionsTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _setSubscriptionIamPolicySample = new SetSubscriptionIamPolicySample();
-        testSubscriptionIamPermissionsSample = new TestSubscriptionIamPermissionsSample();
+        _testSubscriptionIamPermissionsSample = new TestSubscriptionIamPermissionsSample();
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class SubscriptionPolicyPermisssionsTest
 
         _pubsubFixture.Eventually(() =>
         {
-            var response = testSubscriptionIamPermissionsSample
+            var response = _testSubscriptionIamPermissionsSample
             .TestSubscriptionIamPermissionsResponse(_pubsubFixture.ProjectId,
             subscriptionId, PublisherServiceApiClient.Create());
             Assert.NotEmpty(response.ToString());

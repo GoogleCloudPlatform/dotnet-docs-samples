@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     /// Returns true if an action should be retried when an exception is
     /// thrown.
     /// </summary>
-    static bool ShouldRetry(Exception e)
+    private static bool ShouldRetry(Exception e)
     {
         AggregateException aggregateException = e as AggregateException;
         if (aggregateException != null)
@@ -90,7 +90,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     /// </summary>
     /// <param name="delete">The delete operation to run.</param>
     /// <returns>An action to run inside Eventually().</returns>
-    Action HandleDeleteRace(Action delete)
+    private Action HandleDeleteRace(Action delete)
     {
         bool sawTimeout = false;
         return () =>

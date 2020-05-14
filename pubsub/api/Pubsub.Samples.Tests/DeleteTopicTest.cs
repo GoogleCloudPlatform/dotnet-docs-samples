@@ -23,8 +23,8 @@ public class DeleteTopicTest
         _deleteTopicSample.DeleteTopic(_pubsubFixture.ProjectId, topicId);
 
         _pubsubFixture.TempTopicIds.Remove(topicId);  // We already deleted it.
-        
+
         Exception ex = Assert.Throws<Grpc.Core.RpcException>(() =>
-            _getTopicSample.GetTopic(_pubsubFixture.ProjectId,topicId));
+            _getTopicSample.GetTopic(_pubsubFixture.ProjectId, topicId));
     }
 }
