@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START pubsub_subscriber_async_pull]
+// [START scc_receive_notifications]
 
 using Google.Cloud.PubSub.V1;
 using System.Collections.Generic;
@@ -49,3 +50,4 @@ public class PullMessagesAsyncSample
     }
 }
 // [END pubsub_subscriber_async_pull]
+// [END scc_receive_notifications]
