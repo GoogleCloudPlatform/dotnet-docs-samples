@@ -19,7 +19,7 @@ public class SetTopicIamPolicyTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly SetTopicIamPolicySample _setTopicIamPolicySample;
-    private GetTopicIamPolicySample _getTopicIamPolicySample;
+    private readonly GetTopicIamPolicySample _getTopicIamPolicySample;
     public SetTopicIamPolicyTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
