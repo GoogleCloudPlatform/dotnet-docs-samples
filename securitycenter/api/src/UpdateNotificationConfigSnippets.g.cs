@@ -33,10 +33,11 @@ public class UpdateNotificationConfigSnippets
         {
             NotificationConfigName = notificationConfigName,
             Description = "updated description",
-            PubsubTopicAsTopicName = pubsubTopic
+            PubsubTopicAsTopicName = pubsubTopic,
+            StreamingConfig = new NotificationConfig.Types.StreamingConfig { Filter = "state = \"INACTIVE\"" }
         };
 
-        FieldMask fieldMask = new FieldMask { Paths = { "description", "pubsub_topic" } };
+        FieldMask fieldMask = new FieldMask { Paths = { "description", "pubsub_topic", "streaming_config.filter" } };
         SecurityCenterClient client = SecurityCenterClient.Create();
         NotificationConfig updatedConfig = client.UpdateNotificationConfig(configToUpdate, fieldMask);
 
