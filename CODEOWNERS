@@ -1,10 +1,11 @@
 *           @amanda-tarafa
 
 bigquery/   @jsimonweb
-bigtable/   @jsimonweb
-datastore/  @jsimonweb
-firestore/  @jsimonweb
-storage/    @jsimonweb
+bigtable/   @GoogleCloudPlatform/bigtable-dpe
+datastore/  @GoogleCloudPlatform/firestore-dpe
+cloud-sql/  @GoogleCloudPlatform/cloud-sql-dpes
+firestore/  @GoogleCloudPlatform/firestore-dpe
+storage/    @GoogleCloudPlatform/storage-dpe
 applications/leaderboard/   @jsimonweb
 
 spanner/       @skuruppu
