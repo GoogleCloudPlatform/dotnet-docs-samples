@@ -14,13 +14,12 @@
  * the License.
  */
 
-using System;
 using Google.Cloud.Logging.V2;
-using Xunit;
-using System.Diagnostics;
-using System.Collections.Generic;
 using Grpc.Core;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using Xunit;
 
 namespace GoogleCloudSamples
 {
@@ -187,7 +186,7 @@ namespace GoogleCloudSamples
             {
                 string sinkId = "sinkForTestCreateSink" + RandomName();
                 string logId = "logForTestCreateSink" + RandomName();
-                SinkName sinkName = new SinkName(_projectId, sinkId);
+                LogSinkName sinkName = new LogSinkName(_projectId, sinkId);
                 string message = "Example log entry.";
                 _sinksToDelete.Add(sinkId);
                 _logsToDelete.Add(logId);
@@ -198,7 +197,7 @@ namespace GoogleCloudSamples
                 var created2 = Run("create-sink", sinkId, logId);
                 created2.AssertSucceeded();
                 var sinkClient = ConfigServiceV2Client.Create();
-                var results = sinkClient.GetSink(SinkNameOneof.From(sinkName));
+                var results = sinkClient.GetSink(sinkName);
                 // Confirm newly created sink is returned.
                 Assert.NotNull(results);
             }
@@ -232,7 +231,7 @@ namespace GoogleCloudSamples
                 string sinkId = "sinkForTestUpdateSink" + RandomName();
                 string logId = "logForTestUpdateSink" + RandomName();
                 string newLogId = "newlogForTestUpdateSink" + RandomName();
-                SinkName sinkName = new SinkName(_projectId, sinkId);
+                LogSinkName sinkName = new LogSinkName(_projectId, sinkId);
                 string message = "Example log entry.";
                 _sinksToDelete.Add(sinkId);
                 _logsToDelete.Add(logId);
@@ -245,7 +244,7 @@ namespace GoogleCloudSamples
                 Run("update-sink", sinkId, newLogId).AssertSucceeded();
                 // Get sink to confirm that log has been updated.
                 var sinkClient = ConfigServiceV2Client.Create();
-                var results = sinkClient.GetSink(SinkNameOneof.From(sinkName));
+                var results = sinkClient.GetSink(sinkName);
                 var currentLog = results.Filter;
                 Assert.Contains(newLogId, currentLog);
             }
@@ -255,7 +254,7 @@ namespace GoogleCloudSamples
             {
                 string sinkId = "sinkForTestDeleteSink" + RandomName();
                 string logId = "logForTestDeleteSink" + RandomName();
-                SinkName sinkName = new SinkName(_projectId, sinkId);
+                LogSinkName sinkName = new LogSinkName(_projectId, sinkId);
                 string message = "Example log entry.";
                 _sinksToDelete.Add(sinkId);
                 _logsToDelete.Add(logId);
@@ -268,7 +267,7 @@ namespace GoogleCloudSamples
                 // Get sink to confirm it has been deleted.
                 var sinkClient = ConfigServiceV2Client.Create();
                 Exception ex = Assert.Throws<Grpc.Core.RpcException>(() =>
-                    sinkClient.GetSink(SinkNameOneof.From(sinkName)));
+                    sinkClient.GetSink(sinkName));
             }
 
             readonly CommandLineRunner _quickStart = new CommandLineRunner()

@@ -14,16 +14,16 @@
  * the License.
  */
 
+using CommandLine;
+using Google.Cloud.Spanner.Data;
+using log4net;
 using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using System.Linq;
-using Google.Cloud.Spanner.Data;
-using CommandLine;
-using log4net;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -520,6 +520,83 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
+    [Verb("createBackup", HelpText = "Create a backup of a Spanner database.")]
+    class CreateBackupOptions : DefaultOptions
+    {
+        [Value(3, HelpText = "The ID of the backup to create.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    class DefaultBackupOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the backups reside.", Required = true)]
+        public string instanceId { get; set; }
+    }
+
+
+    [Verb("restoreDatabase", HelpText = "Restore a Spanner database from a backup.")]
+    class RestoreDatabaseOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the database to create.", Required = true)]
+        public string databaseId { get; set; }
+        [Value(3, HelpText = "The ID of the backup to restore from.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("getBackupOperations", HelpText = "Get a list of Spanner database backup operations.")]
+    class GetBackupOperationsOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the database to filter backups on.", Required = true)]
+        public string databaseId { get; set; }
+    }
+
+    [Verb("getDatabaseOperations", HelpText = "Get a list of Spanner database operations.")]
+    class GetDatabaseOperationsOptions
+    {
+        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
+        public string projectId { get; set; }
+        [Value(1, HelpText = "The ID of the instance where the operations reside.", Required = true)]
+        public string instanceId { get; set; }
+    }
+
+    [Verb("updateBackup", HelpText = "Update a Spanner database backup.")]
+    class UpdateBackupOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the backup to update.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("deleteBackup", HelpText = "Delete a Spanner database backup.")]
+    class DeleteBackupOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the backup to delete.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("getBackups", HelpText = "Get a list of Spanner database backups.")]
+    class GetBackupsOptions : DefaultBackupOptions
+    {
+        [Value(2, HelpText = "The ID of the database to filter backups on.", Required = true)]
+        public string databaseId { get; set; }
+        [Value(3, HelpText = "The ID of the backup to filter backups on.", Required = true)]
+        public string backupId { get; set; }
+    }
+
+    [Verb("cancelBackupOperation", HelpText = "Cancel a Spanner database backup creation operation.")]
+    class CancelBackupOperationOptions : CreateBackupOptions { }
+
+    [Verb("createConnectionWithQueryOptions", HelpText = "Creates a connection with query options set and queries the 'Albums' table.")]
+    class CreateConnectionWithQueryOptionsOptions : DefaultOptions
+    {
+    }
+
+    [Verb("runCommandWithQueryOptions", HelpText = "Query 'Albums' table with query options set.")]
+    class RunCommandWithQueryOptionsOptions : DefaultOptions
+    {
+    }
+
     // [START spanner_retry_strategy]
     public class RetryRobot
     {
@@ -616,14 +693,7 @@ namespace GoogleCloudSamples.Spanner
             {
                 string createStatement = $"CREATE DATABASE `{databaseId}`";
                 var cmd = connection.CreateDdlCommand(createStatement);
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
-                {
-                    // OK.
-                }
+                await cmd.ExecuteNonQueryAsync();
             }
             // Update connection string with Database ID for table creation.
             connectionString = connectionString + $"/databases/{databaseId}";
@@ -1339,7 +1409,7 @@ namespace GoogleCloudSamples.Spanner
                 await connection.OpenAsync();
 
                 SpannerCommand cmd = connection.CreateDmlCommand(
-                   "DELETE Singers WHERE FirstName = 'Alice'");
+                   "DELETE FROM Singers WHERE FirstName = 'Alice'");
                 int rowCount = await cmd.ExecuteNonQueryAsync();
                 Console.WriteLine($"{rowCount} row(s) deleted...");
             }
@@ -1635,7 +1705,7 @@ namespace GoogleCloudSamples.Spanner
                 await connection.OpenAsync();
 
                 SpannerCommand cmd = connection.CreateDmlCommand(
-                    "DELETE Singers WHERE SingerId > 10"
+                    "DELETE FROM Singers WHERE SingerId > 10"
                 );
                 long rowCount = await cmd.ExecutePartitionedUpdateAsync();
                 Console.WriteLine($"{rowCount} row(s) deleted...");
@@ -1804,7 +1874,14 @@ namespace GoogleCloudSamples.Spanner
             {
                 string createStatement = $"CREATE DATABASE `{databaseId}`";
                 var cmd = connection.CreateDdlCommand(createStatement);
-                await cmd.ExecuteNonQueryAsync();
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
+                {
+                    // Database Already Exists.
+                }
             }
             // [END spanner_create_custom_database]
         }
@@ -3508,6 +3585,90 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
+        public static object CreateConnectionWithQueryOptions(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = CreateConnectionWithQueryOptionsAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task CreateConnectionWithQueryOptionsAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_create_client_with_query_options]
+            var builder = new SpannerConnectionStringBuilder
+            {
+                DataSource = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}"
+            };
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(builder))
+            {
+                // Set query options on the connection.
+                connection.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine("SingerId : "
+                        + reader.GetFieldValue<string>("SingerId")
+                        + " AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + " AlbumTitle : "
+                        + reader.GetFieldValue<string>("AlbumTitle"));
+                    }
+                }
+            }
+            // [END spanner_create_client_with_query_options]
+        }
+
+        public static object RunCommandWithQueryOptions(
+            string projectId, string instanceId, string databaseId)
+        {
+            var response = RunCommandWithQueryOptionsAsync(
+                projectId, instanceId, databaseId);
+            s_logger.Info("Waiting for operation to complete...");
+            response.Wait();
+            s_logger.Info($"Response status: {response.Status}");
+            return ExitCode.Success;
+        }
+
+        private static async Task RunCommandWithQueryOptionsAsync(
+            string projectId, string instanceId, string databaseId)
+        {
+            // [START spanner_query_with_query_options]
+            var builder = new SpannerConnectionStringBuilder
+            {
+                DataSource = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}"
+            };
+            // Create connection to Cloud Spanner.
+            using (var connection = new SpannerConnection(builder))
+            {
+                var cmd = connection.CreateSelectCommand(
+                    "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
+                // Set query options just for this command.
+                cmd.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Console.WriteLine("SingerId : "
+                        + reader.GetFieldValue<string>("SingerId")
+                        + " AlbumId : "
+                        + reader.GetFieldValue<string>("AlbumId")
+                        + " AlbumTitle : "
+                        + reader.GetFieldValue<string>("AlbumTitle"));
+                    }
+                }
+            }
+            // [END spanner_query_with_query_options]
+        }
+
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
@@ -3671,6 +3832,40 @@ namespace GoogleCloudSamples.Spanner
                 .Add((DropSampleTablesOptions opts) =>
                     DropSampleTables(opts.projectId, opts.instanceId,
                     opts.databaseId).Result)
+                .Add((CreateBackupOptions opts) =>
+                    CreateBackup.SpannerCreateBackup(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
+                .Add((CancelBackupOperationOptions opts) =>
+                    CancelBackupOperation.SpannerCancelBackupOperation(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
+                .Add((GetBackupsOptions opts) =>
+                    GetBackups.SpannerGetBackups(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
+                .Add((RestoreDatabaseOptions opts) =>
+                    RestoreDatabase.SpannerRestoreDatabase(
+                        opts.projectId, opts.instanceId, opts.databaseId,
+                        opts.backupId))
+                .Add((UpdateBackupOptions opts) =>
+                    UpdateBackup.SpannerUpdateBackup(
+                        opts.projectId, opts.instanceId, opts.backupId))
+                .Add((GetDatabaseOperationsOptions opts) =>
+                    GetDatabaseOperations.SpannerGetDatabaseOperations(
+                        opts.projectId, opts.instanceId))
+                .Add((GetBackupOperationsOptions opts) =>
+                    GetBackupOperations.SpannerGetBackupOperations(
+                        opts.projectId, opts.instanceId, opts.databaseId))
+                .Add((DeleteBackupOptions opts) =>
+                    DeleteBackup.SpannerDeleteBackup(
+                        opts.projectId, opts.instanceId, opts.backupId))
+                .Add((CreateConnectionWithQueryOptionsOptions opts) =>
+                    CreateConnectionWithQueryOptions(opts.projectId,
+                    opts.instanceId, opts.databaseId))
+                .Add((RunCommandWithQueryOptionsOptions opts) =>
+                    RunCommandWithQueryOptions(opts.projectId,
+                    opts.instanceId, opts.databaseId))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }

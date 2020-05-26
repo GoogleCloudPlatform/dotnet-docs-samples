@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using CommandLine;
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.Bigtable.Admin.V2;
+using Google.LongRunning;
 using System;
 using System.Linq;
-using CommandLine;
-using Google.LongRunning;
-using Google.Cloud.Bigtable.Admin.V2;
 using System.Text.RegularExpressions;
-using Google.Api.Gax.ResourceNames;
-using LocationName = Google.Cloud.Bigtable.Admin.V2.LocationName;
 
 namespace GoogleCloudSamples.Bigtable
 {
@@ -483,7 +482,7 @@ namespace GoogleCloudSamples.Bigtable
 
         public static int Main(string[] args)
         {
-            if (projectId == "YOUR-PROJECT" + "-ID")
+            if (projectId == "YOUR-PROJECT-ID")
             {
                 Console.WriteLine("Edit InstanceAdmin.cs and replace YOUR-PROJECT-ID with your project id.");
                 return -1;

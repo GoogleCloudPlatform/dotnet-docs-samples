@@ -14,8 +14,6 @@
  * the License.
  */
 
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.V1;
 using System;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,7 +28,6 @@ namespace GoogleCloudSamples
             VoidMain = BatchGetAssetsHistory.Main,
         };
         private readonly ITestOutputHelper _testOutput;
-        private readonly StorageClient _storageClient = StorageClient.Create();
         private readonly string _bucketName;
         public BatchGetAssetsHistoryTest(ITestOutputHelper output, RandomBucketFixture bucketFixture)
         {

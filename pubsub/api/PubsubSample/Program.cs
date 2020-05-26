@@ -14,14 +14,11 @@
 
 using CommandLine;
 using Google.Api.Gax.ResourceNames;
-using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Iam.V1;
 using Google.Cloud.PubSub.V1;
-using Grpc.Auth;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -120,7 +117,7 @@ namespace GoogleCloudSamples
         public string projectId { get; set; }
         [Value(1, HelpText = "The topic to set the IAM Policy details for.", Required = true)]
         public string topicId { get; set; }
-        [Value(2, HelpText = @"The role to set IAM policy for: 
+        [Value(2, HelpText = @"The role to set IAM policy for:
         ""pubsub.viewer"" or ""pubsub.editor""", Required = true)]
         public string role { get; set; }
         [Value(3, HelpText = @"The member to add to the topic's IAM policy:
@@ -143,7 +140,7 @@ namespace GoogleCloudSamples
         public string projectId { get; set; }
         [Value(1, HelpText = "The subscription to set the IAM Policy details for.", Required = true)]
         public string subscriptionId { get; set; }
-        [Value(2, HelpText = @"The role to set IAM policy for: 
+        [Value(2, HelpText = @"The role to set IAM policy for:
         ""pubsub.viewer"" or ""pubsub.editor""", Required = true)]
         public string role { get; set; }
         [Value(3, HelpText = @"The member to add to the subscription's IAM policy:
@@ -274,13 +271,23 @@ namespace GoogleCloudSamples
             // [START pubsub_publisher_batch_settings]
             // PublisherClient collects messages into appropriately sized
             // batches.
+            // [START pubsub_publish]
             var publishTasks =
-                messageTexts.Select(text => publisher.PublishAsync(text));
-            foreach (Task<string> task in publishTasks)
-            {
-                string message = await task;
-                await Console.Out.WriteLineAsync($"Published message {message}");
-            }
+                messageTexts.Select(async text =>
+                {
+                    try
+                    {
+                        string message = await publisher.PublishAsync(text);
+                        await Console.Out.WriteLineAsync($"Published message {message}");
+                    }
+                    catch (Exception exception)
+                    {
+                        await Console.Out.WriteLineAsync($"An error ocurred when publishing message {text}:");
+                        await Console.Out.WriteLineAsync(exception.Message);
+                    }
+                });
+            await Task.WhenAll(publishTasks);
+            // [END pubsub_publish]
             // [END pubsub_publisher_batch_settings]
             // [END pubsub_quickstart_publisher]
             return 0;
@@ -290,13 +297,14 @@ namespace GoogleCloudSamples
             string subscriptionId, bool acknowledge)
         {
             // [START pubsub_subscriber_async_pull]
+            // [START scc_receive_notifications]
             SubscriptionName subscriptionName = new SubscriptionName(projectId,
                 subscriptionId);
             SubscriberClient subscriber = await SubscriberClient.CreateAsync(
                 subscriptionName);
             // SubscriberClient runs your message handle function on multiple
             // threads to maximize throughput.
-            subscriber.StartAsync(
+            Task startTask = subscriber.StartAsync(
                 async (PubsubMessage message, CancellationToken cancel) =>
                 {
                     string text =
@@ -310,6 +318,7 @@ namespace GoogleCloudSamples
             await Task.Delay(3000);
             await subscriber.StopAsync(CancellationToken.None);
             // [END pubsub_subscriber_async_pull]
+            // [END scc_receive_notifications]
             return 0;
         }
 
@@ -336,7 +345,7 @@ namespace GoogleCloudSamples
             // [START pubsub_subscriber_flow_settings]
             // SubscriberClient runs your message handle function on multiple
             // threads to maximize throughput.
-            subscriber.StartAsync(
+            Task startTask = subscriber.StartAsync(
                 async (PubsubMessage message, CancellationToken cancel) =>
                 {
                     string text =
@@ -501,17 +510,11 @@ namespace GoogleCloudSamples
         public static PublisherServiceApiClient CreatePublisherWithServiceCredentials(
             string jsonPath)
         {
-            GoogleCredential googleCredential = null;
-            using (var jsonStream = new FileStream(jsonPath, FileMode.Open,
-                FileAccess.Read, FileShare.Read))
+            PublisherServiceApiClientBuilder builder = new PublisherServiceApiClientBuilder
             {
-                googleCredential = GoogleCredential.FromStream(jsonStream)
-                    .CreateScoped(PublisherServiceApiClient.DefaultScopes);
-            }
-            Channel channel = new Channel(PublisherServiceApiClient.DefaultEndpoint.Host,
-                PublisherServiceApiClient.DefaultEndpoint.Port,
-                googleCredential.ToChannelCredentials());
-            return PublisherServiceApiClient.Create(channel);
+                CredentialsPath = jsonPath
+            };
+            return builder.Build();
         }
 
         public static object ListSubscriptions(string projectId)

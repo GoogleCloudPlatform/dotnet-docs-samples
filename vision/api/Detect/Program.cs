@@ -15,12 +15,11 @@
 using CommandLine;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.Vision.V1;
+using Google.Protobuf;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using Google.Protobuf;
-using Google.Api.Gax.Grpc;
+using System.Linq;
 
 namespace GoogleCloudSamples
 {
@@ -262,7 +261,7 @@ namespace GoogleCloudSamples
             // Instantiate a client connected to the 'eu' location.
             var client = new ImageAnnotatorClientBuilder
             {
-                Endpoint = new ServiceEndpoint("eu-vision.googleapis.com")
+                Endpoint = "eu-vision.googleapis.com"
             }.Build();
             // [END vision_set_endpoint]
             var response = client.DetectText(image);

@@ -58,8 +58,8 @@ namespace GoogleCloudSamples
         public static void Main(string[] args)
         {
             CommandLine.Parser.Default.ParseArguments<Options>(args)
-                .WithParsed<Options>(opts => Console.WriteLine(
-                    IAPClient.InvokeRequest(opts.IapClientId, opts.CredentialsPath, opts.Uri)));
+                .WithParsed(opts => Console.WriteLine(
+                    new IAPClient().InvokeRequestAsync(opts.IapClientId, opts.CredentialsPath, opts.Uri).GetAwaiter().GetResult()));
         }
     }
 }

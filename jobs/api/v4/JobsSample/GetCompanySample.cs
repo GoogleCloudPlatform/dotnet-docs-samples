@@ -23,11 +23,11 @@ namespace GoogleCloudSamples
         public static object GetCompany(string projectId, string tenantId, string companyId)
         {
             CompanyServiceClient companyServiceClient = CompanyServiceClient.Create();
-            CompanyName company = new CompanyName(projectId, tenantId, companyId);
+            CompanyName companyName = CompanyName.FromProjectTenantCompany(projectId, tenantId, companyId);
 
             GetCompanyRequest request = new GetCompanyRequest
             {
-                CompanyNameOneof = CompanyNameOneof.From(company)
+                CompanyName = companyName
             };
             var response = companyServiceClient.GetCompany(request);
             Console.WriteLine($"Company name: {response.Name}");

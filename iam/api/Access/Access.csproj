@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>library</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Iam.v1" Version="1.44.1.1883" />
-    <PackageReference Include="Google.Apis.Cloudresourcemanager.v1" Version="1.44.1.1894" />
+    <PackageReference Include="Google.Apis.Iam.v1" Version="1.45.0.1904" />
+    <PackageReference Include="Google.Apis.Cloudresourcemanager.v1" Version="1.45.0.1915" />
   </ItemGroup>
 
 </Project>

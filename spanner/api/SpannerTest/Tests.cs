@@ -13,18 +13,56 @@
 // the License.
 
 using Google.Cloud.Spanner.Data;
+using Grpc.Core;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using Xunit;
-using Xunit.Sdk;
-using Grpc.Core;
+using Google.Cloud.Spanner.Admin.Database.V1;
+using Google.Cloud.Spanner.Common.V1;
 
 namespace GoogleCloudSamples.Spanner
 {
-    public class QuickStartTests
+    public class QuickStartFixture : IDisposable
     {
+        public string ProjectId { get; private set; } =
+            Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public string InstanceId { get; private set; } = "my-instance";
+        public string DatabaseId { get; private set; } = "my-database";
+
+        public void Dispose()
+        {
+            try
+            {
+                // Delete database created from running the tests.
+                CommandLineRunner runner = new CommandLineRunner()
+                {
+                    Main = Program.Main,
+                    Command = "Spanner"
+                };
+                runner.Run("deleteDatabase",
+                    ProjectId, InstanceId, DatabaseId);
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
+        }
+    }
+    public class QuickStartTests : IClassFixture<QuickStartFixture>
+    {
+        readonly QuickStartFixture _fixture;
+        readonly CommandLineRunner _spannerCmd = new CommandLineRunner()
+        {
+            Main = Program.Main,
+            Command = "Spanner"
+        };
+
+        public QuickStartTests(QuickStartFixture fixture)
+        {
+            _fixture = fixture;
+            _spannerCmd.Run("createDatabase",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+        }
+
         [Fact]
         public void TestQuickStart()
         {
@@ -52,6 +90,8 @@ namespace GoogleCloudSamples.Spanner
                 };
                 runner.Run("deleteDatabase",
                     ProjectId, InstanceId, DatabaseId);
+                runner.Run("deleteDatabase",
+                    ProjectId, InstanceId, RestoredDatabaseId);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
         }
@@ -63,8 +103,16 @@ namespace GoogleCloudSamples.Spanner
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
         private static readonly string s_randomDatabaseName = "my-db-"
             + TestUtil.RandomName();
+        private static readonly string s_randomToBeCancelledBackupName = "my-backup-"
+            + TestUtil.RandomName();
+        private static readonly string s_randomRestoredDatabaseName = "my-db-"
+            + TestUtil.RandomName();
         public string DatabaseId =
             Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
+        public string BackupDatabaseId = "my-test-database";
+        public string BackupId = "my-test-database-backup";
+        public string ToBeCancelledBackupId = s_randomToBeCancelledBackupName;
+        public string RestoredDatabaseId = s_randomRestoredDatabaseName;
         public bool s_initializedDatabase { get; set; } = false;
     }
 
@@ -86,6 +134,7 @@ namespace GoogleCloudSamples.Spanner
                 {
                     _fixture.s_initializedDatabase = true;
                     InitializeDatabase();
+                    InitializeBackup();
                 }
             }
         }
@@ -105,6 +154,58 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             _spannerCmd.Run("addIndex",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            // Create a new table that includes supported datatypes.
+            _spannerCmd.Run("createTableWithDatatypes",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            // Write data to the new table.
+            _spannerCmd.Run("writeDatatypesData",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+        }
+
+        void InitializeBackup()
+        {
+            // Sample database for backup and restore tests.
+            try
+            {
+                _spannerCmd.Run("createSampleDatabase",
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
+                _spannerCmd.Run("insertSampleData",
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
+            }
+            catch (Exception e)
+            {
+                // We intentionally keep an existing database around to reduce the
+                // the likelihood of test timetouts when creating a backup so
+                // it's ok to get an AlreadyExists error.
+                if (e.ToString().Contains("Database already exists"))
+                {
+                    Console.WriteLine($"Database {_fixture.BackupDatabaseId} already exists.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            try
+            {
+                _spannerCmd.Run("createBackup",
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId,
+                    _fixture.BackupId);
+            }
+            catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
+            {
+                // We intentionally keep an existing backup around to reduce the
+                // the likelihood of test timetouts when creating a backup so
+                // it's ok to get an AlreadyExists error.
+                if (e.ToString().Contains("Backup already exists"))
+                {
+                    Console.WriteLine($"Backup {_fixture.BackupId} already exists.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
@@ -428,16 +529,8 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
-        void TestDatatypes()
+        void TestQueryWithArray()
         {
-            // Create a new table that includes supported datatypes.
-            ConsoleOutput createOutput = _spannerCmd.Run("createTableWithDatatypes",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Equal(0, createOutput.ExitCode);
-            // Write data to the new table.
-            ConsoleOutput writeOutput = _spannerCmd.Run("writeDatatypesData",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Equal(0, writeOutput.ExitCode);
             // Query records using an array parameter.
             ConsoleOutput readOutput = _spannerCmd.Run("queryWithArray",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
@@ -445,47 +538,82 @@ namespace GoogleCloudSamples.Spanner
             // Confirm expected result in output.
             Assert.Contains("19 Venue 19 2020-11-01", readOutput.Stdout);
             Assert.Contains("42 Venue 42 2020-10-01", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithBool()
+        {
             // Query records using an bool parameter.
-            readOutput = _spannerCmd.Run("queryWithBool",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithBool",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("19 Venue 19 True", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithBytes()
+        {
             // Query records using an bytes parameter.
-            readOutput = _spannerCmd.Run("queryWithBytes",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithBytes",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("4 Venue 4", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithDate()
+        {
             // Query records using an date parameter.
-            readOutput = _spannerCmd.Run("queryWithDate",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithDate",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("4 Venue 4 2018-09-02", readOutput.Stdout);
             Assert.Contains("42 Venue 42 2018-10-01", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithFloat()
+        {
             // Query records using an float64 parameter.
-            readOutput = _spannerCmd.Run("queryWithFloat",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithFloat",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("4 Venue 4 0.8", readOutput.Stdout);
             Assert.Contains("19 Venue 19 0.9", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithInt()
+        {
             // Query records using an int64 parameter.
-            readOutput = _spannerCmd.Run("queryWithInt",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithInt",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("19 Venue 19 6300", readOutput.Stdout);
             Assert.Contains("42 Venue 42 3000", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithString()
+        {
             // Query records using an string parameter.
-            readOutput = _spannerCmd.Run("queryWithString",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithString",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm expected result in output.
             Assert.Contains("42 Venue 42", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestQueryWithTimestamp()
+        {
             // Query records using a timestamp parameter.
-            readOutput = _spannerCmd.Run("queryWithTimestamp",
+            ConsoleOutput readOutput = _spannerCmd.Run("queryWithTimestamp",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
             Assert.Equal(0, readOutput.ExitCode);
             // Confirm output includes valid timestamps.
@@ -538,7 +666,7 @@ namespace GoogleCloudSamples.Spanner
                 foreach (var innerException in e.InnerExceptions)
                 {
                     SpannerException spannerException = innerException as SpannerException;
-                    if (spannerException != null && spannerException.Message.ToLower().Contains("duplicate"))
+                    if (spannerException != null && spannerException.ErrorCode == ErrorCode.AlreadyExists)
                     {
                         Console.WriteLine($"Database {_fixture.DatabaseId} already exists.");
                         rethrow = false;
@@ -558,6 +686,26 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Singers", output.Stdout);
         }
 
+        [Fact]
+        void TestConnectionWithQueryOptions()
+        {
+            ConsoleOutput output = _spannerCmd.Run("createConnectionWithQueryOptions",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
+            Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
+
+        [Fact]
+        void TestRunCommandWithQueryOptions()
+        {
+            ConsoleOutput output = _spannerCmd.Run("runCommandWithQueryOptions",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
+            Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
+
         /// <summary>
         /// Run a couple queries and verify the database contains the
         /// data inserted by insertSampleData.
@@ -570,6 +718,60 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
+
+        [Fact]
+        void TestCancelBackup()
+        {
+            ConsoleOutput output = _spannerCmd.Run("cancelBackupOperation",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId,
+                _fixture.ToBeCancelledBackupId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Create backup operation cancelled", output.Stdout);
+        }
+
+        [Fact]
+        void TestGetBackupOperations()
+        {
+            ConsoleOutput output = _spannerCmd.Run("getBackupOperations",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(_fixture.BackupId, output.Stdout);
+            Assert.Contains(_fixture.BackupDatabaseId, output.Stdout);
+            Assert.Contains("100% complete", output.Stdout);
+        }
+
+        [Fact]
+        void TestGetBackups()
+        {
+            ConsoleOutput output = _spannerCmd.Run("getBackups",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId, _fixture.BackupId);
+            Assert.Equal(0, output.ExitCode);
+            // BackupId should be a result of each of the 7 ListBackups calls and
+            // once in a filter that is printed. But since we create a backup and
+            // reuse it across runs, the filter on create_time may not capture this
+            // backup so the check is for >= 7.
+            Assert.True(Regex.Matches(output.Stdout, _fixture.BackupId).Count >= 7);
+        }
+
+        [Fact]
+        void TestRestoreDatabase()
+        {
+            ConsoleOutput output = _spannerCmd.Run("restoreDatabase",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.RestoredDatabaseId, _fixture.BackupId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(_fixture.BackupId, output.Stdout);
+            Assert.Contains(_fixture.RestoredDatabaseId, output.Stdout);
+            Assert.Contains($"was restored to {_fixture.RestoredDatabaseId} from backup", output.Stdout);
+        }
+
+        [Fact]
+        void TestUpdateBackup()
+        {
+            ConsoleOutput output = _spannerCmd.Run("updateBackup",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Updated Backup ExpireTime", output.Stdout);
         }
     }
 }

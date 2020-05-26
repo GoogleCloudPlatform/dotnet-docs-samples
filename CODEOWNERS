@@ -1,20 +1,17 @@
 *           @amanda-tarafa
 
 bigquery/   @jsimonweb
-bigtable/   @jsimonweb
-datastore/  @jsimonweb
-firestore/  @jsimonweb
-spanner/    @jsimonweb
-storage/    @jsimonweb
+bigtable/   @GoogleCloudPlatform/bigtable-dpe
+datastore/  @GoogleCloudPlatform/firestore-dpe
+cloud-sql/  @GoogleCloudPlatform/cloud-sql-dpes
+firestore/  @GoogleCloudPlatform/firestore-dpe
+storage/    @GoogleCloudPlatform/storage-dpe
 applications/leaderboard/   @jsimonweb
 
-dialogflow/ @beccasaurus
-language/   @beccasaurus
-pubsub/     @beccasaurus
-speech/     @beccasaurus
-translate/  @beccasaurus
-video/      @beccasaurus
-vision/     @beccasaurus
+spanner/       @skuruppu
+
+kms/           @sethvargo
+secretmanager/ @sethvargo
 
 applications/liftAndShiftPetshop/   @simonz130
 
