@@ -23,10 +23,10 @@ Test with a Cloud Event:
 ```sh
 curl $MY_RUN_SERVICE_URL \
   -X POST \
-  -H "Ce-Id: say-hello" \
-  -H "Ce-Specversion: 1.0" \
-  -H "Ce-Type: event" \
-  -H "Ce-Source: curl" \
+  -H "ce-id: say-hello" \
+  -H "ce-specversion: 1.0" \
+  -H "ce-type: event" \
+  -H "ce-source: curl" \
   -H "Content-Type: application/json" \
   -d '{"msg":"Hello World!"}'
 ```
