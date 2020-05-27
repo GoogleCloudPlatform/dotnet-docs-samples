@@ -37,12 +37,14 @@ namespace HelloEvents
 
             app.UseEndpoints(endpoints =>
             {
+                // Handle HTTP GET requests
                 endpoints.MapGet("/", async context =>
                 {
                     var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
                     await context.Response.WriteAsync($"Hello {target}!\n");
                 });
 
+                // Handle HTTP POST requests
                 endpoints.MapPost("/", async context =>
                 {
                     var source = context.Request.Headers["ce-source"];
