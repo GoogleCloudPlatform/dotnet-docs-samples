@@ -19,8 +19,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Google.Cloud.Spanner.Admin.Database.V1;
-using Google.Cloud.Spanner.Common.V1;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -28,7 +26,8 @@ namespace GoogleCloudSamples.Spanner
     {
         public string ProjectId { get; private set; } =
             Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        public string InstanceId { get; private set; } = "my-instance";
+        public string InstanceId { get; private set; } =
+            Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
         public string DatabaseId { get; private set; } = "my-database";
 
         public void Dispose()
