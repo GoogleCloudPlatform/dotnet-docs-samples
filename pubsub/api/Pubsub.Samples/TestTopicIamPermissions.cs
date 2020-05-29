@@ -28,7 +28,7 @@ public class TestTopicIamPermissionsSample
         permissions.Add("pubsub.topics.update");
         TestIamPermissionsRequest request = new TestIamPermissionsRequest
         {
-            Resource = new TopicName(projectId, topicId).ToString(),
+            Resource = TopicName.FromProjectTopic(projectId, topicId).ToString(),
             Permissions = { permissions }
         };
         TestIamPermissionsResponse response = publisher.TestIamPermissions(request);

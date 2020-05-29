@@ -28,7 +28,7 @@ public class TestSubscriptionIamPermissionsSample
         permissions.Add("pubsub.subscriptions.update");
         TestIamPermissionsRequest request = new TestIamPermissionsRequest
         {
-            Resource = new SubscriptionName(projectId, subscriptionId).ToString(),
+            Resource = SubscriptionName.FromProjectSubscription(projectId, subscriptionId).ToString(),
             Permissions = { permissions }
         };
         TestIamPermissionsResponse response = publisher.TestIamPermissions(request);

@@ -35,7 +35,7 @@ public class SetSubscriptionIamPolicySample
         };
         SetIamPolicyRequest request = new SetIamPolicyRequest
         {
-            Resource = new SubscriptionName(projectId, subscriptionId).ToString(),
+            Resource = SubscriptionName.FromProjectSubscription(projectId, subscriptionId).ToString(),
             Policy = policy
         };
         Policy response = publisher.SetIamPolicy(request);

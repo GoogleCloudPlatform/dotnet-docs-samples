@@ -24,7 +24,7 @@ public class PullMessagesSyncSample
     public static void PullMessagesSync(string projectId,
     string subscriptionId, bool acknowledge)
     {
-        SubscriptionName subscriptionName = new SubscriptionName(projectId,
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
             subscriptionId);
         SubscriberServiceApiClient subscriberClient =
             SubscriberServiceApiClient.Create();

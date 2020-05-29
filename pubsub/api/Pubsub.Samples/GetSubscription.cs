@@ -22,7 +22,7 @@ public class GetSubscriptionSample
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
 
-        SubscriptionName subscriptionName = new SubscriptionName(projectId,
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
             subscriptionId);
 
         return subscriber.GetSubscription(subscriptionName);

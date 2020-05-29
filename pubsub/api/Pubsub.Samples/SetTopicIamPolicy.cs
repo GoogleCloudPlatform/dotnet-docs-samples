@@ -35,7 +35,7 @@ public class SetTopicIamPolicySample
         };
         SetIamPolicyRequest request = new SetIamPolicyRequest
         {
-            Resource = new TopicName(projectId, topicId).ToString(),
+            Resource = TopicName.FromProjectTopic(projectId, topicId).ToString(),
             Policy = policy
         };
         Policy response = publisher.SetIamPolicy(request);

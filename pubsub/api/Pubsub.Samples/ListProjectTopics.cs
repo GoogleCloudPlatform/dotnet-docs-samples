@@ -22,7 +22,7 @@ public class ListProjectTopicsSample
 {
     public List<string> ListProjectTopics(PublisherServiceApiClient publisher, string projectId)
     {
-        ProjectName projectName = new ProjectName(projectId);
+        ProjectName projectName = ProjectName.FromProject(projectId);
         IEnumerable<Topic> topics = publisher.ListTopics(projectName);
 
         var result = new List<string>();

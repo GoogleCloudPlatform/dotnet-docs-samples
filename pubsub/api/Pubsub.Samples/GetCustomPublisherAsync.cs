@@ -25,8 +25,8 @@ public class GetCustomPublisherAsyncSample
     /// </summary>
     public async Task<PublisherClient> GetCustomPublisherAsync(string projectId, string topicId)
     {
-        PublisherClient publisher = await PublisherClient.CreateAsync(
-            new TopicName(projectId, topicId),
+        TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
+        PublisherClient publisher = await PublisherClient.CreateAsync(topicName,
             settings: new PublisherClient.Settings
             {
                 BatchingSettings = new Google.Api.Gax.BatchingSettings(

@@ -23,11 +23,12 @@ public class CreateSubscriptionSample
     string subscriptionId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
-        TopicName topicName = new TopicName(projectId, topicId);
-        SubscriptionName subscriptionName = new SubscriptionName(projectId,
+        TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
             subscriptionId);
 
         Subscription subscription = null;
+
         try
         {
             subscription = subscriber.CreateSubscription(

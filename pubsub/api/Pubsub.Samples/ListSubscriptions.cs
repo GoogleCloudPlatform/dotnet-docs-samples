@@ -23,7 +23,7 @@ public class ListSubscriptionsSample
     public List<Subscription> ListSubscriptions(string projectId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
-        ProjectName projectName = new ProjectName(projectId);
+        ProjectName projectName = ProjectName.FromProject(projectId);
 
         var result = new List<Subscription>();
 

@@ -21,8 +21,8 @@ public class GetPublisherAsyncSample
 {
     public async Task<PublisherClient> GetPublisherAsync(string projectId, string topicId)
     {
-        PublisherClient publisher = await PublisherClient.CreateAsync(
-            new TopicName(projectId, topicId));
+        TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
+        PublisherClient publisher = await PublisherClient.CreateAsync(topicName);
         return publisher;
     }
 }

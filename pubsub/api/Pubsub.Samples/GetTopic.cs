@@ -21,7 +21,7 @@ public class GetTopicSample
     public Topic GetTopic(string projectId, string topicId)
     {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-        TopicName topicName = new TopicName(projectId, topicId);
+        TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
         return publisher.GetTopic(topicName);
     }
 }

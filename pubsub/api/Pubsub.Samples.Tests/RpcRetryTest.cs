@@ -47,9 +47,9 @@ public class RpcRetryTest
     internal void RpcRetry(string topicId, string subscriptionId,
             PublisherServiceApiClient publisher, SubscriberServiceApiClient subscriber)
     {
-        TopicName topicName = new TopicName(_pubsubFixture.ProjectId, topicId);
+        TopicName topicName = TopicName.FromProjectTopic(_pubsubFixture.ProjectId, topicId);
         // Create Subscription.
-        SubscriptionName subscriptionName = new SubscriptionName(_pubsubFixture.ProjectId,
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(_pubsubFixture.ProjectId,
             subscriptionId);
         // Create Topic
         try

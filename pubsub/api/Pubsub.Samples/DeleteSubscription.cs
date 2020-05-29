@@ -23,7 +23,7 @@ public class DeleteSubscriptionSample
     string subscriptionId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
-        SubscriptionName subscriptionName = new SubscriptionName(projectId,
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
             subscriptionId);
         subscriber.DeleteSubscription(subscriptionName);
         Console.WriteLine("Subscription deleted.");

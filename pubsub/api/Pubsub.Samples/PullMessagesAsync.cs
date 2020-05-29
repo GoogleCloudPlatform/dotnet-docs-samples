@@ -27,7 +27,7 @@ public class PullMessagesAsyncSample
     public async Task<List<string>> PullMessagesAsync(string projectId,
     string subscriptionId, bool acknowledge)
     {
-        SubscriptionName subscriptionName = new SubscriptionName(projectId,
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
             subscriptionId);
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(
             subscriptionName);
