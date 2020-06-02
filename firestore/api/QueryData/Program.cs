@@ -12,14 +12,11 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using CommandLine;
 using Google.Cloud.Firestore;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Threading;
-using System.Linq;
 
 namespace GoogleCloudSamples
 {
@@ -33,6 +30,10 @@ Where command is one of
     create-query-state
     create-query-capital
     simple-queries
+    array-contains-query
+    array-contains-any-query
+    in-query
+    in-query-array
     chained-query
     composite-index-chained-query
     range-query
@@ -155,6 +156,49 @@ Where command is one of
             }
         }
 
+        private static async Task ArrayContainsAnyQuery(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            CollectionReference citiesRef = db.Collection("cities");
+            // [START fs_query_filter_array_contains_any]
+            Query query = citiesRef.WhereArrayContainsAny("Regions", new[] { "west_coast", "east_coast" });
+            // [END fs_query_filter_array_contains_any]
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
+                Console.WriteLine("Document {0} returned by query 'Regions array_contains_any {{west_coast, east_coast}}'", documentSnapshot.Id);
+            }
+        }
+
+        private static async Task InQueryWithoutArray(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            CollectionReference citiesRef = db.Collection("cities");
+            // [START fs_query_filter_in]
+            Query query = citiesRef.WhereIn("Country", new[] { "USA", "Japan" });
+            // [END fs_query_filter_in]
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
+                Console.WriteLine("Document {0} returned by query 'Country in {{USA, Japan}}'", documentSnapshot.Id);
+            }
+        }
+
+        private static async Task InQueryWithArray(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            CollectionReference citiesRef = db.Collection("cities");
+            // [START fs_query_filter_in_with_array]
+            Query query = citiesRef.WhereIn("Regions",
+                new[] { new[] { "west_coast" }, new[] { "east_coast" } });
+            // [END fs_query_filter_in_with_array]
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
+            {
+                Console.WriteLine("Document {0} returned by query 'Regions in {{west_coast}}, {{east_coast}}'", documentSnapshot.Id);
+            }
+        }
+
         private static async Task ChainedQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
@@ -244,6 +288,18 @@ Where command is one of
 
                 case "array-contains-query":
                     ArrayContainsQuery(project).Wait();
+                    break;
+
+                case "array-contains-any-query":
+                    ArrayContainsAnyQuery(project).Wait();
+                    break;
+
+                case "in-query":
+                    InQueryWithoutArray(project).Wait();
+                    break;
+
+                case "in-query-array":
+                    InQueryWithArray(project).Wait();
                     break;
 
                 case "chained-query":
