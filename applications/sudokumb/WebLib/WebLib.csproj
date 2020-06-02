@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.0.0" />
     <PackageReference Include="Google.Cloud.Datastore.V1" Version="3.0.0" />
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.0.0-beta02" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
   </ItemGroup>
 

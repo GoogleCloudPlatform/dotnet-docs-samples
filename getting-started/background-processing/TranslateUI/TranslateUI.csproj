@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.0.0" />
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.0.0-beta02" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
   </ItemGroup>

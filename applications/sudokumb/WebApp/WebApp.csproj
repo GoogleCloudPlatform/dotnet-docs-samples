@@ -7,7 +7,7 @@
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.44.1.1885" />
+    <PackageReference Include="Google.Apis.CloudKMS.v1" Version="1.46.0.1968" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" PrivateAssets="All" Version="2.2.4" />
   </ItemGroup>

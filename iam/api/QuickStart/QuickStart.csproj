@@ -4,6 +4,6 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Iam.v1" Version="1.45.0.1904" />
+    <PackageReference Include="Google.Apis.Iam.v1" Version="1.46.0.1961" />
   </ItemGroup>
 </Project>
