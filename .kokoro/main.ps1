@@ -39,9 +39,9 @@ try {
     )
 
     $groups[0] = $allDirs
-    $groups[1] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("f") -le 0) }
-    $groups[2] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("g") -ge 0) -and ($_.Substring(0, 1).CompareTo("q") -le 0) -and ($IsRunningOnWindows -or -not ($_.Equals("iot"))) }
-    $groups[3] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("r") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
+    $groups[1] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("j") -le 0) -and ($IsRunningOnWindows -or -not ($_.Equals("iot"))) }
+    $groups[2] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("k") -ge 0) -and ($_.Substring(0, 1).CompareTo("s") -le 0) }
+    $groups[3] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("t") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
     $dirs = $groups[$GroupNumber]
 
     # Find all the runTest scripts.
