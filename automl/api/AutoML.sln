@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snippets", "Snippets\Snippets.csproj", "{D6927FDC-E8B7-498D-9C3B-6F9CC6AEDD61}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automl.Samples", "Automl.Samples\Automl.Samples.csproj", "{D6927FDC-E8B7-498D-9C3B-6F9CC6AEDD61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomlTests", "AutomlTests\AutomlTests.csproj", "{7DC8FCE9-1B98-41ED-8791-E64CA3A39B00}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automl.Samples.Tests", "Automl.Samples.Tests\Automl.Samples.Tests.csproj", "{7DC8FCE9-1B98-41ED-8791-E64CA3A39B00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

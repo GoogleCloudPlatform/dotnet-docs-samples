@@ -15,7 +15,7 @@
        <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
     <ItemGroup>
-    <ProjectReference Include="..\Snippets\Snippets.csproj" />
+    <ProjectReference Include="..\Automl.Samples\Automl.Samples.csproj" />
     <!--<ProjectReference Include="..\..\..\testutil\testutil.csproj" />-->
   </ItemGroup>
 

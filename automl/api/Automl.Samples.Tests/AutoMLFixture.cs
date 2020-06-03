@@ -14,21 +14,21 @@
 
 using System;
 using Xunit;
-
-namespace GoogleCloudSamples
+[CollectionDefinition(nameof(AutoMLFixture))]
+public class AutoMLFixture : ICollectionFixture<AutoMLFixture>
 {
-    [CollectionDefinition(nameof(AutoMLFixture))]
-    public class AutoMLFixture : ICollectionFixture<AutoMLFixture>
+    public string ProjectId { get; }
+
+    public AutoMLFixture()
     {
-        public readonly string ProjectId;
-
-        public AutoMLFixture()
+        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        if (string.IsNullOrEmpty(ProjectId))
         {
-            ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+    }
 
-        public void Dispose()
-        {
-        }
+    public void Dispose()
+    {
     }
 }
