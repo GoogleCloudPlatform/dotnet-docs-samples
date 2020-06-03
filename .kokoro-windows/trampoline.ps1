@@ -26,4 +26,4 @@ try {
 }
 
 # Run the tests.
-github\dotnet-docs-samples\.kokoro\main.ps1 $GroupNumber
+github\dotnet-docs-samples\.kokoro\main.ps1 $GroupNumber $true

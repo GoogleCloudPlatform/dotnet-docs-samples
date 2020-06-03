@@ -837,7 +837,7 @@ namespace GoogleCloudSamples
             }
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1060")]
         public void TestDownloadObjectRequesterPays()
         {
             try
