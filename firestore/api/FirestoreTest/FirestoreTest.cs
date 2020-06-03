@@ -582,6 +582,44 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void ArrayContainsQueryAnyTest()
+        {
+            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunQueryData("array-contains-any-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Document SF returned by query 'Regions array_contains_any {west_coast, east_coast}'", output.Stdout);
+            Assert.Contains("Document LA returned by query 'Regions array_contains_any {west_coast, east_coast}'", output.Stdout);
+            Assert.Contains("Document DC returned by query 'Regions array_contains_any {west_coast, east_coast}'", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by query 'Regions array_contains_any {west_coast, east_coast}'", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query 'Regions array_contains west_coast'", output.Stdout);
+        }
+
+        [Fact]
+        public void InQueryWithoutArrayTest()
+        {
+            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            // Expected: "SF", "LA", "DC", "TOK"
+            var output = RunQueryData("in-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Document SF returned by query 'Country in {USA, Japan}'", output.Stdout);
+            Assert.Contains("Document LA returned by query 'Country in {USA, Japan}'", output.Stdout);
+            Assert.Contains("Document DC returned by query 'Country in {USA, Japan}'", output.Stdout);
+            Assert.Contains("Document TOK returned by query 'Country in {USA, Japan}'", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query 'Country in {USA, Japan}'", output.Stdout);
+        }
+
+        [Fact]
+        public void InQueryWithArrayTest()
+        {
+            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            // Expected: "DC"
+            var output = RunQueryData("in-query-array", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            Assert.Contains("Document DC returned by query 'Regions in {west_coast}, {east_coast}'", output.Stdout);
+            Assert.DoesNotContain("Document LA returned by query 'Regions in {west_coast}, {east_coast}'", output.Stdout);
+            Assert.DoesNotContain("Document SF returned by query 'Regions in {west_coast}, {east_coast}'", output.Stdout);
+            Assert.DoesNotContain("Document TOK returned by query 'Regions in {west_coast}, {east_coast}'", output.Stdout);
+            Assert.DoesNotContain("Document BJ returned by query 'Regions in {west_coast}, {east_coast}'", output.Stdout);
+        }
+
+        [Fact]
         public void ChainedQueryTest()
         {
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
