@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Spanner.Admin.Instance.V1;
 using Google.Cloud.Spanner.Data;
 using Grpc.Core;
 using System;
@@ -132,6 +133,7 @@ namespace GoogleCloudSamples.Spanner
                 if (!_fixture.s_initializedDatabase)
                 {
                     _fixture.s_initializedDatabase = true;
+                    InitializeInstance();
                     InitializeDatabase();
                     InitializeBackup();
                 }
@@ -204,6 +206,33 @@ namespace GoogleCloudSamples.Spanner
                 {
                     throw;
                 }
+            }
+        }
+
+        async void InitializeInstance()
+        {
+            InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
+            try
+            {
+                string name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}";
+                Instance response = await instanceAdminClient.GetInstanceAsync(name);
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
+            {
+                string parent = $"projects/{_fixture.ProjectId}";
+                Instance instance = new Instance
+                {
+                    DisplayName = _fixture.InstanceId,
+                    Name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}",
+                    NodeCount = 1,
+                    Config = $"projects/{_fixture.ProjectId}/instanceConfigs/regional-us-central1"
+                };
+
+                // Make the CreateInstance request
+                var response = instanceAdminClient.CreateInstance(parent, _fixture.InstanceId, instance);
+
+                // Poll until the returned long-running operation is complete
+                response.PollUntilCompleted();
             }
         }
 
