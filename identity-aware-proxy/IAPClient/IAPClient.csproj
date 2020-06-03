@@ -4,7 +4,6 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="Google.Apis.Auth" Version="1.45.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.0" />
   </ItemGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>

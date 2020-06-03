@@ -1,4 +1,4 @@
-﻿# Copyright(c) 2017 Google Inc.
+# Copyright(c) 2020 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -12,13 +12,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# TODO: Resurrect this test when bug 68199801 is fixed.
-Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
-Require-Platform Win*
-Set-TestTimeout 1800
-
-BackupAndEdit-TextFile "..\QuickStart\Program.cs" `
-    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{
-    dotnet test --test-adapter-path:. --logger:junit -v n
-}
+dotnet restore
+dotnet build
+dotnet test --test-adapter-path:. --logger:junit --no-build -v n
