@@ -729,7 +729,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Create backup operation cancelled", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1065")]
         void TestGetBackupOperations()
         {
             ConsoleOutput output = _spannerCmd.Run("getBackupOperations",
