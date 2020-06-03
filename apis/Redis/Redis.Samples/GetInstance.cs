@@ -15,6 +15,7 @@
 // [START redis_get_instance]
 
 using Google.Cloud.Redis.V1;
+using System;
 
 public class GetInstanceSample
 {
@@ -26,14 +27,21 @@ public class GetInstanceSample
     {
         // Create client
         CloudRedisClient cloudRedisClient = CloudRedisClient.Create();
-        GetInstanceRequest getInstanceRequest = new GetInstanceRequest
-        {
-            InstanceName = new InstanceName(projectId, locationId, instanceId)
-        };
-        // Make the GetInstance request
-        Instance result = cloudRedisClient.GetInstance(getInstanceRequest);
+        InstanceName instanceName = new InstanceName(projectId, locationId, instanceId);
 
-        return result;
+        // Make the GetInstance request
+        Instance instance = cloudRedisClient.GetInstance(instanceName);
+
+        Console.WriteLine($"InstanceId:\t{instance.InstanceName.InstanceId}");
+        Console.WriteLine($"State:\t{instance.State}");
+        Console.WriteLine($"Tier:\t{instance.Tier}");
+        Console.WriteLine($"Host:\t{instance.Host}");
+        Console.WriteLine($"Location:\t{instance.LocationId}");
+        Console.WriteLine($"Memory Size(GB):\t{instance.MemorySizeGb}");
+        Console.WriteLine($"Version:\t{instance.RedisVersion}");
+        Console.WriteLine($"Reserved IP Range:\t{instance.ReservedIpRange}");
+
+        return instance;
     }
 }
 // [END redis_get_instance]

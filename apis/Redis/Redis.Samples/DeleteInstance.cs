@@ -30,12 +30,11 @@ public class DeleteInstanceSample
     {
         // Create client
         CloudRedisClient cloudRedisClient = CloudRedisClient.Create();
-        DeleteInstanceRequest request = new DeleteInstanceRequest
-        {
-            InstanceName = new InstanceName(projectId, locationId, instanceId),
-        };
+        InstanceName instanceName = new InstanceName(projectId, locationId, instanceId);
+
         // Make the DeleteInstance request
-        Operation<Empty, OperationMetadata> response = cloudRedisClient.DeleteInstance(request);
+        Operation<Empty, OperationMetadata> response = cloudRedisClient
+            .DeleteInstance(instanceName);
 
         Console.WriteLine("Waiting for the instance delete operation to complete.");
         // Poll until the returned long-running operation is complete

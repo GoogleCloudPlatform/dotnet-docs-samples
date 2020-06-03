@@ -25,21 +25,17 @@ public class ListInstanceSample
     /// Lists all Redis instances owned by a project in with the specified
     /// location (region).
     /// </summary>
-    public List<Instance> ListInstance(string projectId = "my-project",
+    public IEnumerable<Instance> ListInstance(string projectId = "my-project",
         string locationId = "us-east1")
     {
         // Create client
         CloudRedisClient cloudRedisClient = CloudRedisClient.Create();
-        ListInstancesRequest listInstancesRequest = new ListInstancesRequest
-        {
-            ParentAsLocationName = LocationName.FromProjectLocation(projectId, locationId),
-        };
+        var parent = LocationName.FromProjectLocation(projectId, locationId);
+
         // Make the ListInstances request
-        var instances = cloudRedisClient.ListInstances(listInstancesRequest);
+        var instances = cloudRedisClient.ListInstances(parent);
 
-        var result = new List<Instance>();
         Console.WriteLine("Instances: ");
-
         foreach (var instance in instances)
         {
             Console.WriteLine($"InstanceId:\t{instance.InstanceName.InstanceId}");
@@ -50,10 +46,9 @@ public class ListInstanceSample
             Console.WriteLine($"Memory Size(GB):\t{instance.MemorySizeGb}");
             Console.WriteLine($"Version:\t{instance.RedisVersion}");
             Console.WriteLine($"Reserved IP Range:\t{instance.ReservedIpRange}");
-            result.Add(instance);
         }
 
-        return result;
+        return instances;
     }
 }
 // [END redis_list_instance]

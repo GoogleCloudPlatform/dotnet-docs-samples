@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(RedisFixture))]
@@ -31,6 +32,6 @@ public class ListInstanceTest
         //run the sample code.
         var result = _sample.ListInstance(_fixture.ProjectId, _fixture.LocationId);
 
-        Assert.True(result.Count > 0);
+        Assert.True(result.ToList().Count > 0);
     }
 }
