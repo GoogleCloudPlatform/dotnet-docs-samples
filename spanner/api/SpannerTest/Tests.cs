@@ -550,7 +550,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("19 Venue 19 True", readOutput.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1062")]
         void TestQueryWithBytes()
         {
             // Query records using an bytes parameter.
