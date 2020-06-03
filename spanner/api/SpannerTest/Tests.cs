@@ -63,7 +63,7 @@ namespace GoogleCloudSamples.Spanner
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1062")]
         public void TestQuickStart()
         {
             CommandLineRunner runner = new CommandLineRunner()
