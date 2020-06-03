@@ -405,6 +405,19 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
+        void TestDeleteSampleData()
+        {
+            ConsoleOutput output = _spannerCmd.Run("deleteSampleData",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Contains("Deleted individual rows in Albums.", output.Stdout);
+            Assert.Contains($"2 row(s) deleted from Singers.", output.Stdout);
+            Assert.Contains($"7 row(s) deleted from Singers.", output.Stdout);
+            // Put the deleted sample data back.
+            _spannerCmd.Run("insertSampleData",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+        }
+
+        [Fact]
         void TestDml()
         {
             RefillMarketingBudgetsAsync(300000, 300000).Wait();

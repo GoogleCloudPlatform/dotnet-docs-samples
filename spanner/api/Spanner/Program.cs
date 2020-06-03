@@ -1769,23 +1769,44 @@ namespace GoogleCloudSamples.Spanner
                 new Singer {SingerId = 5, FirstName = "David",
                     LastName = "Lomond"},
             };
+            List<Album> albums = new List<Album> {
+                new Album {SingerId = secondSingerId, AlbumId = 1,
+                    AlbumTitle = "Green"},
+                new Album {SingerId = secondSingerId, AlbumId = 3,
+                    AlbumTitle = "Terrified"},
+            };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
             {
                 await connection.OpenAsync();
 
-                // Delete rows from the Singers table.
-                var cmd = connection.CreateDeleteCommand("Singers",
+                // Delete individual rows from the Albums table.
+                var cmd = connection.CreateDeleteCommand("Albums",
                     new SpannerParameterCollection {
-                        {"SingerId", SpannerDbType.Int64}
+                        {"SingerId", SpannerDbType.Int64},
+                        {"AlbumId", SpannerDbType.Int64}
                     });
-                await Task.WhenAll(singers.Select(singer =>
+                await Task.WhenAll(albums.Select(album =>
                 {
-                    cmd.Parameters["SingerId"].Value = singer.SingerId;
+                    cmd.Parameters["SingerId"].Value = album.SingerId;
+                    cmd.Parameters["AlbumId"].Value = album.AlbumId;
                     return cmd.ExecuteNonQueryAsync();
                 }));
 
-                Console.WriteLine("Deleted data.");
+                Console.WriteLine("Deleted individual rows in Albums.");
+
+                // Delete a range of rows from the Singers table where the column key is >=3 and <5.
+                cmd = connection.CreateDmlCommand(
+                   "DELETE FROM Singers WHERE SingerId >= 3 AND SingerId < 5");
+                int rowCount = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine($"{rowCount} row(s) deleted from Singers.");
+
+                // Delete remaining Singers rows, which will also delete the remaining Albums rows
+                // since it was defined with ON DELETE CASCADE.
+                cmd = connection.CreateDmlCommand(
+                   "DELETE FROM Singers WHERE true");
+                rowCount = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine($"{rowCount} row(s) deleted from Singers.");
             }
         }
         // [END spanner_delete_data]
