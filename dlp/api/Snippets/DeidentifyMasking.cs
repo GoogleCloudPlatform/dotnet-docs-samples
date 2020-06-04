@@ -27,7 +27,7 @@ class DlpDeidentifyMasking
     /// <param name="text">The text in which sensitive data will be masked.
     /// </param>
     /// <returns>The text with sensitive data masked.</returns>
-    public string DeidentiyMasking(
+    public string DeidentifyMasking(
         string projectId = "YOUR-PROJECT-ID",
         string text = "My SSN is 372819127.")
     {
