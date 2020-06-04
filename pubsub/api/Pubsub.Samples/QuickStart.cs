@@ -21,13 +21,9 @@ public class QuickStartSample
 {
     public string QuickStart(string projectId)
     {
-        // Instantiates a client
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-
-        // The name for the new topic
         var topicName = TopicName.FromProjectTopic(projectId, "my-new-topic");
 
-        // Creates the new topic
         try
         {
             Topic topic = publisher.CreateTopic(topicName);
