@@ -18,19 +18,17 @@ using Xunit;
 public class GetInstanceTest
 {
     private readonly RedisFixture _fixture;
-    private readonly GetInstanceSample _sample;
-
     public GetInstanceTest(RedisFixture fixture)
     {
         _fixture = fixture;
-        _sample = new GetInstanceSample();
     }
 
     [Fact]
     public void GetInstance()
     {
+        GetInstanceSample getInstanceSample = new GetInstanceSample();
         //run the sample code.
-        var result = _sample.GetInstance(_fixture.ProjectId, _fixture.LocationId, _fixture.InstanceId);
+        var result = getInstanceSample.GetInstance(_fixture.ProjectId, _fixture.LocationId, _fixture.InstanceId);
 
         Assert.Equal(result.InstanceName.InstanceId, _fixture.InstanceId);
     }

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 [CollectionDefinition(nameof(RedisFixture))]
 public class RedisFixture : IDisposable, ICollectionFixture<RedisFixture>
 {
-    private readonly CreateInstanceSample _createSample;
-    private readonly DeleteInstanceSample _deleteSample;
+    private List<string> _instanceIdsToDelete = new List<string>();
     public string ProjectId { get; }
     public string LocationId { get; }
     public string InstanceId { get; private set; } = $"csharp-{Guid.NewGuid().ToString().Substring(0, 20)}";
@@ -27,14 +27,29 @@ public class RedisFixture : IDisposable, ICollectionFixture<RedisFixture>
     public RedisFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
+        if (string.IsNullOrWhiteSpace(ProjectId))
+        {
+            throw new Exception("Please set the GOOGLE_PROJECT_ID Environment Variable to your project ID.");
+        }
+
         LocationId = "us-east1";
-        _createSample = new CreateInstanceSample();
-        _deleteSample = new DeleteInstanceSample();
-        _createSample.CreateInstance(ProjectId, LocationId, InstanceId);
+        CreateInstanceSample createInstanceSample = new CreateInstanceSample();
+        createInstanceSample.CreateInstance(ProjectId, LocationId, InstanceId);
+        MarkForDeletion(InstanceId);
     }
 
     public void Dispose()
     {
-        _deleteSample.DeleteInstance(ProjectId, LocationId, InstanceId);
+        DeleteInstanceSample deleteInstanceSample = new DeleteInstanceSample();
+        _instanceIdsToDelete.ForEach(instanceId =>
+        {
+            deleteInstanceSample.DeleteInstance(ProjectId, LocationId, instanceId);
+        });
+    }
+
+    public void MarkForDeletion(string instanceId)
+    {
+        _instanceIdsToDelete.Add(instanceId);
     }
 }

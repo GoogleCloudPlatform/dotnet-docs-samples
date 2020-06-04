@@ -19,18 +19,17 @@ using Xunit;
 public class ListInstanceTest
 {
     private readonly RedisFixture _fixture;
-    private readonly ListInstanceSample _sample;
     public ListInstanceTest(RedisFixture fixture)
     {
         _fixture = fixture;
-        _sample = new ListInstanceSample();
     }
 
     [Fact]
     public void ListInstance()
     {
+        ListInstanceSample listInstanceSample = new ListInstanceSample();
         //run the sample code.
-        var result = _sample.ListInstance(_fixture.ProjectId, _fixture.LocationId);
+        var result = listInstanceSample.ListInstance(_fixture.ProjectId, _fixture.LocationId);
 
         Assert.True(result.ToList().Count > 0);
     }

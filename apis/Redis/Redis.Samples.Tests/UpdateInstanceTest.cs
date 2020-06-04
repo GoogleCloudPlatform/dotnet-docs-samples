@@ -18,21 +18,20 @@ using Xunit;
 public class UpdateInstanceTest
 {
     private readonly RedisFixture _fixture;
-    private readonly UpdateInstanceSample _sample;
-    private readonly GetInstanceSample _getInstanceSample;
     public UpdateInstanceTest(RedisFixture fixture)
     {
         _fixture = fixture;
-        _sample = new UpdateInstanceSample();
-        _getInstanceSample = new GetInstanceSample();
     }
 
     [Fact]
     public void UpdateInstance()
     {
+        UpdateInstanceSample updateInstanceSample = new UpdateInstanceSample();
+        GetInstanceSample getInstanceSample = new GetInstanceSample();
+
         //run the sample code.
-        _sample.UpdateInstance(_fixture.ProjectId, _fixture.LocationId, _fixture.InstanceId);
-        var updatedInstance = _getInstanceSample.GetInstance(_fixture.ProjectId, _fixture.LocationId, _fixture.InstanceId);
+        updateInstanceSample.UpdateInstance(_fixture.ProjectId, _fixture.LocationId, _fixture.InstanceId);
+        var updatedInstance = getInstanceSample.GetInstance(_fixture.ProjectId, _fixture.LocationId, _fixture.InstanceId);
         Assert.True(updatedInstance.Labels.ContainsKey("environment"));
     }
 }

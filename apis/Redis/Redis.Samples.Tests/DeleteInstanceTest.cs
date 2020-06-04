@@ -12,27 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Redis.V1;
+using Grpc.Core;
 using System;
 using Xunit;
 
 [Collection(nameof(RedisFixture))]
-public class CreateInstanceTest
+public class DeleteInstanceTest
 {
     private readonly RedisFixture _fixture;
-    public CreateInstanceTest(RedisFixture fixture)
+    public DeleteInstanceTest(RedisFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void CreateInstance()
+    public void DeleteInstance()
     {
+        //create new instance.
         var instanceId = $"csharp-{Guid.NewGuid().ToString().Substring(0, 20)}";
         CreateInstanceSample createInstanceSample = new CreateInstanceSample();
-        //run the sample code.
-        Instance instance = createInstanceSample.CreateInstance(_fixture.ProjectId, _fixture.LocationId, instanceId);
-        _fixture.MarkForDeletion(instanceId);
-        Assert.Equal(Instance.Types.State.Ready, instance.State);
+        createInstanceSample.CreateInstance(_fixture.ProjectId, _fixture.LocationId, instanceId);
+
+        DeleteInstanceSample deleteInstanceSample = new DeleteInstanceSample();
+        deleteInstanceSample.DeleteInstance(_fixture.ProjectId, _fixture.LocationId, instanceId);
+
+        try
+        {
+            GetInstanceSample getInstanceSample = new GetInstanceSample();
+            //should throw exception.
+            var instance = getInstanceSample.GetInstance(_fixture.ProjectId, _fixture.LocationId, instanceId);
+        }
+        catch (Exception exception)
+        {
+            Assert.Equal(StatusCode.NotFound, ((RpcException)exception).StatusCode);
+        }
     }
 }
