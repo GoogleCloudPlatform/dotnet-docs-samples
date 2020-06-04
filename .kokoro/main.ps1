@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-param([int]$GroupNumber = 0)
+param([int]$GroupNumber = 0, [bool]$IsRunningOnWindows = $false)
 
 Push-Location
 try {
@@ -33,19 +33,15 @@ try {
     # Groups of subdirectories.
     $groups = @(
         $false,  # 0: Everything.
-        $false,  # 1: Everything not in another group.
-        @('video', 'applications'),  # 2
-        @('iam'), # 3: Runs once every 24 hours to avoid bursting active roles limit of 300.
-        # 4: There's no shard 4, so this is effectively not currently running on Linux.
-        # Needed because of BouncyCastle and M2Mqtt dependecies that don't support .NET Core.
-        @('iot') 
+        $false,  # 1: Everything starting from a to c.
+        $false,  # 2: Everything starting from d to l, except for iot when on Linux because of the BouncyCastle and other dependencies.
+        $false   # 3: Everything starting from m to z.
     )
 
-    $union = $groups[2..($groups.Length-1)] | `
-         % {$_} # Flatten the list
     $groups[0] = $allDirs
-    $groups[1] = $allDirs | Where-Object { -not $union.Contains($_) }
-
+    $groups[1] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("f") -le 0) }
+    $groups[2] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("g") -ge 0) -and ($_.Substring(0, 1).CompareTo("q") -le 0) -and ($IsRunningOnWindows -or -not ($_.Equals("iot"))) }
+    $groups[3] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("r") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
     $dirs = $groups[$GroupNumber]
 
     # Find all the runTest scripts.
