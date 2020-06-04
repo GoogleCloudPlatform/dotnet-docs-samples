@@ -1757,23 +1757,9 @@ namespace GoogleCloudSamples.Spanner
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
-            List<Singer> singers = new List<Singer> {
-                new Singer {SingerId = firstSingerId, FirstName = "Marc",
-                    LastName = "Richards"},
-                new Singer {SingerId = secondSingerId, FirstName = "Catalina",
-                    LastName = "Smith"},
-                new Singer {SingerId = 3, FirstName = "Alice",
-                    LastName = "Trentor"},
-                new Singer {SingerId = 4, FirstName = "Lea",
-                    LastName = "Martin"},
-                new Singer {SingerId = 5, FirstName = "David",
-                    LastName = "Lomond"},
-            };
             List<Album> albums = new List<Album> {
-                new Album {SingerId = secondSingerId, AlbumId = 1,
-                    AlbumTitle = "Green"},
-                new Album {SingerId = secondSingerId, AlbumId = 3,
-                    AlbumTitle = "Terrified"},
+                new Album { SingerId = secondSingerId, AlbumId = 1, AlbumTitle = "Green" },
+                new Album { SingerId = secondSingerId, AlbumId = 3, AlbumTitle = "Terrified" },
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -1781,11 +1767,13 @@ namespace GoogleCloudSamples.Spanner
                 await connection.OpenAsync();
 
                 // Delete individual rows from the Albums table.
-                var cmd = connection.CreateDeleteCommand("Albums",
+                var cmd = connection.CreateDeleteCommand(
+                    "Albums",
                     new SpannerParameterCollection {
                         {"SingerId", SpannerDbType.Int64},
                         {"AlbumId", SpannerDbType.Int64}
-                    });
+                    }
+                );
                 await Task.WhenAll(albums.Select(album =>
                 {
                     cmd.Parameters["SingerId"].Value = album.SingerId;

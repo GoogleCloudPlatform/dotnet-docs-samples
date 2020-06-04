@@ -412,6 +412,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Deleted individual rows in Albums.", output.Stdout);
             Assert.Contains($"2 row(s) deleted from Singers.", output.Stdout);
             Assert.Contains($"7 row(s) deleted from Singers.", output.Stdout);
+
             // Put the deleted sample data back.
             _spannerCmd.Run("insertSampleData",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
