@@ -11,5 +11,7 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-dotnet test --test-adapter-path:. --logger:junit -v n
+
+# https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1068
+# dotnet test --test-adapter-path:. --logger:junit -v n
 

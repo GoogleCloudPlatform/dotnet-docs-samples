@@ -81,10 +81,11 @@ Shell](#cloudshell) section below.
 1.  Enable APIs for your project. <a target='_blank' href="https://console.cloud.google.com/flows/enableapi?apiid=speech.googleapis.com&showconfirmation=true">Click here</a> to visit Cloud Platform Console and enable the Google Cloud Speech API.
 1.  <a target='_blank' href="https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/GoogleCloudPlatform/dotnet-docs-samples&page=editor&open_in_viewer=README.md&working_dir=speech/api">Open the sample with Cloud Shell</a>.
 1.  Upload your JSON key file to Cloud Shell:
-    *  Use the Cloud Shell file browser to select the **dotnet-doc-samples** folder.
-    *  Use the **File** menu to select **Import > File or Zip Archive**
-    *  Select and import the JSON key that was downloaded as instructed in the  [root README](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/master/README.md).
-    ![Use the Cloud Shell file browser to Import > File](cloud-shell-import-file.png)
+    *  Use the Cloud Shell Editor to select the **dotnet-doc-samples** folder.
+    *  Use the **File** menu to select **Upload Files...**
+    *  Select and upload the JSON key that was downloaded as instructed in the  [root README](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/master/README.md).
+
+    ![Use the Cloud Shell Editor to Upload Files](cloud-shell-editor-upload-files.png)
 
 1.  Set the environment variable `GOOGLE_APPLICATION_CREDENTIALS` to the path of the JSON key that was just imported. In Cloud Shell console, the command will look like this:
 
