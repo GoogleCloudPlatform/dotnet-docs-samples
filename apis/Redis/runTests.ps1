@@ -13,5 +13,7 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
+Set-TestTimeout 600
+
 dotnet restore
 dotnet test --test-adapter-path:. --logger:junit
