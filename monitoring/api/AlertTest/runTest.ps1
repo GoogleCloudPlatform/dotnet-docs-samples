@@ -13,5 +13,6 @@
 # the License.
 dotnet restore
 dotnet build
-dotnet test --test-adapter-path:. --logger:junit --no-restore --no-build -v n
+# https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1068
+# dotnet test --test-adapter-path:. --logger:junit --no-restore --no-build -v n
 
