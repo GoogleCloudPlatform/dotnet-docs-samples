@@ -19,7 +19,7 @@ using Xunit;
 [CollectionDefinition(nameof(RedisFixture))]
 public class RedisFixture : IDisposable, ICollectionFixture<RedisFixture>
 {
-    private List<string> _instanceIdsToDelete = new List<string>();
+    private readonly List<string> _instanceIdsToDelete = new List<string>();
     public string ProjectId { get; }
     public string LocationId { get; }
     public string InstanceId { get; private set; } = $"csharp-{Guid.NewGuid().ToString().Substring(0, 20)}";
