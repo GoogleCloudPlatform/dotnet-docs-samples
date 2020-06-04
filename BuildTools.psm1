@@ -611,7 +611,7 @@ function Run-Kestrel([Parameter(mandatory=$true)][string]$url)
             throw "Kestrel failed to start."
         }
         foreach ($line in $lines) {
-            if ($line -like 'Application started.*') {
+            if ($line.contains('Application started')) {
                 return $kestrelJob
             }
         }
