@@ -12,8 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax;
+using GoogleCloudSamples;
+using System;
+using System.IO;
+using System.Linq;
 using Xunit;
 
 public class JobsCreateTests : IClassFixture<DlpTestFixture>
 {
+    private RetryRobot TestRetryRobot { get; } = new RetryRobot();
+    private DlpTestFixture Fixture { get; }
+    public JobsCreateTests(DlpTestFixture fixture)
+    {
+        Fixture = fixture;
+    }
+
+    [Fact]
+    public void TestCreateDlpJob()
+    {
+        using RandomBucketFixture randomBucketFixture = new RandomBucketFixture(Fixture.ProjectId);
+        using BucketCollector bucketCollector = new BucketCollector(randomBucketFixture.BucketName);
+        string bucketName = randomBucketFixture.BucketName;
+        string fileName = Guid.NewGuid().ToString();
+        string objectName = $"gs://{bucketName}/{fileName}";
+        bucketCollector.CopyToBucket(Path.Combine(Fixture.ResourcePath, "dates-input.csv"), fileName);
+        Google.Cloud.Dlp.V2.DlpJob job = JobsCreate.CreateJob(Fixture.ProjectId, objectName);
+
+        TestRetryRobot.ShouldRetry = ex => true;
+        TestRetryRobot.Eventually(() =>
+        {
+            PagedEnumerable<Google.Cloud.Dlp.V2.ListDlpJobsResponse, Google.Cloud.Dlp.V2.DlpJob> response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "InspectJob");
+
+            Assert.True(response.Any());
+        });
+    }
 }

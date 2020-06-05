@@ -18,128 +18,133 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-/// <summary>
-/// Creates a bucket with a random name for use in tests.  Call Dispose()
-/// to delete the bucket.
-/// </summary>
-public class RandomBucketFixture : IDisposable
+namespace GoogleCloudSamples
 {
-    private readonly StorageClient _storage = StorageClient.Create();
-    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-    public RandomBucketFixture()
+    /// <summary>
+    /// Creates a bucket with a random name for use in tests.  Call Dispose()
+    /// to delete the bucket.
+    /// </summary>
+    public class RandomBucketFixture : IDisposable
     {
-        BucketName = RandomBucketName();
-        _storage.CreateBucket(_projectId, BucketName);
-    }
+        private readonly StorageClient _storage = StorageClient.Create();
 
-    public void Dispose()
-    {
-        int retryDelayMs = 0;
-        for (int errorCount = 0; errorCount < 4; ++errorCount)
+        public RandomBucketFixture() : this(Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID")) { }
+
+        public RandomBucketFixture(string projectId)
         {
-            Thread.Sleep(retryDelayMs);
-            retryDelayMs = (retryDelayMs + 1000) * 2;
-            try
+            BucketName = RandomBucketName();
+            _storage.CreateBucket(projectId, BucketName);
+        }
+
+        public void Dispose()
+        {
+            int retryDelayMs = 0;
+            for (int errorCount = 0; errorCount < 4; ++errorCount)
             {
-                _storage.DeleteBucket(BucketName, new DeleteBucketOptions()
+                Thread.Sleep(retryDelayMs);
+                retryDelayMs = (retryDelayMs + 1000) * 2;
+                try
                 {
-                    DeleteObjects = true
-                });
-            }
-            catch (Google.GoogleApiException e)
-            when (e.Error.Code == 404)
-            {
-                return;  // Bucket does not exist.  Ok.
-            }
-            catch (Google.GoogleApiException)
-            {
-                continue;  // Try again.
-            }
-        }
-    }
-
-    private static string RandomBucketName()
-    {
-        return TestUtil.RandomName();
-    }
-
-    public string BucketName { get; private set; }
-}
-
-/// <summary>
-/// Tracks objects in a Cloud Storage bucket for later clean up.
-/// Call Dispose() to clean up.
-/// </summary>
-public class BucketCollector : IDisposable
-{
-    private readonly StorageClient _storage = StorageClient.Create();
-    private readonly string _bucketName;
-
-    private readonly SortedDictionary<string, SortedSet<string>> _garbage =
-    new SortedDictionary<string, SortedSet<string>>();
-
-    public BucketCollector(string bucketName)
-    {
-        _bucketName = bucketName;
-    }
-
-    /// <summary>
-    /// Record the name of a Cloud Storage object for later clean up.
-    /// </summary>
-    /// <returns>The object name.</returns>
-    public string Collect(string objectName)
-    {
-        return Collect(_bucketName, objectName);
-    }
-
-    /// <summary>
-    /// Record the name of a Cloud Storage object for later clean up.
-    /// </summary>
-    /// <returns>The object name.</returns>
-    public string Collect(string bucketName, string objectName)
-    {
-        if (!_garbage.TryGetValue(bucketName, out SortedSet<string> objectNames))
-        {
-            objectNames = _garbage[bucketName] = new SortedSet<string>();
-        }
-        objectNames.Add(objectName);
-        return objectName;
-    }
-
-    /// <summary>
-    /// Copies a local file to the Cloud Storage bucket and records its
-    /// name for later clean up.
-    /// </summary>
-    /// <param name="localPath"></param>
-    /// <param name="objectName"></param>
-    public void CopyToBucket(string localPath, string objectName)
-    {
-        using (Stream m = new FileStream(localPath, FileMode.Open,
-            FileAccess.Read, FileShare.Read))
-        {
-            _storage.UploadObject(_bucketName, objectName, null, m);
-            Collect(objectName);
-        }
-    }
-
-    public void Dispose()
-    {
-        RetryRobot robot = new RetryRobot()
-        {
-            MaxTryCount = 10,
-            ShouldRetry = (e) => true,
-        };
-        foreach (KeyValuePair<string, SortedSet<string>> bucket in _garbage)
-        {
-            foreach (string objectName in bucket.Value)
-            {
-                robot.Eventually(() =>
+                    _storage.DeleteBucket(BucketName, new DeleteBucketOptions()
+                    {
+                        DeleteObjects = true
+                    });
+                }
+                catch (Google.GoogleApiException e)
+                when (e.Error.Code == 404)
                 {
-                    _storage.DeleteObject(bucket.Key, objectName);
-                });
+                    return;  // Bucket does not exist.  Ok.
+                }
+                catch (Google.GoogleApiException)
+                {
+                    continue;  // Try again.
+                }
             }
         }
-        _garbage.Clear();
+
+        private static string RandomBucketName()
+        {
+            return TestUtil.RandomName();
+        }
+
+        public string BucketName { get; private set; }
+    }
+
+    /// <summary>
+    /// Tracks objects in a Cloud Storage bucket for later clean up.
+    /// Call Dispose() to clean up.
+    /// </summary>
+    public class BucketCollector : IDisposable
+    {
+        private readonly StorageClient _storage = StorageClient.Create();
+        private readonly string _bucketName;
+
+        private readonly SortedDictionary<string, SortedSet<string>> _garbage =
+        new SortedDictionary<string, SortedSet<string>>();
+
+        public BucketCollector(string bucketName)
+        {
+            _bucketName = bucketName;
+        }
+
+        /// <summary>
+        /// Record the name of a Cloud Storage object for later clean up.
+        /// </summary>
+        /// <returns>The object name.</returns>
+        public string Collect(string objectName)
+        {
+            return Collect(_bucketName, objectName);
+        }
+
+        /// <summary>
+        /// Record the name of a Cloud Storage object for later clean up.
+        /// </summary>
+        /// <returns>The object name.</returns>
+        public string Collect(string bucketName, string objectName)
+        {
+            if (!_garbage.TryGetValue(bucketName, out SortedSet<string> objectNames))
+            {
+                objectNames = _garbage[bucketName] = new SortedSet<string>();
+            }
+            objectNames.Add(objectName);
+            return objectName;
+        }
+
+        /// <summary>
+        /// Copies a local file to the Cloud Storage bucket and records its
+        /// name for later clean up.
+        /// </summary>
+        /// <param name="localPath"></param>
+        /// <param name="objectName"></param>
+        public void CopyToBucket(string localPath, string objectName)
+        {
+            using (Stream m = new FileStream(localPath, FileMode.Open,
+                FileAccess.Read, FileShare.Read))
+            {
+                _storage.UploadObject(_bucketName, objectName, null, m);
+                Collect(objectName);
+            }
+        }
+
+        public void Dispose()
+        {
+            RetryRobot robot = new RetryRobot()
+            {
+                MaxTryCount = 10,
+                ShouldRetry = (e) => true,
+            };
+            foreach (KeyValuePair<string, SortedSet<string>> bucket in _garbage)
+            {
+                foreach (string objectName in bucket.Value)
+                {
+                    robot.Eventually(() =>
+                    {
+                        _storage.DeleteObject(bucket.Key, objectName);
+                    });
+                }
+            }
+            _garbage.Clear();
+        }
     }
 }

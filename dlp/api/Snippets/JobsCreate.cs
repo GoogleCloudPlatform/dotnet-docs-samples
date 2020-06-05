@@ -17,23 +17,46 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
+using System.Linq;
+using static Google.Cloud.Dlp.V2.StorageConfig.Types;
 
 public class JobsCreate
 {
-    public static DlpJob CreateJob(String projectId, String gcsPath, String jobId)
+    public static DlpJob CreateJob(string projectId, string gcsPath)
     {
         DlpServiceClient dlp = DlpServiceClient.Create();
 
-        StorageConfig.Types.TimespanConfig timespanConfig = new StorageConfig.Types.TimespanConfig
+        StorageConfig storageConfig = new StorageConfig
         {
-            EnableAutoPopulationOfTimespanConfig = true
+            CloudStorageOptions = new CloudStorageOptions
+            {
+                FileSet = new CloudStorageOptions.Types.FileSet()
+                {
+                    Url = gcsPath
+                }
+            },
+            TimespanConfig = new TimespanConfig
+            {
+                EnableAutoPopulationOfTimespanConfig = true
+            }
+        };
+
+        InspectConfig inspectConfig = new InspectConfig
+        {
+            InfoTypes = { new[] { "EMAIL_ADDRESS", "CREDIT_CARD_NUMBER" }.Select(it => new InfoType() { Name = it }) },
+            IncludeQuote = true,
+            MinLikelihood = Likelihood.Unlikely,
+            Limits = new InspectConfig.Types.FindingLimits() { MaxFindingsPerItem = 100 }
         };
 
         DlpJob response = dlp.CreateDlpJob(new CreateDlpJobRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
-            JobId = jobId,
-
+            InspectJob = new InspectJobConfig
+            {
+                InspectConfig = inspectConfig,
+                StorageConfig = storageConfig,
+            }
         });
 
         Console.WriteLine($"Job: {response.Name} status: {response.State}");
