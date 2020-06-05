@@ -31,7 +31,7 @@ namespace GoogleCloudSamples
 
         public RandomBucketFixture() : this(Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID")) { }
 
-        public RandomBucketFixture(string projectId)
+        private RandomBucketFixture(string projectId)
         {
             BucketName = RandomBucketName();
             _storage.CreateBucket(projectId, BucketName);
