@@ -18,6 +18,5 @@ namespace GoogleCloudSamples
 {
     public class JobsDeleteTests : IClassFixture<DlpTestFixture>
     {
-
     }
 }

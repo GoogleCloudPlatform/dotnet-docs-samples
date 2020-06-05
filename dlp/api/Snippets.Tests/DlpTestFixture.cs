@@ -20,7 +20,6 @@ using System.IO;
 
 namespace GoogleCloudSamples
 {
-
     public class DlpTestFixture
     {
         public string ProjectId => Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
