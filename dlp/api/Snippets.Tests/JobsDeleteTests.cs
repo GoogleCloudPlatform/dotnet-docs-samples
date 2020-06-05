@@ -14,7 +14,11 @@
 
 using Xunit;
 
-public class JobsDeleteTests : IClassFixture<DlpTestFixture>
+namespace GoogleCloudSamples
 {
+    public class JobsDeleteTests : IClassFixture<DlpTestFixture>
+    {
+
+    }
 
 }

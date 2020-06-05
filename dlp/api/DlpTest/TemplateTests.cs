@@ -12,48 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using GoogleCloudSamples;
 using System;
 using Xunit;
 
-/// <summary>
-/// Tests for DLP Template APIs
-/// </summary>
-public class TemplateTests : IClassFixture<DlpTestFixture>
+namespace GoogleCloudSamples
 {
-    private readonly DlpTestFixture _testSettings;
-
-    public TemplateTests(DlpTestFixture fixture)
+    /// <summary>
+    /// Tests for DLP Template APIs
+    /// </summary>
+    public class TemplateTests : IClassFixture<DlpTestFixture>
     {
-        _testSettings = fixture;
-    }
+        private readonly DlpTestFixture _testSettings;
 
-    [Fact]
-    public void TestTemplates()
-    {
-        // Creation
-        string name = $"my-inspect-template-{TestUtil.RandomName()}";
-        string displayName = $"My display name {Guid.NewGuid()}";
-        string description = $"My description {Guid.NewGuid()}";
-        string fullName = $"projects/{_testSettings.ProjectId}/inspectTemplates/{name}";
+        public TemplateTests(DlpTestFixture fixture)
+        {
+            _testSettings = fixture;
+        }
 
-        ConsoleOutput output = _testSettings.CommandLineRunner.Run(
-            "createInspectTemplate",
-            _testSettings.ProjectId,
-            name,
-            displayName,
-            description);
+        [Fact]
+        public void TestTemplates()
+        {
+            // Creation
+            string name = $"my-inspect-template-{TestUtil.RandomName()}";
+            string displayName = $"My display name {Guid.NewGuid()}";
+            string description = $"My description {Guid.NewGuid()}";
+            string fullName = $"projects/{_testSettings.ProjectId}/inspectTemplates/{name}";
 
-        Assert.Contains($"Successfully created template {fullName}", output.Stdout);
+            ConsoleOutput output = _testSettings.CommandLineRunner.Run(
+                "createInspectTemplate",
+                _testSettings.ProjectId,
+                name,
+                displayName,
+                description);
 
-        // List
-        output = _testSettings.CommandLineRunner.Run("listTemplates", _testSettings.ProjectId);
-        Assert.Contains($"Template {fullName}", output.Stdout);
-        Assert.Contains($"Display Name: {displayName}", output.Stdout);
-        Assert.Contains($"Description: {description}", output.Stdout);
+            Assert.Contains($"Successfully created template {fullName}", output.Stdout);
 
-        // Deletion
-        output = _testSettings.CommandLineRunner.Run("deleteTemplate", _testSettings.ProjectId, fullName);
-        Assert.Contains($"Successfully deleted template {fullName}", output.Stdout);
+            // List
+            output = _testSettings.CommandLineRunner.Run("listTemplates", _testSettings.ProjectId);
+            Assert.Contains($"Template {fullName}", output.Stdout);
+            Assert.Contains($"Display Name: {displayName}", output.Stdout);
+            Assert.Contains($"Description: {description}", output.Stdout);
+
+            // Deletion
+            output = _testSettings.CommandLineRunner.Run("deleteTemplate", _testSettings.ProjectId, fullName);
+            Assert.Contains($"Successfully deleted template {fullName}", output.Stdout);
+        }
     }
 }

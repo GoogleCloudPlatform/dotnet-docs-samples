@@ -14,32 +14,34 @@
 
 using Google.Api.Gax;
 using Google.Cloud.Dlp.V2;
-using GoogleCloudSamples;
 using System.Linq;
 using Xunit;
 
-public class JobsListTests : IClassFixture<DlpTestFixture>
+namespace GoogleCloudSamples
 {
-    private RetryRobot TestRetryRobot { get; } = new RetryRobot();
-    private DlpTestFixture Fixture { get; }
-    public JobsListTests(DlpTestFixture fixture)
+    public class JobsListTests : IClassFixture<DlpTestFixture>
     {
-        Fixture = fixture;
-    }
-
-    [Fact]
-    public void TestListDlpJobs()
-    {
-        // Create job.
-        DlpServiceClient dlp = DlpServiceClient.Create();
-        DlpJob dlpJob = dlp.CreateDlpJob(Fixture.GetTestRiskAnalysisJobRequest());
-
-        TestRetryRobot.ShouldRetry = ex => true;
-        TestRetryRobot.Eventually(() =>
+        private RetryRobot TestRetryRobot { get; } = new RetryRobot();
+        private DlpTestFixture Fixture { get; }
+        public JobsListTests(DlpTestFixture fixture)
         {
-            PagedEnumerable<ListDlpJobsResponse, DlpJob> response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "RiskAnalysisJob");
+            Fixture = fixture;
+        }
 
-            Assert.True(response.Any());
-        });
+        [Fact]
+        public void TestListDlpJobs()
+        {
+            // Create job.
+            DlpServiceClient dlp = DlpServiceClient.Create();
+            DlpJob dlpJob = dlp.CreateDlpJob(Fixture.GetTestRiskAnalysisJobRequest());
+
+            TestRetryRobot.ShouldRetry = ex => true;
+            TestRetryRobot.Eventually(() =>
+            {
+                PagedEnumerable<ListDlpJobsResponse, DlpJob> response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "RiskAnalysisJob");
+
+                Assert.True(response.Any());
+            });
+        }
     }
 }

@@ -18,57 +18,60 @@ using Google.Cloud.Dlp.V2;
 using System;
 using System.IO;
 
-/* Initialize environment variables for DLP tests */
-public class DlpTestFixture
+namespace GoogleCloudSamples
 {
-    public string ProjectId => Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    public string WrappedKey => Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
-    public string KeyName => Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
-    public string ResourcePath => Path.GetFullPath("../../../resources/");
-    public CreateDlpJobRequest GetTestRiskAnalysisJobRequest()
+
+    public class DlpTestFixture
     {
-        return new CreateDlpJobRequest()
+        public string ProjectId => Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public string WrappedKey => Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
+        public string KeyName => Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
+        public string ResourcePath => Path.GetFullPath("../../../resources/");
+        public CreateDlpJobRequest GetTestRiskAnalysisJobRequest()
         {
-            ParentAsProjectName = new ProjectName(ProjectId),
-            RiskJob = new RiskAnalysisJobConfig()
+            return new CreateDlpJobRequest()
             {
-                PrivacyMetric = new PrivacyMetric()
+                ParentAsProjectName = new ProjectName(ProjectId),
+                RiskJob = new RiskAnalysisJobConfig()
                 {
-                    CategoricalStatsConfig = new PrivacyMetric.Types.CategoricalStatsConfig()
+                    PrivacyMetric = new PrivacyMetric()
                     {
-                        Field = new FieldId()
+                        CategoricalStatsConfig = new PrivacyMetric.Types.CategoricalStatsConfig()
                         {
-                            Name = "zip_code"
+                            Field = new FieldId()
+                            {
+                                Name = "zip_code"
+                            }
                         }
+                    },
+                    SourceTable = new BigQueryTable()
+                    {
+                        ProjectId = "bigquery-public-data",
+                        DatasetId = "san_francisco",
+                        TableId = "bikeshare_trips"
                     }
-                },
-                SourceTable = new BigQueryTable()
-                {
-                    ProjectId = "bigquery-public-data",
-                    DatasetId = "san_francisco",
-                    TableId = "bikeshare_trips"
                 }
-            }
-        };
-    }
+            };
+        }
 
-    public DlpTestFixture() { }
+        public DlpTestFixture() { }
 
-    public void Dispose()
-    {
-        // Delete any jobs created by the test.
-        DlpServiceClient dlp = DlpServiceClient.Create();
-        PagedEnumerable<ListDlpJobsResponse, DlpJob> result = dlp.ListDlpJobs(new ListDlpJobsRequest
+        public void Dispose()
         {
-            ParentAsProjectName = new ProjectName(ProjectId),
-            Type = DlpJobType.RiskAnalysisJob
-        });
-        foreach (DlpJob job in result)
-        {
-            dlp.DeleteDlpJob(new DeleteDlpJobRequest()
+            // Delete any jobs created by the test.
+            DlpServiceClient dlp = DlpServiceClient.Create();
+            PagedEnumerable<ListDlpJobsResponse, DlpJob> result = dlp.ListDlpJobs(new ListDlpJobsRequest
             {
-                Name = job.Name
+                ParentAsProjectName = new ProjectName(ProjectId),
+                Type = DlpJobType.RiskAnalysisJob
             });
+            foreach (DlpJob job in result)
+            {
+                dlp.DeleteDlpJob(new DeleteDlpJobRequest()
+                {
+                    Name = job.Name
+                });
+            }
         }
     }
 }

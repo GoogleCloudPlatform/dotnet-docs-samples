@@ -12,38 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using GoogleCloudSamples;
 using System.IO;
 using Xunit;
 
-/// <summary>
-/// Testing redact samples for DLP
-/// </summary>
-public class RedactTests : IClassFixture<DlpTestFixture>
+namespace GoogleCloudSamples
 {
-    private readonly DlpTestFixture _testSettings;
-
-    public RedactTests(DlpTestFixture fixture)
+    /// <summary>
+    /// Testing redact samples for DLP
+    /// </summary>
+    public class RedactTests : IClassFixture<DlpTestFixture>
     {
-        _testSettings = fixture;
-    }
+        private readonly DlpTestFixture _testSettings;
 
-    [Fact]
-    public void TestRedactImage()
-    {
-        string inPath = Path.Combine("resources", "test.png");
-        string outPath = "redacted.png";
+        public RedactTests(DlpTestFixture fixture)
+        {
+            _testSettings = fixture;
+        }
 
-        ConsoleOutput output = _testSettings.CommandLineRunner.Run(
-            "redactImage",
-            "--projectId", _testSettings.ProjectId,
-            "--imageFromPath", inPath,
-            "--imageToPath", outPath);
-        output.AssertSucceeded();
+        [Fact]
+        public void TestRedactImage()
+        {
+            string inPath = Path.Combine("resources", "test.png");
+            string outPath = "redacted.png";
 
-        FileInfo outFile = new FileInfo(outPath);
+            ConsoleOutput output = _testSettings.CommandLineRunner.Run(
+                "redactImage",
+                "--projectId", _testSettings.ProjectId,
+                "--imageFromPath", inPath,
+                "--imageToPath", outPath);
+            output.AssertSucceeded();
 
-        Assert.True(File.Exists(outPath), "Redacted image exists");
-        Assert.True(outFile.Length > 0, "Redacted image written");
+            FileInfo outFile = new FileInfo(outPath);
+
+            Assert.True(File.Exists(outPath), "Redacted image exists");
+            Assert.True(outFile.Length > 0, "Redacted image written");
+        }
     }
 }
