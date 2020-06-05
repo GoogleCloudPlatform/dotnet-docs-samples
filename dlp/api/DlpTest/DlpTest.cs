@@ -23,9 +23,9 @@ using Xunit;
 
 public class DlpTestFixture
 {
-    public readonly string ProjectId;
-    public readonly string WrappedKey;
-    public readonly string KeyName;
+    public string ProjectId => Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    public string WrappedKey => Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
+    public string KeyName => Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
     public readonly string ResourcePath = Path.GetFullPath("../../../resources/");
 
     public readonly CommandLineRunner CommandLineRunner = new CommandLineRunner
@@ -33,17 +33,7 @@ public class DlpTestFixture
         VoidMain = Dlp.Main,
     };
 
-    public DlpTestFixture()
-    {
-        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        // Authorize the client using Application Default Credentials.
-        // See: https://developers.google.com/identity/protocols/application-default-credentials
-        _ = GoogleCredential.GetApplicationDefaultAsync().Result;
-
-        // Fetch the test key from an environment variable
-        KeyName = Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
-        WrappedKey = Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
-    }
+    public DlpTestFixture() { }
 }
 
 // TODO reconcile these with the "simple" tests below

@@ -14,7 +14,6 @@
 
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
-using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Dlp.V2;
 using System;
 using System.IO;
@@ -53,12 +52,7 @@ public class DlpTestFixture
         };
     }
 
-    public DlpTestFixture()
-    {
-        // Authorize the client using Application Default Credentials.
-        // See: https://developers.google.com/identity/protocols/application-default-credentials
-        _ = GoogleCredential.GetApplicationDefaultAsync().Result;
-    }
+    public DlpTestFixture() { }
 
     public void Dispose()
     {
