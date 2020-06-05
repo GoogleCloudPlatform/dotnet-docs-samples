@@ -43,7 +43,8 @@ internal class DeIdentify
             {
                 InfoTypeTransformations = new InfoTypeTransformations
                 {
-                    Transformations = {
+                    Transformations = 
+                    {
                             new InfoTypeTransformations.Types.InfoTypeTransformation
                             {
                                 PrimitiveTransformation = new PrimitiveTransformation
