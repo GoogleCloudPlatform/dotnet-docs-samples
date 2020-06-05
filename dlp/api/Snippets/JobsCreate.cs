@@ -14,22 +14,22 @@
 
 // [START dlp_create_job]
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
-using Google.Api.Gax.ResourceNames;
 
-class JobsCreate
+public class JobsCreate
 {
-    public static DlpJob createJob(String projectId, String gcsPath, String jobId)
+    public static DlpJob CreateJob(String projectId, String gcsPath, String jobId)
     {
         DlpServiceClient dlp = DlpServiceClient.Create();
 
-        var timespanConfig = new StorageConfig.Types.TimespanConfig
+        StorageConfig.Types.TimespanConfig timespanConfig = new StorageConfig.Types.TimespanConfig
         {
             EnableAutoPopulationOfTimespanConfig = true
         };
 
-        var response = dlp.CreateDlpJob(new CreateDlpJobRequest
+        DlpJob response = dlp.CreateDlpJob(new CreateDlpJobRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             JobId = jobId,

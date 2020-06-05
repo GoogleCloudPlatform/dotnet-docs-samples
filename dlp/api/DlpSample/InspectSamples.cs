@@ -25,24 +25,94 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Google.Cloud.Dlp.V2.InspectConfig.Types;
 
-namespace GoogleCloudSamples
+internal class InspectSamples
 {
-    internal class InspectSamples
+    // [START dlp_inspect_string]
+    public static object InspectString(
+        string projectId,
+        string dataValue,
+        string minLikelihood,
+        int maxFindings,
+        bool includeQuote,
+        IEnumerable<InfoType> infoTypes,
+        IEnumerable<CustomInfoType> customInfoTypes)
     {
-        // [START dlp_inspect_string]
-        public static object InspectString(
-            string projectId,
-            string dataValue,
-            string minLikelihood,
-            int maxFindings,
-            bool includeQuote,
-            IEnumerable<InfoType> infoTypes,
-            IEnumerable<CustomInfoType> customInfoTypes)
+        InspectConfig inspectConfig = new InspectConfig
         {
-            var inspectConfig = new InspectConfig
+            MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood),
+            Limits = new InspectConfig.Types.FindingLimits
+            {
+                MaxFindingsPerRequest = maxFindings
+            },
+            IncludeQuote = includeQuote,
+            InfoTypes = { infoTypes },
+            CustomInfoTypes = { customInfoTypes }
+        };
+        InspectContentRequest request = new InspectContentRequest
+        {
+            ParentAsProjectName = new ProjectName(projectId),
+            Item = new ContentItem
+            {
+                Value = dataValue
+            },
+            InspectConfig = inspectConfig
+        };
+
+        DlpServiceClient dlp = DlpServiceClient.Create();
+        InspectContentResponse response = dlp.InspectContent(request);
+
+        Google.Protobuf.Collections.RepeatedField<Finding> findings = response.Result.Findings;
+        if (findings.Count > 0)
+        {
+            Console.WriteLine("Findings:");
+            foreach (Finding finding in findings)
+            {
+                if (includeQuote)
+                {
+                    Console.WriteLine($"  Quote: {finding.Quote}");
+                }
+                Console.WriteLine($"  InfoType: {finding.InfoType}");
+                Console.WriteLine($"  Likelihood: {finding.Likelihood}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No findings.");
+        }
+
+        return 0;
+    }
+
+    // [END dlp_inspect_string]
+
+    // [START dlp_inspect_file]
+    private static readonly Dictionary<string, ByteContentItem.Types.BytesType> s_fileTypes =
+        new Dictionary<string, ByteContentItem.Types.BytesType>()
+    {
+            { ".bmp", ByteContentItem.Types.BytesType.ImageBmp },
+            { ".jpg", ByteContentItem.Types.BytesType.ImageJpeg },
+            { ".jpeg", ByteContentItem.Types.BytesType.ImageJpeg },
+            { ".png", ByteContentItem.Types.BytesType.ImagePng },
+            { ".svg", ByteContentItem.Types.BytesType.ImageSvg },
+            { ".txt", ByteContentItem.Types.BytesType.TextUtf8 }
+    };
+
+    public static object InspectFile(
+        string projectId,
+        string file,
+        string minLikelihood,
+        int maxFindings,
+        bool includeQuote,
+        IEnumerable<InfoType> infoTypes,
+        IEnumerable<CustomInfoType> customInfoTypes)
+    {
+        FileStream fileStream = new FileStream(file, FileMode.Open);
+        try
+        {
+            InspectConfig inspectConfig = new InspectConfig
             {
                 MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood),
-                Limits = new InspectConfig.Types.FindingLimits
+                Limits = new FindingLimits
                 {
                     MaxFindingsPerRequest = maxFindings
                 },
@@ -50,24 +120,29 @@ namespace GoogleCloudSamples
                 InfoTypes = { infoTypes },
                 CustomInfoTypes = { customInfoTypes }
             };
-            var request = new InspectContentRequest
+            DlpServiceClient dlp = DlpServiceClient.Create();
+            InspectContentResponse response = dlp.InspectContent(new InspectContentRequest
             {
                 ParentAsProjectName = new ProjectName(projectId),
                 Item = new ContentItem
                 {
-                    Value = dataValue
+                    ByteItem = new ByteContentItem
+                    {
+                        Data = ByteString.FromStream(fileStream),
+                        Type = s_fileTypes.GetValueOrDefault(
+                                new FileInfo(file).Extension.ToLower(),
+                                ByteContentItem.Types.BytesType.Unspecified
+                        )
+                    }
                 },
                 InspectConfig = inspectConfig
-            };
+            });
 
-            DlpServiceClient dlp = DlpServiceClient.Create();
-            InspectContentResponse response = dlp.InspectContent(request);
-
-            var findings = response.Result.Findings;
+            Google.Protobuf.Collections.RepeatedField<Finding> findings = response.Result.Findings;
             if (findings.Count > 0)
             {
                 Console.WriteLine("Findings:");
-                foreach (var finding in findings)
+                foreach (Finding finding in findings)
                 {
                     if (includeQuote)
                     {
@@ -84,141 +159,64 @@ namespace GoogleCloudSamples
 
             return 0;
         }
-
-        // [END dlp_inspect_string]
-
-        // [START dlp_inspect_file]
-        private static readonly Dictionary<string, ByteContentItem.Types.BytesType> s_fileTypes =
-            new Dictionary<string, ByteContentItem.Types.BytesType>()
+        finally
         {
-            { ".bmp", ByteContentItem.Types.BytesType.ImageBmp },
-            { ".jpg", ByteContentItem.Types.BytesType.ImageJpeg },
-            { ".jpeg", ByteContentItem.Types.BytesType.ImageJpeg },
-            { ".png", ByteContentItem.Types.BytesType.ImagePng },
-            { ".svg", ByteContentItem.Types.BytesType.ImageSvg },
-            { ".txt", ByteContentItem.Types.BytesType.TextUtf8 }
-        };
-
-        public static object InspectFile(
-            string projectId,
-            string file,
-            string minLikelihood,
-            int maxFindings,
-            bool includeQuote,
-            IEnumerable<InfoType> infoTypes,
-            IEnumerable<CustomInfoType> customInfoTypes)
-        {
-            var fileStream = new FileStream(file, FileMode.Open);
-            try
-            {
-                var inspectConfig = new InspectConfig
-                {
-                    MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood),
-                    Limits = new FindingLimits
-                    {
-                        MaxFindingsPerRequest = maxFindings
-                    },
-                    IncludeQuote = includeQuote,
-                    InfoTypes = { infoTypes },
-                    CustomInfoTypes = { customInfoTypes }
-                };
-                DlpServiceClient dlp = DlpServiceClient.Create();
-                InspectContentResponse response = dlp.InspectContent(new InspectContentRequest
-                {
-                    ParentAsProjectName = new ProjectName(projectId),
-                    Item = new ContentItem
-                    {
-                        ByteItem = new ByteContentItem
-                        {
-                            Data = ByteString.FromStream(fileStream),
-                            Type = s_fileTypes.GetValueOrDefault(
-                                    new FileInfo(file).Extension.ToLower(),
-                                    ByteContentItem.Types.BytesType.Unspecified
-                            )
-                        }
-                    },
-                    InspectConfig = inspectConfig
-                });
-
-                var findings = response.Result.Findings;
-                if (findings.Count > 0)
-                {
-                    Console.WriteLine("Findings:");
-                    foreach (var finding in findings)
-                    {
-                        if (includeQuote)
-                        {
-                            Console.WriteLine($"  Quote: {finding.Quote}");
-                        }
-                        Console.WriteLine($"  InfoType: {finding.InfoType}");
-                        Console.WriteLine($"  Likelihood: {finding.Likelihood}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No findings.");
-                }
-
-                return 0;
-            }
-            finally
-            {
-                fileStream.Close();
-            }
+            fileStream.Close();
         }
+    }
 
-        // [END dlp_inspect_file]
+    // [END dlp_inspect_file]
 
-        // [START dlp_inspect_bigquery]
-        public static object InspectBigQuery(
-            string projectId,
-            string minLikelihood,
-            int maxFindings,
-            bool includeQuote,
-            IEnumerable<FieldId> identifyingFields,
-            IEnumerable<InfoType> infoTypes,
-            IEnumerable<CustomInfoType> customInfoTypes,
-            string datasetId,
-            string tableId)
+    // [START dlp_inspect_bigquery]
+    public static object InspectBigQuery(
+        string projectId,
+        string minLikelihood,
+        int maxFindings,
+        bool includeQuote,
+        IEnumerable<FieldId> identifyingFields,
+        IEnumerable<InfoType> infoTypes,
+        IEnumerable<CustomInfoType> customInfoTypes,
+        string datasetId,
+        string tableId)
+    {
+        InspectJobConfig inspectJob = new InspectJobConfig
         {
-            var inspectJob = new InspectJobConfig
+            StorageConfig = new StorageConfig
             {
-                StorageConfig = new StorageConfig
+                BigQueryOptions = new BigQueryOptions
                 {
-                    BigQueryOptions = new BigQueryOptions
+                    TableReference = new Google.Cloud.Dlp.V2.BigQueryTable
                     {
-                        TableReference = new Google.Cloud.Dlp.V2.BigQueryTable
-                        {
-                            ProjectId = projectId,
-                            DatasetId = datasetId,
-                            TableId = tableId,
-                        },
-                        IdentifyingFields =
+                        ProjectId = projectId,
+                        DatasetId = datasetId,
+                        TableId = tableId,
+                    },
+                    IdentifyingFields =
                         {
                             identifyingFields
                         }
-                    },
-
-                    TimespanConfig = new StorageConfig.Types.TimespanConfig
-                    {
-                        StartTime = Timestamp.FromDateTime(System.DateTime.UtcNow.AddYears(-1)),
-                        EndTime = Timestamp.FromDateTime(System.DateTime.UtcNow)
-                    }
                 },
 
-                InspectConfig = new InspectConfig
+                TimespanConfig = new StorageConfig.Types.TimespanConfig
                 {
-                    InfoTypes = { infoTypes },
-                    CustomInfoTypes = { customInfoTypes },
-                    Limits = new FindingLimits
-                    {
-                        MaxFindingsPerRequest = maxFindings
-                    },
-                    ExcludeInfoTypes = false,
-                    IncludeQuote = includeQuote,
-                    MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+                    StartTime = Timestamp.FromDateTime(System.DateTime.UtcNow.AddYears(-1)),
+                    EndTime = Timestamp.FromDateTime(System.DateTime.UtcNow)
+                }
+            },
+
+            InspectConfig = new InspectConfig
+            {
+                InfoTypes = { infoTypes },
+                CustomInfoTypes = { customInfoTypes },
+                Limits = new FindingLimits
+                {
+                    MaxFindingsPerRequest = maxFindings
                 },
-                Actions =
+                ExcludeInfoTypes = false,
+                IncludeQuote = includeQuote,
+                MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+            },
+            Actions =
                 {
                     new Google.Cloud.Dlp.V2.Action
                     {
@@ -237,89 +235,89 @@ namespace GoogleCloudSamples
                         },
                     }
                 }
-            };
+        };
 
-            // Issue Create Dlp Job Request
-            DlpServiceClient client = DlpServiceClient.Create();
-            var request = new CreateDlpJobRequest
+        // Issue Create Dlp Job Request
+        DlpServiceClient client = DlpServiceClient.Create();
+        CreateDlpJobRequest request = new CreateDlpJobRequest
+        {
+            InspectJob = inspectJob,
+            ParentAsProjectName = new ProjectName(projectId),
+        };
+
+        // We need created job name
+        DlpJob dlpJob = client.CreateDlpJob(request);
+        string jobName = dlpJob.Name;
+
+        // Make sure the job finishes before inspecting the results.
+        // Alternatively, we can inspect results opportunistically, but
+        // for testing purposes, we want consistent outcome
+        bool jobFinished = EnsureJobFinishes(projectId, jobName);
+        if (jobFinished)
+        {
+            BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
+            Google.Cloud.BigQuery.V2.BigQueryTable table = bigQueryClient.GetTable(datasetId, tableId);
+
+            // Return only first page of 10 rows
+            Console.WriteLine("DLP v2 Results:");
+            Google.Api.Gax.PagedEnumerable<Google.Apis.Bigquery.v2.Data.TableDataList, BigQueryRow> firstPage = table.ListRows(new ListRowsOptions { StartIndex = 0, PageSize = 10 });
+            foreach (BigQueryRow item in firstPage)
             {
-                InspectJob = inspectJob,
-                ParentAsProjectName = new ProjectName(projectId),
-            };
-
-            // We need created job name
-            var dlpJob = client.CreateDlpJob(request);
-            string jobName = dlpJob.Name;
-
-            // Make sure the job finishes before inspecting the results.
-            // Alternatively, we can inspect results opportunistically, but
-            // for testing purposes, we want consistent outcome
-            bool jobFinished = EnsureJobFinishes(projectId, jobName);
-            if (jobFinished)
-            {
-                var bigQueryClient = BigQueryClient.Create(projectId);
-                var table = bigQueryClient.GetTable(datasetId, tableId);
-
-                // Return only first page of 10 rows
-                Console.WriteLine("DLP v2 Results:");
-                var firstPage = table.ListRows(new ListRowsOptions { StartIndex = 0, PageSize = 10 });
-                foreach (var item in firstPage)
-                {
-                    Console.WriteLine($"\t {item[""]}");
-                }
+                Console.WriteLine($"\t {item[""]}");
             }
-
-            return 0;
         }
 
-        // [END dlp_inspect_bigquery]
+        return 0;
+    }
 
-        // [START dlp_inspect_datastore]
-        public static object InspectCloudDataStore(
-            string projectId,
-            string minLikelihood,
-            int maxFindings,
-            bool includeQuote,
-            string kindName,
-            string namespaceId,
-            IEnumerable<InfoType> infoTypes,
-            IEnumerable<CustomInfoType> customInfoTypes,
-            string datasetId,
-            string tableId)
+    // [END dlp_inspect_bigquery]
+
+    // [START dlp_inspect_datastore]
+    public static object InspectCloudDataStore(
+        string projectId,
+        string minLikelihood,
+        int maxFindings,
+        bool includeQuote,
+        string kindName,
+        string namespaceId,
+        IEnumerable<InfoType> infoTypes,
+        IEnumerable<CustomInfoType> customInfoTypes,
+        string datasetId,
+        string tableId)
+    {
+        InspectJobConfig inspectJob = new InspectJobConfig
         {
-            var inspectJob = new InspectJobConfig
+            StorageConfig = new StorageConfig
             {
-                StorageConfig = new StorageConfig
+                DatastoreOptions = new DatastoreOptions
                 {
-                    DatastoreOptions = new DatastoreOptions
+                    Kind = new KindExpression { Name = kindName },
+                    PartitionId = new PartitionId
                     {
-                        Kind = new KindExpression { Name = kindName },
-                        PartitionId = new PartitionId
-                        {
-                            NamespaceId = namespaceId,
-                            ProjectId = projectId,
-                        }
-                    },
-                    TimespanConfig = new StorageConfig.Types.TimespanConfig
-                    {
-                        StartTime = Timestamp.FromDateTime(System.DateTime.UtcNow.AddYears(-1)),
-                        EndTime = Timestamp.FromDateTime(System.DateTime.UtcNow)
+                        NamespaceId = namespaceId,
+                        ProjectId = projectId,
                     }
                 },
-
-                InspectConfig = new InspectConfig
+                TimespanConfig = new StorageConfig.Types.TimespanConfig
                 {
-                    InfoTypes = { infoTypes },
-                    CustomInfoTypes = { customInfoTypes },
-                    Limits = new FindingLimits
-                    {
-                        MaxFindingsPerRequest = maxFindings
-                    },
-                    ExcludeInfoTypes = false,
-                    IncludeQuote = includeQuote,
-                    MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+                    StartTime = Timestamp.FromDateTime(System.DateTime.UtcNow.AddYears(-1)),
+                    EndTime = Timestamp.FromDateTime(System.DateTime.UtcNow)
+                }
+            },
+
+            InspectConfig = new InspectConfig
+            {
+                InfoTypes = { infoTypes },
+                CustomInfoTypes = { customInfoTypes },
+                Limits = new FindingLimits
+                {
+                    MaxFindingsPerRequest = maxFindings
                 },
-                Actions =
+                ExcludeInfoTypes = false,
+                IncludeQuote = includeQuote,
+                MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+            },
+            Actions =
                 {
                     new Google.Cloud.Dlp.V2.Action
                     {
@@ -338,79 +336,79 @@ namespace GoogleCloudSamples
                         },
                     }
                 }
-            };
+        };
 
-            // Issue Create Dlp Job Request
-            DlpServiceClient client = DlpServiceClient.Create();
-            var request = new CreateDlpJobRequest
+        // Issue Create Dlp Job Request
+        DlpServiceClient client = DlpServiceClient.Create();
+        CreateDlpJobRequest request = new CreateDlpJobRequest
+        {
+            InspectJob = inspectJob,
+            ParentAsProjectName = new ProjectName(projectId),
+        };
+
+        // We need created job name
+        DlpJob dlpJob = client.CreateDlpJob(request);
+        string jobName = dlpJob.Name;
+
+        // Make sure the job finishes before inspecting the results.
+        // Alternatively, we can inspect results opportunistically, but
+        // for testing purposes, we want consistent outcome
+        bool jobFinished = EnsureJobFinishes(projectId, jobName);
+        if (jobFinished)
+        {
+            BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
+            Google.Cloud.BigQuery.V2.BigQueryTable table = bigQueryClient.GetTable(datasetId, tableId);
+
+            // Return only first page of 10 rows
+            Console.WriteLine("DLP v2 Results:");
+            Google.Api.Gax.PagedEnumerable<Google.Apis.Bigquery.v2.Data.TableDataList, BigQueryRow> firstPage = table.ListRows(new ListRowsOptions { StartIndex = 0, PageSize = 10 });
+            foreach (BigQueryRow item in firstPage)
             {
-                InspectJob = inspectJob,
-                ParentAsProjectName = new ProjectName(projectId),
-            };
-
-            // We need created job name
-            var dlpJob = client.CreateDlpJob(request);
-            var jobName = dlpJob.Name;
-
-            // Make sure the job finishes before inspecting the results.
-            // Alternatively, we can inspect results opportunistically, but
-            // for testing purposes, we want consistent outcome
-            bool jobFinished = EnsureJobFinishes(projectId, jobName);
-            if (jobFinished)
-            {
-                var bigQueryClient = BigQueryClient.Create(projectId);
-                var table = bigQueryClient.GetTable(datasetId, tableId);
-
-                // Return only first page of 10 rows
-                Console.WriteLine("DLP v2 Results:");
-                var firstPage = table.ListRows(new ListRowsOptions { StartIndex = 0, PageSize = 10 });
-                foreach (var item in firstPage)
-                {
-                    Console.WriteLine($"\t {item[""]}");
-                }
+                Console.WriteLine($"\t {item[""]}");
             }
-
-            return 0;
         }
 
-        // [END dlp_inspect_datastore]
+        return 0;
+    }
 
-        // [START dlp_inspect_gcs]
+    // [END dlp_inspect_datastore]
 
-        public static object InspectGCS(
-            string projectId,
-            string minLikelihood,
-            int maxFindings,
-            bool includeQuote,
-            IEnumerable<InfoType> infoTypes,
-            IEnumerable<CustomInfoType> customInfoTypes,
-            string bucketName,
-            string topicId,
-            string subscriptionId)
+    // [START dlp_inspect_gcs]
+
+    public static object InspectGCS(
+        string projectId,
+        string minLikelihood,
+        int maxFindings,
+        bool includeQuote,
+        IEnumerable<InfoType> infoTypes,
+        IEnumerable<CustomInfoType> customInfoTypes,
+        string bucketName,
+        string topicId,
+        string subscriptionId)
+    {
+        InspectJobConfig inspectJob = new InspectJobConfig
         {
-            var inspectJob = new InspectJobConfig
+            StorageConfig = new StorageConfig
             {
-                StorageConfig = new StorageConfig
+                CloudStorageOptions = new CloudStorageOptions
                 {
-                    CloudStorageOptions = new CloudStorageOptions
-                    {
-                        FileSet = new CloudStorageOptions.Types.FileSet { Url = $"gs://{bucketName}/*.txt" },
-                        BytesLimitPerFile = 1073741824
-                    },
+                    FileSet = new CloudStorageOptions.Types.FileSet { Url = $"gs://{bucketName}/*.txt" },
+                    BytesLimitPerFile = 1073741824
                 },
-                InspectConfig = new InspectConfig
+            },
+            InspectConfig = new InspectConfig
+            {
+                InfoTypes = { infoTypes },
+                CustomInfoTypes = { customInfoTypes },
+                ExcludeInfoTypes = false,
+                IncludeQuote = includeQuote,
+                Limits = new FindingLimits
                 {
-                    InfoTypes = { infoTypes },
-                    CustomInfoTypes = { customInfoTypes },
-                    ExcludeInfoTypes = false,
-                    IncludeQuote = includeQuote,
-                    Limits = new FindingLimits
-                    {
-                        MaxFindingsPerRequest = maxFindings
-                    },
-                    MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+                    MaxFindingsPerRequest = maxFindings
                 },
-                Actions =
+                MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+            },
+            Actions =
                 {
                     new Google.Cloud.Dlp.V2.Action
                     {
@@ -421,89 +419,88 @@ namespace GoogleCloudSamples
                         }
                     }
                 }
-            };
+        };
 
-            // Issue Create Dlp Job Request
-            DlpServiceClient client = DlpServiceClient.Create();
-            var request = new CreateDlpJobRequest
-            {
-                InspectJob = inspectJob,
-                ParentAsProjectName = new ProjectName(projectId),
-            };
-
-            // We need created job name
-            var dlpJob = client.CreateDlpJob(request);
-
-            // Get a pub/sub subscription and listen for DLP results
-            var fireEvent = new ManualResetEventSlim();
-
-            var subscriptionName = new SubscriptionName(projectId, subscriptionId);
-            var subscriber = SubscriberClient.CreateAsync(subscriptionName).Result;
-            subscriber.StartAsync(
-                (pubSubMessage, cancellationToken) =>
-                {
-                    // Given a message that we receive on this subscription, we should either acknowledge or decline it
-                    if (pubSubMessage.Attributes["DlpJobName"] == dlpJob.Name)
-                    {
-                        fireEvent.Set();
-                        return Task.FromResult(SubscriberClient.Reply.Ack);
-                    }
-
-                    return Task.FromResult(SubscriberClient.Reply.Nack);
-                });
-
-            // We block here until receiving a signal from a separate thread that is waiting on a message indicating receiving a result of Dlp job
-            if (fireEvent.Wait(TimeSpan.FromMinutes(1)))
-            {
-                // Stop the thread that is listening to messages as a result of StartAsync call earlier
-                subscriber.StopAsync(CancellationToken.None).Wait();
-
-                // Now we can inspect full job results
-                var job = client.GetDlpJob(new GetDlpJobRequest { DlpJobName = new DlpJobName(projectId, dlpJob.Name) });
-
-                // Inspect Job details
-                Console.WriteLine($"Processed bytes: {job.InspectDetails.Result.ProcessedBytes}");
-                Console.WriteLine($"Total estimated bytes: {job.InspectDetails.Result.TotalEstimatedBytes}");
-                var stats = job.InspectDetails.Result.InfoTypeStats;
-                Console.WriteLine("Found stats:");
-                foreach (var stat in stats)
-                {
-                    Console.WriteLine($"{stat.InfoType.Name}");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Error: The wait failed on timeout");
-            }
-
-            return 0;
-        }
-
-        // [END dlp_inspect_gcs]
-
-        private static bool EnsureJobFinishes(string projectId, string jobName)
+        // Issue Create Dlp Job Request
+        DlpServiceClient client = DlpServiceClient.Create();
+        CreateDlpJobRequest request = new CreateDlpJobRequest
         {
-            DlpServiceClient client = DlpServiceClient.Create();
-            var request = new GetDlpJobRequest
-            {
-                DlpJobName = new DlpJobName(projectId, jobName),
-            };
+            InspectJob = inspectJob,
+            ParentAsProjectName = new ProjectName(projectId),
+        };
 
-            // Simple logic that gives the job 5*30 sec at most to complete - for testing purposes only
-            int numOfAttempts = 5;
-            do
+        // We need created job name
+        DlpJob dlpJob = client.CreateDlpJob(request);
+
+        // Get a pub/sub subscription and listen for DLP results
+        ManualResetEventSlim fireEvent = new ManualResetEventSlim();
+
+        SubscriptionName subscriptionName = new SubscriptionName(projectId, subscriptionId);
+        SubscriberClient subscriber = SubscriberClient.CreateAsync(subscriptionName).Result;
+        subscriber.StartAsync(
+            (pubSubMessage, cancellationToken) =>
             {
-                var dlpJob = client.GetDlpJob(request);
-                numOfAttempts--;
-                if (dlpJob.State != DlpJob.Types.JobState.Running)
+                // Given a message that we receive on this subscription, we should either acknowledge or decline it
+                if (pubSubMessage.Attributes["DlpJobName"] == dlpJob.Name)
                 {
-                    return true;
+                    fireEvent.Set();
+                    return Task.FromResult(SubscriberClient.Reply.Ack);
                 }
 
-                Thread.Sleep(TimeSpan.FromSeconds(30));
-            } while (numOfAttempts > 0);
+                return Task.FromResult(SubscriberClient.Reply.Nack);
+            });
 
-            return false;
+        // We block here until receiving a signal from a separate thread that is waiting on a message indicating receiving a result of Dlp job
+        if (fireEvent.Wait(TimeSpan.FromMinutes(1)))
+        {
+            // Stop the thread that is listening to messages as a result of StartAsync call earlier
+            subscriber.StopAsync(CancellationToken.None).Wait();
+
+            // Now we can inspect full job results
+            DlpJob job = client.GetDlpJob(new GetDlpJobRequest { DlpJobName = new DlpJobName(projectId, dlpJob.Name) });
+
+            // Inspect Job details
+            Console.WriteLine($"Processed bytes: {job.InspectDetails.Result.ProcessedBytes}");
+            Console.WriteLine($"Total estimated bytes: {job.InspectDetails.Result.TotalEstimatedBytes}");
+            Google.Protobuf.Collections.RepeatedField<InfoTypeStats> stats = job.InspectDetails.Result.InfoTypeStats;
+            Console.WriteLine("Found stats:");
+            foreach (InfoTypeStats stat in stats)
+            {
+                Console.WriteLine($"{stat.InfoType.Name}");
+            }
         }
+        else
+        {
+            Console.WriteLine("Error: The wait failed on timeout");
+        }
+
+        return 0;
+    }
+
+    // [END dlp_inspect_gcs]
+
+    private static bool EnsureJobFinishes(string projectId, string jobName)
+    {
+        DlpServiceClient client = DlpServiceClient.Create();
+        GetDlpJobRequest request = new GetDlpJobRequest
+        {
+            DlpJobName = new DlpJobName(projectId, jobName),
+        };
+
+        // Simple logic that gives the job 5*30 sec at most to complete - for testing purposes only
+        int numOfAttempts = 5;
+        do
+        {
+            DlpJob dlpJob = client.GetDlpJob(request);
+            numOfAttempts--;
+            if (dlpJob.State != DlpJob.Types.JobState.Running)
+            {
+                return true;
+            }
+
+            Thread.Sleep(TimeSpan.FromSeconds(30));
+        } while (numOfAttempts > 0);
+
+        return false;
     }
 }

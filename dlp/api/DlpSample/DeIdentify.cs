@@ -21,31 +21,29 @@ using System.IO;
 using System.Linq;
 using static Google.Cloud.Dlp.V2.CryptoReplaceFfxFpeConfig.Types;
 
-namespace GoogleCloudSamples
+internal class DeIdentify
 {
-    internal class DeIdentify
+    // [START dlp_deidentify_masking]
+    public static object DeidMask(
+        string projectId,
+        string dataValue,
+        IEnumerable<InfoType> infoTypes,
+        string maskingCharacter,
+        int numberToMask,
+        bool reverseOrder)
     {
-        // [START dlp_deidentify_masking]
-        public static object DeidMask(
-            string projectId,
-            string dataValue,
-            IEnumerable<InfoType> infoTypes,
-            string maskingCharacter,
-            int numberToMask,
-            bool reverseOrder)
+        DeidentifyContentRequest request = new DeidentifyContentRequest
         {
-            var request = new DeidentifyContentRequest
+            ParentAsProjectName = new ProjectName(projectId),
+            InspectConfig = new InspectConfig
             {
-                ParentAsProjectName = new ProjectName(projectId),
-                InspectConfig = new InspectConfig
+                InfoTypes = { infoTypes }
+            },
+            DeidentifyConfig = new DeidentifyConfig
+            {
+                InfoTypeTransformations = new InfoTypeTransformations
                 {
-                    InfoTypes = { infoTypes }
-                },
-                DeidentifyConfig = new DeidentifyConfig
-                {
-                    InfoTypeTransformations = new InfoTypeTransformations
-                    {
-                        Transformations = {
+                    Transformations = {
                             new InfoTypeTransformations.Types.InfoTypeTransformation
                             {
                                 PrimitiveTransformation = new PrimitiveTransformation
@@ -59,37 +57,37 @@ namespace GoogleCloudSamples
                                 }
                             }
                         }
-                    }
-                },
-                Item = new ContentItem
-                {
-                    Value = dataValue
                 }
-            };
-
-            DlpServiceClient dlp = DlpServiceClient.Create();
-            var response = dlp.DeidentifyContent(request);
-
-            Console.WriteLine($"Deidentified content: {response.Item.Value}");
-            return 0;
-        }
-
-        // [END dlp_deidentify_masking]
-
-        // [START dlp_deidentify_fpe]
-        public static object DeidFpe(
-            string projectId,
-            string dataValue,
-            IEnumerable<InfoType> infoTypes,
-            string keyName,
-            string wrappedKey,
-            string alphabet)
-        {
-            var deidentifyConfig = new DeidentifyConfig
+            },
+            Item = new ContentItem
             {
-                InfoTypeTransformations = new InfoTypeTransformations
-                {
-                    Transformations =
+                Value = dataValue
+            }
+        };
+
+        DlpServiceClient dlp = DlpServiceClient.Create();
+        DeidentifyContentResponse response = dlp.DeidentifyContent(request);
+
+        Console.WriteLine($"Deidentified content: {response.Item.Value}");
+        return 0;
+    }
+
+    // [END dlp_deidentify_masking]
+
+    // [START dlp_deidentify_fpe]
+    public static object DeidFpe(
+        string projectId,
+        string dataValue,
+        IEnumerable<InfoType> infoTypes,
+        string keyName,
+        string wrappedKey,
+        string alphabet)
+    {
+        DeidentifyConfig deidentifyConfig = new DeidentifyConfig
+        {
+            InfoTypeTransformations = new InfoTypeTransformations
+            {
+                Transformations =
                     {
                         new InfoTypeTransformations.Types.InfoTypeTransformation
                         {
@@ -114,41 +112,41 @@ namespace GoogleCloudSamples
                             }
                         }
                     }
-                }
-            };
+            }
+        };
 
-            DlpServiceClient dlp = DlpServiceClient.Create();
-            var response = dlp.DeidentifyContent(
-                new DeidentifyContentRequest
-                {
-                    ParentAsProjectName = new ProjectName(projectId),
-                    InspectConfig = new InspectConfig
-                    {
-                        InfoTypes = { infoTypes }
-                    },
-                    DeidentifyConfig = deidentifyConfig,
-                    Item = new ContentItem { Value = dataValue }
-                });
-
-            Console.WriteLine($"Deidentified content: {response.Item.Value}");
-            return 0;
-        }
-
-        // [END dlp_deidentify_fpe]
-
-        // [START dlp_reidentify_fpe]
-        public static object ReidFpe(
-            string projectId,
-            string dataValue,
-            string keyName,
-            string wrappedKey,
-            string alphabet)
-        {
-            var reidentifyConfig = new DeidentifyConfig
+        DlpServiceClient dlp = DlpServiceClient.Create();
+        DeidentifyContentResponse response = dlp.DeidentifyContent(
+            new DeidentifyContentRequest
             {
-                InfoTypeTransformations = new InfoTypeTransformations
+                ParentAsProjectName = new ProjectName(projectId),
+                InspectConfig = new InspectConfig
                 {
-                    Transformations =
+                    InfoTypes = { infoTypes }
+                },
+                DeidentifyConfig = deidentifyConfig,
+                Item = new ContentItem { Value = dataValue }
+            });
+
+        Console.WriteLine($"Deidentified content: {response.Item.Value}");
+        return 0;
+    }
+
+    // [END dlp_deidentify_fpe]
+
+    // [START dlp_reidentify_fpe]
+    public static object ReidFpe(
+        string projectId,
+        string dataValue,
+        string keyName,
+        string wrappedKey,
+        string alphabet)
+    {
+        DeidentifyConfig reidentifyConfig = new DeidentifyConfig
+        {
+            InfoTypeTransformations = new InfoTypeTransformations
+            {
+                Transformations =
                     {
                         new InfoTypeTransformations.Types.InfoTypeTransformation
                         {
@@ -177,12 +175,12 @@ namespace GoogleCloudSamples
                             }
                         }
                     }
-                }
-            };
+            }
+        };
 
-            var inspectConfig = new InspectConfig
-            {
-                CustomInfoTypes =
+        InspectConfig inspectConfig = new InspectConfig
+        {
+            CustomInfoTypes =
                 {
                     new CustomInfoType
                     {
@@ -193,111 +191,110 @@ namespace GoogleCloudSamples
                         SurrogateType = new CustomInfoType.Types.SurrogateType()
                     }
                 }
-            };
+        };
 
-            var dlp = DlpServiceClient.Create();
-            var response = dlp.ReidentifyContent(new ReidentifyContentRequest
+        DlpServiceClient dlp = DlpServiceClient.Create();
+        ReidentifyContentResponse response = dlp.ReidentifyContent(new ReidentifyContentRequest
+        {
+            ParentAsProjectName = new ProjectName(projectId),
+            InspectConfig = inspectConfig,
+            ReidentifyConfig = reidentifyConfig,
+            Item = new ContentItem { Value = dataValue }
+        });
+
+        Console.WriteLine($"Reidentified content: {response.Item.Value}");
+        return 0;
+    }
+
+    // [END dlp_reidentify_fpe]
+
+    // [START dlp_deidentify_date_shift]
+    public static object DeidDateShift(
+        string projectId,
+        string inputCsvFile,
+        string outputCsvFile,
+        int lowerBoundDays,
+        int upperBoundDays,
+        string dateFields,
+        string contextField = "",
+        string keyName = "",
+        string wrappedKey = "")
+    {
+        DlpServiceClient dlp = DlpServiceClient.Create();
+
+        // Read file
+        string[] csvLines = File.ReadAllLines(inputCsvFile);
+        string[] csvHeaders = csvLines[0].Split(',');
+        string[] csvRows = csvLines.Skip(1).ToArray();
+
+        // Convert dates to protobuf format, and everything else to a string
+        IEnumerable<FieldId> protoHeaders = csvHeaders.Select(header => new FieldId { Name = header });
+        IEnumerable<Table.Types.Row> protoRows = csvRows.Select(CsvRow =>
+        {
+            string[] rowValues = CsvRow.Split(',');
+            IEnumerable<Value> protoValues = rowValues.Select(RowValue =>
             {
-                ParentAsProjectName = new ProjectName(projectId),
-                InspectConfig = inspectConfig,
-                ReidentifyConfig = reidentifyConfig,
-                Item = new ContentItem { Value = dataValue }
+                if (System.DateTime.TryParse(RowValue, out System.DateTime parsedDate))
+                {
+                    return new Value
+                    {
+                        DateValue = new Google.Type.Date
+                        {
+                            Year = parsedDate.Year,
+                            Month = parsedDate.Month,
+                            Day = parsedDate.Day
+                        }
+                    };
+                }
+                else
+                {
+                    return new Value
+                    {
+                        StringValue = RowValue
+                    };
+                }
             });
 
-            Console.WriteLine($"Reidentified content: {response.Item.Value}");
-            return 0;
+            Table.Types.Row rowObject = new Table.Types.Row();
+            rowObject.Values.Add(protoValues);
+            return rowObject;
+        });
+
+        IEnumerable<FieldId> dateFieldList = dateFields
+            .Split(',')
+            .Select(field => new FieldId { Name = field });
+
+        // Construct + execute the request
+        DateShiftConfig dateShiftConfig = new DateShiftConfig
+        {
+            LowerBoundDays = lowerBoundDays,
+            UpperBoundDays = upperBoundDays
+        };
+        bool hasKeyName = !String.IsNullOrEmpty(keyName);
+        bool hasWrappedKey = !String.IsNullOrEmpty(wrappedKey);
+        bool hasContext = !String.IsNullOrEmpty(contextField);
+        if (hasKeyName && hasWrappedKey && hasContext)
+        {
+            dateShiftConfig.Context = new FieldId { Name = contextField };
+            dateShiftConfig.CryptoKey = new CryptoKey
+            {
+                KmsWrapped = new KmsWrappedCryptoKey
+                {
+                    WrappedKey = ByteString.FromBase64(wrappedKey),
+                    CryptoKeyName = keyName
+                }
+            };
+        }
+        else if (hasKeyName || hasWrappedKey || hasContext)
+        {
+            throw new ArgumentException("Must specify ALL or NONE of: {contextFieldId, keyName, wrappedKey}!");
         }
 
-        // [END dlp_reidentify_fpe]
-
-        // [START dlp_deidentify_date_shift]
-        public static object DeidDateShift(
-            string projectId,
-            string inputCsvFile,
-            string outputCsvFile,
-            int lowerBoundDays,
-            int upperBoundDays,
-            string dateFields,
-            string contextField = "",
-            string keyName = "",
-            string wrappedKey = "")
+        DeidentifyConfig deidConfig = new DeidentifyConfig
         {
-            var dlp = DlpServiceClient.Create();
-
-            // Read file
-            string[] csvLines = File.ReadAllLines(inputCsvFile);
-            string[] csvHeaders = csvLines[0].Split(',');
-            string[] csvRows = csvLines.Skip(1).ToArray();
-
-            // Convert dates to protobuf format, and everything else to a string
-            var protoHeaders = csvHeaders.Select(header => new FieldId { Name = header });
-            var protoRows = csvRows.Select(CsvRow =>
+            RecordTransformations = new RecordTransformations
             {
-                var rowValues = CsvRow.Split(',');
-                var protoValues = rowValues.Select(RowValue =>
-                {
-                    System.DateTime parsedDate;
-                    if (System.DateTime.TryParse(RowValue, out parsedDate))
-                    {
-                        return new Value
-                        {
-                            DateValue = new Google.Type.Date
-                            {
-                                Year = parsedDate.Year,
-                                Month = parsedDate.Month,
-                                Day = parsedDate.Day
-                            }
-                        };
-                    }
-                    else
-                    {
-                        return new Value
-                        {
-                            StringValue = RowValue
-                        };
-                    }
-                });
-
-                var rowObject = new Table.Types.Row();
-                rowObject.Values.Add(protoValues);
-                return rowObject;
-            });
-
-            var dateFieldList = dateFields
-                .Split(',')
-                .Select(field => new FieldId { Name = field });
-
-            // Construct + execute the request
-            var dateShiftConfig = new DateShiftConfig
-            {
-                LowerBoundDays = lowerBoundDays,
-                UpperBoundDays = upperBoundDays
-            };
-            bool hasKeyName = !String.IsNullOrEmpty(keyName);
-            bool hasWrappedKey = !String.IsNullOrEmpty(wrappedKey);
-            bool hasContext = !String.IsNullOrEmpty(contextField);
-            if (hasKeyName && hasWrappedKey && hasContext)
-            {
-                dateShiftConfig.Context = new FieldId { Name = contextField };
-                dateShiftConfig.CryptoKey = new CryptoKey
-                {
-                    KmsWrapped = new KmsWrappedCryptoKey
-                    {
-                        WrappedKey = ByteString.FromBase64(wrappedKey),
-                        CryptoKeyName = keyName
-                    }
-                };
-            }
-            else if (hasKeyName || hasWrappedKey || hasContext)
-            {
-                throw new ArgumentException("Must specify ALL or NONE of: {contextFieldId, keyName, wrappedKey}!");
-            }
-
-            var deidConfig = new DeidentifyConfig
-            {
-                RecordTransformations = new RecordTransformations
-                {
-                    FieldTransformations =
+                FieldTransformations =
                     {
                         new FieldTransformation
                         {
@@ -308,52 +305,53 @@ namespace GoogleCloudSamples
                             Fields = { dateFieldList }
                         }
                     }
-                }
-            };
+            }
+        };
 
-            DeidentifyContentResponse response = dlp.DeidentifyContent(
-                new DeidentifyContentRequest
-                {
-                    Parent = $"projects/{projectId}",
-                    DeidentifyConfig = deidConfig,
-                    Item = new ContentItem
-                    {
-                        Table = new Table
-                        {
-                            Headers = { protoHeaders },
-                            Rows = { protoRows }
-                        }
-                    }
-                });
-
-            // Save the results
-            List<String> outputLines = new List<string>();
-            outputLines.Add(csvLines[0]);
-
-            outputLines.AddRange(response.Item.Table.Rows.Select(ProtoRow =>
+        DeidentifyContentResponse response = dlp.DeidentifyContent(
+            new DeidentifyContentRequest
             {
-                var Values = ProtoRow.Values.Select(ProtoValue =>
+                Parent = $"projects/{projectId}",
+                DeidentifyConfig = deidConfig,
+                Item = new ContentItem
                 {
-                    if (ProtoValue.DateValue != null)
+                    Table = new Table
                     {
-                        var ProtoDate = ProtoValue.DateValue;
-                        System.DateTime Date = new System.DateTime(
-                            ProtoDate.Year, ProtoDate.Month, ProtoDate.Day);
-                        return Date.ToShortDateString();
+                        Headers = { protoHeaders },
+                        Rows = { protoRows }
                     }
-                    else
-                    {
-                        return ProtoValue.StringValue;
-                    }
-                });
-                return String.Join(',', Values);
-            }));
+                }
+            });
 
-            File.WriteAllLines(outputCsvFile, outputLines);
+        // Save the results
+        List<string> outputLines = new List<string>
+        {
+            csvLines[0]
+        };
 
-            return 0;
-        }
+        outputLines.AddRange(response.Item.Table.Rows.Select(ProtoRow =>
+        {
+            IEnumerable<string> Values = ProtoRow.Values.Select(ProtoValue =>
+            {
+                if (ProtoValue.DateValue != null)
+                {
+                    Google.Type.Date ProtoDate = ProtoValue.DateValue;
+                    System.DateTime Date = new System.DateTime(
+                        ProtoDate.Year, ProtoDate.Month, ProtoDate.Day);
+                    return Date.ToShortDateString();
+                }
+                else
+                {
+                    return ProtoValue.StringValue;
+                }
+            });
+            return String.Join(',', Values);
+        }));
 
-        // [END dlp_deidentify_date_shift]
+        File.WriteAllLines(outputCsvFile, outputLines);
+
+        return 0;
     }
+
+    // [END dlp_deidentify_date_shift]
 }

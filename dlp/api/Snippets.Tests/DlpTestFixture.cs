@@ -17,29 +17,42 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Dlp.V2;
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
-using Xunit;
 
-namespace Snippets.Tests
+/* Initialize environment variables for DLP tests */
+public class DlpTestFixture
 {
-    /* Initialize environment variables for DLP tests */
-    public class DlpTestFixture
+    public readonly string ProjectId;
+    public readonly string WrappedKey;
+    public readonly string KeyName;
+    public readonly string ResourcePath = Path.GetFullPath("../../../resources/");
+
+    public DlpTestFixture()
     {
-        public readonly string ProjectId;
-        public readonly string WrappedKey;
-        public readonly string KeyName;
-        public readonly string ResourcePath = Path.GetFullPath("../../../resources/");
+        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        // Authorize the client using Application Default Credentials.
+        // See: https://developers.google.com/identity/protocols/application-default-credentials
+        _ = GoogleCredential.GetApplicationDefaultAsync().Result;
 
-        public DlpTestFixture()
+        // Fetch the test key from an environment variable
+        KeyName = Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
+        WrappedKey = Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
+    }
+
+    public void Dispose()
+    {
+        // Delete any jobs created by the test.
+        DlpServiceClient dlp = DlpServiceClient.Create();
+        Google.Api.Gax.PagedEnumerable<ListDlpJobsResponse, DlpJob> result = dlp.ListDlpJobs(new ListDlpJobsRequest
         {
-            ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            // Authorize the client using Application Default Credentials.
-            // See: https://developers.google.com/identity/protocols/application-default-credentials
-            GoogleCredential credential = GoogleCredential.GetApplicationDefaultAsync().Result;
-
-            // Fetch the test key from an environment variable
-            KeyName = Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
-            WrappedKey = Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
+            ParentAsProjectName = new ProjectName(ProjectId),
+            Type = DlpJobType.RiskAnalysisJob
+        });
+        foreach (DlpJob job in result)
+        {
+            dlp.DeleteDlpJob(new DeleteDlpJobRequest()
+            {
+                Name = job.Name
+            });
         }
     }
 }

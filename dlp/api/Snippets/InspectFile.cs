@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.IO;
 using static Google.Cloud.Dlp.V2.ByteContentItem.Types;
 
-class DlpInspectFile
+public class DlpInspectFile
 {
     /// <summary>
     /// Inspects the provided file for sensitive data.
@@ -30,7 +30,7 @@ class DlpInspectFile
     /// <param name="projectId">Your Google Cloud Project ID.</param>
     /// <param name="filePath">The path to the specified file to inspect.</param>
     /// <param name="fileType">The type of the specifed file.</param>
-    public IEnumerable<Finding> InspectFile(
+    public static IEnumerable<Finding> InspectFile(
         string projectId = "YOUR-PROJECT-ID",
         string filePath = "path/to/image.png",
         BytesType fileType = BytesType.ImagePng)
@@ -46,7 +46,7 @@ class DlpInspectFile
         }
 
         // Construct a request.
-        var request = new InspectContentRequest
+        InspectContentRequest request = new InspectContentRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             Item = new ContentItem
@@ -82,11 +82,11 @@ class DlpInspectFile
         InspectContentResponse response = dlp.InspectContent(request);
 
         // Inspect response
-        var findings = response.Result.Findings;
+        Google.Protobuf.Collections.RepeatedField<Finding> findings = response.Result.Findings;
         if (findings.Count > 0)
         {
             Console.WriteLine("Findings:");
-            foreach (var finding in findings)
+            foreach (Finding finding in findings)
             {
                 Console.WriteLine($"Quote: {finding.Quote}");
                 Console.WriteLine($"InfoType: {finding.InfoType}");

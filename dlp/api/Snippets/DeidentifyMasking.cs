@@ -18,7 +18,7 @@ using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
 
-class DlpDeidentifyMasking
+public class DlpDeidentifyMasking
 {
     /// <summary>
     /// Replace sensitive information with masking characters using the DLP API.
@@ -35,7 +35,7 @@ class DlpDeidentifyMasking
         DlpServiceClient dlp = DlpServiceClient.Create();
 
         // Construct a request.
-        var transformation = new InfoTypeTransformations.Types.InfoTypeTransformation
+        InfoTypeTransformations.Types.InfoTypeTransformation transformation = new InfoTypeTransformations.Types.InfoTypeTransformation
         {
             PrimitiveTransformation = new PrimitiveTransformation
             {
@@ -47,7 +47,7 @@ class DlpDeidentifyMasking
                 }
             }
         };
-        var request = new DeidentifyContentRequest
+        DeidentifyContentRequest request = new DeidentifyContentRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             InspectConfig = new InspectConfig
@@ -68,7 +68,7 @@ class DlpDeidentifyMasking
         };
 
         // Call the API.
-        var response = dlp.DeidentifyContent(request);
+        DeidentifyContentResponse response = dlp.DeidentifyContent(request);
 
         // Inspect the results.
         Console.WriteLine($"Deidentified content: {response.Item.Value}");

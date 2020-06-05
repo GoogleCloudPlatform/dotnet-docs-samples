@@ -17,7 +17,7 @@
 using Google.Cloud.Dlp.V2;
 using System;
 
-class JobsDelete
+public class JobsDelete
 {
     public static void DeleteJob(string jobName)
     {

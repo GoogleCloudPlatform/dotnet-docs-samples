@@ -12,13 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.Dlp.V2;
+using System.Linq;
 using Xunit;
-using System;
 
-namespace Snippets.Tests
+public class JobsListTests : IClassFixture<DlpTestFixture>
 {
-    public class JobsListTests : IClassFixture<DlpTestFixture>, IDisposable
+    private RetryRobot TestRetryRobot { get; } = new RetryRobot();
+    private DlpTestFixture Fixture { get; }
+    public JobsListTests(DlpTestFixture fixture)
     {
-        
+        Fixture = fixture;
+    }
+
+    private static CreateDlpJobRequest GetTestRequest(string projectId)
+    {
+        return new CreateDlpJobRequest()
+        {
+            ParentAsProjectName = new ProjectName(projectId),
+            RiskJob = new RiskAnalysisJobConfig()
+            {
+                PrivacyMetric = new PrivacyMetric()
+                {
+                    CategoricalStatsConfig = new PrivacyMetric.Types.CategoricalStatsConfig()
+                    {
+                        Field = new FieldId()
+                        {
+                            Name = "zip_code"
+                        }
+                    }
+                },
+                SourceTable = new BigQueryTable()
+                {
+                    ProjectId = "bigquery-public-data",
+                    DatasetId = "san_francisco",
+                    TableId = "bikeshare_trips"
+                }
+            }
+        };
+    }
+
+    [Fact]
+    public void TestListDlpJobs()
+    {
+        // Create job.
+        DlpServiceClient dlp = DlpServiceClient.Create();
+        DlpJob dlpJob = dlp.CreateDlpJob(GetTestRequest(Fixture.ProjectId));
+
+        TestRetryRobot.ShouldRetry = ex => true;
+        TestRetryRobot.Eventually(() =>
+        {
+            var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "RiskAnalysisJob");
+
+            Assert.True(response.Any());
+        });
     }
 }

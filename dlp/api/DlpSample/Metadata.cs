@@ -15,32 +15,29 @@
 using Google.Cloud.Dlp.V2;
 using System;
 
-namespace GoogleCloudSamples
+internal class Metadata
 {
-    internal class Metadata
+    // [START dlp_list_info_types]
+    public static object ListInfoTypes(
+        string languageCode,
+        string filter)
     {
-        // [START dlp_list_info_types]
-        public static object ListInfoTypes(
-            string languageCode,
-            string filter)
-        {
-            DlpServiceClient dlp = DlpServiceClient.Create();
-            var response = dlp.ListInfoTypes(
-                new ListInfoTypesRequest
-                {
-                    LanguageCode = languageCode,
-                    Filter = filter
-                });
-
-            Console.WriteLine("Info Types:");
-            foreach (var InfoType in response.InfoTypes)
+        DlpServiceClient dlp = DlpServiceClient.Create();
+        ListInfoTypesResponse response = dlp.ListInfoTypes(
+            new ListInfoTypesRequest
             {
-                Console.WriteLine($"\t{InfoType.Name} ({InfoType.DisplayName})");
-            }
+                LanguageCode = languageCode,
+                Filter = filter
+            });
 
-            return 0;
+        Console.WriteLine("Info Types:");
+        foreach (InfoTypeDescription InfoType in response.InfoTypes)
+        {
+            Console.WriteLine($"\t{InfoType.Name} ({InfoType.DisplayName})");
         }
 
-        // [END dlp_list_info_types]
+        return 0;
     }
+
+    // [END dlp_list_info_types]
 }

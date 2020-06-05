@@ -15,18 +15,18 @@
 
 // [START dlp_list_jobs]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Api.Gax;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
 
-class JobsList
+public class JobsList
 {
-    public static PagedEnumerable<ListDlpJobsResponse, DlpJob> ListJobs(string projectId, string filter, string jobType)
+    public static PagedEnumerable<ListDlpJobsResponse, DlpJob> ListDlpJobs(string projectId, string filter, string jobType)
     {
         DlpServiceClient dlp = DlpServiceClient.Create();
 
-        var response = dlp.ListDlpJobs(new ListDlpJobsRequest
+        PagedEnumerable<ListDlpJobsResponse, DlpJob> response = dlp.ListDlpJobs(new ListDlpJobsRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             Filter = filter,

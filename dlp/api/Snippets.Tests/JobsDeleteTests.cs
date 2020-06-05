@@ -13,12 +13,8 @@
 // limitations under the License.
 
 using Xunit;
-using System;
 
-namespace Snippets.Tests
+public class JobsDeleteTests : IClassFixture<DlpTestFixture>
 {
-    public class JobsDeleteTests : IClassFixture<DlpTestFixture>, IDisposable
-    {
-        
-    }
+
 }

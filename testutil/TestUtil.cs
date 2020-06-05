@@ -22,166 +22,163 @@ using System.Security.Cryptography;
 using System.Threading;
 using Xunit;
 
-namespace GoogleCloudSamples
+public class TestUtil
 {
-    public class TestUtil
+    public static string RandomName()
     {
-        public static string RandomName()
+        using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
         {
-            using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
+            string legalChars = "abcdefhijklmnpqrstuvwxyz";
+            byte[] randomByte = new byte[1];
+            char[] randomChars = new char[20];
+            int nextChar = 0;
+            while (nextChar < randomChars.Length)
             {
-                string legalChars = "abcdefhijklmnpqrstuvwxyz";
-                byte[] randomByte = new byte[1];
-                var randomChars = new char[20];
-                int nextChar = 0;
-                while (nextChar < randomChars.Length)
-                {
-                    rng.GetBytes(randomByte);
-                    if (legalChars.Contains((char)randomByte[0]))
-                        randomChars[nextChar++] = (char)randomByte[0];
-                }
-                return new string(randomChars);
+                rng.GetBytes(randomByte);
+                if (legalChars.Contains((char)randomByte[0]))
+                    randomChars[nextChar++] = (char)randomByte[0];
+            }
+            return new string(randomChars);
+        }
+    }
+}
+
+// TODO: Remove this class and use
+//       Transient Fault Handling Application Block:
+//       https://msdn.microsoft.com/en-us/library/dn440719(v=pandp.60).aspx
+public class RetryRobot
+{
+    public int FirstRetryDelayMs { get; set; } = 1000;
+    public float DelayMultiplier { get; set; } = 2;
+    public int MaxTryCount { get; set; } = 7;
+    public IEnumerable<Type> RetryWhenExceptions { get; set; } = new Type[0];
+    public Func<Exception, bool> ShouldRetry { get; set; }
+
+    /// <summary>
+    /// Retry action when assertion fails.
+    /// </summary>
+    /// <param name="func"></param>
+    public T Eventually<T>(Func<T> func)
+    {
+        int delayMs = FirstRetryDelayMs;
+        for (int i = 0; ; ++i)
+        {
+            try
+            {
+                return func();
+            }
+            catch (Exception e)
+            when (ShouldCatch(e) && i < MaxTryCount)
+            {
+                Thread.Sleep(delayMs);
+                delayMs *= (int)DelayMultiplier;
             }
         }
     }
 
-    // TODO: Remove this class and use
-    //       Transient Fault Handling Application Block:
-    //       https://msdn.microsoft.com/en-us/library/dn440719(v=pandp.60).aspx
-    public class RetryRobot
+    private bool ShouldCatch(Exception e)
     {
-        public int FirstRetryDelayMs { get; set; } = 1000;
-        public float DelayMultiplier { get; set; } = 2;
-        public int MaxTryCount { get; set; } = 7;
-        public IEnumerable<Type> RetryWhenExceptions { get; set; } = new Type[0];
-        public Func<Exception, bool> ShouldRetry { get; set; }
-
-        /// <summary>
-        /// Retry action when assertion fails.
-        /// </summary>
-        /// <param name="func"></param>
-        public T Eventually<T>(Func<T> func)
+        if (ShouldRetry != null)
+            return ShouldRetry(e);
+        foreach (Type exceptionType in RetryWhenExceptions)
         {
-            int delayMs = FirstRetryDelayMs;
-            for (int i = 0; ; ++i)
-            {
-                try
-                {
-                    return func();
-                }
-                catch (Exception e)
-                when (ShouldCatch(e) && i < MaxTryCount)
-                {
-                    Thread.Sleep(delayMs);
-                    delayMs *= (int)DelayMultiplier;
-                }
-            }
+            if (exceptionType.IsAssignableFrom(e.GetType()))
+                return true;
         }
+        return false;
+    }
 
-        private bool ShouldCatch(Exception e)
+    public void Eventually(Action action)
+    {
+        Eventually(() => { action(); return 0; });
+    }
+}
+
+public struct ConsoleOutput
+{
+    public int ExitCode;
+    public string Stdout;
+
+    public void AssertSucceeded()
+    {
+        Assert.True(0 == ExitCode, $"Exit code: {ExitCode}\n{Stdout}");
+    }
+};
+
+public class CommandLineRunner
+{
+    // Use a lock to protect globally-shared stdout.
+    private static readonly object s_lock = new object();
+
+    public Func<string[], int> Main { get; set; }
+    public Action<string[]> VoidMain { get; set; }
+    public string Command { get; set; }
+
+    /// <summary>Runs executable with the provided arguments</summary>
+    /// <returns>The console output of this program</returns>
+    public ConsoleOutput Run(params string[] arguments)
+    {
+        lock (s_lock)
         {
-            if (ShouldRetry != null)
-                return ShouldRetry(e);
-            foreach (var exceptionType in RetryWhenExceptions)
+            Console.Write($"{Command} ");
+            Console.WriteLine(string.Join(" ", arguments));
+
+            TextWriter consoleOut = Console.Out;
+            StringWriter stringOut = new StringWriter();
+            Console.SetOut(stringOut);
+            try
             {
-                if (exceptionType.IsAssignableFrom(e.GetType()))
-                    return true;
+                int exitCode = 0;
+                if (null == VoidMain)
+                    exitCode = Main(arguments);
+                else
+                    VoidMain(arguments);
+                ConsoleOutput consoleOutput = new ConsoleOutput()
+                {
+                    ExitCode = exitCode,
+                    Stdout = stringOut.ToString()
+                };
+                Console.Write(consoleOutput.Stdout);
+                return consoleOutput;
             }
-            return false;
-        }
-
-        public void Eventually(Action action)
-        {
-            Eventually(() => { action(); return 0; });
+            finally
+            {
+                Console.SetOut(consoleOut);
+            }
         }
     }
 
-    public struct ConsoleOutput
+    public ConsoleOutput RunWithStdIn(string stdIn, params string[] arguments)
     {
-        public int ExitCode;
-        public string Stdout;
-
-        public void AssertSucceeded()
+        lock (s_lock)
         {
-            Assert.True(0 == ExitCode, $"Exit code: {ExitCode}\n{Stdout}");
-        }
-    };
+            Console.Write($"{Command} ");
+            Console.WriteLine(string.Join(" ", arguments));
 
-    public class CommandLineRunner
-    {
-        // Use a lock to protect globally-shared stdout.
-        private static readonly object s_lock = new object();
-
-        public Func<string[], int> Main { get; set; }
-        public Action<string[]> VoidMain { get; set; }
-        public string Command { get; set; }
-
-        /// <summary>Runs executable with the provided arguments</summary>
-        /// <returns>The console output of this program</returns>
-        public ConsoleOutput Run(params string[] arguments)
-        {
-            lock (s_lock)
+            TextWriter consoleOut = Console.Out;
+            TextReader consoleIn = Console.In;
+            StringWriter stringOut = new StringWriter();
+            Console.SetOut(stringOut);
+            Console.SetIn(new StringReader(stdIn));
+            try
             {
-                Console.Write($"{Command} ");
-                Console.WriteLine(string.Join(" ", arguments));
-
-                TextWriter consoleOut = Console.Out;
-                StringWriter stringOut = new StringWriter();
-                Console.SetOut(stringOut);
-                try
+                int exitCode = 0;
+                if (null == VoidMain)
+                    exitCode = Main(arguments);
+                else
+                    VoidMain(arguments);
+                ConsoleOutput consoleOutput = new ConsoleOutput()
                 {
-                    int exitCode = 0;
-                    if (null == VoidMain)
-                        exitCode = Main(arguments);
-                    else
-                        VoidMain(arguments);
-                    var consoleOutput = new ConsoleOutput()
-                    {
-                        ExitCode = exitCode,
-                        Stdout = stringOut.ToString()
-                    };
-                    Console.Write(consoleOutput.Stdout);
-                    return consoleOutput;
-                }
-                finally
-                {
-                    Console.SetOut(consoleOut);
-                }
+                    ExitCode = exitCode,
+                    Stdout = stringOut.ToString()
+                };
+                Console.Write(consoleOutput.Stdout);
+                return consoleOutput;
             }
-        }
-
-        public ConsoleOutput RunWithStdIn(string stdIn, params string[] arguments)
-        {
-            lock (s_lock)
+            finally
             {
-                Console.Write($"{Command} ");
-                Console.WriteLine(string.Join(" ", arguments));
-
-                TextWriter consoleOut = Console.Out;
-                TextReader consoleIn = Console.In;
-                StringWriter stringOut = new StringWriter();
-                Console.SetOut(stringOut);
-                Console.SetIn(new StringReader(stdIn));
-                try
-                {
-                    int exitCode = 0;
-                    if (null == VoidMain)
-                        exitCode = Main(arguments);
-                    else
-                        VoidMain(arguments);
-                    var consoleOutput = new ConsoleOutput()
-                    {
-                        ExitCode = exitCode,
-                        Stdout = stringOut.ToString()
-                    };
-                    Console.Write(consoleOutput.Stdout);
-                    return consoleOutput;
-                }
-                finally
-                {
-                    Console.SetOut(consoleOut);
-                    Console.SetIn(consoleIn);
-                }
+                Console.SetOut(consoleOut);
+                Console.SetIn(consoleIn);
             }
         }
     }
