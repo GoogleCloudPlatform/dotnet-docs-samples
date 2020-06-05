@@ -32,7 +32,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestCreateDlpJob()
         {
-            using RandomBucketFixture randomBucketFixture = new RandomBucketFixture(Fixture.ProjectId);
+            using RandomBucketFixture randomBucketFixture = new RandomBucketFixture();
             using BucketCollector bucketCollector = new BucketCollector(randomBucketFixture.BucketName);
             string bucketName = randomBucketFixture.BucketName;
             string fileName = Guid.NewGuid().ToString();
