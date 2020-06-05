@@ -20,7 +20,6 @@ using System.Threading;
 
 namespace GoogleCloudSamples
 {
-
     /// <summary>
     /// Creates a bucket with a random name for use in tests.  Call Dispose()
     /// to delete the bucket.
