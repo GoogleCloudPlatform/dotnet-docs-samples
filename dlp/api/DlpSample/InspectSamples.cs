@@ -37,7 +37,7 @@ internal class InspectSamples
         IEnumerable<InfoType> infoTypes,
         IEnumerable<CustomInfoType> customInfoTypes)
     {
-        InspectConfig inspectConfig = new InspectConfig
+        var inspectConfig = new InspectConfig
         {
             MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood),
             Limits = new InspectConfig.Types.FindingLimits
@@ -48,7 +48,7 @@ internal class InspectSamples
             InfoTypes = { infoTypes },
             CustomInfoTypes = { customInfoTypes }
         };
-        InspectContentRequest request = new InspectContentRequest
+        var request = new InspectContentRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             Item = new ContentItem
@@ -58,14 +58,14 @@ internal class InspectSamples
             InspectConfig = inspectConfig
         };
 
-        DlpServiceClient dlp = DlpServiceClient.Create();
-        InspectContentResponse response = dlp.InspectContent(request);
+        var dlp = DlpServiceClient.Create();
+        var response = dlp.InspectContent(request);
 
-        Google.Protobuf.Collections.RepeatedField<Finding> findings = response.Result.Findings;
+        var findings = response.Result.Findings;
         if (findings.Count > 0)
         {
             Console.WriteLine("Findings:");
-            foreach (Finding finding in findings)
+            foreach (var finding in findings)
             {
                 if (includeQuote)
                 {
@@ -106,10 +106,10 @@ internal class InspectSamples
         IEnumerable<InfoType> infoTypes,
         IEnumerable<CustomInfoType> customInfoTypes)
     {
-        FileStream fileStream = new FileStream(file, FileMode.Open);
+        var fileStream = new FileStream(file, FileMode.Open);
         try
         {
-            InspectConfig inspectConfig = new InspectConfig
+            var inspectConfig = new InspectConfig
             {
                 MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood),
                 Limits = new FindingLimits
@@ -120,8 +120,8 @@ internal class InspectSamples
                 InfoTypes = { infoTypes },
                 CustomInfoTypes = { customInfoTypes }
             };
-            DlpServiceClient dlp = DlpServiceClient.Create();
-            InspectContentResponse response = dlp.InspectContent(new InspectContentRequest
+            var dlp = DlpServiceClient.Create();
+            var response = dlp.InspectContent(new InspectContentRequest
             {
                 ParentAsProjectName = new ProjectName(projectId),
                 Item = new ContentItem
@@ -138,11 +138,11 @@ internal class InspectSamples
                 InspectConfig = inspectConfig
             });
 
-            Google.Protobuf.Collections.RepeatedField<Finding> findings = response.Result.Findings;
+            var findings = response.Result.Findings;
             if (findings.Count > 0)
             {
                 Console.WriteLine("Findings:");
-                foreach (Finding finding in findings)
+                foreach (var finding in findings)
                 {
                     if (includeQuote)
                     {
@@ -179,7 +179,7 @@ internal class InspectSamples
         string datasetId,
         string tableId)
     {
-        InspectJobConfig inspectJob = new InspectJobConfig
+        var inspectJob = new InspectJobConfig
         {
             StorageConfig = new StorageConfig
             {
@@ -238,30 +238,30 @@ internal class InspectSamples
         };
 
         // Issue Create Dlp Job Request
-        DlpServiceClient client = DlpServiceClient.Create();
-        CreateDlpJobRequest request = new CreateDlpJobRequest
+        var client = DlpServiceClient.Create();
+        var request = new CreateDlpJobRequest
         {
             InspectJob = inspectJob,
             ParentAsProjectName = new ProjectName(projectId),
         };
 
         // We need created job name
-        DlpJob dlpJob = client.CreateDlpJob(request);
-        string jobName = dlpJob.Name;
+        var dlpJob = client.CreateDlpJob(request);
+        var jobName = dlpJob.Name;
 
         // Make sure the job finishes before inspecting the results.
         // Alternatively, we can inspect results opportunistically, but
         // for testing purposes, we want consistent outcome
-        bool jobFinished = EnsureJobFinishes(projectId, jobName);
+        var jobFinished = EnsureJobFinishes(projectId, jobName);
         if (jobFinished)
         {
-            BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
-            Google.Cloud.BigQuery.V2.BigQueryTable table = bigQueryClient.GetTable(datasetId, tableId);
+            var bigQueryClient = BigQueryClient.Create(projectId);
+            var table = bigQueryClient.GetTable(datasetId, tableId);
 
             // Return only first page of 10 rows
             Console.WriteLine("DLP v2 Results:");
-            Google.Api.Gax.PagedEnumerable<Google.Apis.Bigquery.v2.Data.TableDataList, BigQueryRow> firstPage = table.ListRows(new ListRowsOptions { StartIndex = 0, PageSize = 10 });
-            foreach (BigQueryRow item in firstPage)
+            var firstPage = table.ListRows(new ListRowsOptions { StartIndex = 0, PageSize = 10 });
+            foreach (var item in firstPage)
             {
                 Console.WriteLine($"\t {item[""]}");
             }
@@ -285,7 +285,7 @@ internal class InspectSamples
         string datasetId,
         string tableId)
     {
-        InspectJobConfig inspectJob = new InspectJobConfig
+        var inspectJob = new InspectJobConfig
         {
             StorageConfig = new StorageConfig
             {
@@ -339,30 +339,30 @@ internal class InspectSamples
         };
 
         // Issue Create Dlp Job Request
-        DlpServiceClient client = DlpServiceClient.Create();
-        CreateDlpJobRequest request = new CreateDlpJobRequest
+        var client = DlpServiceClient.Create();
+        var request = new CreateDlpJobRequest
         {
             InspectJob = inspectJob,
             ParentAsProjectName = new ProjectName(projectId),
         };
 
         // We need created job name
-        DlpJob dlpJob = client.CreateDlpJob(request);
-        string jobName = dlpJob.Name;
+        var dlpJob = client.CreateDlpJob(request);
+        var jobName = dlpJob.Name;
 
         // Make sure the job finishes before inspecting the results.
         // Alternatively, we can inspect results opportunistically, but
         // for testing purposes, we want consistent outcome
-        bool jobFinished = EnsureJobFinishes(projectId, jobName);
+        var jobFinished = EnsureJobFinishes(projectId, jobName);
         if (jobFinished)
         {
-            BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
-            Google.Cloud.BigQuery.V2.BigQueryTable table = bigQueryClient.GetTable(datasetId, tableId);
+            var bigQueryClient = BigQueryClient.Create(projectId);
+            var table = bigQueryClient.GetTable(datasetId, tableId);
 
             // Return only first page of 10 rows
             Console.WriteLine("DLP v2 Results:");
-            Google.Api.Gax.PagedEnumerable<Google.Apis.Bigquery.v2.Data.TableDataList, BigQueryRow> firstPage = table.ListRows(new ListRowsOptions { StartIndex = 0, PageSize = 10 });
-            foreach (BigQueryRow item in firstPage)
+            var firstPage = table.ListRows(new ListRowsOptions { StartIndex = 0, PageSize = 10 });
+            foreach (var item in firstPage)
             {
                 Console.WriteLine($"\t {item[""]}");
             }
@@ -386,7 +386,7 @@ internal class InspectSamples
         string topicId,
         string subscriptionId)
     {
-        InspectJobConfig inspectJob = new InspectJobConfig
+        var inspectJob = new InspectJobConfig
         {
             StorageConfig = new StorageConfig
             {
@@ -422,21 +422,21 @@ internal class InspectSamples
         };
 
         // Issue Create Dlp Job Request
-        DlpServiceClient client = DlpServiceClient.Create();
-        CreateDlpJobRequest request = new CreateDlpJobRequest
+        var client = DlpServiceClient.Create();
+        var request = new CreateDlpJobRequest
         {
             InspectJob = inspectJob,
             ParentAsProjectName = new ProjectName(projectId),
         };
 
         // We need created job name
-        DlpJob dlpJob = client.CreateDlpJob(request);
+        var dlpJob = client.CreateDlpJob(request);
 
         // Get a pub/sub subscription and listen for DLP results
-        ManualResetEventSlim fireEvent = new ManualResetEventSlim();
+        var fireEvent = new ManualResetEventSlim();
 
-        SubscriptionName subscriptionName = new SubscriptionName(projectId, subscriptionId);
-        SubscriberClient subscriber = SubscriberClient.CreateAsync(subscriptionName).Result;
+        var subscriptionName = new SubscriptionName(projectId, subscriptionId);
+        var subscriber = SubscriberClient.CreateAsync(subscriptionName).Result;
         subscriber.StartAsync(
             (pubSubMessage, cancellationToken) =>
             {
@@ -457,14 +457,14 @@ internal class InspectSamples
             subscriber.StopAsync(CancellationToken.None).Wait();
 
             // Now we can inspect full job results
-            DlpJob job = client.GetDlpJob(new GetDlpJobRequest { DlpJobName = new DlpJobName(projectId, dlpJob.Name) });
+            var job = client.GetDlpJob(new GetDlpJobRequest { DlpJobName = new DlpJobName(projectId, dlpJob.Name) });
 
             // Inspect Job details
             Console.WriteLine($"Processed bytes: {job.InspectDetails.Result.ProcessedBytes}");
             Console.WriteLine($"Total estimated bytes: {job.InspectDetails.Result.TotalEstimatedBytes}");
-            Google.Protobuf.Collections.RepeatedField<InfoTypeStats> stats = job.InspectDetails.Result.InfoTypeStats;
+            var stats = job.InspectDetails.Result.InfoTypeStats;
             Console.WriteLine("Found stats:");
-            foreach (InfoTypeStats stat in stats)
+            foreach (var stat in stats)
             {
                 Console.WriteLine($"{stat.InfoType.Name}");
             }
@@ -481,17 +481,17 @@ internal class InspectSamples
 
     private static bool EnsureJobFinishes(string projectId, string jobName)
     {
-        DlpServiceClient client = DlpServiceClient.Create();
-        GetDlpJobRequest request = new GetDlpJobRequest
+        var client = DlpServiceClient.Create();
+        var request = new GetDlpJobRequest
         {
             DlpJobName = new DlpJobName(projectId, jobName),
         };
 
         // Simple logic that gives the job 5*30 sec at most to complete - for testing purposes only
-        int numOfAttempts = 5;
+        var numOfAttempts = 5;
         do
         {
-            DlpJob dlpJob = client.GetDlpJob(request);
+            var dlpJob = client.GetDlpJob(request);
             numOfAttempts--;
             if (dlpJob.State != DlpJob.Types.JobState.Running)
             {

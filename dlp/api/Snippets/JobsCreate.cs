@@ -24,9 +24,9 @@ public class JobsCreate
 {
     public static DlpJob CreateJob(string projectId, string gcsPath)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
-        StorageConfig storageConfig = new StorageConfig
+        var storageConfig = new StorageConfig
         {
             CloudStorageOptions = new CloudStorageOptions
             {
@@ -41,7 +41,7 @@ public class JobsCreate
             }
         };
 
-        InspectConfig inspectConfig = new InspectConfig
+        var inspectConfig = new InspectConfig
         {
             InfoTypes = { new[] { "EMAIL_ADDRESS", "CREDIT_CARD_NUMBER" }.Select(it => new InfoType() { Name = it }) },
             IncludeQuote = true,
@@ -49,7 +49,7 @@ public class JobsCreate
             Limits = new InspectConfig.Types.FindingLimits() { MaxFindingsPerItem = 100 }
         };
 
-        DlpJob response = dlp.CreateDlpJob(new CreateDlpJobRequest
+        var response = dlp.CreateDlpJob(new CreateDlpJobRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             InspectJob = new InspectJobConfig

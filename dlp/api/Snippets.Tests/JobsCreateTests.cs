@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Api.Gax;
 using System;
 using System.IO;
 using System.Linq;
@@ -32,18 +31,18 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestCreateDlpJob()
         {
-            using RandomBucketFixture randomBucketFixture = new RandomBucketFixture();
-            using BucketCollector bucketCollector = new BucketCollector(randomBucketFixture.BucketName);
-            string bucketName = randomBucketFixture.BucketName;
-            string fileName = Guid.NewGuid().ToString();
-            string objectName = $"gs://{bucketName}/{fileName}";
+            using var randomBucketFixture = new RandomBucketFixture();
+            using var bucketCollector = new BucketCollector(randomBucketFixture.BucketName);
+            var bucketName = randomBucketFixture.BucketName;
+            var fileName = Guid.NewGuid().ToString();
+            var objectName = $"gs://{bucketName}/{fileName}";
             bucketCollector.CopyToBucket(Path.Combine(Fixture.ResourcePath, "dates-input.csv"), fileName);
-            Google.Cloud.Dlp.V2.DlpJob job = JobsCreate.CreateJob(Fixture.ProjectId, objectName);
+            var job = JobsCreate.CreateJob(Fixture.ProjectId, objectName);
 
             TestRetryRobot.ShouldRetry = ex => true;
             TestRetryRobot.Eventually(() =>
             {
-                PagedEnumerable<Google.Cloud.Dlp.V2.ListDlpJobsResponse, Google.Cloud.Dlp.V2.DlpJob> response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "InspectJob");
+                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "InspectJob");
 
                 Assert.True(response.Any());
             });

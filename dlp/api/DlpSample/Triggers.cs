@@ -55,9 +55,9 @@ internal class JobTriggers
         string displayName,
         string description)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
-        InspectJobConfig jobConfig = new InspectJobConfig
+        var jobConfig = new InspectJobConfig
         {
             InspectConfig = new InspectConfig
             {
@@ -87,7 +87,7 @@ internal class JobTriggers
             }
         };
 
-        JobTrigger jobTrigger = new JobTrigger
+        var jobTrigger = new JobTrigger
         {
             Triggers =
                 {
@@ -108,7 +108,7 @@ internal class JobTriggers
             Description = description
         };
 
-        JobTrigger response = dlp.CreateJobTrigger(
+        var response = dlp.CreateJobTrigger(
             new CreateJobTriggerRequest
             {
                 ParentAsProjectName = new ProjectName(projectId),
@@ -125,15 +125,15 @@ internal class JobTriggers
     // [START dlp_list_triggers]
     public static object ListJobTriggers(string projectId)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
-        Google.Api.Gax.PagedEnumerable<ListJobTriggersResponse, JobTrigger> response = dlp.ListJobTriggers(
+        var response = dlp.ListJobTriggers(
             new ListJobTriggersRequest
             {
                 ParentAsProjectName = new ProjectName(projectId)
             });
 
-        foreach (JobTrigger trigger in response)
+        foreach (var trigger in response)
         {
             Console.WriteLine($"Name: {trigger.Name}");
             Console.WriteLine($"  Created: {trigger.CreateTime}");
@@ -152,7 +152,7 @@ internal class JobTriggers
     // [START dlp_delete_trigger]
     public static object DeleteJobTrigger(string triggerName)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         dlp.DeleteJobTrigger(
             new DeleteJobTriggerRequest

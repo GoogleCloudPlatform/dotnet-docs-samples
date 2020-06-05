@@ -24,9 +24,9 @@ public class JobsList
 {
     public static PagedEnumerable<ListDlpJobsResponse, DlpJob> ListDlpJobs(string projectId, string filter, string jobType)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
-        PagedEnumerable<ListDlpJobsResponse, DlpJob> response = dlp.ListDlpJobs(new ListDlpJobsRequest
+        var response = dlp.ListDlpJobs(new ListDlpJobsRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             Filter = filter,

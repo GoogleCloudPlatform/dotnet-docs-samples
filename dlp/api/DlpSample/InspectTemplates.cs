@@ -29,9 +29,9 @@ internal class InspectTemplates
         int maxFindings,
         bool includeQuote)
     {
-        DlpServiceClient client = DlpServiceClient.Create();
+        var client = DlpServiceClient.Create();
 
-        CreateInspectTemplateRequest request = new CreateInspectTemplateRequest
+        var request = new CreateInspectTemplateRequest
         {
             Parent = $"projects/{projectId}",
             InspectTemplate = new InspectTemplate
@@ -51,7 +51,7 @@ internal class InspectTemplates
             TemplateId = templateId
         };
 
-        InspectTemplate response = client.CreateInspectTemplate(request);
+        var response = client.CreateInspectTemplate(request);
 
         Console.WriteLine($"Successfully created template {response.Name}.");
 
@@ -63,9 +63,9 @@ internal class InspectTemplates
     // [START dlp_delete_inspect_template]
     public static object DeleteInspectTemplate(string projectId, string templateName)
     {
-        DlpServiceClient client = DlpServiceClient.Create();
+        var client = DlpServiceClient.Create();
 
-        DeleteInspectTemplateRequest request = new DeleteInspectTemplateRequest
+        var request = new DeleteInspectTemplateRequest
         {
             Name = templateName
         };
@@ -81,15 +81,15 @@ internal class InspectTemplates
     // [START dlp_list_inspect_templates]
     public static object ListInspectTemplate(string projectId)
     {
-        DlpServiceClient client = DlpServiceClient.Create();
+        var client = DlpServiceClient.Create();
 
-        PagedEnumerable<ListInspectTemplatesResponse, InspectTemplate> response = client.ListInspectTemplates(
+        var response = client.ListInspectTemplates(
             new ListInspectTemplatesRequest
             {
                 Parent = $"projects/{projectId}",
             }
         );
-        foreach (InspectTemplate template in response)
+        foreach (var template in response)
         {
             Console.WriteLine($"Template {template.Name}:");
             Console.WriteLine($"\tDisplay Name: {template.DisplayName}");
@@ -111,25 +111,25 @@ internal class InspectTemplates
     // Not intended for inclusion in the documentation
     public static object ListInspectTemplatesPaging(string projectId)
     {
-        DlpServiceClient client = DlpServiceClient.Create();
+        var client = DlpServiceClient.Create();
 
         // Read the templates in batches of 10 using paging.
         const int batchSize = 10;
-        string nextPageToken = string.Empty;
+        var nextPageToken = string.Empty;
         Page<InspectTemplate> currentTemplatesPage = null;
         do
         {
-            ListInspectTemplatesRequest request = new ListInspectTemplatesRequest
+            var request = new ListInspectTemplatesRequest
             {
                 Parent = $"projects/{projectId}",
                 PageToken = nextPageToken,
             };
 
             // This is the actual API call to DLP
-            PagedEnumerable<ListInspectTemplatesResponse, InspectTemplate> response = client.ListInspectTemplates(request);
+            var response = client.ListInspectTemplates(request);
 
             currentTemplatesPage = response.ReadPage(batchSize); ;
-            foreach (InspectTemplate template in currentTemplatesPage)
+            foreach (var template in currentTemplatesPage)
             {
                 Console.WriteLine("Inspect Template Info:");
                 Console.WriteLine($"\tname: {template.Name}");

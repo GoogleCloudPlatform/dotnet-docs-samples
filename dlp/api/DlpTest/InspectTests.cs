@@ -29,7 +29,7 @@ namespace GoogleCloudSamples
         public void TestInspectString()
         {
             // inspect a string with results
-            ConsoleOutput outputA = _testSettings.CommandLineRunner.Run(
+            var outputA = _testSettings.CommandLineRunner.Run(
                 "inspectString",
                 _testSettings.ProjectId,
                 "The name Robert is very common.",
@@ -38,7 +38,7 @@ namespace GoogleCloudSamples
             Assert.Contains("PERSON_NAME", outputA.Stdout);
 
             // inspect a string with no results
-            ConsoleOutput outputB = _testSettings.CommandLineRunner.Run(
+            var outputB = _testSettings.CommandLineRunner.Run(
                 "inspectString",
                 _testSettings.ProjectId,
                 "She sells sea shells by the sea shore.",
@@ -47,7 +47,7 @@ namespace GoogleCloudSamples
             Assert.Contains("No findings", outputB.Stdout);
 
             // inspect a string with custom info types
-            ConsoleOutput outputC = _testSettings.CommandLineRunner.Run(
+            var outputC = _testSettings.CommandLineRunner.Run(
                 "inspectString",
                 _testSettings.ProjectId,
                 "My name is Robert and my phone number is (425) 634-9233.",
@@ -58,7 +58,7 @@ namespace GoogleCloudSamples
             Assert.Contains("CUSTOM_REGEX_0", outputC.Stdout);
 
             // inspect a string with no results
-            ConsoleOutput outputD = _testSettings.CommandLineRunner.Run(
+            var outputD = _testSettings.CommandLineRunner.Run(
                 "inspectString",
                 _testSettings.ProjectId,
                 "She sells sea shells by the sea shore.",
@@ -72,7 +72,7 @@ namespace GoogleCloudSamples
         public void TestInspectFile()
         {
             // inspect a text file with results
-            ConsoleOutput outputA = _testSettings.CommandLineRunner.Run(
+            var outputA = _testSettings.CommandLineRunner.Run(
                 "inspectFile",
                 _testSettings.ProjectId,
                 _testSettings.ResourcePath + "test.txt",
@@ -81,7 +81,7 @@ namespace GoogleCloudSamples
             Assert.Contains("PERSON_NAME", outputA.Stdout);
 
             // inspect an image file with results
-            ConsoleOutput outputB = _testSettings.CommandLineRunner.Run(
+            var outputB = _testSettings.CommandLineRunner.Run(
                 "inspectFile",
                 _testSettings.ProjectId,
                 _testSettings.ResourcePath + "test.png",
@@ -90,7 +90,7 @@ namespace GoogleCloudSamples
             Assert.Contains("PHONE_NUMBER", outputB.Stdout);
 
             // inspect a file with no results
-            ConsoleOutput outputC = _testSettings.CommandLineRunner.Run(
+            var outputC = _testSettings.CommandLineRunner.Run(
                 "inspectFile",
                 _testSettings.ProjectId,
                 _testSettings.ResourcePath + "harmless.txt"
@@ -98,7 +98,7 @@ namespace GoogleCloudSamples
             Assert.Contains("No findings", outputC.Stdout);
 
             // inspect a text file with custom info types
-            ConsoleOutput outputD = _testSettings.CommandLineRunner.Run(
+            var outputD = _testSettings.CommandLineRunner.Run(
                 "inspectFile",
                 _testSettings.ProjectId,
                 _testSettings.ResourcePath + "test.txt",

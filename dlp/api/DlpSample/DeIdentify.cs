@@ -32,7 +32,7 @@ internal class DeIdentify
         int numberToMask,
         bool reverseOrder)
     {
-        DeidentifyContentRequest request = new DeidentifyContentRequest
+        var request = new DeidentifyContentRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             InspectConfig = new InspectConfig
@@ -66,8 +66,8 @@ internal class DeIdentify
             }
         };
 
-        DlpServiceClient dlp = DlpServiceClient.Create();
-        DeidentifyContentResponse response = dlp.DeidentifyContent(request);
+        var dlp = DlpServiceClient.Create();
+        var response = dlp.DeidentifyContent(request);
 
         Console.WriteLine($"Deidentified content: {response.Item.Value}");
         return 0;
@@ -84,7 +84,7 @@ internal class DeIdentify
         string wrappedKey,
         string alphabet)
     {
-        DeidentifyConfig deidentifyConfig = new DeidentifyConfig
+        var deidentifyConfig = new DeidentifyConfig
         {
             InfoTypeTransformations = new InfoTypeTransformations
             {
@@ -116,8 +116,8 @@ internal class DeIdentify
             }
         };
 
-        DlpServiceClient dlp = DlpServiceClient.Create();
-        DeidentifyContentResponse response = dlp.DeidentifyContent(
+        var dlp = DlpServiceClient.Create();
+        var response = dlp.DeidentifyContent(
             new DeidentifyContentRequest
             {
                 ParentAsProjectName = new ProjectName(projectId),
@@ -143,7 +143,7 @@ internal class DeIdentify
         string wrappedKey,
         string alphabet)
     {
-        DeidentifyConfig reidentifyConfig = new DeidentifyConfig
+        var reidentifyConfig = new DeidentifyConfig
         {
             InfoTypeTransformations = new InfoTypeTransformations
             {
@@ -179,7 +179,7 @@ internal class DeIdentify
             }
         };
 
-        InspectConfig inspectConfig = new InspectConfig
+        var inspectConfig = new InspectConfig
         {
             CustomInfoTypes =
                 {
@@ -194,8 +194,8 @@ internal class DeIdentify
                 }
         };
 
-        DlpServiceClient dlp = DlpServiceClient.Create();
-        ReidentifyContentResponse response = dlp.ReidentifyContent(new ReidentifyContentRequest
+        var dlp = DlpServiceClient.Create();
+        var response = dlp.ReidentifyContent(new ReidentifyContentRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             InspectConfig = inspectConfig,
@@ -221,21 +221,21 @@ internal class DeIdentify
         string keyName = "",
         string wrappedKey = "")
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Read file
-        string[] csvLines = File.ReadAllLines(inputCsvFile);
-        string[] csvHeaders = csvLines[0].Split(',');
-        string[] csvRows = csvLines.Skip(1).ToArray();
+        var csvLines = File.ReadAllLines(inputCsvFile);
+        var csvHeaders = csvLines[0].Split(',');
+        var csvRows = csvLines.Skip(1).ToArray();
 
         // Convert dates to protobuf format, and everything else to a string
-        IEnumerable<FieldId> protoHeaders = csvHeaders.Select(header => new FieldId { Name = header });
-        IEnumerable<Table.Types.Row> protoRows = csvRows.Select(CsvRow =>
+        var protoHeaders = csvHeaders.Select(header => new FieldId { Name = header });
+        var protoRows = csvRows.Select(CsvRow =>
         {
-            string[] rowValues = CsvRow.Split(',');
-            IEnumerable<Value> protoValues = rowValues.Select(RowValue =>
+            var rowValues = CsvRow.Split(',');
+            var protoValues = rowValues.Select(RowValue =>
             {
-                if (System.DateTime.TryParse(RowValue, out System.DateTime parsedDate))
+                if (System.DateTime.TryParse(RowValue, out var parsedDate))
                 {
                     return new Value
                     {
@@ -256,24 +256,24 @@ internal class DeIdentify
                 }
             });
 
-            Table.Types.Row rowObject = new Table.Types.Row();
+            var rowObject = new Table.Types.Row();
             rowObject.Values.Add(protoValues);
             return rowObject;
         });
 
-        IEnumerable<FieldId> dateFieldList = dateFields
+        var dateFieldList = dateFields
             .Split(',')
             .Select(field => new FieldId { Name = field });
 
         // Construct + execute the request
-        DateShiftConfig dateShiftConfig = new DateShiftConfig
+        var dateShiftConfig = new DateShiftConfig
         {
             LowerBoundDays = lowerBoundDays,
             UpperBoundDays = upperBoundDays
         };
-        bool hasKeyName = !String.IsNullOrEmpty(keyName);
-        bool hasWrappedKey = !String.IsNullOrEmpty(wrappedKey);
-        bool hasContext = !String.IsNullOrEmpty(contextField);
+        var hasKeyName = !String.IsNullOrEmpty(keyName);
+        var hasWrappedKey = !String.IsNullOrEmpty(wrappedKey);
+        var hasContext = !String.IsNullOrEmpty(contextField);
         if (hasKeyName && hasWrappedKey && hasContext)
         {
             dateShiftConfig.Context = new FieldId { Name = contextField };
@@ -291,7 +291,7 @@ internal class DeIdentify
             throw new ArgumentException("Must specify ALL or NONE of: {contextFieldId, keyName, wrappedKey}!");
         }
 
-        DeidentifyConfig deidConfig = new DeidentifyConfig
+        var deidConfig = new DeidentifyConfig
         {
             RecordTransformations = new RecordTransformations
             {
@@ -309,7 +309,7 @@ internal class DeIdentify
             }
         };
 
-        DeidentifyContentResponse response = dlp.DeidentifyContent(
+        var response = dlp.DeidentifyContent(
             new DeidentifyContentRequest
             {
                 Parent = $"projects/{projectId}",
@@ -325,19 +325,19 @@ internal class DeIdentify
             });
 
         // Save the results
-        List<string> outputLines = new List<string>
+        var outputLines = new List<string>
         {
             csvLines[0]
         };
 
         outputLines.AddRange(response.Item.Table.Rows.Select(ProtoRow =>
         {
-            IEnumerable<string> Values = ProtoRow.Values.Select(ProtoValue =>
+            var Values = ProtoRow.Values.Select(ProtoValue =>
             {
                 if (ProtoValue.DateValue != null)
                 {
-                    Google.Type.Date ProtoDate = ProtoValue.DateValue;
-                    System.DateTime Date = new System.DateTime(
+                    var ProtoDate = ProtoValue.DateValue;
+                    var Date = new System.DateTime(
                         ProtoDate.Year, ProtoDate.Month, ProtoDate.Day);
                     return Date.ToShortDateString();
                 }

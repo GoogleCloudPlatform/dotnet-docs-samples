@@ -22,8 +22,8 @@ internal class Metadata
         string languageCode,
         string filter)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
-        ListInfoTypesResponse response = dlp.ListInfoTypes(
+        var dlp = DlpServiceClient.Create();
+        var response = dlp.ListInfoTypes(
             new ListInfoTypesRequest
             {
                 LanguageCode = languageCode,
@@ -31,7 +31,7 @@ internal class Metadata
             });
 
         Console.WriteLine("Info Types:");
-        foreach (InfoTypeDescription InfoType in response.InfoTypes)
+        foreach (var InfoType in response.InfoTypes)
         {
             Console.WriteLine($"\t{InfoType.Name} ({InfoType.DisplayName})");
         }

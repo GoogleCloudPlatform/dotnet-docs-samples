@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
@@ -58,13 +57,13 @@ namespace GoogleCloudSamples
         public void Dispose()
         {
             // Delete any jobs created by the test.
-            DlpServiceClient dlp = DlpServiceClient.Create();
-            PagedEnumerable<ListDlpJobsResponse, DlpJob> result = dlp.ListDlpJobs(new ListDlpJobsRequest
+            var dlp = DlpServiceClient.Create();
+            var result = dlp.ListDlpJobs(new ListDlpJobsRequest
             {
                 ParentAsProjectName = new ProjectName(ProjectId),
                 Type = DlpJobType.RiskAnalysisJob
             });
-            foreach (DlpJob job in result)
+            foreach (var job in result)
             {
                 dlp.DeleteDlpJob(new DeleteDlpJobRequest()
                 {

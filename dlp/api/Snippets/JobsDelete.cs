@@ -21,7 +21,7 @@ public class JobsDelete
 {
     public static void DeleteJob(string jobName)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         dlp.DeleteDlpJob(new DeleteDlpJobRequest
         {

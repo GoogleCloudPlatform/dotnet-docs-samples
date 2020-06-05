@@ -32,10 +32,10 @@ public class DlpDeidentifyMasking
         string text = "My SSN is 372819127.")
     {
         // Instantiate a client.
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Construct a request.
-        InfoTypeTransformations.Types.InfoTypeTransformation transformation = new InfoTypeTransformations.Types.InfoTypeTransformation
+        var transformation = new InfoTypeTransformations.Types.InfoTypeTransformation
         {
             PrimitiveTransformation = new PrimitiveTransformation
             {
@@ -47,7 +47,7 @@ public class DlpDeidentifyMasking
                 }
             }
         };
-        DeidentifyContentRequest request = new DeidentifyContentRequest
+        var request = new DeidentifyContentRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             InspectConfig = new InspectConfig
@@ -68,7 +68,7 @@ public class DlpDeidentifyMasking
         };
 
         // Call the API.
-        DeidentifyContentResponse response = dlp.DeidentifyContent(request);
+        var response = dlp.DeidentifyContent(request);
 
         // Inspect the results.
         Console.WriteLine($"Deidentified content: {response.Item.Value}");

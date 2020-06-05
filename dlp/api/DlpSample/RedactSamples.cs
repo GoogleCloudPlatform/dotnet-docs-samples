@@ -23,7 +23,7 @@ internal class RedactSamples
     // [START redact_image]
     public static object RedactFromImage(string projectId, string originalImagePath, string redactedImagePath)
     {
-        RedactImageRequest request = new RedactImageRequest
+        var request = new RedactImageRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             InspectConfig = new InspectConfig
@@ -44,8 +44,8 @@ internal class RedactSamples
             },
         };
 
-        DlpServiceClient client = DlpServiceClient.Create();
-        RedactImageResponse response = client.RedactImage(request);
+        var client = DlpServiceClient.Create();
+        var response = client.RedactImage(request);
 
         Console.WriteLine($"Extracted text: {response.ExtractedText}");
 

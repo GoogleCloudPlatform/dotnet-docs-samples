@@ -40,10 +40,10 @@ internal class RiskAnalysis
         string subscriptionId,
         string columnName)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Construct + submit the job
-        RiskAnalysisJobConfig config = new RiskAnalysisJobConfig
+        var config = new RiskAnalysisJobConfig
         {
             PrivacyMetric = new PrivacyMetric
             {
@@ -70,7 +70,7 @@ internal class RiskAnalysis
                 }
         };
 
-        DlpJob submittedJob = dlp.CreateDlpJob(
+        var submittedJob = dlp.CreateDlpJob(
             new CreateDlpJobRequest
             {
                 ParentAsProjectName = new ProjectName(callingProjectId),
@@ -78,13 +78,13 @@ internal class RiskAnalysis
             });
 
         // Listen to pub/sub for the job
-        SubscriptionName subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
-        SubscriberClient subscriber = SubscriberClient.CreateAsync(
+        var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
+        var subscriber = SubscriberClient.CreateAsync(
             subscriptionName).Result;
 
         // SimpleSubscriber runs your message handle function on multiple
         // threads to maximize throughput.
-        ManualResetEventSlim done = new ManualResetEventSlim(false);
+        var done = new ManualResetEventSlim(false);
         subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -103,20 +103,20 @@ internal class RiskAnalysis
         subscriber.StopAsync(CancellationToken.None).Wait();
 
         // Process results
-        DlpJob resultJob = dlp.GetDlpJob(
+        var resultJob = dlp.GetDlpJob(
             new GetDlpJobRequest
             {
                 DlpJobName = DlpJobName.Parse(submittedJob.Name)
             });
 
-        AnalyzeDataSourceRiskDetails.Types.NumericalStatsResult result = resultJob.RiskDetails.NumericalStatsResult;
+        var result = resultJob.RiskDetails.NumericalStatsResult;
 
         // 'UnpackValue(x)' is a prettier version of 'x.toString()'
         Console.WriteLine($"Value Range: [{DlpSamplesUtils.UnpackValue(result.MinValue)}, {DlpSamplesUtils.UnpackValue(result.MaxValue)}]");
-        string lastValue = string.Empty;
-        for (int quantile = 0; quantile < result.QuantileValues.Count; quantile++)
+        var lastValue = string.Empty;
+        for (var quantile = 0; quantile < result.QuantileValues.Count; quantile++)
         {
-            string currentValue = DlpSamplesUtils.UnpackValue(result.QuantileValues[quantile]);
+            var currentValue = DlpSamplesUtils.UnpackValue(result.QuantileValues[quantile]);
             if (lastValue != currentValue)
             {
                 Console.WriteLine($"Value at {quantile + 1}% quantile: {currentValue}");
@@ -139,10 +139,10 @@ internal class RiskAnalysis
         string subscriptionId,
         string columnName)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Construct + submit the job
-        RiskAnalysisJobConfig config = new RiskAnalysisJobConfig
+        var config = new RiskAnalysisJobConfig
         {
             PrivacyMetric = new PrivacyMetric
             {
@@ -168,20 +168,20 @@ internal class RiskAnalysis
                 }
         };
 
-        DlpJob submittedJob = dlp.CreateDlpJob(new CreateDlpJobRequest
+        var submittedJob = dlp.CreateDlpJob(new CreateDlpJobRequest
         {
             ParentAsProjectName = new ProjectName(callingProjectId),
             RiskJob = config
         });
 
         // Listen to pub/sub for the job
-        SubscriptionName subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
-        SubscriberClient subscriber = SubscriberClient.CreateAsync(
+        var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
+        var subscriber = SubscriberClient.CreateAsync(
             subscriptionName).Result;
 
         // SimpleSubscriber runs your message handle function on multiple
         // threads to maximize throughput.
-        ManualResetEventSlim done = new ManualResetEventSlim(false);
+        var done = new ManualResetEventSlim(false);
         subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -200,22 +200,22 @@ internal class RiskAnalysis
         subscriber.StopAsync(CancellationToken.None).Wait();
 
         // Process results
-        DlpJob resultJob = dlp.GetDlpJob(new GetDlpJobRequest
+        var resultJob = dlp.GetDlpJob(new GetDlpJobRequest
         {
             DlpJobName = DlpJobName.Parse(submittedJob.Name)
         });
 
-        AnalyzeDataSourceRiskDetails.Types.CategoricalStatsResult result = resultJob.RiskDetails.CategoricalStatsResult;
+        var result = resultJob.RiskDetails.CategoricalStatsResult;
 
-        for (int bucketIdx = 0; bucketIdx < result.ValueFrequencyHistogramBuckets.Count; bucketIdx++)
+        for (var bucketIdx = 0; bucketIdx < result.ValueFrequencyHistogramBuckets.Count; bucketIdx++)
         {
-            AnalyzeDataSourceRiskDetails.Types.CategoricalStatsResult.Types.CategoricalStatsHistogramBucket bucket = result.ValueFrequencyHistogramBuckets[bucketIdx];
+            var bucket = result.ValueFrequencyHistogramBuckets[bucketIdx];
             Console.WriteLine($"Bucket {bucketIdx}");
             Console.WriteLine($"  Most common value occurs {bucket.ValueFrequencyUpperBound} time(s).");
             Console.WriteLine($"  Least common value occurs {bucket.ValueFrequencyLowerBound} time(s).");
             Console.WriteLine($"  {bucket.BucketSize} unique value(s) total.");
 
-            foreach (ValueFrequency bucketValue in bucket.BucketValues)
+            foreach (var bucketValue in bucket.BucketValues)
             {
                 // 'UnpackValue(x)' is a prettier version of 'x.toString()'
                 Console.WriteLine($"  Value {DlpSamplesUtils.UnpackValue(bucketValue.Value)} occurs {bucketValue.Count} time(s).");
@@ -237,15 +237,15 @@ internal class RiskAnalysis
         string subscriptionId,
         IEnumerable<FieldId> quasiIds)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Construct + submit the job
-        KAnonymityConfig KAnonymityConfig = new KAnonymityConfig
+        var KAnonymityConfig = new KAnonymityConfig
         {
             QuasiIds = { quasiIds }
         };
 
-        RiskAnalysisJobConfig config = new RiskAnalysisJobConfig
+        var config = new RiskAnalysisJobConfig
         {
             PrivacyMetric = new PrivacyMetric
             {
@@ -269,7 +269,7 @@ internal class RiskAnalysis
                 }
         };
 
-        DlpJob submittedJob = dlp.CreateDlpJob(
+        var submittedJob = dlp.CreateDlpJob(
             new CreateDlpJobRequest
             {
                 ParentAsProjectName = new ProjectName(callingProjectId),
@@ -277,13 +277,13 @@ internal class RiskAnalysis
             });
 
         // Listen to pub/sub for the job
-        SubscriptionName subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
-        SubscriberClient subscriber = SubscriberClient.CreateAsync(
+        var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
+        var subscriber = SubscriberClient.CreateAsync(
             subscriptionName).Result;
 
         // SimpleSubscriber runs your message handle function on multiple
         // threads to maximize throughput.
-        ManualResetEventSlim done = new ManualResetEventSlim(false);
+        var done = new ManualResetEventSlim(false);
         subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -302,21 +302,21 @@ internal class RiskAnalysis
         subscriber.StopAsync(CancellationToken.None).Wait();
 
         // Process results
-        DlpJob resultJob = dlp.GetDlpJob(new GetDlpJobRequest
+        var resultJob = dlp.GetDlpJob(new GetDlpJobRequest
         {
             DlpJobName = DlpJobName.Parse(submittedJob.Name)
         });
 
-        AnalyzeDataSourceRiskDetails.Types.KAnonymityResult result = resultJob.RiskDetails.KAnonymityResult;
+        var result = resultJob.RiskDetails.KAnonymityResult;
 
-        for (int bucketIdx = 0; bucketIdx < result.EquivalenceClassHistogramBuckets.Count; bucketIdx++)
+        for (var bucketIdx = 0; bucketIdx < result.EquivalenceClassHistogramBuckets.Count; bucketIdx++)
         {
-            AnalyzeDataSourceRiskDetails.Types.KAnonymityResult.Types.KAnonymityHistogramBucket bucket = result.EquivalenceClassHistogramBuckets[bucketIdx];
+            var bucket = result.EquivalenceClassHistogramBuckets[bucketIdx];
             Console.WriteLine($"Bucket {bucketIdx}");
             Console.WriteLine($"  Bucket size range: [{bucket.EquivalenceClassSizeLowerBound}, {bucket.EquivalenceClassSizeUpperBound}].");
             Console.WriteLine($"  {bucket.BucketSize} unique value(s) total.");
 
-            foreach (AnalyzeDataSourceRiskDetails.Types.KAnonymityResult.Types.KAnonymityEquivalenceClass bucketValue in bucket.BucketValues)
+            foreach (var bucketValue in bucket.BucketValues)
             {
                 // 'UnpackValue(x)' is a prettier version of 'x.toString()'
                 Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => DlpSamplesUtils.UnpackValue(x)))}]");
@@ -340,16 +340,16 @@ internal class RiskAnalysis
         IEnumerable<FieldId> quasiIds,
         string sensitiveAttribute)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Construct + submit the job
-        LDiversityConfig ldiversityConfig = new LDiversityConfig
+        var ldiversityConfig = new LDiversityConfig
         {
             SensitiveAttribute = new FieldId { Name = sensitiveAttribute },
             QuasiIds = { quasiIds }
         };
 
-        RiskAnalysisJobConfig config = new RiskAnalysisJobConfig
+        var config = new RiskAnalysisJobConfig
         {
             PrivacyMetric = new PrivacyMetric
             {
@@ -372,7 +372,7 @@ internal class RiskAnalysis
                 }
         };
 
-        DlpJob submittedJob = dlp.CreateDlpJob(
+        var submittedJob = dlp.CreateDlpJob(
             new CreateDlpJobRequest
             {
                 ParentAsProjectName = new ProjectName(callingProjectId),
@@ -380,13 +380,13 @@ internal class RiskAnalysis
             });
 
         // Listen to pub/sub for the job
-        SubscriptionName subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
-        SubscriberClient subscriber = SubscriberClient.CreateAsync(
+        var subscriptionName = new SubscriptionName(callingProjectId, subscriptionId);
+        var subscriber = SubscriberClient.CreateAsync(
             subscriptionName).Result;
 
         // SimpleSubscriber runs your message handle function on multiple
         // threads to maximize throughput.
-        ManualResetEventSlim done = new ManualResetEventSlim(false);
+        var done = new ManualResetEventSlim(false);
         subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -405,28 +405,28 @@ internal class RiskAnalysis
         subscriber.StopAsync(CancellationToken.None).Wait();
 
         // Process results
-        DlpJob resultJob = dlp.GetDlpJob(
+        var resultJob = dlp.GetDlpJob(
             new GetDlpJobRequest
             {
                 DlpJobName = DlpJobName.Parse(submittedJob.Name)
             });
 
-        AnalyzeDataSourceRiskDetails.Types.LDiversityResult result = resultJob.RiskDetails.LDiversityResult;
+        var result = resultJob.RiskDetails.LDiversityResult;
 
-        for (int bucketIdx = 0; bucketIdx < result.SensitiveValueFrequencyHistogramBuckets.Count; bucketIdx++)
+        for (var bucketIdx = 0; bucketIdx < result.SensitiveValueFrequencyHistogramBuckets.Count; bucketIdx++)
         {
-            AnalyzeDataSourceRiskDetails.Types.LDiversityResult.Types.LDiversityHistogramBucket bucket = result.SensitiveValueFrequencyHistogramBuckets[bucketIdx];
+            var bucket = result.SensitiveValueFrequencyHistogramBuckets[bucketIdx];
             Console.WriteLine($"Bucket {bucketIdx}");
             Console.WriteLine($"  Bucket size range: [{bucket.SensitiveValueFrequencyLowerBound}, {bucket.SensitiveValueFrequencyUpperBound}].");
             Console.WriteLine($"  {bucket.BucketSize} unique value(s) total.");
 
-            foreach (AnalyzeDataSourceRiskDetails.Types.LDiversityResult.Types.LDiversityEquivalenceClass bucketValue in bucket.BucketValues)
+            foreach (var bucketValue in bucket.BucketValues)
             {
                 // 'UnpackValue(x)' is a prettier version of 'x.toString()'
                 Console.WriteLine($"    Quasi-ID values: [{String.Join(',', bucketValue.QuasiIdsValues.Select(x => DlpSamplesUtils.UnpackValue(x)))}]");
                 Console.WriteLine($"    Class size: {bucketValue.EquivalenceClassSize}");
 
-                foreach (ValueFrequency topValue in bucketValue.TopSensitiveValues)
+                foreach (var topValue in bucketValue.TopSensitiveValues)
                 {
                     Console.WriteLine($"    Sensitive value {DlpSamplesUtils.UnpackValue(topValue.Value)} occurs {topValue.Count} time(s).");
                 }
@@ -450,10 +450,10 @@ internal class RiskAnalysis
         IEnumerable<InfoType> infoTypes,
         string regionCode)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Construct + submit the job
-        KMapEstimationConfig kmapEstimationConfig = new KMapEstimationConfig
+        var kmapEstimationConfig = new KMapEstimationConfig
         {
             QuasiIds =
                 {
@@ -469,7 +469,7 @@ internal class RiskAnalysis
             RegionCode = regionCode
         };
 
-        RiskAnalysisJobConfig config = new RiskAnalysisJobConfig()
+        var config = new RiskAnalysisJobConfig()
         {
             PrivacyMetric = new PrivacyMetric
             {
@@ -493,7 +493,7 @@ internal class RiskAnalysis
                 }
         };
 
-        DlpJob submittedJob = dlp.CreateDlpJob(
+        var submittedJob = dlp.CreateDlpJob(
             new CreateDlpJobRequest
             {
                 ParentAsProjectName = new ProjectName(callingProjectId),
@@ -501,15 +501,15 @@ internal class RiskAnalysis
             });
 
         // Listen to pub/sub for the job
-        SubscriptionName subscriptionName = new SubscriptionName(
+        var subscriptionName = new SubscriptionName(
             callingProjectId,
             subscriptionId);
-        SubscriberClient subscriber = SubscriberClient.CreateAsync(
+        var subscriber = SubscriberClient.CreateAsync(
             subscriptionName).Result;
 
         // SimpleSubscriber runs your message handle function on multiple
         // threads to maximize throughput.
-        ManualResetEventSlim done = new ManualResetEventSlim(false);
+        var done = new ManualResetEventSlim(false);
         subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             if (message.Attributes["DlpJobName"] == submittedJob.Name)
@@ -528,21 +528,21 @@ internal class RiskAnalysis
         subscriber.StopAsync(CancellationToken.None).Wait();
 
         // Process results
-        DlpJob resultJob = dlp.GetDlpJob(new GetDlpJobRequest
+        var resultJob = dlp.GetDlpJob(new GetDlpJobRequest
         {
             DlpJobName = DlpJobName.Parse(submittedJob.Name)
         });
 
-        AnalyzeDataSourceRiskDetails.Types.KMapEstimationResult result = resultJob.RiskDetails.KMapEstimationResult;
+        var result = resultJob.RiskDetails.KMapEstimationResult;
 
-        for (int histogramIdx = 0; histogramIdx < result.KMapEstimationHistogram.Count; histogramIdx++)
+        for (var histogramIdx = 0; histogramIdx < result.KMapEstimationHistogram.Count; histogramIdx++)
         {
-            AnalyzeDataSourceRiskDetails.Types.KMapEstimationResult.Types.KMapEstimationHistogramBucket histogramValue = result.KMapEstimationHistogram[histogramIdx];
+            var histogramValue = result.KMapEstimationHistogram[histogramIdx];
             Console.WriteLine($"Bucket {histogramIdx}");
             Console.WriteLine($"  Anonymity range: [{histogramValue.MinAnonymity}, {histogramValue.MaxAnonymity}].");
             Console.WriteLine($"  Size: {histogramValue.BucketSize}");
 
-            foreach (AnalyzeDataSourceRiskDetails.Types.KMapEstimationResult.Types.KMapEstimationQuasiIdValues datapoint in histogramValue.BucketValues)
+            foreach (var datapoint in histogramValue.BucketValues)
             {
                 // 'UnpackValue(x)' is a prettier version of 'x.toString()'
                 Console.WriteLine($"    Values: [{String.Join(',', datapoint.QuasiIdsValues.Select(x => DlpSamplesUtils.UnpackValue(x)))}]");

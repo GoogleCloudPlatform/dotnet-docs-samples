@@ -107,7 +107,7 @@ internal class DlpSamplesUtils
         IEnumerable<CustomInfoType> regexTypes = new CustomInfoType[] { };
         if (!String.IsNullOrEmpty(customRegexesStr))
         {
-            string[] regexes = customRegexesStr.Split(new char[] { separator });
+            var regexes = customRegexesStr.Split(new char[] { separator });
             regexTypes = Enumerable.Range(0, regexes.Length).Select(idx =>
             {
                 try
@@ -162,7 +162,7 @@ internal class DlpSamplesUtils
     /// <param name="protoValue">Proto value.</param>
     public static string UnpackValue(Value protoValue)
     {
-        Dictionary<string, object> jsonValue = JsonConvert.DeserializeObject<Dictionary<string, object>>(protoValue.ToString());
+        var jsonValue = JsonConvert.DeserializeObject<Dictionary<string, object>>(protoValue.ToString());
         return jsonValue.Values.ElementAt(0).ToString();
     }
 }

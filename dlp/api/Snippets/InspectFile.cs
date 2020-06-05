@@ -36,7 +36,7 @@ public class DlpInspectFile
         BytesType fileType = BytesType.ImagePng)
     {
         // Instantiate a client.
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Get the bytes from the file.
         ByteString fileBytes;
@@ -46,7 +46,7 @@ public class DlpInspectFile
         }
 
         // Construct a request.
-        InspectContentRequest request = new InspectContentRequest
+        var request = new InspectContentRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             Item = new ContentItem
@@ -79,14 +79,14 @@ public class DlpInspectFile
         };
 
         // Execute request
-        InspectContentResponse response = dlp.InspectContent(request);
+        var response = dlp.InspectContent(request);
 
         // Inspect response
-        Google.Protobuf.Collections.RepeatedField<Finding> findings = response.Result.Findings;
+        var findings = response.Result.Findings;
         if (findings.Count > 0)
         {
             Console.WriteLine("Findings:");
-            foreach (Finding finding in findings)
+            foreach (var finding in findings)
             {
                 Console.WriteLine($"Quote: {finding.Quote}");
                 Console.WriteLine($"InfoType: {finding.InfoType}");

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
@@ -26,16 +25,16 @@ internal class Jobs
     // [START dlp_list_jobs]
     public static object ListJobs(string projectId, string filter, string jobType)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
-        PagedEnumerable<ListDlpJobsResponse, DlpJob> response = dlp.ListDlpJobs(new ListDlpJobsRequest
+        var response = dlp.ListDlpJobs(new ListDlpJobsRequest
         {
             ParentAsProjectName = new ProjectName(projectId),
             Filter = filter,
             Type = (DlpJobType)Enum.Parse(typeof(DlpJobType), jobType)
         });
 
-        foreach (DlpJob job in response)
+        foreach (var job in response)
         {
             Console.WriteLine($"Job: {job.Name} status: {job.State}");
         }
@@ -48,7 +47,7 @@ internal class Jobs
     // [START dlp_delete_job]
     public static object DeleteJob(string jobName)
     {
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         dlp.DeleteDlpJob(new DeleteDlpJobRequest
         {
