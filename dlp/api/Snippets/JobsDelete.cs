@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Google Inc.
+// Copyright 2018 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,32 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START dlp_delete_job]
+
 using Google.Cloud.Dlp.V2;
 using System;
 
-internal class Metadata
+public class JobsDelete
 {
-    // [START dlp_list_info_types]
-    public static object ListInfoTypes(
-        string languageCode,
-        string filter)
+    public static void DeleteJob(string jobName)
     {
         var dlp = DlpServiceClient.Create();
-        var response = dlp.ListInfoTypes(
-            new ListInfoTypesRequest
-            {
-                LanguageCode = languageCode,
-                Filter = filter
-            });
 
-        Console.WriteLine("Info Types:");
-        foreach (var InfoType in response.InfoTypes)
+        dlp.DeleteDlpJob(new DeleteDlpJobRequest
         {
-            Console.WriteLine($"\t{InfoType.Name} ({InfoType.DisplayName})");
-        }
+            Name = jobName
+        });
 
-        return 0;
+        Console.WriteLine($"Successfully deleted job {jobName}.");
     }
-
-    // [END dlp_list_info_types]
 }
+// [END dlp_delete_job]

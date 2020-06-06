@@ -18,7 +18,7 @@ using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
 
-class DlpDeidentifyMasking
+public class DlpDeidentifyMasking
 {
     /// <summary>
     /// Replace sensitive information with masking characters using the DLP API.
@@ -27,12 +27,12 @@ class DlpDeidentifyMasking
     /// <param name="text">The text in which sensitive data will be masked.
     /// </param>
     /// <returns>The text with sensitive data masked.</returns>
-    public string DeidentiyMasking(
+    public string DeidentifyMasking(
         string projectId = "YOUR-PROJECT-ID",
         string text = "My SSN is 372819127.")
     {
         // Instantiate a client.
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Construct a request.
         var transformation = new InfoTypeTransformations.Types.InfoTypeTransformation

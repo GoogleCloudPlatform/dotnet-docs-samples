@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Google Inc.
+// Copyright 2018 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+// [START dlp_list_jobs]
+
+using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
 
-/// <summary>
-/// This class contains examples of how to list and delete DLP jobs
-/// For more information, see https://cloud-dot-devsite.googleplex.com/dlp/docs/reference/rest/v2/projects.dlpJobs
-/// </summary>
-internal class Jobs
+public class JobsList
 {
-    // [START dlp_list_jobs]
-    public static object ListJobs(string projectId, string filter, string jobType)
+    public static PagedEnumerable<ListDlpJobsResponse, DlpJob> ListDlpJobs(string projectId, string filter, string jobType)
     {
         var dlp = DlpServiceClient.Create();
 
@@ -34,29 +33,8 @@ internal class Jobs
             Type = (DlpJobType)Enum.Parse(typeof(DlpJobType), jobType)
         });
 
-        foreach (var job in response)
-        {
-            Console.WriteLine($"Job: {job.Name} status: {job.State}");
-        }
-
-        return 0;
+        return response;
     }
-
-    // [END dlp_list_jobs]
-
-    // [START dlp_delete_job]
-    public static object DeleteJob(string jobName)
-    {
-        var dlp = DlpServiceClient.Create();
-
-        dlp.DeleteDlpJob(new DeleteDlpJobRequest
-        {
-            Name = jobName
-        });
-
-        Console.WriteLine($"Successfully deleted job {jobName}.");
-        return 0;
-    }
-
-    // [END dlp_delete_job]
 }
+
+// [END dlp_list_jobs]

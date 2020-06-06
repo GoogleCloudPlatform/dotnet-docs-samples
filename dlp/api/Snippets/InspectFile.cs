@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.IO;
 using static Google.Cloud.Dlp.V2.ByteContentItem.Types;
 
-class DlpInspectFile
+public class DlpInspectFile
 {
     /// <summary>
     /// Inspects the provided file for sensitive data.
@@ -30,13 +30,13 @@ class DlpInspectFile
     /// <param name="projectId">Your Google Cloud Project ID.</param>
     /// <param name="filePath">The path to the specified file to inspect.</param>
     /// <param name="fileType">The type of the specifed file.</param>
-    public IEnumerable<Finding> InspectFile(
+    public static IEnumerable<Finding> InspectFile(
         string projectId = "YOUR-PROJECT-ID",
         string filePath = "path/to/image.png",
         BytesType fileType = BytesType.ImagePng)
     {
         // Instantiate a client.
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Get the bytes from the file.
         ByteString fileBytes;
@@ -79,7 +79,7 @@ class DlpInspectFile
         };
 
         // Execute request
-        InspectContentResponse response = dlp.InspectContent(request);
+        var response = dlp.InspectContent(request);
 
         // Inspect response
         var findings = response.Result.Findings;
