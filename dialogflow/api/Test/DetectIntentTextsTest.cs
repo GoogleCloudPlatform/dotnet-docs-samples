@@ -28,7 +28,6 @@ namespace GoogleCloudSamples
             Assert.Equal(0, ExitCode);
 
             Assert.Contains("Query text:", Stdout);
-            Assert.Contains("Intent detected:", Stdout);
             Assert.Contains("Intent confidence:", Stdout);
             Assert.Contains("Fulfillment text:", Stdout);
         }
