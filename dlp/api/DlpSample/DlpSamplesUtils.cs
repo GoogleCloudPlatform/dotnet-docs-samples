@@ -77,7 +77,7 @@ internal class DlpSamplesUtils
         char separator = ',')
     {
         IEnumerable<CustomInfoType> dictionary = new CustomInfoType[] { };
-        if (!String.IsNullOrEmpty(customDictionariesStr))
+        if (!string.IsNullOrEmpty(customDictionariesStr))
         {
             try
             {
@@ -105,7 +105,7 @@ internal class DlpSamplesUtils
             }
         }
         IEnumerable<CustomInfoType> regexTypes = new CustomInfoType[] { };
-        if (!String.IsNullOrEmpty(customRegexesStr))
+        if (!string.IsNullOrEmpty(customRegexesStr))
         {
             var regexes = customRegexesStr.Split(new char[] { separator });
             regexTypes = Enumerable.Range(0, regexes.Length).Select(idx =>
@@ -116,7 +116,7 @@ internal class DlpSamplesUtils
                     {
                         InfoType = new InfoType
                         {
-                            Name = String.Format("CUSTOM_REGEX_{0}", idx)
+                            Name = string.Format("CUSTOM_REGEX_{0}", idx)
                         },
                         Regex = new CustomInfoType.Types.Regex
                         {

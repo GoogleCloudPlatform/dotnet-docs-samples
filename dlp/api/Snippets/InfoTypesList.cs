@@ -12,33 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dlp_list_jobs]
+// [START dlp_list_info_types]
 
 using System;
-using Google.Api.Gax;
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 
-public class JobsList
+public class InfoTypesList
 {
-    public static PagedEnumerable<ListDlpJobsResponse, DlpJob> ListDlpJobs(string projectId, string filter, string jobType)
+    public static ListInfoTypesResponse ListInfoTypes(string languageCode, string filter)
     {
         var dlp = DlpServiceClient.Create();
+        var response = dlp.ListInfoTypes(
+            new ListInfoTypesRequest
+            {
+                LanguageCode = languageCode,
+                Filter = filter
+            });
 
-        var response = dlp.ListDlpJobs(new ListDlpJobsRequest
+        Console.WriteLine("Info Types:");
+        foreach (var InfoType in response.InfoTypes)
         {
-            ParentAsProjectName = new ProjectName(projectId),
-            Filter = filter,
-            Type = (DlpJobType)Enum.Parse(typeof(DlpJobType), jobType)
-        });
-
-        foreach (var job in response)
-        {
-            Console.WriteLine($"Job: {job.Name} status: {job.State}");
+            Console.WriteLine($"\t{InfoType.Name} ({InfoType.DisplayName})");
         }
 
         return response;
     }
 }
 
-// [END dlp_list_jobs]
+// [END dlp_list_info_types]

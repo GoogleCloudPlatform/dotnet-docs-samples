@@ -21,6 +21,7 @@ using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static Google.Cloud.Dlp.V2.InspectConfig.Types;
@@ -62,7 +63,7 @@ internal class InspectSamples
         var response = dlp.InspectContent(request);
 
         var findings = response.Result.Findings;
-        if (findings.Count > 0)
+        if (findings.Any())
         {
             Console.WriteLine("Findings:");
             foreach (var finding in findings)
@@ -139,7 +140,7 @@ internal class InspectSamples
             });
 
             var findings = response.Result.Findings;
-            if (findings.Count > 0)
+            if (findings.Any())
             {
                 Console.WriteLine("Findings:");
                 foreach (var finding in findings)

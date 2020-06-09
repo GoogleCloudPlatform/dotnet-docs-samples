@@ -12,35 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-using Google.Cloud.Dlp.V2;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class JobsListTests : IClassFixture<DlpTestFixture>
+    public class InfoTypesListTests : IClassFixture<DlpTestFixture>
     {
-        private RetryRobot TestRetryRobot { get; } = new RetryRobot();
         private DlpTestFixture Fixture { get; }
-        public JobsListTests(DlpTestFixture fixture)
+        public InfoTypesListTests(DlpTestFixture fixture)
         {
             Fixture = fixture;
         }
 
         [Fact]
-        public void TestListDlpJobs()
+        public void TestListInfoTypes()
         {
-            // Create job.
-            var dlp = DlpServiceClient.Create();
-            var dlpJob = dlp.CreateDlpJob(Fixture.GetTestRiskAnalysisJobRequest());
+            var response = InfoTypesList.ListInfoTypes("en-us", "supported_by=INSPECT");
 
-            TestRetryRobot.ShouldRetry = ex => true;
-            TestRetryRobot.Eventually(() =>
-            {
-                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "RiskAnalysisJob");
-
-                Assert.True(response.Any());
-            });
+            Assert.Contains(response.InfoTypes, it => it.Name == "AMERICAN_BANKERS_CUSIP_ID");
         }
     }
 }
