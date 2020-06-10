@@ -1,4 +1,3 @@
-using System;
 // Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +13,6 @@ using System;
 // limitations under the License.
 
 using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace GoogleCloudSamples

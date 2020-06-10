@@ -32,10 +32,11 @@ public class JobsList
             Type = (DlpJobType)Enum.Parse(typeof(DlpJobType), jobType)
         });
 
-        foreach (var job in response)
-        {
-            Console.WriteLine($"Job: {job.Name} status: {job.State}");
-        }
+        // Uncomment to print jobs
+        // foreach (var job in response)
+        // {
+        //     Console.WriteLine($"Job: {job.Name} status: {job.State}");
+        // }
 
         return response;
     }

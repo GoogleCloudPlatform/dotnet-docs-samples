@@ -29,11 +29,12 @@ public class InfoTypesList
                 Filter = filter
             });
 
-        Console.WriteLine("Info Types:");
-        foreach (var InfoType in response.InfoTypes)
-        {
-            Console.WriteLine($"\t{InfoType.Name} ({InfoType.DisplayName})");
-        }
+        // Uncomment to print infotypes
+        // Console.WriteLine("Info Types:");
+        // foreach (var InfoType in response.InfoTypes)
+        // {
+        //     Console.WriteLine($"\t{InfoType.Name} ({InfoType.DisplayName})");
+        // }
 
         return response;
     }
