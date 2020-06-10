@@ -33,6 +33,16 @@ public class DeidentifyWithDateShift
         string keyName,
         string wrappedKey)
     {
+        var hasKeyName = !string.IsNullOrEmpty(keyName);
+        var hasWrappedKey = !string.IsNullOrEmpty(wrappedKey);
+        var hasContext = !string.IsNullOrEmpty(contextField);
+        bool allFieldsSet = hasKeyName && hasWrappedKey && hasContext;
+        bool noFieldsSet = !hasKeyName && !hasWrappedKey && !hasContext;
+        if (!(allFieldsSet || noFieldsSet))
+        {
+            throw new ArgumentException("Must specify ALL or NONE of: {contextFieldId, keyName, wrappedKey}!");
+        }
+
         var dlp = DlpServiceClient.Create();
 
         // Read file
@@ -42,13 +52,13 @@ public class DeidentifyWithDateShift
 
         // Convert dates to protobuf format, and everything else to a string
         var protoHeaders = csvHeaders.Select(header => new FieldId { Name = header });
-        var protoRows = csvRows.Select(CsvRow =>
+        var protoRows = csvRows.Select(csvRow =>
         {
-            var rowValues = CsvRow.Split(',');
-            var protoValues = rowValues.Select(RowValue =>
-               System.DateTime.TryParse(RowValue, out var parsedDate)
+            var rowValues = csvRow.Split(',');
+            var protoValues = rowValues.Select(rowValue =>
+               System.DateTime.TryParse(rowValue, out var parsedDate)
                ? new Value { DateValue = Google.Type.Date.FromDateTime(parsedDate) }
-               : new Value { StringValue = RowValue });
+               : new Value { StringValue = rowValue });
 
             var rowObject = new Table.Types.Row();
             rowObject.Values.Add(protoValues);
@@ -65,25 +75,16 @@ public class DeidentifyWithDateShift
             LowerBoundDays = lowerBoundDays,
             UpperBoundDays = upperBoundDays
         };
-        var hasKeyName = !string.IsNullOrEmpty(keyName);
-        var hasWrappedKey = !string.IsNullOrEmpty(wrappedKey);
-        var hasContext = !string.IsNullOrEmpty(contextField);
-        if (hasKeyName && hasWrappedKey && hasContext)
+
+        dateShiftConfig.Context = new FieldId { Name = contextField };
+        dateShiftConfig.CryptoKey = new CryptoKey
         {
-            dateShiftConfig.Context = new FieldId { Name = contextField };
-            dateShiftConfig.CryptoKey = new CryptoKey
+            KmsWrapped = new KmsWrappedCryptoKey
             {
-                KmsWrapped = new KmsWrappedCryptoKey
-                {
-                    WrappedKey = ByteString.FromBase64(wrappedKey),
-                    CryptoKeyName = keyName
-                }
-            };
-        }
-        else if (hasKeyName || hasWrappedKey || hasContext)
-        {
-            throw new ArgumentException("Must specify ALL or NONE of: {contextFieldId, keyName, wrappedKey}!");
-        }
+                WrappedKey = ByteString.FromBase64(wrappedKey),
+                CryptoKeyName = keyName
+            }
+        };
 
         var deidConfig = new DeidentifyConfig
         {
