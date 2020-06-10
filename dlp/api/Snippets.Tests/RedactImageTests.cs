@@ -12,34 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-using Google.Cloud.Dlp.V2;
+using System.IO;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class JobsListTests : IClassFixture<DlpTestFixture>
+    public class RedactImageTests : IClassFixture<DlpTestFixture>
     {
-        private RetryRobot TestRetryRobot { get; } = new RetryRobot();
         private DlpTestFixture Fixture { get; }
-        public JobsListTests(DlpTestFixture fixture)
+        public RedactImageTests(DlpTestFixture fixture)
         {
             Fixture = fixture;
         }
 
-        [Fact]
-        public void TestListDlpJobs()
+        public void TestRedactImage()
         {
-            var dlp = DlpServiceClient.Create();
-            var dlpJob = dlp.CreateDlpJob(Fixture.GetTestRiskAnalysisJobRequest());
-
-            TestRetryRobot.ShouldRetry = ex => true;
-            TestRetryRobot.Eventually(() =>
-            {
-                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "RiskAnalysisJob");
-
-                Assert.True(response.Any());
-            });
+            var input = Path.Combine(Fixture.ResourcePath, "test.png");
+            var output = Path.Combine(Fixture.ResourcePath, "redacted.png");
+            var redacted = RedactImage.Redact(Fixture.ProjectId, input, output);
+            Assert.True(File.Exists(output));
+            Assert.Equal("223-456-7890", redacted.ExtractedText);
         }
     }
 }

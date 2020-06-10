@@ -12,34 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-using Google.Cloud.Dlp.V2;
+using System.IO;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class JobsListTests : IClassFixture<DlpTestFixture>
+    public class DeidentifyWithDateShiftTests : IClassFixture<DlpTestFixture>
     {
-        private RetryRobot TestRetryRobot { get; } = new RetryRobot();
         private DlpTestFixture Fixture { get; }
-        public JobsListTests(DlpTestFixture fixture)
+        public DeidentifyWithDateShiftTests(DlpTestFixture fixture)
         {
             Fixture = fixture;
         }
 
-        [Fact]
-        public void TestListDlpJobs()
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
+        public void TestDeidentifyWithDateShift()
         {
-            var dlp = DlpServiceClient.Create();
-            var dlpJob = dlp.CreateDlpJob(Fixture.GetTestRiskAnalysisJobRequest());
-
-            TestRetryRobot.ShouldRetry = ex => true;
-            TestRetryRobot.Eventually(() =>
-            {
-                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "RiskAnalysisJob");
-
-                Assert.True(response.Any());
-            });
+            var inputFilePath = Path.Combine(Fixture.ResourcePath, "dates-input.csv");
+            Assert.True(File.Exists(inputFilePath));
+            var result = DeidentifyWithDateShift.Deidentify(Fixture.ProjectId, inputFilePath, 50, 50, "birth_date,register_date", "name", Fixture.KeyName, Fixture.WrappedKey);
+            Assert.NotNull(result);
+            Assert.Contains(result.Overview.TransformationSummaries, ts => ts.Field.Name == "birth_date");
         }
     }
 }
