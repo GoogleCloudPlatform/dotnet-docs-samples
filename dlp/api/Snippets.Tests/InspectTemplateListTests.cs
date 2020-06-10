@@ -45,7 +45,6 @@ namespace GoogleCloudSamples
             {
                 InspectTemplateDelete.Delete(Fixture.ProjectId, fullName);
             }
-
         }
     }
 }
