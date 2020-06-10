@@ -23,5 +23,5 @@ BackupAndEdit-TextFile "..\QuickStart\QuickStart.cs", "..\HelloWorld\HelloWorld.
 {
     dotnet restore
     dotnet build
-    dotnet test
+    dotnet test --test-adapter-path:. --logger:junit -v n
 }
