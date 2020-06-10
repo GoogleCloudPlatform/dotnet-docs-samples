@@ -176,7 +176,6 @@ namespace GoogleCloudSamples
             Assert.Contains(data, reidOutput.Stdout);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1006")]
         public void TestTriggers()
         {
             var triggerId = $"my-csharp-test-trigger-{Guid.NewGuid()}";
