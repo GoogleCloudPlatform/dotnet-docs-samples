@@ -18,15 +18,13 @@ using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class InspectTemplateListTests
+    public class InspectTemplateListTests : IClassFixture<DlpTestFixture>
     {
         private DlpTestFixture Fixture { get; }
         public InspectTemplateListTests(DlpTestFixture fixture)
         {
             Fixture = fixture;
         }
-
-
 
         [Fact]
         public void TestInspectTemplateList()
