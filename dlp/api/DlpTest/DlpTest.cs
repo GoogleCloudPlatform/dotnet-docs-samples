@@ -188,7 +188,7 @@ namespace GoogleCloudSamples
             var createOutput = _dlp.Run(
                 "createJobTrigger",
                 CallingProjectId,
-                "-i", "PERSON_NAME,US_ZIP",
+                "-i", "PERSON_NAME,LOCATION",
                 _bucketName,
                 "1",
                 "--autoPopulateTimespan",
