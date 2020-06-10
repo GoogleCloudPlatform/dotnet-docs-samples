@@ -20,7 +20,7 @@ using System.Collections.Generic;
 
 public class BigQueryCreateJob
 {
-    public void CreateJob(string projectId = "your-project-id")
+    public BigQueryJob CreateJob(string projectId = "your-project-id")
     {
         string query = @"
             SELECT country_name from `bigquery-public-data.utility_us.country_code_iso";
@@ -45,6 +45,7 @@ public class BigQueryCreateJob
             options: queryOptions);
 
         Console.WriteLine($"Started job: {queryJob.Reference.JobId}");
+        return queryJob;
     }
 }
 // [END bigquery_create_job]
