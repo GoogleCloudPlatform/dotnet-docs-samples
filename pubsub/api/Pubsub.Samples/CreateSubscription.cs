@@ -19,8 +19,7 @@ using Grpc.Core;
 
 public class CreateSubscriptionSample
 {
-    public Subscription CreateSubscription(string projectId, string topicId,
-    string subscriptionId)
+    public Subscription CreateSubscription(string projectId, string topicId, string subscriptionId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
@@ -35,8 +34,7 @@ public class CreateSubscriptionSample
                 subscriptionName, topicName, pushConfig: null,
                 ackDeadlineSeconds: 60);
         }
-        catch (RpcException e)
-        when (e.Status.StatusCode == StatusCode.AlreadyExists)
+        catch (RpcException e) when (e.Status.StatusCode == StatusCode.AlreadyExists)
         {
             // Already exists.  That's fine.
         }

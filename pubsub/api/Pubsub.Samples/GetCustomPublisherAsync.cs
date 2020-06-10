@@ -26,14 +26,20 @@ public class GetCustomPublisherAsyncSample
     public async Task<PublisherClient> GetCustomPublisherAsync(string projectId, string topicId)
     {
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
-        PublisherClient publisher = await PublisherClient.CreateAsync(topicName,
-            settings: new PublisherClient.Settings
-            {
-                BatchingSettings = new Google.Api.Gax.BatchingSettings(
+
+        // Default Settings:
+        // byteCountThreshold: 1000000
+        // elementCountThreshold: 100
+        // delayThreshold: 10 milliseconds
+
+        var customSettings = new PublisherClient.Settings
+        {
+            BatchingSettings = new Google.Api.Gax.BatchingSettings(
                     elementCountThreshold: 100,
                     byteCountThreshold: 10240,
                     delayThreshold: TimeSpan.FromSeconds(3))
-            });
+        };
+        PublisherClient publisher = await PublisherClient.CreateAsync(topicName, settings: customSettings);
         return publisher;
     }
 }
