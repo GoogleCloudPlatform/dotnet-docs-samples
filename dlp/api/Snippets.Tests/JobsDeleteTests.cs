@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Dlp.V2;
 using System;
 using System.IO;
 using Xunit;
@@ -37,8 +38,10 @@ namespace GoogleCloudSamples
             bucketCollector.CopyToBucket(Path.Combine(Fixture.ResourcePath, "dates-input.csv"), fileName);
             var job = JobsCreate.CreateJob(Fixture.ProjectId, objectName);
             JobsDelete.DeleteJob(job.Name);
-            var activeJobs = JobsList.ListDlpJobs(Fixture.ProjectId, "state = RUNNING", "InspectJob");
-            Assert.DoesNotContain(activeJobs, job => job.Name == job.Name);
+            var activeJobs = JobsList.ListDlpJobs(Fixture.ProjectId, "state = RUNNING", DlpJobType.InspectJob);
+            Assert.DoesNotContain(activeJobs, j => j.Name == job.Name);
         }
     }
 }
+
+// Created job: { "name": "projects/dlapi-test/dlpJobs/i-4395928244510149959", "type": "INSPECT_JOB", "state": "PENDING", "inspectDetails": { "requestedOptions": { "snapshotInspectTemplate": { }, "jobConfig": { "storageConfig": { "cloudStorageOptions": { "fileSet": { "url": "gs://frucanpzcniuzunxeqdt/c8a9671e-7a0b-436f-8f82-815f75cc2850" } }, "timespanConfig": { "enableAutoPopulationOfTimespanConfig": true } }, "inspectConfig": { "infoTypes": [ { "name": "EMAIL_ADDRESS" }, { "name": "CREDIT_CARD_NUMBER" } ], "minLikelihood": "UNLIKELY", "limits": { "maxFindingsPerItem": 100 }, "includeQuote": true } } }, "result": { } }, "createTime": "2020-06-11T21:24:34.436Z" }
