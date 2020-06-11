@@ -1,5 +1,3 @@
-using System.IO;
-using System;
 // Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +13,8 @@ using System;
 // limitations under the License.
 
 using Google.Cloud.Dlp.V2;
+using System.IO;
+using System;
 using Xunit;
 
 namespace GoogleCloudSamples

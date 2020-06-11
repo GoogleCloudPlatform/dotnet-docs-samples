@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Dlp.V2;
 using System;
 using System.IO;
 using System.Linq;
@@ -42,7 +43,7 @@ namespace GoogleCloudSamples
             TestRetryRobot.ShouldRetry = ex => true;
             TestRetryRobot.Eventually(() =>
             {
-                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "InspectJob");
+                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", DlpJobType.InspectJob);
 
                 Assert.True(response.Any());
             });
