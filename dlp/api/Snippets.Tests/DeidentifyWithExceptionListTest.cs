@@ -29,7 +29,7 @@ namespace GoogleCloudSamples
         {
             var testString = "jack@example.org accessed customer record of user5@example.com";
             var expectedString = "jack@example.org accessed customer record of [EMAIL_ADDRESS]";
-            var result = DeidentifyWithSimpleWordList.Deidentify(Fixture.ProjectId, testString);
+            var result = DeidentifyWithExceptionList.Deidentify(Fixture.ProjectId, testString);
 
             Assert.Equal(expectedString, result.Item.Value);
         }

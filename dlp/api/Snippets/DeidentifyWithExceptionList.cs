@@ -19,7 +19,7 @@ using System;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 
-public class DeidentifyWithSimpleWordList
+public class DeidentifyWithExceptionList
 {
     public static DeidentifyContentResponse Deidentify(string projectId, string text)
     {
