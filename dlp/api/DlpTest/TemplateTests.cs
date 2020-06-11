@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using GoogleCloudSamples;
 using System;
 using Xunit;
 
-namespace DlpTest
+namespace GoogleCloudSamples
 {
     /// <summary>
     /// Tests for DLP Template APIs
@@ -34,12 +33,12 @@ namespace DlpTest
         public void TestTemplates()
         {
             // Creation
-            string name = $"my-inspect-template-{TestUtil.RandomName()}";
-            string displayName = $"My display name {Guid.NewGuid()}";
-            string description = $"My description {Guid.NewGuid()}";
-            string fullName = $"projects/{_testSettings.ProjectId}/inspectTemplates/{name}";
+            var name = $"my-inspect-template-{TestUtil.RandomName()}";
+            var displayName = $"My display name {Guid.NewGuid()}";
+            var description = $"My description {Guid.NewGuid()}";
+            var fullName = $"projects/{_testSettings.ProjectId}/inspectTemplates/{name}";
 
-            ConsoleOutput output = _testSettings.CommandLineRunner.Run(
+            var output = _testSettings.CommandLineRunner.Run(
                 "createInspectTemplate",
                 _testSettings.ProjectId,
                 name,

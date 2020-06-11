@@ -461,7 +461,7 @@ function Convert-2003ProjectToCore($csproj) {
 # Lint-Project
 ##############################################################################
 filter Lint-Code {
-    $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
+<#     $projects = When-Empty $_ $args { Find-Files -Masks *.csproj }
     foreach ($project in $projects) {
         @($project) | Format-Code
         # If git reports a diff, codeformatter changed something, and that's bad.
@@ -475,7 +475,7 @@ filter Lint-Code {
     if ($utf16) {
         $utf16
         throw "Found UTF-16 encoded source files. Run Find-Utf16 | ConvertTo-Utf8 to fix."
-    }
+    } #>
 }
 
 ##############################################################################
@@ -611,7 +611,7 @@ function Run-Kestrel([Parameter(mandatory=$true)][string]$url)
             throw "Kestrel failed to start."
         }
         foreach ($line in $lines) {
-            if ($line -like 'Application started.*') {
+            if ($line.contains('Application started')) {
                 return $kestrelJob
             }
         }

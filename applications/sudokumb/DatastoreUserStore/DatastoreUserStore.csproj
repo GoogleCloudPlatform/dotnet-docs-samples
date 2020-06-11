@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Google.Cloud.Datastore.V1" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.All" />
-  </ItemGroup>
-</Project>
