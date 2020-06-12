@@ -14,14 +14,13 @@
 
 // [START dlp_list_jobs]
 
-using System;
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 
 public class JobsList
 {
-    public static PagedEnumerable<ListDlpJobsResponse, DlpJob> ListDlpJobs(string projectId, string filter, string jobType)
+    public static PagedEnumerable<ListDlpJobsResponse, DlpJob> ListDlpJobs(string projectId, string filter, DlpJobType jobType)
     {
         var dlp = DlpServiceClient.Create();
 
@@ -29,7 +28,7 @@ public class JobsList
         {
             ParentAsProjectName = new ProjectName(projectId),
             Filter = filter,
-            Type = (DlpJobType)Enum.Parse(typeof(DlpJobType), jobType)
+            Type = jobType
         });
 
         // Uncomment to print jobs

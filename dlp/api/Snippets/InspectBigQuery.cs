@@ -27,7 +27,7 @@ public class InspectBigQuery
 {
     public static object Inspect(
         string projectId,
-        string minLikelihood,
+        Likelihood minLikelihood,
         int maxFindings,
         bool includeQuote,
         IEnumerable<FieldId> identifyingFields,
@@ -71,7 +71,7 @@ public class InspectBigQuery
                 },
                 ExcludeInfoTypes = false,
                 IncludeQuote = includeQuote,
-                MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+                MinLikelihood = minLikelihood
             },
             Actions =
                 {

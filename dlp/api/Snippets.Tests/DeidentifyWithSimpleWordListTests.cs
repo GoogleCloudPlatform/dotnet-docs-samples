@@ -12,34 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-using Google.Cloud.Dlp.V2;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class JobsListTests : IClassFixture<DlpTestFixture>
+    public class DeidentifyWithSimpleWordListTests : IClassFixture<DlpTestFixture>
     {
-        private RetryRobot TestRetryRobot { get; } = new RetryRobot();
         private DlpTestFixture Fixture { get; }
-        public JobsListTests(DlpTestFixture fixture)
+        public DeidentifyWithSimpleWordListTests(DlpTestFixture fixture)
         {
             Fixture = fixture;
         }
 
         [Fact]
-        public void TestListDlpJobs()
+        public void TestDeidentifyWithSimpleWordList()
         {
-            var dlp = DlpServiceClient.Create();
-            var dlpJob = dlp.CreateDlpJob(Fixture.GetTestRiskAnalysisJobRequest());
+            var testString = "Patient was seen in RM-YELLOW then transferred to rm green.";
+            var expectedString = "Patient was seen in [CUSTOM_ROOM_ID] then transferred to [CUSTOM_ROOM_ID].";
+            var result = DeidentifyWithSimpleWordList.Deidentify(Fixture.ProjectId, testString);
 
-            TestRetryRobot.ShouldRetry = ex => true;
-            TestRetryRobot.Eventually(() =>
-            {
-                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", DlpJobType.RiskAnalysisJob);
-
-                Assert.True(response.Any());
-            });
+            Assert.Equal(expectedString, result.Item.Value);
         }
     }
 }
