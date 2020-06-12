@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 // Copyright (c) 2020 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,6 +15,7 @@ using System.Text.RegularExpressions;
 // [START dlp_inspect_string_multiple_rules]
 
 using System;
+using System.Text.RegularExpressions;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using static Google.Cloud.Dlp.V2.CustomInfoType.Types;
