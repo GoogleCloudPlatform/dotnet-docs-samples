@@ -12,7 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START dlp_inspect_string_with_exclusion_dict]
+// [START dlp_inspect_string_with_exclusion_dict_substring]
 
 using System;
 using System.Collections.Generic;
@@ -20,37 +20,43 @@ using System.Linq;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 
-public class InspectStringWithExclusionDict
+public class InspectStringWithExclusionDictSubstring
 {
-    public static InspectContentResponse Inspect(string projectId, string textToInspect, List<String> excludedMatchList)
+    public static InspectContentResponse Inspect(string projectId, string textToInspect, List<String> excludedSubstringList)
     {
         var dlp = DlpServiceClient.Create();
 
-        var byteContentItem = new ByteContentItem
+        var byteItem = new ByteContentItem
         {
             Type = ByteContentItem.Types.BytesType.TextUtf8,
             Data = Google.Protobuf.ByteString.CopyFromUtf8(textToInspect)
         };
 
-        var contentItem = new ContentItem { ByteItem = byteContentItem };
+        var contentItem = new ContentItem { ByteItem = byteItem };
 
-        var infoTypes = new string[] { "PHONE_NUMBER", "EMAIL_ADDRESS", "CREDIT_CARD_NUMBER" }.Select(it => new InfoType { Name = it });
+        var infoTypes = new string[]
+        {
+            "EMAIL_ADDRESS",
+            "DOMAIN_NAME",
+            "PHONE_NUMBER",
+            "PERSON_NAME"
+        }.Select(it => new InfoType { Name = it });
 
         var exclusionRule = new ExclusionRule
         {
-            MatchingType = MatchingType.FullMatch,
+            MatchingType = MatchingType.PartialMatch,
             Dictionary = new CustomInfoType.Types.Dictionary
             {
                 WordList = new CustomInfoType.Types.Dictionary.Types.WordList
                 {
-                    Words = { excludedMatchList }
+                    Words = { excludedSubstringList }
                 }
             }
         };
 
         var ruleSet = new InspectionRuleSet
         {
-            InfoTypes = { new InfoType { Name = "EMAIL_ADDRESS" } },
+            InfoTypes = { infoTypes },
             Rules = { new InspectionRule { ExclusionRule = exclusionRule } }
         };
 
@@ -82,4 +88,4 @@ public class InspectStringWithExclusionDict
     }
 }
 
-// [END dlp_inspect_string_with_exclusion_dict]
+// [END dlp_inspect_string_with_exclusion_dict_substring]
