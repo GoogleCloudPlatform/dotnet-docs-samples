@@ -13,40 +13,40 @@
 // limitations under the License.
 
 using Google.Cloud.Dlp.V2;
-using System;
 using System.IO;
-using System.Linq;
+using System;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class JobsCreateTests : IClassFixture<DlpTestFixture>
+    public class TriggersDeleteTests : IClassFixture<DlpTestFixture>
     {
-        private RetryRobot TestRetryRobot { get; } = new RetryRobot();
         private DlpTestFixture Fixture { get; }
-        public JobsCreateTests(DlpTestFixture fixture)
+
+        public TriggersDeleteTests(DlpTestFixture fixture)
         {
-            Fixture = fixture;
+            this.Fixture = fixture;
         }
 
         [Fact]
-        public void TestCreateJob()
+        public void TestTriggerDelete()
         {
+            var infoTypes = new InfoType[] { new InfoType { Name = "PERSON_NAME" } };
+            var triggerId = $"my-csharp-test-trigger-{Guid.NewGuid()}";
+            var fullTriggerId = $"projects/{Fixture.ProjectId}/jobTriggers/{triggerId}";
+            var displayName = $"My trigger display name {Guid.NewGuid()}";
+            var description = $"My trigger description {Guid.NewGuid()}";
+
             using var randomBucketFixture = new RandomBucketFixture();
             using var bucketCollector = new BucketCollector(randomBucketFixture.BucketName);
             var bucketName = randomBucketFixture.BucketName;
             var fileName = Guid.NewGuid().ToString();
             var objectName = $"gs://{bucketName}/{fileName}";
             bucketCollector.CopyToBucket(Path.Combine(Fixture.ResourcePath, "dates-input.csv"), fileName);
-            var job = JobsCreate.CreateJob(Fixture.ProjectId, objectName);
-
-            TestRetryRobot.ShouldRetry = ex => true;
-            TestRetryRobot.Eventually(() =>
-            {
-                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", DlpJobType.InspectJob);
-
-                Assert.True(response.Any());
-            });
+            var trigger = TriggersCreate.Create(Fixture.ProjectId, bucketName, Likelihood.Unlikely, 1, true, 1, infoTypes, triggerId, displayName, description);
+            TriggersDelete.Delete(trigger.Name);
+            var triggers = TriggersList.List(Fixture.ProjectId);
+            Assert.DoesNotContain(triggers, t => t.Name == trigger.Name);
         }
     }
 }

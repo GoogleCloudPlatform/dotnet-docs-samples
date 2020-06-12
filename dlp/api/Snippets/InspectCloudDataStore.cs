@@ -27,7 +27,7 @@ public class InspectCloudDataStore
 {
     public static object Inspect(
         string projectId,
-        string minLikelihood,
+        Likelihood minLikelihood,
         int maxFindings,
         bool includeQuote,
         string kindName,
@@ -67,7 +67,7 @@ public class InspectCloudDataStore
                 },
                 ExcludeInfoTypes = false,
                 IncludeQuote = includeQuote,
-                MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+                MinLikelihood = minLikelihood
             },
             Actions =
                 {
