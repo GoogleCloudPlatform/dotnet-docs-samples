@@ -11,4 +11,6 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-dotnet test --test-adapter-path:. --logger:junit -v n
+dotnet restore
+dotnet build
+dotnet test --test-adapter-path:. --logger:junit --no-build -v n
