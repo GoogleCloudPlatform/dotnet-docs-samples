@@ -16,50 +16,47 @@ using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using System;
 
-namespace GoogleCloudSamples
+/// <summary>
+/// This class contains examples of how to list and delete DLP jobs
+/// For more information, see https://cloud-dot-devsite.googleplex.com/dlp/docs/reference/rest/v2/projects.dlpJobs
+/// </summary>
+internal class Jobs
 {
-    /// <summary>
-    /// This class contains examples of how to list and delete DLP jobs
-    /// For more information, see https://cloud-dot-devsite.googleplex.com/dlp/docs/reference/rest/v2/projects.dlpJobs
-    /// </summary>
-    internal class Jobs
+    // [START dlp_list_jobs]
+    public static object ListJobs(string projectId, string filter, string jobType)
     {
-        // [START dlp_list_jobs]
-        public static object ListJobs(string projectId, string filter, string jobType)
+        var dlp = DlpServiceClient.Create();
+
+        var response = dlp.ListDlpJobs(new ListDlpJobsRequest
         {
-            DlpServiceClient dlp = DlpServiceClient.Create();
+            ParentAsProjectName = new ProjectName(projectId),
+            Filter = filter,
+            Type = (DlpJobType)Enum.Parse(typeof(DlpJobType), jobType)
+        });
 
-            var response = dlp.ListDlpJobs(new ListDlpJobsRequest
-            {
-                ParentAsProjectName = new ProjectName(projectId),
-                Filter = filter,
-                Type = (DlpJobType)Enum.Parse(typeof(DlpJobType), jobType)
-            });
-
-            foreach (var job in response)
-            {
-                Console.WriteLine($"Job: {job.Name} status: {job.State}");
-            }
-
-            return 0;
+        foreach (var job in response)
+        {
+            Console.WriteLine($"Job: {job.Name} status: {job.State}");
         }
 
-        // [END dlp_list_jobs]
-
-        // [START dlp_delete_job]
-        public static object DeleteJob(string jobName)
-        {
-            DlpServiceClient dlp = DlpServiceClient.Create();
-
-            dlp.DeleteDlpJob(new DeleteDlpJobRequest
-            {
-                Name = jobName
-            });
-
-            Console.WriteLine($"Successfully deleted job {jobName}.");
-            return 0;
-        }
-
-        // [END dlp_delete_job]
+        return 0;
     }
+
+    // [END dlp_list_jobs]
+
+    // [START dlp_delete_job]
+    public static object DeleteJob(string jobName)
+    {
+        var dlp = DlpServiceClient.Create();
+
+        dlp.DeleteDlpJob(new DeleteDlpJobRequest
+        {
+            Name = jobName
+        });
+
+        Console.WriteLine($"Successfully deleted job {jobName}.");
+        return 0;
+    }
+
+    // [END dlp_delete_job]
 }
