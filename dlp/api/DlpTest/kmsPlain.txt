@@ -1,1 +1,0 @@
-32 byte crypto file is 32 bytes.
