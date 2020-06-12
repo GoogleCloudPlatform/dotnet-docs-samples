@@ -14,6 +14,7 @@
 
 using Google.LongRunning;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(AutoMLFixture))]
@@ -33,12 +34,7 @@ public class GetOperationStatusTest
         // Get operation ID
         var listOperSample = new AutoMLListOperationStatus();
 
-        Operation firstOper;
-        using (IEnumerator<Operation> iter = listOperSample.ListOperationStatus(_fixture.ProjectId, "us-central1").GetEnumerator())
-        {
-            iter.MoveNext();
-            firstOper = iter.Current;
-        }
+        Operation firstOper = listOperSample.ListOperationStatus(_fixture.ProjectId, "us-central1").First();
         // Act
         Operation result = _sample.GetOperationStatus(firstOper.Name);
 

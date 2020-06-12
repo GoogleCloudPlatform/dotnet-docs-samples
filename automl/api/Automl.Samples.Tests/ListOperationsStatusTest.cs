@@ -19,8 +19,9 @@ using Xunit;
 [Collection(nameof(AutoMLFixture))]
 public class ListOperationStatusTest
 {
-    private AutoMLFixture _fixture { get; }
-    private AutoMLListOperationStatus _sample { get; }
+    private readonly AutoMLFixture _fixture;
+    private readonly AutoMLListOperationStatus _sample;
+
     public ListOperationStatusTest(AutoMLFixture fixture)
     {
         _fixture = fixture;
@@ -30,17 +31,6 @@ public class ListOperationStatusTest
     [Fact]
     public void TestListOpetationStatus()
     {
-        // Act
-        IEnumerable<Operation> operations = _sample.ListOperationStatus(_fixture.ProjectId, "us-central1");
-
-        Operation firstOper;
-        using (IEnumerator<Operation> iter = operations.GetEnumerator())
-        {
-            iter.MoveNext();
-            firstOper = iter.Current;
-        }
-
-        // Assert
-        Assert.Contains("projects/", firstOper.Name);
+        Assert.NotEmpty(_sample.ListOperationStatus(_fixture.ProjectId, "us-central1"));
     }
 }

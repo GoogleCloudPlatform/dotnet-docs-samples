@@ -12,29 +12,50 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+// [START automl_get_operation_status]
+
 using Google.Cloud.AutoML.V1;
 using Google.LongRunning;
+using System;
 
 public class AutoMLGetOperationStatus
 {
-    // [START automl_get_operation_status]
     /// <summary>
     /// Demonstrates using the AutoML client to get operation status.
     /// </summary>
-    /// <param name="operationFullId">the complete name of a operation. For example, the name of your
-    /// operation is projects/[projectId]/locations/us-central1/operations/[operationId].</param>
-    public Operation GetOperationStatus(string operationFullId
-        = "projects/[projectId]/locations/us-central1/operations/[operationId]")
+    /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="location">GCP Project Region.</param>
+    /// <param name="operationId">Operation ID. </param>
+    public Operation GetOperationStatus(string projectId = "YOUR-PROJECT-ID",
+        string location = "YOUR-PROJECT-LOCATION", string operationId
+        = "YOUR-OPERATION-ID")
     {
         // Initialize the client that will be used to send requests. This client only needs to be created
         // once, and can be reused for multiple requests.
         AutoMlClient client = AutoMlClient.Create();
+        string operationFullId = $"projects/{projectId}/locations/{location}/operations/{operationId}";
 
         // Get the latest state of a long-running operation.
         Operation operation = client.CreateModelOperationsClient.GetOperation(operationFullId);
 
+
+        // Display operation details.
+        Console.WriteLine("Operation details:");
+        Console.WriteLine($"Name: {operation.Name}");
+        Console.WriteLine($"Metadata Type Url: {operation.Metadata.TypeUrl}");
+        Console.WriteLine($"Done: {operation.Done}");
+        if (operation.Response != null)
+        {
+            Console.WriteLine($"Response Type Url: {operation.Response.TypeUrl}");
+        }
+        if (operation.Error != null)
+        {
+            Console.WriteLine("\tResponse:");
+            Console.WriteLine($"\t\tError code: {operation.Error.Code}");
+            Console.WriteLine($"\t\tError message: {operation.Error.Message}");
+        }
         // Return the result.
         return operation;
     }
-    // [END automl_get_operation_status]
 }
+// [END automl_get_operation_status]

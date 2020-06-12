@@ -12,6 +12,8 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+// [START automl_list_operation_status]
+
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.AutoML.V1;
 using Google.LongRunning;
@@ -19,11 +21,11 @@ using System.Collections.Generic;
 
 public class AutoMLListOperationStatus
 {
-    // [START automl_list_operation_status]
     /// <summary>
     /// Demonstrates using the AutoML client to list operations.
     /// </summary>
     /// <param name="projectId">GCP Project ID.</param>
+    /// <param name="location">GCP Project Region.</param>
     public IEnumerable<Operation> ListOperationStatus(string projectId = "YOUR-PROJECT-ID", string location = "YOUR-PROJECT-LOCATION")
     {
         // Initialize the client that will be used to send requests. This client only needs to be created
@@ -39,13 +41,11 @@ public class AutoMLListOperationStatus
             Name = projectLocation.ToString()
         };
 
-
         // Call the API.
         IEnumerable<Operation> operations = client.CreateModelOperationsClient.ListOperations(listrequest);
 
         // Return the result.
         return operations;
     }
-
-    // [END automl_list_operation_status]
 }
+// [END automl_list_operation_status]
