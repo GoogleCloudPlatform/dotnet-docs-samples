@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 // Copyright (c) 2020 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,6 +15,7 @@ using System.Collections.Generic;
 // [START dlp_inspect_string_with_exclusion_dict]
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
