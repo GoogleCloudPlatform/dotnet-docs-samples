@@ -26,3 +26,4 @@ google_application_credentials.json
 env/
 applications/liftAndShiftPetshop/PrecompiledWeb/
 applications/liftAndShiftPetshop/Web/
+*.leu
