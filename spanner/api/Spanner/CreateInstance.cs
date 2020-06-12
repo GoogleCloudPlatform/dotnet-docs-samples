@@ -34,7 +34,7 @@ public class CreateInstance
             ConfigAsInstanceConfigName =
                 InstanceConfigName.FromProjectInstanceConfig(projectId, "regional-us-central1"),
             DisplayName = "This is a display name.",
-            NodeCount = 2,
+            NodeCount = 1,
             Labels =
             {
                 { "cloud_spanner_samples", "true" },
