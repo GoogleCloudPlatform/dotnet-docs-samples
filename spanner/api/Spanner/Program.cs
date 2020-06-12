@@ -1756,7 +1756,8 @@ namespace GoogleCloudSamples.Spanner
             string connectionString =
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
-            List<Album> albums = new List<Album> {
+            List<Album> albums = new List<Album>
+            {
                 new Album { SingerId = singerId, AlbumId = 1, AlbumTitle = "Green" },
                 new Album { SingerId = singerId, AlbumId = 3, AlbumTitle = "Terrified" },
             };
@@ -1770,7 +1771,8 @@ namespace GoogleCloudSamples.Spanner
                 {
                     var cmd = connection.CreateDeleteCommand(
                         "UpcomingAlbums",
-                        new SpannerParameterCollection {
+                        new SpannerParameterCollection
+                        {
                             { "SingerId", SpannerDbType.Int64, album.SingerId },
                             { "AlbumId", SpannerDbType.Int64, album.AlbumId }
                         }
@@ -1831,29 +1833,31 @@ namespace GoogleCloudSamples.Spanner
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
-            List<Singer> singers = new List<Singer> {
-                new Singer {SingerId = firstSingerId, FirstName = "Marc",
-                    LastName = "Richards"},
-                new Singer {SingerId = secondSingerId, FirstName = "Catalina",
-                    LastName = "Smith"},
-                new Singer {SingerId = 3, FirstName = "Alice",
-                    LastName = "Trentor"},
-                new Singer {SingerId = 4, FirstName = "Lea",
-                    LastName = "Martin"},
-                new Singer {SingerId = 5, FirstName = "David",
-                    LastName = "Lomond"},
+            List<Singer> singers = new List<Singer>
+            {
+                new Singer { SingerId = firstSingerId, FirstName = "Marc",
+                    LastName = "Richards" },
+                new Singer { SingerId = secondSingerId, FirstName = "Catalina",
+                    LastName = "Smith" },
+                new Singer { SingerId = 3, FirstName = "Alice",
+                    LastName = "Trentor" },
+                new Singer { SingerId = 4, FirstName = "Lea",
+                    LastName = "Martin" },
+                new Singer { SingerId = 5, FirstName = "David",
+                    LastName = "Lomond" },
             };
-            List<Album> albums = new List<Album> {
-                new Album {SingerId = firstSingerId, AlbumId = 1,
-                    AlbumTitle = "Total Junk"},
-                new Album {SingerId = firstSingerId, AlbumId = 2,
-                    AlbumTitle = "Go, Go, Go"},
-                new Album {SingerId = secondSingerId, AlbumId = 1,
-                    AlbumTitle = "Green"},
-                new Album {SingerId = secondSingerId, AlbumId = 2,
-                    AlbumTitle = "Forever Hold your Peace"},
-                new Album {SingerId = secondSingerId, AlbumId = 3,
-                    AlbumTitle = "Terrified"},
+            List<Album> albums = new List<Album>
+            {
+                new Album { SingerId = firstSingerId, AlbumId = 1,
+                    AlbumTitle = "Total Junk" },
+                new Album { SingerId = firstSingerId, AlbumId = 2,
+                    AlbumTitle = "Go, Go, Go" },
+                new Album { SingerId = secondSingerId, AlbumId = 1,
+                    AlbumTitle = "Green" },
+                new Album { SingerId = secondSingerId, AlbumId = 2,
+                    AlbumTitle = "Forever Hold your Peace" },
+                new Album { SingerId = secondSingerId, AlbumId = 3,
+                    AlbumTitle = "Terrified" },
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -1862,11 +1866,12 @@ namespace GoogleCloudSamples.Spanner
 
                 // Insert rows into the Singers table.
                 var cmd = connection.CreateInsertCommand("Singers",
-                    new SpannerParameterCollection {
-                        {"SingerId", SpannerDbType.Int64},
-                        {"FirstName", SpannerDbType.String},
-                        {"LastName", SpannerDbType.String}
-                });
+                    new SpannerParameterCollection
+                    {
+                        { "SingerId", SpannerDbType.Int64 },
+                        { "FirstName", SpannerDbType.String },
+                        { "LastName", SpannerDbType.String }
+                    });
                 await Task.WhenAll(singers.Select(singer =>
                 {
                     cmd.Parameters["SingerId"].Value = singer.SingerId;
@@ -1877,11 +1882,12 @@ namespace GoogleCloudSamples.Spanner
 
                 // Insert rows into the Albums table.
                 cmd = connection.CreateInsertCommand("Albums",
-                    new SpannerParameterCollection {
-                        {"SingerId", SpannerDbType.Int64},
-                        {"AlbumId", SpannerDbType.Int64},
-                        {"AlbumTitle", SpannerDbType.String}
-                });
+                    new SpannerParameterCollection
+                    {
+                        { "SingerId", SpannerDbType.Int64 },
+                        { "AlbumId", SpannerDbType.Int64 },
+                        { "AlbumTitle", SpannerDbType.String }
+                    });
                 await Task.WhenAll(albums.Select(album =>
                 {
                     cmd.Parameters["SingerId"].Value = album.SingerId;
@@ -1935,29 +1941,31 @@ namespace GoogleCloudSamples.Spanner
             string connectionString =
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
-            List<Singer> singers = new List<Singer> {
-                new Singer {SingerId = firstSingerId, FirstName = "Marc",
-                    LastName = "Richards"},
-                new Singer {SingerId = secondSingerId, FirstName = "Catalina",
-                    LastName = "Smith"},
-                new Singer {SingerId = 3, FirstName = "Alice",
-                    LastName = "Trentor"},
-                new Singer {SingerId = 4, FirstName = "Lea",
-                    LastName = "Martin"},
-                new Singer {SingerId = 5, FirstName = "David",
-                    LastName = "Lomond"},
+            List<Singer> singers = new List<Singer>
+            {
+                new Singer { SingerId = firstSingerId, FirstName = "Marc",
+                    LastName = "Richards" },
+                new Singer { SingerId = secondSingerId, FirstName = "Catalina",
+                    LastName = "Smith" },
+                new Singer { SingerId = 3, FirstName = "Alice",
+                    LastName = "Trentor" },
+                new Singer { SingerId = 4, FirstName = "Lea",
+                    LastName = "Martin" },
+                new Singer { SingerId = 5, FirstName = "David",
+                    LastName = "Lomond" },
             };
-            List<Album> albums = new List<Album> {
-                new Album {SingerId = firstSingerId, AlbumId = 1,
-                    AlbumTitle = "Total Junk"},
-                new Album {SingerId = firstSingerId, AlbumId = 2,
-                    AlbumTitle = "Go, Go, Go"},
-                new Album {SingerId = secondSingerId, AlbumId = 1,
-                    AlbumTitle = "Green"},
-                new Album {SingerId = secondSingerId, AlbumId = 2,
-                    AlbumTitle = "Forever Hold your Peace"},
-                new Album {SingerId = secondSingerId, AlbumId = 3,
-                    AlbumTitle = "Terrified"},
+            List<Album> albums = new List<Album>
+            {
+                new Album { SingerId = firstSingerId, AlbumId = 1,
+                    AlbumTitle = "Total Junk" },
+                new Album { SingerId = firstSingerId, AlbumId = 2,
+                    AlbumTitle = "Go, Go, Go" },
+                new Album { SingerId = secondSingerId, AlbumId = 1,
+                    AlbumTitle = "Green" },
+                new Album { SingerId = secondSingerId, AlbumId = 2,
+                    AlbumTitle = "Forever Hold your Peace" },
+                new Album { SingerId = secondSingerId, AlbumId = 3,
+                    AlbumTitle = "Terrified" },
             };
             // Create connection to Cloud Spanner.
             using (var connection = new SpannerConnection(connectionString))
@@ -1966,11 +1974,12 @@ namespace GoogleCloudSamples.Spanner
 
                 // Insert rows into the Singers table.
                 var cmd = connection.CreateInsertCommand("UpcomingSingers",
-                    new SpannerParameterCollection {
-                        {"SingerId", SpannerDbType.Int64},
-                        {"FirstName", SpannerDbType.String},
-                        {"LastName", SpannerDbType.String}
-                });
+                    new SpannerParameterCollection
+                    {
+                        { "SingerId", SpannerDbType.Int64 },
+                        { "FirstName", SpannerDbType.String },
+                        { "LastName", SpannerDbType.String }
+                    });
                 await Task.WhenAll(singers.Select(singer =>
                 {
                     cmd.Parameters["SingerId"].Value = singer.SingerId;
@@ -1981,11 +1990,12 @@ namespace GoogleCloudSamples.Spanner
 
                 // Insert rows into the Albums table.
                 cmd = connection.CreateInsertCommand("UpcomingAlbums",
-                    new SpannerParameterCollection {
-                        {"SingerId", SpannerDbType.Int64},
-                        {"AlbumId", SpannerDbType.Int64},
-                        {"AlbumTitle", SpannerDbType.String}
-                });
+                    new SpannerParameterCollection
+                    {
+                        { "SingerId", SpannerDbType.Int64 },
+                        { "AlbumId", SpannerDbType.Int64 },
+                        { "AlbumTitle", SpannerDbType.String }
+                    });
                 await Task.WhenAll(albums.Select(album =>
                 {
                     cmd.Parameters["SingerId"].Value = album.SingerId;
@@ -2006,19 +2016,21 @@ namespace GoogleCloudSamples.Spanner
             // Make the request.
             using (var connection = new SpannerConnection(connectionString))
             {
-                foreach (string table in new[] { "UpcomingAlbums", "UpcomingSingers" })
-                {
-                    try
-                    {
-                        await connection.CreateDdlCommand($"DROP TABLE {table}")
-                            .ExecuteNonQueryAsync();
-                    }
-                    catch (SpannerException e) when (e.ErrorCode == ErrorCode.NotFound)
-                    {
-                        // Table does not exist.  Not a problem.
-                    }
-                }
+                DeleteTable(connection, "UpcomingAlbums");
+                DeleteTable(connection, "UpcomingSingers");
                 return 0;
+            }
+            async void DeleteTable(SpannerConnection connection, string table)
+            {
+                try
+                {
+                    await connection.CreateDdlCommand($"DROP TABLE {table}")
+                        .ExecuteNonQueryAsync();
+                }
+                catch (SpannerException e) when (e.ErrorCode == ErrorCode.NotFound)
+                {
+                    // Table does not exist.  Not a problem.
+                }
             }
         }
 
