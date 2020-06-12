@@ -209,30 +209,17 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
-        async void InitializeInstance()
+        void InitializeInstance()
         {
-            InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
+            InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
             try
             {
                 string name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}";
-                Instance response = await instanceAdminClient.GetInstanceAsync(name);
+                Instance response = instanceAdminClient.GetInstance(name);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
             {
-                string parent = $"projects/{_fixture.ProjectId}";
-                Instance instance = new Instance
-                {
-                    DisplayName = _fixture.InstanceId,
-                    Name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}",
-                    NodeCount = 1,
-                    Config = $"projects/{_fixture.ProjectId}/instanceConfigs/regional-us-central1"
-                };
-
-                // Make the CreateInstance request
-                var response = instanceAdminClient.CreateInstance(parent, _fixture.InstanceId, instance);
-
-                // Poll until the returned long-running operation is complete
-                response.PollUntilCompleted();
+                CreateInstance.SpannerCreateInstance(_fixture.ProjectId, _fixture.InstanceId);
             }
         }
 
