@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Google.Api.Gax.ResourceNames;
-using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Dlp.V2;
 using System;
 using System.IO;
@@ -24,9 +23,9 @@ namespace GoogleCloudSamples
 {
     public class DlpTestFixture
     {
-        public readonly string ProjectId;
-        public readonly string WrappedKey;
-        public readonly string KeyName;
+        public string ProjectId => Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public string WrappedKey => Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
+        public string KeyName => Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
         public readonly string ResourcePath = Path.GetFullPath("../../../resources/");
 
         public readonly CommandLineRunner CommandLineRunner = new CommandLineRunner
@@ -34,38 +33,12 @@ namespace GoogleCloudSamples
             VoidMain = Dlp.Main,
         };
 
-        public DlpTestFixture()
-        {
-            ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            // Authorize the client using Application Default Credentials.
-            // See: https://developers.google.com/identity/protocols/application-default-credentials
-            GoogleCredential credential = GoogleCredential.GetApplicationDefaultAsync().Result;
-
-            // Fetch the test key from an environment variable
-            KeyName = Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
-            WrappedKey = Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
-        }
+        public DlpTestFixture() { }
     }
 
     // TODO reconcile these with the "simple" tests below
     public partial class DlpTest : IClassFixture<DlpTestFixture>, IDisposable
     {
-        private const string phone = "(223) 456-7890";
-        private const string email = "gary@somedomain.org";
-        private const string cc = "4000-3000-2000-1000";
-
-        private const string inspectStringValue = "hi my phone number is (223) 456-7890 and my email address is " +
-            "gary@somedomain.org. You'll find my credit card number is 4000-3000-2000-1000!";
-
-        private const string ident = "111223333";
-
-        private readonly Regex _deidFpeResultRegex =
-            new Regex("Please de-identify the following identifier: TOKEN\\(\\d+\\):(?<ident>.{9})");
-
-        private readonly Regex _alphanumRegex = new Regex("[a-zA-Z0-9]*");
-        private readonly Regex _hexRegex = new Regex("[0-9A-F]*");
-        private readonly Regex _numRegex = new Regex("\\d*");
-        private readonly Regex _alphanumUcRegex = new Regex("[A-Z0-9]*");
         private readonly DlpTestFixture _kmsFixture;
         private string ProjectId { get { return _kmsFixture.ProjectId; } }
 
@@ -112,7 +85,7 @@ namespace GoogleCloudSamples
         public void Dispose()
         {
             // Delete any jobs created by the test.
-            DlpServiceClient dlp = DlpServiceClient.Create();
+            var dlp = DlpServiceClient.Create();
             var result = dlp.ListDlpJobs(new ListDlpJobsRequest
             {
                 ParentAsProjectName = new ProjectName(ProjectId),
@@ -131,12 +104,12 @@ namespace GoogleCloudSamples
         public void TestListInfoTypes()
         {
             // list all info types
-            ConsoleOutput outputA = _dlp.Run("listInfoTypes");
+            var outputA = _dlp.Run("listInfoTypes");
             Assert.Contains("US_DEA_NUMBER", outputA.Stdout);
             Assert.Contains("AMERICAN_BANKERS_CUSIP_ID", outputA.Stdout);
 
             // list info types with a filter
-            ConsoleOutput outputB = _dlp.Run(
+            var outputB = _dlp.Run(
                 "listInfoTypes",
                 "-f", "supported_by=RISK_ANALYSIS"
             );
@@ -147,7 +120,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestDeidMask()
         {
-            ConsoleOutput output = _dlp.Run(
+            var output = _dlp.Run(
                 "deidMask",
                 ProjectId,
                 "'My SSN is 372819127.'",
@@ -161,11 +134,10 @@ namespace GoogleCloudSamples
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
         public void TestDeidentifyDates()
         {
-            string InputPath = _resourcePath + "dates-input.csv";
-            string OutputPath = _resourcePath + "resources/dates-shifted.csv";
-            string CorrectPath = _resourcePath + "resources/dates-correct.csv";
-
-            ConsoleOutput output = _dlp.Run(
+            var InputPath = _resourcePath + "dates-input.csv";
+            var OutputPath = _resourcePath + "resources/dates-shifted.csv";
+            var CorrectPath = _resourcePath + "resources/dates-correct.csv";
+            _ = _dlp.Run(
                 "deidDateShift",
                 ProjectId,
                 InputPath,
@@ -185,11 +157,11 @@ namespace GoogleCloudSamples
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
         public void TestDeidReidFpe()
         {
-            string data = "'My SSN is 372819127'";
-            string alphabet = "Numeric";
+            var data = "'My SSN is 372819127'";
+            var alphabet = "Numeric";
 
             // Deid
-            ConsoleOutput deidOutput = _dlp.Run(
+            var deidOutput = _dlp.Run(
                 "deidFpe",
                 CallingProjectId,
                 data,
@@ -200,23 +172,22 @@ namespace GoogleCloudSamples
             Assert.Matches(new Regex("My SSN is TOKEN\\(9\\):\\d+"), deidOutput.Stdout);
 
             // Reid
-            ConsoleOutput reidOutput = _dlp.Run("reidFpe", CallingProjectId, data, KeyName, WrappedKey, alphabet);
+            var reidOutput = _dlp.Run("reidFpe", CallingProjectId, data, KeyName, WrappedKey, alphabet);
             Assert.Contains(data, reidOutput.Stdout);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1006")]
         public void TestTriggers()
         {
-            string triggerId = $"my-csharp-test-trigger-{Guid.NewGuid()}";
-            string fullTriggerId = $"projects/{CallingProjectId}/jobTriggers/{triggerId}";
-            string displayName = $"My trigger display name {Guid.NewGuid()}";
-            string description = $"My trigger description {Guid.NewGuid()}";
+            var triggerId = $"my-csharp-test-trigger-{Guid.NewGuid()}";
+            var fullTriggerId = $"projects/{CallingProjectId}/jobTriggers/{triggerId}";
+            var displayName = $"My trigger display name {Guid.NewGuid()}";
+            var description = $"My trigger description {Guid.NewGuid()}";
 
             // Create
-            ConsoleOutput createOutput = _dlp.Run(
+            var createOutput = _dlp.Run(
                 "createJobTrigger",
                 CallingProjectId,
-                "-i", "PERSON_NAME,US_ZIP",
+                "-i", "PERSON_NAME,LOCATION",
                 _bucketName,
                 "1",
                 "--autoPopulateTimespan",
@@ -228,20 +199,20 @@ namespace GoogleCloudSamples
             Assert.Contains($"Successfully created trigger {fullTriggerId}", createOutput.Stdout);
 
             // List
-            ConsoleOutput listOutput = _dlp.Run("listJobTriggers", CallingProjectId);
+            var listOutput = _dlp.Run("listJobTriggers", CallingProjectId);
             Assert.Contains($"Name: {fullTriggerId}", listOutput.Stdout);
             Assert.Contains($"Display Name: {displayName}", listOutput.Stdout);
             Assert.Contains($"Description: {description}", listOutput.Stdout);
 
             // Delete
-            ConsoleOutput deleteOutput = _dlp.Run("deleteJobTrigger", fullTriggerId);
+            var deleteOutput = _dlp.Run("deleteJobTrigger", fullTriggerId);
             Assert.Contains($"Successfully deleted trigger {fullTriggerId}", deleteOutput.Stdout);
         }
 
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
         public void TestNumericalStats()
         {
-            ConsoleOutput output = _dlp.Run(
+            var output = _dlp.Run(
                 "numericalStats",
                 CallingProjectId,
                 TableProjectId,
@@ -259,7 +230,7 @@ namespace GoogleCloudSamples
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
         public void TestCategoricalStats()
         {
-            ConsoleOutput output = _dlp.Run(
+            var output = _dlp.Run(
                 "categoricalStats",
                 CallingProjectId,
                 TableProjectId,
@@ -278,7 +249,7 @@ namespace GoogleCloudSamples
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
         public void TestKAnonymity()
         {
-            ConsoleOutput output = _dlp.Run(
+            var output = _dlp.Run(
                 "kAnonymity",
                 CallingProjectId,
                 TableProjectId,
@@ -297,7 +268,7 @@ namespace GoogleCloudSamples
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
         public void TestLDiversity()
         {
-            ConsoleOutput output = _dlp.Run(
+            var output = _dlp.Run(
                 "lDiversity",
                 CallingProjectId,
                 TableProjectId,
@@ -318,7 +289,7 @@ namespace GoogleCloudSamples
         [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
         public void TestKMap()
         {
-            ConsoleOutput output = _dlp.Run(
+            var output = _dlp.Run(
                 "kMap",
                 CallingProjectId,
                 TableProjectId,
@@ -340,7 +311,7 @@ namespace GoogleCloudSamples
         public void TestJobs()
         {
             // Create job.
-            DlpServiceClient dlp = DlpServiceClient.Create();
+            var dlp = DlpServiceClient.Create();
             var dlpJob = dlp.CreateDlpJob(new CreateDlpJobRequest()
             {
                 ParentAsProjectName = new ProjectName(ProjectId),
@@ -364,18 +335,18 @@ namespace GoogleCloudSamples
                     }
                 }
             });
-            Regex dlpJobRegex = new Regex("projects/.*/dlpJobs/r-\\d+");
+            var dlpJobRegex = new Regex("projects/.*/dlpJobs/r-\\d+");
 
             _retryRobot.ShouldRetry = ex => true;
             _retryRobot.Eventually(() =>
             {
                 // List jobs.
-                ConsoleOutput listOutput = _dlp.Run("listJobs", CallingProjectId, "state=DONE", "RiskAnalysisJob");
+                var listOutput = _dlp.Run("listJobs", CallingProjectId, "state=DONE", "RiskAnalysisJob");
                 Assert.Matches(dlpJobRegex, listOutput.Stdout);
 
                 // Delete created job.
-                string jobName = dlpJobRegex.Match(listOutput.Stdout).Value;
-                ConsoleOutput deleteOutput = _dlp.Run("deleteJob", jobName);
+                var jobName = dlpJobRegex.Match(listOutput.Stdout).Value;
+                var deleteOutput = _dlp.Run("deleteJob", jobName);
                 Assert.Contains($"Successfully deleted job {jobName}", deleteOutput.Stdout);
             });
         }

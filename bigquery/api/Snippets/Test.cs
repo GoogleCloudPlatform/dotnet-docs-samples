@@ -86,6 +86,14 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     }
 
     [Fact]
+    public void TestCreateJob()
+    {
+        var snippet = new BigQueryCreateJob();
+        BigQueryJob job = snippet.CreateJob(_projectId);
+        Assert.NotNull(job);
+    }
+
+    [Fact]
     public void TestCreateTable()
     {
         var snippet = new BigQueryCreateTable();

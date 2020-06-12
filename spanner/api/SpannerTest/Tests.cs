@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Spanner.Admin.Instance.V1;
 using Google.Cloud.Spanner.Data;
 using Grpc.Core;
 using System;
@@ -19,8 +20,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Google.Cloud.Spanner.Admin.Database.V1;
-using Google.Cloud.Spanner.Common.V1;
 
 namespace GoogleCloudSamples.Spanner
 {
@@ -28,7 +27,8 @@ namespace GoogleCloudSamples.Spanner
     {
         public string ProjectId { get; private set; } =
             Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        public string InstanceId { get; private set; } = "my-instance";
+        public string InstanceId { get; private set; } =
+            Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
         public string DatabaseId { get; private set; } = "my-database";
 
         public void Dispose()
@@ -133,6 +133,7 @@ namespace GoogleCloudSamples.Spanner
                 if (!_fixture.s_initializedDatabase)
                 {
                     _fixture.s_initializedDatabase = true;
+                    InitializeInstance();
                     InitializeDatabase();
                     InitializeBackup();
                 }
@@ -205,6 +206,33 @@ namespace GoogleCloudSamples.Spanner
                 {
                     throw;
                 }
+            }
+        }
+
+        async void InitializeInstance()
+        {
+            InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
+            try
+            {
+                string name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}";
+                Instance response = await instanceAdminClient.GetInstanceAsync(name);
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
+            {
+                string parent = $"projects/{_fixture.ProjectId}";
+                Instance instance = new Instance
+                {
+                    DisplayName = _fixture.InstanceId,
+                    Name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}",
+                    NodeCount = 1,
+                    Config = $"projects/{_fixture.ProjectId}/instanceConfigs/regional-us-central1"
+                };
+
+                // Make the CreateInstance request
+                var response = instanceAdminClient.CreateInstance(parent, _fixture.InstanceId, instance);
+
+                // Poll until the returned long-running operation is complete
+                response.PollUntilCompleted();
             }
         }
 
@@ -563,7 +591,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("19 Venue 19 True", readOutput.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1062")]
         void TestQueryWithBytes()
         {
             // Query records using an bytes parameter.
@@ -742,7 +770,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Create backup operation cancelled", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1065")]
         void TestGetBackupOperations()
         {
             ConsoleOutput output = _spannerCmd.Run("getBackupOperations",
@@ -761,9 +789,9 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, output.ExitCode);
             // BackupId should be a result of each of the 7 ListBackups calls and
             // once in a filter that is printed. But since we create a backup and
-            // reuse it across runs, the filter on create_time may not capture this
-            // backup so the check is for >= 7.
-            Assert.True(Regex.Matches(output.Stdout, _fixture.BackupId).Count >= 7);
+            // reuse it across runs, the filter on create_time and expire_time may not capture this
+            // backup so the check is for >= 5.
+            Assert.True(Regex.Matches(output.Stdout, _fixture.BackupId).Count >= 5);
         }
 
         [Fact]
