@@ -14,12 +14,9 @@
 
 // [START dlp_inspect_string_custom_hotword]
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
-using static Google.Cloud.Dlp.V2.InspectConfig.Types;
+using System;
 using static Google.Cloud.Dlp.V2.CustomInfoType.Types;
 
 public class InspectStringCustomHotword
