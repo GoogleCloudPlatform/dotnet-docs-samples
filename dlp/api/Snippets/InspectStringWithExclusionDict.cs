@@ -13,7 +13,7 @@ using System.Collections.Generic;
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START dlp_inspect_string_multiple_rules]
+// [START dlp_inspect_string_with_exclusion_dict]
 
 using System;
 using System.Linq;
@@ -82,4 +82,5 @@ public class InspectStringWithExclusionDict
         return response;
     }
 }
-// [END dlp_inspect_string_multiple_rules]
+
+// [END dlp_inspect_string_with_exclusion_dict]
