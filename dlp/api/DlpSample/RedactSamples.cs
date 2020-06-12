@@ -18,43 +18,40 @@ using Google.Protobuf;
 using System;
 using System.IO;
 
-namespace GoogleCloudSamples
+internal class RedactSamples
 {
-    internal class RedactSamples
+    // [START redact_image]
+    public static object RedactFromImage(string projectId, string originalImagePath, string redactedImagePath)
     {
-        // [START redact_image]
-        public static object RedactFromImage(string projectId, string originalImagePath, string redactedImagePath)
+        var request = new RedactImageRequest
         {
-            var request = new RedactImageRequest
+            ParentAsProjectName = new ProjectName(projectId),
+            InspectConfig = new InspectConfig
             {
-                ParentAsProjectName = new ProjectName(projectId),
-                InspectConfig = new InspectConfig
-                {
-                    MinLikelihood = Likelihood.Likely,
-                    Limits = new InspectConfig.Types.FindingLimits() { MaxFindingsPerItem = 5 },
-                    IncludeQuote = true,
-                    InfoTypes =
+                MinLikelihood = Likelihood.Likely,
+                Limits = new InspectConfig.Types.FindingLimits() { MaxFindingsPerItem = 5 },
+                IncludeQuote = true,
+                InfoTypes =
                     {
                         new InfoType { Name = "PHONE_NUMBER" },
                         new InfoType { Name = "EMAIL_ADDRESS" }
                     }
-                },
-                ByteItem = new ByteContentItem
-                {
-                    Type = ByteContentItem.Types.BytesType.ImagePng,
-                    Data = ByteString.FromStream(new FileStream(originalImagePath, FileMode.Open))
-                },
-            };
+            },
+            ByteItem = new ByteContentItem
+            {
+                Type = ByteContentItem.Types.BytesType.ImagePng,
+                Data = ByteString.FromStream(new FileStream(originalImagePath, FileMode.Open))
+            },
+        };
 
-            DlpServiceClient client = DlpServiceClient.Create();
-            var response = client.RedactImage(request);
+        var client = DlpServiceClient.Create();
+        var response = client.RedactImage(request);
 
-            Console.WriteLine($"Extracted text: {response.ExtractedText}");
+        Console.WriteLine($"Extracted text: {response.ExtractedText}");
 
-            // Writes redacted image into file
-            response.RedactedImage.WriteTo(new FileStream(redactedImagePath, FileMode.Create, FileAccess.Write));
+        // Writes redacted image into file
+        response.RedactedImage.WriteTo(new FileStream(redactedImagePath, FileMode.Create, FileAccess.Write));
 
-            return 0;
-        }
+        return 0;
     }
 }

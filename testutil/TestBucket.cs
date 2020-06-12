@@ -12,12 +12,10 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using Google.Api.Gax;
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace GoogleCloudSamples
@@ -29,12 +27,13 @@ namespace GoogleCloudSamples
     public class RandomBucketFixture : IDisposable
     {
         private readonly StorageClient _storage = StorageClient.Create();
-        private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        public RandomBucketFixture()
+        public RandomBucketFixture() : this(Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID")) { }
+
+        private RandomBucketFixture(string projectId)
         {
             BucketName = RandomBucketName();
-            _storage.CreateBucket(_projectId, BucketName);
+            _storage.CreateBucket(projectId, BucketName);
         }
 
         public void Dispose()
@@ -103,8 +102,7 @@ namespace GoogleCloudSamples
         /// <returns>The object name.</returns>
         public string Collect(string bucketName, string objectName)
         {
-            SortedSet<string> objectNames;
-            if (!_garbage.TryGetValue(bucketName, out objectNames))
+            if (!_garbage.TryGetValue(bucketName, out SortedSet<string> objectNames))
             {
                 objectNames = _garbage[bucketName] = new SortedSet<string>();
             }
@@ -130,14 +128,14 @@ namespace GoogleCloudSamples
 
         public void Dispose()
         {
-            var robot = new RetryRobot()
+            RetryRobot robot = new RetryRobot()
             {
                 MaxTryCount = 10,
                 ShouldRetry = (e) => true,
             };
-            foreach (var bucket in _garbage)
+            foreach (KeyValuePair<string, SortedSet<string>> bucket in _garbage)
             {
-                foreach (var objectName in bucket.Value)
+                foreach (string objectName in bucket.Value)
                 {
                     robot.Eventually(() =>
                     {

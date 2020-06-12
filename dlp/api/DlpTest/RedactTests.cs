@@ -32,10 +32,10 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestRedactImage()
         {
-            string inPath = Path.Combine("resources", "test.png");
-            string outPath = "redacted.png";
+            var inPath = Path.Combine("resources", "test.png");
+            var outPath = "redacted.png";
 
-            ConsoleOutput output = _testSettings.CommandLineRunner.Run(
+            var output = _testSettings.CommandLineRunner.Run(
                 "redactImage",
                 "--projectId", _testSettings.ProjectId,
                 "--imageFromPath", inPath,

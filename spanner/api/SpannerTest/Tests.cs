@@ -12,6 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Spanner.Admin.Instance.V1;
 using Google.Cloud.Spanner.Data;
 using Grpc.Core;
 using System;
@@ -22,9 +23,47 @@ using Xunit;
 
 namespace GoogleCloudSamples.Spanner
 {
-    public class QuickStartTests
+    public class QuickStartFixture : IDisposable
     {
-        [Fact]
+        public string ProjectId { get; private set; } =
+            Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public string InstanceId { get; private set; } =
+            Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
+        public string DatabaseId { get; private set; } = "my-database";
+
+        public void Dispose()
+        {
+            try
+            {
+                // Delete database created from running the tests.
+                CommandLineRunner runner = new CommandLineRunner()
+                {
+                    Main = Program.Main,
+                    Command = "Spanner"
+                };
+                runner.Run("deleteDatabase",
+                    ProjectId, InstanceId, DatabaseId);
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
+        }
+    }
+    public class QuickStartTests : IClassFixture<QuickStartFixture>
+    {
+        readonly QuickStartFixture _fixture;
+        readonly CommandLineRunner _spannerCmd = new CommandLineRunner()
+        {
+            Main = Program.Main,
+            Command = "Spanner"
+        };
+
+        public QuickStartTests(QuickStartFixture fixture)
+        {
+            _fixture = fixture;
+            _spannerCmd.Run("createDatabase",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+        }
+
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1062")]
         public void TestQuickStart()
         {
             CommandLineRunner runner = new CommandLineRunner()
@@ -51,6 +90,8 @@ namespace GoogleCloudSamples.Spanner
                 };
                 runner.Run("deleteDatabase",
                     ProjectId, InstanceId, DatabaseId);
+                runner.Run("deleteDatabase",
+                    ProjectId, InstanceId, RestoredDatabaseId);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
         }
@@ -62,8 +103,16 @@ namespace GoogleCloudSamples.Spanner
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
         private static readonly string s_randomDatabaseName = "my-db-"
             + TestUtil.RandomName();
+        private static readonly string s_randomToBeCancelledBackupName = "my-backup-"
+            + TestUtil.RandomName();
+        private static readonly string s_randomRestoredDatabaseName = "my-db-"
+            + TestUtil.RandomName();
         public string DatabaseId =
             Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
+        public string BackupDatabaseId = "my-test-database";
+        public string BackupId = "my-test-database-backup";
+        public string ToBeCancelledBackupId = s_randomToBeCancelledBackupName;
+        public string RestoredDatabaseId = s_randomRestoredDatabaseName;
         public bool s_initializedDatabase { get; set; } = false;
     }
 
@@ -84,7 +133,9 @@ namespace GoogleCloudSamples.Spanner
                 if (!_fixture.s_initializedDatabase)
                 {
                     _fixture.s_initializedDatabase = true;
+                    InitializeInstance();
                     InitializeDatabase();
+                    InitializeBackup();
                 }
             }
         }
@@ -110,6 +161,66 @@ namespace GoogleCloudSamples.Spanner
             // Write data to the new table.
             _spannerCmd.Run("writeDatatypesData",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+        }
+
+        void InitializeBackup()
+        {
+            // Sample database for backup and restore tests.
+            try
+            {
+                _spannerCmd.Run("createSampleDatabase",
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
+                _spannerCmd.Run("insertSampleData",
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
+            }
+            catch (Exception e)
+            {
+                // We intentionally keep an existing database around to reduce the
+                // the likelihood of test timetouts when creating a backup so
+                // it's ok to get an AlreadyExists error.
+                if (e.ToString().Contains("Database already exists"))
+                {
+                    Console.WriteLine($"Database {_fixture.BackupDatabaseId} already exists.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            try
+            {
+                _spannerCmd.Run("createBackup",
+                    _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId,
+                    _fixture.BackupId);
+            }
+            catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
+            {
+                // We intentionally keep an existing backup around to reduce the
+                // the likelihood of test timetouts when creating a backup so
+                // it's ok to get an AlreadyExists error.
+                if (e.ToString().Contains("Backup already exists"))
+                {
+                    Console.WriteLine($"Backup {_fixture.BackupId} already exists.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        void InitializeInstance()
+        {
+            InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+            try
+            {
+                string name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}";
+                Instance response = instanceAdminClient.GetInstance(name);
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
+            {
+                CreateInstance.SpannerCreateInstance(_fixture.ProjectId, _fixture.InstanceId);
+            }
         }
 
         async Task RefillMarketingBudgetsAsync(int firstAlbumBudget,
@@ -309,6 +420,18 @@ namespace GoogleCloudSamples.Spanner
         }
 
         [Fact]
+        void TestDeleteSampleData()
+        {
+            // The deleteSampleData command creates the necessary tables, populates it with data
+            // and drops the tables afterwards.
+            ConsoleOutput output = _spannerCmd.Run("deleteSampleData",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Contains("Deleted individual rows in UpcomingAlbums.", output.Stdout);
+            Assert.Contains($"2 row(s) deleted from UpcomingSingers.", output.Stdout);
+            Assert.Contains($"3 row(s) deleted from UpcomingSingers.", output.Stdout);
+        }
+
+        [Fact]
         void TestDml()
         {
             RefillMarketingBudgetsAsync(300000, 300000).Wait();
@@ -455,7 +578,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("19 Venue 19 True", readOutput.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1062")]
         void TestQueryWithBytes()
         {
             // Query records using an bytes parameter.
@@ -570,7 +693,7 @@ namespace GoogleCloudSamples.Spanner
                 foreach (var innerException in e.InnerExceptions)
                 {
                     SpannerException spannerException = innerException as SpannerException;
-                    if (spannerException != null && spannerException.Message.ToLower().Contains("duplicate"))
+                    if (spannerException != null && spannerException.ErrorCode == ErrorCode.AlreadyExists)
                     {
                         Console.WriteLine($"Database {_fixture.DatabaseId} already exists.");
                         rethrow = false;
@@ -622,6 +745,60 @@ namespace GoogleCloudSamples.Spanner
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("SingerId : 1 AlbumId : 1", output.Stdout);
             Assert.Contains("SingerId : 2 AlbumId : 1", output.Stdout);
+        }
+
+        [Fact]
+        void TestCancelBackup()
+        {
+            ConsoleOutput output = _spannerCmd.Run("cancelBackupOperation",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId,
+                _fixture.ToBeCancelledBackupId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Create backup operation cancelled", output.Stdout);
+        }
+
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1065")]
+        void TestGetBackupOperations()
+        {
+            ConsoleOutput output = _spannerCmd.Run("getBackupOperations",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(_fixture.BackupId, output.Stdout);
+            Assert.Contains(_fixture.BackupDatabaseId, output.Stdout);
+            Assert.Contains("100% complete", output.Stdout);
+        }
+
+        [Fact]
+        void TestGetBackups()
+        {
+            ConsoleOutput output = _spannerCmd.Run("getBackups",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId, _fixture.BackupId);
+            Assert.Equal(0, output.ExitCode);
+            // BackupId should be a result of each of the 7 ListBackups calls and
+            // once in a filter that is printed. But since we create a backup and
+            // reuse it across runs, the filter on create_time and expire_time may not capture this
+            // backup so the check is for >= 5.
+            Assert.True(Regex.Matches(output.Stdout, _fixture.BackupId).Count >= 5);
+        }
+
+        [Fact]
+        void TestRestoreDatabase()
+        {
+            ConsoleOutput output = _spannerCmd.Run("restoreDatabase",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.RestoredDatabaseId, _fixture.BackupId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains(_fixture.BackupId, output.Stdout);
+            Assert.Contains(_fixture.RestoredDatabaseId, output.Stdout);
+            Assert.Contains($"was restored to {_fixture.RestoredDatabaseId} from backup", output.Stdout);
+        }
+
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1065")]
+        void TestUpdateBackup()
+        {
+            ConsoleOutput output = _spannerCmd.Run("updateBackup",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupId);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Updated Backup ExpireTime", output.Stdout);
         }
     }
 }
