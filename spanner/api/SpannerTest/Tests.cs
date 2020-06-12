@@ -407,15 +407,13 @@ namespace GoogleCloudSamples.Spanner
         [Fact]
         void TestDeleteSampleData()
         {
+            // The deleteSampleData command creates the necessary tables, populates it with data
+            // and drops the tables afterwards.
             ConsoleOutput output = _spannerCmd.Run("deleteSampleData",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
-            Assert.Contains("Deleted individual rows in Albums.", output.Stdout);
-            Assert.Contains($"2 row(s) deleted from Singers.", output.Stdout);
-            Assert.Contains($"7 row(s) deleted from Singers.", output.Stdout);
-
-            // Put the deleted sample data back.
-            _spannerCmd.Run("insertSampleData",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Contains("Deleted individual rows in UpcomingAlbums.", output.Stdout);
+            Assert.Contains($"2 row(s) deleted from UpcomingSingers.", output.Stdout);
+            Assert.Contains($"3 row(s) deleted from UpcomingSingers.", output.Stdout);
         }
 
         [Fact]
