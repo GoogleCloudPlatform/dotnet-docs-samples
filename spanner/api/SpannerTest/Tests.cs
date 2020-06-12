@@ -780,7 +780,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains($"was restored to {_fixture.RestoredDatabaseId} from backup", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1065")]
         void TestUpdateBackup()
         {
             ConsoleOutput output = _spannerCmd.Run("updateBackup",
