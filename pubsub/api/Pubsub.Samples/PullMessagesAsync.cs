@@ -13,10 +13,10 @@
 // limitations under the License.
 
 // [START pubsub_subscriber_async_pull]
-// [START scc_receive_notifications]
+// [START pubsub_quickstart_subscriber]
 
 using Google.Cloud.PubSub.V1;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,27 +24,26 @@ using System.Threading.Tasks;
 
 public class PullMessagesAsyncSample
 {
-    public async Task<List<string>> PullMessagesAsync(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<int> PullMessagesAsync(string projectId, string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
         // SubscriberClient runs your message handle function on multiple
         // threads to maximize throughput.
-        var result = new List<string>();
+        int messageCount = 0;
         Task startTask = subscriber.StartAsync(
             async (PubsubMessage message, CancellationToken cancel) =>
             {
-                string text =
-                    Encoding.UTF8.GetString(message.Data.ToArray());
-                result.Add($"Message {message.MessageId}: {text}");
-                return acknowledge ? SubscriberClient.Reply.Ack
-                    : SubscriberClient.Reply.Nack;
+                string text = Encoding.UTF8.GetString(message.Data.ToArray());
+                Console.WriteLine($"Message {message.MessageId}: {text}");
+                Interlocked.Increment(ref messageCount);
+                return acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack;
             });
         // Run for 5 seconds.
         await Task.Delay(5000);
         await subscriber.StopAsync(CancellationToken.None);
-        return result;
+        return messageCount;
     }
 }
 // [END pubsub_subscriber_async_pull]
-// [END scc_receive_notifications]
+// [END pubsub_quickstart_subscriber]

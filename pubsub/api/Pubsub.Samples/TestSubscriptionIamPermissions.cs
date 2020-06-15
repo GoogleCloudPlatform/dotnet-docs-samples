@@ -20,8 +20,7 @@ using System.Collections.Generic;
 
 public class TestSubscriptionIamPermissionsSample
 {
-    public TestIamPermissionsResponse TestSubscriptionIamPermissionsResponse(
-        string projectId, string subscriptionId, PublisherServiceApiClient publisher)
+    public TestIamPermissionsResponse TestSubscriptionIamPermissionsResponse(string projectId, string subscriptionId)
     {
         List<string> permissions = new List<string>
         {
@@ -30,9 +29,10 @@ public class TestSubscriptionIamPermissionsSample
         };
         TestIamPermissionsRequest request = new TestIamPermissionsRequest
         {
-            Resource = SubscriptionName.FromProjectSubscription(projectId, subscriptionId).ToString(),
+            ResourceAsResourceName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId),
             Permissions = { permissions }
         };
+        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         TestIamPermissionsResponse response = publisher.TestIamPermissions(request);
         return response;
     }

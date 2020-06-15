@@ -16,14 +16,14 @@
 
 using Google.Cloud.PubSub.V1;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
-public class GetCustomPublisherAsyncSample
+public class PublishBatchedMessagesAsyncSample
 {
-    /// <summary>
-    /// Create a PublisherClient with custom batch thresholds.
-    /// </summary>
-    public async Task<PublisherClient> GetCustomPublisherAsync(string projectId, string topicId)
+    public async Task<int> PublishBatchMessagesAsync(string projectId, string topicId, IEnumerable<string> messageTexts)
     {
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
 
@@ -31,16 +31,31 @@ public class GetCustomPublisherAsyncSample
         // byteCountThreshold: 1000000
         // elementCountThreshold: 100
         // delayThreshold: 10 milliseconds
-
         var customSettings = new PublisherClient.Settings
         {
-            BatchingSettings = new Google.Api.Gax.BatchingSettings(
-                    elementCountThreshold: 100,
-                    byteCountThreshold: 10240,
-                    delayThreshold: TimeSpan.FromSeconds(3))
+            BatchingSettings = new Google.Api.Gax.BatchingSettings(elementCountThreshold: 100,
+            byteCountThreshold: 10240,
+            delayThreshold: TimeSpan.FromSeconds(3))
         };
+
         PublisherClient publisher = await PublisherClient.CreateAsync(topicName, settings: customSettings);
-        return publisher;
+
+        int publishedMessageCount = 0;
+        var publishTasks = messageTexts.Select(async text =>
+        {
+            try
+            {
+                string message = await publisher.PublishAsync(text);
+                Console.WriteLine($"Published message {message}");
+                Interlocked.Increment(ref publishedMessageCount);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"An error ocurred when publishing message {text}: {exception.Message}");
+            }
+        });
+        await Task.WhenAll(publishTasks);
+        return publishedMessageCount;
     }
 }
 // [END pubsub_publisher_batch_settings]

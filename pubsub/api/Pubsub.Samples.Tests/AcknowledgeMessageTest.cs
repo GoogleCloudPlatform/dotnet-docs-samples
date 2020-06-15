@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Google.Api.Gax;
-using Google.Cloud.PubSub.V1;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -46,30 +44,24 @@ public class AcknowledgeMessageTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        var publisher = Task.Run(() =>
-        PublisherClient.CreateAsync(TopicName.FromProjectTopic(_pubsubFixture.ProjectId, topicId)))
-            .ResultWithUnwrappedExceptions();
-
-        Task.Run(() =>
-        _publishMessagesAsyncSample.PublishMessagesAsync(publisher, new string[] { message }))
-            .ResultWithUnwrappedExceptions();
+        Task.Run(() => _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message }));
 
         // Pull and acknowledge the messages
         _pubsubFixture.Eventually(() =>
         {
             var result = HandlePullMessages(customFlow, subscriptionId);
-            Assert.Contains(result, c => c.Contains(message));
+            Assert.Equal(1, result);
         });
 
         _pubsubFixture.Eventually(() =>
         {
             //Pull the Message to confirm it's gone after it's acknowledged
             var result = HandlePullMessages(customFlow, subscriptionId);
-            Assert.True(result.Count == 0);
+            Assert.True(result == 0);
         });
     }
 
-    private List<string> HandlePullMessages(bool customFlow, string subscriptionId)
+    private int HandlePullMessages(bool customFlow, string subscriptionId)
     {
         if (customFlow)
         {

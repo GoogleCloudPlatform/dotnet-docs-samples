@@ -24,7 +24,7 @@ public class CreateTopicSample
     public Topic CreateTopic(string projectId, string topicId)
     {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-        var topicName = TopicName.FromProjectTopic(projectId, "my-new-topic");
+        var topicName = TopicName.FromProjectTopic(projectId, topicId);
         Topic topic = null;
 
         try
@@ -32,7 +32,7 @@ public class CreateTopicSample
             topic = publisher.CreateTopic(topicName);
             Console.WriteLine($"Topic {topic.Name} created.");
         }
-        catch (RpcException e) when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists)
+        catch (RpcException e) when (e.Status.StatusCode == StatusCode.AlreadyExists)
         {
             Console.WriteLine($"Topic {topicName} already exists.");
         }

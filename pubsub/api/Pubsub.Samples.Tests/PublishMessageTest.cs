@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Google.Api.Gax;
-using Google.Cloud.PubSub.V1;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,15 +22,15 @@ using Xunit;
 public class PublishMessageTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly GetCustomPublisherAsyncSample _getCustomPublisherAsyncSample;
     private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
+    private readonly PublishBatchedMessagesAsyncSample _publishBatchedMessagesAsyncSample;
     private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
     public PublishMessageTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _getCustomPublisherAsyncSample = new GetCustomPublisherAsyncSample();
         _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
         _pullMessagesAsyncSample = new PullMessagesAsyncSample();
+        _publishBatchedMessagesAsyncSample = new PublishBatchedMessagesAsyncSample();
     }
 
     [Theory]
@@ -48,24 +47,18 @@ public class PublishMessageTest
 
         List<string> messageTexts = new[] { "Hello World!", "Good day.", "Bye bye." }.ToList();
 
-        PublisherClient publisher;
         if (customBatch)
         {
-            publisher = Task.Run(() =>
-                 _getCustomPublisherAsyncSample.GetCustomPublisherAsync(_pubsubFixture.ProjectId, topicId))
+            var output = Task.Run(() => _publishBatchedMessagesAsyncSample.PublishBatchMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts))
                 .ResultWithUnwrappedExceptions();
+            Assert.Equal(messageTexts.Count, output);
         }
         else
         {
-            publisher = Task.Run(() => PublisherClient.CreateAsync(TopicName.FromProjectTopic(_pubsubFixture.ProjectId, topicId)))
+            var output = Task.Run(() => _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts))
                 .ResultWithUnwrappedExceptions();
+            Assert.Equal(messageTexts.Count, output);
         }
-
-        var output = Task.Run(() =>
-        _publishMessagesAsyncSample.PublishMessagesAsync(publisher, messageTexts))
-            .ResultWithUnwrappedExceptions();
-
-        Assert.Contains("Published message", output);
 
         // Pull the Message to confirm it is valid
         _pubsubFixture.Eventually(() =>
@@ -73,7 +66,7 @@ public class PublishMessageTest
             var result = Task.Run(() =>
             _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false))
             .ResultWithUnwrappedExceptions();
-            Assert.True(result.Count > 0);
+            Assert.True(result > 0);
         });
     }
 }

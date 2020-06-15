@@ -21,9 +21,7 @@ public class GetSubscriptionSample
     public Subscription GetSubscription(string projectId, string subscriptionId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
-
-        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
-            subscriptionId);
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
 
         return subscriber.GetSubscription(subscriptionName);
     }

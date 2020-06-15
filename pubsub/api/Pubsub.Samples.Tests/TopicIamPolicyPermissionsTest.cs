@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.PubSub.V1;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -43,8 +42,7 @@ public class TopicIamPolicyPermissionsTest
             testMemberValueToConfirm);
 
         var response =
-            _testTopicIamPermissionsSample.TestTopicIamPermissions(_pubsubFixture.ProjectId,
-            topicId, PublisherServiceApiClient.Create());
+            _testTopicIamPermissionsSample.TestTopicIamPermissions(_pubsubFixture.ProjectId, topicId);
         Assert.NotEmpty(response.ToString());
     }
 }

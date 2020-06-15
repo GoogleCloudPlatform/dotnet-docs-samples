@@ -19,8 +19,7 @@ using Google.Cloud.PubSub.V1;
 
 public class SetSubscriptionIamPolicySample
 {
-    public Policy SetSubscriptionIamPolicy(string projectId,
-    string subscriptionId, string role, string member)
+    public Policy SetSubscriptionIamPolicy(string projectId, string subscriptionId, string role, string member)
     {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         string roleToBeAddedToPolicy = $"roles/{role}";
@@ -37,7 +36,7 @@ public class SetSubscriptionIamPolicySample
         };
         SetIamPolicyRequest request = new SetIamPolicyRequest
         {
-            Resource = SubscriptionName.FromProjectSubscription(projectId, subscriptionId).ToString(),
+            ResourceAsResourceName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId),
             Policy = policy
         };
         Policy response = publisher.SetIamPolicy(request);

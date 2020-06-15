@@ -16,7 +16,6 @@
 
 using Google.Cloud.PubSub.V1;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,39 +23,31 @@ using System.Threading.Tasks;
 
 public class PullMessagesCustomAsyncSample
 {
-    public async Task<List<string>> PullMessagesCustomAsync(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<int> PullMessagesCustomAsync(string projectId, string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
-        var result = new List<string>();
+        int messageCount = 0;
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName,
             settings: new SubscriberClient.Settings()
             {
                 AckExtensionWindow = TimeSpan.FromSeconds(4),
                 AckDeadline = TimeSpan.FromSeconds(10),
-                FlowControlSettings = new Google.Api.Gax
-                    .FlowControlSettings(
-                    maxOutstandingElementCount: 100,
-                    maxOutstandingByteCount: 10240)
+                FlowControlSettings = new Google.Api.Gax.FlowControlSettings(maxOutstandingElementCount: 100, maxOutstandingByteCount: 10240)
             });
-        // [START pubsub_quickstart_subscriber]
-        // [START pubsub_subscriber_flow_settings]
         // SubscriberClient runs your message handle function on multiple
         // threads to maximize throughput.
         Task startTask = subscriber.StartAsync(
             async (PubsubMessage message, CancellationToken cancel) =>
             {
-                string text =
-                    Encoding.UTF8.GetString(message.Data.ToArray());
-                result.Add($"Message {message.MessageId}: {text}");
-                return acknowledge ? SubscriberClient.Reply.Ack
-                    : SubscriberClient.Reply.Nack;
+                string text = Encoding.UTF8.GetString(message.Data.ToArray());
+                Console.WriteLine($"Message {message.MessageId}: {text}");
+                Interlocked.Increment(ref messageCount);
+                return acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack;
             });
         // Run for 5 seconds.
         await Task.Delay(5000);
         await subscriber.StopAsync(CancellationToken.None);
-        // [END pubsub_subscriber_flow_settings]
-        // [END pubsub_quickstart_subscriber]
-        return result;
+        return messageCount;
     }
 }
 // [END pubsub_subscriber_flow_settings]

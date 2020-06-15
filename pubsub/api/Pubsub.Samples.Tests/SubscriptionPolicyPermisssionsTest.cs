@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.PubSub.V1;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -49,8 +48,7 @@ public class SubscriptionPolicyPermisssionsTest
         _pubsubFixture.Eventually(() =>
         {
             var response = _testSubscriptionIamPermissionsSample
-            .TestSubscriptionIamPermissionsResponse(_pubsubFixture.ProjectId,
-            subscriptionId, PublisherServiceApiClient.Create());
+            .TestSubscriptionIamPermissionsResponse(_pubsubFixture.ProjectId, subscriptionId);
             Assert.NotEmpty(response.ToString());
         });
     }
