@@ -3,9 +3,8 @@
 These samples demonstrate how to interact with the [Google Cloud Pub/Sub API][Pubsub] using C# and
 the .NET client libraries to call the Cloud Pub/Sub API.
 
-The samples requires [.NET Core 2.0][net-core] or later.  That means using
-[Visual Studio 2017](https://www.visualstudio.com/), or the command line.  Visual Studio 2015 users
-can use [this older sample](https://github.com/GoogleCloudPlatform/dotnet-docs-samples/tree/vs2015/pubsub/api).
+The samples requires [.NET Core 3.1][net-core] or later.  That means using
+[Visual Studio 2019](https://www.visualstudio.com/), or the command line.
 
 ## Setup
 

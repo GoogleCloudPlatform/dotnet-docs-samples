@@ -13,27 +13,31 @@
 // limitations under the License.
 
 // [START pubsub_create_topic]
+// [START pubsub_quickstart_create_topic]
 
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
+using System;
 
 public class CreateTopicSample
 {
     public Topic CreateTopic(string projectId, string topicId)
     {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-        TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
+        var topicName = TopicName.FromProjectTopic(projectId, "my-new-topic");
+        Topic topic = null;
 
-        Topic result = null;
         try
         {
-            result = publisher.CreateTopic(topicName);
+            topic = publisher.CreateTopic(topicName);
+            Console.WriteLine($"Topic {topic.Name} created.");
         }
-        catch (RpcException e) when (e.Status.StatusCode == StatusCode.AlreadyExists)
+        catch (RpcException e) when (e.Status.StatusCode == Grpc.Core.StatusCode.AlreadyExists)
         {
-            // Already exists.  That's fine.
+            Console.WriteLine($"Topic {topicName} already exists.");
         }
-        return result;
+        return topic;
     }
 }
+// [END pubsub_quickstart_create_topic]
 // [END pubsub_create_topic]

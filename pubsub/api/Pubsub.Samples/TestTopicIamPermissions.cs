@@ -23,9 +23,11 @@ public class TestTopicIamPermissionsSample
     public TestIamPermissionsResponse TestTopicIamPermissions(string projectId,
         string topicId, PublisherServiceApiClient publisher)
     {
-        List<string> permissions = new List<string>();
-        permissions.Add("pubsub.topics.get");
-        permissions.Add("pubsub.topics.update");
+        List<string> permissions = new List<string>
+        {
+            "pubsub.topics.get",
+            "pubsub.topics.update"
+        };
         TestIamPermissionsRequest request = new TestIamPermissionsRequest
         {
             Resource = TopicName.FromProjectTopic(projectId, topicId).ToString(),

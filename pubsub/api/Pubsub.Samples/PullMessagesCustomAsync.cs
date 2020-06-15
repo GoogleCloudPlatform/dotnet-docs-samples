@@ -24,18 +24,14 @@ using System.Threading.Tasks;
 
 public class PullMessagesCustomAsyncSample
 {
-    public async Task<List<string>> PullMessagesCustomAsync(string projectId,
-    string subscriptionId, bool acknowledge)
+    public async Task<List<string>> PullMessagesCustomAsync(string projectId, string subscriptionId, bool acknowledge)
     {
-        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
-            subscriptionId);
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         var result = new List<string>();
-        SubscriberClient subscriber = await SubscriberClient.CreateAsync(
-            subscriptionName,
+        SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName,
             settings: new SubscriberClient.Settings()
             {
                 AckExtensionWindow = TimeSpan.FromSeconds(4),
-                Scheduler = Google.Api.Gax.SystemScheduler.Instance,
                 AckDeadline = TimeSpan.FromSeconds(10),
                 FlowControlSettings = new Google.Api.Gax
                     .FlowControlSettings(

@@ -27,11 +27,13 @@ public class SetSubscriptionIamPolicySample
 
         Policy policy = new Policy
         {
-            Bindings =
+            Bindings = {
+                new Binding
                 {
-                    new Binding { Role = roleToBeAddedToPolicy,
-                        Members = { member } }
+                    Role = roleToBeAddedToPolicy,
+                    Members = { member }
                 }
+            }
         };
         SetIamPolicyRequest request = new SetIamPolicyRequest
         {

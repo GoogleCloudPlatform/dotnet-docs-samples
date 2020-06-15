@@ -27,11 +27,13 @@ public class SetTopicIamPolicySample
 
         Policy policy = new Policy
         {
-            Bindings =
-                    {
-                        new Binding { Role = roleToBeAddedToPolicy,
-                            Members = { member } }
-                    }
+            Bindings = {
+                new Binding
+                {
+                    Role = roleToBeAddedToPolicy,
+                    Members = { member }
+                }
+            }
         };
         SetIamPolicyRequest request = new SetIamPolicyRequest
         {

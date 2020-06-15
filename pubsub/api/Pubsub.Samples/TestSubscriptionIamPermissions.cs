@@ -23,9 +23,11 @@ public class TestSubscriptionIamPermissionsSample
     public TestIamPermissionsResponse TestSubscriptionIamPermissionsResponse(
         string projectId, string subscriptionId, PublisherServiceApiClient publisher)
     {
-        List<string> permissions = new List<string>();
-        permissions.Add("pubsub.subscriptions.get");
-        permissions.Add("pubsub.subscriptions.update");
+        List<string> permissions = new List<string>
+        {
+            "pubsub.subscriptions.get",
+            "pubsub.subscriptions.update"
+        };
         TestIamPermissionsRequest request = new TestIamPermissionsRequest
         {
             Resource = SubscriptionName.FromProjectSubscription(projectId, subscriptionId).ToString(),

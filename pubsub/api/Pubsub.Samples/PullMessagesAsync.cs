@@ -27,8 +27,7 @@ public class PullMessagesAsyncSample
     public async Task<List<string>> PullMessagesAsync(string projectId, string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
-        SubscriberClient subscriber = await SubscriberClient.CreateAsync(
-            subscriptionName);
+        SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
         // SubscriberClient runs your message handle function on multiple
         // threads to maximize throughput.
         var result = new List<string>();
