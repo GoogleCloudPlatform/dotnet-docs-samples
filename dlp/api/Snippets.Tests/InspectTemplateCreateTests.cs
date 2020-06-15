@@ -32,7 +32,7 @@ namespace GoogleCloudSamples
             var name = $"my-inspect-template-{TestUtil.RandomName()}";
             var displayName = $"My display name {Guid.NewGuid()}";
             var description = $"My description {Guid.NewGuid()}";
-            var fullName = $"projects/{Fixture.ProjectId}/inspectTemplates/{name}";
+            var fullName = $"projects/{Fixture.ProjectId}/locations/global/inspectTemplates/{name}";
 
             var template = InspectTemplateCreate.Create(Fixture.ProjectId, name, displayName, description, Likelihood.Possible, 5, true);
 
