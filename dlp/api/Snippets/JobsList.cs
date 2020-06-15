@@ -1,4 +1,4 @@
-// Copyright 2018 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // [START dlp_list_jobs]
 
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
-using System;
 
 public class JobsList
 {
-    public static PagedEnumerable<ListDlpJobsResponse, DlpJob> ListDlpJobs(string projectId, string filter, string jobType)
+    public static PagedEnumerable<ListDlpJobsResponse, DlpJob> ListDlpJobs(string projectId, string filter, DlpJobType jobType)
     {
         var dlp = DlpServiceClient.Create();
 
@@ -30,8 +28,14 @@ public class JobsList
         {
             ParentAsProjectName = new ProjectName(projectId),
             Filter = filter,
-            Type = (DlpJobType)Enum.Parse(typeof(DlpJobType), jobType)
+            Type = jobType
         });
+
+        // Uncomment to print jobs
+        // foreach (var job in response)
+        // {
+        //     Console.WriteLine($"Job: {job.Name} status: {job.State}");
+        // }
 
         return response;
     }

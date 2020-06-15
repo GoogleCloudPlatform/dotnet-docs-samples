@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Api.Gax.ResourceNames;
-using Google.Cloud.Dlp.V2;
 using System;
 using System.IO;
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.Dlp.V2;
 
 namespace GoogleCloudSamples
 {

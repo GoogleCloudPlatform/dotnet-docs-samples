@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Dlp.V2;
 using System;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestCreateDlpJob()
+        public void TestCreateJob()
         {
             using var randomBucketFixture = new RandomBucketFixture();
             using var bucketCollector = new BucketCollector(randomBucketFixture.BucketName);
@@ -42,7 +43,7 @@ namespace GoogleCloudSamples
             TestRetryRobot.ShouldRetry = ex => true;
             TestRetryRobot.Eventually(() =>
             {
-                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "InspectJob");
+                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", DlpJobType.InspectJob);
 
                 Assert.True(response.Any());
             });
