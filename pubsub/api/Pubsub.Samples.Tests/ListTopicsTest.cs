@@ -21,13 +21,10 @@ public class ListTopicsTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly ListProjectTopicsSample _listProjectTopicsSample;
-    private readonly CreatePublisherWithServiceCredentialsSample _createPublisherWithServiceCredentialsSample;
     public ListTopicsTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _listProjectTopicsSample = new ListProjectTopicsSample();
-        _createPublisherWithServiceCredentialsSample =
-            new CreatePublisherWithServiceCredentialsSample();
     }
 
     [Fact]
@@ -40,7 +37,7 @@ public class ListTopicsTest
         {
             var listProjectTopicsOutput = _listProjectTopicsSample
             .ListProjectTopics(PublisherServiceApiClient.Create(), _pubsubFixture.ProjectId);
-            Assert.Contains(listProjectTopicsOutput, c => c.Contains(topicId));
+            Assert.Contains(listProjectTopicsOutput, c => c.TopicName.TopicId.Contains(topicId));
         });
     }
 
@@ -53,13 +50,15 @@ public class ListTopicsTest
 
         _pubsubFixture.Eventually(() =>
         {
-            var publisher = _createPublisherWithServiceCredentialsSample
-            .CreatePublisherWithServiceCredentials(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
+            PublisherServiceApiClientBuilder builder = new PublisherServiceApiClientBuilder
+            {
+                CredentialsPath = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS")
+            };
+            var publisher = builder.Build();
 
-            var listProjectTopicsOutput = _listProjectTopicsSample
-            .ListProjectTopics(publisher, _pubsubFixture.ProjectId);
+            var listProjectTopicsOutput = _listProjectTopicsSample.ListProjectTopics(publisher, _pubsubFixture.ProjectId);
 
-            Assert.Contains(listProjectTopicsOutput, c => c.Contains(topicId));
+            Assert.Contains(listProjectTopicsOutput, c => c.TopicName.TopicId.Contains(topicId));
         });
     }
 }

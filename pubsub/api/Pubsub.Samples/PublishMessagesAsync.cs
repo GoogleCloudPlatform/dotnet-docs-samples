@@ -24,8 +24,7 @@ using System.Threading.Tasks;
 
 public class PublishMessagesAsyncSample
 {
-    public async Task<string> PublishMessagesAsync(PublisherClient publisher,
-    IEnumerable<string> messageTexts)
+    public async Task<string> PublishMessagesAsync(PublisherClient publisher, IEnumerable<string> messageTexts)
     {
         // PublisherClient collects messages into appropriately sized
         // batches.

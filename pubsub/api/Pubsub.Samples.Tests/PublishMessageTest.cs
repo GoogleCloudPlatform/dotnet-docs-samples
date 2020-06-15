@@ -23,14 +23,12 @@ using Xunit;
 public class PublishMessageTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly GetPublisherAsyncSample _getPublisherAsyncSample;
     private readonly GetCustomPublisherAsyncSample _getCustomPublisherAsyncSample;
     private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
     private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
     public PublishMessageTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _getPublisherAsyncSample = new GetPublisherAsyncSample();
         _getCustomPublisherAsyncSample = new GetCustomPublisherAsyncSample();
         _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
         _pullMessagesAsyncSample = new PullMessagesAsyncSample();
@@ -59,11 +57,9 @@ public class PublishMessageTest
         }
         else
         {
-            publisher = Task.Run(() =>
-            _getPublisherAsyncSample.GetPublisherAsync(_pubsubFixture.ProjectId, topicId))
+            publisher = Task.Run(() => PublisherClient.CreateAsync(TopicName.FromProjectTopic(_pubsubFixture.ProjectId, topicId)))
                 .ResultWithUnwrappedExceptions();
         }
-
 
         var output = Task.Run(() =>
         _publishMessagesAsyncSample.PublishMessagesAsync(publisher, messageTexts))

@@ -15,18 +15,14 @@
 // [START pubsub_delete_subscription]
 
 using Google.Cloud.PubSub.V1;
-using System;
 
 public class DeleteSubscriptionSample
 {
-    public void DeleteSubscription(string projectId,
-    string subscriptionId)
+    public void DeleteSubscription(string projectId, string subscriptionId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
-        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
-            subscriptionId);
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         subscriber.DeleteSubscription(subscriptionName);
-        Console.WriteLine("Subscription deleted.");
     }
 }
 // [END pubsub_delete_subscription]

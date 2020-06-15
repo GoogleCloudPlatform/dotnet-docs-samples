@@ -20,20 +20,12 @@ using System.Collections.Generic;
 
 public class ListSubscriptionsSample
 {
-    public List<Subscription> ListSubscriptions(string projectId)
+    public IEnumerable<Subscription> ListSubscriptions(string projectId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
         ProjectName projectName = ProjectName.FromProject(projectId);
-
-        var result = new List<Subscription>();
-
         var subscriptions = subscriber.ListSubscriptions(projectName);
-
-        foreach (Subscription subscription in subscriptions)
-        {
-            result.Add(subscription);
-        }
-        return result;
+        return subscriptions;
     }
 }
 // [END pubsub_list_subscriptions]

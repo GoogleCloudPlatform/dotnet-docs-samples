@@ -20,17 +20,11 @@ using System.Collections.Generic;
 
 public class ListProjectTopicsSample
 {
-    public List<string> ListProjectTopics(PublisherServiceApiClient publisher, string projectId)
+    public IEnumerable<Topic> ListProjectTopics(PublisherServiceApiClient publisher, string projectId)
     {
         ProjectName projectName = ProjectName.FromProject(projectId);
         IEnumerable<Topic> topics = publisher.ListTopics(projectName);
-
-        var result = new List<string>();
-        foreach (Topic topic in topics)
-        {
-            result.Add(topic.Name);
-        }
-        return result;
+        return topics;
     }
 }
 // [END pubsub_list_topics]

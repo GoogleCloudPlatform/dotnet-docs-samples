@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Api.Gax;
+using Google.Cloud.PubSub.V1;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,7 +22,6 @@ using Xunit;
 public class AcknowledgeMessageTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly GetPublisherAsyncSample _getPublisherAsyncSample;
     private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
     private readonly PullMessagesCustomAsyncSample _pullMessagesCustomAsyncSample;
     private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
@@ -29,7 +29,6 @@ public class AcknowledgeMessageTest
     public AcknowledgeMessageTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _getPublisherAsyncSample = new GetPublisherAsyncSample();
         _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
         _pullMessagesCustomAsyncSample = new PullMessagesCustomAsyncSample();
         _pullMessagesAsyncSample = new PullMessagesAsyncSample();
@@ -48,7 +47,7 @@ public class AcknowledgeMessageTest
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         var publisher = Task.Run(() =>
-        _getPublisherAsyncSample.GetPublisherAsync(_pubsubFixture.ProjectId, topicId))
+        PublisherClient.CreateAsync(TopicName.FromProjectTopic(_pubsubFixture.ProjectId, topicId)))
             .ResultWithUnwrappedExceptions();
 
         Task.Run(() =>

@@ -23,15 +23,14 @@ public class CreateSubscriptionSample
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
-        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
-            subscriptionId);
+        
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
 
         Subscription subscription = null;
 
         try
         {
-            subscription = subscriber.CreateSubscription(
-                subscriptionName, topicName, pushConfig: null,
+            subscription = subscriber.CreateSubscription(subscriptionName, topicName, pushConfig: null,
                 ackDeadlineSeconds: 60);
         }
         catch (RpcException e) when (e.Status.StatusCode == StatusCode.AlreadyExists)

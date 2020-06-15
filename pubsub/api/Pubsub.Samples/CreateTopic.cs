@@ -29,8 +29,7 @@ public class CreateTopicSample
         {
             result = publisher.CreateTopic(topicName);
         }
-        catch (RpcException e)
-        when (e.Status.StatusCode == StatusCode.AlreadyExists)
+        catch (RpcException e) when (e.Status.StatusCode == StatusCode.AlreadyExists)
         {
             // Already exists.  That's fine.
         }

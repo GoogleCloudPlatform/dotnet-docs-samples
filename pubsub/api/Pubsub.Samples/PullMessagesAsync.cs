@@ -24,11 +24,9 @@ using System.Threading.Tasks;
 
 public class PullMessagesAsyncSample
 {
-    public async Task<List<string>> PullMessagesAsync(string projectId,
-    string subscriptionId, bool acknowledge)
+    public async Task<List<string>> PullMessagesAsync(string projectId, string subscriptionId, bool acknowledge)
     {
-        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId,
-            subscriptionId);
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(
             subscriptionName);
         // SubscriberClient runs your message handle function on multiple
