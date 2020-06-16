@@ -26,7 +26,7 @@ namespace GoogleCloudSamples.Bigtable
             Command = "dotnet run"
         };
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1008")]
+        [Fact]
         public void TestRunQuickStart()
         {
             var output = _quickStart.Run();
@@ -42,7 +42,7 @@ namespace GoogleCloudSamples.Bigtable
             Command = "dotnet run"
         };
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1008")]
+        [Fact]
         public void TestRunHelloWorld()
         {
             var output = _helloWorld.Run();
@@ -113,7 +113,7 @@ namespace GoogleCloudSamples.Bigtable
             _tableAdminCmd.Run("createTable", _fixture.TableId);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1008")]
+        [Fact]
         public void TestListTables()
         {
             string expectedOutput = $"Table ID:                     {_fixture.TableId}";
@@ -122,7 +122,7 @@ namespace GoogleCloudSamples.Bigtable
             Assert.Contains(expectedOutput, output.Stdout);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1008")]
+        [Fact]
         public void TestListInstances()
         {
             ConsoleOutput output = _instanceAdminCmd.Run("listInstances");
