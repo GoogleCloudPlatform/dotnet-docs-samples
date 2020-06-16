@@ -28,7 +28,7 @@ public class InspectTemplateList
         var response = client.ListInspectTemplates(
             new ListInspectTemplatesRequest
             {
-                ParentAsProjectName = new ProjectName(projectId),
+                Parent = new LocationName(projectId, "global").ToString(),
             }
         );
 

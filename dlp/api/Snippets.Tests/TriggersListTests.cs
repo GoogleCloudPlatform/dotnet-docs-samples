@@ -33,7 +33,7 @@ namespace GoogleCloudSamples
         {
             var infoTypes = new InfoType[] { new InfoType { Name = "PERSON_NAME" } };
             var triggerId = $"my-csharp-test-trigger-{Guid.NewGuid()}";
-            var fullTriggerId = $"projects/{Fixture.ProjectId}/jobTriggers/{triggerId}";
+            var fullTriggerId = $"projects/{Fixture.ProjectId}/locations/global/jobTriggers/{triggerId}";
             var displayName = $"My trigger display name {Guid.NewGuid()}";
             var description = $"My trigger description {Guid.NewGuid()}";
 
@@ -47,6 +47,7 @@ namespace GoogleCloudSamples
             try
             {
                 var triggers = TriggersList.List(Fixture.ProjectId);
+                Console.WriteLine($"Looking for {trigger.Name}");
                 Assert.Contains(triggers, t => t.Name == trigger.Name);
             }
             finally

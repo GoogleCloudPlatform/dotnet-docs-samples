@@ -40,7 +40,7 @@ public class DeidentifyWithMasking
         };
         var request = new DeidentifyContentRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             InspectConfig = new InspectConfig
             {
                 InfoTypes =

@@ -26,7 +26,7 @@ public class RedactImage
     {
         var request = new RedactImageRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             InspectConfig = new InspectConfig
             {
                 MinLikelihood = Likelihood.Likely,

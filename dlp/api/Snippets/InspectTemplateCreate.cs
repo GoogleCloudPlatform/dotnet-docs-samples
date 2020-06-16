@@ -33,7 +33,7 @@ public class InspectTemplateCreate
 
         var request = new CreateInspectTemplateRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             InspectTemplate = new InspectTemplate
             {
                 DisplayName = displayName,

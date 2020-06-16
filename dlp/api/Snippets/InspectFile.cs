@@ -40,7 +40,7 @@ public class DlpInspectFile
         // Construct a request.
         var request = new InspectContentRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             Item = new ContentItem
             {
                 ByteItem = new ByteContentItem()
