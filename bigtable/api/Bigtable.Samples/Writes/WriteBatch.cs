@@ -17,8 +17,6 @@
 using System;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Common.V2;
-using Google.Protobuf.Collections;
-using System.Collections;
 using System.Collections.Generic;
 
 public class WriteBatchSample
