@@ -81,7 +81,7 @@ public class InspectStringWithoutOverlap
         // Construct the Inspect request to be sent by the client.
         var request = new InspectContentRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             Item = contentItem,
             InspectConfig = config
         };
