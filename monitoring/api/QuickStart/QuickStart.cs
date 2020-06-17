@@ -62,16 +62,19 @@ namespace GoogleCloudSamples
             // Prepare custom metric.
             Metric metric = new Metric
             {
-                Type = "custom.googleapis.com/shops/daily_sales"
+                Type = "custom.googleapis.com/my_metric"
             };
             metric.Labels.Add("store_id", "Pittsburgh");
 
             // Prepare monitored resource.
             MonitoredResource resource = new MonitoredResource
             {
-                Type = "global"
+                Type = "gce_instance"
             };
+            
             resource.Labels.Add("project_id", projectId);
+            resource.Labels.Add("instance_id", "1234567890123456789");
+            resource.Labels.Add("zone", "us-central1-f");
 
             // Create a new time series using inputs.
             TimeSeries timeSeriesData = new TimeSeries

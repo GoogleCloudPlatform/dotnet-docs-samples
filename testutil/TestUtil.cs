@@ -22,6 +22,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using Xunit;
 
+
 namespace GoogleCloudSamples
 {
     public class TestUtil
@@ -32,7 +33,7 @@ namespace GoogleCloudSamples
             {
                 string legalChars = "abcdefhijklmnpqrstuvwxyz";
                 byte[] randomByte = new byte[1];
-                var randomChars = new char[20];
+                char[] randomChars = new char[20];
                 int nextChar = 0;
                 while (nextChar < randomChars.Length)
                 {
@@ -82,7 +83,7 @@ namespace GoogleCloudSamples
         {
             if (ShouldRetry != null)
                 return ShouldRetry(e);
-            foreach (var exceptionType in RetryWhenExceptions)
+            foreach (Type exceptionType in RetryWhenExceptions)
             {
                 if (exceptionType.IsAssignableFrom(e.GetType()))
                     return true;
@@ -135,7 +136,7 @@ namespace GoogleCloudSamples
                         exitCode = Main(arguments);
                     else
                         VoidMain(arguments);
-                    var consoleOutput = new ConsoleOutput()
+                    ConsoleOutput consoleOutput = new ConsoleOutput()
                     {
                         ExitCode = exitCode,
                         Stdout = stringOut.ToString()
@@ -169,7 +170,7 @@ namespace GoogleCloudSamples
                         exitCode = Main(arguments);
                     else
                         VoidMain(arguments);
-                    var consoleOutput = new ConsoleOutput()
+                    ConsoleOutput consoleOutput = new ConsoleOutput()
                     {
                         ExitCode = exitCode,
                         Stdout = stringOut.ToString()

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 Google LLC.
+// Copyright (c) 2020 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -14,29 +14,21 @@
 
 // [START dlp_inspect_file]
 
-using Google.Api.Gax.ResourceNames;
-using Google.Cloud.Dlp.V2;
-using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.Dlp.V2;
+using Google.Protobuf;
 using static Google.Cloud.Dlp.V2.ByteContentItem.Types;
 
-class DlpInspectFile
+public class DlpInspectFile
 {
-    /// <summary>
-    /// Inspects the provided file for sensitive data.
-    ///</summary>
-    /// <param name="projectId">Your Google Cloud Project ID.</param>
-    /// <param name="filePath">The path to the specified file to inspect.</param>
-    /// <param name="fileType">The type of the specifed file.</param>
-    public IEnumerable<Finding> InspectFile(
-        string projectId = "YOUR-PROJECT-ID",
-        string filePath = "path/to/image.png",
-        BytesType fileType = BytesType.ImagePng)
+    public static IEnumerable<Finding> InspectFile(string projectId, string filePath, BytesType fileType)
     {
         // Instantiate a client.
-        DlpServiceClient dlp = DlpServiceClient.Create();
+        var dlp = DlpServiceClient.Create();
 
         // Get the bytes from the file.
         ByteString fileBytes;
@@ -48,7 +40,7 @@ class DlpInspectFile
         // Construct a request.
         var request = new InspectContentRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             Item = new ContentItem
             {
                 ByteItem = new ByteContentItem()
@@ -60,7 +52,8 @@ class DlpInspectFile
             InspectConfig = new InspectConfig
             {
                 // The info types of information to match
-                InfoTypes = {
+                InfoTypes =
+                {
                     new InfoType { Name = "PHONE_NUMBER" },
                     new InfoType { Name = "EMAIL_ADDRESS" },
                     new InfoType { Name = "CREDIT_CARD_NUMBER" }
@@ -79,11 +72,11 @@ class DlpInspectFile
         };
 
         // Execute request
-        InspectContentResponse response = dlp.InspectContent(request);
+        var response = dlp.InspectContent(request);
 
         // Inspect response
         var findings = response.Result.Findings;
-        if (findings.Count > 0)
+        if (findings.Any())
         {
             Console.WriteLine("Findings:");
             foreach (var finding in findings)

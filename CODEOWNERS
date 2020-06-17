@@ -1,20 +1,36 @@
-*           @amanda-tarafa
+# There are two aspects that should be taken into account when reviewing samples on this repo.
+#   * That the samples are meaningful and consistent with similar samples in other languages
+#     and with what is stated in documentation. Some sample sets have specific owners that
+#     are in charge of this aspect.
+#   * The extent to which the sample is idiomatic C# and consistent with the rest of the samples in this repo.
+#     Currently @amanda-tarafa, @jskeet, in that order of availability, are in charge of this aspect.
+# Any PR will require two reviewers, one for each of the aspects mentioned above. For those sample sets
+# that don't have a specific owner, idiomatic reviewers will do their best effort to either review this
+# aspect themselves or find someone who can.
 
-bigquery/   @jsimonweb
-bigtable/   @GoogleCloudPlatform/bigtable-dpe
-datastore/  @GoogleCloudPlatform/firestore-dpe
-cloud-sql/  @GoogleCloudPlatform/cloud-sql-dpes
-firestore/  @GoogleCloudPlatform/firestore-dpe
-storage/    @GoogleCloudPlatform/storage-dpe
-applications/leaderboard/   @jsimonweb
+*           @amanda-tarafa @jskeet
 
-spanner/       @skuruppu
+bigtable/   @GoogleCloudPlatform/bigtable-dpe @amanda-tarafa @jskeet
+datastore/  @GoogleCloudPlatform/firestore-dpe @amanda-tarafa @jskeet
+cloud-sql/  @GoogleCloudPlatform/cloud-sql-dpes @amanda-tarafa @jskeet
+firestore/  @GoogleCloudPlatform/firestore-dpe @amanda-tarafa @jskeet
+storage/    @GoogleCloudPlatform/storage-dpe @amanda-tarafa @jskeet
 
-kms/           @sethvargo
-secretmanager/ @sethvargo
+bigquery/                  @jsimonweb @amanda-tarafa @jskeet
+applications/leaderboard/  @jsimonweb @amanda-tarafa @jskeet
 
-applications/liftAndShiftPetshop/   @simonz130
+spanner/  @skuruppu @amanda-tarafa @jskeet
 
-applications/googlehome-meets-dotnetcontainers/ @meteatamel
+kms/            @sethvargo @amanda-tarafa @jskeet
+secretmanager/  @sethvargo @amanda-tarafa @jskeet
 
-applications/sudokumb   @SurferJeffAtGoogle
+applications/liftAndShiftPetshop/  @simonz130 @amanda-tarafa @jskeet
+
+applications/googlehome-meets-dotnetcontainers/  @meteatamel @amanda-tarafa @jskeet
+run/                                             @meteatamel @jskeet @amanda-tarafa
+
+applications/sudokumb  @SurferJeffAtGoogle @amanda-tarafa @jskeet
+
+securitycenter/  @hsanchez94 @amanda-tarafa @jskeet
+
+dlp/ @pheonixblade9 @amanda-tarafa @jskeet
