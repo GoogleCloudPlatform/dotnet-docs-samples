@@ -39,8 +39,7 @@ public class SubscriptionPolicyPermisssionsTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        _setSubscriptionIamPolicySample.SetSubscriptionIamPolicy(_pubsubFixture.ProjectId,
-            subscriptionId, testRoleValueToConfirm, testMemberValueToConfirm);
+        _setSubscriptionIamPolicySample.SetSubscriptionIamPolicy(_pubsubFixture.ProjectId, subscriptionId, testRoleValueToConfirm, testMemberValueToConfirm);
 
         var response = _testSubscriptionIamPermissionsSample.TestSubscriptionIamPermissionsResponse(_pubsubFixture.ProjectId, subscriptionId);
         Assert.NotEmpty(response.ToString());

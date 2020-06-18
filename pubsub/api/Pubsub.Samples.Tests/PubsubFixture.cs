@@ -23,16 +23,12 @@ using Xunit;
 public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
 {
     public readonly string ProjectId;
-    public readonly PublisherServiceApiClient Publisher;
-    public readonly SubscriberServiceApiClient Subscriber;
     public List<string> TempTopicIds { get; set; } = new List<string>();
     public List<string> TempSubscriptionIds { get; set; } = new List<string>();
 
     public PubsubFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        Publisher = PublisherServiceApiClient.Create();
-        Subscriber = SubscriberServiceApiClient.Create();
     }
 
     public void Dispose()
@@ -77,8 +73,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
                 {
                     delete();
                 }
-                catch (Grpc.Core.RpcException e)
-                when (e.Status.StatusCode == StatusCode.DeadlineExceeded)
+                catch (RpcException e) when (e.Status.StatusCode == StatusCode.DeadlineExceeded)
                 {
                     sawTimeout = true;
                     throw;
@@ -90,8 +85,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
                 {
                     delete();
                 }
-                catch (Grpc.Core.RpcException e)
-                when (e.Status.StatusCode == StatusCode.NotFound)
+                catch (RpcException e) when (e.Status.StatusCode == StatusCode.NotFound)
                 {
                     // Earlier timeout request that deleted the thing
                     // actually succeeded on the server.

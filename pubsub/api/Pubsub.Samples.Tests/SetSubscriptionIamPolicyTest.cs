@@ -37,9 +37,7 @@ public class SetSubscriptionIamPolicyTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        var policy = _setSubscriptionIamPolicySample.SetSubscriptionIamPolicy(
-            _pubsubFixture.ProjectId, subscriptionId, testRoleValueToConfirm,
-            testMemberValueToConfirm);
+        var policy = _setSubscriptionIamPolicySample.SetSubscriptionIamPolicy(_pubsubFixture.ProjectId, subscriptionId, testRoleValueToConfirm, testMemberValueToConfirm);
 
         Assert.Equal($"roles/{testRoleValueToConfirm}", policy.Bindings[0].Role);
         Assert.Contains(policy.Bindings[0].Members, c => c.Contains(testMemberValueToConfirm));
