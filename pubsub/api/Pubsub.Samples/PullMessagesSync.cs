@@ -18,13 +18,16 @@ using Google.Cloud.PubSub.V1;
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class PullMessagesSyncSample
 {
-    public static void PullMessagesSync(string projectId, string subscriptionId, bool acknowledge)
+    public int PullMessagesSync(string projectId, string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
+        int messageCount = 0;
         // Pull messages from server,
         // allowing an immediate response if there are no messages.
         PullResponse response = subscriberClient.Pull(subscriptionName, returnImmediately: true, maxMessages: 20);
@@ -33,12 +36,14 @@ public class PullMessagesSyncSample
         {
             string text = Encoding.UTF8.GetString(msg.Message.Data.ToArray());
             Console.WriteLine($"Message {msg.Message.MessageId}: {text}");
+            Interlocked.Increment(ref messageCount);
         }
         // If acknowledgement required, send to server.
         if (acknowledge)
         {
             subscriberClient.Acknowledge(subscriptionName, response.ReceivedMessages.Select(msg => msg.AckId));
         }
+        return messageCount;
     }
 }
 // [END pubsub_subscriber_sync_pull]

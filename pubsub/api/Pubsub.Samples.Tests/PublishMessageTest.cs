@@ -36,7 +36,7 @@ public class PublishMessageTest
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void PublishMessage(bool customBatch)
+    public async void PublishMessage(bool customBatch)
     {
         string topicId = "testTopicForMessageCreation" + _pubsubFixture.RandomName();
         string subscriptionId = "testSubscriptionForMessageCreation" + _pubsubFixture.RandomName();
@@ -49,24 +49,17 @@ public class PublishMessageTest
 
         if (customBatch)
         {
-            var output = Task.Run(() => _publishBatchedMessagesAsyncSample.PublishBatchMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts))
-                .ResultWithUnwrappedExceptions();
+            var output = await _publishBatchedMessagesAsyncSample.PublishBatchMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts);
             Assert.Equal(messageTexts.Count, output);
         }
         else
         {
-            var output = Task.Run(() => _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts))
-                .ResultWithUnwrappedExceptions();
+            var output = await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts);
             Assert.Equal(messageTexts.Count, output);
         }
 
         // Pull the Message to confirm it is valid
-        _pubsubFixture.Eventually(() =>
-        {
-            var result = Task.Run(() =>
-            _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false))
-            .ResultWithUnwrappedExceptions();
-            Assert.True(result > 0);
-        });
+        var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
+        Assert.True(result > 0);
     }
 }

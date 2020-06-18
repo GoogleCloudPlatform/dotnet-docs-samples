@@ -33,9 +33,10 @@ public class PublishBatchedMessagesAsyncSample
         // delayThreshold: 10 milliseconds
         var customSettings = new PublisherClient.Settings
         {
-            BatchingSettings = new Google.Api.Gax.BatchingSettings(elementCountThreshold: 100,
-            byteCountThreshold: 10240,
-            delayThreshold: TimeSpan.FromSeconds(3))
+            BatchingSettings = new Google.Api.Gax.BatchingSettings(
+                elementCountThreshold: 50,
+                byteCountThreshold: 10240,
+                delayThreshold: TimeSpan.FromSeconds(3))
         };
 
         PublisherClient publisher = await PublisherClient.CreateAsync(topicName, settings: customSettings);

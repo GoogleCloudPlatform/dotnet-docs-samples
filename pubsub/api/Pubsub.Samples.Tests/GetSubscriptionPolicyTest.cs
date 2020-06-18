@@ -19,6 +19,7 @@ public class GetSubscriptionPolicyTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly GetSubscriptionIamPolicySample _getSubscriptionIamPolicySample;
+
     public GetSubscriptionPolicyTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;

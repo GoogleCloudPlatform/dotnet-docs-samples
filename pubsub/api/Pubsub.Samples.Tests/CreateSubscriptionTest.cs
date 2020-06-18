@@ -18,11 +18,12 @@ using Xunit;
 public class CreateSubscriptionTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly GetSubscriptionSample _getSubscriptionSampleObject;
+    private readonly CreateSubscriptionSample _createSubscriptionSample;
+
     public CreateSubscriptionTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _getSubscriptionSampleObject = new GetSubscriptionSample();
+        _createSubscriptionSample = new CreateSubscriptionSample();
     }
 
     [Fact]
@@ -32,9 +33,9 @@ public class CreateSubscriptionTest
         string subscriptionId = "testSubscriptionForSubscriptionCreation" + _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);
-        var newlyCreatedSubscription = _pubsubFixture.CreateSubscription(topicId, subscriptionId);
-
-        var subscription = _getSubscriptionSampleObject.GetSubscription(_pubsubFixture.ProjectId, subscriptionId);
+        var newlyCreatedSubscription = _createSubscriptionSample.CreateSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId);
+        _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
+        var subscription = _pubsubFixture.GetSubscription(subscriptionId);
 
         Assert.Equal(newlyCreatedSubscription, subscription);
     }

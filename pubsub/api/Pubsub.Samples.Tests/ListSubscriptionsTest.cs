@@ -35,11 +35,8 @@ public class ListSubscriptionsTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        _pubsubFixture.Eventually(() =>
-        {
-            var subscriptions = _listSubscriptionsSample.ListSubscriptions(_pubsubFixture.ProjectId);
+        var subscriptions = _listSubscriptionsSample.ListSubscriptions(_pubsubFixture.ProjectId);
 
-            Assert.Contains(subscriptions.Select(s => s.SubscriptionName.SubscriptionId), c => c.Contains(subscriptionId));
-        });
+        Assert.Contains(subscriptions.Select(s => s.SubscriptionName.SubscriptionId), c => c.Contains(subscriptionId));
     }
 }

@@ -18,18 +18,19 @@ using Xunit;
 public class CreateTopicTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly GetTopicSample _getTopicSample;
+    private readonly CreateTopicSample _createTopicSample;
     public CreateTopicTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _getTopicSample = new GetTopicSample();
+        _createTopicSample = new CreateTopicSample();
     }
     [Fact]
     public void CreateTopic()
     {
         string topicId = "testTopicForTopicCreation" + _pubsubFixture.RandomName();
-        var newlyCreatedTopic = _pubsubFixture.CreateTopic(topicId);
-        var topic = _getTopicSample.GetTopic(_pubsubFixture.ProjectId, topicId);
+        var newlyCreatedTopic = _createTopicSample.CreateTopic(_pubsubFixture.ProjectId, topicId);
+        _pubsubFixture.TempTopicIds.Add(topicId);
+        var topic = _pubsubFixture.GetTopic(topicId);
         Assert.Equal(newlyCreatedTopic, topic);
     }
 }

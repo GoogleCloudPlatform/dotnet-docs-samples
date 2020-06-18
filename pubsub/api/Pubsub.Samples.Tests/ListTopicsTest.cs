@@ -33,32 +33,7 @@ public class ListTopicsTest
         string topicId = "testTopicForListingTopics" + _pubsubFixture.RandomName();
         _pubsubFixture.CreateTopic(topicId);
 
-        _pubsubFixture.Eventually(() =>
-        {
-            var listProjectTopicsOutput = _listProjectTopicsSample
-            .ListProjectTopics(PublisherServiceApiClient.Create(), _pubsubFixture.ProjectId);
-            Assert.Contains(listProjectTopicsOutput, c => c.TopicName.TopicId.Contains(topicId));
-        });
-    }
-
-    [Fact]
-    public void ListTopicsWithServiceCredentials()
-    {
-        string topicId = "testTopicForListingTopics" + _pubsubFixture.RandomName();
-
-        _pubsubFixture.CreateTopic(topicId);
-
-        _pubsubFixture.Eventually(() =>
-        {
-            PublisherServiceApiClientBuilder builder = new PublisherServiceApiClientBuilder
-            {
-                CredentialsPath = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS")
-            };
-            var publisher = builder.Build();
-
-            var listProjectTopicsOutput = _listProjectTopicsSample.ListProjectTopics(publisher, _pubsubFixture.ProjectId);
-
-            Assert.Contains(listProjectTopicsOutput, c => c.TopicName.TopicId.Contains(topicId));
-        });
+        var listProjectTopicsOutput = _listProjectTopicsSample.ListProjectTopics(_pubsubFixture.ProjectId);
+        Assert.Contains(listProjectTopicsOutput, c => c.TopicName.TopicId.Contains(topicId));
     }
 }

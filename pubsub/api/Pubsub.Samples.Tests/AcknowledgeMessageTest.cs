@@ -21,21 +21,21 @@ public class AcknowledgeMessageTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
-    private readonly PullMessagesCustomAsyncSample _pullMessagesCustomAsyncSample;
+    private readonly PullMessagesWithFlowControlAsyncSample _pullMessagesCustomAsyncSample;
     private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
 
     public AcknowledgeMessageTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
-        _pullMessagesCustomAsyncSample = new PullMessagesCustomAsyncSample();
+        _pullMessagesCustomAsyncSample = new PullMessagesWithFlowControlAsyncSample();
         _pullMessagesAsyncSample = new PullMessagesAsyncSample();
     }
 
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void AcknowledgeMessage(bool customFlow)
+    public async void AcknowledgeMessage(bool customFlow)
     {
         string topicId = "testTopicForMessageAck" + _pubsubFixture.RandomName();
         string subscriptionId = "testSubscriptionForMessageAck" + _pubsubFixture.RandomName();
@@ -44,35 +44,28 @@ public class AcknowledgeMessageTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        Task.Run(() => _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message }));
+        await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message });
 
         // Pull and acknowledge the messages
-        _pubsubFixture.Eventually(() =>
-        {
-            var result = HandlePullMessages(customFlow, subscriptionId);
-            Assert.Equal(1, result);
-        });
+        var result = HandlePullMessages(customFlow, subscriptionId);
+        Assert.Equal(1, result);
 
-        _pubsubFixture.Eventually(() =>
-        {
-            //Pull the Message to confirm it's gone after it's acknowledged
-            var result = HandlePullMessages(customFlow, subscriptionId);
-            Assert.True(result == 0);
-        });
+        //Pull the Message to confirm it's gone after it's acknowledged
+        result = HandlePullMessages(customFlow, subscriptionId);
+        Assert.True(result == 0);
     }
 
     private int HandlePullMessages(bool customFlow, string subscriptionId)
     {
         if (customFlow)
         {
-            return Task.Run(() => _pullMessagesCustomAsyncSample.PullMessagesCustomAsync(
-                  _pubsubFixture.ProjectId, subscriptionId, true))
+            return Task.Run(() => _pullMessagesCustomAsyncSample.PullMessagesWithFlowControlAsync(_pubsubFixture.ProjectId, subscriptionId, true))
                   .ResultWithUnwrappedExceptions();
         }
         else
         {
-            return Task.Run(() => _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId,
-                     subscriptionId, true)).ResultWithUnwrappedExceptions();
+            return Task.Run(() => _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true))
+                .ResultWithUnwrappedExceptions();
         }
     }
 }

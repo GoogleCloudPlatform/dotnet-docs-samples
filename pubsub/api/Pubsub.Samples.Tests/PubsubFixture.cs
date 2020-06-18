@@ -19,7 +19,6 @@ using Grpc.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Xunit;
 
 [CollectionDefinition(nameof(PubsubFixture))]
@@ -44,42 +43,21 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         var deleteSubscriptionSampleObject = new DeleteSubscriptionSample();
         foreach (string subscriptionId in TempSubscriptionIds)
         {
-            Eventually(HandleDeleteRace(() =>
+            _retryRobot.Eventually(HandleDeleteRace(() =>
                 deleteSubscriptionSampleObject.DeleteSubscription(ProjectId, subscriptionId)));
         }
         foreach (string topicId in TempTopicIds)
         {
-            Eventually(HandleDeleteRace(() =>
+            _retryRobot.Eventually(HandleDeleteRace(() =>
                 deleteTopicSampleObject.DeleteTopic(ProjectId, topicId)));
         }
     }
 
-    /// <summary>
-    /// Returns true if an action should be retried when an exception is
-    /// thrown.
-    /// </summary>
-    private static bool ShouldRetry(Exception e)
-    {
-        AggregateException aggregateException = e as AggregateException;
-        if (aggregateException != null)
-        {
-            return ShouldRetry(aggregateException.InnerExceptions
-                .LastOrDefault());
-        }
-        if (e is Xunit.Sdk.XunitException)
-        {
-            return true;
-        }
-        var rpcException = e as Grpc.Core.RpcException;
-        return rpcException?.Status.StatusCode == StatusCode.NotFound;
-    }
-
     private readonly RetryRobot _retryRobot = new RetryRobot()
     {
-        ShouldRetry = (Exception e) => ShouldRetry(e)
+        MaxTryCount = 3,
+        ShouldRetry = (e) => true,
     };
-
-    public void Eventually(Action action) => _retryRobot.Eventually(action);
 
     /// <summary>
     /// Handle a special race condition that can occur when deleting
@@ -168,21 +146,23 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         return subscription;
     }
 
+    public Topic GetTopic(string topicId)
+    {
+        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
+        TopicName topicName = TopicName.FromProjectTopic(ProjectId, topicId);
+        return publisher.GetTopic(topicName);
+    }
+
+    public Subscription GetSubscription(string subscriptionId)
+    {
+        SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
+        SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(ProjectId, subscriptionId);
+
+        return subscriber.GetSubscription(subscriptionName);
+    }
+
     public string RandomName()
     {
-        using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
-        {
-            string legalChars = "abcdefhijklmnpqrstuvwxyz";
-            byte[] randomByte = new byte[1];
-            var randomChars = new char[20];
-            int nextChar = 0;
-            while (nextChar < randomChars.Length)
-            {
-                rng.GetBytes(randomByte);
-                if (legalChars.Contains((char)randomByte[0]))
-                    randomChars[nextChar++] = (char)randomByte[0];
-            }
-            return new string(randomChars);
-        }
+        return Guid.NewGuid().ToString().Substring(0, 18);
     }
 }

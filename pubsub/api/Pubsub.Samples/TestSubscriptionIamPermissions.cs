@@ -16,21 +16,15 @@
 
 using Google.Cloud.Iam.V1;
 using Google.Cloud.PubSub.V1;
-using System.Collections.Generic;
 
 public class TestSubscriptionIamPermissionsSample
 {
     public TestIamPermissionsResponse TestSubscriptionIamPermissionsResponse(string projectId, string subscriptionId)
     {
-        List<string> permissions = new List<string>
-        {
-            "pubsub.subscriptions.get",
-            "pubsub.subscriptions.update"
-        };
         TestIamPermissionsRequest request = new TestIamPermissionsRequest
         {
             ResourceAsResourceName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId),
-            Permissions = { permissions }
+            Permissions = { "pubsub.subscriptions.get", "pubsub.subscriptions.update" }
         };
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         TestIamPermissionsResponse response = publisher.TestIamPermissions(request);

@@ -22,15 +22,10 @@ public class TestTopicIamPermissionsSample
 {
     public TestIamPermissionsResponse TestTopicIamPermissions(string projectId, string topicId)
     {
-        List<string> permissions = new List<string>
-        {
-            "pubsub.topics.get",
-            "pubsub.topics.update"
-        };
         TestIamPermissionsRequest request = new TestIamPermissionsRequest
         {
             ResourceAsResourceName = TopicName.FromProjectTopic(projectId, topicId),
-            Permissions = { permissions }
+            Permissions = { "pubsub.topics.get", "pubsub.topics.update" }
         };
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         TestIamPermissionsResponse response = publisher.TestIamPermissions(request);

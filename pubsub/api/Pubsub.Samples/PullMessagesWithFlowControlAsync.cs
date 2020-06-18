@@ -21,9 +21,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class PullMessagesCustomAsyncSample
+public class PullMessagesWithFlowControlAsyncSample
 {
-    public async Task<int> PullMessagesCustomAsync(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<int> PullMessagesWithFlowControlAsync(string projectId, string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         int messageCount = 0;

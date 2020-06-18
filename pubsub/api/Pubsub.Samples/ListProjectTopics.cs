@@ -20,8 +20,9 @@ using System.Collections.Generic;
 
 public class ListProjectTopicsSample
 {
-    public IEnumerable<Topic> ListProjectTopics(PublisherServiceApiClient publisher, string projectId)
+    public IEnumerable<Topic> ListProjectTopics(string projectId)
     {
+        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         ProjectName projectName = ProjectName.FromProject(projectId);
         IEnumerable<Topic> topics = publisher.ListTopics(projectName);
         return topics;

@@ -37,12 +37,9 @@ public class TopicIamPolicyPermissionsTest
 
         _pubsubFixture.CreateTopic(topicId);
 
-        _setTopicIamPolicySample.SetTopicIamPolicy(
-            _pubsubFixture.ProjectId, topicId, testRoleValueToConfirm,
-            testMemberValueToConfirm);
+        _setTopicIamPolicySample.SetTopicIamPolicy(_pubsubFixture.ProjectId, topicId, testRoleValueToConfirm, testMemberValueToConfirm);
 
-        var response =
-            _testTopicIamPermissionsSample.TestTopicIamPermissions(_pubsubFixture.ProjectId, topicId);
+        var response = _testTopicIamPermissionsSample.TestTopicIamPermissions(_pubsubFixture.ProjectId, topicId);
         Assert.NotEmpty(response.ToString());
     }
 }
