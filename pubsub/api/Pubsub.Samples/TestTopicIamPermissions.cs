@@ -16,7 +16,6 @@
 
 using Google.Cloud.Iam.V1;
 using Google.Cloud.PubSub.V1;
-using System.Collections.Generic;
 
 public class TestTopicIamPermissionsSample
 {

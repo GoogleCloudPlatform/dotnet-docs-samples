@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.PubSub.V1;
-using System;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -21,6 +19,7 @@ public class ListTopicsTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly ListProjectTopicsSample _listProjectTopicsSample;
+
     public ListTopicsTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;

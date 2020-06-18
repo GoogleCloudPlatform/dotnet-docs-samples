@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Api.Gax.Grpc;
 using Google.Cloud.PubSub.V1;
 using GoogleCloudSamples;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 [CollectionDefinition(nameof(PubsubFixture))]
@@ -27,8 +25,8 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public readonly string ProjectId;
     public readonly PublisherServiceApiClient Publisher;
     public readonly SubscriberServiceApiClient Subscriber;
-    public readonly List<string> TempTopicIds = new List<string>();
-    public readonly List<string> TempSubscriptionIds = new List<string>();
+    public List<string> TempTopicIds { get; set; } = new List<string>();
+    public List<string> TempSubscriptionIds { get; set; } = new List<string>();
 
     public PubsubFixture()
     {
@@ -101,34 +99,6 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
             }
         };
     }
-
-    /// <summary>
-    /// Creates new CallSettings that will retry an RPC that fails.
-    /// </summary>
-    /// <param name="tryCount">
-    /// How many times to try the RPC before giving up?
-    /// </param>
-    /// <param name="finalStatusCodes">
-    /// Which status codes should we *not* retry?
-    /// </param>
-    /// <returns>
-    /// A CallSettings instance.
-    /// </returns>
-    public CallSettings NewRetryCallSettings(int tryCount, params StatusCode[] finalStatusCodes) =>
-        // Initialize values for backoff settings to be used
-        // by the CallSettings for RPC retries
-        CallSettings.FromRetry(
-            RetrySettings.FromExponentialBackoff(
-                maxAttempts: tryCount,
-                initialBackoff: TimeSpan.FromSeconds(3),
-                maxBackoff: TimeSpan.FromSeconds(10),
-                backoffMultiplier: 2,
-                retryFilter: ex =>
-                    ex is RpcException rpcEx &&
-                    rpcEx.StatusCode != StatusCode.OK &&
-                    !finalStatusCodes.Contains(rpcEx.StatusCode),
-                backoffJitter: RetrySettings.NoJitter))
-            .WithHeader("ClientVersion", "2.0.0-beta02");
 
     public Topic CreateTopic(string topicId)
     {

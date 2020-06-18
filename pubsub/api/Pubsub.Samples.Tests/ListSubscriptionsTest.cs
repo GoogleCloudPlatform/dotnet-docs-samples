@@ -20,6 +20,7 @@ public class ListSubscriptionsTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly ListSubscriptionsSample _listSubscriptionsSample;
+
     public ListSubscriptionsTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;

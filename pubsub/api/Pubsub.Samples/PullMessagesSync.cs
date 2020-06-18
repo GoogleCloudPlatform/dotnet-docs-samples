@@ -19,7 +19,6 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 public class PullMessagesSyncSample
 {
@@ -30,7 +29,7 @@ public class PullMessagesSyncSample
         int messageCount = 0;
         // Pull messages from server,
         // allowing an immediate response if there are no messages.
-        PullResponse response = subscriberClient.Pull(subscriptionName, returnImmediately: true, maxMessages: 20);
+        PullResponse response = subscriberClient.Pull(subscriptionName, returnImmediately: false, maxMessages: 20);
         // Print out each received message.
         foreach (ReceivedMessage msg in response.ReceivedMessages)
         {
@@ -39,7 +38,7 @@ public class PullMessagesSyncSample
             Interlocked.Increment(ref messageCount);
         }
         // If acknowledgement required, send to server.
-        if (acknowledge)
+        if (acknowledge && messageCount > 0)
         {
             subscriberClient.Acknowledge(subscriptionName, response.ReceivedMessages.Select(msg => msg.AckId));
         }

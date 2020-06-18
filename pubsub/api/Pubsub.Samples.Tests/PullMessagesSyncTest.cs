@@ -12,40 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class PublishMessageTest
+public class PullMessagesSyncTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
-    private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
+    private readonly PullMessagesSyncSample _pullMessagesSyncSample;
 
-    public PublishMessageTest(PubsubFixture pubsubFixture)
+    public PullMessagesSyncTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
-        _pullMessagesAsyncSample = new PullMessagesAsyncSample();
+        _pullMessagesSyncSample = new PullMessagesSyncSample();
     }
 
     [Fact]
-    public async void PublishMessage()
+    public async void PullMessagesSync()
     {
-        string topicId = "testTopicForMessageCreation" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForMessageCreation" + _pubsubFixture.RandomName();
+        string topicId = "testTopicForMessageSyncAck" + _pubsubFixture.RandomName();
+        string subscriptionId = "testSubscriptionForMessageSyncAck" + _pubsubFixture.RandomName();
+        var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        List<string> messageTexts = new[] { "Hello World!", "Good day.", "Bye bye." }.ToList();
+        await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message });
 
-        var output = await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts);
-        Assert.Equal(messageTexts.Count, output);
+        // Pull and acknowledge the messages
+        var result = _pullMessagesSyncSample.PullMessagesSync(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.Equal(1, result);
 
-        // Pull the Message to confirm it is valid
-        var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(result > 0);
+        //Pull the Message to confirm it's gone after it's acknowledged
+        result = _pullMessagesSyncSample.PullMessagesSync(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.True(result == 0);
     }
 }

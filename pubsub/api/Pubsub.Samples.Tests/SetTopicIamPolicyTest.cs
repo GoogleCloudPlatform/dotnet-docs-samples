@@ -19,12 +19,11 @@ public class SetTopicIamPolicyTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly SetTopicIamPolicySample _setTopicIamPolicySample;
-    private readonly GetTopicIamPolicySample _getTopicIamPolicySample;
+
     public SetTopicIamPolicyTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _setTopicIamPolicySample = new SetTopicIamPolicySample();
-        _getTopicIamPolicySample = new GetTopicIamPolicySample();
     }
 
     [Fact]
@@ -39,9 +38,7 @@ public class SetTopicIamPolicyTest
         var policy = _setTopicIamPolicySample.SetTopicIamPolicy(_pubsubFixture.ProjectId,
              topicId, testRoleValueToConfirm, testMemberValueToConfirm);
 
-        var policyOutput = _getTopicIamPolicySample.GetTopicIamPolicy(
-            _pubsubFixture.ProjectId, topicId);
-
-        Assert.Equal(policy, policyOutput);
+        Assert.Equal($"roles/{testRoleValueToConfirm}", policy.Bindings[0].Role);
+        Assert.Contains(policy.Bindings[0].Members, c => c.Contains(testMemberValueToConfirm));
     }
 }

@@ -19,11 +19,13 @@ public class CreateTopicTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly CreateTopicSample _createTopicSample;
+
     public CreateTopicTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _createTopicSample = new CreateTopicSample();
     }
+
     [Fact]
     public void CreateTopic()
     {

@@ -17,31 +17,31 @@ using System.Linq;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class PublishMessageTest
+public class PublishBatchMessageTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
+    private readonly PublishBatchedMessagesAsyncSample _publishBatchedMessagesAsyncSample;
     private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
 
-    public PublishMessageTest(PubsubFixture pubsubFixture)
+    public PublishBatchMessageTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
         _pullMessagesAsyncSample = new PullMessagesAsyncSample();
+        _publishBatchedMessagesAsyncSample = new PublishBatchedMessagesAsyncSample();
     }
 
     [Fact]
-    public async void PublishMessage()
+    public async void PublishBatchMessagesAsync()
     {
-        string topicId = "testTopicForMessageCreation" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForMessageCreation" + _pubsubFixture.RandomName();
+        string topicId = "testTopicForBatchMessageCreation" + _pubsubFixture.RandomName();
+        string subscriptionId = "testSubscriptionForBatchMessageCreation" + _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         List<string> messageTexts = new[] { "Hello World!", "Good day.", "Bye bye." }.ToList();
 
-        var output = await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts);
+        var output = await _publishBatchedMessagesAsyncSample.PublishBatchMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts);
         Assert.Equal(messageTexts.Count, output);
 
         // Pull the Message to confirm it is valid

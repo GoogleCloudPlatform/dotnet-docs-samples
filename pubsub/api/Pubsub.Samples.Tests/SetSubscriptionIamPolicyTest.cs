@@ -19,12 +19,11 @@ public class SetSubscriptionIamPolicyTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly SetSubscriptionIamPolicySample _setSubscriptionIamPolicySample;
-    private readonly GetSubscriptionIamPolicySample _getSubscriptionIamPolicySample;
+
     public SetSubscriptionIamPolicyTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _setSubscriptionIamPolicySample = new SetSubscriptionIamPolicySample();
-        _getSubscriptionIamPolicySample = new GetSubscriptionIamPolicySample();
     }
 
     [Fact]
@@ -42,9 +41,7 @@ public class SetSubscriptionIamPolicyTest
             _pubsubFixture.ProjectId, subscriptionId, testRoleValueToConfirm,
             testMemberValueToConfirm);
 
-        var policyOutput = _getSubscriptionIamPolicySample.GetSubscriptionIamPolicy(
-            _pubsubFixture.ProjectId, subscriptionId);
-
-        Assert.Equal(policy, policyOutput);
+        Assert.Equal($"roles/{testRoleValueToConfirm}", policy.Bindings[0].Role);
+        Assert.Contains(policy.Bindings[0].Members, c => c.Contains(testMemberValueToConfirm));
     }
 }
