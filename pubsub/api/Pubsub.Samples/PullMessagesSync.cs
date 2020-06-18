@@ -15,6 +15,7 @@
 // [START pubsub_subscriber_sync_pull]
 
 using Google.Cloud.PubSub.V1;
+using Grpc.Core;
 using System;
 using System.Linq;
 using System.Text;
@@ -27,20 +28,27 @@ public class PullMessagesSyncSample
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
         int messageCount = 0;
-        // Pull messages from server,
-        // allowing an immediate response if there are no messages.
-        PullResponse response = subscriberClient.Pull(subscriptionName, returnImmediately: false, maxMessages: 20);
-        // Print out each received message.
-        foreach (ReceivedMessage msg in response.ReceivedMessages)
+        try
         {
-            string text = Encoding.UTF8.GetString(msg.Message.Data.ToArray());
-            Console.WriteLine($"Message {msg.Message.MessageId}: {text}");
-            Interlocked.Increment(ref messageCount);
+            // Pull messages from server,
+            // allowing an immediate response if there are no messages.
+            PullResponse response = subscriberClient.Pull(subscriptionName, returnImmediately: false, maxMessages: 20);
+            // Print out each received message.
+            foreach (ReceivedMessage msg in response.ReceivedMessages)
+            {
+                string text = Encoding.UTF8.GetString(msg.Message.Data.ToArray());
+                Console.WriteLine($"Message {msg.Message.MessageId}: {text}");
+                Interlocked.Increment(ref messageCount);
+            }
+            // If acknowledgement required, send to server.
+            if (acknowledge && messageCount > 0)
+            {
+                subscriberClient.Acknowledge(subscriptionName, response.ReceivedMessages.Select(msg => msg.AckId));
+            }
         }
-        // If acknowledgement required, send to server.
-        if (acknowledge && messageCount > 0)
+        catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.Unavailable)
         {
-            subscriberClient.Acknowledge(subscriptionName, response.ReceivedMessages.Select(msg => msg.AckId));
+            // UNAVAILABLE due to too many concurrent pull requests pending for the given subscription.
         }
         return messageCount;
     }
