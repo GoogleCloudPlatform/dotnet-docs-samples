@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Google.Cloud.PubSub.V1;
-using GoogleCloudSamples;
-using Grpc.Core;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -37,61 +35,12 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         var deleteSubscriptionSampleObject = new DeleteSubscriptionSample();
         foreach (string subscriptionId in TempSubscriptionIds)
         {
-            _retryRobot.Eventually(HandleDeleteRace(() =>
-                deleteSubscriptionSampleObject.DeleteSubscription(ProjectId, subscriptionId)));
+            deleteSubscriptionSampleObject.DeleteSubscription(ProjectId, subscriptionId);
         }
         foreach (string topicId in TempTopicIds)
         {
-            _retryRobot.Eventually(HandleDeleteRace(() =>
-                deleteTopicSampleObject.DeleteTopic(ProjectId, topicId)));
+            deleteTopicSampleObject.DeleteTopic(ProjectId, topicId);
         }
-    }
-
-    private readonly RetryRobot _retryRobot = new RetryRobot()
-    {
-        MaxTryCount = 3,
-        ShouldRetry = (e) => true,
-    };
-
-    /// <summary>
-    /// Handle a special race condition that can occur when deleting
-    /// something:
-    /// 1. Delete request times out.
-    /// 2. Delete operation continues on server and succeeds.
-    /// 3. Later requests to delete the same entity see NotFound error.
-    /// </summary>
-    /// <param name="delete">The delete operation to run.</param>
-    /// <returns>An action to run inside Eventually().</returns>
-    private Action HandleDeleteRace(Action delete)
-    {
-        bool sawTimeout = false;
-        return () =>
-        {
-            if (!sawTimeout)
-            {
-                try
-                {
-                    delete();
-                }
-                catch (RpcException e) when (e.Status.StatusCode == StatusCode.DeadlineExceeded)
-                {
-                    sawTimeout = true;
-                    throw;
-                }
-            }
-            else
-            {
-                try
-                {
-                    delete();
-                }
-                catch (RpcException e) when (e.Status.StatusCode == StatusCode.NotFound)
-                {
-                    // Earlier timeout request that deleted the thing
-                    // actually succeeded on the server.
-                }
-            }
-        };
     }
 
     public Topic CreateTopic(string topicId)

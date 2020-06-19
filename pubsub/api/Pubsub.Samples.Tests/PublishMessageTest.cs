@@ -39,7 +39,7 @@ public class PublishMessageTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        List<string> messageTexts = new[] { "Hello World!", "Good day.", "Bye bye." }.ToList();
+        List<string> messageTexts = new List<string> { "Hello World!", "Good day.", "Bye bye." }.ToList();
 
         var output = await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts);
         Assert.Equal(messageTexts.Count, output);

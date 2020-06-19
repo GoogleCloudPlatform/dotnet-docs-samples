@@ -14,6 +14,7 @@
 
 // [START pubsub_publisher_batch_settings]
 
+using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ public class PublishBatchedMessagesAsyncSample
         // delayThreshold: 10 milliseconds
         var customSettings = new PublisherClient.Settings
         {
-            BatchingSettings = new Google.Api.Gax.BatchingSettings(
+            BatchingSettings = new BatchingSettings(
                 elementCountThreshold: 50,
                 byteCountThreshold: 10240,
                 delayThreshold: TimeSpan.FromSeconds(3))
