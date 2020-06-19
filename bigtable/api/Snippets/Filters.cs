@@ -19,8 +19,6 @@ using Google.Cloud.Bigtable.V2;
 using System;
 using System.Linq;
 
-// [END bigtable_filters_imports]
-
 
 
 namespace Filters
