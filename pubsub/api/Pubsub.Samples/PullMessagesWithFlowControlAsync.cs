@@ -14,6 +14,7 @@
 
 // [START pubsub_subscriber_flow_settings]
 
+using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using System;
 using System.Linq;
@@ -32,7 +33,7 @@ public class PullMessagesWithFlowControlAsyncSample
             {
                 AckExtensionWindow = TimeSpan.FromSeconds(4),
                 AckDeadline = TimeSpan.FromSeconds(10),
-                FlowControlSettings = new Google.Api.Gax.FlowControlSettings(maxOutstandingElementCount: 100, maxOutstandingByteCount: 10240)
+                FlowControlSettings = new FlowControlSettings(maxOutstandingElementCount: 100, maxOutstandingByteCount: 10240)
             });
         // SubscriberClient runs your message handle function on multiple
         // threads to maximize throughput.
