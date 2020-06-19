@@ -67,7 +67,7 @@ public class DeidentifyWithFpe
         var response = dlp.DeidentifyContent(
             new DeidentifyContentRequest
             {
-                ParentAsProjectName = new ProjectName(projectId),
+                Parent = new LocationName(projectId, "global").ToString(),
                 InspectConfig = new InspectConfig
                 {
                     InfoTypes = { infoTypes }

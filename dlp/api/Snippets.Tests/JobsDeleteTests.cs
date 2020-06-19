@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Dlp.V2;
 using System;
 using System.IO;
 using Xunit;
@@ -37,8 +38,8 @@ namespace GoogleCloudSamples
             bucketCollector.CopyToBucket(Path.Combine(Fixture.ResourcePath, "dates-input.csv"), fileName);
             var job = JobsCreate.CreateJob(Fixture.ProjectId, objectName);
             JobsDelete.DeleteJob(job.Name);
-            var activeJobs = JobsList.ListDlpJobs(Fixture.ProjectId, "state = RUNNING", "InspectJob");
-            Assert.DoesNotContain(activeJobs, job => job.Name == job.Name);
+            var activeJobs = JobsList.ListDlpJobs(Fixture.ProjectId, "state = RUNNING", DlpJobType.InspectJob);
+            Assert.DoesNotContain(activeJobs, j => j.Name == job.Name);
         }
     }
 }

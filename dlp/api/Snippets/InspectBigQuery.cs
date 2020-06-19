@@ -27,7 +27,7 @@ public class InspectBigQuery
 {
     public static object Inspect(
         string projectId,
-        string minLikelihood,
+        Likelihood minLikelihood,
         int maxFindings,
         bool includeQuote,
         IEnumerable<FieldId> identifyingFields,
@@ -71,7 +71,7 @@ public class InspectBigQuery
                 },
                 ExcludeInfoTypes = false,
                 IncludeQuote = includeQuote,
-                MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+                MinLikelihood = minLikelihood
             },
             Actions =
                 {
@@ -99,7 +99,7 @@ public class InspectBigQuery
         var request = new CreateDlpJobRequest
         {
             InspectJob = inspectJob,
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
         };
 
         // We need created job name

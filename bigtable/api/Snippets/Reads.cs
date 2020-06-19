@@ -12,11 +12,13 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+
 // [START bigtable_reads_print]
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using System;
 using System.Linq;
+// [END bigtable_reads_imports]
 
 
 
@@ -24,7 +26,6 @@ namespace Reads
 {
     public class ReadSnippets
     {
-        
         // Write your code here.
         // [START_EXCLUDE]
         // [START bigtable_reads_row]

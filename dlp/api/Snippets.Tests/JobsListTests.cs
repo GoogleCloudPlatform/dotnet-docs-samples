@@ -36,7 +36,7 @@ namespace GoogleCloudSamples
             TestRetryRobot.ShouldRetry = ex => true;
             TestRetryRobot.Eventually(() =>
             {
-                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", "RiskAnalysisJob");
+                var response = JobsList.ListDlpJobs(Fixture.ProjectId, "state=DONE", DlpJobType.RiskAnalysisJob);
 
                 Assert.True(response.Any());
             });

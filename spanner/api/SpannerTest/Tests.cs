@@ -209,30 +209,17 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
-        async void InitializeInstance()
+        void InitializeInstance()
         {
-            InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
+            InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
             try
             {
                 string name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}";
-                Instance response = await instanceAdminClient.GetInstanceAsync(name);
+                Instance response = instanceAdminClient.GetInstance(name);
             }
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
             {
-                string parent = $"projects/{_fixture.ProjectId}";
-                Instance instance = new Instance
-                {
-                    DisplayName = _fixture.InstanceId,
-                    Name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}",
-                    NodeCount = 1,
-                    Config = $"projects/{_fixture.ProjectId}/instanceConfigs/regional-us-central1"
-                };
-
-                // Make the CreateInstance request
-                var response = instanceAdminClient.CreateInstance(parent, _fixture.InstanceId, instance);
-
-                // Poll until the returned long-running operation is complete
-                response.PollUntilCompleted();
+                CreateInstance.SpannerCreateInstance(_fixture.ProjectId, _fixture.InstanceId);
             }
         }
 
@@ -430,6 +417,18 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains("Imagination", readOutput.Stdout);
             Assert.Contains("9", readOutput.Stdout);
             Assert.Contains("Imagination", readOutput.Stdout);
+        }
+
+        [Fact]
+        void TestDeleteSampleData()
+        {
+            // The deleteSampleData command creates the necessary tables, populates it with data
+            // and drops the tables afterwards.
+            ConsoleOutput output = _spannerCmd.Run("deleteSampleData",
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
+            Assert.Contains("Deleted individual rows in UpcomingAlbums.", output.Stdout);
+            Assert.Contains($"2 row(s) deleted from UpcomingSingers.", output.Stdout);
+            Assert.Contains($"3 row(s) deleted from UpcomingSingers.", output.Stdout);
         }
 
         [Fact]
@@ -793,7 +792,7 @@ namespace GoogleCloudSamples.Spanner
             Assert.Contains($"was restored to {_fixture.RestoredDatabaseId} from backup", output.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1065")]
         void TestUpdateBackup()
         {
             ConsoleOutput output = _spannerCmd.Run("updateBackup",

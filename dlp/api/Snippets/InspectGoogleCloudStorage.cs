@@ -27,7 +27,7 @@ public class InspectGoogleCloudStorage
 {
     public static DlpJob InspectGCS(
         string projectId,
-        string minLikelihood,
+        Likelihood minLikelihood,
         int maxFindings,
         bool includeQuote,
         IEnumerable<InfoType> infoTypes,
@@ -56,7 +56,7 @@ public class InspectGoogleCloudStorage
                 {
                     MaxFindingsPerRequest = maxFindings
                 },
-                MinLikelihood = (Likelihood)System.Enum.Parse(typeof(Likelihood), minLikelihood)
+                MinLikelihood = minLikelihood
             },
             Actions =
                 {
@@ -76,7 +76,7 @@ public class InspectGoogleCloudStorage
         var request = new CreateDlpJobRequest
         {
             InspectJob = inspectJob,
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
         };
 
         // We need created job name

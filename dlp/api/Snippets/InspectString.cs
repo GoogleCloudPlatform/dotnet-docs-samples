@@ -45,7 +45,7 @@ public class InspectString
         };
         var request = new InspectContentRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             Item = new ContentItem
             {
                 Value = dataValue

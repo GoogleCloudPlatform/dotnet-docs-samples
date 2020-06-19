@@ -12,12 +12,15 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+
 // [START bigtable_filters_print]
 
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using System;
 using System.Linq;
+
+// [END bigtable_filters_imports]
 
 
 
@@ -330,6 +333,7 @@ namespace Filters
         }
         // [END bigtable_filters_composing_condition]
 
+
         // [END_EXCLUDE]
         public string readFilter(string projectId, string instanceId, string tableId, RowFilter filter)
         {
@@ -368,4 +372,3 @@ namespace Filters
     }
 }
 // [END bigtable_filters_print]
-
