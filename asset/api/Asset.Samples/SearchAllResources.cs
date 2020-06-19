@@ -16,22 +16,17 @@
 
 using Google.Api.Gax;
 using Google.Cloud.Asset.V1;
-using System;
 using System.Collections.Generic;
 
 
-public class SearchAllResources
+public class SearchAllResourcesSample
 {
-    public static void Main(string[] args)
+    public SearchAllResourcesResponse SearchAllResources(string scope, string query = "", string[] assetTypes = null, int pageSize = 0, string pageToken = "", string orderBy = "")
     {
-        string scope = "SCOPE-OF-THE-SEARCH";
-        string query = "QUERY-STATEMENT";
-        string[] assetTypes = { };
-        int pageSize = 0;
-        string pageToken = "";
-        string orderBy = "";
-
+        // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
+
+        // Build the request.
         SearchAllResourcesRequest request = new SearchAllResourcesRequest
         {
             Scope = scope,
@@ -40,15 +35,15 @@ public class SearchAllResources
             PageToken = pageToken,
             OrderBy = orderBy,
         };
-        request.AssetTypes.AddRange(assetTypes);
+        request.AssetTypes.AddRange(assetTypes ?? new string[] { });
+
+        // Call the API.
         PagedEnumerable<SearchAllResourcesResponse, ResourceSearchResult> response = client.SearchAllResources(request);
 
-        // Extract the first page
+        // Return the first page.
         IEnumerator<SearchAllResourcesResponse> enumerator = response.AsRawResponses().GetEnumerator();
         enumerator.MoveNext();
-        SearchAllResourcesResponse page = enumerator.Current;
-
-        Console.WriteLine(page.Results);
+        return enumerator.Current;
     }
 }
 // [END asset_quickstart_search_all_resources]

@@ -12,36 +12,38 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START asset_quickstart_export_assets]
+// [START asset_quickstart_batch_get_assets_history]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Asset.V1;
+using Google.Protobuf.WellKnownTypes;
 using System;
 
 
-public class ExportAssets
+public class BatchGetAssetsHistorySample
 {
-    public static void Main(string[] args)
+    public BatchGetAssetsHistoryResponse BatchGetAssetsHistory(string[] assetNames, string projectId)
     {
-        string bucketName = "YOUR-BUCKET-NAME";
-        string projectId = "YOUR-GOOGLE-PROJECT-ID";
-        string assetDumpFile = String.Format("gs://{0}/my-assets.txt", bucketName);
+        // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
-        ExportAssetsRequest request = new ExportAssetsRequest
+
+        // Build the request.
+        BatchGetAssetsHistoryRequest request = new BatchGetAssetsHistoryRequest
         {
             ParentAsResourceName = ProjectName.FromProject(projectId),
-            OutputConfig = new OutputConfig
+            ContentType = ContentType.Resource,
+            ReadTimeWindow = new TimeWindow
             {
-                GcsDestination = new GcsDestination { Uri = assetDumpFile }
+                StartTime = Timestamp.FromDateTime(DateTime.UtcNow)
             }
         };
-        // Start the long-running export operation
-        var operation = client.ExportAssets(request);
-        // Wait for it to complete (or fail)
-        operation = operation.PollUntilCompleted();
-        // Extract the result
-        ExportAssetsResponse response = operation.Result;
-        Console.WriteLine(response);
+        request.AssetNames.AddRange(assetNames);
+
+        // Call the API.
+        BatchGetAssetsHistoryResponse response = client.BatchGetAssetsHistory(request);
+
+        // Return the result.
+        return response;
     }
 }
-// [END asset_quickstart_export_assets]
+// [END asset_quickstart_batch_get_assets_history]

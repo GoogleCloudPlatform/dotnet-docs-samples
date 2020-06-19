@@ -6,19 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Bigquery.v2" Version="1.46.0.1980" />
     <PackageReference Include="Google.Cloud.BigQuery.V2" Version="2.0.0" />
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
-    <ProjectReference Include="..\SearchAllResources\SearchAllResources.csproj" />
+    <ProjectReference Include="..\Asset.Samples\Asset.Samples.csproj" />
   </ItemGroup>
 
 </Project>
