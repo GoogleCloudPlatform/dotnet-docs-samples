@@ -134,8 +134,7 @@ namespace GoogleCloudSamples.Spanner
                 if (!_fixture.s_initializedDatabase)
                 {
                     _fixture.s_initializedDatabase = true;
-                    DelelteBackups();
-                    DelelteDatabases();
+                    DeleteStaleBackupsAndDatabases();
                     InitializeInstance();
                     InitializeDatabase();
                     InitializeBackup();
@@ -143,54 +142,57 @@ namespace GoogleCloudSamples.Spanner
             }
         }
 
-        void DelelteBackups()
+        void DeleteStaleBackupsAndDatabases()
         {
             DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
-
-            //delete backup contains "a"
-            var dataTime = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd");
-            var listBackupRequest = new ListBackupsRequest
+            var instanceName = InstanceName.FromProjectInstance(_fixture.ProjectId, _fixture.InstanceId);
+            var databases = databaseAdminClient.ListDatabases(instanceName).Where(c => c.DatabaseName.DatabaseId.StartsWith("my-db-")).ToList();
+            var databasesToDelete = new List<string>();
+            // delete all the databases created before 5 hrs.
+            var timestamp = DateTime.UtcNow.AddHours(-5).ToTimestamp().Seconds;
+            databases.ForEach(database =>
             {
-                Parent = InstanceName.Format(_fixture.ProjectId, _fixture.InstanceId),
-                Filter = $"create_time < {dataTime} AND name:Howl"
-            };
-
-            var backups = databaseAdminClient.ListBackups(listBackupRequest).ToList();
-            Console.Out.WriteLineAsync($"{backups.Count} old backups found.");
-            foreach (var backup in backups)
-            {
-                var deleteBackupRequest = new DeleteBackupRequest()
+                var databaseId = database.DatabaseName.DatabaseId.Replace("my-db-", "");
+                if (long.TryParse(databaseId, out long dbCreationTime) && dbCreationTime <= timestamp)
                 {
-                    Name = backup.Name
-                };
-                databaseAdminClient.DeleteBackup(deleteBackupRequest);
-            }
-        }
-
-        void DelelteDatabases()
-        {
-            string adminConnectionString = $"Data Source=projects/{_fixture.ProjectId}/"
-              + $"instances/{_fixture.InstanceId}";
-
-            DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
-            InstanceName instanceName = InstanceName.FromProjectInstance(_fixture.ProjectId, _fixture.InstanceId);
-            var databases = databaseAdminClient.ListDatabases(instanceName).ToList();
-            Console.Out.WriteLineAsync($"{databases.Count} old databases found.");
-            using (var connection = new SpannerConnection(adminConnectionString))
-                foreach (var database in databases)
-                {
-                    using (var cmd = connection.CreateDdlCommand($@"DROP DATABASE {database.DatabaseName.DatabaseId}"))
-                    {
-                        try
-                        {
-                            cmd.ExecuteNonQuery();
-                        }
-                        catch (Exception)
-                        {
-                            continue;
-                        }
-                    }
+                    databasesToDelete.Add(database.DatabaseName.DatabaseId);
                 }
+            });
+
+            Console.Out.WriteLineAsync($"{databasesToDelete.Count} old databases found.");
+
+            //get backups
+            ListBackupsRequest request = new ListBackupsRequest
+            {
+                ParentAsInstanceName = instanceName,
+                Filter = $"database:my-db-"
+            };
+            var backups = databaseAdminClient.ListBackups(request).ToList();
+
+            //backups for databases to delete.
+            var backupsToDelete = backups.Where(c => databasesToDelete.Contains(DatabaseName.Parse(c.Database).DatabaseId)).ToList();
+
+            Console.Out.WriteLineAsync($"{backupsToDelete.Count} old backups found.");
+
+            //delete the backups
+            backupsToDelete.ForEach(backup =>
+            {
+                try
+                {
+                    DeleteBackup.SpannerDeleteBackup(_fixture.ProjectId, _fixture.InstanceId, backup.BackupName.BackupId);
+                }
+                catch (Exception) { }
+            });
+
+            //delete the databases
+            databasesToDelete.ForEach(databaseId =>
+            {
+                try
+                {
+                    _spannerCmd.Run("deleteDatabase", _fixture.ProjectId, _fixture.InstanceId, databaseId);
+                }
+                catch (Exception) { }
+            });
         }
 
         void InitializeInstance()
