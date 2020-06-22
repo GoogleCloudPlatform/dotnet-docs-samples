@@ -12,10 +12,15 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Admin.Instance.V1;
+using Google.Cloud.Spanner.Common.V1;
 using Google.Cloud.Spanner.Data;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -101,14 +106,10 @@ namespace GoogleCloudSamples.Spanner
         // Allow environment variables to override the default instance and database names.
         public string InstanceId { get; private set; } =
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
-        private static readonly string s_randomDatabaseName = "my-db-"
-            + TestUtil.RandomName();
-        private static readonly string s_randomToBeCancelledBackupName = "my-backup-"
-            + TestUtil.RandomName();
-        private static readonly string s_randomRestoredDatabaseName = "my-db-"
-            + TestUtil.RandomName();
-        public string DatabaseId =
-            Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
+        private static readonly string s_randomDatabaseName = "my-db-" + DateTime.UtcNow.ToTimestamp().Seconds;
+        private static readonly string s_randomToBeCancelledBackupName = "my-backup-" + DateTime.UtcNow.ToTimestamp().Seconds;
+        private static readonly string s_randomRestoredDatabaseName = "my-db-" + DateTime.UtcNow.ToTimestamp().Seconds;
+        public string DatabaseId = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
         public string BackupDatabaseId = "my-test-database";
         public string BackupId = "my-test-database-backup";
         public string ToBeCancelledBackupId = s_randomToBeCancelledBackupName;
@@ -133,10 +134,76 @@ namespace GoogleCloudSamples.Spanner
                 if (!_fixture.s_initializedDatabase)
                 {
                     _fixture.s_initializedDatabase = true;
+                    DelelteBackups();
+                    DelelteDatabases();
                     InitializeInstance();
                     InitializeDatabase();
                     InitializeBackup();
                 }
+            }
+        }
+
+        void DelelteBackups()
+        {
+            DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+
+            //delete backup contains "a"
+            var dataTime = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd");
+            var listBackupRequest = new ListBackupsRequest
+            {
+                Parent = InstanceName.Format(_fixture.ProjectId, _fixture.InstanceId),
+                Filter = $"create_time < {dataTime} AND name:Howl"
+            };
+
+            var backups = databaseAdminClient.ListBackups(listBackupRequest).ToList();
+            Console.Out.WriteLineAsync($"{backups.Count} old backups found.");
+            foreach (var backup in backups)
+            {
+                var deleteBackupRequest = new DeleteBackupRequest()
+                {
+                    Name = backup.Name
+                };
+                databaseAdminClient.DeleteBackup(deleteBackupRequest);
+            }
+        }
+
+        void DelelteDatabases()
+        {
+            string adminConnectionString = $"Data Source=projects/{_fixture.ProjectId}/"
+              + $"instances/{_fixture.InstanceId}";
+
+            DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+            InstanceName instanceName = InstanceName.FromProjectInstance(_fixture.ProjectId, _fixture.InstanceId);
+            var databases = databaseAdminClient.ListDatabases(instanceName).ToList();
+            Console.Out.WriteLineAsync($"{databases.Count} old databases found.");
+            using (var connection = new SpannerConnection(adminConnectionString))
+                foreach (var database in databases)
+                {
+                    using (var cmd = connection.CreateDdlCommand($@"DROP DATABASE {database.DatabaseName.DatabaseId}"))
+                    {
+                        try
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                        catch (Exception)
+                        {
+                            continue;
+                        }
+                    }
+                }
+        }
+
+        void InitializeInstance()
+        {
+            InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+            try
+            {
+                string name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}";
+                Instance response = instanceAdminClient.GetInstance(name);
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
+            {
+                CreateInstance.SpannerCreateInstance(_fixture.ProjectId, _fixture.InstanceId);
             }
         }
 
@@ -206,20 +273,6 @@ namespace GoogleCloudSamples.Spanner
                 {
                     throw;
                 }
-            }
-        }
-
-        void InitializeInstance()
-        {
-            InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
-            try
-            {
-                string name = $"projects/{_fixture.ProjectId}/instances/{_fixture.InstanceId}";
-                Instance response = instanceAdminClient.GetInstance(name);
-            }
-            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
-            {
-                CreateInstance.SpannerCreateInstance(_fixture.ProjectId, _fixture.InstanceId);
             }
         }
 
