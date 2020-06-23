@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.AutoML.V1;
 using Google.LongRunning;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -22,6 +22,7 @@ public class GetOperationStatusTest
 {
     private readonly AutoMLFixture _fixture;
     private readonly AutoMLGetOperationStatus _sample;
+
     public GetOperationStatusTest(AutoMLFixture fixture)
     {
         _fixture = fixture;
@@ -36,7 +37,7 @@ public class GetOperationStatusTest
 
         Operation firstOper = listOperSample.ListOperationStatus(_fixture.ProjectId, "us-central1").First();
         // Act
-        Operation result = _sample.GetOperationStatus(firstOper.Name);
+        Operation<Model, OperationMetadata> result = _sample.GetOperationStatus(firstOper.Name);
 
         // Assert 
         Assert.Contains(firstOper.Name, result.Name);

@@ -14,5 +14,4 @@
 
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
-dotnet restore
 dotnet test --test-adapter-path:. --logger:junit
