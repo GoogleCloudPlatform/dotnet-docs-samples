@@ -25,8 +25,8 @@ namespace GoogleCloudSamples
     public class QuickStartTest : IDisposable
     {
         private readonly string _projectId;
-        private ServiceAccount serviceAccount;
-        private IamService iamService;
+        private readonly ServiceAccount _serviceAccount;
+        private readonly IamService _iamService;
 
         public QuickStartTest()
         {
@@ -40,7 +40,7 @@ namespace GoogleCloudSamples
             // Create service account for test
             var credential = GoogleCredential.GetApplicationDefault()
                 .CreateScoped(IamService.Scope.CloudPlatform);
-            iamService = new IamService(
+            _iamService = new IamService(
                 new IamService.Initializer
                 {
                     HttpClientInitializer = credential
@@ -54,15 +54,15 @@ namespace GoogleCloudSamples
                     DisplayName = "iamTestAccount"
                 }
             };
-            serviceAccount = iamService.Projects.ServiceAccounts.Create(
+            _serviceAccount = _iamService.Projects.ServiceAccounts.Create(
                 request, "projects/" + _projectId).Execute();
         }
 
         public void Dispose()
         {
             // Delete service account
-            string resource = "projects/-/serviceAccounts/" + serviceAccount.Email;
-            iamService.Projects.ServiceAccounts.Delete(resource).Execute();
+            string resource = "projects/-/serviceAccounts/" + _serviceAccount.Email;
+            _iamService.Projects.ServiceAccounts.Delete(resource).Execute();
 
         }
 
@@ -70,7 +70,7 @@ namespace GoogleCloudSamples
         public void TestQuickStart()
         {
             var role = "roles/logging.logWriter";
-            var member = "serviceAccount:" + serviceAccount.Email;
+            var member = "serviceAccount:" + _serviceAccount.Email;
 
             // Initialize service
             var crmService = QuickStart.InitializeService();
