@@ -25,11 +25,7 @@ namespace GoogleCloudSamples
 
             DetectIntentTexts.RegisterCommands(verbMap);
             DetectIntentStream.RegisterCommands(verbMap);
-            ContextManagement.RegisterCommands(verbMap);
             IntentManagement.RegisterCommands(verbMap);
-            EntityManagement.RegisterCommands(verbMap);
-            EntityTypeManagement.RegisterCommands(verbMap);
-            SessionEntityTypeManagement.RegisterCommands(verbMap);
 
             verbMap.NotParsedFunc = (err) => 1;
 
