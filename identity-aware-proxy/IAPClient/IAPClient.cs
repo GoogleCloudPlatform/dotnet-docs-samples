@@ -17,49 +17,66 @@ limitations under the License.
 // [START iap_make_request]
 
 using Google.Apis.Auth.OAuth2;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace GoogleCloudSamples
+public class IAPClient
 {
-    class IAPClient
+    /// <summary>
+    /// Makes a request to a IAP secured application by first obtaining
+    /// an OIDC token.
+    /// </summary>
+    /// <param name="iapClientId">The client ID observed on 
+    /// https://console.cloud.google.com/apis/credentials. </param>
+    /// <param name="credentialsFilePath">Path to the credentials .json file
+    /// downloaded from https://console.cloud.google.com/apis/credentials.
+    /// </param>
+    /// <param name="uri">HTTP URI to fetch.</param>
+    /// <param name="cancellationToken">The token to propagate operation cancel notifications.</param>
+    /// <returns>The HTTP response message.</returns>
+    public async Task<HttpResponseMessage> InvokeRequestAsync(
+        string iapClientId, string credentialsFilePath, string uri, CancellationToken cancellationToken = default)
     {
-        /// <summary>
-        /// Authenticates using the client id and credentials, then fetches
-        /// the uri.
-        /// </summary>
-        /// <param name="iapClientId">The client id observed on 
-        /// https://console.cloud.google.com/apis/credentials. </param>
-        /// <param name="credentialsFilePath">Path to the credentials .json file
-        /// downloaded from https://console.cloud.google.com/apis/credentials.
-        /// </param>
-        /// <param name="uri">HTTP uri to fetch.</param>
-        /// <returns>The http response body as a string.</returns>
-        public async Task<string> InvokeRequestAsync(string iapClientId, string credentialsFilePath, string uri)
-        {
-            // Read credentials from the credentials .json file.
-            ServiceAccountCredential saCredential;
-            using (var fs = new FileStream(credentialsFilePath, FileMode.Open, FileAccess.Read))
-            {
-                saCredential = ServiceAccountCredential.FromServiceAccountData(fs);
-            }
+        // Get the OidcToken.
+        // You only need to do this once in your application
+        // as long as you can keep a reference to the returned OidcToken.
+        OidcToken oidcToken = await GetOidcTokenAsync(iapClientId, credentialsFilePath, cancellationToken).ConfigureAwait(false);
 
-            // Request an OIDC token for the Cloud IAP-secured client ID.
-            OidcToken oidcToken = await saCredential.GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(iapClientId)).ConfigureAwait(false);
-            // Always request the string token from the OIDC token, the OIDC token will refresh the string token if it expires.
-            string token = await oidcToken.GetAccessTokenAsync().ConfigureAwait(false);
+        // Before making an HTTP request, always obtain the string token from the OIDC token,
+        // the OIDC token will refresh the string token if it expires.
+        string token = await oidcToken.GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
 
-            // Include the OIDC token in an Authorization: Bearer header to 
-            // IAP-secured resource
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                string response = await httpClient.GetStringAsync(uri).ConfigureAwait(false);
-                return response;
-            }
-        }
+        // Include the OIDC token in an Authorization: Bearer header to 
+        // IAP-secured resource
+        // Note: Normally you would use an HttpClientFactory to build the httpClient.
+        // For simplicity we are building the HttpClient directly.
+        using HttpClient httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return await httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Obtains an OIDC token for authentication an IAP request.
+    /// </summary>
+    /// <param name="iapClientId">The client ID observed on 
+    /// https://console.cloud.google.com/apis/credentials. </param>
+    /// <param name="credentialsFilePath">Path to the credentials .json file
+    /// downloaded from https://console.cloud.google.com/apis/credentials.
+    /// </param>
+    /// <param name="cancellationToken">The token to propagate operation cancel notifications.</param>
+    /// <returns>The HTTP response message.</returns>
+    public async Task<OidcToken> GetOidcTokenAsync(string iapClientId, string credentialsFilePath, CancellationToken cancellationToken)
+    {
+        // Read credentials from the credentials .json file.
+        GoogleCredential credential = await GoogleCredential
+            .FromFileAsync(credentialsFilePath, cancellationToken).ConfigureAwait(false);
+
+        // Request an OIDC token for the Cloud IAP-secured client ID.
+       return await credential
+            .GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(iapClientId), cancellationToken).ConfigureAwait(false);
     }
 }
+
 // [END iap_make_request]

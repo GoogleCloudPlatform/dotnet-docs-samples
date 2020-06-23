@@ -12,26 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class InspectStringWithoutOverlapTests : IClassFixture<DlpTestFixture>
+    public class InspectStringWithExclusionDictSubstringTests : IClassFixture<DlpTestFixture>
     {
         private DlpTestFixture Fixture { get; }
-        public InspectStringWithoutOverlapTests(DlpTestFixture fixture)
+        public InspectStringWithExclusionDictSubstringTests(DlpTestFixture fixture)
         {
             Fixture = fixture;
         }
 
         [Fact]
-        public void TestInspectStringWithoutOverlap()
+        public void TestInspectStringExclusionDictSubstring()
         {
-            string testData = "example.com is a domain, james@example.org is an email.";
-            var response = InspectStringWithoutOverlap.Inspect(Fixture.ProjectId, testData);
+            string testData = "Some email addresses: gary@example.com, TEST@example.com";
+            var testList = new List<string> { "TEST" };
+            var response = InspectStringWithExclusionDictSubstring.Inspect(Fixture.ProjectId, testData, testList);
 
-            Assert.Contains(response.Result.Findings, f => f.Quote.Contains("example.com"));
-            Assert.DoesNotContain(response.Result.Findings, f => f.Quote.Contains("example.org"));
+            Assert.Contains(response.Result.Findings, f => f.Quote.Contains("gary@example.com"));
+            Assert.DoesNotContain(response.Result.Findings, f => f.Quote.Contains("TEST@example.com"));
         }
     }
 }

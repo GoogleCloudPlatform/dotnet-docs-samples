@@ -29,7 +29,7 @@ namespace GoogleCloudSamples
         {
             return new CreateDlpJobRequest()
             {
-                ParentAsProjectName = new ProjectName(ProjectId),
+                Parent = new LocationName(ProjectId, "global").ToString(),
                 RiskJob = new RiskAnalysisJobConfig()
                 {
                     PrivacyMetric = new PrivacyMetric()
@@ -60,7 +60,7 @@ namespace GoogleCloudSamples
             var dlp = DlpServiceClient.Create();
             var result = dlp.ListDlpJobs(new ListDlpJobsRequest
             {
-                ParentAsProjectName = new ProjectName(ProjectId),
+                Parent = new LocationName(ProjectId, "global").ToString(),
                 Type = DlpJobType.RiskAnalysisJob
             });
             foreach (var job in result)

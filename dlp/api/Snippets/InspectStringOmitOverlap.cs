@@ -12,14 +12,14 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START dlp_inspect_string_without_overlap]
+// [START dlp_inspect_string_omit_overlap]
 
+using System;
 using System.Linq;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
-using static Google.Cloud.Dlp.V2.CustomInfoType.Types;
 
-public class InspectStringWithoutOverlap
+public class InspectStringOmitOverlap
 {
     public static InspectContentResponse Inspect(string projectId, string textToInspect)
     {
@@ -29,43 +29,30 @@ public class InspectStringWithoutOverlap
         var dlp = DlpServiceClient.Create();
 
         // Specify the type and content to be inspected.
-        var byteContentItem = new ByteContentItem
+        var byteItem = new ByteContentItem
         {
             Type = ByteContentItem.Types.BytesType.TextUtf8,
             Data = Google.Protobuf.ByteString.CopyFromUtf8(textToInspect)
         };
-        var contentItem = new ContentItem
-        {
-            ByteItem = byteContentItem
-        };
+        var contentItem = new ContentItem { ByteItem = byteItem };
 
         // Specify the type of info the inspection will look for.
         // See https://cloud.google.com/dlp/docs/infotypes-reference for complete list of info types.
-        var infoTypes = new string[] { "DOMAIN_NAME", "EMAIL_ADDRESS" }.Select(it => new InfoType { Name = it });
-
-        // Define a custom info type to exclude email addresses
-        var customInfoType = new CustomInfoType
-        {
-            InfoType = new InfoType { Name = "EMAIL_ADDRESS" },
-            ExclusionType = ExclusionType.Exclude
-        };
+        var infoTypes = new string[] { "PERSON_NAME", "EMAIL_ADDRESS" }.Select(it => new InfoType { Name = it });
 
         // Exclude EMAIL_ADDRESS matches
         var exclusionRule = new ExclusionRule
         {
-            ExcludeInfoTypes = new ExcludeInfoTypes
-            {
-                InfoTypes = { new InfoType { Name = "EMAIL_ADDRESS" } }
-            },
+            ExcludeInfoTypes = new ExcludeInfoTypes { InfoTypes = { new InfoType { Name = "EMAIL_ADDRESS" } } },
             MatchingType = MatchingType.PartialMatch
         };
 
-        // Construct a ruleset that applies the exclusion rule to the DOMAIN_NAME infotype.
-        // If a DOMAIN_NAME match is part of an EMAIL_ADDRESS match, the DOMAIN_NAME match will
+        // Construct a ruleset that applies the exclusion rule to the PERSON_NAME infotype.
+        // If a PERSON_NAME match overlaps with an EMAIL_ADDRESS match, the PERSON_NAME match will
         // be excluded.
         var ruleSet = new InspectionRuleSet
         {
-            InfoTypes = { new InfoType { Name = "DOMAIN_NAME" } },
+            InfoTypes = { new InfoType { Name = "PERSON_NAME" } },
             Rules = { new InspectionRule { ExclusionRule = exclusionRule } }
         };
 
@@ -73,7 +60,6 @@ public class InspectStringWithoutOverlap
         var config = new InspectConfig
         {
             InfoTypes = { infoTypes },
-            CustomInfoTypes = { customInfoType },
             IncludeQuote = true,
             RuleSet = { ruleSet }
         };
@@ -89,7 +75,17 @@ public class InspectStringWithoutOverlap
         // Use the client to send the API request.
         var response = dlp.InspectContent(request);
 
+        // Parse the response and process results
+        Console.WriteLine($"Findings: {response.Result.Findings.Count}");
+        foreach (var f in response.Result.Findings)
+        {
+            Console.WriteLine("\tQuote: " + f.Quote);
+            Console.WriteLine("\tInfo type: " + f.InfoType.Name);
+            Console.WriteLine("\tLikelihood: " + f.Likelihood);
+        }
+
         return response;
     }
 }
-// [END dlp_inspect_string_without_overlap]
+
+// [END dlp_inspect_string_omit_overlap]

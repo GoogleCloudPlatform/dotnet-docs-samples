@@ -76,7 +76,7 @@ public class DeidentifyWithExceptionList
 
         var request = new DeidentifyContentRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             InspectConfig = inspectConfig,
             DeidentifyConfig = deidentifyConfig,
             Item = contentItem

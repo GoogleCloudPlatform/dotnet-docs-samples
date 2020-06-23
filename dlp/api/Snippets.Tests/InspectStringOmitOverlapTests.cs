@@ -16,22 +16,22 @@ using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class InspectStringWithoutOverlapTests : IClassFixture<DlpTestFixture>
+    public class InspectStringOmitOverlapTests : IClassFixture<DlpTestFixture>
     {
         private DlpTestFixture Fixture { get; }
-        public InspectStringWithoutOverlapTests(DlpTestFixture fixture)
+        public InspectStringOmitOverlapTests(DlpTestFixture fixture)
         {
             Fixture = fixture;
         }
 
         [Fact]
-        public void TestInspectStringWithoutOverlap()
+        public void TestInspectStringOmitOverlapTests()
         {
-            string testData = "example.com is a domain, james@example.org is an email.";
-            var response = InspectStringWithoutOverlap.Inspect(Fixture.ProjectId, testData);
+            string testData = "james@example.com";
+            var response = InspectStringOmitOverlap.Inspect(Fixture.ProjectId, testData);
 
-            Assert.Contains(response.Result.Findings, f => f.Quote.Contains("example.com"));
-            Assert.DoesNotContain(response.Result.Findings, f => f.Quote.Contains("example.org"));
+            Assert.Contains(response.Result.Findings, f => f.InfoType.Name == "EMAIL_ADDRESS");
+            Assert.DoesNotContain(response.Result.Findings, f => f.InfoType.Name == "PERSON_NAME");
         }
     }
 }

@@ -12,26 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class InspectStringWithoutOverlapTests : IClassFixture<DlpTestFixture>
+    public class InspectStringCustomExcludingSubstringTests : IClassFixture<DlpTestFixture>
     {
         private DlpTestFixture Fixture { get; }
-        public InspectStringWithoutOverlapTests(DlpTestFixture fixture)
+        public InspectStringCustomExcludingSubstringTests(DlpTestFixture fixture)
         {
             Fixture = fixture;
         }
 
         [Fact]
-        public void TestInspectStringWithoutOverlap()
+        public void TestInspectStringExclusionDict()
         {
-            string testData = "example.com is a domain, james@example.org is an email.";
-            var response = InspectStringWithoutOverlap.Inspect(Fixture.ProjectId, testData);
+            string testData = "Name: Doe, John. Name: Example, Jimmy";
+            string testRegex = "[A-Z][a-z]{1,15}, [A-Z][a-z]{1,15}";
+            var testList = new List<string> { "Jimmy" };
+            var response = InspectStringCustomExcludingSubstring.Inspect(Fixture.ProjectId, testData, testRegex, testList);
 
-            Assert.Contains(response.Result.Findings, f => f.Quote.Contains("example.com"));
-            Assert.DoesNotContain(response.Result.Findings, f => f.Quote.Contains("example.org"));
+            Assert.Contains(response.Result.Findings, f => f.Quote.Contains("Doe, John"));
+            Assert.DoesNotContain(response.Result.Findings, f => f.Quote.Contains("Example, Jimmy"));
         }
     }
 }

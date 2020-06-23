@@ -12,16 +12,16 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START dlp_inspect_string_custom_hotword]
+// [START dlp_inspect_string_custom_excluding_substring]
 
+using System;
+using System.Collections.Generic;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
-using System;
-using static Google.Cloud.Dlp.V2.CustomInfoType.Types;
 
-public class InspectStringCustomHotword
+public class InspectStringCustomExcludingSubstring
 {
-    public static InspectContentResponse Inspect(string projectId, string textToInspect, string customHotword)
+    public static InspectContentResponse Inspect(string projectId, string textToInspect, string customDetectorPattern, List<String> excludedSubstringList)
     {
         var dlp = DlpServiceClient.Create();
 
@@ -31,39 +31,48 @@ public class InspectStringCustomHotword
             Data = Google.Protobuf.ByteString.CopyFromUtf8(textToInspect)
         };
 
-        var contentItem = new ContentItem
+        var contentItem = new ContentItem { ByteItem = byteContentItem };
+
+        var infoType = new InfoType
         {
-            ByteItem = byteContentItem
+            Name = "CUSTOM_NAME_DETECTOR"
+        };
+        var customInfoType = new CustomInfoType
+        {
+            InfoType = infoType,
+            Regex = new CustomInfoType.Types.Regex { Pattern = customDetectorPattern }
         };
 
-        var hotwordRule = new DetectionRule.Types.HotwordRule
+        var exclusionRule = new ExclusionRule
         {
-            HotwordRegex = new Regex { Pattern = customHotword },
-            Proximity = new DetectionRule.Types.Proximity { WindowBefore = 50 },
-            LikelihoodAdjustment = new DetectionRule.Types.LikelihoodAdjustment { FixedLikelihood = Likelihood.VeryLikely }
+            MatchingType = MatchingType.PartialMatch,
+            Dictionary = new CustomInfoType.Types.Dictionary
+            {
+                WordList = new CustomInfoType.Types.Dictionary.Types.WordList
+                {
+                    Words = { excludedSubstringList }
+                }
+            }
         };
 
-        var infoType = new InfoType { Name = "PERSON_NAME" };
-
-        var inspectionRuleSet = new InspectionRuleSet
+        var ruleSet = new InspectionRuleSet
         {
             InfoTypes = { infoType },
-            Rules = { new InspectionRule { HotwordRule = hotwordRule } }
+            Rules = { new InspectionRule { ExclusionRule = exclusionRule } }
         };
 
-        var inspectConfig = new InspectConfig
+        var config = new InspectConfig
         {
-            InfoTypes = { infoType },
+            CustomInfoTypes = { customInfoType },
             IncludeQuote = true,
-            RuleSet = { inspectionRuleSet },
-            MinLikelihood = Likelihood.VeryLikely
+            RuleSet = { ruleSet }
         };
 
         var request = new InspectContentRequest
         {
             Parent = new LocationName(projectId, "global").ToString(),
             Item = contentItem,
-            InspectConfig = inspectConfig
+            InspectConfig = config
         };
 
         var response = dlp.InspectContent(request);
@@ -79,4 +88,5 @@ public class InspectStringCustomHotword
         return response;
     }
 }
-// [END dlp_inspect_string_custom_hotword]
+
+// [END dlp_inspect_string_custom_excluding_substring]

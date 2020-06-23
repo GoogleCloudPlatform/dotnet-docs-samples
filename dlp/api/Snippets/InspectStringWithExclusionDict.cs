@@ -12,16 +12,17 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START dlp_inspect_string_custom_hotword]
+// [START dlp_inspect_string_with_exclusion_dict]
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
-using System;
-using static Google.Cloud.Dlp.V2.CustomInfoType.Types;
 
-public class InspectStringCustomHotword
+public class InspectStringWithExclusionDict
 {
-    public static InspectContentResponse Inspect(string projectId, string textToInspect, string customHotword)
+    public static InspectContentResponse Inspect(string projectId, string textToInspect, List<String> excludedMatchList)
     {
         var dlp = DlpServiceClient.Create();
 
@@ -31,39 +32,40 @@ public class InspectStringCustomHotword
             Data = Google.Protobuf.ByteString.CopyFromUtf8(textToInspect)
         };
 
-        var contentItem = new ContentItem
+        var contentItem = new ContentItem { ByteItem = byteContentItem };
+
+        var infoTypes = new string[] { "PHONE_NUMBER", "EMAIL_ADDRESS", "CREDIT_CARD_NUMBER" }.Select(it => new InfoType { Name = it });
+
+        var exclusionRule = new ExclusionRule
         {
-            ByteItem = byteContentItem
+            MatchingType = MatchingType.FullMatch,
+            Dictionary = new CustomInfoType.Types.Dictionary
+            {
+                WordList = new CustomInfoType.Types.Dictionary.Types.WordList
+                {
+                    Words = { excludedMatchList }
+                }
+            }
         };
 
-        var hotwordRule = new DetectionRule.Types.HotwordRule
+        var ruleSet = new InspectionRuleSet
         {
-            HotwordRegex = new Regex { Pattern = customHotword },
-            Proximity = new DetectionRule.Types.Proximity { WindowBefore = 50 },
-            LikelihoodAdjustment = new DetectionRule.Types.LikelihoodAdjustment { FixedLikelihood = Likelihood.VeryLikely }
+            InfoTypes = { new InfoType { Name = "EMAIL_ADDRESS" } },
+            Rules = { new InspectionRule { ExclusionRule = exclusionRule } }
         };
 
-        var infoType = new InfoType { Name = "PERSON_NAME" };
-
-        var inspectionRuleSet = new InspectionRuleSet
+        var config = new InspectConfig
         {
-            InfoTypes = { infoType },
-            Rules = { new InspectionRule { HotwordRule = hotwordRule } }
-        };
-
-        var inspectConfig = new InspectConfig
-        {
-            InfoTypes = { infoType },
+            InfoTypes = { infoTypes },
             IncludeQuote = true,
-            RuleSet = { inspectionRuleSet },
-            MinLikelihood = Likelihood.VeryLikely
+            RuleSet = { ruleSet }
         };
 
         var request = new InspectContentRequest
         {
             Parent = new LocationName(projectId, "global").ToString(),
             Item = contentItem,
-            InspectConfig = inspectConfig
+            InspectConfig = config
         };
 
         var response = dlp.InspectContent(request);
@@ -79,4 +81,5 @@ public class InspectStringCustomHotword
         return response;
     }
 }
-// [END dlp_inspect_string_custom_hotword]
+
+// [END dlp_inspect_string_with_exclusion_dict]
