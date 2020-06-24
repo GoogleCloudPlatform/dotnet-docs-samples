@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START run_events_pubsub_handler]
+
 using System;
 using System.IO;
 using System.Text;
@@ -22,7 +24,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 
-// [START run_events_pubsub_handler]
 public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
