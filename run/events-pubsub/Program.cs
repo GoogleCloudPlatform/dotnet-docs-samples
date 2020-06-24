@@ -16,29 +16,26 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace EventsPubSub
+public class Program
 {
-    public class Program
+    // [START run_events_pubsub_server]
+    public static void Main(string[] args)
     {
-        // [START run_events_pubsub_server]
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
-        // [END run_events_pubsub_server]
-
-        // [START run_events_pubsub_server_setup]
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            var url = $"http://0.0.0.0:{port}";
-
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>().UseUrls(url);
-                });
-        }
-        // [END run_events_pubsub_server_setup]
+        CreateHostBuilder(args).Build().Run();
     }
+    // [END run_events_pubsub_server]
+
+    // [START run_events_pubsub_server_setup]
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+        var url = $"http://0.0.0.0:{port}";
+
+        return Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>().UseUrls(url);
+            });
+    }
+    // [END run_events_pubsub_server_setup]
 }

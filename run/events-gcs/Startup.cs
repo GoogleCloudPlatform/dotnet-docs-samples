@@ -18,41 +18,38 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace EventsGcs
+// [START run_events_gcs_handler]
+public class Startup
 {
-    public class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
         {
+            app.UseDeveloperExceptionPage();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
         {
-            if (env.IsDevelopment())
+            endpoints.MapPost("/", async context =>
             {
-                app.UseDeveloperExceptionPage();
-            }
+                var ceSubject = context.Request.Headers["ce-subject"];
 
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                // [START run_events_gcs_handler]
-                endpoints.MapPost("/", async context =>
+                if (string.IsNullOrEmpty(ceSubject))
                 {
-                    var ceSubject = context.Request.Headers["ce-subject"];
+                    context.Response.StatusCode = 400;
+                    await context.Response.WriteAsync("Bad Request: expected header Ce-Subject");
+                    return;
+                }
 
-                    if (string.IsNullOrEmpty(ceSubject))
-                    {
-                        context.Response.StatusCode = 400;
-                        await context.Response.WriteAsync("Bad Request: expected header Ce-Subject");
-                        return;
-                    }
-
-                    await context.Response.WriteAsync($"GCS CloudEvent type: {ceSubject}");
-                });
-                // [END run_events_gcs_handler]
+                await context.Response.WriteAsync($"GCS CloudEvent type: {ceSubject}");
             });
-        }
+        });
     }
 }
+// [END run_events_gcs_handler]

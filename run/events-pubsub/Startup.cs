@@ -22,55 +22,52 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 
-namespace EventsPubSub
+// [START run_events_pubsub_handler]
+public class Startup
 {
-    public class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
         {
+            app.UseDeveloperExceptionPage();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
         {
-            if (env.IsDevelopment())
+            endpoints.MapPost("/", async context =>
             {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                // [START run_events_pubsub_handler]
-                endpoints.MapPost("/", async context =>
+                using (var reader = new StreamReader(context.Request.Body))
                 {
-                    using (var reader = new StreamReader(context.Request.Body))
+                    var body = await reader.ReadToEndAsync();
+                    dynamic cloudEventData = JsonConvert.DeserializeObject(body);
+                    if (cloudEventData == null)
                     {
-                        var body = await reader.ReadToEndAsync();
-                        dynamic cloudEventData = JsonConvert.DeserializeObject(body);
-                        if (cloudEventData == null)
-                        {
-                             context.Response.StatusCode = 400;
-                             await context.Response.WriteAsync("Bad request: No Pub/Sub message received");
-                             return;
-                        }
-
-                        dynamic pubSubMessage = cloudEventData["message"];
-                        if (pubSubMessage == null)
-                        {
-                             context.Response.StatusCode = 400;
-                             await context.Response.WriteAsync("Bad request: Invalid Pub/Sub message format");
-                             return;
-                        }
-
-                        var data = (string)pubSubMessage["data"];
-                        var name = Encoding.UTF8.GetString(Convert.FromBase64String(data));
-                        var id = context.Request.Headers["ce-id"];
-                        await context.Response.WriteAsync($"Hello {name}! ID: {id}");
+                            context.Response.StatusCode = 400;
+                            await context.Response.WriteAsync("Bad request: No Pub/Sub message received");
+                            return;
                     }
-                });
-                // [END run_events_pubsub_handler]
+
+                    dynamic pubSubMessage = cloudEventData["message"];
+                    if (pubSubMessage == null)
+                    {
+                            context.Response.StatusCode = 400;
+                            await context.Response.WriteAsync("Bad request: Invalid Pub/Sub message format");
+                            return;
+                    }
+
+                    var data = (string)pubSubMessage["data"];
+                    var name = Encoding.UTF8.GetString(Convert.FromBase64String(data));
+                    var id = context.Request.Headers["ce-id"];
+                    await context.Response.WriteAsync($"Hello {name}! ID: {id}");
+                }
             });
-        }
+        });
     }
 }
+// [END run_events_pubsub_handler]
