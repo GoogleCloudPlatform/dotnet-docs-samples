@@ -17,11 +17,11 @@
 using Google.Api.Gax;
 using Google.Cloud.Asset.V1;
 using System.Collections.Generic;
-
+using System.Linq;
 
 public class SearchAllResourcesSample
 {
-    public SearchAllResourcesResponse SearchAllResources(string scope, string query = "", string[] assetTypes = null, int pageSize = 0, string pageToken = "", string orderBy = "")
+    public SearchAllResourcesResponse SearchAllResources(string scope, string query = "", string[] assetTypes = null, int pageSize = 0, string orderBy = "")
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
@@ -32,7 +32,6 @@ public class SearchAllResourcesSample
             Scope = scope,
             Query = query,
             PageSize = pageSize,
-            PageToken = pageToken,
             OrderBy = orderBy,
         };
         request.AssetTypes.AddRange(assetTypes ?? new string[] { });
@@ -41,9 +40,8 @@ public class SearchAllResourcesSample
         PagedEnumerable<SearchAllResourcesResponse, ResourceSearchResult> response = client.SearchAllResources(request);
 
         // Return the first page.
-        IEnumerator<SearchAllResourcesResponse> enumerator = response.AsRawResponses().GetEnumerator();
-        enumerator.MoveNext();
-        return enumerator.Current;
+        IEnumerable<SearchAllResourcesResponse> byPages = response.AsRawResponses();
+        return byPages.First();
     }
 }
 // [END asset_quickstart_search_all_resources]

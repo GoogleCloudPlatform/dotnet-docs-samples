@@ -19,7 +19,6 @@ using Google.Cloud.Asset.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-
 public class BatchGetAssetsHistorySample
 {
     public BatchGetAssetsHistoryResponse BatchGetAssetsHistory(string[] assetNames, string projectId)

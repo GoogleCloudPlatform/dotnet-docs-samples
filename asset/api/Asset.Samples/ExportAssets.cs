@@ -18,12 +18,11 @@ using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Asset.V1;
 using System;
 
-
 public class ExportAssetsSample
 {
     public ExportAssetsResponse ExportAssets(string bucketName, string projectId)
     {
-        string assetDumpFile = String.Format("gs://{0}/my-assets.txt", bucketName);
+        string assetDumpFile = $"gs://{bucketName}/my-assets.txt";
         // Create the client
         AssetServiceClient client = AssetServiceClient.Create();
         // Build the request

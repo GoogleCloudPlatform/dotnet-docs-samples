@@ -17,11 +17,11 @@
 using Google.Api.Gax;
 using Google.Cloud.Asset.V1;
 using System.Collections.Generic;
-
+using System.Linq;
 
 public class SearchAllIamPoliciesSample
 {
-    public SearchAllIamPoliciesResponse SearchAllIamPolicies(string scope, string query = "", int pageSize = 0, string pageToken = "")
+    public SearchAllIamPoliciesResponse SearchAllIamPolicies(string scope, string query = "", int pageSize = 0)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
@@ -32,16 +32,14 @@ public class SearchAllIamPoliciesSample
             Scope = scope,
             Query = query,
             PageSize = pageSize,
-            PageToken = pageToken,
         };
 
         // Call the API.
         PagedEnumerable<SearchAllIamPoliciesResponse, IamPolicySearchResult> response = client.SearchAllIamPolicies(request);
 
         // Return the first page.
-        IEnumerator<SearchAllIamPoliciesResponse> enumerator = response.AsRawResponses().GetEnumerator();
-        enumerator.MoveNext();
-        return enumerator.Current;
+        IEnumerable<SearchAllIamPoliciesResponse> byPages = response.AsRawResponses();
+        return byPages.First();
     }
 }
 // [END asset_quickstart_search_all_iam_policies]
