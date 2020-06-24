@@ -12,7 +12,8 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START bigtable_reads_imports]
+
+// [START bigtable_reads_print]
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using System;
@@ -25,6 +26,8 @@ namespace Reads
 {
     public class ReadSnippets
     {
+        // Write your code here.
+        // [START_EXCLUDE]
         // [START bigtable_reads_row]
 
         /// <summary>
@@ -190,15 +193,7 @@ namespace Reads
         }
         // [END bigtable_reads_filter]
 
-        // [START bigtable_reads_row]
-        // [START bigtable_reads_row_partial]
-        // [START bigtable_reads_rows]
-        // [START bigtable_reads_row_range]
-        // [START bigtable_reads_row_ranges]
-        // [START bigtable_reads_prefix]
-        // [START bigtable_reads_filter]
-
-
+        // [END_EXCLUDE]
         public string printRow(Row row)
         {
             String result = $"Reading data for {row.Key.ToStringUtf8()}\n";
