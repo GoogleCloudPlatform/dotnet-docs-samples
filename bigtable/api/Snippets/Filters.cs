@@ -12,7 +12,8 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START bigtable_filters_imports]
+
+// [START bigtable_filters_print]
 
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
@@ -28,6 +29,9 @@ namespace Filters
     public class FilterSnippets
     {
 
+        
+        // Write your code here.
+        // [START_EXCLUDE]
         // [START bigtable_filters_limit_row_sample]
         /// <summary>
         /// /// Read using a row sample filter from an existing table.
@@ -329,7 +333,8 @@ namespace Filters
         }
         // [END bigtable_filters_composing_condition]
 
-        // [START bigtable_filters_print]
+
+        // [END_EXCLUDE]
         public string readFilter(string projectId, string instanceId, string tableId, RowFilter filter)
         {
             BigtableClient bigtableClient = BigtableClient.Create();
@@ -365,5 +370,5 @@ namespace Filters
             return result;
         }
     }
-    // [END bigtable_filters_print]
 }
+// [END bigtable_filters_print]
