@@ -14,6 +14,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -39,11 +40,12 @@ public class PublishBatchMessageTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        List<string> messageTexts = new List<string> { "Hello World!", "Good day.", "Bye bye." }.ToList();
+        List<string> messageTexts = new List<string> { "Hello World!", "Good day.", "Bye bye." };
 
         var output = await _publishBatchedMessagesAsyncSample.PublishBatchMessagesAsync(_pubsubFixture.ProjectId, topicId, messageTexts);
         Assert.Equal(messageTexts.Count, output);
 
+        await Task.Delay(1000);
         // Pull the Message to confirm it is valid
         var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
         Assert.True(result > 0);

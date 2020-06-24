@@ -37,7 +37,7 @@ public class PublishBatchedMessagesAsyncSample
             BatchingSettings = new BatchingSettings(
                 elementCountThreshold: 50,
                 byteCountThreshold: 10240,
-                delayThreshold: TimeSpan.FromSeconds(3))
+                delayThreshold: TimeSpan.FromMilliseconds(500))
         };
 
         PublisherClient publisher = await PublisherClient.CreateAsync(topicName, settings: customSettings);
@@ -53,7 +53,7 @@ public class PublishBatchedMessagesAsyncSample
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"An error ocurred when publishing message {text}: {exception.Message}");
+                Console.WriteLine($"An error occurred when publishing message {text}: {exception.Message}");
             }
         });
         await Task.WhenAll(publishTasks);
