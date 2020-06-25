@@ -21,7 +21,7 @@ using System.Linq;
 
 public class SearchAllIamPoliciesSample
 {
-    public SearchAllIamPoliciesResponse SearchAllIamPolicies(string scope, string query = "", int pageSize = 0)
+    public SearchAllIamPoliciesResponse SearchAllIamPolicies(string scope, string query)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
@@ -31,7 +31,6 @@ public class SearchAllIamPoliciesSample
         {
             Scope = scope,
             Query = query,
-            PageSize = pageSize,
         };
 
         // Call the API.

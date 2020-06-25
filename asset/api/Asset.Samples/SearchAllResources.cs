@@ -21,7 +21,7 @@ using System.Linq;
 
 public class SearchAllResourcesSample
 {
-    public SearchAllResourcesResponse SearchAllResources(string scope, string query = "", string[] assetTypes = null, int pageSize = 0, string orderBy = "")
+    public SearchAllResourcesResponse SearchAllResources(string scope, string query)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
@@ -31,10 +31,7 @@ public class SearchAllResourcesSample
         {
             Scope = scope,
             Query = query,
-            PageSize = pageSize,
-            OrderBy = orderBy,
         };
-        request.AssetTypes.AddRange(assetTypes ?? new string[] { });
 
         // Call the API.
         PagedEnumerable<SearchAllResourcesResponse, ResourceSearchResult> response = client.SearchAllResources(request);

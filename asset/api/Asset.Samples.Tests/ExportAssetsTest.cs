@@ -35,7 +35,6 @@ public class ExportAssetsTest
         // Run the sample code.
         var result = _sample.ExportAssets(_fixture.BucketName, _fixture.ProjectId);
 
-        string expectedOutput = String.Format("\"outputConfig\": {{ \"gcsDestination\": {{ \"uri\": \"gs://{0}/my-assets.txt\" }} }}", _fixture.BucketName);
-        Assert.Contains(expectedOutput, result.ToString());
+        Assert.Equal($"gs://{_fixture.BucketName}/my-assets.txt", result.OutputConfig.GcsDestination.Uri);
     }
 }
