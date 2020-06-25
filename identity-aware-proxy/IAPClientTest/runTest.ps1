@@ -12,5 +12,4 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Skipping because of: https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1040
-# dotnet test --test-adapter-path:. --logger:junit
+dotnet test --test-adapter-path:. --logger:junit

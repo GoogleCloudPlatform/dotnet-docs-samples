@@ -90,7 +90,7 @@ public class TriggersCreate
         var response = dlp.CreateJobTrigger(
             new CreateJobTriggerRequest
             {
-                ParentAsProjectName = new ProjectName(projectId),
+                Parent = new LocationName(projectId, "global").ToString(),
                 JobTrigger = jobTrigger,
                 TriggerId = triggerId
             });
