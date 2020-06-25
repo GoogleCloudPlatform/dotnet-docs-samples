@@ -101,14 +101,13 @@ namespace GoogleCloudSamples.Spanner
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
         }
 
-        public string ProjectId { get; private set; } =
-            Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         // Allow environment variables to override the default instance and database names.
         public string InstanceId { get; private set; } =
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
-        private static readonly string s_randomDatabaseName = "my-db-" + DateTime.UtcNow.ToTimestamp().Seconds;
-        private static readonly string s_randomToBeCancelledBackupName = "my-backup-" + DateTime.UtcNow.ToTimestamp().Seconds;
-        private static readonly string s_randomRestoredDatabaseName = "my-db-" + DateTime.UtcNow.AddMinutes(1).ToTimestamp().Seconds;
+        private static readonly string s_randomDatabaseName = $"my-db-{DateTime.UtcNow.ToTimestamp().Seconds}";
+        private static readonly string s_randomToBeCancelledBackupName = $"my-backup-{DateTime.UtcNow.ToTimestamp().Seconds}";
+        private static readonly string s_randomRestoredDatabaseName = $"my-db-{DateTime.UtcNow.AddMinutes(1).ToTimestamp().Seconds}";
         public string DatabaseId = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
         public string BackupDatabaseId = "my-test-database";
         public string BackupId = "my-test-database-backup";
