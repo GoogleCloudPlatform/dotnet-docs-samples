@@ -27,29 +27,36 @@ MY_PUBSUB_TRIGGER=pubsub-trigger
 
 ## Quickstart
 
+Set the Cloud Run region to one of the supported regions and platform:
+
+```sh
+gcloud config set run/region europe-west1
+gcloud config set run/platform managed
+```
+
 Deploy your Cloud Run service:
 
 ```sh
 gcloud builds submit \
- --tag gcr.io/$(gcloud config get-value project)/$MY_RUN_CONTAINER
-gcloud run deploy $MY_RUN_SERVICE \
- --image gcr.io/$(gcloud config get-value project)/$MY_RUN_CONTAINER \
+ --tag gcr.io/$(gcloud config get-value project)/${MY_RUN_CONTAINER}
+gcloud run deploy ${MY_RUN_SERVICE} \
+ --image gcr.io/$(gcloud config get-value project)/${MY_RUN_CONTAINER} \
  --allow-unauthenticated
 ```
 
 Create a Cloud Pub/Sub topic:
 
 ```sh
-gcloud pubsub topics create $MY_TOPIC
+gcloud pubsub topics create ${MY_TOPIC}
 ```
 
 Create a Cloud Pub/Sub trigger:
 
 ```sh
-gcloud alpha events triggers create $MY_PUBSUB_TRIGGER \
---target-service $MY_RUN_SERVICE \
+gcloud alpha events triggers create ${MY_PUBSUB_TRIGGER} \
+--target-service ${MY_RUN_SERVICE} \
 --type com.google.cloud.pubsub.topic.publish \
---parameters topic=$MY_TOPIC
+--parameters topic=${MY_TOPIC}
 ```
 
 ## Test
@@ -57,7 +64,7 @@ gcloud alpha events triggers create $MY_PUBSUB_TRIGGER \
 Test your Cloud Run service by publishing a message to the topic:
 
 ```sh
-gcloud pubsub topics publish $MY_TOPIC --message="John Doe"
+gcloud pubsub topics publish ${MY_TOPIC} --message="John Doe"
 ```
 
 You may observe the Cloud Run service printing upon receiving an event in
@@ -65,6 +72,6 @@ Cloud Logging.
 
 ```sh
 gcloud logging read "resource.type=cloud_run_revision AND \
-resource.labels.service_name=$MY_RUN_SERVICE" --project \
+resource.labels.service_name=${MY_RUN_SERVICE}" --project \
 $(gcloud config get-value project) --limit 30 --format 'value(textPayload)'
 ```
