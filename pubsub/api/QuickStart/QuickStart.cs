@@ -16,7 +16,6 @@
 
 using Google.Cloud.PubSub.V1;
 using System;
-using System.Diagnostics;
 
 namespace GoogleCloudSamples
 {
