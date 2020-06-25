@@ -108,7 +108,7 @@ namespace GoogleCloudSamples.Spanner
             Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
         private static readonly string s_randomDatabaseName = "my-db-" + DateTime.UtcNow.ToTimestamp().Seconds;
         private static readonly string s_randomToBeCancelledBackupName = "my-backup-" + DateTime.UtcNow.ToTimestamp().Seconds;
-        private static readonly string s_randomRestoredDatabaseName = "my-db-" + DateTime.UtcNow.ToTimestamp().Seconds;
+        private static readonly string s_randomRestoredDatabaseName = "my-db-" + DateTime.UtcNow.AddMinutes(1).ToTimestamp().Seconds;
         public string DatabaseId = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? s_randomDatabaseName;
         public string BackupDatabaseId = "my-test-database";
         public string BackupId = "my-test-database-backup";
