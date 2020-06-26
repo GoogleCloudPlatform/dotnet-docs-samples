@@ -34,5 +34,5 @@ public class Program
                 webBuilder.UseStartup<Startup>().UseUrls(url);
             });
     }
-    // [END run_events_gcs_server_setup]
+    // [END run_events_gcs_server]
 }
