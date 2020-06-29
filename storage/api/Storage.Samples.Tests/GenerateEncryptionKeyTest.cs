@@ -12,22 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.V1;
-using System;
+using Xunit;
 
-namespace Storage
+public class GenerateEncryptionKeyTest
 {
-    public class CreateBucket
+    [Fact]
+    public void GenerateEncryptionKey()
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+        var generateEncryptionKeySample = new GenerateEncryptionKeySample();
+        var key = generateEncryptionKeySample.GenerateEncryptionKey();
+        Assert.NotNull(key);
     }
 }

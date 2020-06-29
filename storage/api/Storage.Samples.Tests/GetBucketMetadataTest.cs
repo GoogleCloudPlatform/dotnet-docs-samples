@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.V1;
-using System;
+using Xunit;
 
-namespace Storage
+[Collection(nameof(BucketFixture))]
+public class GetBucketMetadataTest
 {
-    public class CreateBucket
+    private readonly BucketFixture _bucketFixture;
+
+    public GetBucketMetadataTest(BucketFixture bucketFixture)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+        _bucketFixture = bucketFixture;
+    }
+
+    [Fact]
+    public void GetBucketMetadata()
+    {
+        var getBucketMetadataSample = new GetBucketMetadataSample();
+        var metadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketName);
+        Assert.NotNull(metadata);
     }
 }

@@ -12,22 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
+// [START storage_generate_signed_url]
+
 using Google.Cloud.Storage.V1;
 using System;
 
-namespace Storage
+public class GenerateSignedUrlSample
 {
-    public class CreateBucket
+    public string GenerateSignedUrl(string bucketName, string objectName)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+        UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
+        string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), null);
+        Console.WriteLine(url);
+        return url;
     }
 }
+// [END storage_generate_signed_url]

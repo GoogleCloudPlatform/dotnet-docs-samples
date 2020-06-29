@@ -12,22 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
+// [START storage_copy_file]
+
 using Google.Cloud.Storage.V1;
 using System;
 
-namespace Storage
+public class CopyFileSample
 {
-    public class CreateBucket
+    public void CopyFile(string sourceBucketName, string sourceObjectName, string destBucketName, string destObjectName)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+        var storage = StorageClient.Create();
+        storage.CopyObject(sourceBucketName, sourceObjectName, destBucketName, destObjectName);
+
+        Console.WriteLine($"Copied {sourceBucketName}/{sourceObjectName} to " + $"{destBucketName}/{destObjectName}.");
     }
 }
+// [END storage_copy_file]

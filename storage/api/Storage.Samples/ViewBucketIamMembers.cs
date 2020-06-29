@@ -12,22 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_view_bucket_iam_members]
+
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
-namespace Storage
+public class ViewBucketIamMembersSample
 {
-    public class CreateBucket
+    public Policy ViewBucketIamMembers(string bucketName)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        var policy = storage.GetBucketIamPolicy(bucketName);
+        foreach (var binding in policy.Bindings)
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
+            Console.WriteLine($"  Role: {binding.Role}");
+            Console.WriteLine("  Members:");
+            foreach (var member in binding.Members)
+            {
+                Console.WriteLine($"    {member}");
+            }
         }
-        // [END storage_create_bucket]
+        return policy;
     }
 }
+// [END storage_view_bucket_iam_members]

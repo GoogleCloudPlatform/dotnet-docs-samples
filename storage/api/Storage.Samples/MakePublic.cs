@@ -12,22 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_make_public]
+
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
 
-namespace Storage
+public class MakePublicSample
 {
-    public class CreateBucket
+    public string MakePublic(string bucketName, string objectName)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        var storageObject = storage.GetObject(bucketName, objectName);
+        storageObject.Acl = storageObject.Acl ?? new List<ObjectAccessControl>();
+        storage.UpdateObject(storageObject, new UpdateObjectOptions
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+            PredefinedAcl = PredefinedObjectAcl.PublicRead
+        });
+        Console.WriteLine(objectName + " is now public and can be fetched from " + storageObject.MediaLink);
+
+        return storageObject.MediaLink;
     }
 }
+// [END storage_make_public]

@@ -12,22 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.V1;
-using System;
+// [START storage_generate_encryption_key]
 
-namespace Storage
+using Google.Cloud.Storage.V1;
+
+public class GenerateEncryptionKeySample
 {
-    public class CreateBucket
+    public string GenerateEncryptionKey()
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+        var encryptionKey = EncryptionKey.Generate().Base64Key;
+        return encryptionKey;
     }
 }
+// [END storage_generate_encryption_key]

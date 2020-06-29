@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
+// [START storage_get_requester_pays_status]
+
 using Google.Cloud.Storage.V1;
 using System;
 
-namespace Storage
+public class GetRequesterPaysStatusSample
 {
-    public class CreateBucket
+    public bool GetRequesterPaysStatus(string projectId, string bucketName)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+            UserProject = projectId
+        });
+        bool? requesterPaysOrNull = bucket.Billing?.RequesterPays;
+        bool requesterPays = requesterPaysOrNull.HasValue ? requesterPaysOrNull.Value : false;
+        Console.WriteLine("RequesterPays: {0}", requesterPays);
+        return requesterPays;
     }
 }
+// [END storage_get_requester_pays_status]

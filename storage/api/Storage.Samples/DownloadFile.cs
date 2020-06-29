@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
+// [START storage_download_file]
+
 using Google.Cloud.Storage.V1;
 using System;
+using System.IO;
 
-namespace Storage
+public class DownloadFileSample
 {
-    public class CreateBucket
+    public void DownloadFile(string bucketName, string objectName, string localPath = null)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        localPath = localPath ?? Path.GetFileName(objectName);
+        using (var outputFile = File.OpenWrite(localPath))
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
+            storage.DownloadObject(bucketName, objectName, outputFile);
         }
-        // [END storage_create_bucket]
+        Console.WriteLine($"Downloaded {objectName} to {localPath}.");
     }
 }
+// [END storage_download_file]

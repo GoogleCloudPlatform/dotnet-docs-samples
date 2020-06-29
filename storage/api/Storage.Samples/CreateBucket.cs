@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_create_bucket]
+// [START storage_quickstart]
+
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
-namespace Storage
+public class CreateBucketSample
 {
-    public class CreateBucket
+    public Bucket CreateBucket(string projectId, string bucketName)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+        var storage = StorageClient.Create();
+        var bucket = storage.CreateBucket(projectId, bucketName);
+        Console.WriteLine($"Created {bucketName}.");
+        return bucket;
     }
 }
+// [END storage_quickstart]
+// [END storage_create_bucket]

@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
+// [START storage_upload_file]
+
 using Google.Cloud.Storage.V1;
 using System;
+using System.IO;
 
-namespace Storage
+public class UploadFileSample
 {
-    public class CreateBucket
+    public void UploadFile(string bucketName, string localPath, string objectName = null)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        using (var f = File.OpenRead(localPath))
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
+            objectName = objectName ?? Path.GetFileName(localPath);
+            storage.UploadObject(bucketName, objectName, null, f);
+            Console.WriteLine($"Uploaded {objectName}.");
         }
-        // [END storage_create_bucket]
     }
 }
+// [END storage_upload_file]

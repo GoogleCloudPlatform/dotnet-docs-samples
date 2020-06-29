@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.V1;
-using System;
+using Xunit;
 
-namespace Storage
+[Collection(nameof(BucketFixture))]
+public class GetMetadataTest
 {
-    public class CreateBucket
+    private readonly BucketFixture _bucketFixture;
+
+    public GetMetadataTest(BucketFixture bucketFixture)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
-        {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+        _bucketFixture = bucketFixture;
+    }
+
+    [Fact]
+    public void GetMetadata()
+    {
+        GetMetadataSample getMetadataSample = new GetMetadataSample();
+        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketName, _bucketFixture.FileName);
+        Assert.NotNull(metadata);
     }
 }

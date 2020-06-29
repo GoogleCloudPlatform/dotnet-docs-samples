@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
+// [START storage_set_event_based_hold]
+
 using Google.Cloud.Storage.V1;
 using System;
 
-namespace Storage
+public class SetEventBasedHoldSample
 {
-    public class CreateBucket
+    public void SetEventBasedHold(string bucketName, string objectName)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        var storageObject = storage.GetObject(bucketName, objectName);
+        storageObject.EventBasedHold = true;
+        storage.UpdateObject(storageObject, new UpdateObjectOptions()
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
-        }
-        // [END storage_create_bucket]
+            // Use IfMetagenerationMatch to avoid race conditions.
+            IfMetagenerationMatch = storageObject.Metageneration
+        });
+        Console.WriteLine($"Event-based hold was set for {objectName}.");
     }
 }
+// [END storage_set_event_based_hold]

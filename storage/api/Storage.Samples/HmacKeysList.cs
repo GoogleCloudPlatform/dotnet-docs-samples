@@ -12,22 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_list_hmac_keys]
+
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
 
-namespace Storage
+public class ListHmacKeysSample
 {
-    public class CreateBucket
+    public IEnumerable<HmacKeyMetadata> ListHmacKeys(string projectId)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        var keys = storage.ListHmacKeys(projectId);
+
+        foreach (var metadata in keys)
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
+            Console.WriteLine($"Service Account Email: {metadata.ServiceAccountEmail}");
+            Console.WriteLine($"Access ID: {metadata.AccessId}");
         }
-        // [END storage_create_bucket]
+        return keys;
     }
 }
+// [END storage_list_hmac_keys]

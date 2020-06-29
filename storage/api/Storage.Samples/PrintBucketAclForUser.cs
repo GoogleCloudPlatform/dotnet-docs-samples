@@ -12,22 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_print_bucket_acl_for_user]
+
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Storage
+public class PrintBucketAclForUserSample
 {
-    public class CreateBucket
+    public IEnumerable<BucketAccessControl> PrintBucketAclForUser(string bucketName, string userEmail)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
+            Projection = Projection.Full
+        });
+
+        var bucketAclForUser = bucket.Acl.Where((acl) => acl.Entity == $"user-{userEmail}");
+        foreach (var acl in bucketAclForUser)
+        {
+            Console.WriteLine($"{acl.Role}:{acl.Entity}");
         }
-        // [END storage_create_bucket]
+
+        return bucketAclForUser;
     }
 }
+// [END storage_print_bucket_acl_for_user]

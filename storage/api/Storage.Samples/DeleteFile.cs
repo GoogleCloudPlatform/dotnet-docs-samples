@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
+// [START storage_delete_file]
+
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
 
-namespace Storage
+public class DeleteFileSample
 {
-    public class CreateBucket
+    public void DeleteFile(string bucketName, IEnumerable<string> objectNames)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        foreach (string objectName in objectNames)
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
+            storage.DeleteObject(bucketName, objectName);
+            Console.WriteLine($"Deleted {objectName}.");
         }
-        // [END storage_create_bucket]
     }
 }
+// [END storage_delete_file]

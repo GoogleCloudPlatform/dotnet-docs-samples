@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
+// [START storage_list_files]
+
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
 
-namespace Storage
+public class ListFilesSample
 {
-    public class CreateBucket
+    public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListFiles(string bucketName)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        var storageObjects = storage.ListObjects(bucketName, "");
+        foreach (var storageObject in storageObjects)
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
+            Console.WriteLine(storageObject.Name);
         }
-        // [END storage_create_bucket]
+
+        return storageObjects;
     }
 }
+// [END storage_list_files]

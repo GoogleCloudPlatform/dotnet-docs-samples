@@ -12,22 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START storage_print_bucket_default_acl]
+
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
 
-namespace Storage
+public class PrintBucketDefaultAclSample
 {
-    public class CreateBucket
+    public IEnumerable<ObjectAccessControl> PrintBucketDefaultAcl(string bucketName)
     {
-        // [START storage_create_bucket]
-        public static Bucket StorageCreateBucket(string projectId, string bucketName)
+        var storage = StorageClient.Create();
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
         {
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(projectId, bucketName);
-            Console.WriteLine($"Created {bucketName}.");
-            return bucket;
+            Projection = Projection.Full
+        });
+
+        foreach (var acl in bucket.DefaultObjectAcl)
+        {
+            Console.WriteLine($"{acl.Role}:{acl.Entity}");
         }
-        // [END storage_create_bucket]
+
+        return bucket.DefaultObjectAcl;
     }
 }
+// [END storage_print_bucket_default_acl]
