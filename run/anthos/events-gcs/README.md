@@ -25,6 +25,7 @@ MY_RUN_SERVICE=gcs-service
 MY_RUN_CONTAINER=gcs-container
 MY_GCS_TRIGGER=gcs-trigger
 MY_GCS_BUCKET=gcs-bucket-$(gcloud config get-value project)
+MY_GCS_REGION=europe-west1
 ```
 
 ## Quickstart
@@ -37,7 +38,7 @@ gcloud config set run/cluster_location europe-west1-b
 gcloud config set run/platform gke
 ```
 
-Deploy your Cloud Run service:
+Inside [events_gcs] folder, deploy your Cloud Run service:
 
 ```sh
 gcloud builds submit \
@@ -50,7 +51,7 @@ Create a bucket:
 
 ```sh
 gsutil mb -p $(gcloud config get-value project) \
-    -l $(gcloud config get-value run/region) \
+    -l ${MY_GCS_REGION} \
     gs://${MY_GCS_BUCKET}
 ```
 
@@ -82,10 +83,11 @@ gcloud alpha events triggers create ${MY_GCS_TRIGGER} \
 
 ## Test
 
-Test your Cloud Run service by publishing a message to the topic:
+Test your Cloud Run service by uploading a file to the bucket:
 
 ```sh
-gsutil defstorageclass set STANDARD gs://${MY_GCS_BUCKET}
+echo "Hello World" > random.txt
+gsutil cp random.txt gs://${MY_GCS_BUCKET}/random.txt
 ```
 
 Observe the Cloud Run service printing upon receiving an event in
@@ -96,3 +98,5 @@ gcloud logging read "resource.type=cloud_run_revision AND \
 resource.labels.service_name=${MY_RUN_SERVICE}" --project \
 $(gcloud config get-value project) --limit 30 --format 'value(textPayload)'
 ```
+
+[events_gcs]: ../../events-gcs
