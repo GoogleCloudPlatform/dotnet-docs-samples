@@ -147,8 +147,9 @@ namespace GoogleCloudSamples.Spanner
             var instanceName = InstanceName.FromProjectInstance(_fixture.ProjectId, _fixture.InstanceId);
             var databases = databaseAdminClient.ListDatabases(instanceName).Where(c => c.DatabaseName.DatabaseId.StartsWith("my-db-")).ToList();
             var databasesToDelete = new List<string>();
-            // delete all the databases created before 5 hrs.
-            var timestamp = DateTime.UtcNow.AddHours(-5).ToTimestamp().Seconds;
+
+            // Delete all the databases created before 4 hrs.
+            var timestamp = DateTime.UtcNow.AddHours(-4).ToTimestamp().Seconds;
             databases.ForEach(database =>
             {
                 var databaseId = database.DatabaseName.DatabaseId.Replace("my-db-", "");
@@ -160,7 +161,7 @@ namespace GoogleCloudSamples.Spanner
 
             Console.Out.WriteLineAsync($"{databasesToDelete.Count} old databases found.");
 
-            //get backups
+            // Get backups.
             ListBackupsRequest request = new ListBackupsRequest
             {
                 ParentAsInstanceName = instanceName,
@@ -168,12 +169,12 @@ namespace GoogleCloudSamples.Spanner
             };
             var backups = databaseAdminClient.ListBackups(request).ToList();
 
-            //backups for databases to delete.
+            // Backups that belong to the databases to be deleted.
             var backupsToDelete = backups.Where(c => databasesToDelete.Contains(DatabaseName.Parse(c.Database).DatabaseId)).ToList();
 
             Console.Out.WriteLineAsync($"{backupsToDelete.Count} old backups found.");
 
-            //delete the backups
+            // Delete the backups.
             backupsToDelete.ForEach(backup =>
             {
                 try
@@ -183,7 +184,7 @@ namespace GoogleCloudSamples.Spanner
                 catch (Exception) { }
             });
 
-            //delete the databases
+            // Delete the databases.
             databasesToDelete.ForEach(databaseId =>
             {
                 try
