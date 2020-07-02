@@ -23,9 +23,6 @@ public class Program
     {
         CreateHostBuilder(args).Build().Run();
     }
-    // [END run_events_gcs_server]
-
-    // [START run_events_gcs_server_setup]
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
         var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
@@ -37,5 +34,5 @@ public class Program
                 webBuilder.UseStartup<Startup>().UseUrls(url);
             });
     }
-    // [END run_events_gcs_server_setup]
+    // [END run_events_gcs_server]
 }
