@@ -111,6 +111,6 @@ for more information.
 [run_button_helloworld]: https://deploy.cloud.run/?git_repo=https://github.com/knative/docs&dir=docs/serving/samples/hello-world/helloworld-csharp
 [testing]: https://cloud.google.com/run/docs/testing/local#running_locally_using_docker_with_access_to_services
 [events_gcs]: events-gcs
-[anthos_events_gcs]: anthos/events-gcs
+[anthos_events_gcs]: events-gcs/anthos.md
 [events_pubsub]: events-pubsub
-[anthos_events_pubsub]: anthos/events-pubsub
+[anthos_events_pubsub]: events-pubsub/anthos.md

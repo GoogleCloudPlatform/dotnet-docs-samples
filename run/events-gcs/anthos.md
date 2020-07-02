@@ -38,7 +38,7 @@ gcloud config set run/cluster_location europe-west1-b
 gcloud config set run/platform gke
 ```
 
-Inside [events_gcs] folder, deploy your Cloud Run service:
+Deploy your Cloud Run service:
 
 ```sh
 gcloud builds submit \
@@ -98,5 +98,3 @@ gcloud logging read "resource.type=cloud_run_revision AND \
 resource.labels.service_name=${MY_RUN_SERVICE}" --project \
 $(gcloud config get-value project) --limit 30 --format 'value(textPayload)'
 ```
-
-[events_gcs]: ../../events-gcs
