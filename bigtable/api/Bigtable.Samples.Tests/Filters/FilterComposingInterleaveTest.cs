@@ -12,23 +12,23 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(BigtableClientFixture))]
-public class WriteBatchTest
+public class FilterComposingInterleaveTest
 {
     private readonly BigtableClientFixture _fixture;
-    public WriteBatchTest(BigtableClientFixture fixture)
+
+    public FilterComposingInterleaveTest(BigtableClientFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void WriteBatch()
+    public async void TestFilterComposingInterleave()
     {
-        WriteBatchSample writeBatch = new WriteBatchSample();
-        var result = writeBatch.WriteBatch(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
-        Assert.Equal(2, result.Count());
+        FilterComposingInterleaveAsyncSample filterComposingInterleaveAsyncSample = new FilterComposingInterleaveAsyncSample();
+        var result = await filterComposingInterleaveAsyncSample.FilterComposingInterleaveAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
+        Snapshooter.Xunit.Snapshot.Match(_fixture.GetRowsData(result));
     }
 }

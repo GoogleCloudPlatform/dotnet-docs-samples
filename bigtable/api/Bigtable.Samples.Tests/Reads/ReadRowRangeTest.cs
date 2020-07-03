@@ -12,19 +12,23 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START bigtable_reads_row]
+using Xunit;
 
-using Google.Cloud.Bigtable.Common.V2;
-using Google.Cloud.Bigtable.V2;
-
-public class ReadRowSample
+[Collection(nameof(BigtableClientFixture))]
+public class ReadRowRangeTest
 {
-    public Row ReadRow(string projectId, string instanceId, string tableId, string rowKey)
+    private readonly BigtableClientFixture _fixture;
+
+    public ReadRowRangeTest(BigtableClientFixture fixture)
     {
-        BigtableClient bigtableClient = BigtableClient.Create();
-        TableName tableName = new TableName(projectId, instanceId, tableId);
-        Row row = bigtableClient.ReadRow(tableName, rowKey);
-        return row;
+        _fixture = fixture;
+    }
+
+    [Fact]
+    public async void TestReadRowRange()
+    {
+        ReadRowRangeSample readRowRangeSample = new ReadRowRangeSample();
+        var result = await readRowRangeSample.ReadRowRangeAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
+        Snapshooter.Xunit.Snapshot.Match(_fixture.GetRowsData(result));
     }
 }
-// [END bigtable_reads_row]

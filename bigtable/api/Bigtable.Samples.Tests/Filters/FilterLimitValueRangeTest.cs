@@ -12,23 +12,23 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(BigtableClientFixture))]
-public class WriteBatchTest
+public class FilterLimitValueRangeTest
 {
     private readonly BigtableClientFixture _fixture;
-    public WriteBatchTest(BigtableClientFixture fixture)
+
+    public FilterLimitValueRangeTest(BigtableClientFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void WriteBatch()
+    public async void TestFilterLimitValueRange()
     {
-        WriteBatchSample writeBatch = new WriteBatchSample();
-        var result = writeBatch.WriteBatch(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
-        Assert.Equal(2, result.Count());
+        FilterLimitValueRangeAsyncSample filterLimitValueRangeAsyncSample = new FilterLimitValueRangeAsyncSample();
+        var result = await filterLimitValueRangeAsyncSample.FilterLimitValueRangeAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
+        Snapshooter.Xunit.Snapshot.Match(_fixture.GetRowsData(result));
     }
 }

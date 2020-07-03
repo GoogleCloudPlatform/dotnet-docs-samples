@@ -12,23 +12,23 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(BigtableClientFixture))]
-public class WriteBatchTest
+public class FilterLimitColFamilyRegexTest
 {
     private readonly BigtableClientFixture _fixture;
-    public WriteBatchTest(BigtableClientFixture fixture)
+
+    public FilterLimitColFamilyRegexTest(BigtableClientFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void WriteBatch()
+    public async void TestFilterLimitColFamilyRegex()
     {
-        WriteBatchSample writeBatch = new WriteBatchSample();
-        var result = writeBatch.WriteBatch(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
-        Assert.Equal(2, result.Count());
+        FilterLimitColFamilyRegexAsyncSample filterLimitColFamilyRegexAsyncSample = new FilterLimitColFamilyRegexAsyncSample();
+        var result = await filterLimitColFamilyRegexAsyncSample.FilterLimitColFamilyRegexAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
+        Snapshooter.Xunit.Snapshot.Match(_fixture.GetRowsData(result));
     }
 }

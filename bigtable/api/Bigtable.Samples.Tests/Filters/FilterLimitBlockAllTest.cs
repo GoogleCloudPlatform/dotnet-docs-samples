@@ -12,19 +12,23 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START bigtable_reads_row]
+using Xunit;
 
-using Google.Cloud.Bigtable.Common.V2;
-using Google.Cloud.Bigtable.V2;
-
-public class ReadRowSample
+[Collection(nameof(BigtableClientFixture))]
+public class FilterLimitBlockAllTest
 {
-    public Row ReadRow(string projectId, string instanceId, string tableId, string rowKey)
+    private readonly BigtableClientFixture _fixture;
+
+    public FilterLimitBlockAllTest(BigtableClientFixture fixture)
     {
-        BigtableClient bigtableClient = BigtableClient.Create();
-        TableName tableName = new TableName(projectId, instanceId, tableId);
-        Row row = bigtableClient.ReadRow(tableName, rowKey);
-        return row;
+        _fixture = fixture;
+    }
+
+    [Fact]
+    public async void TestFilterLimitBlockAll()
+    {
+        FilterLimitBlockAllAsyncSample filterLimitBlockAllAsyncSample = new FilterLimitBlockAllAsyncSample();
+        var result = await filterLimitBlockAllAsyncSample.BigtableFilterLimitBlockAllAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
+        Assert.Empty(result);
     }
 }
-// [END bigtable_reads_row]

@@ -17,11 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Filters\" />
-    <Folder Include="Reads\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Bigtable.Samples\Bigtable.Samples.csproj" />
   </ItemGroup>
 

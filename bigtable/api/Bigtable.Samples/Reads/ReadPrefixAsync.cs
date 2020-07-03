@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 public class ReadPrefixSample
 {
-    public static async Task<List<Row>> ReadPrefixAsync(string projectId, string instanceId, string tableId)
+    public async Task<List<Row>> ReadPrefixAsync(string projectId, string instanceId, string tableId)
     {
         BigtableClient bigtableClient = BigtableClient.Create();
         TableName tableName = TableName.FromProjectInstanceTable(projectId, instanceId, tableId);

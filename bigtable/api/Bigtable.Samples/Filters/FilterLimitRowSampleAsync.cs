@@ -31,8 +31,8 @@ public class FilterLimitRowSampleAsyncSample
     {
         BigtableClient bigtableClient = BigtableClient.Create();
 
-        // A filter that matches cells from a row with probability .75
-        RowFilter filter = RowFilters.RowSample(.75);
+        // A filter that matches cells from a row with probability .95
+        RowFilter filter = RowFilters.RowSample(.95);
         TableName tableName = TableName.FromProjectInstanceTable(projectId, instanceId, tableId);
         ReadRowsStream readRowsStream = bigtableClient.ReadRows(tableName, filter: filter);
         var enumerator = readRowsStream.GetAsyncEnumerator(default);

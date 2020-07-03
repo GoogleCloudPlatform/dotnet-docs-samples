@@ -12,23 +12,23 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(BigtableClientFixture))]
-public class WriteBatchTest
+public class FilterModifyStripValueTest
 {
     private readonly BigtableClientFixture _fixture;
-    public WriteBatchTest(BigtableClientFixture fixture)
+
+    public FilterModifyStripValueTest(BigtableClientFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void WriteBatch()
+    public async void TestFilterModifyStripValueTest()
     {
-        WriteBatchSample writeBatch = new WriteBatchSample();
-        var result = writeBatch.WriteBatch(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
-        Assert.Equal(2, result.Count());
+        FilterModifyStripValueAsyncSample filterModifyStripValueAsyncSample = new FilterModifyStripValueAsyncSample();
+        var result = await filterModifyStripValueAsyncSample.FilterModifyStripValueAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
+        Snapshooter.Xunit.Snapshot.Match(_fixture.GetRowsData(result));
     }
 }

@@ -28,13 +28,11 @@ public class FilterLimitTimestampRangeAsyncSample
     /// <param name="projectId">Your Google Cloud Project ID.</param>
     /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
     /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
-    public async Task<List<Row>> FilterLimitTimestampRangeAsync(string projectId, string instanceId, string tableId)
+    public async Task<List<Row>> FilterLimitTimestampRangeAsync(string projectId, string instanceId, string tableId, DateTime startTimestamp, DateTime endTimestamp)
     {
         BigtableClient bigtableClient = BigtableClient.Create();
 
-        // A filter that matches cells whose timestamp is from an hour ago or earlier
-        BigtableVersion timestamp_minus_hr = new BigtableVersion(new DateTime(2020, 1, 10, 13, 0, 0, DateTimeKind.Utc));
-        RowFilter filter = RowFilters.TimestampRange(new DateTime(0), timestamp_minus_hr.ToDateTime());
+        RowFilter filter = RowFilters.TimestampRange(startTimestamp, endTimestamp);
         TableName tableName = TableName.FromProjectInstanceTable(projectId, instanceId, tableId);
         ReadRowsStream readRowsStream = bigtableClient.ReadRows(tableName, filter: filter);
         var enumerator = readRowsStream.GetAsyncEnumerator(default);

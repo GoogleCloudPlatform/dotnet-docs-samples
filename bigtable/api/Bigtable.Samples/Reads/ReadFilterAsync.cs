@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 public class ReadFilterSample
 {
-    public static async Task<List<Row>> ReadFilterAsync(string projectId, string instanceId, string tableId)
+    public async Task<List<Row>> ReadFilterAsync(string projectId, string instanceId, string tableId)
     {
         BigtableClient bigtableClient = BigtableClient.Create();
         TableName tableName = TableName.FromProjectInstanceTable(projectId, instanceId, tableId);

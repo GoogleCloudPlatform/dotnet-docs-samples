@@ -12,23 +12,27 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System.Linq;
+using Google.Cloud.Bigtable.V2;
+using System;
 using Xunit;
 
 [Collection(nameof(BigtableClientFixture))]
-public class WriteBatchTest
+public class FilterLimitTimestampRangeTest
 {
     private readonly BigtableClientFixture _fixture;
-    public WriteBatchTest(BigtableClientFixture fixture)
+
+    public FilterLimitTimestampRangeTest(BigtableClientFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void WriteBatch()
+    public async void TestFilterLimitTimestampRange()
     {
-        WriteBatchSample writeBatch = new WriteBatchSample();
-        var result = writeBatch.WriteBatch(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
-        Assert.Equal(2, result.Count());
+        FilterLimitTimestampRangeAsyncSample filterLimitTimestampRangeAsyncSample = new FilterLimitTimestampRangeAsyncSample();
+        var timestamp = new DateTime(2020, 1, 10, 14, 0, 0, DateTimeKind.Utc);
+        var timestamp_minus_hr = new DateTime(2020, 1, 10, 13, 0, 0, DateTimeKind.Utc);
+        var result = await filterLimitTimestampRangeAsyncSample.FilterLimitTimestampRangeAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId, timestamp_minus_hr, timestamp);
+        Assert.True(result.Count >= 1);
     }
 }

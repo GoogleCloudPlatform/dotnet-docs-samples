@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 Google LLC.
+﻿// Copyright (c) 2020 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -31,8 +31,7 @@ public class WriteSimple
 
         Mutation[] mutations = {
             Mutations.SetCell(COLUMN_FAMILY, "connected_cell", 1, timestamp),
-            Mutations.SetCell(COLUMN_FAMILY, "connected_wifi", 1, timestamp),
-            Mutations.SetCell(COLUMN_FAMILY, "os_build", "PQ2A.190405.003", timestamp)
+            Mutations.SetCell(COLUMN_FAMILY, "os_build", "PQ3A.190405.003", timestamp)
         };
         MutateRowResponse mutateRowResponse = bigtableClient.MutateRow(tableName, rowkey, mutations);
         return mutateRowResponse;

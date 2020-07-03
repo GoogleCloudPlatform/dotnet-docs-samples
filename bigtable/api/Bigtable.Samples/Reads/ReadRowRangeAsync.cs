@@ -19,31 +19,28 @@ using Google.Cloud.Bigtable.V2;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Reads
+public class ReadRowRangeSample
 {
-    public class ReadRowRangeSample
+    public async Task<List<Row>> ReadRowRangeAsync(string projectId, string instanceId, string tableId)
     {
-        public static async Task<List<Row>> ReadRowRangeAsync(string projectId, string instanceId, string tableId)
+        string start = "phone#4c410523#20190501";
+        string end = "phone#4c410523#201906201";
+
+        BigtableClient bigtableClient = BigtableClient.Create();
+        TableName tableName = new TableName(projectId, instanceId, tableId);
+        RowSet rowSet = RowSet.FromRowRanges(RowRange.ClosedOpen(start, end));
+        ReadRowsStream readRowsStream = bigtableClient.ReadRows(tableName, rowSet);
+
+        var enumerator = readRowsStream.GetAsyncEnumerator(default);
+
+        var result = new List<Row>();
+        while (await enumerator.MoveNextAsync())
         {
-            string start = "phone#4c410523#20190501";
-            string end = "phone#4c410523#201906201";
-
-            BigtableClient bigtableClient = BigtableClient.Create();
-            TableName tableName = new TableName(projectId, instanceId, tableId);
-            RowSet rowSet = RowSet.FromRowRanges(RowRange.ClosedOpen(start, end));
-            ReadRowsStream readRowsStream = bigtableClient.ReadRows(tableName, rowSet);
-
-            var enumerator = readRowsStream.GetAsyncEnumerator(default);
-
-            var result = new List<Row>();
-            while (await enumerator.MoveNextAsync())
-            {
-                var row = enumerator.Current;
-                result.Add(row);
-            }
-            await enumerator.DisposeAsync();
-            return result;
+            var row = enumerator.Current;
+            result.Add(row);
         }
+        await enumerator.DisposeAsync();
+        return result;
     }
 }
 // [END bigtable_reads_row_range]
