@@ -70,7 +70,7 @@ public class InspectStringCustomExcludingSubstring
 
         var request = new InspectContentRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             Item = contentItem,
             InspectConfig = config
         };

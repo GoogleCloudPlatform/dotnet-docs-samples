@@ -28,7 +28,7 @@ public class TriggersList
         var response = dlp.ListJobTriggers(
             new ListJobTriggersRequest
             {
-                ParentAsProjectName = new ProjectName(projectId)
+                Parent = new LocationName(projectId, "global").ToString(),
             });
 
         foreach (var trigger in response)

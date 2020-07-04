@@ -51,7 +51,7 @@ public class JobsCreate
 
         var response = dlp.CreateDlpJob(new CreateDlpJobRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             InspectJob = new InspectJobConfig
             {
                 InspectConfig = inspectConfig,

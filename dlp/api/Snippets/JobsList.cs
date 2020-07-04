@@ -26,7 +26,7 @@ public class JobsList
 
         var response = dlp.ListDlpJobs(new ListDlpJobsRequest
         {
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
             Filter = filter,
             Type = jobType
         });

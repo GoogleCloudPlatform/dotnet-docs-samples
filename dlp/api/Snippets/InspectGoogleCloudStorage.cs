@@ -76,7 +76,7 @@ public class InspectGoogleCloudStorage
         var request = new CreateDlpJobRequest
         {
             InspectJob = inspectJob,
-            ParentAsProjectName = new ProjectName(projectId),
+            Parent = new LocationName(projectId, "global").ToString(),
         };
 
         // We need created job name
