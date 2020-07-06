@@ -30,6 +30,7 @@ namespace HelloWorld.Tests
             var request = new HttpRequestMessage
             {
                 RequestUri = new Uri("uri", System.UriKind.Relative),
+                // CloudEvent headers
                 Headers =
                 {
                     { "ce-type", "com.google.cloud.storage.object.finalized.v0" },
