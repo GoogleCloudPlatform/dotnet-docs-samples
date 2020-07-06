@@ -12,21 +12,22 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START bigtable_delete_instance]
+using Xunit;
 
-using Google.Cloud.Bigtable.Admin.V2;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-public class DeleteInstanceSample
+[Collection(nameof(BigtableInstanceAdminFixture))]
+public class ListInstancesTest
 {
-    public void DeleteInstance(string projectId, string instanceId)
+    private readonly BigtableInstanceAdminFixture _fixture;
+    public ListInstancesTest(BigtableInstanceAdminFixture fixture)
     {
-        BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
+        _fixture = fixture;
+    }
 
-        InstanceName instanceName = InstanceName.FromProjectInstance(projectId, instanceId);
-        bigtableInstanceAdminClient.DeleteInstance(instanceName);
+    [Fact]
+    public void TestListInstances()
+    {
+        ListInstancesSample listInstancesSample = new ListInstancesSample();
+        var instances = listInstancesSample.ListInstances(_fixture.ProjectId);
+        Assert.Contains(instances, c => c.InstanceName.InstanceId.Contains(_fixture.InstanceId));
     }
 }
-// [END bigtable_delete_instance]

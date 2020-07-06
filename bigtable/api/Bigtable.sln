@@ -29,6 +29,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstanceAdmin.Samples", "In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableAdmin.Samples", "TableAdmin.Samples\TableAdmin.Samples.csproj", "{BEECE045-C4BC-49CD-9E59-20437A322CA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstanceAdmin.Samples.Tests", "InstanceAdmin.Samples.Tests\InstanceAdmin.Samples.Tests.csproj", "{1FFD28E6-5578-4F4B-BB95-5DEA2A86052B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableAdmin.Samples.Tests", "TableAdmin.Samples.Tests\TableAdmin.Samples.Tests.csproj", "{78BC3E43-0877-4BDC-BD40-921F80D1170C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,14 @@ Global
 		{BEECE045-C4BC-49CD-9E59-20437A322CA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEECE045-C4BC-49CD-9E59-20437A322CA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BEECE045-C4BC-49CD-9E59-20437A322CA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FFD28E6-5578-4F4B-BB95-5DEA2A86052B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FFD28E6-5578-4F4B-BB95-5DEA2A86052B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FFD28E6-5578-4F4B-BB95-5DEA2A86052B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FFD28E6-5578-4F4B-BB95-5DEA2A86052B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78BC3E43-0877-4BDC-BD40-921F80D1170C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78BC3E43-0877-4BDC-BD40-921F80D1170C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78BC3E43-0877-4BDC-BD40-921F80D1170C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78BC3E43-0877-4BDC-BD40-921F80D1170C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
