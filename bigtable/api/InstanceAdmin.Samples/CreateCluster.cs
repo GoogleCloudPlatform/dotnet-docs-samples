@@ -25,14 +25,14 @@ public class CreateClusterSample
     {
         BigtableInstanceAdminClient bigtableInstanceAdminClient = BigtableInstanceAdminClient.Create();
 
-        // Please refer to the link below for the full list of availabel locations:
+        // Please refer to the link below for the full list of available locations:
         // https://cloud.google.com/bigtable/docs/locations
         string zone2 = "us-east1-d";
 
         // Create an additional cluster with cluster id "ssd-cluster2" with 3 nodes and location us-east1-d.
         // Additional cluster can only be created in PRODUCTION type instance.
         // Additional cluster must have same storage type as existing cluster.
-        // Please read about routing_policy for more information on mutli cluster instances.
+        // Please read about routing_policy for more information on multi cluster instances.
         // https://cloud.google.com/bigtable/docs/reference/admin/rpc/google.bigtable.admin.v2#google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
         // Cluster to be created within the instance.
         Cluster myCluster2 = new Cluster

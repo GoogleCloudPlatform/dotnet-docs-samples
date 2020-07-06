@@ -21,12 +21,6 @@ using System.Threading.Tasks;
 
 public class FilterLimitCellsPerRowOffsetAsyncSample
 {
-    /// <summary>
-    /// Read using a cells per row offset filter from an existing table.
-    ///</summary>
-    /// <param name="projectId">Your Google Cloud Project ID.</param>
-    /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
-    /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
     public async Task<List<Row>> FilterLimitCellsPerRowOffsetAsync(string projectId, string instanceId, string tableId)
     {
         BigtableClient bigtableClient = BigtableClient.Create();

@@ -19,6 +19,7 @@ using Xunit;
 public class CreateMaxVersionsFamilyTest
 {
     private readonly BigtableTableAdminFixture _fixture;
+
     public CreateMaxVersionsFamilyTest(BigtableTableAdminFixture fixture)
     {
         _fixture = fixture;

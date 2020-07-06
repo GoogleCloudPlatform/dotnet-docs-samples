@@ -19,6 +19,7 @@ using Xunit;
 public class DeleteTableTest
 {
     private readonly BigtableTableAdminFixture _fixture;
+
     public DeleteTableTest(BigtableTableAdminFixture fixture)
     {
         _fixture = fixture;

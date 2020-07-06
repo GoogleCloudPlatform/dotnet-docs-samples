@@ -19,7 +19,7 @@ using Xunit;
 public class BigtableTableAdminFixture : IDisposable, ICollectionFixture<BigtableTableAdminFixture>
 {
     public string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    public string InstanceId { get; private set; } = Environment.GetEnvironmentVariable("TEST_BIGTABLE_INSTANCE") ?? "lalji-test-instance";
+    public string InstanceId { get; private set; } = Environment.GetEnvironmentVariable("TEST_BIGTABLE_INSTANCE") ?? "my-instance";
     public string TableId { get; private set; } = $"my-table-{Guid.NewGuid().ToString().Substring(0, 8)}";
 
     public BigtableTableAdminFixture()

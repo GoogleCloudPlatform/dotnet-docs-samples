@@ -24,7 +24,7 @@ using Xunit;
 public class BigtableClientFixture : IDisposable, ICollectionFixture<BigtableClientFixture>
 {
     public string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    public string InstanceId { get; private set; } = "lalji-test-instance";    // Environment.GetEnvironmentVariable("TEST_BIGTABLE_INSTANCE");
+    public string InstanceId { get; private set; } = Environment.GetEnvironmentVariable("TEST_BIGTABLE_INSTANCE") ?? "my-instance";
     public string TableId { get; private set; } = $"mobile-time-series-{Guid.NewGuid().ToString().Substring(0, 8)}";
 
     public BigtableClientFixture()

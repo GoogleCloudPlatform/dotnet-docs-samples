@@ -18,6 +18,7 @@ using Xunit;
 public class CreateNestedFamilyTest
 {
     private readonly BigtableTableAdminFixture _fixture;
+
     public CreateNestedFamilyTest(BigtableTableAdminFixture fixture)
     {
         _fixture = fixture;

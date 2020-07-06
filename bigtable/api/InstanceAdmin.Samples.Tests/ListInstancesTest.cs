@@ -18,6 +18,7 @@ using Xunit;
 public class ListInstancesTest
 {
     private readonly BigtableInstanceAdminFixture _fixture;
+
     public ListInstancesTest(BigtableInstanceAdminFixture fixture)
     {
         _fixture = fixture;

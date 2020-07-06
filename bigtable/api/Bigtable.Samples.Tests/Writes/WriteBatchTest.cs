@@ -19,6 +19,7 @@ using Xunit;
 public class WriteBatchTest
 {
     private readonly BigtableClientFixture _fixture;
+
     public WriteBatchTest(BigtableClientFixture fixture)
     {
         _fixture = fixture;

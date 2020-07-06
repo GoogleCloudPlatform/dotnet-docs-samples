@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2020 Google LLC.
+// Copyright (c) 2020 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -19,6 +19,7 @@ using Xunit;
 public class UpdateFamilyTest
 {
     private readonly BigtableTableAdminFixture _fixture;
+
     public UpdateFamilyTest(BigtableTableAdminFixture fixture)
     {
         _fixture = fixture;
@@ -30,7 +31,7 @@ public class UpdateFamilyTest
         CreateMaxAgeFamilySample createMaxAgeFamilySample = new CreateMaxAgeFamilySample();
         UpdateFamilySample updateFamilySample = new UpdateFamilySample();
         DeleteFamilySample deleteFamilySample = new DeleteFamilySample();
-        
+
         // Create max age family.
         createMaxAgeFamilySample.CreateMaxAgeFamily(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
 
@@ -38,7 +39,7 @@ public class UpdateFamilyTest
         var table = updateFamilySample.UpdateFamily(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId);
 
         Assert.DoesNotContain(table.ColumnFamilies, c => c.Value.GcRule.RuleCase == GcRule.RuleOneofCase.MaxAge);
-        
+
         deleteFamilySample.DeleteFamily(_fixture.ProjectId, _fixture.InstanceId, _fixture.TableId, "cf1");
     }
 }

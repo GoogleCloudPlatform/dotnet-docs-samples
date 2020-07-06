@@ -19,6 +19,7 @@ using Xunit;
 public class CreateMaxAgeFamilyTest
 {
     private readonly BigtableTableAdminFixture _fixture;
+
     public CreateMaxAgeFamilyTest(BigtableTableAdminFixture fixture)
     {
         _fixture = fixture;

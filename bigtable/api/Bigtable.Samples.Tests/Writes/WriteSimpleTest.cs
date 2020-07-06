@@ -20,6 +20,7 @@ using Xunit;
 public class WriteSimpleTest
 {
     private readonly BigtableClientFixture _fixture;
+
     public WriteSimpleTest(BigtableClientFixture fixture)
     {
         _fixture = fixture;

@@ -22,12 +22,6 @@ using System.Threading.Tasks;
 
 public class FilterLimitTimestampRangeAsyncSample
 {
-    /// <summary>
-    /// Read using a timestamp range filter from an existing table.
-    ///</summary>
-    /// <param name="projectId">Your Google Cloud Project ID.</param>
-    /// <param name="instanceId">Your Google Cloud Bigtable Instance ID.</param>
-    /// <param name="tableId">Your Google Cloud Bigtable table ID.</param>
     public async Task<List<Row>> FilterLimitTimestampRangeAsync(string projectId, string instanceId, string tableId, DateTime startTimestamp, DateTime endTimestamp)
     {
         BigtableClient bigtableClient = BigtableClient.Create();

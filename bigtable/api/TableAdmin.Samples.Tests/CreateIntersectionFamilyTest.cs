@@ -19,6 +19,7 @@ using Xunit;
 public class CreateIntersectionFamilyTest
 {
     private readonly BigtableTableAdminFixture _fixture;
+
     public CreateIntersectionFamilyTest(BigtableTableAdminFixture fixture)
     {
         _fixture = fixture;

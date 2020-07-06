@@ -19,6 +19,7 @@ using Xunit;
 public class CreateUnionFamilyTest
 {
     private readonly BigtableTableAdminFixture _fixture;
+
     public CreateUnionFamilyTest(BigtableTableAdminFixture fixture)
     {
         _fixture = fixture;
