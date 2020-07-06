@@ -16,9 +16,6 @@
 
 using Google.Cloud.Bigtable.Admin.V2;
 using Google.Cloud.Bigtable.Common.V2;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 public class DeleteTableSample
 {

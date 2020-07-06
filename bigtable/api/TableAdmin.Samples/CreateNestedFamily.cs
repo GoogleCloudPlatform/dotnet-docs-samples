@@ -19,7 +19,6 @@ using Google.Cloud.Bigtable.Common.V2;
 using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 public class CreateNestedFamilySample
 {

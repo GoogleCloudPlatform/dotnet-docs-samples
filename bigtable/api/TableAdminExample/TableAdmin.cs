@@ -17,11 +17,9 @@ using System.Collections.Generic;
 using System.Linq;
 using CommandLine;
 using Google.Api.Gax;
-using Google.LongRunning;
 using Google.Cloud.Bigtable.Admin.V2;
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
 
 namespace GoogleCloudSamples.Bigtable
 {

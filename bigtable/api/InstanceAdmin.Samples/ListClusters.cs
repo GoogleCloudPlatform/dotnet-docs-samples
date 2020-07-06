@@ -15,9 +15,7 @@
 // [START bigtable_list_clusters]
 
 using Google.Cloud.Bigtable.Admin.V2;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 public class ListClustersSample
 {

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bigtable.Samples\Bigtable.Samples.csproj" />
+    <ProjectReference Include="..\HelloWorld\HelloWorld.csproj" />
   </ItemGroup>
 
 </Project>

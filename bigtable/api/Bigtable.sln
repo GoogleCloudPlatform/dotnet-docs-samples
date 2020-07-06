@@ -11,27 +11,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InstanceAdmin", "InstanceAd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableAdmin", "TableAdminExample\TableAdmin.csproj", "{32FA2C3F-5105-4C2F-A857-2EA3AC6C55FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineUtil", "..\..\commandlineutil\Lib\CommandLineUtil.csproj", "{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnippetsTest", "SnippetsTest\SnippetsTest.csproj", "{045E33DF-ACD9-4B6B-8379-360D20E3AFF7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snippets", "Snippets\Snippets.csproj", "{F146B528-BFAF-44FD-BC1E-FBAC59FA2969}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigtableTest", "BigtableTest\BigtableTest.csproj", "{873226A7-8526-4012-8182-FF0DB755FEE7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "testutil", "..\..\testutil\testutil.csproj", "{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bigtable.Samples.Tests", "Bigtable.Samples.Tests\Bigtable.Samples.Tests.csproj", "{457802B5-6E82-4310-996A-893ABE29DBBA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bigtable.Samples", "Bigtable.Samples\Bigtable.Samples.csproj", "{7FDB4B62-5A06-48E1-88DB-17EC25095DFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstanceAdmin.Samples", "InstanceAdmin.Samples\InstanceAdmin.Samples.csproj", "{29FB1FD3-C59D-47BA-BE53-18B760E6F484}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InstanceAdmin.Samples", "InstanceAdmin.Samples\InstanceAdmin.Samples.csproj", "{29FB1FD3-C59D-47BA-BE53-18B760E6F484}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableAdmin.Samples", "TableAdmin.Samples\TableAdmin.Samples.csproj", "{BEECE045-C4BC-49CD-9E59-20437A322CA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableAdmin.Samples", "TableAdmin.Samples\TableAdmin.Samples.csproj", "{BEECE045-C4BC-49CD-9E59-20437A322CA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstanceAdmin.Samples.Tests", "InstanceAdmin.Samples.Tests\InstanceAdmin.Samples.Tests.csproj", "{1FFD28E6-5578-4F4B-BB95-5DEA2A86052B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InstanceAdmin.Samples.Tests", "InstanceAdmin.Samples.Tests\InstanceAdmin.Samples.Tests.csproj", "{1FFD28E6-5578-4F4B-BB95-5DEA2A86052B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableAdmin.Samples.Tests", "TableAdmin.Samples.Tests\TableAdmin.Samples.Tests.csproj", "{78BC3E43-0877-4BDC-BD40-921F80D1170C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableAdmin.Samples.Tests", "TableAdmin.Samples.Tests\TableAdmin.Samples.Tests.csproj", "{78BC3E43-0877-4BDC-BD40-921F80D1170C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineUtil", "..\..\commandlineutil\Lib\CommandLineUtil.csproj", "{CCEBBAD3-77E6-4C11-A416-8FCB6EC5D8B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,26 +49,10 @@ Global
 		{32FA2C3F-5105-4C2F-A857-2EA3AC6C55FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32FA2C3F-5105-4C2F-A857-2EA3AC6C55FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32FA2C3F-5105-4C2F-A857-2EA3AC6C55FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA9F90AA-F994-49DB-9520-B1D1B31A84D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{045E33DF-ACD9-4B6B-8379-360D20E3AFF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{045E33DF-ACD9-4B6B-8379-360D20E3AFF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{045E33DF-ACD9-4B6B-8379-360D20E3AFF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{045E33DF-ACD9-4B6B-8379-360D20E3AFF7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F146B528-BFAF-44FD-BC1E-FBAC59FA2969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F146B528-BFAF-44FD-BC1E-FBAC59FA2969}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F146B528-BFAF-44FD-BC1E-FBAC59FA2969}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F146B528-BFAF-44FD-BC1E-FBAC59FA2969}.Release|Any CPU.Build.0 = Release|Any CPU
-		{873226A7-8526-4012-8182-FF0DB755FEE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{873226A7-8526-4012-8182-FF0DB755FEE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{873226A7-8526-4012-8182-FF0DB755FEE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{873226A7-8526-4012-8182-FF0DB755FEE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{050F6CF9-711B-4AA9-A7E7-213F881CC4D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{457802B5-6E82-4310-996A-893ABE29DBBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{457802B5-6E82-4310-996A-893ABE29DBBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{457802B5-6E82-4310-996A-893ABE29DBBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -99,6 +77,10 @@ Global
 		{78BC3E43-0877-4BDC-BD40-921F80D1170C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78BC3E43-0877-4BDC-BD40-921F80D1170C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78BC3E43-0877-4BDC-BD40-921F80D1170C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCEBBAD3-77E6-4C11-A416-8FCB6EC5D8B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCEBBAD3-77E6-4C11-A416-8FCB6EC5D8B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCEBBAD3-77E6-4C11-A416-8FCB6EC5D8B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCEBBAD3-77E6-4C11-A416-8FCB6EC5D8B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

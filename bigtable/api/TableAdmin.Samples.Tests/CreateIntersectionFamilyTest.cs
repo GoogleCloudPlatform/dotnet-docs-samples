@@ -13,8 +13,6 @@
 // the License.
 
 using Google.Cloud.Bigtable.Admin.V2;
-using System;
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(BigtableTableAdminFixture))]

@@ -15,9 +15,6 @@
 // [START bigtable_get_instance]
 
 using Google.Cloud.Bigtable.Admin.V2;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 public class GetInstanceSample
 {

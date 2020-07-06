@@ -18,8 +18,6 @@ using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Bigtable.Admin.V2;
 using Google.LongRunning;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 public class CreateClusterSample
 {

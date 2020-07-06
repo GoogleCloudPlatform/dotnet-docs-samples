@@ -1,4 +1,4 @@
-# Copyright(c) 2018 Google Inc.
+# Copyright(c) 2020 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -12,16 +12,4 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
-
-Require-Platform Win*
-Set-TestTimeout 600
-
-BackupAndEdit-TextFile "..\QuickStart\QuickStart.cs", "..\HelloWorld\HelloWorld.cs", "..\TableAdminExample\TableAdmin.cs",  "..\InstanceAdminExample\InstanceAdmin.cs" `
-    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID;
-    "YOUR-INSTANCE-ID" = $env:TEST_BIGTABLE_INSTANCE;} `
-{
-    dotnet restore
-    dotnet build
-    dotnet test --test-adapter-path:. --logger:junit -v n
-}
+dotnet test --test-adapter-path:. --logger:junit
