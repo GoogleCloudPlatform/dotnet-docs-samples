@@ -2016,11 +2016,11 @@ namespace GoogleCloudSamples.Spanner
             // Make the request.
             using (var connection = new SpannerConnection(connectionString))
             {
-                await DeleteTable(connection, "UpcomingAlbums");
-                await DeleteTable(connection, "UpcomingSingers");
+                await DeleteTableAsync(connection, "UpcomingAlbums");
+                await DeleteTableAsync(connection, "UpcomingSingers");
                 return 0;
             }
-            async Task DeleteTable(SpannerConnection connection, string table)
+            async Task DeleteTableAsync(SpannerConnection connection, string table)
             {
                 try
                 {
