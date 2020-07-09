@@ -18,6 +18,7 @@
 
 using Google.Cloud.SecurityCenter.V1;
 using Google.Protobuf.WellKnownTypes;
+using static NotificationConfig.Types;
 using System;
 
 /// <summary>Snippet for UpdateNotificationConfig</summary>
