@@ -15,23 +15,23 @@
 // [START functions_helloworld_storage]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
-using Google.Cloud.Functions.Framework.GcfEvents;
+using Google.Events.SystemTextJson.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace HelloGcs
 {
-    public class Function : ICloudEventFunction<StorageObject>
+    public class Function : ICloudEventFunction<StorageObjectData>
     {
         private readonly ILogger _logger;
 
         public Function(ILogger<Function> logger) =>
             _logger = logger;
        
-        public Task HandleAsync(CloudEvent cloudEvent, StorageObject data, CancellationToken cancellationToken)
+        public Task HandleAsync(CloudEvent cloudEvent, StorageObjectData data, CancellationToken cancellationToken)
         {
-            if (cloudEvent.Type == "com.google.cloud.storage.object.finalized.v0")
+            if (cloudEvent.Type == StorageObjectData.FinalizedCloudEventType)
             {
                 // Default event type for GCS-triggered functions
                 _logger.LogInformation("File {name} uploaded", data.Name);
