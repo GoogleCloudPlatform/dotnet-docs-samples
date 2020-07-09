@@ -5,6 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Functions.Invoker" Version="1.0.0-alpha07" />
+    <PackageReference Include="Google.Cloud.Functions.Invoker" Version="1.0.0-alpha08" />
   </ItemGroup>
 </Project>
