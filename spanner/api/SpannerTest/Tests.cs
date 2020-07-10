@@ -100,14 +100,14 @@ namespace GoogleCloudSamples.Spanner
             catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound) { }
         }
 
-        public string ProjectId { get; private set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        public string ProjectId { get; set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         // Allow environment variables to override the default instance and database names.
-        public string InstanceId { get; private set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
-        public string DatabaseId = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
-        public string BackupDatabaseId = "my-test-database";
-        public string BackupId = "my-test-database-backup";
-        public string ToBeCancelledBackupId = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
-        public string RestoredDatabaseId = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        public string InstanceId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
+        public string DatabaseId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        public string BackupDatabaseId { get; set; } = "my-test-database";
+        public string BackupId { get; set; } = "my-test-database-backup";
+        public string ToBeCancelledBackupId { get; set; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        public string RestoredDatabaseId { get; set; } = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
         public bool s_initializedDatabase { get; set; } = false;
     }
 
@@ -145,7 +145,7 @@ namespace GoogleCloudSamples.Spanner
             var databasesToDelete = new List<string>();
 
             // Delete all the databases created before 4 hrs.
-            var timestamp = DateTimeOffset.UtcNow.AddHours(-4).ToUnixTimeSeconds();
+            var timestamp = DateTimeOffset.UtcNow.AddHours(-4).ToUnixTimeMilliseconds();
             foreach (var database in databases)
             {
                 var databaseId = database.DatabaseName.DatabaseId.Replace("my-restore-db-", "").Replace("my-db-", "");
@@ -266,6 +266,18 @@ namespace GoogleCloudSamples.Spanner
                 if (e.ToString().Contains("Backup already exists"))
                 {
                     Console.WriteLine($"Backup {_fixture.BackupId} already exists.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (RpcException e) when (e.StatusCode == StatusCode.FailedPrecondition)
+            {
+                // it's ok backup has been in progress in another test cycle.
+                if (e.Message.Contains("maximum number of pending backups (1) for the database has been reached"))
+                {
+                    Console.WriteLine($"Backup {_fixture.BackupId} already in progress.");
                 }
                 else
                 {
@@ -802,7 +814,7 @@ namespace GoogleCloudSamples.Spanner
         void TestCancelBackup()
         {
             ConsoleOutput output = _spannerCmd.Run("cancelBackupOperation",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.BackupDatabaseId,
+                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId,
                 _fixture.ToBeCancelledBackupId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Create backup operation cancelled", output.Stdout);
