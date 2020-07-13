@@ -22,37 +22,45 @@ Configure environment variables:
 MY_RUN_SERVICE=gcs-service
 MY_RUN_CONTAINER=gcs-container
 MY_GCS_TRIGGER=gcs-trigger
-MY_GCS_BUCKET=gcs-bucket
+MY_GCS_BUCKET=gcs-bucket-$(gcloud config get-value project)
 ```
 
 ## Quickstart
+
+Set the Cloud Run region to one of the supported regions and platform:
+
+```sh
+gcloud config set run/region europe-west1
+gcloud config set run/platform managed
+```
 
 Deploy your Cloud Run service:
 
 ```sh
 gcloud builds submit \
- --tag gcr.io/$(gcloud config get-value project)/$MY_RUN_CONTAINER
-gcloud run deploy $MY_RUN_SERVICE \
- --image gcr.io/$(gcloud config get-value project)/$MY_RUN_CONTAINER \
+ --tag gcr.io/$(gcloud config get-value project)/${MY_RUN_CONTAINER}
+gcloud run deploy ${MY_RUN_SERVICE} \
+ --image gcr.io/$(gcloud config get-value project)/${MY_RUN_CONTAINER} \
  --allow-unauthenticated
 ```
 
 Create a bucket:
 
 ```sh
-gsutil mb -p $(gcloud config get-value project) -l \
-us-central1 gs://"$MY_GCS_BUCKET"
+gsutil mb -p $(gcloud config get-value project) \
+    -l $(gcloud config get-value run/region) \
+    gs://${MY_GCS_BUCKET}
 ```
 
 Create Cloud Storage trigger:
 
 ```sh
-gcloud alpha events triggers create $MY_GCS_TRIGGER \
- --target-service "$MY_RUN_SERVICE" \
+gcloud alpha events triggers create ${MY_GCS_TRIGGER} \
+ --target-service ${MY_RUN_SERVICE} \
  --type com.google.cloud.auditlog.event \
  --parameters methodName=storage.buckets.update \
  --parameters serviceName=storage.googleapis.com \
- --parameters resourceName=projects/_/buckets/"$MY_GCS_BUCKET"
+ --parameters resourceName=projects/_/buckets/${MY_GCS_BUCKET}
 ```
 
 ## Test
@@ -60,7 +68,7 @@ gcloud alpha events triggers create $MY_GCS_TRIGGER \
 Test your Cloud Run service by publishing a message to the topic:
 
 ```sh
-gsutil defstorageclass set STANDARD gs://$MY_GCS_BUCKET
+gsutil defstorageclass set STANDARD gs://${MY_GCS_BUCKET}
 ```
 
 Observe the Cloud Run service printing upon receiving an event in
@@ -68,6 +76,6 @@ Cloud Logging:
 
 ```sh
 gcloud logging read "resource.type=cloud_run_revision AND \
-resource.labels.service_name=$MY_RUN_SERVICE" --project \
+resource.labels.service_name=${MY_RUN_SERVICE}" --project \
 $(gcloud config get-value project) --limit 30 --format 'value(textPayload)'
 ```

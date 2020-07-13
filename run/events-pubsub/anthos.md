@@ -1,6 +1,8 @@
-# Events for Cloud Run – Pub/Sub tutorial
+# Events for Cloud Run on Anthos – Pub/Sub tutorial
 
-This sample shows how to create a service that processes Pub/Sub events.
+This sample shows how to create a service that processes Pub/Sub events on Anthos.
+It is assumed that you already created a GKE cluster with Events for Cloud Run
+already installed.
 
 ## Setup
 
@@ -27,11 +29,12 @@ MY_PUBSUB_TRIGGER=pubsub-trigger
 
 ## Quickstart
 
-Set the Cloud Run region to one of the supported regions and platform:
+Set cluster name, location and platform:
 
 ```sh
-gcloud config set run/region europe-west1
-gcloud config set run/platform managed
+gcloud config set run/cluster events-cluster
+gcloud config set run/cluster_location europe-west1-b
+gcloud config set run/platform gke
 ```
 
 Deploy your Cloud Run service:
@@ -40,8 +43,7 @@ Deploy your Cloud Run service:
 gcloud builds submit \
  --tag gcr.io/$(gcloud config get-value project)/${MY_RUN_CONTAINER}
 gcloud run deploy ${MY_RUN_SERVICE} \
- --image gcr.io/$(gcloud config get-value project)/${MY_RUN_CONTAINER} \
- --allow-unauthenticated
+ --image gcr.io/$(gcloud config get-value project)/${MY_RUN_CONTAINER}
 ```
 
 Create a Cloud Pub/Sub topic:
@@ -54,9 +56,10 @@ Create a Cloud Pub/Sub trigger:
 
 ```sh
 gcloud alpha events triggers create ${MY_PUBSUB_TRIGGER} \
---target-service ${MY_RUN_SERVICE} \
---type com.google.cloud.pubsub.topic.publish \
---parameters topic=${MY_TOPIC}
+  --source CloudPubSubSource \
+  --target-service ${MY_RUN_SERVICE} \
+  --type com.google.cloud.pubsub.topic.publish \
+  --parameters topic=${MY_TOPIC}
 ```
 
 ## Test
