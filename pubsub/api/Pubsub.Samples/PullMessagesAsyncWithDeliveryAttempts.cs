@@ -24,20 +24,21 @@ public class PullMessagesAsyncWithDeliveryAttemptsSample
 {
     public async Task<int> PullMessagesAsyncWithDeliveryAttempts(string projectId, string subscriptionId, bool acknowledge)
     {
+        // This is an existing subscription with a dead letter policy.
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
 
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
 
         int messageCount = 0;
-        Task startTask = subscriber.StartAsync(async (PubsubMessage message, CancellationToken cancel) =>
+        Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             string text = Encoding.UTF8.GetString(message.Data.ToArray());
             System.Console.WriteLine($"Delivery Attempt: {message.GetDeliveryAttempt()}");
             Interlocked.Increment(ref messageCount);
-            return acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack;
+            return acknowledge ? Task.FromResult(SubscriberClient.Reply.Ack) : Task.FromResult(SubscriberClient.Reply.Nack);
         });
         // Run for 5 seconds.
-        await Task.Delay(5000);
+        startTask.Wait(5000);
         await subscriber.StopAsync(CancellationToken.None);
         return messageCount;
     }

@@ -22,7 +22,9 @@ public class RemoveDeadLetterPolicySample
     public Subscription RemoveDeadLetterPolicy(string projectId, string topicId, string subscriptionId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
+        // This is an existing topic that the subscription with dead letter policy is attached to.
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
+        // This is an existing subscription with dead letter policy.
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
 
         var subscription = new Subscription()

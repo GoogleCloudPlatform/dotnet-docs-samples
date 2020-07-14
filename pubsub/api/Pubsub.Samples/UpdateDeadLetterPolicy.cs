@@ -22,8 +22,13 @@ public class UpdateDeadLetterPolicySample
     public Subscription UpdateDeadLetterPolicy(string projectId, string topicId, string subscriptionId, string deadLetterTopicId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
+        // This is an existing topic that the subscription with dead letter policy is attached to.
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
+        // This is an existing subscription with a dead letter policy.
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
+        // This is an existing dead letter topic that the subscription with dead letter policy forwards
+        // dead letter messages to.
+        var deadLetterTopic = TopicName.FromProjectTopic(projectId, deadLetterTopicId).ToString();
 
         var subscription = new Subscription()
         {
@@ -31,14 +36,15 @@ public class UpdateDeadLetterPolicySample
             TopicAsTopicName = topicName,
             DeadLetterPolicy = new DeadLetterPolicy
             {
-                DeadLetterTopic = TopicName.FromProjectTopic(projectId, deadLetterTopicId).ToString(),
-                MaxDeliveryAttempts = 15
+                DeadLetterTopic = deadLetterTopic,
+                MaxDeliveryAttempts = 20,
             }
         };
 
         var request = new UpdateSubscriptionRequest
         {
             Subscription = subscription,
+            // Construct a field mask to indicate which field to update in the subscription.
             UpdateMask = new FieldMask { Paths = { "dead_letter_policy" } }
         };
         var updatedSubscription = subscriber.UpdateSubscription(request);

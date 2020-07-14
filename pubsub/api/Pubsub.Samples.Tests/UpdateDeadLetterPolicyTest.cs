@@ -31,9 +31,10 @@ public class UpdateDeadLetterPolicyTest
     [Fact]
     public void UpdateDeadLetterPolicy()
     {
-        string topicId = "testTopicForDeadLetterPolicySubscriptionCreation" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForDeadLetterPolicySubscriptionCreation" + _pubsubFixture.RandomName();
-        string deadLetterTopicId = "testTopicForDeadLetter" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForDeadLetterPolicySubscriptionCreation{randomName}";
+        string subscriptionId = $"testSubscriptionForDeadLetterPolicySubscriptionCreation{randomName}";
+        string deadLetterTopicId = $"testTopicForDeadLetter{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateTopic(deadLetterTopicId);
@@ -43,7 +44,7 @@ public class UpdateDeadLetterPolicyTest
         _updateDeadLetterPolicySample.UpdateDeadLetterPolicy(_pubsubFixture.ProjectId, topicId, subscriptionId, deadLetterTopicId);
         var subscription = _pubsubFixture.GetSubscription(subscriptionId);
 
-        Assert.Equal(15, subscription.DeadLetterPolicy.MaxDeliveryAttempts);
+        Assert.Equal(20, subscription.DeadLetterPolicy.MaxDeliveryAttempts);
 
     }
 }

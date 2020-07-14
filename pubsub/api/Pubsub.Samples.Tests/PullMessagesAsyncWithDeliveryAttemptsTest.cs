@@ -33,9 +33,10 @@ public class PullMessagesAsyncWithDeliveryAttemptsTest
     [Fact]
     public async void PullMessagesAsyncWithDeliveryAttempts()
     {
-        string topicId = "testTopicForDeadLetterPolicyMessageSyncAck" + _pubsubFixture.RandomName();
-        string deadLetterTopicId = "testTopicForDeadLetter" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionDeadLetterPolicyForMessageSyncAck" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForDeadLetterPolicyMessageSyncAck{randomName}";
+        string deadLetterTopicId = $"testTopicForDeadLetter{randomName}";
+        string subscriptionId = $"testSubscriptionDeadLetterPolicyForMessageSyncAck{randomName}";
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);
