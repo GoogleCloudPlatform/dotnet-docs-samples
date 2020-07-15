@@ -788,6 +788,18 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
+        public void TestBucketLifecycleManagement()
+        {
+            using (var bucketLifecyleManagement = new BucketFixture())
+            {
+                var enableBucketLifecycleManagement = Run("enable-bucket-lifecycle-management", bucketLifecyleManagement.BucketName);
+                AssertSucceeded(enableBucketLifecycleManagement);
+                var disableBucketLifecycleManagement = Run("enable-bucket-lifecycle-management", bucketLifecyleManagement.BucketName);
+                AssertSucceeded(disableBucketLifecycleManagement);
+            }
+        }
+
+        [Fact]
         public void TestGenerateEncryptionKey()
         {
             var output = Run("generate-encryption-key");

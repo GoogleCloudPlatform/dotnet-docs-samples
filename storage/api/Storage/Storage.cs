@@ -89,7 +89,9 @@ namespace GoogleCloudSamples
             "  Storage release-object-event-based-hold bucket-name object-name\n" +
             "  Storage enable-uniform-bucket-level-access bucket-name\n" +
             "  Storage disable-uniform-bucket-level-access bucket-name\n" +
-            "  Storage get-uniform-bucket-level-access bucket-name\n";
+            "  Storage get-uniform-bucket-level-access bucket-name\n" +
+            "  Storage enable-bucket-lifecycle-management bucket-name\n" +
+            "  Storage disable-bucket-lifecycle-management bucket-name\n";
 
         // [START storage_list_buckets]
         private void ListBuckets()
@@ -1243,6 +1245,46 @@ namespace GoogleCloudSamples
         }
         // [END storage_get_uniform_bucket_level_access]
 
+        // [START storage_enable_bucket_lifecycle_management]
+        public void EnableBucketLifecycleManagement(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.Lifecycle = new Bucket.LifecycleData
+            {
+                Rule = new List<Bucket.LifecycleData.RuleData>
+                {
+                    new Bucket.LifecycleData.RuleData
+                    {
+                        Condition = new Bucket.LifecycleData.RuleData.ConditionData{
+                            Age = 100,
+                        },
+                        Action = new Bucket.LifecycleData.RuleData.ActionData { Type = "Delete" }
+                    },
+                },
+            };
+            bucket = storage.UpdateBucket(bucket);
+
+            Console.WriteLine($"Lifecycle management is enabled for bucket {bucketName} and the rules are:");
+            foreach (var rule in bucket.Lifecycle.Rule)
+            {
+                Console.WriteLine($"Age: {rule.Condition.Age} Action: {rule.Action.Type}");
+            }
+        }
+        // [END storage_enable_bucket_lifecycle_management]
+
+        // [START storage_disable_bucket_lifecycle_management]
+        public void DisableBucketLifecycleManagement(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            var bucket = storage.GetBucket(bucketName);
+            bucket.Lifecycle = null;
+            bucket = storage.UpdateBucket(bucket);
+
+            Console.WriteLine($"Lifecycle management is disabled for bucket {bucketName}.");
+        }
+        // [END storage_disable_bucket_lifecycle_management]
+
         private void UploadFileRequesterPays(string bucketName, string localPath,
             string objectName = null)
         {
@@ -1568,6 +1610,16 @@ namespace GoogleCloudSamples
                         if (args.Length < 2 && PrintUsage()) return -1;
                         DisableBucketDefaultEventBasedHold(args[1]);
                         break;
+
+                    case "enable-bucket-lifecycle-management":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        EnableBucketLifecycleManagement(args[1]);
+                        break;
+
+                    case "disable-bucket-lifecycle-management":
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        DisableBucketLifecycleManagement(args[1]);
+                        break;  
 
                     case "lock-bucket-retention-policy":
                         if (args.Length < 2 && PrintUsage()) return -1;
