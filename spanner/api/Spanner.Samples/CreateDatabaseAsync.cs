@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_create_custom_database]
+// [START spanner_create_database]
 
 using Google.Cloud.Spanner.Data;
 using System.Threading.Tasks;
 
 public class CreateDatabaseAsyncSample
 {
-    public async Task CreateDatabaseAsync(string projectId, string instanceId, string databaseId)
+    public async Task CreateDatabaseAsyncAsync(string projectId, string instanceId, string databaseId)
     {
         // Initialize request connection string for database creation.
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
@@ -28,15 +28,35 @@ public class CreateDatabaseAsyncSample
         {
             string createStatement = $"CREATE DATABASE `{databaseId}`";
             var cmd = connection.CreateDdlCommand(createStatement);
-            try
-            {
-                await cmd.ExecuteNonQueryAsync();
-            }
-            catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
-            {
-                // Database Already Exists.
-            }
+            await cmd.ExecuteNonQueryAsync();
+        }
+        // Update connection string with Database ID for table creation.
+        connectionString = connectionString + $"/databases/{databaseId}";
+        using (var connection = new SpannerConnection(connectionString))
+        {
+            // Define create table statement for table #1.
+            string createTableStatement =
+           @"CREATE TABLE Singers (
+                     SingerId INT64 NOT NULL,
+                     FirstName    STRING(1024),
+                     LastName STRING(1024),
+                     ComposerInfo   BYTES(MAX)
+                 ) PRIMARY KEY (SingerId)";
+            // Make the request.
+            var cmd = connection.CreateDdlCommand(createTableStatement);
+            await cmd.ExecuteNonQueryAsync();
+            // Define create table statement for table #2.
+            createTableStatement =
+            @"CREATE TABLE Albums (
+                     SingerId     INT64 NOT NULL,
+                     AlbumId      INT64 NOT NULL,
+                     AlbumTitle   STRING(MAX)
+                 ) PRIMARY KEY (SingerId, AlbumId),
+                 INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+            // Make the request.
+            cmd = connection.CreateDdlCommand(createTableStatement);
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }
-// [END spanner_create_custom_database]
+// [END spanner_create_database]

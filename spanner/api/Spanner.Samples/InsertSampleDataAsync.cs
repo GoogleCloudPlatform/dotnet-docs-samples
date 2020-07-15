@@ -27,19 +27,21 @@ public class InsertSampleDataAsyncSample
         const int firstSingerId = 1;
         const int secondSingerId = 2;
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        List<Singer> singers = new List<Singer> {
+        List<Singer> singers = new List<Singer>
+        {
             new Singer { SingerId = firstSingerId, FirstName = "Marc", LastName = "Richards" },
             new Singer { SingerId = secondSingerId, FirstName = "Catalina", LastName = "Smith" },
             new Singer { SingerId = 3, FirstName = "Alice", LastName = "Trentor" },
             new Singer { SingerId = 4, FirstName = "Lea", LastName = "Martin" },
             new Singer { SingerId = 5, FirstName = "David", LastName = "Lomond" },
         };
-        List<Album> albums = new List<Album> {
+        List<Album> albums = new List<Album>
+        {
             new Album { SingerId = firstSingerId, AlbumId = 1, AlbumTitle = "Total Junk" },
-                new Album { SingerId = firstSingerId, AlbumId = 2, AlbumTitle = "Go, Go, Go" },
-                new Album { SingerId = secondSingerId, AlbumId = 1, AlbumTitle = "Green" },
-                new Album { SingerId = secondSingerId, AlbumId = 2, AlbumTitle = "Forever Hold your Peace" },
-                new Album { SingerId = secondSingerId, AlbumId = 3, AlbumTitle = "Terrified" },
+            new Album { SingerId = firstSingerId, AlbumId = 2, AlbumTitle = "Go, Go, Go" },
+            new Album { SingerId = secondSingerId, AlbumId = 1, AlbumTitle = "Green" },
+            new Album { SingerId = secondSingerId, AlbumId = 2, AlbumTitle = "Forever Hold your Peace" },
+            new Album { SingerId = secondSingerId, AlbumId = 3, AlbumTitle = "Terrified" },
         };
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
@@ -47,7 +49,8 @@ public class InsertSampleDataAsyncSample
             await connection.OpenAsync();
 
             // Insert rows into the Singers table.
-            var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection {
+            var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
+            {
                 { "SingerId", SpannerDbType.Int64 },
                 { "FirstName", SpannerDbType.String },
                 { "LastName", SpannerDbType.String }
@@ -64,9 +67,9 @@ public class InsertSampleDataAsyncSample
             cmd = connection.CreateInsertCommand("Albums",
                 new SpannerParameterCollection
                 {
-                        { "SingerId", SpannerDbType.Int64 },
-                        { "AlbumId", SpannerDbType.Int64 },
-                        { "AlbumTitle", SpannerDbType.String }
+                    { "SingerId", SpannerDbType.Int64 },
+                    { "AlbumId", SpannerDbType.Int64 },
+                    { "AlbumTitle", SpannerDbType.String }
                 });
 
             await Task.WhenAll(albums.Select(album =>
