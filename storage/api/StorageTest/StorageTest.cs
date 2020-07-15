@@ -794,6 +794,7 @@ namespace GoogleCloudSamples
             {
                 var enableBucketLifecycleManagement = Run("enable-bucket-lifecycle-management", bucketLifecyleManagement.BucketName);
                 AssertSucceeded(enableBucketLifecycleManagement);
+                Assert.Contains("Age: 100 Action: Delete", enableBucketLifecycleManagement.Stdout);
                 var disableBucketLifecycleManagement = Run("enable-bucket-lifecycle-management", bucketLifecyleManagement.BucketName);
                 AssertSucceeded(disableBucketLifecycleManagement);
             }
