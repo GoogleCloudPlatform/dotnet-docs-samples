@@ -503,7 +503,7 @@ namespace GoogleCloudSamples
         {
             using (var bucket = new BucketFixture())
             {
-                string userEmail = GetServiceAccountEmail();
+                string userEmail = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
                 var printedAcl = Run("print-acl", bucket.BucketName);
                 AssertSucceeded(printedAcl);
                 Assert.DoesNotContain(userEmail, printedAcl.Stdout);
@@ -536,7 +536,7 @@ namespace GoogleCloudSamples
         {
             using (var bucket = new BucketFixture())
             {
-                string userEmail = GetServiceAccountEmail();
+                string userEmail = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
                 var printedAcl = Run("print-default-acl", bucket.BucketName);
                 AssertSucceeded(printedAcl);
                 Assert.DoesNotContain(userEmail, printedAcl.Stdout);
@@ -564,7 +564,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestAddObjectOwner()
         {
-            string userEmail = GetServiceAccountEmail();
+            string userEmail = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
             Run("upload", _bucketName, "Hello.txt", Collect("HelloAddObjectOwner.txt"));
             var printedAcl = Run("print-acl", _bucketName, "HelloAddObjectOwner.txt");
             AssertSucceeded(printedAcl);
@@ -612,7 +612,7 @@ namespace GoogleCloudSamples
         {
             using (var iamTests = new BucketFixture())
             {
-                string member = GetServiceAccountEmail();
+                string userEmail = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
                 string memberType = "serviceAccount";
                 string role = "roles/storage.objectViewer";
 
