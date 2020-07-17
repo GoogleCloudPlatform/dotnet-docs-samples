@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 public class Startup
@@ -30,12 +31,14 @@ public class Startup
     {
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
     {
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
+
+        logger.LogInformation("Service is starting...");
 
         app.UseRouting();
 
@@ -43,27 +46,33 @@ public class Startup
         {
             endpoints.MapPost("/", async context =>
             {
+                logger.LogInformation("Handling HTTP POST");
+
                 using (var reader = new StreamReader(context.Request.Body))
                 {
                     var body = await reader.ReadToEndAsync();
+                    logger.LogInformation($"HTTP POST body: {body}");
+
                     dynamic cloudEventData = JsonConvert.DeserializeObject(body);
                     if (cloudEventData == null)
                     {
-                            context.Response.StatusCode = 400;
-                            await context.Response.WriteAsync("Bad request: No Pub/Sub message received");
-                            return;
+                        context.Response.StatusCode = 400;
+                        await context.Response.WriteAsync("Bad request: No Pub/Sub message received");
+                        return;
                     }
 
                     dynamic pubSubMessage = cloudEventData["message"];
                     if (pubSubMessage == null)
                     {
-                            context.Response.StatusCode = 400;
-                            await context.Response.WriteAsync("Bad request: Invalid Pub/Sub message format");
-                            return;
+                        context.Response.StatusCode = 400;
+                        await context.Response.WriteAsync("Bad request: Invalid Pub/Sub message format");
+                        return;
                     }
 
                     var data = (string)pubSubMessage["data"];
                     var name = Encoding.UTF8.GetString(Convert.FromBase64String(data));
+                    logger.LogInformation($"Extracted name: {name}");
+
                     var id = context.Request.Headers["ce-id"];
                     await context.Response.WriteAsync($"Hello {name}! ID: {id}");
                 }
