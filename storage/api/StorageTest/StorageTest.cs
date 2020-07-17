@@ -612,8 +612,7 @@ namespace GoogleCloudSamples
         {
             using (var iamTests = new BucketFixture())
             {
-                string member =
-                   "230835935096-8io28ro0tvbbv612p5k6nstlaucmhnrq@developer.gserviceaccount.com";
+                string member = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
                 string memberType = "serviceAccount";
                 string role = "roles/storage.objectViewer";
 
