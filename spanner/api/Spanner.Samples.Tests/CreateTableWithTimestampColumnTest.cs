@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Admin.Database.V1;
-using Google.Cloud.Spanner.Admin.Instance.V1;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]

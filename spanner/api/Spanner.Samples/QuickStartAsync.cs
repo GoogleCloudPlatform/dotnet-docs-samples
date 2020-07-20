@@ -15,7 +15,6 @@
 // [START spanner_quickstart]
 
 using Google.Cloud.Spanner.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

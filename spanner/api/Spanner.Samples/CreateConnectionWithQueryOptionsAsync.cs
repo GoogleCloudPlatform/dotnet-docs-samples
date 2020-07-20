@@ -15,7 +15,6 @@
 // [START spanner_create_client_with_query_options]
 
 using Google.Cloud.Spanner.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

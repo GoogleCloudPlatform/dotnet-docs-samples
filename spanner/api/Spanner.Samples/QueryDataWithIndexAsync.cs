@@ -16,7 +16,6 @@
 // [START spanner_read_data_with_index]
 
 using Google.Cloud.Spanner.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
