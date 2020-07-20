@@ -12,9 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_delete_data]
+// [START spanner_insert_data]
+// [START spanner_write_data_for_struct_queries]
+// [START spanner_query_with_parameter]
+// [START spanner_quickstart
+
 public class Singer
 {
     public int SingerId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
 }
+// [END spanner_quickstart
+// [END spanner_query_with_parameter]
+// [END spanner_write_data_for_struct_queries]
+// [END spanner_insert_data]
+// [END spanner_delete_data]

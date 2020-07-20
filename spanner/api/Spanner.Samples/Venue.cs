@@ -12,8 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
+// [START spanner_query_with_array_parameter]
+// [START spanner_query_with_bool_parameter]
+// [START spanner_query_with_bytes_parameter]
+// [START spanner_query_with_date_parameter]
+// [START spanner_query_with_float_parameter]
+// [START spanner_query_with_int_parameter]
+// [START spanner_query_with_string_parameter]
+// [START spanner_query_with_timestamp_parameter]
+// [START spanner_insert_datatypes_data]
 
 public class Venue
 {
@@ -21,9 +28,18 @@ public class Venue
     public string VenueName { get; set; }
     public byte[] VenueInfo { get; set; }
     public int Capacity { get; set; }
-    public List<DateTime> AvailableDates { get; set; }
-    public DateTime LastContactDate { get; set; }
-    public DateTime LastUpdateTime { get; set; }
+    public System.Collections.Generic.List<System.DateTime> AvailableDates { get; set; }
+    public System.DateTime LastContactDate { get; set; }
+    public System.DateTime LastUpdateTime { get; set; }
     public bool OutdoorVenue { get; set; }
     public float PopularityScore { get; set; }
 }
+// [END spanner_insert_datatypes_data]
+// [END spanner_query_with_timestamp_parameter]
+// [END spanner_query_with_string_parameter]
+// [END spanner_query_with_int_parameter]
+// [END spanner_query_with_float_parameter]
+// [END spanner_query_with_date_parameter]
+// [END spanner_query_with_bytes_parameter]
+// [END spanner_query_with_bool_parameter]
+// [END spanner_query_with_array_parameter]

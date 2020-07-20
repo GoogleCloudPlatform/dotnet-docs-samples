@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+// [START spanner_insert_data_with_timestamp_column]
 
 public class Performance
 {
     public int SingerId { get; set; }
     public int VenueId { get; set; }
-    public DateTime EventDate { get; set; }
+    public System.DateTime EventDate { get; set; }
     public long Revenue { get; set; }
 }
+// [END spanner_insert_data_with_timestamp_column]
