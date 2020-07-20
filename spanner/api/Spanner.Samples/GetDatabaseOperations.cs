@@ -27,7 +27,7 @@ public class GetDatabaseOperationsSample
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-        var filter = "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.OptimizeRestoredDatabaseMetadata)";
+        var filter = "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateDatabaseMetadata)";
 
         ListDatabaseOperationsRequest request = new ListDatabaseOperationsRequest
         {
@@ -40,11 +40,10 @@ public class GetDatabaseOperationsSample
 
         foreach (var operation in operations)
         {
-            OptimizeRestoredDatabaseMetadata metadata =
-                operation.Metadata.Unpack<OptimizeRestoredDatabaseMetadata>();
+            CreateDatabaseMetadata metadata =
+                operation.Metadata.Unpack<CreateDatabaseMetadata>();
             Console.WriteLine(
-                $"Database {metadata.Name} restored from backup is " +
-                $"{metadata.Progress.ProgressPercent}% optimized");
+                $"Database {metadata.Database} created successfully.");
         }
 
         return operations;

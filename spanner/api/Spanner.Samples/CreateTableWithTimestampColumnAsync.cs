@@ -25,8 +25,7 @@ public class CreateTableWithTimestampColumnAsyncSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using (var connection = new SpannerConnection(connectionString))
         {
-            // Define create table statement for table with
-            // commit timestamp column.
+            // Define create table statement for table with commit timestamp column.
             string createTableStatement =
             @"CREATE TABLE Performances (
                     SingerId       INT64 NOT NULL,

@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 public class QueryDataWithArrayOfStructAsyncSample
 {
-    public static async Task QueryDataWithArrayOfStructAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<int>> QueryDataWithArrayOfStructAsync(string projectId, string instanceId, string databaseId)
     {
         // [START spanner_create_user_defined_struct]
         var nameType = new SpannerStruct
@@ -39,7 +39,7 @@ public class QueryDataWithArrayOfStructAsyncSample
             new SpannerStruct { { "FirstName", SpannerDbType.String, "Benjamin" }, { "LastName", SpannerDbType.String, "Martinez" } },
         };
         // [END spanner_create_array_of_struct_with_data]
-
+        var singerIds = new List<int>();
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using (var connection = new SpannerConnection(connectionString))
         {
@@ -53,11 +53,14 @@ public class QueryDataWithArrayOfStructAsyncSample
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine(reader.GetFieldValue<string>("SingerId"));
+                        var singerId = reader.GetFieldValue<int>("SingerId");
+                        Console.WriteLine($"SingerId: {singerId}");
+                        singerIds.Add(singerId);
                     }
                 }
             }
         }
+        return singerIds;
     }
 }
 // [END spanner_query_data_with_array_of_struct]

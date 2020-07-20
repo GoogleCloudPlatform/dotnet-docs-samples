@@ -17,11 +17,12 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryDataWithIndexAsyncSample
 {
-    public async Task QueryDataWithIndexAsync(string projectId, string instanceId, string databaseId, string startTitle = "Aardvark", string endTitle = "Goo")
+    public async Task<List<Album>> QueryDataWithIndexAsync(string projectId, string instanceId, string databaseId, string startTitle = "Aardvark", string endTitle = "Goo")
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create connection to Cloud Spanner.
@@ -35,16 +36,23 @@ public class QueryDataWithIndexAsyncSample
                 new SpannerParameterCollection { { "startTitle", SpannerDbType.String }, { "endTitle", SpannerDbType.String } });
             cmd.Parameters["startTitle"].Value = startTitle;
             cmd.Parameters["endTitle"].Value = endTitle;
+            var albums = new List<Album>();
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    var marketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? "" : reader.GetFieldValue<string>("MarketingBudget");
-                    Console.WriteLine("AlbumId : " + reader.GetFieldValue<string>("AlbumId")
-                    + " AlbumTitle : " + reader.GetFieldValue<string>("AlbumTitle")
-                    + " MarketingBudget : " + marketingBudget);
+                    var marketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? 0 : reader.GetFieldValue<long>("MarketingBudget");
+                    var albumId = reader.GetFieldValue<int>("AlbumId");
+                    var albumTitle = reader.GetFieldValue<string>("AlbumTitle");
+                    albums.Add(new Album
+                    {
+                        AlbumId = albumId,
+                        AlbumTitle = albumTitle,
+                        MarketingBudget = marketingBudget
+                    });
                 }
             }
+            return albums;
         }
     }
 }

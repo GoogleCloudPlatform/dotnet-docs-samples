@@ -23,7 +23,7 @@ public class UpdateUsingDmlWithStructCoreAsyncSample
     public async Task<int> UpdateUsingDmlWithStructCoreAsync(string projectId, string instanceId, string databaseId)
     {
         var nameStruct = new SpannerStruct {
-            { "FirstName", SpannerDbType.String, "Timothy" },
+            { "FirstName", SpannerDbType.String, "Elena" },
             { "LastName", SpannerDbType.String, "Campbell" }
         };
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";

@@ -16,16 +16,17 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Transactions;
 
 public class QueryDataWithTransactionAsyncSample
 {
-    public async Task QueryDataWithTransactionAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Album>> QueryDataWithTransactionAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        // Gets a transaction object that captures the database state
-        // at a specific point in time.
+        var albums = new List<Album>();
+        // Gets a transaction object that captures the database state at a specific point in time.
         using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
             // Create connection to Cloud Spanner.
@@ -54,14 +55,22 @@ public class QueryDataWithTransactionAsyncSample
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine("SingerId : " + reader.GetFieldValue<string>("SingerId")
-                            + " AlbumId : " + reader.GetFieldValue<string>("AlbumId")
-                            + " AlbumTitle : " + reader.GetFieldValue<string>("AlbumTitle"));
+                        var singerId = reader.GetFieldValue<int>("SingerId");
+                        var albumId = reader.GetFieldValue<int>("AlbumId");
+                        var albumTitle = reader.GetFieldValue<string>("AlbumTitle");
+                        Console.WriteLine($"SingerId : {singerId} AlbumId : {albumId} AlbumTitle : {albumTitle}");
+                        albums.Add(new Album
+                        {
+                            AlbumId = albumId,
+                            SingerId = singerId,
+                            AlbumTitle = albumTitle
+                        });
                     }
                 }
             }
             scope.Complete();
             Console.WriteLine("Transaction complete.");
+            return albums;
         }
     }
 }

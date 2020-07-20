@@ -29,12 +29,12 @@ public class WriteAndReadUsingDmlCoreAsyncSample
         {
             await connection.OpenAsync();
 
-            SpannerCommand cmd = connection.CreateDmlCommand(@"INSERT Singers (SingerId, FirstName, LastName) VALUES (11, 'Timothy', 'Campbell')");
+            SpannerCommand cmd = connection.CreateDmlCommand(@"INSERT Singers (SingerId, FirstName, LastName) VALUES (16, 'Timothy', 'Campbell')");
             int rowCount = await cmd.ExecuteNonQueryAsync();
             Console.WriteLine($"{rowCount} row(s) inserted...");
 
             // Read newly inserted record.
-            cmd = connection.CreateSelectCommand(@"SELECT FirstName, LastName FROM Singers WHERE SingerId = 11");
+            cmd = connection.CreateSelectCommand(@"SELECT FirstName, LastName FROM Singers WHERE SingerId = 16");
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())

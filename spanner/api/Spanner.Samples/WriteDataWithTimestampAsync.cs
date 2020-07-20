@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 public class WriteDataWithTimestampAsyncSample
 {
-    public async Task WriteDataWithTimestampAsync(string projectId, string instanceId, string databaseId)
+    public async Task<int> WriteDataWithTimestampAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         List<Performance> performances = new List<Performance> {
@@ -43,16 +43,17 @@ public class WriteDataWithTimestampAsyncSample
                 {"LastUpdateTime", SpannerDbType.Timestamp},
             });
 
-            await Task.WhenAll(performances.Select(performance =>
-            {
-                cmd.Parameters["SingerId"].Value = performance.SingerId;
-                cmd.Parameters["VenueId"].Value = performance.VenueId;
-                cmd.Parameters["EventDate"].Value = performance.EventDate;
-                cmd.Parameters["Revenue"].Value = performance.Revenue;
-                cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
-                return cmd.ExecuteNonQueryAsync();
-            }));
+            var rowCountAarray = await Task.WhenAll(performances.Select(performance =>
+              {
+                  cmd.Parameters["SingerId"].Value = performance.SingerId;
+                  cmd.Parameters["VenueId"].Value = performance.VenueId;
+                  cmd.Parameters["EventDate"].Value = performance.EventDate;
+                  cmd.Parameters["Revenue"].Value = performance.Revenue;
+                  cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
+                  return cmd.ExecuteNonQueryAsync();
+              }));
             Console.WriteLine("Inserted data.");
+            return rowCountAarray.Sum();
         }
     }
 }

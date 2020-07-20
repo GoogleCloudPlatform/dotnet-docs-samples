@@ -16,11 +16,12 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryWithFloatAsyncSample
 {
-    public async Task QueryWithFloatAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Venue>> QueryWithFloatAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create a Float object to use for querying.
@@ -28,17 +29,26 @@ public class QueryWithFloatAsyncSample
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
+            var venues = new List<Venue>();
             var cmd = connection.CreateSelectCommand("SELECT VenueId, VenueName, PopularityScore FROM Venues WHERE PopularityScore > @ExampleFloat");
             cmd.Parameters.Add("ExampleFloat", SpannerDbType.Float64, exampleFloat);
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine(reader.GetFieldValue<string>("VenueId")
-                        + " " + reader.GetFieldValue<string>("VenueName")
-                        + " " + reader.GetFieldValue<string>("PopularityScore"));
+                    var venueId = reader.GetFieldValue<int>("VenueId");
+                    var venueName = reader.GetFieldValue<string>("VenueName");
+                    var popularityScore = reader.GetFieldValue<float>("PopularityScore");
+                    Console.WriteLine($"VenueId: {venueId} VenueName: {venueName} PopularityScore: {popularityScore}");
+                    venues.Add(new Venue
+                    {
+                        VenueId = venueId,
+                        VenueName = venueName,
+                        PopularityScore = popularityScore
+                    });
                 }
             }
+            return venues;
         }
     }
 }

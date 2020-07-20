@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 public class InsertStructSampleDataAsyncSample
 {
-    public async Task InsertStructSampleDataAsync(string projectId, string instanceId, string databaseId)
+    public async Task<int> InsertStructSampleDataAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         List<Singer> singers = new List<Singer> {
@@ -30,6 +30,8 @@ public class InsertStructSampleDataAsyncSample
             new Singer {SingerId = 7, FirstName = "Gabriel", LastName = "Wright"},
             new Singer {SingerId = 8, FirstName = "Benjamin", LastName = "Martinez"},
             new Singer {SingerId = 9, FirstName = "Hannah", LastName = "Harris"},
+            new Singer {SingerId = 11, FirstName = "Anthony", LastName = "Hunter"},
+            new Singer {SingerId = 12, FirstName = "Earlean", LastName = "Holland"},
         };
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
@@ -43,14 +45,15 @@ public class InsertStructSampleDataAsyncSample
                         {"FirstName", SpannerDbType.String},
                         {"LastName", SpannerDbType.String}
             });
-            await Task.WhenAll(singers.Select(singer =>
-            {
-                cmd.Parameters["SingerId"].Value = singer.SingerId;
-                cmd.Parameters["FirstName"].Value = singer.FirstName;
-                cmd.Parameters["LastName"].Value = singer.LastName;
-                return cmd.ExecuteNonQueryAsync();
-            }));
+            var rows = await Task.WhenAll(singers.Select(singer =>
+              {
+                  cmd.Parameters["SingerId"].Value = singer.SingerId;
+                  cmd.Parameters["FirstName"].Value = singer.FirstName;
+                  cmd.Parameters["LastName"].Value = singer.LastName;
+                  return cmd.ExecuteNonQueryAsync();
+              }));
             Console.WriteLine("Inserted struct data.");
+            return rows.Sum();
         }
     }
 }

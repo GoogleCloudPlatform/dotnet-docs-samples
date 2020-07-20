@@ -16,16 +16,19 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class CreateConnectionWithQueryOptionsAsyncSample
 {
-    public async Task CreateConnectionWithQueryOptionsAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Album>> CreateConnectionWithQueryOptionsAsync(string projectId, string instanceId, string databaseId)
     {
         var builder = new SpannerConnectionStringBuilder
         {
             DataSource = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}"
         };
+
+        var albums = new List<Album>();
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(builder))
         {
@@ -36,12 +39,16 @@ public class CreateConnectionWithQueryOptionsAsyncSample
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine("SingerId : " + reader.GetFieldValue<string>("SingerId")
-                    + " AlbumId : " + reader.GetFieldValue<string>("AlbumId")
-                    + " AlbumTitle : " + reader.GetFieldValue<string>("AlbumTitle"));
+                    albums.Add(new Album
+                    {
+                        SingerId = reader.GetFieldValue<int>("SingerId"),
+                        AlbumId = reader.GetFieldValue<int>("AlbumId"),
+                        AlbumTitle = reader.GetFieldValue<string>("AlbumTitle")
+                    });
                 }
             }
         }
+        return albums;
     }
 }
 // [END spanner_create_client_with_query_options]

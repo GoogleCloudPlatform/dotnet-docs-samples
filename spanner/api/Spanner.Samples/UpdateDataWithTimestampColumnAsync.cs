@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 public class UpdateDataWithTimestampColumnAsyncSample
 {
-    public static async Task UpdateDataWithTimestampColumnAsync(string projectId, string instanceId, string databaseId)
+    public async Task<int> UpdateDataWithTimestampColumnAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create connection to Cloud Spanner.
@@ -33,6 +33,7 @@ public class UpdateDataWithTimestampColumnAsyncSample
                 {"LastUpdateTime", SpannerDbType.Timestamp},
             });
 
+            var rowCount = 0;
             var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Albums");
             using (var reader = await cmdLookup.ExecuteReaderAsync())
             {
@@ -44,7 +45,7 @@ public class UpdateDataWithTimestampColumnAsyncSample
                         cmd.Parameters["AlbumId"].Value = reader.GetFieldValue<int>("AlbumId");
                         cmd.Parameters["MarketingBudget"].Value = 1000000;
                         cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
-                        await cmd.ExecuteNonQueryAsync();
+                        rowCount += await cmd.ExecuteNonQueryAsync();
                     }
                     if (reader.GetInt64(0) == 2 && reader.GetInt64(1) == 2)
                     {
@@ -52,12 +53,13 @@ public class UpdateDataWithTimestampColumnAsyncSample
                         cmd.Parameters["AlbumId"].Value = reader.GetFieldValue<int>("AlbumId");
                         cmd.Parameters["MarketingBudget"].Value = 750000;
                         cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
-                        await cmd.ExecuteNonQueryAsync();
+                        rowCount += await cmd.ExecuteNonQueryAsync();
                     }
                 }
             }
+            Console.WriteLine("Updated data.");
+            return rowCount;
         }
-        Console.WriteLine("Updated data.");
     }
 }
 // [END spanner_update_data_with_timestamp_column]

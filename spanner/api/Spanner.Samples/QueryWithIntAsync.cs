@@ -16,11 +16,12 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryWithIntAsyncSample
 {
-    public async Task QueryWithIntAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Venue>> QueryWithIntAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create a Int64 object to use for querying.
@@ -28,17 +29,26 @@ public class QueryWithIntAsyncSample
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
+            var venues = new List<Venue>();
             var cmd = connection.CreateSelectCommand("SELECT VenueId, VenueName, Capacity FROM Venues WHERE Capacity >= @ExampleInt");
             cmd.Parameters.Add("ExampleInt", SpannerDbType.Int64, exampleInt);
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine(reader.GetFieldValue<string>("VenueId")
-                        + " " + reader.GetFieldValue<string>("VenueName")
-                        + " " + reader.GetFieldValue<string>("Capacity"));
+                    var venueId = reader.GetFieldValue<int>("VenueId");
+                    var venueName = reader.GetFieldValue<string>("VenueName");
+                    var capacity = reader.GetFieldValue<int>("Capacity");
+                    Console.WriteLine($"VenueId: {venueId} VenueName: {venueName} Capacity:{capacity}");
+                    venues.Add(new Venue
+                    {
+                        VenueId = venueId,
+                        VenueName = venueName,
+                        Capacity = capacity
+                    });
                 }
             }
+            return venues;
         }
     }
 }

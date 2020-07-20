@@ -17,4 +17,6 @@ public class Album
     public int SingerId { get; set; }
     public int AlbumId { get; set; }
     public string AlbumTitle { get; set; }
+    public long? MarketingBudget { get; set; }
+    public System.DateTime? LastUpdateTime { get; set; }
 }

@@ -16,29 +16,39 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryWithParameterAsyncSample
 {
-    public async Task QueryWithParameterAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Singer>> QueryWithParameterAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
+            var singers = new List<Singer>();
             var cmd = connection.CreateSelectCommand($"SELECT SingerId, FirstName, LastName FROM Singers WHERE LastName = @lastName",
                 new SpannerParameterCollection { { "lastName", SpannerDbType.String } });
 
-            cmd.Parameters["lastName"].Value = "Garcia";
+            cmd.Parameters["lastName"].Value = "Richards";
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine("SingerId : " + reader.GetFieldValue<string>("SingerId")
-                    + " FirstName : " + reader.GetFieldValue<string>("FirstName")
-                    + " LastName : " + reader.GetFieldValue<string>("LastName"));
+                    var singerId = reader.GetFieldValue<int>("SingerId");
+                    var firstName = reader.GetFieldValue<string>("FirstName");
+                    var lastName = reader.GetFieldValue<string>("LastName");
+                    Console.WriteLine($"SingerId : {singerId} FirstName : {firstName} LastName : {lastName}");
+                    singers.Add(new Singer
+                    {
+                        SingerId = singerId,
+                        FirstName = firstName,
+                        LastName = lastName
+                    });
                 }
             }
+            return singers;
         }
     }
 }

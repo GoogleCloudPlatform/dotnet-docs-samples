@@ -23,6 +23,7 @@ public class Venue
     public int Capacity { get; set; }
     public List<DateTime> AvailableDates { get; set; }
     public DateTime LastContactDate { get; set; }
+    public DateTime LastUpdateTime { get; set; }
     public bool OutdoorVenue { get; set; }
     public float PopularityScore { get; set; }
 }

@@ -16,14 +16,16 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryDataWithTransactionCoreAsyncSample
 {
-    public static async Task QueryDataWithTransactionCoreAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Album>> QueryDataWithTransactionCoreAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
+        var albums = new List<Album>();
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
@@ -52,14 +54,22 @@ public class QueryDataWithTransactionCoreAsyncSample
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine("SingerId : " + reader.GetFieldValue<string>("SingerId")
-                            + " AlbumId : " + reader.GetFieldValue<string>("AlbumId")
-                            + " AlbumTitle : " + reader.GetFieldValue<string>("AlbumTitle"));
+                        var singerId = reader.GetFieldValue<int>("SingerId");
+                        var albumId = reader.GetFieldValue<int>("AlbumId");
+                        var albumTitle = reader.GetFieldValue<string>("AlbumTitle");
+                        Console.WriteLine($"SingerId : {singerId} AlbumId : {albumId} AlbumTitle : {albumTitle}");
+                        albums.Add(new Album
+                        {
+                            AlbumId = albumId,
+                            SingerId = singerId,
+                            AlbumTitle = albumTitle
+                        });
                     }
                 }
             }
         }
         Console.WriteLine("Transaction complete.");
+        return albums;
     }
 }
 // [END spanner_read_only_transaction_core]

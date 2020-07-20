@@ -16,11 +16,12 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryWithStringAsyncSample
 {
-    public async Task QueryWithStringAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Venue>> QueryWithStringAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create a String object to use for querying.
@@ -28,15 +29,24 @@ public class QueryWithStringAsyncSample
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
+            var venues = new List<Venue>();
             var cmd = connection.CreateSelectCommand("SELECT VenueId, VenueName FROM Venues WHERE VenueName = @ExampleString");
             cmd.Parameters.Add("ExampleString", SpannerDbType.String, exampleString);
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine(reader.GetFieldValue<string>("VenueId") + " " + reader.GetFieldValue<string>("VenueName"));
+                    var venueId = reader.GetFieldValue<int>("VenueId");
+                    var venueName = reader.GetFieldValue<string>("VenueName");
+                    Console.WriteLine($"VenueId: {venueId } VenueName: {venueName}");
+                    venues.Add(new Venue
+                    {
+                        VenueId = venueId,
+                        VenueName = venueName
+                    });
                 }
             }
+            return venues;
         }
     }
 }

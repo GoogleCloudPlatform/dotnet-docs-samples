@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 public class WriteWithTransactionUsingDmlCoreAsyncSample
 {
-    public async Task WriteWithTransactionUsingDmlCoreAsync(string projectId, string instanceId, string databaseId)
+    public async Task<int> WriteWithTransactionUsingDmlCoreAsync(string projectId, string instanceId, string databaseId)
     {
         // This sample transfers 200,000 from the MarketingBudget
         // field of the second Album to the first Album. Make sure to run
@@ -76,18 +76,20 @@ public class WriteWithTransactionUsingDmlCoreAsyncSample
                 SpannerCommand cmd = connection.CreateDmlCommand("UPDATE Albums SET MarketingBudget = @MarketingBudget  WHERE SingerId = 2 and AlbumId = 2");
                 cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, secondBudget);
                 cmd.Transaction = transaction;
-                await cmd.ExecuteNonQueryAsync();
+                var rowCount = await cmd.ExecuteNonQueryAsync();
 
                 // Update first album to add the transfer amount.
                 firstBudget += transferAmount;
                 cmd = connection.CreateDmlCommand("UPDATE Albums SET MarketingBudget = @MarketingBudget WHERE SingerId = 1 and AlbumId = 1");
                 cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, firstBudget);
                 cmd.Transaction = transaction;
-                await cmd.ExecuteNonQueryAsync();
+                rowCount += await cmd.ExecuteNonQueryAsync();
 
                 await transaction.CommitAsync();
+
+                Console.WriteLine("Transaction complete.");
+                return rowCount;
             }
-            Console.WriteLine("Transaction complete.");
         }
     }
 }

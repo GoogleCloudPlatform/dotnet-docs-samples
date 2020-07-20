@@ -16,11 +16,12 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryDataWithStructFieldAsyncSample
 {
-    public async Task QueryDataWithStructFieldAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<int>> QueryDataWithStructFieldAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         var structParam = new SpannerStruct
@@ -28,6 +29,8 @@ public class QueryDataWithStructFieldAsyncSample
             { "FirstName", SpannerDbType.String, "Elena" },
             { "LastName", SpannerDbType.String, "Campbell" },
         };
+
+        var singerIds = new List<int>();
         using (var connection = new SpannerConnection(connectionString))
         {
             using (var cmd = connection.CreateSelectCommand("SELECT SingerId FROM Singers WHERE FirstName = @name.FirstName"))
@@ -37,11 +40,14 @@ public class QueryDataWithStructFieldAsyncSample
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine(reader.GetFieldValue<string>("SingerId"));
+                        var singerId = reader.GetFieldValue<int>("SingerId");
+                        singerIds.Add(singerId);
+                        Console.WriteLine($"SingerId: {singerId}");
                     }
                 }
             }
         }
+        return singerIds;
     }
 }
 // [END spanner_field_access_on_struct_parameters]

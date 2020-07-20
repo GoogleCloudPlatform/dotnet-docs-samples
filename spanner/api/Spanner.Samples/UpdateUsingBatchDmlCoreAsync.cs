@@ -32,7 +32,6 @@ public class UpdateUsingBatchDmlCoreAsyncSample
             await connection.OpenAsync();
 
             SpannerBatchCommand cmd = connection.CreateBatchDmlCommand();
-            //var cmd = new SpannerBatchCommand(connection);
 
             cmd.Add("INSERT INTO Albums (SingerId, AlbumId, AlbumTitle, MarketingBudget) VALUES (1, 3, 'Test Album Title', 10000)");
 

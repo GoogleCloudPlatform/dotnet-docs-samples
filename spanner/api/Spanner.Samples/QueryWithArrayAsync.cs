@@ -21,13 +21,14 @@ using System.Threading.Tasks;
 
 public class QueryWithArrayAsyncSample
 {
-    public async Task QueryWithArrayAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Venue>> QueryWithArrayAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create a list array of dates to use for querying.
         var exampleArray = new List<DateTime>();
         exampleArray.InsertRange(0, new DateTime[] { DateTime.Parse("2020-10-01"), DateTime.Parse("2020-11-01") });
 
+        var venues = new List<Venue>();
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
@@ -40,12 +41,20 @@ public class QueryWithArrayAsyncSample
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine(reader.GetFieldValue<string>("VenueId")
-                        + " " + reader.GetFieldValue<string>("VenueName")
-                        + " " + reader.GetFieldValue<string>("AvailableDate"));
+                    var venueId = reader.GetFieldValue<int>("VenueId");
+                    var venueName = reader.GetFieldValue<string>("VenueName");
+                    var availableDate = reader.GetFieldValue<DateTime>("AvailableDate");
+                    venues.Add(new Venue
+                    {
+                        VenueId = venueId,
+                        VenueName = venueName,
+                        AvailableDates = new List<DateTime> { availableDate }
+                    });
+                    Console.WriteLine($"VenueId: {venueId} VenueName:{venueName } AvailableDates: {availableDate}");
                 }
             }
         }
+        return venues;
     }
 }
 // [END spanner_query_with_array_parameter]

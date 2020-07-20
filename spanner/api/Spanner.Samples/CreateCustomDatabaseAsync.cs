@@ -28,14 +28,7 @@ public class CreateCustomDatabaseAsyncSample
         {
             string createStatement = $"CREATE DATABASE `{databaseId}`";
             var cmd = connection.CreateDdlCommand(createStatement);
-            try
-            {
-                await cmd.ExecuteNonQueryAsync();
-            }
-            catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
-            {
-                // Database Already Exists.
-            }
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }

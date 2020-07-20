@@ -16,33 +16,41 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryDataWithStoringIndexAsyncSample
 {
-    public async Task QueryDataWithStoringIndexAsync(string projectId, string instanceId, string databaseId, string startTitle = "Aardvark", string endTitle = "Goo")
+    public async Task<List<Album>> QueryDataWithStoringIndexAsync(string projectId, string instanceId, string databaseId, string startTitle = "Aardvark", string endTitle = "Goo")
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
             var cmd = connection.CreateSelectCommand(
-                "SELECT AlbumId, AlbumTitle, MarketingBudget FROM Albums@ "
+                "SELECT AlbumId, AlbumTitle FROM Albums@ "
                 + "{FORCE_INDEX=AlbumsByAlbumTitle2} "
                 + $"WHERE AlbumTitle >= @startTitle "
                 + $"AND AlbumTitle < @endTitle",
                 new SpannerParameterCollection { { "startTitle", SpannerDbType.String }, { "endTitle", SpannerDbType.String } });
             cmd.Parameters["startTitle"].Value = startTitle;
             cmd.Parameters["endTitle"].Value = endTitle;
+            var albums = new List<Album>();
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine("AlbumId : " + reader.GetFieldValue<string>("AlbumId")
-                    + " AlbumTitle : " + reader.GetFieldValue<string>("AlbumTitle")
-                    + " MarketingBudget : " + reader.GetFieldValue<string>("MarketingBudget"));
+                    var albumId = reader.GetFieldValue<int>("AlbumId");
+                    var albumTitle = reader.GetFieldValue<string>("AlbumTitle");
+                    Console.WriteLine($"AlbumId : {albumId} AlbumTitle : {albumTitle}.");
+                    albums.Add(new Album
+                    {
+                        AlbumId = albumId,
+                        AlbumTitle = albumTitle,
+                    });
                 }
             }
+            return albums;
         }
     }
 }

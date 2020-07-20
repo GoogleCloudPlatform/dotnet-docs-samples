@@ -16,38 +16,41 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryDataWithTimestampColumnAsyncSample
 {
-    public static async Task QueryDataWithTimestampColumnAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Album>> QueryDataWithTimestampColumnAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        var albums = new List<Album>();
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
-            var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, MarketingBudget, LastUpdateTime FROM Albums");
+            var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, LastUpdateTime FROM Albums");
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    string budget = string.Empty;
-                    if (reader["MarketingBudget"] != DBNull.Value)
-                    {
-                        budget = reader.GetFieldValue<string>("MarketingBudget");
-                    }
-                    string timestamp = string.Empty;
+                    DateTime? timestamp = null;
                     if (reader["LastUpdateTime"] != DBNull.Value)
                     {
-                        timestamp = reader.GetFieldValue<string>("LastUpdateTime");
+                        timestamp = reader.GetFieldValue<DateTime>("LastUpdateTime");
                     }
-                    Console.WriteLine("SingerId : " + reader.GetFieldValue<string>("SingerId")
-                    + " AlbumId : " + reader.GetFieldValue<string>("AlbumId")
-                    + $" MarketingBudget : {budget}"
-                    + $" LastUpdateTime : {timestamp}");
+                    var singerId = reader.GetFieldValue<int>("SingerId");
+                    var albumId = reader.GetFieldValue<int>("AlbumId");
+                    Console.WriteLine($"SingerId : {singerId}  AlbumId : {albumId} LastUpdateTime : {timestamp}");
+                    albums.Add(new Album
+                    {
+                        SingerId = singerId,
+                        AlbumId = albumId,
+                        LastUpdateTime = timestamp
+                    });
                 }
             }
         }
+        return albums;
     }
 }
 // [END spanner_query_data_with_timestamp_column]

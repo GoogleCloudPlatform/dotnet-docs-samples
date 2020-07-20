@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 public class GetBackupsSample
 {
-    public IEnumerable<Backup> SpannerGetBackups(string projectId, string instanceId, string databaseId, string backupId)
+    public IEnumerable<Backup> GetBackups(string projectId, string instanceId, string databaseId, string backupId)
     {
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();

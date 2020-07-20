@@ -15,11 +15,13 @@
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Admin.Instance.V1;
 using Google.Cloud.Spanner.Common.V1;
+using Google.Cloud.Spanner.Data;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 [CollectionDefinition(nameof(SpannerFixture))]
@@ -27,12 +29,13 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
 {
     public string ProjectId { get; set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // Allow environment variables to override the default instance and database names.
-    public string InstanceId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
+    public string InstanceId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "lalji-test-spanner-refactor";
     public string DatabaseId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string BackupDatabaseId { get; set; } = "my-test-database";
     public string BackupId { get; set; } = "my-test-database-backup";
     public string ToBeCancelledBackupId { get; set; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string RestoredDatabaseId { get; set; } = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public List<string> DatabasesToDelete { get; set; } = new List<string>();
 
     public SpannerFixture()
     {
@@ -123,6 +126,7 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
         AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
         AddIndexAsyncSample addIndexAsyncSample = new AddIndexAsyncSample();
+        AddStoringIndexAsyncSample addStoringIndexAsyncSample = new AddStoringIndexAsyncSample();
         CreateTableWithDatatypesAsyncSample createTableWithDatatypesAsyncSample = new CreateTableWithDatatypesAsyncSample();
         WriteDatatypesDataAsyncSample writeDatatypesDataAsyncSample = new WriteDatatypesDataAsyncSample();
         createDatabaseAsyncSample.CreateDatabaseAsyncAsync(ProjectId, InstanceId, DatabaseId).Wait();
@@ -135,6 +139,10 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         createTableWithDatatypesAsyncSample.CreateTableWithDatatypesAsync(ProjectId, InstanceId, DatabaseId).Wait();
         // Write data to the new table.
         writeDatatypesDataAsyncSample.WriteDatatypesDataAsync(ProjectId, InstanceId, DatabaseId).Wait();
+        // Add storing Index on table.
+        addStoringIndexAsyncSample.AddStoringIndexAsync(ProjectId, InstanceId, DatabaseId).Wait();
+        // Update the value of MarketingBudgets.
+        RefillMarketingBudgetsAsync(300000, 300000).Wait();
     }
 
     void InitializeBackup()
@@ -150,7 +158,7 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         catch (Exception e)
         {
             // We intentionally keep an existing database around to reduce the
-            // the likelihood of test timetouts when creating a backup so
+            // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
             if (e.ToString().Contains("Database already exists"))
             {
@@ -169,7 +177,7 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
         {
             // We intentionally keep an existing backup around to reduce the
-            // the likelihood of test timetouts when creating a backup so
+            // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
             if (e.ToString().Contains("Backup already exists"))
             {
@@ -194,10 +202,50 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         }
     }
 
+    public IEnumerable<Database> GetDatabases()
+    {
+        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+        InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
+        var databases = databaseAdminClient.ListDatabases(instanceName);
+        return databases;
+    }
+
+    public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget)
+    {
+        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
+        // Create connection to Cloud Spanner.
+        using (var connection = new SpannerConnection(connectionString))
+        {
+            await connection.OpenAsync();
+            var cmd = connection.CreateUpdateCommand("Albums",
+            new SpannerParameterCollection
+            {
+                    {"SingerId", SpannerDbType.Int64},
+                    {"AlbumId", SpannerDbType.Int64},
+                    {"MarketingBudget", SpannerDbType.Int64},
+            });
+            for (int i = 1; i <= 2; ++i)
+            {
+                cmd.Parameters["SingerId"].Value = i;
+                cmd.Parameters["AlbumId"].Value = i;
+                cmd.Parameters["MarketingBudget"].Value = i == 1 ? firstAlbumBudget : secondAlbumBudget;
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+    }
+
     public void Dispose()
     {
+        DatabasesToDelete.AddRange(new List<string> { DatabaseId, RestoredDatabaseId });
         DeleteDatabaseAsyncSample deleteDatabaseAsyncSample = new DeleteDatabaseAsyncSample();
-        deleteDatabaseAsyncSample.DeleteDatabaseAsync(ProjectId, InstanceId, DatabaseId).Wait();
-        deleteDatabaseAsyncSample.DeleteDatabaseAsync(ProjectId, InstanceId, RestoredDatabaseId).Wait();
+        foreach (var databaseId in DatabasesToDelete)
+        {
+            try
+            {
+                deleteDatabaseAsyncSample.DeleteDatabaseAsync(ProjectId, InstanceId, databaseId).Wait();
+            }
+            catch (Exception) { }
+        }
+
     }
 }

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_dml_batch_insert]
+
 using Google.Cloud.Spanner.Data;
 using System;
 using System.Threading.Tasks;
@@ -76,3 +78,4 @@ public class BatchInsertRecordsAsyncSample
         Console.WriteLine("Done inserting sample records...");
     }
 }
+// [END spanner_dml_batch_insert]

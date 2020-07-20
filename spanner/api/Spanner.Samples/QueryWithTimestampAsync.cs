@@ -16,11 +16,12 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryWithTimestampAsyncSample
 {
-    public async Task QueryWithTimestampAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Venue>> QueryWithTimestampAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create a DateTime timestamp object to use for querying.
@@ -28,22 +29,30 @@ public class QueryWithTimestampAsyncSample
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
+            var venues = new List<Venue>();
             var cmd = connection.CreateSelectCommand("SELECT VenueId, VenueName, LastUpdateTime FROM Venues WHERE LastUpdateTime < @ExampleTimestamp");
             cmd.Parameters.Add("ExampleTimestamp", SpannerDbType.Timestamp, exampleTimestamp);
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    string timestamp = string.Empty;
+                    DateTime timestamp = new DateTime();
                     if (reader["LastUpdateTime"] != DBNull.Value)
                     {
-                        timestamp = reader.GetFieldValue<string>("LastUpdateTime");
+                        timestamp = reader.GetFieldValue<DateTime>("LastUpdateTime");
                     }
-                    Console.WriteLine("VenueId : " + reader.GetFieldValue<string>("VenueId")
-                    + " VenueName : " + reader.GetFieldValue<string>("VenueName")
-                    + $" LastUpdateTime : {timestamp}");
+                    var venueId = reader.GetFieldValue<int>("VenueId");
+                    var venueName = reader.GetFieldValue<string>("VenueName");
+                    Console.WriteLine($"VenueId : {venueId}  VenueName : {venueName} LastUpdateTime : {timestamp}");
+                    venues.Add(new Venue
+                    {
+                        VenueId = venueId,
+                        VenueName = venueName,
+                        LastUpdateTime = timestamp
+                    });
                 }
             }
+            return venues;
         }
     }
 }

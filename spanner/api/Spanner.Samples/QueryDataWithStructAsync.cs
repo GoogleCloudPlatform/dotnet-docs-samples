@@ -16,11 +16,12 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryDataWithStructAsyncSample
 {
-    public async Task QueryDataWithStructAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<int>> QueryDataWithStructAsync(string projectId, string instanceId, string databaseId)
     {
         // [START spanner_create_struct_with_data]
         var nameStruct = new SpannerStruct
@@ -31,6 +32,7 @@ public class QueryDataWithStructAsyncSample
         // [END spanner_create_struct_with_data]
 
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        var singerIds = new List<int>();
         using (var connection = new SpannerConnection(connectionString))
         {
             using (var cmd = connection.CreateSelectCommand(
@@ -43,11 +45,14 @@ public class QueryDataWithStructAsyncSample
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine(reader.GetFieldValue<string>("SingerId"));
+                        var singerId = reader.GetFieldValue<int>("SingerId");
+                        singerIds.Add(singerId);
+                        Console.WriteLine($"SingerId: {singerId}");
                     }
                 }
             }
         }
+        return singerIds;
     }
 }
 // [END spanner_query_data_with_struct]

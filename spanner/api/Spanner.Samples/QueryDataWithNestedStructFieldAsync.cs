@@ -16,11 +16,12 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryDataWithNestedStructFieldAsyncSample
 {
-    public async Task QueryDataWithNestedStructFieldAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<int>> QueryDataWithNestedStructFieldAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         SpannerStruct name1 = new SpannerStruct
@@ -39,6 +40,7 @@ public class QueryDataWithNestedStructFieldAsyncSample
             { "artistNames", SpannerDbType.ArrayOf(name1.GetSpannerDbType()), new[] { name1, name2 } }
         };
 
+        var singerIds = new List<int>();
         using (var connection = new SpannerConnection(connectionString))
         {
             using (var cmd = connection.CreateSelectCommand(
@@ -51,12 +53,15 @@ public class QueryDataWithNestedStructFieldAsyncSample
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine(reader.GetFieldValue<string>("SingerId"));
+                        var singerId = reader.GetFieldValue<int>("SingerId");
+                        Console.WriteLine($"SingerId: {singerId}");
                         Console.WriteLine(reader.GetFieldValue<string>(1));
+                        singerIds.Add(singerId);
                     }
                 }
             }
         }
+        return singerIds;
     }
 }
 // [END spanner_field_access_on_nested_struct_parameters]

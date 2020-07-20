@@ -22,7 +22,7 @@ using System;
 
 public class CancelBackupOperationSample
 {
-    public void CancelBackupOperation(string projectId, string instanceId, string databaseId, string backupId)
+    public bool CancelBackupOperation(string projectId, string instanceId, string databaseId, string backupId)
     {
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
@@ -54,6 +54,7 @@ public class CancelBackupOperationSample
         }
 
         Console.WriteLine($"Create backup operation cancelled: {operation.Name}");
+        return completedOperation.IsFaulted;
     }
 }
 // [END spanner_cancel_backup_create]

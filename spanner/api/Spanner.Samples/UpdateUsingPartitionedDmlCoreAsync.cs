@@ -29,7 +29,7 @@ public class UpdateUsingPartitionedDmlCoreAsyncSample
         {
             await connection.OpenAsync();
 
-            SpannerCommand cmd = connection.CreateDmlCommand("UPDATE Albums SET MarketingBudget = 100000 WHERE SingerId > 1");
+            SpannerCommand cmd = connection.CreateDmlCommand("UPDATE Albums SET MarketingBudget = 100000 WHERE SingerId = 1");
             long rowCount = await cmd.ExecutePartitionedUpdateAsync();
 
             Console.WriteLine($"{rowCount} row(s) updated...");

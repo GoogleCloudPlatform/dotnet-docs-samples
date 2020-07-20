@@ -20,19 +20,17 @@ using System.Threading.Tasks;
 
 public class ReadWriteWithTransactionCoreAsyncSample
 {
-    public async Task ReadWriteWithTransactionCoreAsync(string projectId, string instanceId, string databaseId)
+    public async Task<int> ReadWriteWithTransactionCoreAsync(string projectId, string instanceId, string databaseId)
     {
-        // This sample transfers 200,000 from the MarketingBudget
+        // This sample transfers 20,000 from the MarketingBudget
         // field of the second Album to the first Album. Make sure to run
         // the addColumn and writeDataToNewColumn samples first,
         // in that order.
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
-        decimal transferAmount = 200000;
+        decimal transferAmount = 20000;
         decimal secondBudget = 0;
         decimal firstBudget = 0;
-
-        Console.WriteLine(".NetCore API sample.");
 
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
@@ -86,18 +84,19 @@ public class ReadWriteWithTransactionCoreAsyncSample
                 cmd.Parameters["SingerId"].Value = 2;
                 cmd.Parameters["AlbumId"].Value = 2;
                 cmd.Parameters["MarketingBudget"].Value = secondBudget;
-                await cmd.ExecuteNonQueryAsync();
+                var rowCount = await cmd.ExecuteNonQueryAsync();
 
                 // Update first album to add the transfer amount.
                 firstBudget += transferAmount;
                 cmd.Parameters["SingerId"].Value = 1;
                 cmd.Parameters["AlbumId"].Value = 1;
                 cmd.Parameters["MarketingBudget"].Value = firstBudget;
-                await cmd.ExecuteNonQueryAsync();
+                rowCount += await cmd.ExecuteNonQueryAsync();
 
                 await transaction.CommitAsync();
+                Console.WriteLine("Transaction complete.");
+                return rowCount;
             }
-            Console.WriteLine("Transaction complete.");
         }
     }
 }

@@ -16,15 +16,17 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryWithBoolAsyncSample
 {
-    public async Task QueryWithBoolAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Venue>> QueryWithBoolAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        var venues = new List<Venue>();
         // Create a Boolean to use for querying.
-        Boolean exampleBool = true;
+        bool exampleBool = true;
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
@@ -36,12 +38,20 @@ public class QueryWithBoolAsyncSample
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine(reader.GetFieldValue<string>("VenueId")
-                        + " " + reader.GetFieldValue<string>("VenueName")
-                        + " " + reader.GetFieldValue<string>("OutdoorVenue"));
+                    var venueId = reader.GetFieldValue<int>("VenueId");
+                    var venueName = reader.GetFieldValue<string>("VenueName");
+                    var outdoorVenue = reader.GetFieldValue<bool>("OutdoorVenue");
+                    Console.WriteLine($"VenueId: {venueId} VenueName:{venueName } OutdoorVenue:{outdoorVenue}");
+                    venues.Add(new Venue
+                    {
+                        VenueId = venueId,
+                        VenueName = venueName,
+                        OutdoorVenue = outdoorVenue
+                    });
                 }
             }
         }
+        return venues;
     }
 }
 // [END spanner_query_with_bool_parameter]

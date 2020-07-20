@@ -16,13 +16,15 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryWithDateAsyncSample
 {
-    public async Task QueryWithDateAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Venue>> QueryWithDateAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        var venues = new List<Venue>();
         // Create a Date object to use for querying.
         DateTime exampleDate = new DateTime(2019, 01, 01);
         // Create connection to Cloud Spanner.
@@ -34,12 +36,20 @@ public class QueryWithDateAsyncSample
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine(reader.GetFieldValue<string>("VenueId")
-                        + " " + reader.GetFieldValue<string>("VenueName")
-                        + " " + reader.GetFieldValue<string>("LastContactDate"));
+                    var venueId = reader.GetFieldValue<int>("VenueId");
+                    var venueName = reader.GetFieldValue<string>("VenueName");
+                    var lastContactDate = reader.GetFieldValue<DateTime>("LastContactDate");
+                    Console.WriteLine($"VenueId: {venueId} VenueName: {venueName} LastContactDate:{lastContactDate}");
+                    venues.Add(new Venue
+                    {
+                        VenueId = venueId,
+                        VenueName = venueName,
+                        LastContactDate = lastContactDate
+                    });
                 }
             }
         }
+        return venues;
     }
 }
 // [END spanner_query_with_date_parameter]

@@ -21,7 +21,7 @@ using System.Transactions;
 
 public class ReadWriteWithTransactionAsyncSample
 {
-    public async Task ReadWriteWithTransactionAsync(string projectId, string instanceId, string databaseId)
+    public async Task<int> ReadWriteWithTransactionAsync(string projectId, string instanceId, string databaseId)
     {
         // This sample transfers 200,000 from the MarketingBudget
         // field of the second Album to the first Album. Make sure to run
@@ -79,16 +79,17 @@ public class ReadWriteWithTransactionAsyncSample
                 cmd.Parameters["SingerId"].Value = 2;
                 cmd.Parameters["AlbumId"].Value = 2;
                 cmd.Parameters["MarketingBudget"].Value = secondBudget;
-                await cmd.ExecuteNonQueryAsync();
+                var rowCount = await cmd.ExecuteNonQueryAsync();
 
                 // Update first album to add the transfer amount.
                 firstBudget += transferAmount;
                 cmd.Parameters["SingerId"].Value = 1;
                 cmd.Parameters["AlbumId"].Value = 1;
                 cmd.Parameters["MarketingBudget"].Value = firstBudget;
-                await cmd.ExecuteNonQueryAsync();
+                rowCount += await cmd.ExecuteNonQueryAsync();
                 scope.Complete();
                 Console.WriteLine("Transaction complete.");
+                return rowCount;
             }
         }
     }

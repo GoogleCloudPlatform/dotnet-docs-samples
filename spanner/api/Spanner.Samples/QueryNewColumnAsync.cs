@@ -16,13 +16,15 @@
 
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class QueryNewColumnAsyncSample
 {
-    public async Task QueryNewColumnAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Album>> QueryNewColumnAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        var albums = new List<Album>();
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
@@ -31,17 +33,23 @@ public class QueryNewColumnAsyncSample
             {
                 while (await reader.ReadAsync())
                 {
-                    string budget = string.Empty;
+                    long? budget = null;
                     if (reader["MarketingBudget"] != DBNull.Value)
                     {
-                        budget = reader.GetFieldValue<string>("MarketingBudget");
+                        budget = reader.GetFieldValue<long>("MarketingBudget");
                     }
-                    Console.WriteLine("SingerId : " + reader.GetFieldValue<string>("SingerId")
-                    + " AlbumId : " + reader.GetFieldValue<string>("AlbumId")
-                    + $" MarketingBudget : {budget}");
+                    var singerId = reader.GetFieldValue<int>("SingerId");
+                    var albumId = reader.GetFieldValue<int>("AlbumId");
+                    albums.Add(new Album
+                    {
+                        SingerId = singerId,
+                        AlbumId = albumId,
+                        MarketingBudget = budget == null ? null : budget
+                    }); ;
                 }
             }
         }
+        return albums;
     }
 }
 // [END spanner_query_data_with_new_column]
