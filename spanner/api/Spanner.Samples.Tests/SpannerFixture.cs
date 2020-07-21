@@ -28,7 +28,7 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
 {
     public string ProjectId { get; set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // Allow environment variables to override the default instance and database names.
-    public string InstanceId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "lalji-test-spanner-refactor";
+    public string InstanceId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
     public string DatabaseId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string BackupDatabaseId { get; set; } = "my-test-database";
     public string BackupId { get; set; } = "my-test-database-backup";
