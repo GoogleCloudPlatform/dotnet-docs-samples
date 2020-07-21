@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ using System.Threading.Tasks;
 
 public class BatchReadRecordsAsyncSample
 {
-    int s_rowsRead;
-    int s_partitionId;
+    private int _rowsRead;
+    private int _partitionId;
     public async Task<List<int>> BatchReadRecordsAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
@@ -42,14 +42,14 @@ public class BatchReadRecordsAsyncSample
                 await Task.WhenAll(partitions.Select(x => DistributedReadWorkerAsync(x, transactionId)))
                     .ConfigureAwait(false);
             }
-            Console.WriteLine($"Done reading!  Total rows read: {s_rowsRead:N0} with {s_partitionId} partition(s)");
-            return new List<int> { s_rowsRead, s_partitionId };
+            Console.WriteLine($"Done reading!  Total rows read: {_rowsRead:N0} with {_partitionId} partition(s)");
+            return new List<int> { _rowsRead, _partitionId };
         }
     }
 
     private async Task DistributedReadWorkerAsync(CommandPartition readPartition, TransactionId id)
     {
-        var localId = Interlocked.Increment(ref s_partitionId);
+        var localId = Interlocked.Increment(ref _partitionId);
         using (var connection = new SpannerConnection(id.ConnectionString))
         using (var transaction = connection.BeginReadOnlyTransaction(id))
         {
@@ -59,7 +59,7 @@ public class BatchReadRecordsAsyncSample
                 {
                     while (await reader.ReadAsync())
                     {
-                        Interlocked.Increment(ref s_rowsRead);
+                        Interlocked.Increment(ref _rowsRead);
                         Console.WriteLine($"Partition ({localId}) "
                             + $"{reader.GetFieldValue<string>("SingerId")}"
                             + $" {reader.GetFieldValue<string>("FirstName")}"

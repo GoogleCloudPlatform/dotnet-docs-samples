@@ -29,7 +29,6 @@ public class DeleteBackupSample
         databaseAdminClient.DeleteBackup(backupAsBackupName);
 
         Console.WriteLine("Backup deleted successfully.");
-
     }
 }
 // [END spanner_delete_backup]

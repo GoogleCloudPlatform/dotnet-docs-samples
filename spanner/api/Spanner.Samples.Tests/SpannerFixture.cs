@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,13 +38,34 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
 
     public SpannerFixture()
     {
-        DeleteStaleBackupsAndDatabases();
-        InitializeInstance();
+        // Don't need to cleanup stale Backups and Databases when instance is new.
+        var isExistingInstance = InitializeInstance();
+        if (isExistingInstance)
+        {
+            DeleteStaleBackupsAndDatabases();
+        }
         InitializeDatabase();
         InitializeBackup();
     }
 
-    void DeleteStaleBackupsAndDatabases()
+    private bool InitializeInstance()
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
+        try
+        {
+            Instance response = instanceAdminClient.GetInstance(instanceName);
+            return true;
+        }
+        catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
+        {
+            CreateInstanceSample createInstanceSample = new CreateInstanceSample();
+            createInstanceSample.CreateInstance(ProjectId, InstanceId);
+            return false;
+        }
+    }
+
+    private void DeleteStaleBackupsAndDatabases()
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
@@ -101,22 +122,7 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         }
     }
 
-    void InitializeInstance()
-    {
-        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
-        try
-        {
-            InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-            Instance response = instanceAdminClient.GetInstance(instanceName);
-        }
-        catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
-        {
-            CreateInstanceSample createInstanceSample = new CreateInstanceSample();
-            createInstanceSample.CreateInstance(ProjectId, InstanceId);
-        }
-    }
-
-    void InitializeDatabase()
+    private void InitializeDatabase()
     {
         // If the database has not been initialized, retry.
         CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
@@ -144,7 +150,7 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         RefillMarketingBudgetsAsync(300000, 300000).Wait();
     }
 
-    void InitializeBackup()
+    private void InitializeBackup()
     {
         // Sample database for backup and restore tests.
         try
@@ -154,20 +160,14 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
             createDatabaseAsyncSample.CreateDatabaseAsyncAsync(ProjectId, InstanceId, BackupDatabaseId).Wait();
             insertSampleDataAsyncSample.InsertSampleDataAsync(ProjectId, InstanceId, BackupDatabaseId).Wait();
         }
-        catch (Exception e)
+        catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.AlreadyExists)
         {
             // We intentionally keep an existing database around to reduce the
             // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
-            if (e.ToString().Contains("Database already exists"))
-            {
-                Console.WriteLine($"Database {BackupDatabaseId} already exists.");
-            }
-            else
-            {
-                throw;
-            }
+            Console.WriteLine($"Database {BackupDatabaseId} already exists.");
         }
+
         try
         {
             CreateBackupSample createBackupSample = new CreateBackupSample();
@@ -178,18 +178,11 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
             // We intentionally keep an existing backup around to reduce the
             // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
-            if (e.ToString().Contains("Backup already exists"))
-            {
-                Console.WriteLine($"Backup {BackupId} already exists.");
-            }
-            else
-            {
-                throw;
-            }
+            Console.WriteLine($"Backup {BackupId} already exists.");
         }
         catch (RpcException e) when (e.StatusCode == StatusCode.FailedPrecondition)
         {
-            // it's ok backup has been in progress in another test cycle.
+            // It's ok backup has been in progress in another test cycle.
             if (e.Message.Contains("maximum number of pending backups (1) for the database has been reached"))
             {
                 Console.WriteLine($"Backup {BackupId} already in progress.");
@@ -245,6 +238,5 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
             }
             catch (Exception) { }
         }
-
     }
 }
