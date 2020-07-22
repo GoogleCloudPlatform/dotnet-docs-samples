@@ -337,15 +337,6 @@ function Run-TestScripts($TimeoutSeconds=300) {
     Run-TestScriptsOnce $scripts $TimeoutSeconds 'Starting' $results
     # Rename all the test logs to a name Sponge will find.
     Get-ChildItem -Recurse TestResults.xml | Rename-Item -Force -NewName 01_sponge_log.xml
-    # Retry the failures once.
-    $failed = $results['Failed']
-    if ($failed) {
-        $results['Failed'] = @()
-        Run-TestScriptsOnce ($failed | Get-Item) $TimeoutSeconds `
-            'Retrying' $results
-        # Rename all the test logs to a name Sponge will find.
-        Get-ChildItem -Recurse TestResults.xml | Rename-Item -Force -NewName 02_sponge_log.xml
-    }
 
     # Print a final summary.
     Write-Output ("=" * 79)
