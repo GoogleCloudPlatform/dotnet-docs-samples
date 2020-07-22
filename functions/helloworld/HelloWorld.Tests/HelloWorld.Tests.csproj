@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HelloGcsGeneric\HelloGcsGeneric.csproj" />
     <ProjectReference Include="..\HelloGcs\HelloGcs.csproj" />
     <ProjectReference Include="..\HelloHttp\HelloHttp.csproj" />
   </ItemGroup>

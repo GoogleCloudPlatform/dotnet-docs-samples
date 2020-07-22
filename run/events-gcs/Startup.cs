@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 public class Startup
 {
@@ -26,12 +27,14 @@ public class Startup
     {
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
     {
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
+
+        logger.LogInformation("Service is starting...");
 
         app.UseRouting();
 
@@ -39,7 +42,10 @@ public class Startup
         {
             endpoints.MapPost("/", async context =>
             {
+                logger.LogInformation("Handling HTTP POST");
+
                 var ceSubject = context.Request.Headers["ce-subject"];
+                logger.LogInformation($"ce-subject: {ceSubject}");
 
                 if (string.IsNullOrEmpty(ceSubject))
                 {
