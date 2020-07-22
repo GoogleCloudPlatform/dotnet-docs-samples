@@ -17,8 +17,4 @@ Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 Require-Platform Win*
 Set-TestTimeout 1800
 
-BackupAndEdit-TextFile "..\QuickStart\Program.cs" `
-    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{
-    dotnet test --test-adapter-path:. --logger:junit -v n
-}
+ dotnet test --test-adapter-path:. --logger:junit -v n
