@@ -20,5 +20,5 @@ Set-TestTimeout 1800
 BackupAndEdit-TextFile "..\QuickStart\Program.cs" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {
-    dotnet test --test-adapter-path:. --logger:junit -v n
+    dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
 }

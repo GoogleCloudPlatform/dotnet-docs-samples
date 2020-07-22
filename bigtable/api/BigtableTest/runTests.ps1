@@ -21,7 +21,5 @@ BackupAndEdit-TextFile "..\QuickStart\QuickStart.cs", "..\HelloWorld\HelloWorld.
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID;
     "YOUR-INSTANCE-ID" = $env:TEST_BIGTABLE_INSTANCE;} `
 {
-    dotnet restore
-    dotnet build
-    dotnet test --test-adapter-path:. --logger:junit -v n
+    dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
 }
