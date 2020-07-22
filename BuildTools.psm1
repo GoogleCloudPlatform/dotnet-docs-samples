@@ -263,7 +263,7 @@ function Run-TestScriptsOnce([array]$Scripts, [int]$TimeoutSeconds,
         Write-Output "$verb $relativePath..."
         $job = Start-Job -ArgumentList $relativePath, $script.Directory, `
             ('.\"{0}"' -f $script.Name) {
-            $ErrorActionPreference = "Stop"
+            $ErrorActionPreference = "Continue"
             Write-Output ("-" * 79)
             Write-Output $args[0]
             Set-Location $args[1]
