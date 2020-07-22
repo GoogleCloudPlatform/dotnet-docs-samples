@@ -21,8 +21,10 @@ using System;
 
 public class BatchGetAssetsHistorySample
 {
-    public BatchGetAssetsHistoryResponse BatchGetAssetsHistory(string[] assetNames, string projectId)
+    public BatchGetAssetsHistoryResponse BatchGetAssetsHistory(string assetName, string projectId)
     {
+        string[] assetNames = { assetName };
+        
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
 

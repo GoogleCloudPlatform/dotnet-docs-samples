@@ -34,7 +34,7 @@ public class BatchGetAssetsHistoryTest
     {
         // Run the sample code.
         string assetName = String.Format("//storage.googleapis.com/{0}", _fixture.BucketName);
-        var result = _sample.BatchGetAssetsHistory(new string[] { assetName }, _fixture.ProjectId);
+        var result = _sample.BatchGetAssetsHistory(assetName, _fixture.ProjectId);
 
         Assert.Contains(assetName, result.ToString());
     }
