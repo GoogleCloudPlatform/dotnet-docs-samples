@@ -22,8 +22,8 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     public readonly string ProjectId;
     public List<string> TempBucketNames { get; set; } = new List<string>();
     public SortedDictionary<string, SortedSet<string>> TempBucketFiles { get; set; } = new SortedDictionary<string, SortedSet<string>>();
-    public string BucketName { get; private set; } = Guid.NewGuid().ToString(); //"lalji-test-bucket";//
-    public string BucketName1 { get; private set; } = Guid.NewGuid().ToString(); //"lalji-test-regional-bucket";// 
+    public string BucketName { get; private set; } = Guid.NewGuid().ToString();
+    public string BucketName1 { get; private set; } = Guid.NewGuid().ToString();
     public string FileName { get; private set; } = "Hello.txt";
     public string FilePath { get; private set; } = "Resources/Hello.txt";
     public string KmsKeyRing { get; private set; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYRING");
