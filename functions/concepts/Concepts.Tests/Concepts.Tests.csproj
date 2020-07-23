@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EnvironmentVariables\EnvironmentVariables.csproj" />
     <ProjectReference Include="..\ExecutionCount\ExecutionCount.csproj" />
+    <ProjectReference Include="..\FileSystem\FileSystem.csproj" />
     <ProjectReference Include="..\Scopes\Scopes.csproj" />
   </ItemGroup>
 

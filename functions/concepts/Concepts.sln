@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvironmentVariables", "Env
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExecutionCount", "ExecutionCount\ExecutionCount.csproj", "{71D5BD80-F1F7-413A-9193-3DF915FFA234}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSystem", "FileSystem\FileSystem.csproj", "{485E69A5-3B78-4318-8244-B43FEA5B221F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{71D5BD80-F1F7-413A-9193-3DF915FFA234}.Release|x64.Build.0 = Release|Any CPU
 		{71D5BD80-F1F7-413A-9193-3DF915FFA234}.Release|x86.ActiveCfg = Release|Any CPU
 		{71D5BD80-F1F7-413A-9193-3DF915FFA234}.Release|x86.Build.0 = Release|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Debug|x64.Build.0 = Debug|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Debug|x86.Build.0 = Debug|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Release|x64.ActiveCfg = Release|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Release|x64.Build.0 = Release|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Release|x86.ActiveCfg = Release|Any CPU
+		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
