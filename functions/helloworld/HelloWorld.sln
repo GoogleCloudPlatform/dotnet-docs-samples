@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloGcsGeneric", "HelloGcs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloPubSub", "HelloPubSub\HelloPubSub.csproj", "{273F9215-252E-4744-BA14-89EAE97FC643}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "HelloWorld\HelloWorld.csproj", "{9B9AC273-1178-4E03-A12F-7B92495B79CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{273F9215-252E-4744-BA14-89EAE97FC643}.Release|x64.Build.0 = Release|Any CPU
 		{273F9215-252E-4744-BA14-89EAE97FC643}.Release|x86.ActiveCfg = Release|Any CPU
 		{273F9215-252E-4744-BA14-89EAE97FC643}.Release|x86.Build.0 = Release|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Debug|x64.Build.0 = Debug|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Debug|x86.Build.0 = Debug|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Release|x64.ActiveCfg = Release|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Release|x64.Build.0 = Release|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Release|x86.ActiveCfg = Release|Any CPU
+		{9B9AC273-1178-4E03-A12F-7B92495B79CB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
