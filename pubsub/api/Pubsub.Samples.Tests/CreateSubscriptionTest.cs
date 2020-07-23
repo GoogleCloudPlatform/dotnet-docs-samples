@@ -29,8 +29,9 @@ public class CreateSubscriptionTest
     [Fact]
     public void CreateSubscription()
     {
-        string topicId = "testTopicForSubscriptionCreation" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForSubscriptionCreation" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForSubscriptionCreation{randomName}";
+        string subscriptionId = $"testSubscriptionForSubscriptionCreation{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         var newlyCreatedSubscription = _createSubscriptionSample.CreateSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId);

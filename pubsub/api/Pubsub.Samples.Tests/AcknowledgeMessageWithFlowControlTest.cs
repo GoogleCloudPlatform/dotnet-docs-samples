@@ -31,8 +31,9 @@ public class AcknowledgeMessageWithFlowControlTest
     [Fact]
     public async void AcknowledgeMessageWithFlowControl()
     {
-        string topicId = "testTopicForMessageWithFlowControlAck" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForMessageWithFlowControlAck" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForMessageWithFlowControlAck{randomName}";
+        string subscriptionId = $"testSubscriptionForMessageWithFlowControlAck{randomName}";
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);

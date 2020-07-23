@@ -23,7 +23,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public readonly string ProjectId;
     public List<string> TempTopicIds { get; set; } = new List<string>();
     public List<string> TempSubscriptionIds { get; set; } = new List<string>();
-    public string DeadLetterTopic { get; set; } = $"testDeadLetterTopic-{Guid.NewGuid().ToString().Substring(0, 18)}";
+    public string DeadLetterTopic { get; set; } = $"testDeadLetterTopic{Guid.NewGuid().ToString().Substring(0, 18)}";
 
     public PubsubFixture()
     {

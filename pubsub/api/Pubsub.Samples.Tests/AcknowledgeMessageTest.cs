@@ -31,8 +31,9 @@ public class AcknowledgeMessageTest
     [Fact]
     public async void AcknowledgeMessage()
     {
-        string topicId = "testTopicForMessageAck" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForMessageAck" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForMessageAck{randomName}";
+        string subscriptionId = $"testSubscriptionForMessageAck{randomName}";
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);

@@ -31,8 +31,9 @@ public class PullMessagesSyncTest
     [Fact]
     public async void PullMessagesSync()
     {
-        string topicId = "testTopicForMessageSyncAck" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForMessageSyncAck" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForMessageSyncAck{randomName}";
+        string subscriptionId = $"testSubscriptionForMessageSyncAck{randomName}";
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);
