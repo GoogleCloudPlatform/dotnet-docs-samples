@@ -19,7 +19,7 @@ using Xunit;
 
 namespace HelloWorld.Tests
 {
-    public class HelloPubSubTest : FunctionTestBase<HelloPubSub.Function>
+    public abstract class HelloPubSubTestBase<TFunction> : FunctionTestBase<TFunction>
     {
         [Fact]
         public async Task MessageWithTextData()
@@ -48,5 +48,15 @@ namespace HelloWorld.Tests
             Assert.Equal("Hello world", logEntry.Message);
             Assert.Equal(LogLevel.Information, logEntry.Level);
         }
+    }
+
+    // C# test
+    public class HelloPubSubTest : HelloPubSubTestBase<HelloPubSub.Function>
+    {
+    }
+
+    // VB test
+    public class HelloPubSubVbTest : HelloPubSubTestBase<HelloPubSubVb.CloudFunction>
+    {
     }
 }
