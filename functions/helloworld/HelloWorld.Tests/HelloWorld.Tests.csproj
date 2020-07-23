@@ -18,6 +18,7 @@
     <ProjectReference Include="..\HelloGcsGeneric\HelloGcsGeneric.csproj" />
     <ProjectReference Include="..\HelloGcs\HelloGcs.csproj" />
     <ProjectReference Include="..\HelloHttp\HelloHttp.csproj" />
+    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0-alpha03" />
   </ItemGroup>
 
 </Project>

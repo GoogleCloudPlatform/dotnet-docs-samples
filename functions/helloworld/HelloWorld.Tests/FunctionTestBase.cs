@@ -13,7 +13,14 @@
 // limitations under the License.
 
 using Google.Cloud.Functions.Invoker.Testing;
+using Google.Protobuf;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace HelloWorld.Tests
 {
@@ -27,5 +34,43 @@ namespace HelloWorld.Tests
         public FunctionTestBase() => Server = new FunctionTestServer<TFunction>();
 
         public void Dispose() => Server.Dispose();
+
+        /// <summary>
+        /// Calls the function with the given CloudEvent type and data. Note
+        /// that the source of the event will not correspond to the "real" source,
+        /// so this can't be used in situations where the function is source-sensitive.
+        /// </summary>
+        protected async Task ExecuteFunctionAsync(string cloudEventType, IMessage data)
+        {
+            using (var client = Server.CreateClient())
+            {
+
+                var request = new HttpRequestMessage
+                {
+                    RequestUri = new Uri("uri", UriKind.Relative),
+                    // CloudEvent headers
+                    Headers =
+                    {
+                        { "ce-type", cloudEventType },
+                        { "ce-id", "1234" },
+                        { "ce-source", "//source.googleapis.com/" },
+                        { "ce-datacontenttype", "application/json" },
+                        { "ce-specversion", "1.0" }
+                    },
+                    Content = new StringContent(data.ToString()),
+                    Method = HttpMethod.Post
+                };
+                var response = await client.SendAsync(request);
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            }
+        }
+
+        /// <summary>
+        /// Convenience method to retrieve all the log entries with a category
+        /// specified by the function's type name.
+        /// </summary>
+        /// <returns></returns>
+        protected IEnumerable<TestLogEntry> GetFunctionLogEntries() =>
+            Server.GetLogEntries(typeof(TFunction));
     }
 }
