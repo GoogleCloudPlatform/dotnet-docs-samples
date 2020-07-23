@@ -30,10 +30,10 @@ public class UpdateDeadLetterPolicySample
         // dead letter messages to.
         var deadLetterTopic = TopicName.FromProjectTopic(projectId, deadLetterTopicId).ToString();
 
-        
-       // Construct the subscription with the dead letter policy you expect to have after the update.
-       // Here, values in the required fields (name, topic) help identify the subscription.
-        var subscription = new Subscription()
+
+        // Construct the subscription with the dead letter policy you expect to have after the update.
+        // Here, values in the required fields (name, topic) help identify the subscription.
+        var subscription = new Subscription
         {
             SubscriptionName = subscriptionName,
             TopicAsTopicName = topicName,

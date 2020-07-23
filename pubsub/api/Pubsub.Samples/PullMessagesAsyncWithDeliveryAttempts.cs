@@ -29,18 +29,21 @@ public class PullMessagesAsyncWithDeliveryAttemptsSample
 
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
 
-        int messageCount = 0;
+        int deliveryAttempt = 0;
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             string text = Encoding.UTF8.GetString(message.Data.ToArray());
             System.Console.WriteLine($"Delivery Attempt: {message.GetDeliveryAttempt()}");
-            Interlocked.Increment(ref messageCount);
-            return acknowledge ? Task.FromResult(SubscriberClient.Reply.Ack) : Task.FromResult(SubscriberClient.Reply.Nack);
+            if (message.GetDeliveryAttempt() != null)
+            {
+                deliveryAttempt = message.GetDeliveryAttempt().Value;
+            }
+            return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);
         });
         // Run for 5 seconds.
         startTask.Wait(5000);
         await subscriber.StopAsync(CancellationToken.None);
-        return messageCount;
+        return deliveryAttempt;
     }
 }
 // [END pubsub_dead_letter_delivery_attempt]

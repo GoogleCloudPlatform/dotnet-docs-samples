@@ -28,7 +28,7 @@ public class CreateSubscriptionWithDeadLetterPolicySample
         var topicName = TopicName.FromProjectTopic(projectId, topicId);
         // This is an existing topic that the subscription with dead letter policy forwards dead letter messages to.
         var deadLetterTopic = TopicName.FromProjectTopic(projectId, deadLetterTopicId).ToString();
-        var subscriptionRequest = new Subscription()
+        var subscriptionRequest = new Subscription
         {
             SubscriptionName = subscriptionName,
             TopicAsTopicName = topicName,

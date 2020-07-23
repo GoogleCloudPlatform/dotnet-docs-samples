@@ -31,13 +31,12 @@ public class RemoveDeadLetterPolicyTest
     [Fact]
     public void RemoveDeadLetterPolicy()
     {
-        string topicId = "testTopicForDeadLetterPolicySubscriptionCreation" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForDeadLetterPolicySubscriptionCreation" + _pubsubFixture.RandomName();
-        string deadLetterTopicId = "testTopicForDeadLetter" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForRemoveDeadLetterPolicy{randomName}";
+        string subscriptionId = $"testSubscriptionForRemoveDeadLetterPolicy{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
-        _pubsubFixture.CreateTopic(deadLetterTopicId);
-        _createSubscriptionWithDeadLetterPolicySample.CreateSubscriptionWithDeadLetterPolicy(_pubsubFixture.ProjectId, subscriptionId, topicId, deadLetterTopicId);
+        _createSubscriptionWithDeadLetterPolicySample.CreateSubscriptionWithDeadLetterPolicy(_pubsubFixture.ProjectId, subscriptionId, topicId, _pubsubFixture.DeadLetterTopic);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
 
         _removeDeadLetterPolicySample.RemoveDeadLetterPolicy(_pubsubFixture.ProjectId, topicId, subscriptionId);

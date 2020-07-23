@@ -30,13 +30,11 @@ public class CreateSubscriptionWithDeadLetterPolicyTest
     public void CreateSubscriptionWithDeadLetterPolicy()
     {
         string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForDeadLetterPolicySubscriptionCreation{randomName}";
-        string subscriptionId = $"testSubscriptionForDeadLetterPolicySubscriptionCreation{randomName}";
-        string deadLetterTopicId = $"testTopicForDeadLetter{randomName}";
+        string topicId = $"testTopicForCreateSubscriptionWithDeadLetterPolicy{randomName}";
+        string subscriptionId = $"testSubscriptionForCreateSubscriptionWithDeadLetterPolicy{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
-        _pubsubFixture.CreateTopic(deadLetterTopicId);
-        _createSubscriptionWithDeadLetterPolicySample.CreateSubscriptionWithDeadLetterPolicy(_pubsubFixture.ProjectId, subscriptionId, topicId, deadLetterTopicId);
+        _createSubscriptionWithDeadLetterPolicySample.CreateSubscriptionWithDeadLetterPolicy(_pubsubFixture.ProjectId, subscriptionId, topicId, _pubsubFixture.DeadLetterTopic);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
         var subscription = _pubsubFixture.GetSubscription(subscriptionId);
 

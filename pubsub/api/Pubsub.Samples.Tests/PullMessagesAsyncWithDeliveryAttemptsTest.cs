@@ -35,24 +35,23 @@ public class PullMessagesAsyncWithDeliveryAttemptsTest
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForDeadLetterPolicyMessageSyncAck{randomName}";
-        string deadLetterTopicId = $"testTopicForDeadLetter{randomName}";
         string subscriptionId = $"testSubscriptionDeadLetterPolicyForMessageSyncAck{randomName}";
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);
-        _pubsubFixture.CreateTopic(deadLetterTopicId);
         _createSubscriptionWithDeadLetterPolicySample.CreateSubscriptionWithDeadLetterPolicy(
-           _pubsubFixture.ProjectId, subscriptionId, topicId, deadLetterTopicId);
+           _pubsubFixture.ProjectId, subscriptionId, topicId, _pubsubFixture.DeadLetterTopic);
+
+        _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
 
         await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message });
 
         // Pull and acknowledge the messages
-        var result = await _pullMessagesAsyncWithDeliveryAttemptsSample.PullMessagesAsyncWithDeliveryAttempts(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(result <= 1);
+        var deliveryAttempt = await _pullMessagesAsyncWithDeliveryAttemptsSample.PullMessagesAsyncWithDeliveryAttempts(_pubsubFixture.ProjectId, subscriptionId, false);
+        Assert.True(deliveryAttempt <= 1);
 
         //Pull the Message to confirm it's gone after it's acknowledged
-        result = await _pullMessagesAsyncWithDeliveryAttemptsSample.PullMessagesAsyncWithDeliveryAttempts(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(result <= 1);
-        _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
+        deliveryAttempt = await _pullMessagesAsyncWithDeliveryAttemptsSample.PullMessagesAsyncWithDeliveryAttempts(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.True(deliveryAttempt >= 1);
     }
 }
