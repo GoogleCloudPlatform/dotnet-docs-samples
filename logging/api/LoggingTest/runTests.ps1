@@ -18,6 +18,5 @@ $filesToProcess = "..\LoggingSample\Program.cs", "..\QuickStart\QuickStart.cs"
 BackupAndEdit-TextFile $filesToProcess `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {
-    dotnet restore
-    dotnet test --test-adapter-path:. --logger:junit
+    dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
 }

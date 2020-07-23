@@ -12,5 +12,4 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-dotnet restore
-dotnet build
+dotnet build 2>&1 | %{ "$_" }
