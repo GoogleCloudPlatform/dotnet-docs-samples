@@ -59,4 +59,9 @@ namespace HelloWorld.Tests
     public class HelloPubSubVbTest : HelloPubSubTestBase<HelloPubSubVb.CloudFunction>
     {
     }
+
+    // F# test
+    public class HelloPubSubFSharpTest : HelloPubSubTestBase<HelloPubSubFSharp.Function>
+    {
+    }
 }

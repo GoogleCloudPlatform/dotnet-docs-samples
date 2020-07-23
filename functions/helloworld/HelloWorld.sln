@@ -11,11 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloGcs", "HelloGcs\HelloG
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloGcsGeneric", "HelloGcsGeneric\HelloGcsGeneric.csproj", "{259B45D0-BD76-4CC0-B4E6-4FAA1E1F4237}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloPubSub", "HelloPubSub\HelloPubSub.csproj", "{273F9215-252E-4744-BA14-89EAE97FC643}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloPubSub", "HelloPubSub\HelloPubSub.csproj", "{273F9215-252E-4744-BA14-89EAE97FC643}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "HelloWorld\HelloWorld.csproj", "{9B9AC273-1178-4E03-A12F-7B92495B79CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld", "HelloWorld\HelloWorld.csproj", "{9B9AC273-1178-4E03-A12F-7B92495B79CB}"
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "HelloPubSubVb", "HelloPubSubVb\HelloPubSubVb.vbproj", "{F5D8E7A1-D758-475A-A21F-0ACEB6680BAB}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "HelloPubSubFSharp", "HelloPubSubFSharp\HelloPubSubFSharp.fsproj", "{107A8C51-54A5-4987-BEB5-2156F001A474}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,18 @@ Global
 		{F5D8E7A1-D758-475A-A21F-0ACEB6680BAB}.Release|x64.Build.0 = Release|Any CPU
 		{F5D8E7A1-D758-475A-A21F-0ACEB6680BAB}.Release|x86.ActiveCfg = Release|Any CPU
 		{F5D8E7A1-D758-475A-A21F-0ACEB6680BAB}.Release|x86.Build.0 = Release|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Debug|x64.Build.0 = Debug|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Debug|x86.Build.0 = Debug|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Release|Any CPU.Build.0 = Release|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Release|x64.ActiveCfg = Release|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Release|x64.Build.0 = Release|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Release|x86.ActiveCfg = Release|Any CPU
+		{107A8C51-54A5-4987-BEB5-2156F001A474}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
