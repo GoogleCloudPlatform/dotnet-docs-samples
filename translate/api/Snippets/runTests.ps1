@@ -12,5 +12,4 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-dotnet restore
-dotnet test --test-adapter-path:. --logger:junit
+dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
