@@ -32,7 +32,6 @@ public class BucketConditionalIamBindingTest
         ViewBucketIamMembersSample viewBucketIamMembersSample = new ViewBucketIamMembersSample();
         EnableUniformBucketLevelAccessSample enableUniformBucketLevelAccessSample = new EnableUniformBucketLevelAccessSample();
         DisableUniformBucketLevelAccessSample disableUniformBucketLevelAccessSample = new DisableUniformBucketLevelAccessSample();
-        string member = "230835935096-8io28ro0tvbbv612p5k6nstlaucmhnrq@developer.gserviceaccount.com";
         string memberType = "serviceAccount";
         string role = "roles/storage.objectViewer";
 
@@ -41,12 +40,12 @@ public class BucketConditionalIamBindingTest
 
         // Add Conditional Binding
         addBucketConditionalIamBindingSample.AddBucketConditionalIamBinding(_bucketFixture.BucketName,
-           role, $"{memberType}:{member}", "title", "description",
+           role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}", "title", "description",
            "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
 
         // View Bucket Iam Members
         var policy = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketName);
-        Assert.Contains(policy.Bindings, c => c.Members.Contains($"{memberType}:{member}"));
+        Assert.Contains(policy.Bindings, c => c.Members.Contains($"{memberType}:{_bucketFixture.ServiceAccountEmail}"));
 
         // Remove Conditional Binding
         removeBucketConditionalIamBindingSample.RemoveBucketConditionalIamBinding(_bucketFixture.BucketName,
@@ -54,7 +53,7 @@ public class BucketConditionalIamBindingTest
             "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
 
         policy = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketName);
-        Assert.DoesNotContain(policy.Bindings, c => c.Members.Contains($"{memberType}:{member}"));
+        Assert.DoesNotContain(policy.Bindings, c => c.Members.Contains($"{memberType}:{_bucketFixture.ServiceAccountEmail}"));
 
         // Disable Uniform bucket level access
         disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(_bucketFixture.BucketName);

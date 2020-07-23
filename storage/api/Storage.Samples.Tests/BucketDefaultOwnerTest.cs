@@ -28,15 +28,14 @@ public class BucketDefaultOwnerTest
     [Fact]
     public void BucketDefaultOwner()
     {
-        string userEmail = "230835935096-8io28ro0tvbbv612p5k6nstlaucmhnrq@developer.gserviceaccount.com";
         var addBucketDefaultOwnerSample = new AddBucketDefaultOwnerSample();
         RemoveBucketDefaultOwnerSample removeBucketDefaultOwnerSample = new RemoveBucketDefaultOwnerSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
 
-        var updatedBucket = addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketName, userEmail);
-        Assert.Contains(updatedBucket.DefaultObjectAcl.Where(c => c.Email != null && c.Role == "OWNER").Select(c => c.Email), c => c.Contains(userEmail));
+        var updatedBucket = addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketName, _bucketFixture.ServiceAccountEmail);
+        Assert.Contains(updatedBucket.DefaultObjectAcl.Where(c => c.Email != null && c.Role == "OWNER").Select(c => c.Email), c => c.Contains(_bucketFixture.ServiceAccountEmail));
 
-        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketName, userEmail);
+        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketName, _bucketFixture.ServiceAccountEmail);
         var metadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketName);
 
         Assert.Null(metadata.DefaultObjectAcl);

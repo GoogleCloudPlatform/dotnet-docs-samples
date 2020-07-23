@@ -29,6 +29,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     public string KmsKeyRing { get; private set; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYRING");
     public string KmsKeyName { get; private set; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYNAME");
     public string KmsKeyLocation { get; private set; } = "us-west1";
+    public string ServiceAccountEmail { get; private set; } = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
 
     public BucketFixture()
     {

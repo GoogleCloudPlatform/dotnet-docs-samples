@@ -30,12 +30,11 @@ public class BucketOwnerTest
         AddBucketOwnerSample addBucketOwnerSample = new AddBucketOwnerSample();
         RemoveBucketOwnerSample removeBucketOwnerSample = new RemoveBucketOwnerSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
-        string userEmail = "230835935096-8io28ro0tvbbv612p5k6nstlaucmhnrq@developer.gserviceaccount.com";
 
-        var result = addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketName, userEmail);
-        Assert.Contains(result.Acl, c => c.Role == "OWNER" && c.Email == userEmail);
+        var result = addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketName, _bucketFixture.ServiceAccountEmail);
+        Assert.Contains(result.Acl, c => c.Role == "OWNER" && c.Email == _bucketFixture.ServiceAccountEmail);
 
-        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketName, userEmail);
+        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketName, _bucketFixture.ServiceAccountEmail);
         result = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketName);
         Assert.Null(result.Acl);
     }

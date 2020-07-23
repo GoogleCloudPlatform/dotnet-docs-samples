@@ -34,7 +34,7 @@ public class PrintFileAclTest
         AddFileOwnerSample addFileOwnerSample = new AddFileOwnerSample();
         RemoveFileOwnerSample removeFileOwnerSample = new RemoveFileOwnerSample();
 
-        string userEmail = "230835935096-8io28ro0tvbbv612p5k6nstlaucmhnrq@developer.gserviceaccount.com";
+        string userEmail = _bucketFixture.ServiceAccountEmail;
         uploadFileSample.UploadFile(_bucketFixture.BucketName, _bucketFixture.FilePath, _bucketFixture.Collect("HelloAddObjectOwner.txt"));
 
         // print file acl
