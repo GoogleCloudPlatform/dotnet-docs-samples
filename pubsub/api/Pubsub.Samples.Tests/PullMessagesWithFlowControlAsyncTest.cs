@@ -15,24 +15,24 @@
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class AcknowledgeMessageTest
+public class PullMessagesWithFlowControlAsyncTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
-    private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
+    private readonly PullMessagesWithFlowControlAsyncSample _pullMessagesCustomAsyncSample;
 
-    public AcknowledgeMessageTest(PubsubFixture pubsubFixture)
+    public PullMessagesWithFlowControlAsyncTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
-        _pullMessagesAsyncSample = new PullMessagesAsyncSample();
+        _pullMessagesCustomAsyncSample = new PullMessagesWithFlowControlAsyncSample();
     }
 
     [Fact]
-    public async void AcknowledgeMessage()
+    public async void PullMessagesWithFlowControlAsync()
     {
-        string topicId = "testTopicForMessageAck" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForMessageAck" + _pubsubFixture.RandomName();
+        string topicId = "testTopicForMessageWithFlowControlAck" + _pubsubFixture.RandomName();
+        string subscriptionId = "testSubscriptionForMessageWithFlowControlAck" + _pubsubFixture.RandomName();
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);
@@ -41,11 +41,11 @@ public class AcknowledgeMessageTest
         await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message });
 
         // Pull and acknowledge the messages
-        var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        var result = await _pullMessagesCustomAsyncSample.PullMessagesWithFlowControlAsync(_pubsubFixture.ProjectId, subscriptionId, true);
         Assert.Equal(1, result);
 
         //Pull the Message to confirm it's gone after it's acknowledged
-        result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        result = await _pullMessagesCustomAsyncSample.PullMessagesWithFlowControlAsync(_pubsubFixture.ProjectId, subscriptionId, true);
         Assert.True(result == 0);
     }
 }
