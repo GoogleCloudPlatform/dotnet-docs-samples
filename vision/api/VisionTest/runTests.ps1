@@ -15,5 +15,4 @@ Import-Module ..\..\..\BuildTools.psm1
 
 Set-TestTimeout 600
 
-dotnet restore
-dotnet test --test-adapter-path:. --logger:junit
+dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
