@@ -16,6 +16,5 @@ Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 BackupAndEdit-TextFile "..\QuickStart\QuickStart.cs" `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {
-    dotnet restore
-    dotnet test --test-adapter-path:. --logger:junit
+    dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
 }

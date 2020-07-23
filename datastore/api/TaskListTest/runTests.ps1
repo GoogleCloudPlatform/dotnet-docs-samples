@@ -14,6 +14,5 @@
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 Set-TestTimeout 900
-dotnet restore
-dotnet build
-dotnet test --test-adapter-path:. --logger:junit --no-build -v n
+
+dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
