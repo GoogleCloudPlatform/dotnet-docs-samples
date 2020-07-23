@@ -22,13 +22,8 @@ namespace Concepts.Tests
         [Fact]
         public async Task ResponseText()
         {
-            using (var client = Server.CreateClient())
-            {
-                var response = await client.GetAsync("uri");
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
-                Assert.Equal("Global: 362880; function: 45", responseBody);
-            }
+            var responseBody = await ExecuteHttpFunctionAsync();
+            Assert.Equal("Global: 362880; function: 45", responseBody);
         }
     }
 }

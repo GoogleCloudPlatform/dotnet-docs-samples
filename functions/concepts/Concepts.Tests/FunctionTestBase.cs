@@ -15,6 +15,7 @@
 using Google.Cloud.Functions.Invoker.Testing;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Concepts.Tests
 {
@@ -36,5 +37,19 @@ namespace Concepts.Tests
         /// <returns></returns>
         protected IEnumerable<TestLogEntry> GetFunctionLogEntries() =>
             Server.GetLogEntries(typeof(TFunction));
+
+        /// <summary>
+        /// Executes a simple HttpFunction, which is assumed to not care about
+        /// the URI or body. The response is returned as text.
+        /// </summary>
+        protected async Task<string> ExecuteHttpFunctionAsync()
+        {
+            using (var client = Server.CreateClient())
+            {
+                var response = await client.GetAsync("uri");
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
     }
 }

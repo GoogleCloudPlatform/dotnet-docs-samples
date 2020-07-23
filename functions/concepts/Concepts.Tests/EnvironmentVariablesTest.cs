@@ -27,27 +27,16 @@ namespace Concepts.Tests
         public async Task VariableSet()
         {
             Environment.SetEnvironmentVariable("FOO", "Test foo value");
-            using (var client = Server.CreateClient())
-            {
-                var response = await client.GetAsync("uri");
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
-                Assert.Equal("Test foo value", responseBody);
-            }
-
+            var responseBody = await ExecuteHttpFunctionAsync();
+            Assert.Equal("Test foo value", responseBody);
         }
 
         [Fact]
         public async Task VariableNotSet()
         {
             Environment.SetEnvironmentVariable("FOO", null);
-            using (var client = Server.CreateClient())
-            {
-                var response = await client.GetAsync("uri");
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
-                Assert.Equal("Specified environment variable is not set.", responseBody);
-            }
+            var responseBody = await ExecuteHttpFunctionAsync();
+            Assert.Equal("Specified environment variable is not set.", responseBody);
         }
     }
 }
