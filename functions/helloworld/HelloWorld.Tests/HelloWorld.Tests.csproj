@@ -22,6 +22,7 @@
     <ProjectReference Include="..\HelloHttp\HelloHttp.csproj" />
     <ProjectReference Include="..\HelloPubSub\HelloPubSub.csproj" />
     <ProjectReference Include="..\HelloWorldFSharp\HelloWorldFSharp.fsproj" />
+    <ProjectReference Include="..\HelloWorldVb\HelloWorldVb.vbproj" />
     <ProjectReference Include="..\HelloWorld\HelloWorld.csproj" />
     <PackageReference Include="Google.Events.Protobuf" Version="1.0.0-alpha03" />
   </ItemGroup>
