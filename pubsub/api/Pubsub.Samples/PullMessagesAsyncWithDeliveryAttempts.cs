@@ -40,9 +40,11 @@ public class PullMessagesAsyncWithDeliveryAttemptsSample
             }
             return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);
         });
-        // Run for 5 seconds.
-        startTask.Wait(5000);
+        // Run for 7 seconds.
+        await Task.Delay(7000);
         await subscriber.StopAsync(CancellationToken.None);
+        // Lets make sure that the start task finished successfully after the call to stop.
+        await startTask;
         return deliveryAttempt;
     }
 }

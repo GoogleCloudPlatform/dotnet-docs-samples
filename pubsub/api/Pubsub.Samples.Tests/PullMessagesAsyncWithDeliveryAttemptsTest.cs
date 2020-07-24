@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -44,14 +45,10 @@ public class PullMessagesAsyncWithDeliveryAttemptsTest
 
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
 
-        await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message });
+        await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new List<string> { message });
 
         // Pull and acknowledge the messages
-        var deliveryAttempt = await _pullMessagesAsyncWithDeliveryAttemptsSample.PullMessagesAsyncWithDeliveryAttempts(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(deliveryAttempt <= 1);
-
-        //Pull the Message to confirm it's gone after it's acknowledged
-        deliveryAttempt = await _pullMessagesAsyncWithDeliveryAttemptsSample.PullMessagesAsyncWithDeliveryAttempts(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(deliveryAttempt >= 1);
+        var deliveryAttempt = await _pullMessagesAsyncWithDeliveryAttemptsSample.PullMessagesAsyncWithDeliveryAttempts(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.True(deliveryAttempt > 0);
     }
 }
