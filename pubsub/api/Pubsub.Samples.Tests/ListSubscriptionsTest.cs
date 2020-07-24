@@ -30,8 +30,9 @@ public class ListSubscriptionsTest
     [Fact]
     public void TestListSubscriptions()
     {
-        string topicId = "testTopicForListingSubscriptions" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForListingSubscriptions" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForListingSubscriptions{randomName}";
+        string subscriptionId = $"testSubscriptionForListingSubscriptions{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);

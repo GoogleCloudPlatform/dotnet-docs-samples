@@ -24,10 +24,12 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string ProjectId { get; }
     public List<string> TempTopicIds { get; } = new List<string>();
     public List<string> TempSubscriptionIds { get; } = new List<string>();
+    public string DeadLetterTopic { get; } = $"testDeadLetterTopic{Guid.NewGuid().ToString().Substring(0, 18)}";
 
     public PubsubFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        CreateTopic(DeadLetterTopic);
     }
 
     public void Dispose()
