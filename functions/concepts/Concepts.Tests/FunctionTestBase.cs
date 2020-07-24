@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Invoker.Testing;
 using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -61,7 +63,21 @@ namespace Concepts.Tests
         /// that the source of the event will not correspond to the "real" source,
         /// so this can't be used in situations where the function is source-sensitive.
         /// </summary>
-        protected async Task ExecuteCloudEventFunctionAsync(string cloudEventType, IMessage data)
+        protected Task ExecuteCloudEventFunctionAsync(string cloudEventType, IMessage data)
+        {
+            var cloudEvent = new CloudEvent(cloudEventType, new Uri("//source.googleapis.com"), "1234")
+            {
+                Data = data
+            };
+            return ExecuteCloudEventFunctionAsync(cloudEvent);
+        }
+
+        /// <summary>
+        /// Calls the function with the given CloudEvent. Note
+        /// that the source of the event will not correspond to the "real" source,
+        /// so this can't be used in situations where the function is source-sensitive.
+        /// </summary>
+        protected async Task ExecuteCloudEventFunctionAsync(CloudEvent cloudEvent)
         {
             using (var client = Server.CreateClient())
             {
@@ -71,15 +87,19 @@ namespace Concepts.Tests
                     // CloudEvent headers
                     Headers =
                     {
-                        { "ce-type", cloudEventType },
-                        { "ce-id", "1234" },
-                        { "ce-source", "//source.googleapis.com/" },
-                        { "ce-datacontenttype", "application/json" },
+                        { "ce-type", cloudEvent.Type },
+                        { "ce-id", cloudEvent.Id },
+                        { "ce-source", cloudEvent.Source.ToString() },
+                        { "ce-datacontenttype", cloudEvent.DataContentType?.ToString() ?? "application/json" },
                         { "ce-specversion", "1.0" }
                     },
-                    Content = new StringContent(data.ToString()),
+                    Content = new StringContent(cloudEvent.Data.ToString()),
                     Method = HttpMethod.Post
                 };
+                if (cloudEvent.Time is DateTime dt)
+                {
+                    request.Headers.Add("ce-time", dt.ToString("o"));
+                }
                 var response = await client.SendAsync(request);
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
