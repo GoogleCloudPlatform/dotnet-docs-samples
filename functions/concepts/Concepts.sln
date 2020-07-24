@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scopes", "Scopes\Scopes.csproj", "{FB8235B2-924C-43A9-A2A5-403667E831DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scopes", "Scopes\Scopes.csproj", "{FB8235B2-924C-43A9-A2A5-403667E831DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Concepts.Tests", "Concepts.Tests\Concepts.Tests.csproj", "{555BD5B5-FB0D-4466-8FED-4420CC2C7091}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Concepts.Tests", "Concepts.Tests\Concepts.Tests.csproj", "{555BD5B5-FB0D-4466-8FED-4420CC2C7091}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvironmentVariables", "EnvironmentVariables\EnvironmentVariables.csproj", "{977561E1-C5EB-4B09-92DC-181A498CE702}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnvironmentVariables", "EnvironmentVariables\EnvironmentVariables.csproj", "{977561E1-C5EB-4B09-92DC-181A498CE702}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExecutionCount", "ExecutionCount\ExecutionCount.csproj", "{71D5BD80-F1F7-413A-9193-3DF915FFA234}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExecutionCount", "ExecutionCount\ExecutionCount.csproj", "{71D5BD80-F1F7-413A-9193-3DF915FFA234}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSystem", "FileSystem\FileSystem.csproj", "{485E69A5-3B78-4318-8244-B43FEA5B221F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSystem", "FileSystem\FileSystem.csproj", "{485E69A5-3B78-4318-8244-B43FEA5B221F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Retry", "Retry\Retry.csproj", "{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,18 @@ Global
 		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Release|x64.Build.0 = Release|Any CPU
 		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Release|x86.ActiveCfg = Release|Any CPU
 		{485E69A5-3B78-4318-8244-B43FEA5B221F}.Release|x86.Build.0 = Release|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Debug|x64.Build.0 = Debug|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Debug|x86.Build.0 = Debug|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Release|x64.ActiveCfg = Release|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Release|x64.Build.0 = Release|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Release|x86.ActiveCfg = Release|Any CPU
+		{098CB77E-10FD-4E25-92B7-8ED34C1AB1E3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
