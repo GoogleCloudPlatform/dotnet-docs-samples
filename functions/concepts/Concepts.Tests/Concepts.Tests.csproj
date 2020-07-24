@@ -21,6 +21,7 @@
     <ProjectReference Include="..\FileSystem\FileSystem.csproj" />
     <ProjectReference Include="..\Retry\Retry.csproj" />
     <ProjectReference Include="..\Scopes\Scopes.csproj" />
+    <ProjectReference Include="..\TimeBoundedRetries\TimeBoundedRetries.csproj" />
   </ItemGroup>
 
 </Project>
