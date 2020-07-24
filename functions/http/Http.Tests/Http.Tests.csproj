@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Cors\Cors.csproj" />
     <ProjectReference Include="..\HttpFormData\HttpFormData.csproj" />
     <ProjectReference Include="..\HttpRequestMethod\HttpRequestMethod.csproj" />
     <ProjectReference Include="..\ParseContentType\ParseContentType.csproj" />
