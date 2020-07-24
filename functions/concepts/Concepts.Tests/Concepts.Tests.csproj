@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
     <PackageReference Include="Google.Cloud.Functions.Invoker.Testing" Version="1.0.0-alpha08" />
+    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0-alpha03" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
@@ -18,6 +19,7 @@
     <ProjectReference Include="..\EnvironmentVariables\EnvironmentVariables.csproj" />
     <ProjectReference Include="..\ExecutionCount\ExecutionCount.csproj" />
     <ProjectReference Include="..\FileSystem\FileSystem.csproj" />
+    <ProjectReference Include="..\Retry\Retry.csproj" />
     <ProjectReference Include="..\Scopes\Scopes.csproj" />
   </ItemGroup>
 

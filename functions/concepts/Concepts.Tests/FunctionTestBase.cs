@@ -13,9 +13,13 @@
 // limitations under the License.
 
 using Google.Cloud.Functions.Invoker.Testing;
+using Google.Protobuf;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Concepts.Tests
 {
@@ -49,6 +53,35 @@ namespace Concepts.Tests
                 var response = await client.GetAsync("uri");
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary>
+        /// Calls the function with the given CloudEvent type and data. Note
+        /// that the source of the event will not correspond to the "real" source,
+        /// so this can't be used in situations where the function is source-sensitive.
+        /// </summary>
+        protected async Task ExecuteCloudEventFunctionAsync(string cloudEventType, IMessage data)
+        {
+            using (var client = Server.CreateClient())
+            {
+                var request = new HttpRequestMessage
+                {
+                    RequestUri = new Uri("uri", UriKind.Relative),
+                    // CloudEvent headers
+                    Headers =
+                    {
+                        { "ce-type", cloudEventType },
+                        { "ce-id", "1234" },
+                        { "ce-source", "//source.googleapis.com/" },
+                        { "ce-datacontenttype", "application/json" },
+                        { "ce-specversion", "1.0" }
+                    },
+                    Content = new StringContent(data.ToString()),
+                    Method = HttpMethod.Post
+                };
+                var response = await client.SendAsync(request);
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
         }
     }
