@@ -35,6 +35,11 @@ namespace HelloWorld.Tests
     {
     }
 
+    // VB test
+    public class HelloWorldVbTest : HelloWorldTestBase<HelloWorldVb.CloudFunction>
+    {
+    }
+
     // F# test
     public class HelloWorldFSharpTest : HelloWorldTestBase<HelloWorldFSharp.Function>
     {
