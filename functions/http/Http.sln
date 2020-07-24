@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpFormData", "HttpFormDat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParseContentType", "ParseContentType\ParseContentType.csproj", "{975B9A61-EED0-40BE-A0F4-FED5CB0042F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendHttpRequest", "SendHttpRequest\SendHttpRequest.csproj", "{DA3037E1-2D65-4FFF-947A-4055C6FD5704}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{975B9A61-EED0-40BE-A0F4-FED5CB0042F0}.Release|x64.Build.0 = Release|Any CPU
 		{975B9A61-EED0-40BE-A0F4-FED5CB0042F0}.Release|x86.ActiveCfg = Release|Any CPU
 		{975B9A61-EED0-40BE-A0F4-FED5CB0042F0}.Release|x86.Build.0 = Release|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Debug|x64.Build.0 = Debug|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Debug|x86.Build.0 = Debug|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Release|x64.ActiveCfg = Release|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Release|x64.Build.0 = Release|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Release|x86.ActiveCfg = Release|Any CPU
+		{DA3037E1-2D65-4FFF-947A-4055C6FD5704}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

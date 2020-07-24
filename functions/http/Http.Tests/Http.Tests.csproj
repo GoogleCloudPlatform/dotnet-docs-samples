@@ -18,6 +18,7 @@
     <ProjectReference Include="..\HttpFormData\HttpFormData.csproj" />
     <ProjectReference Include="..\HttpRequestMethod\HttpRequestMethod.csproj" />
     <ProjectReference Include="..\ParseContentType\ParseContentType.csproj" />
+    <ProjectReference Include="..\SendHttpRequest\SendHttpRequest.csproj" />
   </ItemGroup>
 
 </Project>
