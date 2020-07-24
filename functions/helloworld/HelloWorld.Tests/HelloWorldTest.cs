@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace HelloWorld.Tests
 {
-    public class HelloWorldTest : FunctionTestBase<HelloWorld.Function>
+    public abstract class HelloWorldTestBase<TFunction> : FunctionTestBase<TFunction>
     {
         [Fact]
         public async Task EmptyRequest()
@@ -30,5 +28,15 @@ namespace HelloWorld.Tests
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("Hello World!", responseBody);
         }
+    }
+
+    // C# test
+    public class HelloWorldTest : HelloWorldTestBase<HelloWorld.Function>
+    {
+    }
+
+    // F# test
+    public class HelloWorldFSharpTest : HelloWorldTestBase<HelloWorldFSharp.Function>
+    {
     }
 }
