@@ -15,29 +15,29 @@
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class CreateSubscriptionTest
+public class CreateSubscriptionWithDeadLetterPolicyTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly CreateSubscriptionSample _createSubscriptionSample;
+    private readonly CreateSubscriptionWithDeadLetterPolicySample _createSubscriptionWithDeadLetterPolicySample;
 
-    public CreateSubscriptionTest(PubsubFixture pubsubFixture)
+    public CreateSubscriptionWithDeadLetterPolicyTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _createSubscriptionSample = new CreateSubscriptionSample();
+        _createSubscriptionWithDeadLetterPolicySample = new CreateSubscriptionWithDeadLetterPolicySample();
     }
 
     [Fact]
-    public void CreateSubscription()
+    public void CreateSubscriptionWithDeadLetterPolicy()
     {
         string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForSubscriptionCreation{randomName}";
-        string subscriptionId = $"testSubscriptionForSubscriptionCreation{randomName}";
+        string topicId = $"testTopicForCreateSubscriptionWithDeadLetterPolicy{randomName}";
+        string subscriptionId = $"testSubscriptionForCreateSubscriptionWithDeadLetterPolicy{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
-        var newlyCreatedSubscription = _createSubscriptionSample.CreateSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId);
+        _createSubscriptionWithDeadLetterPolicySample.CreateSubscriptionWithDeadLetterPolicy(_pubsubFixture.ProjectId, subscriptionId, topicId, _pubsubFixture.DeadLetterTopic);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
         var subscription = _pubsubFixture.GetSubscription(subscriptionId);
 
-        Assert.Equal(newlyCreatedSubscription, subscription);
+        Assert.Equal(10, subscription.DeadLetterPolicy.MaxDeliveryAttempts);
     }
 }

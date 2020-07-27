@@ -29,8 +29,9 @@ public class SetSubscriptionIamPolicyTest
     [Fact]
     public void SetSubscriptionIamPolicy()
     {
-        string topicId = "testTopicSetSubscriptionIamPolicy" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionSetSubscriptionIamPolicy" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicSetSubscriptionIamPolicy{randomName}";
+        string subscriptionId = $"testSubscriptionSetSubscriptionIamPolicy{randomName}";
         string testRoleValueToConfirm = "pubsub.editor";
         string testMemberValueToConfirm = "group:cloud-logs@google.com";
 

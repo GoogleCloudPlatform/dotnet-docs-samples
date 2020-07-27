@@ -15,13 +15,13 @@
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class AcknowledgeMessageTest
+public class PullMessagesAsyncTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
     private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
 
-    public AcknowledgeMessageTest(PubsubFixture pubsubFixture)
+    public PullMessagesAsyncTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
@@ -29,10 +29,11 @@ public class AcknowledgeMessageTest
     }
 
     [Fact]
-    public async void AcknowledgeMessage()
+    public async void PullMessagesAsync()
     {
-        string topicId = "testTopicForMessageAck" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForMessageAck" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForMessageAck{randomName}";
+        string subscriptionId = $"testSubscriptionForMessageAck{randomName}";
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);

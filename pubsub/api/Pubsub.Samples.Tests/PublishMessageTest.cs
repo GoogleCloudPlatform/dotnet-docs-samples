@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -33,8 +32,9 @@ public class PublishMessageTest
     [Fact]
     public async void PublishMessage()
     {
-        string topicId = "testTopicForMessageCreation" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForMessageCreation" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForMessageCreation{randomName}";
+        string subscriptionId = $"testSubscriptionForMessageCreation{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);

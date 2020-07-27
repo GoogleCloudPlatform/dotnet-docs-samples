@@ -30,8 +30,9 @@ public class DeleteSubscriptionTest
     [Fact]
     public void TestDeleteSubscription()
     {
-        string topicId = "testTopicForDeleteSubscription" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForDeleteSubscription" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForDeleteSubscription{randomName}";
+        string subscriptionId = $"testSubscriptionForDeleteSubscription{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
