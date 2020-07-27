@@ -19,6 +19,5 @@ BackupAndEdit-TextFile @("..\ExportAssets\ExportAssets.cs") @{
     "YOUR-GOOGLE-PROJECT-ID" = $env:GOOGLE_PROJECT_ID;
     '"YOUR-BUCKET-NAME"' = $getBucketNameClause
 } {
-    dotnet restore
-	dotnet test --test-adapter-path:. --logger:junit
+    dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
 }

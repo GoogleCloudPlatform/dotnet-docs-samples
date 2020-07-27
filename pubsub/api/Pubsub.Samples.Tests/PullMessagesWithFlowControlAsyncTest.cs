@@ -15,13 +15,13 @@
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class AcknowledgeMessageWithFlowControlTest
+public class PullMessagesWithFlowControlAsyncTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
     private readonly PullMessagesWithFlowControlAsyncSample _pullMessagesCustomAsyncSample;
 
-    public AcknowledgeMessageWithFlowControlTest(PubsubFixture pubsubFixture)
+    public PullMessagesWithFlowControlAsyncTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
@@ -29,10 +29,11 @@ public class AcknowledgeMessageWithFlowControlTest
     }
 
     [Fact]
-    public async void AcknowledgeMessageWithFlowControl()
+    public async void PullMessagesWithFlowControlAsync()
     {
-        string topicId = "testTopicForMessageWithFlowControlAck" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForMessageWithFlowControlAck" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForMessageWithFlowControlAck{randomName}";
+        string subscriptionId = $"testSubscriptionForMessageWithFlowControlAck{randomName}";
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);

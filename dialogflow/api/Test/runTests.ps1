@@ -16,7 +16,5 @@ import-module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 Set-TestTimeout 5000
 
-dotnet restore
-dotnet build
 # TODO: https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/947
-dotnet test --test-adapter-path:. --logger:junit --no-build --no-restore -v n --filter DetectIntentTextsTest
+dotnet test --test-adapter-path:. --logger:junit --filter DetectIntentTextsTest 2>&1 | %{ "$_" }

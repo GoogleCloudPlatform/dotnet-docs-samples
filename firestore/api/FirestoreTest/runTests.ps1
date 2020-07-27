@@ -15,11 +15,6 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-dotnet build
-if ($LASTEXITCODE) {
-	throw "Build failed."
-}
-
 $randomString = ""
 1..10 | ForEach-Object {
 	$char = [char] (65 + (Get-Random 26) )
@@ -44,6 +39,5 @@ BackupAndEdit-TextFile "FirestoreTest.cs", "..\Quickstart\Program.cs", "..\AddDa
 	  'YOUR_COLLECTION_NAME' = $citiesCollection;
 	  } `
 {
-    dotnet restore
-    dotnet test
+    dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
 }
