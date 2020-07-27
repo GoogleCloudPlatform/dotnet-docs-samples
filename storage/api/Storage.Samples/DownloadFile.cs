@@ -20,7 +20,13 @@ using System.IO;
 
 public class DownloadFileSample
 {
-    public void DownloadFile(string bucketName, string objectName, string localPath = null)
+    /// <summary>
+    /// Downloads the data for an object from storage.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket containing the object.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    /// <param name="localPath">Local path to write the data into.</param>
+    public void DownloadFile(string bucketName = "your-unique-bucket-name", string objectName = "my-file-name", string localPath = null)
     {
         var storage = StorageClient.Create();
         localPath = localPath ?? Path.GetFileName(objectName);

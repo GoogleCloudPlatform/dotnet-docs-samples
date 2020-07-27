@@ -20,7 +20,13 @@ using System.Linq;
 
 public class RemoveFileOwnerSample
 {
-    public void RemoveFileOwner(string bucketName, string objectName, string userEmail)
+    /// <summary>
+    /// Removes a file's owner.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    /// <param name="userEmail">The user email.</param>
+    public void RemoveFileOwner(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name", string userEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions()

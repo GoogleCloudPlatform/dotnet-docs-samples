@@ -20,7 +20,12 @@ using System;
 
 public class CreateHmacKeySample
 {
-    public HmacKey CreateHmacKey(string projectId, string serviceAccountEmail)
+    /// <summary>
+    /// Creates a new HMAC key associated with a service account.
+    /// </summary>
+    /// <param name="projectId">The project ID in which to create the HMAC key.</param>
+    /// <param name="serviceAccountEmail">The service account to associate with the HMAC key.</param>
+    public HmacKey CreateHmacKey(string projectId = "your-project-id", string serviceAccountEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
         var key = storage.CreateHmacKey(projectId, serviceAccountEmail);

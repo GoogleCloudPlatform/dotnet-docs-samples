@@ -20,7 +20,11 @@ using System.Collections.Generic;
 
 public class ListFilesSample
 {
-    public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListFiles(string bucketName)
+    /// <summary>
+    /// Lists the objects in a given bucket.
+    /// </summary>
+    /// <param name="bucketName">The bucket to list the objects from.</param>
+    public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListFiles(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var storageObjects = storage.ListObjects(bucketName, "");

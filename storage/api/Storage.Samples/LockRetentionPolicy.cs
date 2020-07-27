@@ -19,7 +19,13 @@ using System;
 
 public class LockRetentionPolicySample
 {
-    public bool? LockRetentionPolicy(string bucketName)
+    /// <summary>
+    /// Locks the retention policy of a bucket. This is a one-way process: once a retention
+    /// policy is locked, it cannot be shortened, removed or unlocked, although it can
+    /// be increased in duration. The lock persists until the bucket is deleted.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket whose retention policy should be locked.</param>
+    public bool? LockRetentionPolicy(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

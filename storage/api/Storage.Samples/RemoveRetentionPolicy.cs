@@ -19,7 +19,11 @@ using System;
 
 public class RemoveRetentionPolicySample
 {
-    public void RemoveRetentionPolicy(string bucketName)
+    /// <summary>
+    /// Removes bucket's retention policy.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public void RemoveRetentionPolicy(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

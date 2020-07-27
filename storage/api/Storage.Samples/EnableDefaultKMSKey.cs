@@ -20,7 +20,16 @@ using System;
 
 public class EnableDefaultKMSKeySample
 {
-    public Bucket EnableDefaultKMSKey(string projectId, string bucketName, string keyLocation, string kmsKeyRing, string kmsKeyName)
+    /// <summary>
+    /// Enables a bucket's default KMS key.
+    /// </summary>
+    /// <param name="projectId">The Project Id.</param>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="keyLocation">Key Location.</param>
+    /// <param name="kmsKeyRing">KMS key Ring.</param>
+    /// <param name="kmsKeyName">KMS key Name</param>
+    public Bucket EnableDefaultKMSKey(string projectId = "your-project-id", string bucketName = "your-unique-bucket-name",
+        string keyLocation = "us-west1", string kmsKeyRing = "kms-key-ring", string kmsKeyName = "key-name")
     {
         string keyPrefix = $"projects/{projectId}/locations/{keyLocation}";
         string fullKeyringName = $"{keyPrefix}/keyRings/{kmsKeyRing}";

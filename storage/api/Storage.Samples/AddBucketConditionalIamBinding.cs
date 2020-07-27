@@ -21,8 +21,19 @@ using System.Collections.Generic;
 
 public class AddBucketConditionalIamBindingSample
 {
-    public Policy AddBucketConditionalIamBinding(string bucketName, string role,
-        string member, string title, string description, string expression)
+    /// <summary>
+    /// Adds a conditional Iam policy information about a bucket.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="role">The role to which members belong.</param>
+    /// <param name="member">A collection of identifiers for members who may assume the provided role.</param>
+    /// <param name="title">Title for the expression.</param>
+    /// <param name="description">Description of the expression.</param>
+    /// <param name="expression">Textual representation of an expression in Common Expression Language syntax.</param>
+    public Policy AddBucketConditionalIamBinding(string bucketName = "your-unique-bucket-name", string role = "roles/storage.objectViewer",
+        string member = "serviceAccount:dev@iam.gserviceaccount.com", string title = "title",
+        string description = "description",
+        string expression = "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")")
     {
         var storage = StorageClient.Create();
         var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()

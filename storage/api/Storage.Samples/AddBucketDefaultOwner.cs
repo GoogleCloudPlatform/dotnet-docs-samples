@@ -20,7 +20,12 @@ using System;
 
 public class AddBucketDefaultOwnerSample
 {
-    public Bucket AddBucketDefaultOwner(string bucketName, string userEmail)
+    /// <summary>
+    /// Adds a bucket default owner.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="userEmail">The user Email that holding the owner permission.</param>
+    public Bucket AddBucketDefaultOwner(string bucketName = "your-unique-bucket-name", string userEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName, new GetBucketOptions()

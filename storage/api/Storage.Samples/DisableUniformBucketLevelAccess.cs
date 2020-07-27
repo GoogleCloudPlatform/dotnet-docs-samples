@@ -20,7 +20,11 @@ using System;
 
 public class DisableUniformBucketLevelAccessSample
 {
-    public Bucket DisableUniformBucketLevelAccess(string bucketName)
+    /// <summary>
+    /// Disables a bucket's uniform bucket level access.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public Bucket DisableUniformBucketLevelAccess(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

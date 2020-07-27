@@ -21,7 +21,12 @@ using System.Collections.Generic;
 
 public class PrintFileAclSample
 {
-    public IEnumerable<ObjectAccessControl> PrintObjectAcl(string bucketName, string objectName)
+    /// <summary>
+    /// Prints an object's Acl.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    public IEnumerable<ObjectAccessControl> PrintObjectAcl(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions()

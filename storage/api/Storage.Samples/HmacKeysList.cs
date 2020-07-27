@@ -21,7 +21,11 @@ using System.Collections.Generic;
 
 public class ListHmacKeysSample
 {
-    public IEnumerable<HmacKeyMetadata> ListHmacKeys(string projectId)
+    /// <summary>
+    /// Lists the HMAC keys in a given project.
+    /// </summary>
+    /// <param name="projectId">The project containing the HMAC keys.</param>
+    public IEnumerable<HmacKeyMetadata> ListHmacKeys(string projectId = "your-project-id")
     {
         var storage = StorageClient.Create();
         var keys = storage.ListHmacKeys(projectId);

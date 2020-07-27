@@ -20,7 +20,13 @@ using System;
 
 public class AddFileOwnerSample
 {
-    public Google.Apis.Storage.v1.Data.Object AddFileOwner(string bucketName, string objectName, string userEmail)
+    /// <summary>
+    /// Adds a file owner.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">File/Object Name.</param>
+    /// <param name="userEmail">The user Email that holding the owner permission.</param>
+    public Google.Apis.Storage.v1.Data.Object AddFileOwner(string bucketName = "your-unique-bucket-name", string objectName = "my-file-name", string userEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions()

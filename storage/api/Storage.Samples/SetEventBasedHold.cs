@@ -19,7 +19,12 @@ using System;
 
 public class SetEventBasedHoldSample
 {
-    public void SetEventBasedHold(string bucketName, string objectName)
+    /// <summary>
+    /// Sets an object's event based hold.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    public void SetEventBasedHold(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);

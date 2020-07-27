@@ -27,13 +27,13 @@ public class TemporaryHoldTest
     [Fact]
     public void TemporaryHold()
     {
-        SetTemporarydHoldSample setTemporarydHoldSample = new SetTemporarydHoldSample();
+        SetTemporaryHoldSample setTemporaryHoldSample = new SetTemporaryHoldSample();
         ReleaseTemporaryHoldSample releaseTemporaryHoldSample = new ReleaseTemporaryHoldSample();
         UploadFileSample uploadFileSample = new UploadFileSample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
         uploadFileSample.UploadFile(_bucketFixture.BucketName1, _bucketFixture.FilePath, _bucketFixture.CollectRegionalObject("TemporaryHold.txt"));
 
-        setTemporarydHoldSample.SetTemporarydHold(_bucketFixture.BucketName1, "TemporaryHold.txt");
+        setTemporaryHoldSample.SetTemporaryHold(_bucketFixture.BucketName1, "TemporaryHold.txt");
 
         var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketName1, "TemporaryHold.txt");
         Assert.True(metadata.TemporaryHold);

@@ -20,7 +20,11 @@ using static Google.Apis.Storage.v1.Data.Bucket;
 
 public class GetRetentionPolicySample
 {
-    public RetentionPolicyData GetRetentionPolicy(string bucketName)
+    /// <summary>
+    /// Gets a bucket's retention policy.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public RetentionPolicyData GetRetentionPolicy(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

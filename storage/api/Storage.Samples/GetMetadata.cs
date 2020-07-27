@@ -19,7 +19,12 @@ using System;
 
 public class GetMetadataSample
 {
-    public Google.Apis.Storage.v1.Data.Object GetMetadata(string bucketName, string objectName)
+    /// <summary>
+    /// Fetches the information about an object .
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    public Google.Apis.Storage.v1.Data.Object GetMetadata(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);

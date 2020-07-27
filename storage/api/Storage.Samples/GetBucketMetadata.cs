@@ -20,7 +20,11 @@ using System;
 
 public class GetBucketMetadataSample
 {
-    public Bucket GetBucketMetadata(string bucketName)
+    /// <summary>
+    /// Fetches the information about a bucket.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public Bucket GetBucketMetadata(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

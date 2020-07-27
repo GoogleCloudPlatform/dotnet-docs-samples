@@ -21,7 +21,11 @@ using System.Collections.Generic;
 
 public class PrintBucketDefaultAclSample
 {
-    public IEnumerable<ObjectAccessControl> PrintBucketDefaultAcl(string bucketName)
+    /// <summary>
+    /// Prints bucket's default Acl.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public IEnumerable<ObjectAccessControl> PrintBucketDefaultAcl(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName, new GetBucketOptions()

@@ -19,7 +19,11 @@ using System;
 
 public class GetDefaultEventBasedHoldSample
 {
-    public bool GetDefaultEventBasedHold(string bucketName)
+    /// <summary>
+    /// Gets a bucket's default event based hold.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public bool GetDefaultEventBasedHold(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

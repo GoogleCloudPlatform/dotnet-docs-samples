@@ -20,7 +20,11 @@ using System;
 
 public class DisableDefaultEventBasedHoldSample
 {
-    public Bucket DisableDefaultEventBasedHold(string bucketName)
+    /// <summary>
+    /// Disables a bucket's default event based hold.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public Bucket DisableDefaultEventBasedHold(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

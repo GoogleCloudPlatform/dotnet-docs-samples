@@ -19,7 +19,12 @@ using System;
 
 public class ReleaseEventBasedHoldSample
 {
-    public void ReleaseEventBasedHold(string bucketName, string objectName)
+    /// <summary>
+    /// Releases an object's event based hold.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    public void ReleaseEventBasedHold(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);

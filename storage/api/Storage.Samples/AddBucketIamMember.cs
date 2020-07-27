@@ -21,7 +21,13 @@ using System.Collections.Generic;
 
 public class AddBucketIamMemberSample
 {
-    public Policy AddBucketIamMember(string bucketName, string role, string member)
+    /// <summary>
+    /// Adds a bucket Iam Member.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="role">The role to which members belong.</param>
+    /// <param name="member">A collection of identifiers for members who may assume the provided role.</param>
+    public Policy AddBucketIamMember(string bucketName = "your-unique-bucket-name", string role = "roles/storage.objectViewer", string member = "serviceAccount:dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
         var policy = storage.GetBucketIamPolicy(bucketName);

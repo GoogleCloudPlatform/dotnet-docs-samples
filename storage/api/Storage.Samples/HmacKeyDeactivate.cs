@@ -19,7 +19,12 @@ using System;
 
 public class HmacKeyDeactivateSample
 {
-    public void DeactivateHmacKey(string projectId, string accessId)
+    /// <summary>
+    /// Deactivates an HMAC key.
+    /// </summary>
+    /// <param name="projectId">The project containing the HMAC key.</param>
+    /// <param name="accessId">The ID of the HMAC key.</param>
+    public void DeactivateHmacKey(string projectId = "your-project-id", string accessId = "your-access-id")
     {
         var storage = StorageClient.Create();
         var metadata = storage.GetHmacKey(projectId, accessId);

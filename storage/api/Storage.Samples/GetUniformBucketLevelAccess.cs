@@ -20,7 +20,11 @@ using static Google.Apis.Storage.v1.Data.Bucket.IamConfigurationData;
 
 public class GetUniformBucketLevelAccessSample
 {
-    public UniformBucketLevelAccessData GetUniformBucketLevelAccess(string bucketName)
+    /// <summary>
+    /// Get an uniform bucket level access.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public UniformBucketLevelAccessData GetUniformBucketLevelAccess(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

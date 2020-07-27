@@ -19,7 +19,12 @@ using System;
 
 public class HmacKeyDeleteSample
 {
-    public void DeleteHmacKey(string projectId, string accessId)
+    /// <summary>
+    /// Deletes an HMAC key
+    /// </summary>
+    /// <param name="projectId">The ID of the project containing the HMAC key to delete.</param>
+    /// <param name="accessId">The ID of the HMAC key to delete.</param>
+    public void DeleteHmacKey(string projectId = "your-project-id", string accessId = "your-access-id")
     {
         var storage = StorageClient.Create();
         storage.DeleteHmacKey(projectId, accessId);

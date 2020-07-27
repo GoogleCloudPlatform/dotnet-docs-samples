@@ -36,7 +36,7 @@ public class MoveFileTest
         // Make sure the file doesn't exist until we move it there.
         Assert.Throws<GoogleApiException>(() => getMetadataSample.GetMetadata(_bucketFixture.BucketName, "ByeMove.txt"));
 
-        moveFileSample.MoveFile(_bucketFixture.BucketName, "HelloMove.txt", _bucketFixture.Collect("ByeMove.txt"));
+        moveFileSample.MoveFile(_bucketFixture.BucketName, "HelloMove.txt", _bucketFixture.BucketName, _bucketFixture.Collect("ByeMove.txt"));
 
         // If we try to clean up "HelloMove.txt", it will fail because it moved.
         _bucketFixture.TempBucketFiles[_bucketFixture.BucketName].Remove("HelloMove.txt");

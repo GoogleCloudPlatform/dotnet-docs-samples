@@ -22,8 +22,16 @@ using System.Net.Http;
 
 public class DownloadByteRangeSample
 {
-    public void DownloadByteRange(string bucketName, string objectName, long firstByte,
-        long lastByte, string localPath = null)
+    /// <summary>
+    /// Downloads a byte range to local path.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object.</param>
+    /// <param name="firstByte">The first byte of the object content.</param>
+    /// <param name="lastByte">The last byte of the object content.</param>
+    /// <param name="localPath">Local Path where file will be downloaded.</param>
+    public void DownloadByteRange(string bucketName = "your-unique-bucket-name", string objectName = "my-file-name",
+        long firstByte = 0, long lastByte = 20, string localPath = null)
     {
         var storageClient = StorageClient.Create();
         localPath = localPath ?? $"{Path.GetFileName(objectName)}_{firstByte}-{lastByte}";

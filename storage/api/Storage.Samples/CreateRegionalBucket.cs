@@ -20,7 +20,14 @@ using System;
 
 public class CreateRegionalBucketSample
 {
-    public Bucket CreateRegionalBucket(string projectId, string location, string bucketName)
+    /// <summary>
+    /// Creates a storage bucket with region.
+    /// </summary>
+    /// <param name="projectId">The ID of the project to create the buckets in.</param>
+    /// <param name="location">The location of the bucket. Object data for objects in the bucket resides in 
+    /// physical storage within this region. Defaults to US.</param>
+    /// <param name="bucketName">The name of the bucket to create.</param>
+    public Bucket CreateRegionalBucket(string projectId = "your-project-id", string location = "us-west1", string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         Bucket bucket = new Bucket

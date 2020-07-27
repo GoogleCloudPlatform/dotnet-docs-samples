@@ -19,7 +19,12 @@ using System;
 
 public class GetRequesterPaysStatusSample
 {
-    public bool GetRequesterPaysStatus(string projectId, string bucketName)
+    /// <summary>
+    /// Gets a bucket's requester pays status.
+    /// </summary>
+    /// <param name="projectId">The project Id.</param>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public bool GetRequesterPaysStatus(string projectId = "your-project-id", string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName, new GetBucketOptions()

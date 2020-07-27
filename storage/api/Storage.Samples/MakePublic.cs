@@ -21,7 +21,12 @@ using System.Collections.Generic;
 
 public class MakePublicSample
 {
-    public string MakePublic(string bucketName, string objectName)
+    /// <summary>
+    /// Object owner gets owner access, and all users get reader access.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    public string MakePublic(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);

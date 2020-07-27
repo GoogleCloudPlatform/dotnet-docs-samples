@@ -20,7 +20,12 @@ using System.Net.Http;
 
 public class GenerateV4SignedReadUrlSample
 {
-    public string GenerateV4SignedReadUrl(string bucketName, string objectName)
+    /// <summary>
+    /// Generates V4 signed read Url.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    public string GenerateV4SignedReadUrl(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
     {
         var credential = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
         UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(credential);

@@ -20,7 +20,11 @@ using System;
 
 public class DisableBucketLifecycleManagementSample
 {
-    public Bucket DisableBucketLifecycleManagement(string bucketName)
+    /// <summary>
+    /// Disables a bucket's lifecycle management.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public Bucket DisableBucketLifecycleManagement(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

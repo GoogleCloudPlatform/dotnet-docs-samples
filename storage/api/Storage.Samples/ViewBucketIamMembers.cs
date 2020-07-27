@@ -20,7 +20,11 @@ using System;
 
 public class ViewBucketIamMembersSample
 {
-    public Policy ViewBucketIamMembers(string bucketName)
+    /// <summary>
+    /// Fetches bucket's Iam members.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    public Policy ViewBucketIamMembers(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var policy = storage.GetBucketIamPolicy(bucketName);

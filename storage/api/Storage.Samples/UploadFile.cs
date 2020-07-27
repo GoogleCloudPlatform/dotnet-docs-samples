@@ -20,7 +20,13 @@ using System.IO;
 
 public class UploadFileSample
 {
-    public void UploadFile(string bucketName, string localPath, string objectName = null)
+    /// <summary>
+    /// Uploads the data for an object in storage.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="localPath">The local path.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    public void UploadFile(string bucketName = "your-unique-bucket-name", string localPath = "path/to/your/file", string objectName = null)
     {
         var storage = StorageClient.Create();
         using (var f = File.OpenRead(localPath))

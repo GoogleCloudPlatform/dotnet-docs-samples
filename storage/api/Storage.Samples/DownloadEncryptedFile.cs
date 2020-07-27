@@ -20,7 +20,15 @@ using System.IO;
 
 public class DownloadEncryptedFileSample
 {
-    public void DownloadEncryptedFile(string key, string bucketName, string objectName, string localPath = null)
+    /// <summary>
+    /// Downloads file with encryption.
+    /// </summary>
+    /// <param name="key">The encryption key to use for this operation. 
+    /// If this property is null, the Google.Cloud.Storage.V1.StorageClient.EncryptionKey will be used instead</param>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    /// <param name="localPath">Local path to write the data into.</param>
+    public void DownloadEncryptedFile(string key = "3eFsTXPvqi3BpT2ipFCGirslh1Jgc6ikjoAu2oQ5JcI=", string bucketName = "your-unique-bucket-name", string objectName = "my-file-name", string localPath = null)
     {
         var storage = StorageClient.Create();
         localPath = localPath ?? Path.GetFileName(objectName);

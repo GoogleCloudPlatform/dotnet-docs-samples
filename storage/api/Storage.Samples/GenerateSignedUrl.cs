@@ -19,7 +19,14 @@ using System;
 
 public class GenerateSignedUrlSample
 {
-    public string GenerateSignedUrl(string bucketName, string objectName)
+    /// <summary>
+    /// Creates a signed URL which can be used to provide limited access to specific
+    /// buckets and objects to anyone in possession of the URL, regardless of whether
+    /// they have a Google account.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    public string GenerateSignedUrl(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
     {
         UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS"));
         string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), null);

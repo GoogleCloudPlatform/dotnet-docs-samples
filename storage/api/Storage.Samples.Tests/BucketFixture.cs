@@ -56,7 +56,10 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
         DeleteFileSample deleteFileSample = new DeleteFileSample();
         foreach (var bucket in TempBucketFiles)
         {
-            deleteFileSample.DeleteFile(bucket.Key, bucket.Value);
+            foreach (var file in bucket.Value)
+            {
+                deleteFileSample.DeleteFile(bucket.Key, file);
+            }
         }
 
         foreach (var bucketName in TempBucketNames)

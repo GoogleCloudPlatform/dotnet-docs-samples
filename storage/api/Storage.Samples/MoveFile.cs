@@ -19,11 +19,18 @@ using System;
 
 public class MoveFileSample
 {
-    public void MoveFile(string bucketName, string sourceObjectName, string destObjectName)
+    /// <summary>
+    /// Moves object from one bucket to another bucket.
+    /// </summary>
+    /// <param name="sourceBucketName">The name of the source bucket.</param>
+    /// <param name="sourceObjectName">The name of the source object within the bucket.</param>
+    /// <param name="targetBucketName">The ID of the bucket to move the object.</param>
+    /// <param name="destObjectName">The name of the target object.</param>
+    public void MoveFile(string sourceBucketName = "your-unique-bucket-name", string sourceObjectName = "your-object-name", string targetBucketName = "target-object-bucket", string destObjectName = "target-object-name")
     {
         var storage = StorageClient.Create();
-        storage.CopyObject(bucketName, sourceObjectName, bucketName, destObjectName);
-        storage.DeleteObject(bucketName, sourceObjectName);
+        storage.CopyObject(sourceBucketName, sourceObjectName, targetBucketName, destObjectName);
+        storage.DeleteObject(sourceBucketName, sourceObjectName);
         Console.WriteLine($"Moved {sourceObjectName} to {destObjectName}.");
     }
 }

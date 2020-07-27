@@ -16,18 +16,19 @@
 
 using Google.Cloud.Storage.V1;
 using System;
-using System.Collections.Generic;
 
 public class DeleteFileSample
 {
-    public void DeleteFile(string bucketName, IEnumerable<string> objectNames)
+    /// <summary>
+    /// Deletes a version of the specified object.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket containing the object.</param>
+    /// <param name="objectName">The name of the object within the bucket.</param>
+    public void DeleteFile(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
-        foreach (string objectName in objectNames)
-        {
-            storage.DeleteObject(bucketName, objectName);
-            Console.WriteLine($"Deleted {objectName}.");
-        }
+        storage.DeleteObject(bucketName, objectName);
+        Console.WriteLine($"Deleted {objectName}.");
     }
 }
 // [END storage_delete_file]

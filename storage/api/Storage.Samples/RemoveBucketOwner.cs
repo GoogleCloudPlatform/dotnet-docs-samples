@@ -20,7 +20,12 @@ using System.Linq;
 
 public class RemoveBucketOwnerSample
 {
-    public void RemoveBucketOwner(string bucketName, string userEmail)
+    /// <summary>
+    /// Removes a bucket's owner.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="userEmail">The user email.</param>
+    public void RemoveBucketOwner(string bucketName = "your-unique-bucket-name", string userEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName, new GetBucketOptions()

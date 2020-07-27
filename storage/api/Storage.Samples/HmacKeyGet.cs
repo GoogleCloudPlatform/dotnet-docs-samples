@@ -20,7 +20,12 @@ using System;
 
 public class HmacKeyGetSample
 {
-    public HmacKeyMetadata GetHmacKey(string projectId, string accessId)
+    /// <summary>
+    /// Fetches metadata for the specified HMAC key.
+    /// </summary>
+    /// <param name="projectId">The project containing the HMAC key.</param>
+    /// <param name="accessId">The ID of the HMAC key.</param>
+    public HmacKeyMetadata GetHmacKey(string projectId = "your-project-id", string accessId = "your-access-id")
     {
         var storage = StorageClient.Create();
         var metadata = storage.GetHmacKey(projectId, accessId);

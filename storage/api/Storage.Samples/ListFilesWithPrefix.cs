@@ -20,23 +20,29 @@ using System.Collections.Generic;
 
 public class ListFilesWithPrefixSample
 {
-    // Prefixes and delimiters can be used to emulate directory listings.
-    // Prefixes can be used filter objects starting with prefix.
-    // The delimiter argument can be used to restrict the results to only the
-    // objects in the given "directory". Without the delimiter, the entire  tree
-    // under the prefix is returned.
-    //
-    // For example, given these blobs:
-    //   /a/1.txt
-    //   /a/b/2.txt
-    //
-    // If you just specify prefix="a/", you'll get back:
-    //   /a/1.txt
-    //   /a/b/2.txt
-    //
-    // However, if you specify prefix="a/" and delimiter="/", you'll get back:
-    //   /a/1.txt
-    public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListFilesWithPrefix(string bucketName, string prefix, string delimiter)
+    /// <summary>
+    /// Prefixes and delimiters can be used to emulate directory listings.
+    /// Prefixes can be used filter objects starting with prefix.
+    /// The delimiter argument can be used to restrict the results to only the
+    /// objects in the given "directory". Without the delimiter, the entire  tree
+    /// under the prefix is returned.
+    /// For example, given these blobs:
+    ///   /a/1.txt
+    ///   /a/b/2.txt
+    ///
+    /// If you just specify prefix="a/", you'll get back:
+    ///   /a/1.txt
+    ///   /a/b/2.txt
+    ///
+    /// However, if you specify prefix="a/" and delimiter="/", you'll get back:
+    /// </summary>
+    /// <param name="bucketName">The bucket to list the objects from.</param>
+    /// <param name="prefix">The prefix to match. Only objects with names that start with this string will
+    /// be returned. This parameter may be null or empty, in which case no filtering
+    /// is performed.</param>
+    /// <param name="delimiter">Used to list in "directory mode". Only objects whose names (aside from the prefix)
+    /// do not contain the delimiter will be returned.</param>
+    public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListFilesWithPrefix(string bucketName = "your-unique-bucket-name", string prefix = "your-prefix", string delimiter = "your-delimiter")
     {
         var storage = StorageClient.Create();
         var options = new ListObjectsOptions() { Delimiter = delimiter };
