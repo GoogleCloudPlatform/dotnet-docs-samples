@@ -17,6 +17,7 @@
 // [START scc_update_notification_config]
 
 using Google.Cloud.SecurityCenter.V1;
+using static Google.Cloud.SecurityCenter.V1.NotificationConfig.Types;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
@@ -33,10 +34,11 @@ public class UpdateNotificationConfigSnippets
         {
             NotificationConfigName = notificationConfigName,
             Description = "updated description",
-            PubsubTopicAsTopicName = pubsubTopic
+            PubsubTopicAsTopicName = pubsubTopic,
+            StreamingConfig = new StreamingConfig { Filter = "state = \"INACTIVE\"" }
         };
 
-        FieldMask fieldMask = new FieldMask { Paths = { "description", "pubsub_topic" } };
+        FieldMask fieldMask = new FieldMask { Paths = { "description", "pubsub_topic", "streaming_config.filter" } };
         SecurityCenterClient client = SecurityCenterClient.Create();
         NotificationConfig updatedConfig = client.UpdateNotificationConfig(configToUpdate, fieldMask);
 

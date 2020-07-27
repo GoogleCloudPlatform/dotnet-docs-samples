@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START scc_get_notification_config]
+// [START scc_delete_notification_config]
 
 using Google.Cloud.SecurityCenter.V1;
 using System;
