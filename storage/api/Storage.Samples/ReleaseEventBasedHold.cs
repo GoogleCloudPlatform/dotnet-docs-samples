@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,12 +24,14 @@ public class ReleaseEventBasedHoldSample
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
-    public void ReleaseEventBasedHold(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
+    public void ReleaseEventBasedHold(
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);
         storageObject.EventBasedHold = false;
-        storageObject = storage.UpdateObject(storageObject, new UpdateObjectOptions()
+        storageObject = storage.UpdateObject(storageObject, new UpdateObjectOptions
         {
             // Use IfMetagenerationMatch to avoid race conditions.
             IfMetagenerationMatch = storageObject.Metageneration,

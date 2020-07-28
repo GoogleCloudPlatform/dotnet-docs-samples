@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,11 @@ public class MoveFileSample
     /// <param name="sourceObjectName">The name of the source object within the bucket.</param>
     /// <param name="targetBucketName">The ID of the bucket to move the object.</param>
     /// <param name="destObjectName">The name of the target object.</param>
-    public void MoveFile(string sourceBucketName = "your-unique-bucket-name", string sourceObjectName = "your-object-name", string targetBucketName = "target-object-bucket", string destObjectName = "target-object-name")
+    public void MoveFile(
+        string sourceBucketName = "your-unique-bucket-name",
+        string sourceObjectName = "your-object-name",
+        string targetBucketName = "target-object-bucket",
+        string destObjectName = "target-object-name")
     {
         var storage = StorageClient.Create();
         storage.CopyObject(sourceBucketName, sourceObjectName, targetBucketName, destObjectName);

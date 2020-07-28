@@ -34,11 +34,11 @@ public class UploadDownloadEncryptedFileTest
         var key = generateEncryptionKeySample.GenerateEncryptionKey();
 
         // upload with key
-        uploadEncryptedFileSample.UploadEncryptedFile(key, _bucketFixture.BucketName, _bucketFixture.FilePath,
+        uploadEncryptedFileSample.UploadEncryptedFile(key, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
             _bucketFixture.Collect("HelloEncryptUploadAndDownload.txt"));
 
         //download with key
-        downloadEncryptedFileSample.DownloadEncryptedFile(key, _bucketFixture.BucketName, "HelloEncryptUploadAndDownload.txt", "Hello-downloaded.txt");
+        downloadEncryptedFileSample.DownloadEncryptedFile(key, _bucketFixture.BucketNameGeneric, "HelloEncryptUploadAndDownload.txt", "Hello-downloaded.txt");
         Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("Hello-downloaded.txt"));
         File.Delete("Hello-downloaded.txt");
     }

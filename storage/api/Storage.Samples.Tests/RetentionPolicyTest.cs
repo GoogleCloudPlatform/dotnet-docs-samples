@@ -33,15 +33,15 @@ public class RetentionPolicyTest
         var retentionPeriod = 5;
 
         // set retention policy
-        setRetentionPolicySample.SetRetentionPolicy(_bucketFixture.BucketName, retentionPeriod);
+        setRetentionPolicySample.SetRetentionPolicy(_bucketFixture.BucketNameGeneric, retentionPeriod);
 
         // get retention policy
-        var result = getRetentionPolicySample.GetRetentionPolicy(_bucketFixture.BucketName);
+        var result = getRetentionPolicySample.GetRetentionPolicy(_bucketFixture.BucketNameGeneric);
         Assert.Equal(result.RetentionPeriod, retentionPeriod);
 
         // remove retention policy
-        removeRetentionPolicySample.RemoveRetentionPolicy(_bucketFixture.BucketName);
-        result = getRetentionPolicySample.GetRetentionPolicy(_bucketFixture.BucketName);
+        removeRetentionPolicySample.RemoveRetentionPolicy(_bucketFixture.BucketNameGeneric);
+        result = getRetentionPolicySample.GetRetentionPolicy(_bucketFixture.BucketNameGeneric);
         Assert.Null(result);
     }
 }

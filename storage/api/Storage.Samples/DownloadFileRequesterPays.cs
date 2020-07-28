@@ -28,13 +28,17 @@ public class DownloadFileRequesterPaysSample
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
     /// <param name="localPath">Local path to write the data into.</param>
-    public void DownloadFileRequesterPays(string projectId = "your-project-id", string bucketName = "your-unique-bucket-name", string objectName = "my-file-name", string localPath = null)
+    public void DownloadFileRequesterPays(
+        string projectId = "your-project-id",
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "my-file-name",
+        string localPath = null)
     {
         var storage = StorageClient.Create();
         localPath = localPath ?? Path.GetFileName(objectName);
         using (var outputFile = File.OpenWrite(localPath))
         {
-            storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions()
+            storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions
             {
                 UserProject = projectId
             });

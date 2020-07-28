@@ -42,11 +42,15 @@ public class ListFilesWithPrefixSample
     /// is performed.</param>
     /// <param name="delimiter">Used to list in "directory mode". Only objects whose names (aside from the prefix)
     /// do not contain the delimiter will be returned.</param>
-    public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListFilesWithPrefix(string bucketName = "your-unique-bucket-name", string prefix = "your-prefix", string delimiter = "your-delimiter")
+    public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListFilesWithPrefix(
+        string bucketName = "your-unique-bucket-name",
+        string prefix = "your-prefix",
+        string delimiter = "your-delimiter")
     {
         var storage = StorageClient.Create();
-        var options = new ListObjectsOptions() { Delimiter = delimiter };
+        var options = new ListObjectsOptions { Delimiter = delimiter };
         var storageObjects = storage.ListObjects(bucketName, prefix, options);
+        Console.WriteLine($"Objects in bucket {bucketName} with prefix {prefix}:");
         foreach (var storageObject in storageObjects)
         {
             Console.WriteLine(storageObject.Name);

@@ -31,13 +31,13 @@ public class UniformBucketLevelAccessTest
         GetUniformBucketLevelAccessSample getUniformBucketLevelAccessSample = new GetUniformBucketLevelAccessSample();
         DisableUniformBucketLevelAccessSample disableUniformBucketLevelAccessSample = new DisableUniformBucketLevelAccessSample();
 
-        var bucket = enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(_bucketFixture.BucketName);
+        var bucket = enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
         Assert.True(bucket.IamConfiguration.UniformBucketLevelAccess.Enabled);
 
-        var uniformBucketLevelAccess = getUniformBucketLevelAccessSample.GetUniformBucketLevelAccess(_bucketFixture.BucketName);
+        var uniformBucketLevelAccess = getUniformBucketLevelAccessSample.GetUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
         Assert.True(uniformBucketLevelAccess.Enabled);
 
-        bucket = disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(_bucketFixture.BucketName);
+        bucket = disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
         Assert.False(bucket.IamConfiguration.UniformBucketLevelAccess.Enabled);
     }
 }

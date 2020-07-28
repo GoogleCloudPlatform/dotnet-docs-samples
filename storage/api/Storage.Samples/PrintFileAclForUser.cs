@@ -28,10 +28,13 @@ public class PrintFileAclForUserSample
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
     /// <param name="userEmail">The use email.</param>
-    public IEnumerable<ObjectAccessControl> PrintFileAclForUser(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name", string userEmail = "user@iam.gserviceaccount.com")
+    public IEnumerable<ObjectAccessControl> PrintFileAclForUser(
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "your-object-name",
+        string userEmail = "user@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
-        var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions()
+        var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions
         {
             Projection = Projection.Full
         });

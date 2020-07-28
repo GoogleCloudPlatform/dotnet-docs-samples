@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ public class DeleteFileSample
     /// </summary>
     /// <param name="bucketName">The name of the bucket containing the object.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
-    public void DeleteFile(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
+    public void DeleteFile(
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
         storage.DeleteObject(bucketName, objectName);

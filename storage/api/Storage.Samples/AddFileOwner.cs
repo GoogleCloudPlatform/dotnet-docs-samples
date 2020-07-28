@@ -26,21 +26,24 @@ public class AddFileOwnerSample
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">File/Object Name.</param>
     /// <param name="userEmail">The user Email that holding the owner permission.</param>
-    public Google.Apis.Storage.v1.Data.Object AddFileOwner(string bucketName = "your-unique-bucket-name", string objectName = "my-file-name", string userEmail = "dev@iam.gserviceaccount.com")
+    public Google.Apis.Storage.v1.Data.Object AddFileOwner(
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "my-file-name",
+        string userEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
-        var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions()
+        var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions
         {
             Projection = Projection.Full
         });
 
-        storageObject.Acl.Add(new ObjectAccessControl()
+        storageObject.Acl.Add(new ObjectAccessControl
         {
             Bucket = bucketName,
             Entity = $"user-{userEmail}",
             Role = "OWNER",
         });
-        var updatedObject = storage.UpdateObject(storageObject, new UpdateObjectOptions()
+        var updatedObject = storage.UpdateObject(storageObject, new UpdateObjectOptions
         {
             // Avoid race conditions.
             IfMetagenerationMatch = storageObject.Metageneration,

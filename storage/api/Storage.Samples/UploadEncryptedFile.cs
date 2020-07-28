@@ -28,13 +28,17 @@ public class UploadEncryptedFileSample
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="localPath">The local path.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
-    public void UploadEncryptedFile(string key = "3eFsTXPvqi3BpT2ipFCGirslh1Jgc6ikjoAu2oQ5JcI=", string bucketName = "your-unique-bucket-name", string localPath = "path/to/your/file", string objectName = null)
+    public void UploadEncryptedFile(
+        string key = "3eFsTXPvqi3BpT2ipFCGirslh1Jgc6ikjoAu2oQ5JcI=",
+        string bucketName = "your-unique-bucket-name",
+        string localPath = "path/to/your/file",
+        string objectName = null)
     {
         var storage = StorageClient.Create();
         using (var f = File.OpenRead(localPath))
         {
             objectName = objectName ?? Path.GetFileName(localPath);
-            storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions()
+            storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions
             {
                 EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(key))
             });

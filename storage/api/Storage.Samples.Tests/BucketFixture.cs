@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -19,34 +20,38 @@ using Xunit;
 [CollectionDefinition(nameof(BucketFixture))]
 public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
 {
-    public readonly string ProjectId;
-    public List<string> TempBucketNames { get; set; } = new List<string>();
-    public SortedDictionary<string, SortedSet<string>> TempBucketFiles { get; set; } = new SortedDictionary<string, SortedSet<string>>();
-    public string BucketName { get; private set; } = Guid.NewGuid().ToString();
-    public string BucketName1 { get; private set; } = Guid.NewGuid().ToString();
-    public string FileName { get; private set; } = "Hello.txt";
-    public string FilePath { get; private set; } = "Resources/Hello.txt";
-    public string KmsKeyRing { get; private set; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYRING");
-    public string KmsKeyName { get; private set; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYNAME");
-    public string KmsKeyLocation { get; private set; } = "us-west1";
-    public string ServiceAccountEmail { get; private set; } = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
+    public string ProjectId { get; }
+    public IList<string> TempBucketNames { get; } = new List<string>();
+    public SortedDictionary<string, SortedSet<string>> TempBucketFiles { get; } = new SortedDictionary<string, SortedSet<string>>();
+    public string BucketNameGeneric { get; } = Guid.NewGuid().ToString();
+    public string BucketNameRegional { get; } = Guid.NewGuid().ToString();
+    public string FileName { get; } = "Hello.txt";
+    public string FilePath { get; } = "Resources/Hello.txt";
+    public string KmsKeyRing { get; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYRING");
+    public string KmsKeyName { get; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYNAME");
+    public string KmsKeyLocation { get; } = "us-west1";
+    public string ServiceAccountEmail { get; } = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
 
     public BucketFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        if (string.IsNullOrWhiteSpace(ProjectId))
+        {
+            throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
+        }
         // create simple bucket
         CreateBucketSample createBucketSample = new CreateBucketSample();
-        createBucketSample.CreateBucket(ProjectId, BucketName);
-        TempBucketNames.Add(BucketName);
+        createBucketSample.CreateBucket(ProjectId, BucketNameGeneric);
+        TempBucketNames.Add(BucketNameGeneric);
 
         // create regional bucket
         CreateRegionalBucketSample createRegionalBucketSample = new CreateRegionalBucketSample();
-        createRegionalBucketSample.CreateRegionalBucket(ProjectId, KmsKeyLocation, BucketName1);
-        TempBucketNames.Add(BucketName1);
+        createRegionalBucketSample.CreateRegionalBucket(ProjectId, BucketNameRegional, KmsKeyLocation, StorageClasses.Regional);
+        TempBucketNames.Add(BucketNameRegional);
 
         //upload file to BucketName
         UploadFileSample uploadFileSample = new UploadFileSample();
-        uploadFileSample.UploadFile(BucketName, FilePath);
+        uploadFileSample.UploadFile(BucketNameGeneric, FilePath);
 
         Collect(FileName);
     }
@@ -58,13 +63,27 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
         {
             foreach (var file in bucket.Value)
             {
-                deleteFileSample.DeleteFile(bucket.Key, file);
+                try
+                {
+                    deleteFileSample.DeleteFile(bucket.Key, file);
+                }
+                catch (Exception)
+                {
+                    // Do nothing, we delete on a best effort basis.
+                }
             }
         }
 
         foreach (var bucketName in TempBucketNames)
         {
-            deleteBucketSample.DeleteBucket(bucketName);
+            try
+            {
+                deleteBucketSample.DeleteBucket(bucketName);
+            }
+            catch (Exception)
+            {
+                // Do nothing, we delete on a best effort basis.
+            }
         }
     }
 
@@ -87,12 +106,12 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     /// Add an object to delete at the end of the test.
     /// </summary>
     /// <returns>The objectName.</returns>
-    public string Collect(string objectName) => Collect(BucketName, objectName);
+    public string Collect(string objectName) => Collect(BucketNameGeneric, objectName);
 
     /// <summary>
     /// Add a object located in a regional bucket to delete
     /// at the end of the test.
     /// </summary>
     /// <returns>The regional objectName.</returns>
-    public string CollectRegionalObject(string objectName) => Collect(BucketName1, objectName);
+    public string CollectRegionalObject(string objectName) => Collect(BucketNameRegional, objectName);
 }

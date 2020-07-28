@@ -24,7 +24,8 @@ public class GetUniformBucketLevelAccessSample
     /// Get an uniform bucket level access.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
-    public UniformBucketLevelAccessData GetUniformBucketLevelAccess(string bucketName = "your-unique-bucket-name")
+    public UniformBucketLevelAccessData GetUniformBucketLevelAccess(
+        string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

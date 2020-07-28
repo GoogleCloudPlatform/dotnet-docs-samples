@@ -37,7 +37,7 @@ public class RemoveRetentionPolicySample
             }
 
             bucket.RetentionPolicy.RetentionPeriod = null;
-            bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+            storage.UpdateBucket(bucket, new UpdateBucketOptions
             {
                 IfMetagenerationMatch = bucket.Metageneration
             });

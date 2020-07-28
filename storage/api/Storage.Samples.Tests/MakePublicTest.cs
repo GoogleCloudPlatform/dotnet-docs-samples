@@ -32,9 +32,9 @@ public class MakePublicTest
         MakePublicSample makePublicSample = new MakePublicSample();
         UploadFileSample uploadFileSample = new UploadFileSample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketName, _bucketFixture.FilePath, _bucketFixture.Collect("HelloMakePublic.txt"));
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloMakePublic.txt"));
 
-        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketName, "HelloMakePublic.txt");
+        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "HelloMakePublic.txt");
         Assert.NotNull(metadata.MediaLink);
 
         // Before making the file public, fetching the medialink should throw an exception.
@@ -42,7 +42,7 @@ public class MakePublicTest
         Assert.Throws<WebException>(() => webClient.DownloadString(metadata.MediaLink));
 
         // Make it public and try fetching again.
-        var medialink = makePublicSample.MakePublic(_bucketFixture.BucketName, "HelloMakePublic.txt");
+        var medialink = makePublicSample.MakePublic(_bucketFixture.BucketNameGeneric, "HelloMakePublic.txt");
         var text = webClient.DownloadString(medialink);
         Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), text);
     }

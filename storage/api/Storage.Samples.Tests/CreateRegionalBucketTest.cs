@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Storage.V1;
 using System;
 using Xunit;
 
@@ -30,7 +31,8 @@ public class CreateRegionalBucketTest
     {
         CreateRegionalBucketSample createRegionalBucketSample = new CreateRegionalBucketSample();
         var bucketName = Guid.NewGuid().ToString();
-        var buket = createRegionalBucketSample.CreateRegionalBucket(_bucketFixture.ProjectId, _bucketFixture.KmsKeyLocation, bucketName);
+        var buket = createRegionalBucketSample.CreateRegionalBucket(_bucketFixture.ProjectId, bucketName, _bucketFixture.KmsKeyLocation, StorageClasses.Regional);
         Assert.Equal(buket.Location.ToLower(), _bucketFixture.KmsKeyLocation.ToLower());
+        Assert.Equal("regional", buket.StorageClass.ToLower());
     }
 }

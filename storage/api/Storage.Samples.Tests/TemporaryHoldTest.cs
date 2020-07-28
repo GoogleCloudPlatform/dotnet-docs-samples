@@ -31,16 +31,16 @@ public class TemporaryHoldTest
         ReleaseTemporaryHoldSample releaseTemporaryHoldSample = new ReleaseTemporaryHoldSample();
         UploadFileSample uploadFileSample = new UploadFileSample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketName1, _bucketFixture.FilePath, _bucketFixture.CollectRegionalObject("TemporaryHold.txt"));
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameRegional, _bucketFixture.FilePath, _bucketFixture.CollectRegionalObject("TemporaryHold.txt"));
 
-        setTemporaryHoldSample.SetTemporaryHold(_bucketFixture.BucketName1, "TemporaryHold.txt");
+        setTemporaryHoldSample.SetTemporaryHold(_bucketFixture.BucketNameRegional, "TemporaryHold.txt");
 
-        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketName1, "TemporaryHold.txt");
+        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameRegional, "TemporaryHold.txt");
         Assert.True(metadata.TemporaryHold);
 
-        releaseTemporaryHoldSample.ReleaseTemporaryHold(_bucketFixture.BucketName1, "TemporaryHold.txt");
+        releaseTemporaryHoldSample.ReleaseTemporaryHold(_bucketFixture.BucketNameRegional, "TemporaryHold.txt");
 
-        metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketName1, "TemporaryHold.txt");
+        metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameRegional, "TemporaryHold.txt");
         Assert.False(metadata.TemporaryHold);
     }
 }

@@ -30,11 +30,11 @@ public class ViewBucketIamMembersSample
         var policy = storage.GetBucketIamPolicy(bucketName);
         foreach (var binding in policy.Bindings)
         {
-            Console.WriteLine($"  Role: {binding.Role}");
-            Console.WriteLine("  Members:");
+            Console.WriteLine($"Role: {binding.Role}");
+            Console.WriteLine("Members:");
             foreach (var member in binding.Members)
             {
-                Console.WriteLine($"    {member}");
+                Console.WriteLine($"{member}");
             }
         }
         return policy;

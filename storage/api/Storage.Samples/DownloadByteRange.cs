@@ -30,8 +30,12 @@ public class DownloadByteRangeSample
     /// <param name="firstByte">The first byte of the object content.</param>
     /// <param name="lastByte">The last byte of the object content.</param>
     /// <param name="localPath">Local Path where file will be downloaded.</param>
-    public void DownloadByteRange(string bucketName = "your-unique-bucket-name", string objectName = "my-file-name",
-        long firstByte = 0, long lastByte = 20, string localPath = null)
+    public void DownloadByteRange(
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "my-file-name",
+        long firstByte = 0,
+        long lastByte = 20,
+        string localPath = null)
     {
         var storageClient = StorageClient.Create();
         localPath = localPath ?? $"{Path.GetFileName(objectName)}_{firstByte}-{lastByte}";
@@ -40,10 +44,7 @@ public class DownloadByteRangeSample
         StorageService storage = storageClient.Service;
         var uri = new Uri($"{storage.BaseUri}b/{bucketName}/o/{objectName}?alt=media");
 
-        var request = new HttpRequestMessage()
-        {
-            RequestUri = uri
-        };
+        var request = new HttpRequestMessage { RequestUri = uri };
         request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(firstByte, lastByte);
 
         using (var outputFile = File.OpenWrite(localPath))

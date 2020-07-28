@@ -27,13 +27,12 @@ public class PrintBucketAclForUserSample
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="userEmail">The use email.</param>
-    public IEnumerable<BucketAccessControl> PrintBucketAclForUser(string bucketName = "your-unique-bucket-name", string userEmail = "dev@iam.gserviceaccount.com")
+    public IEnumerable<BucketAccessControl> PrintBucketAclForUser(
+        string bucketName = "your-unique-bucket-name",
+        string userEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
-        {
-            Projection = Projection.Full
-        });
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
 
         var bucketAclForUser = bucket.Acl.Where((acl) => acl.Entity == $"user-{userEmail}");
         foreach (var acl in bucketAclForUser)

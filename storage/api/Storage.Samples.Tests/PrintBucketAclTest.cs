@@ -38,31 +38,31 @@ public class PrintBucketAclTest
         string userEmail = _bucketFixture.ServiceAccountEmail;
 
         // print bucket acl
-        var bucketAcl = printBucketAclSample.PrintBucketAcl(_bucketFixture.BucketName);
+        var bucketAcl = printBucketAclSample.PrintBucketAcl(_bucketFixture.BucketNameGeneric);
         Assert.DoesNotContain(bucketAcl, c => c.Email == userEmail);
 
         // add bucket owner
-        addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketName, userEmail);
+        addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
 
         // print bucket acl
-        bucketAcl = printBucketAclSample.PrintBucketAcl(_bucketFixture.BucketName);
+        bucketAcl = printBucketAclSample.PrintBucketAcl(_bucketFixture.BucketNameGeneric);
         Assert.Contains(bucketAcl, c => c.Email == userEmail);
 
         // Make sure we print-acl-for-user shows us the user, but not all the ACLs.
-        var bucketAclForUser = printBucketAclForUserSample.PrintBucketAclForUser(_bucketFixture.BucketName, userEmail);
+        var bucketAclForUser = printBucketAclForUserSample.PrintBucketAclForUser(_bucketFixture.BucketNameGeneric, userEmail);
         Assert.Contains(bucketAclForUser, c => c.Email == userEmail && bucketAcl.Count() > bucketAclForUser.Count());
 
         // add default owner
-        addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketName, userEmail);
+        addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketNameGeneric, userEmail);
 
         // print default owner
-        var defaultBucketAcl = printBucketDefaultAclSample.PrintBucketDefaultAcl(_bucketFixture.BucketName);
+        var defaultBucketAcl = printBucketDefaultAclSample.PrintBucketDefaultAcl(_bucketFixture.BucketNameGeneric);
         Assert.Contains(defaultBucketAcl, c => c.Role == "OWNER" && c.Email == userEmail);
 
         // remove default owner
-        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketName, userEmail);
+        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketNameGeneric, userEmail);
 
         // remove owner.
-        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketName, userEmail);
+        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
     }
 }

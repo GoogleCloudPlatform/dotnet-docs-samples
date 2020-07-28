@@ -28,10 +28,7 @@ public class PrintBucketAclSample
     public IEnumerable<BucketAccessControl> PrintBucketAcl(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
-        {
-            Projection = Projection.Full
-        });
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
 
         foreach (var acl in bucket.Acl)
         {

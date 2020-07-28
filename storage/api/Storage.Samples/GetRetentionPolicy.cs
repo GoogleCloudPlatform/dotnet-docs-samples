@@ -36,7 +36,7 @@ public class GetRetentionPolicySample
             Console.WriteLine($"Effective time: {bucket.RetentionPolicy.EffectiveTime}");
             bool? isLockedOrNull = bucket?.RetentionPolicy.IsLocked;
             bool isLocked = isLockedOrNull.HasValue ? isLockedOrNull.Value : false;
-            Console.WriteLine("Policy locked: {0}", isLocked);
+            Console.WriteLine($"Policy locked: {isLocked}");
         }
         return bucket.RetentionPolicy;
     }

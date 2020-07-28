@@ -26,12 +26,14 @@ public class GenerateV4UploadSignedUrlSample
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
-    public string GenerateV4UploadSignedUrl(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
+    public string GenerateV4UploadSignedUrl(
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "your-object-name")
     {
         var credential = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
         UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(credential);
 
-        var contentHeaders = new Dictionary<string, IEnumerable<string>>()
+        var contentHeaders = new Dictionary<string, IEnumerable<string>>
         {
             { "Content-Type", new[] { "text/plain" } }
         };

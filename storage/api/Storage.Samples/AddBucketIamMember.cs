@@ -27,11 +27,14 @@ public class AddBucketIamMemberSample
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="role">The role to which members belong.</param>
     /// <param name="member">A collection of identifiers for members who may assume the provided role.</param>
-    public Policy AddBucketIamMember(string bucketName = "your-unique-bucket-name", string role = "roles/storage.objectViewer", string member = "serviceAccount:dev@iam.gserviceaccount.com")
+    public Policy AddBucketIamMember(
+        string bucketName = "your-unique-bucket-name",
+        string role = "roles/storage.objectViewer",
+        string member = "serviceAccount:dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
         var policy = storage.GetBucketIamPolicy(bucketName);
-        Policy.BindingsData bindingToAdd = new Policy.BindingsData()
+        Policy.BindingsData bindingToAdd = new Policy.BindingsData
         {
             Role = role,
             Members = new List<string> { member }

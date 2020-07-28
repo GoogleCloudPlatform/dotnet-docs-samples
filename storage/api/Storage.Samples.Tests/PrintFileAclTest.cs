@@ -35,23 +35,23 @@ public class PrintFileAclTest
         RemoveFileOwnerSample removeFileOwnerSample = new RemoveFileOwnerSample();
 
         string userEmail = _bucketFixture.ServiceAccountEmail;
-        uploadFileSample.UploadFile(_bucketFixture.BucketName, _bucketFixture.FilePath, _bucketFixture.Collect("HelloAddObjectOwner.txt"));
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloAddObjectOwner.txt"));
 
         // print file acl
-        var fileAcl = printFileAclSample.PrintObjectAcl(_bucketFixture.BucketName, "HelloAddObjectOwner.txt");
+        var fileAcl = printFileAclSample.PrintObjectAcl(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt");
         Assert.DoesNotContain(fileAcl, c => c.Email == userEmail);
 
         // add file owner
-        addFileOwnerSample.AddFileOwner(_bucketFixture.BucketName, "HelloAddObjectOwner.txt", userEmail);
+        addFileOwnerSample.AddFileOwner(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt", userEmail);
 
         // print file acl
-        fileAcl = printFileAclSample.PrintObjectAcl(_bucketFixture.BucketName, "HelloAddObjectOwner.txt");
+        fileAcl = printFileAclSample.PrintObjectAcl(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt");
         Assert.Contains(fileAcl, c => c.Email == userEmail);
 
         // Make sure we print-acl-for-user shows us the user, but not all the ACLs.
-        var fileAclForUser = printFileAclForUserSample.PrintFileAclForUser(_bucketFixture.BucketName, "HelloAddObjectOwner.txt", userEmail);
+        var fileAclForUser = printFileAclForUserSample.PrintFileAclForUser(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt", userEmail);
         Assert.Contains(fileAcl, c => c.Email == userEmail && fileAcl.Count() > fileAclForUser.Count());
 
-        removeFileOwnerSample.RemoveFileOwner(_bucketFixture.BucketName, "HelloAddObjectOwner.txt", userEmail);
+        removeFileOwnerSample.RemoveFileOwner(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt", userEmail);
     }
 }

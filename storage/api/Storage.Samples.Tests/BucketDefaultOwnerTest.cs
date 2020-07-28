@@ -32,11 +32,11 @@ public class BucketDefaultOwnerTest
         RemoveBucketDefaultOwnerSample removeBucketDefaultOwnerSample = new RemoveBucketDefaultOwnerSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
 
-        var updatedBucket = addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketName, _bucketFixture.ServiceAccountEmail);
+        var updatedBucket = addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
         Assert.Contains(updatedBucket.DefaultObjectAcl.Where(c => c.Email != null && c.Role == "OWNER").Select(c => c.Email), c => c.Contains(_bucketFixture.ServiceAccountEmail));
 
-        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketName, _bucketFixture.ServiceAccountEmail);
-        var metadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketName);
+        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
+        var metadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketNameGeneric);
 
         Assert.Null(metadata.DefaultObjectAcl);
     }

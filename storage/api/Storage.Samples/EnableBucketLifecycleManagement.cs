@@ -32,22 +32,38 @@ public class EnableBucketLifecycleManagementSample
         bucket.Lifecycle = new Bucket.LifecycleData
         {
             Rule = new List<Bucket.LifecycleData.RuleData>
+            {
+                new Bucket.LifecycleData.RuleData
                 {
-                    new Bucket.LifecycleData.RuleData
-                    {
-                        Condition = new Bucket.LifecycleData.RuleData.ConditionData { Age = 100 },
-                        Action = new Bucket.LifecycleData.RuleData.ActionData { Type = "Delete" }
-                    }
+                    Condition = new Bucket.LifecycleData.RuleData.ConditionData { Age = 100 },
+                    Action = new Bucket.LifecycleData.RuleData.ActionData { Type = "Delete" }
                 }
+            }
         };
         bucket = storage.UpdateBucket(bucket);
 
         Console.WriteLine($"Lifecycle management is enabled for bucket {bucketName} and the rules are:");
         foreach (var rule in bucket.Lifecycle.Rule)
         {
-            Console.WriteLine($"Age: {rule.Condition.Age} Action: {rule.Action.Type}");
+            Console.WriteLine("Action:");
+            Console.WriteLine($"Type: {rule.Action.Type}");
+            Console.WriteLine($"Storage Class: {rule.Action.StorageClass}");
+
+            Console.WriteLine("Condition:");
+            Console.WriteLine($"Age: \t{rule.Condition.Age}");
+            Console.WriteLine($"Created Before: \t{rule.Condition.CreatedBefore}");
+            Console.WriteLine($"Time Before: \t{rule.Condition.CustomTimeBefore}");
+            Console.WriteLine($"Time Before Raw: \t{rule.Condition.CustomTimeBeforeRaw}");
+            Console.WriteLine($"Days Since Custom Time: \t{rule.Condition.DaysSinceCustomTime}");
+            Console.WriteLine($"Days Since Non-current Time: \t{rule.Condition.DaysSinceNoncurrentTime}");
+            Console.WriteLine($"IsLive: \t{rule.Condition.IsLive}");
+            Console.WriteLine($"Pattern: \t{rule.Condition.MatchesPattern}");
+            Console.WriteLine($"Storage Class: \t{rule.Condition.MatchesStorageClass}");
+            Console.WriteLine($"Noncurrent Time Before: \t{rule.Condition.NoncurrentTimeBefore}");
+            Console.WriteLine($"Noncurrent Time Before Raw: \t{rule.Condition.NoncurrentTimeBeforeRaw}");
+            Console.WriteLine($"Newer Versions: \t{rule.Condition.NumNewerVersions}");
         }
         return bucket;
     }
 }
-// [END storage_disable_bucket_lifecycle_management]
+// [END storage_enable_bucket_lifecycle_management]

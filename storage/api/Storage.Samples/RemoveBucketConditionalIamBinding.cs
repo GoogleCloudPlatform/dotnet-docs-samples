@@ -29,11 +29,15 @@ public class RemoveBucketConditionalIamBindingSample
     /// <param name="title">Title for the expression.</param>
     /// <param name="description">Description of the expression.</param>
     /// <param name="expression">Textual representation of an expression in Common Expression Language syntax.</param>
-    public Policy RemoveBucketConditionalIamBinding(string bucketName = "your-unique-bucket-name", string role = "roles/storage.objectViewer", string title = "title",
-        string description = "description", string expression = "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")")
+    public Policy RemoveBucketConditionalIamBinding(
+        string bucketName = "your-unique-bucket-name",
+        string role = "roles/storage.objectViewer",
+        string title = "title",
+        string description = "description",
+        string expression = "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")")
     {
         var storage = StorageClient.Create();
-        var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+        var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions
         {
             RequestedPolicyVersion = 3
         });

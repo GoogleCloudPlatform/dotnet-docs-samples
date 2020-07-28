@@ -31,9 +31,9 @@ public class GenerateSignedUrlTest
     {
         var uploadFileSample = new UploadFileSample();
         var generateSignedUrlSample = new GenerateSignedUrlSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketName, _bucketFixture.FilePath,
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
             _bucketFixture.Collect("HelloSignUrl.txt"));
-        var signedUrl = generateSignedUrlSample.GenerateSignedUrl(_bucketFixture.BucketName, "HelloSignUrl.txt");
+        var signedUrl = generateSignedUrlSample.GenerateSignedUrl(_bucketFixture.BucketNameGeneric, "HelloSignUrl.txt");
 
         using (var client = new HttpClient())
         {

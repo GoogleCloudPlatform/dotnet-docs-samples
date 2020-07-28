@@ -26,7 +26,11 @@ public class CopyFileSample
     /// <param name="sourceObjectName">The name of the object to copy within the bucket.</param>
     /// <param name="destBucketName">The name of the bucket to copy the object to.</param>
     /// <param name="destObjectName">The name of the object within the destination bucket.</param>
-    public void CopyFile(string sourceBucketName = "source-bucket-name", string sourceObjectName = "source-file", string destBucketName = "destination-bucket-name", string destObjectName = "destination-file-name")
+    public void CopyFile(
+        string sourceBucketName = "source-bucket-name",
+        string sourceObjectName = "source-file",
+        string destBucketName = "destination-bucket-name",
+        string destObjectName = "destination-file-name")
     {
         var storage = StorageClient.Create();
         storage.CopyObject(sourceBucketName, sourceObjectName, destBucketName, destObjectName);

@@ -25,7 +25,9 @@ public class CreateHmacKeySample
     /// </summary>
     /// <param name="projectId">The project ID in which to create the HMAC key.</param>
     /// <param name="serviceAccountEmail">The service account to associate with the HMAC key.</param>
-    public HmacKey CreateHmacKey(string projectId = "your-project-id", string serviceAccountEmail = "dev@iam.gserviceaccount.com")
+    public HmacKey CreateHmacKey(
+        string projectId = "your-project-id",
+        string serviceAccountEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
         var key = storage.CreateHmacKey(projectId, serviceAccountEmail);

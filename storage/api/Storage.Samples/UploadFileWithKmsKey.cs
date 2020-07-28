@@ -30,22 +30,24 @@ public class UploadFileWithKmsKeySample
     /// <param name="kmsKeyName">KMS key Name</param>
     /// <param name="localPath">The local path.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
-    public void UploadFileWithKmsKey(string projectId = "your-project-id", string bucketName = "your-unique-bucket-name",
-        string keyLocation = "us-west1", string kmsKeyRing = "kms-key-ring", string kmsKeyName = "key-name",
-        string localPath = "path/to/your/file", string objectName = null)
+    public void UploadFileWithKmsKey(
+        string projectId = "your-project-id",
+        string bucketName = "your-unique-bucket-name",
+        string keyLocation = "us-west1",
+        string kmsKeyRing = "kms-key-ring",
+        string kmsKeyName = "key-name",
+        string localPath = "path/to/your/file",
+        string objectName = null)
     {
-        string KeyPrefix = $"projects/{projectId}/locations/{keyLocation}";
-        string FullKeyringName = $"{KeyPrefix}/keyRings/{kmsKeyRing}";
-        string FullKeyName = $"{FullKeyringName}/cryptoKeys/{kmsKeyName}";
+        string keyPrefix = $"projects/{projectId}/locations/{keyLocation}";
+        string fullKeyringName = $"{keyPrefix}/keyRings/{kmsKeyRing}";
+        string fullKeyName = $"{fullKeyringName}/cryptoKeys/{kmsKeyName}";
 
         var storage = StorageClient.Create();
         using (var f = File.OpenRead(localPath))
         {
             objectName = objectName ?? Path.GetFileName(localPath);
-            storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions()
-            {
-                KmsKeyName = FullKeyName
-            });
+            storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions { KmsKeyName = fullKeyName });
             Console.WriteLine($"Uploaded {objectName}.");
         }
     }

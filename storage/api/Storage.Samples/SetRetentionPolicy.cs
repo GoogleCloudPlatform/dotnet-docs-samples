@@ -32,13 +32,15 @@ public class SetRetentionPolicySample
     /// policy cannot be removed or shortened in duration for the lifetime of the bucket.
     /// Attempting to remove or decrease period of a locked retention policy will result
     /// in a PERMISSION_DENIED error.</param>
-    public RetentionPolicyData SetRetentionPolicy(string bucketName = "your-unique-bucket-name", long retentionPeriod = 10)
+    public RetentionPolicyData SetRetentionPolicy(
+        string bucketName = "your-unique-bucket-name",
+        long retentionPeriod = 10)
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
-        bucket.RetentionPolicy = new RetentionPolicyData();
-        bucket.RetentionPolicy.RetentionPeriod = retentionPeriod;
-        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+        bucket.RetentionPolicy = new RetentionPolicyData { RetentionPeriod = retentionPeriod };
+
+        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
         {
             IfMetagenerationMatch = bucket.Metageneration
         });

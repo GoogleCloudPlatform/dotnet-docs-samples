@@ -30,9 +30,9 @@ public class GenerateV4ReadSignedUrlTest
     {
         var uploadFileSample = new UploadFileSample();
         GenerateV4SignedReadUrlSample generateV4SignedReadUrlSample = new GenerateV4SignedReadUrlSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketName, _bucketFixture.FilePath,
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
             _bucketFixture.Collect("HelloV4SignUrl.txt"));
-        var signedUrl = generateV4SignedReadUrlSample.GenerateV4SignedReadUrl(_bucketFixture.BucketName, "HelloV4SignUrl.txt");
+        var signedUrl = generateV4SignedReadUrlSample.GenerateV4SignedReadUrl(_bucketFixture.BucketNameGeneric, "HelloV4SignUrl.txt");
 
         using (var client = new HttpClient())
         {

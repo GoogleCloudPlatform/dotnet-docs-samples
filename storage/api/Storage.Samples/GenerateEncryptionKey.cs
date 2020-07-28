@@ -15,6 +15,7 @@
 // [START storage_generate_encryption_key]
 
 using Google.Cloud.Storage.V1;
+using System;
 
 public class GenerateEncryptionKeySample
 {
@@ -24,6 +25,7 @@ public class GenerateEncryptionKeySample
     public string GenerateEncryptionKey()
     {
         var encryptionKey = EncryptionKey.Generate().Base64Key;
+        Console.WriteLine($"Generated Base64-encoded AES-256 encryption key: {encryptionKey}");
         return encryptionKey;
     }
 }

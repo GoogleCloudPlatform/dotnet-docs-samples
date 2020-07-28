@@ -32,7 +32,7 @@ public class DisableUniformBucketLevelAccessSample
         /** THIS IS A WORKAROUND */
         bucket.IamConfiguration.BucketPolicyOnly.Enabled = false;
         /** THIS IS A WORKAROUND */
-        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
         {
             // Use IfMetagenerationMatch to avoid race conditions.
             IfMetagenerationMatch = bucket.Metageneration,

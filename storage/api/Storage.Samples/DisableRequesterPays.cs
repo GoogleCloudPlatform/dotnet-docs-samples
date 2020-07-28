@@ -26,16 +26,18 @@ public class DisableRequesterPaysSample
     /// <param name="projectId">Project Id. If set, this is the ID of the project which will be billed for the request.
     /// The caller must have suitable permissions for the project being billed.</param>
     /// <param name="bucketName">The name of the bucket.</param>
-    public Bucket DisableRequesterPays(string projectId = "your-project-id", string bucketName = "your-unique-bucket-name")
+    public Bucket DisableRequesterPays(
+        string projectId = "your-project-id",
+        string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions
         {
             UserProject = projectId
         });
         bucket.Billing = bucket.Billing ?? new Bucket.BillingData();
         bucket.Billing.RequesterPays = false;
-        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
         {
             // Use IfMetagenerationMatch to avoid race conditions.
             IfMetagenerationMatch = bucket.Metageneration,

@@ -24,10 +24,12 @@ public class ListFilesSample
     /// Lists the objects in a given bucket.
     /// </summary>
     /// <param name="bucketName">The bucket to list the objects from.</param>
-    public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListFiles(string bucketName = "your-unique-bucket-name")
+    public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListFiles(
+        string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var storageObjects = storage.ListObjects(bucketName, "");
+        Console.WriteLine($"Files in bucket {bucketName}:");
         foreach (var storageObject in storageObjects)
         {
             Console.WriteLine(storageObject.Name);

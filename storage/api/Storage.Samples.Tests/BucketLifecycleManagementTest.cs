@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ using Xunit;
 [Collection(nameof(BucketFixture))]
 public class BucketLifecycleManagementTest
 {
-
     private readonly BucketFixture _bucketFixture;
 
     public BucketLifecycleManagementTest(BucketFixture bucketFixture)
@@ -32,11 +31,11 @@ public class BucketLifecycleManagementTest
         var disableBucketLifecycleManagementSample = new DisableBucketLifecycleManagementSample();
 
         // Enable Bucket Lifecycle management.
-        var bucket = enableBucketLifecycleManagementSample.EnableBucketLifecycleManagement(_bucketFixture.BucketName);
+        var bucket = enableBucketLifecycleManagementSample.EnableBucketLifecycleManagement(_bucketFixture.BucketNameGeneric);
         Assert.Contains(bucket.Lifecycle.Rule, r => r.Condition.Age == 100 && r.Action.Type == "Delete");
 
         // Disable Bucket Lifecycle management.
-        bucket = disableBucketLifecycleManagementSample.DisableBucketLifecycleManagement(_bucketFixture.BucketName);
+        bucket = disableBucketLifecycleManagementSample.DisableBucketLifecycleManagement(_bucketFixture.BucketNameGeneric);
         Assert.Null(bucket.Lifecycle);
     }
 }

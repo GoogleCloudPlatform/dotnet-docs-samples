@@ -29,7 +29,7 @@ public class GetDefaultEventBasedHoldSample
         var bucket = storage.GetBucket(bucketName);
         bool? defaultEventBasedHoldOrNull = bucket?.DefaultEventBasedHold;
         bool defaultEventBasedHold = defaultEventBasedHoldOrNull.HasValue ? defaultEventBasedHoldOrNull.Value : false;
-        Console.WriteLine("Default event-based hold: {0}", defaultEventBasedHold);
+        Console.WriteLine($"Default event-based hold: {defaultEventBasedHold}");
         return defaultEventBasedHold;
     }
 }

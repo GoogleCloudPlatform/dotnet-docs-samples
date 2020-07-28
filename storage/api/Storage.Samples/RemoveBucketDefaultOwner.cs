@@ -27,13 +27,12 @@ public class RemoveBucketDefaultOwnerSample
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="userEmail">The user email.</param>
-    public void RemoveBucketDefaultOwner(string bucketName = "your-unique-bucket-name", string userEmail = "user@iam.gserviceaccount.com")
+    public void RemoveBucketDefaultOwner(
+        string bucketName = "your-unique-bucket-name",
+        string userEmail = "user@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
-        {
-            Projection = Projection.Full
-        });
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
         if (bucket.DefaultObjectAcl == null)
             return;
 
@@ -44,7 +43,7 @@ public class RemoveBucketDefaultOwnerSample
 
         bucket.DefaultObjectAcl = bucket.DefaultObjectAcl.Where((acl) => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
 
-        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
         {
             // Avoid race conditions.
             IfMetagenerationMatch = bucket.Metageneration,

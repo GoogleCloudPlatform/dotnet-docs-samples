@@ -16,17 +16,17 @@ using System.Linq;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class BucketIamMemberTest
+public class RemoveBucketIamMemberTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public BucketIamMemberTest(BucketFixture bucketFixture)
+    public RemoveBucketIamMemberTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void BucketIamMember()
+    public void TestRemoveBucketIamMember()
     {
         string role = "roles/storage.objectViewer";
         string memberType = "serviceAccount";
@@ -34,16 +34,17 @@ public class BucketIamMemberTest
         RemoveBucketIamMemberSample removeBucketIamMemberSample = new RemoveBucketIamMemberSample();
         ViewBucketIamMembersSample viewBucketIamMembersSample = new ViewBucketIamMembersSample();
 
-        // add bucket Iam member
-        var result = addBucketIamMemberSample.AddBucketIamMember(_bucketFixture.BucketName, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
-        Assert.Contains(result.Bindings, cs => cs.Role == role);
-        Assert.Contains(result.Bindings.SelectMany(c => c.Members), c => c == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        // Add bucket Iam member.
+        var result = addBucketIamMemberSample.AddBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        Assert.Contains(result.Bindings, b => b.Role == role);
+        Assert.Contains(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
 
-        // remove bucket Iam member
-        removeBucketIamMemberSample.RemoveBucketIamMember(_bucketFixture.BucketName, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        // Remove bucket Iam member.
+        removeBucketIamMemberSample.RemoveBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
 
-        result = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketName);
-        Assert.DoesNotContain(result.Bindings, cs => cs.Role == role);
-        Assert.DoesNotContain(result.Bindings.SelectMany(c => c.Members), c => c == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        // Get bucket Iam member.
+        result = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketNameGeneric);
+        Assert.DoesNotContain(result.Bindings, b => b.Role == role);
+        Assert.DoesNotContain(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
     }
 }

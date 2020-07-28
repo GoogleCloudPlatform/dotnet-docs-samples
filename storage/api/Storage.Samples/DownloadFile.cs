@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,10 @@ public class DownloadFileSample
     /// <param name="bucketName">The name of the bucket containing the object.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
     /// <param name="localPath">Local path to write the data into.</param>
-    public void DownloadFile(string bucketName = "your-unique-bucket-name", string objectName = "my-file-name", string localPath = null)
+    public void DownloadFile(
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "my-file-name",
+        string localPath = null)
     {
         var storage = StorageClient.Create();
         localPath = localPath ?? Path.GetFileName(objectName);

@@ -31,9 +31,9 @@ public class DownloadByteRangeTest
     {
         UploadFileSample uploadFileSample = new UploadFileSample();
         DownloadByteRangeSample downloadByteRangeSample = new DownloadByteRangeSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketName, "Resources/HelloDownloadCompleteByteRange.txt",
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt",
             _bucketFixture.Collect("HelloDownloadCompleteByteRange.txt"));
-        downloadByteRangeSample.DownloadByteRange(_bucketFixture.BucketName, "HelloDownloadCompleteByteRange.txt", 0, 20);
+        downloadByteRangeSample.DownloadByteRange(_bucketFixture.BucketNameGeneric, "HelloDownloadCompleteByteRange.txt", 0, 20);
         var downloadedString = Encoding.UTF8.GetString(File.ReadAllBytes("HelloDownloadCompleteByteRange.txt_0-20"));
         Assert.Equal("\uFEFFHello Download Com", downloadedString);
         File.Delete("HelloDownloadCompleteByteRange.txt_0-20");

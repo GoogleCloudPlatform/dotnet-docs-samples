@@ -55,6 +55,11 @@ public class GetBucketMetadataSample
         Console.WriteLine($"Updated:\t{bucket.Updated}");
         Console.WriteLine($"Versioning:\t{bucket.Versioning}");
         Console.WriteLine($"Website:\t{bucket.Website}");
+        Console.WriteLine("Labels:");
+        foreach (var label in bucket.Labels)
+        {
+            Console.WriteLine($"{label.Key}:\t{label.Value}");
+        }
         return bucket;
     }
 }

@@ -24,16 +24,15 @@ public class GetRequesterPaysStatusSample
     /// </summary>
     /// <param name="projectId">The project Id.</param>
     /// <param name="bucketName">The name of the bucket.</param>
-    public bool GetRequesterPaysStatus(string projectId = "your-project-id", string bucketName = "your-unique-bucket-name")
+    public bool GetRequesterPaysStatus(
+        string projectId = "your-project-id",
+        string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
-        {
-            UserProject = projectId
-        });
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions { UserProject = projectId });
         bool? requesterPaysOrNull = bucket.Billing?.RequesterPays;
         bool requesterPays = requesterPaysOrNull.HasValue ? requesterPaysOrNull.Value : false;
-        Console.WriteLine("RequesterPays: {0}", requesterPays);
+        Console.WriteLine($"RequesterPays: {requesterPays}");
         return requesterPays;
     }
 }

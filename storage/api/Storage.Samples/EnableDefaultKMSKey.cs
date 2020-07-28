@@ -28,22 +28,20 @@ public class EnableDefaultKMSKeySample
     /// <param name="keyLocation">Key Location.</param>
     /// <param name="kmsKeyRing">KMS key Ring.</param>
     /// <param name="kmsKeyName">KMS key Name</param>
-    public Bucket EnableDefaultKMSKey(string projectId = "your-project-id", string bucketName = "your-unique-bucket-name",
-        string keyLocation = "us-west1", string kmsKeyRing = "kms-key-ring", string kmsKeyName = "key-name")
+    public Bucket EnableDefaultKMSKey(
+        string projectId = "your-project-id",
+        string bucketName = "your-unique-bucket-name",
+        string keyLocation = "us-west1",
+        string kmsKeyRing = "kms-key-ring",
+        string kmsKeyName = "key-name")
     {
         string keyPrefix = $"projects/{projectId}/locations/{keyLocation}";
         string fullKeyringName = $"{keyPrefix}/keyRings/{kmsKeyRing}";
         string fullKeyName = $"{fullKeyringName}/cryptoKeys/{kmsKeyName}";
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
-        {
-            Projection = Projection.Full
-        });
-        bucket.Encryption = new Bucket.EncryptionData
-        {
-            DefaultKmsKeyName = fullKeyName
-        };
-        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
+        bucket.Encryption = new Bucket.EncryptionData { DefaultKmsKeyName = fullKeyName };
+        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
         {
             // Avoid race conditions.
             IfMetagenerationMatch = bucket.Metageneration,

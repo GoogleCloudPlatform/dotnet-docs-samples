@@ -28,7 +28,7 @@ public class GetBucketMetadataTest
     public void GetBucketMetadata()
     {
         var getBucketMetadataSample = new GetBucketMetadataSample();
-        var metadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketName);
+        var metadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketNameGeneric);
         Assert.NotNull(metadata);
     }
 }

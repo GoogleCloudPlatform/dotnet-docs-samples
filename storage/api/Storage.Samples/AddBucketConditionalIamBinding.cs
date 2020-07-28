@@ -30,24 +30,27 @@ public class AddBucketConditionalIamBindingSample
     /// <param name="title">Title for the expression.</param>
     /// <param name="description">Description of the expression.</param>
     /// <param name="expression">Textual representation of an expression in Common Expression Language syntax.</param>
-    public Policy AddBucketConditionalIamBinding(string bucketName = "your-unique-bucket-name", string role = "roles/storage.objectViewer",
-        string member = "serviceAccount:dev@iam.gserviceaccount.com", string title = "title",
+    public Policy AddBucketConditionalIamBinding(
+        string bucketName = "your-unique-bucket-name",
+        string role = "roles/storage.objectViewer",
+        string member = "serviceAccount:dev@iam.gserviceaccount.com",
+        string title = "title",
         string description = "description",
         string expression = "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")")
     {
         var storage = StorageClient.Create();
-        var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions()
+        var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions
         {
             RequestedPolicyVersion = 3
         });
 
         policy.Version = 3;
 
-        Policy.BindingsData bindingToAdd = new Policy.BindingsData()
+        Policy.BindingsData bindingToAdd = new Policy.BindingsData
         {
             Role = role,
-            Members = new List<string>() { member },
-            Condition = new Expr()
+            Members = new List<string> { member },
+            Condition = new Expr
             {
                 Title = title,
                 Description = description,

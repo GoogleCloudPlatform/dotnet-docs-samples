@@ -26,17 +26,17 @@ public class RemoveFileOwnerSample
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
     /// <param name="userEmail">The user email.</param>
-    public void RemoveFileOwner(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name", string userEmail = "dev@iam.gserviceaccount.com")
+    public void RemoveFileOwner(
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "your-object-name",
+        string userEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
-        var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions()
-        {
-            Projection = Projection.Full
-        });
+        var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions { Projection = Projection.Full });
         if (null == storageObject.Acl)
             return;
         storageObject.Acl = storageObject.Acl.Where((acl) => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
-        var updatedObject = storage.UpdateObject(storageObject, new UpdateObjectOptions()
+        var updatedObject = storage.UpdateObject(storageObject, new UpdateObjectOptions
         {
             // Avoid race conditions.
             IfMetagenerationMatch = storageObject.Metageneration,

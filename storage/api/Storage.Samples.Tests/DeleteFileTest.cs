@@ -32,9 +32,9 @@ public class DeleteFileTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         DeleteFileSample deleteFileSample = new DeleteFileSample();
         ListFilesSample listFilesSample = new ListFilesSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketName, _bucketFixture.FilePath, "DeleteTest.txt");
-        deleteFileSample.DeleteFile(_bucketFixture.BucketName, "DeleteTest.txt");
-        var files = listFilesSample.ListFiles(_bucketFixture.BucketName).ToList();
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, "DeleteTest.txt");
+        deleteFileSample.DeleteFile(_bucketFixture.BucketNameGeneric, "DeleteTest.txt");
+        var files = listFilesSample.ListFiles(_bucketFixture.BucketNameGeneric).ToList();
         Assert.DoesNotContain(files, c => c.Name == "DeleteTest.txt");
     }
 }

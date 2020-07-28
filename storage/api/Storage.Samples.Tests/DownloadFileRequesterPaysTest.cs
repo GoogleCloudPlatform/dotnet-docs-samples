@@ -16,27 +16,27 @@ using System.IO;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class FileRequesterPaysTest
+public class DownloadFileRequesterPaysTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public FileRequesterPaysTest(BucketFixture bucketFixture)
+    public DownloadFileRequesterPaysTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void FileRequesterPays()
+    public void TestDownloadFileRequesterPays()
     {
         var downloadFileRequesterPaysSample = new DownloadFileRequesterPaysSample();
         UploadFileRequesterPaysSample uploadFileRequesterPaysSample = new UploadFileRequesterPaysSample();
 
         // upload file request pays
-        uploadFileRequesterPaysSample.UploadFileRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketName, _bucketFixture.FilePath,
+        uploadFileRequesterPaysSample.UploadFileRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
             _bucketFixture.Collect("HelloDownloadObjectRequesterPays.txt"));
 
         // download file request pays
-        downloadFileRequesterPaysSample.DownloadFileRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketName, "HelloDownloadObjectRequesterPays.txt", "HelloDownloadObjectRequesterPays2.txt");
+        downloadFileRequesterPaysSample.DownloadFileRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric, "HelloDownloadObjectRequesterPays.txt", "HelloDownloadObjectRequesterPays2.txt");
         Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("HelloDownloadObjectRequesterPays2.txt"));
         File.Delete("HelloDownloadObjectRequesterPays2.txt");
     }

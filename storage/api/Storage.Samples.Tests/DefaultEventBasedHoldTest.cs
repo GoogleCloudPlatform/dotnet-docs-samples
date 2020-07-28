@@ -32,15 +32,15 @@ public class DefaultEventBasedHoldTest
         GetDefaultEventBasedHoldSample gettDefaultEventBasedHoldSample = new GetDefaultEventBasedHoldSample();
 
         //enable default event based hold
-        var updatedBucket = enableBucketDefaultEventBasedHoldSample.EnableBucketDefaultEventBasedHold(_bucketFixture.BucketName);
+        var updatedBucket = enableBucketDefaultEventBasedHoldSample.EnableBucketDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
         Assert.True(updatedBucket.DefaultEventBasedHold);
 
         //get default event based hold
-        var defaultEventBasedHold = gettDefaultEventBasedHoldSample.GetDefaultEventBasedHold(_bucketFixture.BucketName);
+        var defaultEventBasedHold = gettDefaultEventBasedHoldSample.GetDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
         Assert.True(defaultEventBasedHold);
 
         //disable default event based hold
-        updatedBucket = disableDefaultEventBasedHoldSample.DisableDefaultEventBasedHold(_bucketFixture.BucketName);
+        updatedBucket = disableDefaultEventBasedHoldSample.DisableDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
         Assert.False(updatedBucket.DefaultEventBasedHold);
     }
 }

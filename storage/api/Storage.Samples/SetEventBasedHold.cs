@@ -24,12 +24,14 @@ public class SetEventBasedHoldSample
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
-    public void SetEventBasedHold(string bucketName = "your-unique-bucket-name", string objectName = "your-object-name")
+    public void SetEventBasedHold(
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);
         storageObject.EventBasedHold = true;
-        storage.UpdateObject(storageObject, new UpdateObjectOptions()
+        storage.UpdateObject(storageObject, new UpdateObjectOptions
         {
             // Use IfMetagenerationMatch to avoid race conditions.
             IfMetagenerationMatch = storageObject.Metageneration

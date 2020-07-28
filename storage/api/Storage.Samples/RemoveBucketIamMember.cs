@@ -26,7 +26,10 @@ public class RemoveBucketIamMemberSample
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="role">The role to which members belong.</param>
     /// <param name="member">A collection of identifiers for members who may assume the provided role.</param>
-    public void RemoveBucketIamMember(string bucketName = "your-unique-bucket-name", string role = "roles/storage.objectViewer", string member = "serviceAccount/dev@iam.gserviceaccount.com")
+    public void RemoveBucketIamMember(
+        string bucketName = "your-unique-bucket-name",
+        string role = "roles/storage.objectViewer",
+        string member = "serviceAccount:dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
         var policy = storage.GetBucketIamPolicy(bucketName);
@@ -35,8 +38,7 @@ public class RemoveBucketIamMemberSample
             if (response.Role == role)
             {
                 // Remove the role/member combo from the IAM policy.
-                response.Members = response.Members
-                .Where(m => m != member).ToList();
+                response.Members = response.Members.Where(m => m != member).ToList();
                 // Remove role if it contains no members.
                 if (response.Members.Count == 0)
                 {
@@ -46,8 +48,7 @@ public class RemoveBucketIamMemberSample
         });
         // Set the modified IAM policy to be the current IAM policy.
         storage.SetBucketIamPolicy(bucketName, policy);
-        Console.WriteLine($"Removed {member} with role {role} "
-            + $"to {bucketName}");
+        Console.WriteLine($"Removed {member} with role {role} from {bucketName}");
     }
 }
 // [END storage_remove_bucket_iam_member]

@@ -31,9 +31,9 @@ public class UploadFileTest
         ListFilesSample listFilesSample = new ListFilesSample();
 
         // upload file
-        uploadFileSample.UploadFile(_bucketFixture.BucketName, _bucketFixture.FilePath, _bucketFixture.Collect("UploadTest.txt"));
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("UploadTest.txt"));
 
-        var files = listFilesSample.ListFiles(_bucketFixture.BucketName);
+        var files = listFilesSample.ListFiles(_bucketFixture.BucketNameGeneric);
         Assert.Contains(files, c => c.Name == "UploadTest.txt");
     }
 }

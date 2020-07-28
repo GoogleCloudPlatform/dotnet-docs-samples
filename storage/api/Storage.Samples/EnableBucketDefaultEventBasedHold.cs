@@ -29,7 +29,7 @@ public class EnableBucketDefaultEventBasedHoldSample
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
         bucket.DefaultEventBasedHold = true;
-        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
         {
             // Use IfMetagenerationMatch to avoid race conditions.
             IfMetagenerationMatch = bucket.Metageneration

@@ -29,7 +29,7 @@ public class DownloadFileTest
     public void DownloadFile()
     {
         DownloadFileSample downloadFileSample = new DownloadFileSample();
-        downloadFileSample.DownloadFile(_bucketFixture.BucketName, _bucketFixture.FileName, "Download-test.txt");
+        downloadFileSample.DownloadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, "Download-test.txt");
         Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("Download-test.txt"));
         File.Delete("Download-test.txt");
     }

@@ -28,13 +28,17 @@ public class DownloadEncryptedFileSample
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">The name of the object within the bucket.</param>
     /// <param name="localPath">Local path to write the data into.</param>
-    public void DownloadEncryptedFile(string key = "3eFsTXPvqi3BpT2ipFCGirslh1Jgc6ikjoAu2oQ5JcI=", string bucketName = "your-unique-bucket-name", string objectName = "my-file-name", string localPath = null)
+    public void DownloadEncryptedFile(
+        string key = "3eFsTXPvqi3BpT2ipFCGirslh1Jgc6ikjoAu2oQ5JcI=",
+        string bucketName = "your-unique-bucket-name",
+        string objectName = "my-file-name",
+        string localPath = null)
     {
         var storage = StorageClient.Create();
         localPath = localPath ?? Path.GetFileName(objectName);
         using (var outputFile = File.OpenWrite(localPath))
         {
-            storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions()
+            storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions
             {
                 EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(key))
             });

@@ -25,21 +25,20 @@ public class AddBucketOwnerSample
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="userEmail">The user Email that holding the owner permission.</param>
-    public Bucket AddBucketOwner(string bucketName = "your-unique-bucket-name", string userEmail = "dev@iam.gserviceaccount.com")
+    public Bucket AddBucketOwner(
+        string bucketName = "your-unique-bucket-name",
+        string userEmail = "dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName, new GetBucketOptions()
-        {
-            Projection = Projection.Full
-        });
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
 
-        bucket.Acl.Add(new BucketAccessControl()
+        bucket.Acl.Add(new BucketAccessControl
         {
             Bucket = bucketName,
             Entity = $"user-{userEmail}",
             Role = "OWNER",
         });
-        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions()
+        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
         {
             // Avoid race conditions.
             IfMetagenerationMatch = bucket.Metageneration,

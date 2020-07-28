@@ -24,7 +24,9 @@ public class HmacKeyDeleteSample
     /// </summary>
     /// <param name="projectId">The ID of the project containing the HMAC key to delete.</param>
     /// <param name="accessId">The ID of the HMAC key to delete.</param>
-    public void DeleteHmacKey(string projectId = "your-project-id", string accessId = "your-access-id")
+    public void DeleteHmacKey(
+        string projectId = "your-project-id",
+        string accessId = "your-access-id")
     {
         var storage = StorageClient.Create();
         storage.DeleteHmacKey(projectId, accessId);
