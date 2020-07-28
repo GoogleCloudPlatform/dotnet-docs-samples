@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
@@ -123,4 +124,32 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     /// Bucket creation/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.
     /// </summary>
     internal void SleepAfterBucketCreateDelete() => Thread.Sleep(2000);
+
+    internal string GetServiceAccountEmail()
+    {
+        var cred = GoogleCredential.GetApplicationDefault().UnderlyingCredential;
+        switch (cred)
+        {
+            case ServiceAccountCredential sac:
+                return sac.Id;
+            // TODO: We may well need to handle ComputeCredential for Kokoro.
+            default:
+                throw new InvalidOperationException($"Unable to retrieve service account email address for credential type {cred.GetType()}");
+        }
+    }
+
+    internal void DeleteAllHmacKeys()
+    {
+        var client = StorageClient.Create();
+        var key = client.ListHmacKeys(ProjectId);
+        foreach (var metadata in key)
+        {
+            if (metadata.State == "ACTIVE")
+            {
+                metadata.State = HmacKeyStates.Inactive;
+                client.UpdateHmacKey(metadata);
+            }
+            client.DeleteHmacKey(ProjectId, metadata.AccessId);
+        }
+    }
 }

@@ -31,15 +31,15 @@ public class RequesterPaysStatusTest
         EnableRequesterPaysSample enableRequesterPaysSample = new EnableRequesterPaysSample();
         DisableRequesterPaysSample disableRequesterPaysSample = new DisableRequesterPaysSample();
 
-        //enable request pay
+        // Enable request pay.
         var bucket = enableRequesterPaysSample.EnableRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric);
         Assert.True(bucket.Billing.RequesterPays);
 
-        //get status
+        // Get status.
         var status = getRequesterPaysStatusSample.GetRequesterPaysStatus(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric);
         Assert.True(status);
 
-        //disable request pay
+        // Disable request pay.
         bucket = disableRequesterPaysSample.DisableRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric);
         Assert.False(bucket.Billing.RequesterPays);
     }

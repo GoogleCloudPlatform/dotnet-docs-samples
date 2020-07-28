@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,27 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class HmacKeyTest
+public class HmacKeyGetTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public HmacKeyTest(BucketFixture bucketFixture)
+    public HmacKeyGetTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void HmacKeySampleTest()
+    public void TestHmacKeyGet()
     {
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
-        ListHmacKeysSample listHmacKeysSample = new ListHmacKeysSample();
         HmacKeyGetSample hmacKeyGetSample = new HmacKeyGetSample();
         HmacKeyDeactivateSample hmacKeyDeactivateSample = new HmacKeyDeactivateSample();
-        HmacKeyActivateSample hmacKeyActivateSample = new HmacKeyActivateSample();
         HmacKeyDeleteSample hmacKeyDeleteSample = new HmacKeyDeleteSample();
 
         // These need to all run as one test so that we can use the created key in every test.
@@ -42,11 +39,6 @@ public class HmacKeyTest
 
         // Create key.
         var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
-        Assert.Equal(key.Metadata.ServiceAccountEmail, serviceAccountEmail);
-
-        // List keys.
-        var keys = listHmacKeysSample.ListHmacKeys(_bucketFixture.ProjectId).ToList();
-        Assert.True(keys.Count > 0);
 
         // Get key.
         var keyMetadata = hmacKeyGetSample.GetHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
@@ -54,20 +46,8 @@ public class HmacKeyTest
 
         // Deactivate key.
         hmacKeyDeactivateSample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-        keyMetadata = hmacKeyGetSample.GetHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-        Assert.Equal("INACTIVE", keyMetadata.State);
-
-        // Activate key.
-        hmacKeyActivateSample.ActivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-        keyMetadata = hmacKeyGetSample.GetHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-        Assert.Equal("ACTIVE", keyMetadata.State);
-
-        // Deactivate key.
-        hmacKeyDeactivateSample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
 
         // Delete key.
         hmacKeyDeleteSample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-        keys = listHmacKeysSample.ListHmacKeys(_bucketFixture.ProjectId).ToList();
-        Assert.True(keys.Count == 0);
     }
 }

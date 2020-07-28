@@ -32,14 +32,14 @@ public class RetentionPolicyTest
         RemoveRetentionPolicySample removeRetentionPolicySample = new RemoveRetentionPolicySample();
         var retentionPeriod = 5;
 
-        // set retention policy
+        // Set retention policy.
         setRetentionPolicySample.SetRetentionPolicy(_bucketFixture.BucketNameGeneric, retentionPeriod);
 
-        // get retention policy
+        // Get retention policy.
         var result = getRetentionPolicySample.GetRetentionPolicy(_bucketFixture.BucketNameGeneric);
         Assert.Equal(result.RetentionPeriod, retentionPeriod);
 
-        // remove retention policy
+        // Remove retention policy.
         removeRetentionPolicySample.RemoveRetentionPolicy(_bucketFixture.BucketNameGeneric);
         result = getRetentionPolicySample.GetRetentionPolicy(_bucketFixture.BucketNameGeneric);
         Assert.Null(result);
