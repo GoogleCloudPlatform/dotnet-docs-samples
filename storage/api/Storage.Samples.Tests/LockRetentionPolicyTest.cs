@@ -34,11 +34,11 @@ public class LockRetentionPolicyTest
 
         var bucketName = Guid.NewGuid().ToString();
         createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
+        _bucketFixture.SleepAfterBucketCreateDelete();
+        _bucketFixture.TempBucketNames.Add(bucketName);
 
         setRetentionPolicySample.SetRetentionPolicy(bucketName, 10);
         var result = lockRetentionPolicySample.LockRetentionPolicy(bucketName);
         Assert.True(result);
-
-        _bucketFixture.TempBucketNames.Add(bucketName);
     }
 }

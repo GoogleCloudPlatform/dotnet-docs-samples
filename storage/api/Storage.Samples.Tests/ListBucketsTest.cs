@@ -32,8 +32,11 @@ public class ListBucketsTest
         ListBucketsSample listBucketsSample = new ListBucketsSample();
         var bucketName = Guid.NewGuid().ToString();
         createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
+        _bucketFixture.SleepAfterBucketCreateDelete();
+        _bucketFixture.TempBucketNames.Add(bucketName);
+
         var buckets = listBucketsSample.ListBuckets(_bucketFixture.ProjectId);
         Assert.Contains(buckets, c => c.Name == bucketName);
-        _bucketFixture.TempBucketNames.Add(bucketName);
+        
     }
 }

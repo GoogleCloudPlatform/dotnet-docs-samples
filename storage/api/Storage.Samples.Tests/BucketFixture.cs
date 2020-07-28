@@ -15,6 +15,7 @@
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Xunit;
 
 [CollectionDefinition(nameof(BucketFixture))]
@@ -42,11 +43,13 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
         // create simple bucket
         CreateBucketSample createBucketSample = new CreateBucketSample();
         createBucketSample.CreateBucket(ProjectId, BucketNameGeneric);
+        SleepAfterBucketCreateDelete();
         TempBucketNames.Add(BucketNameGeneric);
 
         // create regional bucket
         CreateRegionalBucketSample createRegionalBucketSample = new CreateRegionalBucketSample();
         createRegionalBucketSample.CreateRegionalBucket(ProjectId, BucketNameRegional, KmsKeyLocation, StorageClasses.Regional);
+        SleepAfterBucketCreateDelete();
         TempBucketNames.Add(BucketNameRegional);
 
         //upload file to BucketName
@@ -79,6 +82,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
             try
             {
                 deleteBucketSample.DeleteBucket(bucketName);
+                SleepAfterBucketCreateDelete();
             }
             catch (Exception)
             {
@@ -114,4 +118,9 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     /// </summary>
     /// <returns>The regional objectName.</returns>
     public string CollectRegionalObject(string objectName) => Collect(BucketNameRegional, objectName);
+
+    /// <summary>
+    /// Bucket creation/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.
+    /// </summary>
+    internal void SleepAfterBucketCreateDelete() => Thread.Sleep(2000);
 }

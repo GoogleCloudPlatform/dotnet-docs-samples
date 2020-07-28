@@ -32,6 +32,7 @@ public class CreateBucketTest
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
         var bucketName = Guid.NewGuid().ToString();
         createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
+        _bucketFixture.SleepAfterBucketCreateDelete();
         _bucketFixture.TempBucketNames.Add(bucketName);
 
         var metadata = getBucketMetadataSample.GetBucketMetadata(bucketName);
