@@ -44,7 +44,6 @@ namespace HelloWorld.Tests
         {
             using (var client = Server.CreateClient())
             {
-
                 var request = new HttpRequestMessage
                 {
                     RequestUri = new Uri("uri", UriKind.Relative),
