@@ -15,30 +15,30 @@
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class EventBasedHoldTest
+public class ReleaseEventBasedHoldTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public EventBasedHoldTest(BucketFixture bucketFixture)
+    public ReleaseEventBasedHoldTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void EventBasedHold()
+    public void TestReleaseEventBasedHold()
     {
         ReleaseEventBasedHoldSample releaseEventBasedHoldSample = new ReleaseEventBasedHoldSample();
         SetEventBasedHoldSample setEventBasedHoldSample = new SetEventBasedHoldSample();
         UploadFileSample uploadFileSample = new UploadFileSample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("EventBasedHold.txt"));
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("ReleaseEventBasedHold.txt"));
 
-        setEventBasedHoldSample.SetEventBasedHold(_bucketFixture.BucketNameGeneric, "EventBasedHold.txt");
-        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "EventBasedHold.txt");
-        Assert.True(metadata.EventBasedHold);
+        // Set event based hold.
+        setEventBasedHoldSample.SetEventBasedHold(_bucketFixture.BucketNameGeneric, "ReleaseEventBasedHold.txt");
 
-        releaseEventBasedHoldSample.ReleaseEventBasedHold(_bucketFixture.BucketNameGeneric, "EventBasedHold.txt");
-        metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "EventBasedHold.txt");
+        // Release event based hold.
+        releaseEventBasedHoldSample.ReleaseEventBasedHold(_bucketFixture.BucketNameGeneric, "ReleaseEventBasedHold.txt");
+        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "ReleaseEventBasedHold.txt");
         Assert.False(metadata.EventBasedHold);
     }
 }

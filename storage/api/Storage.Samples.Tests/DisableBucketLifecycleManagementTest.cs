@@ -12,29 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class CreateBucketTest
+public class DisableBucketLifecycleManagementTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public CreateBucketTest(BucketFixture bucketFixture)
+    public DisableBucketLifecycleManagementTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void CreateBucket()
+    public void TestDisableBucketLifecycleManagement()
     {
-        CreateBucketSample createBucketSample = new CreateBucketSample();
-        GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
-        var bucketName = Guid.NewGuid().ToString();
-        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
-        _bucketFixture.TempBucketNames.Add(bucketName);
+        var enableBucketLifecycleManagementSample = new EnableBucketLifecycleManagementSample();
+        var disableBucketLifecycleManagementSample = new DisableBucketLifecycleManagementSample();
 
-        var metadata = getBucketMetadataSample.GetBucketMetadata(bucketName);
-        Assert.NotNull(metadata);
+        // Enable bucket lifecycle management.
+        enableBucketLifecycleManagementSample.EnableBucketLifecycleManagement(_bucketFixture.BucketNameGeneric);
+
+        // Disable bucket lifecycle management.
+        var bucket = disableBucketLifecycleManagementSample.DisableBucketLifecycleManagement(_bucketFixture.BucketNameGeneric);
+        Assert.Null(bucket.Lifecycle);
     }
 }

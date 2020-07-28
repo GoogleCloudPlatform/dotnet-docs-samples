@@ -15,32 +15,30 @@
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class DefaultEventBasedHoldTest
+public class GetDefaultEventBasedHoldTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public DefaultEventBasedHoldTest(BucketFixture bucketFixture)
+    public GetDefaultEventBasedHoldTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void DefaultEventBasedHold()
+    public void TestGetDefaultEventBasedHold()
     {
         EnableBucketDefaultEventBasedHoldSample enableBucketDefaultEventBasedHoldSample = new EnableBucketDefaultEventBasedHoldSample();
         DisableDefaultEventBasedHoldSample disableDefaultEventBasedHoldSample = new DisableDefaultEventBasedHoldSample();
-        GetDefaultEventBasedHoldSample gettDefaultEventBasedHoldSample = new GetDefaultEventBasedHoldSample();
+        GetDefaultEventBasedHoldSample getDefaultEventBasedHoldSample = new GetDefaultEventBasedHoldSample();
 
-        //enable default event based hold
-        var updatedBucket = enableBucketDefaultEventBasedHoldSample.EnableBucketDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
-        Assert.True(updatedBucket.DefaultEventBasedHold);
+        // Enable default event based hold.
+        enableBucketDefaultEventBasedHoldSample.EnableBucketDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
 
-        //get default event based hold
-        var defaultEventBasedHold = gettDefaultEventBasedHoldSample.GetDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
+        // Get default event based hold.
+        var defaultEventBasedHold = getDefaultEventBasedHoldSample.GetDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
         Assert.True(defaultEventBasedHold);
 
-        //disable default event based hold
-        updatedBucket = disableDefaultEventBasedHoldSample.DisableDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
-        Assert.False(updatedBucket.DefaultEventBasedHold);
+        // Disable default event based hold.
+        disableDefaultEventBasedHoldSample.DisableDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
     }
 }

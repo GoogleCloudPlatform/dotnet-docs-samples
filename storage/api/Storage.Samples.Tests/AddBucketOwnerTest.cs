@@ -15,27 +15,26 @@
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class BucketOwnerTest
+public class AddBucketOwnerTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public BucketOwnerTest(BucketFixture bucketFixture)
+    public AddBucketOwnerTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void BucketOwner()
+    public void TestAddBucketOwner()
     {
         AddBucketOwnerSample addBucketOwnerSample = new AddBucketOwnerSample();
         RemoveBucketOwnerSample removeBucketOwnerSample = new RemoveBucketOwnerSample();
-        GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
 
+        // Add bucket owner.
         var result = addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
         Assert.Contains(result.Acl, c => c.Role == "OWNER" && c.Email == _bucketFixture.ServiceAccountEmail);
 
+        // Remove bucket owner.
         removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
-        result = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketNameGeneric);
-        Assert.Null(result.Acl);
     }
 }

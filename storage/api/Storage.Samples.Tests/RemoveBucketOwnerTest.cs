@@ -12,29 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class CreateBucketTest
+public class RemoveBucketOwnerTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public CreateBucketTest(BucketFixture bucketFixture)
+    public RemoveBucketOwnerTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void CreateBucket()
+    public void TestRemoveBucketOwner()
     {
-        CreateBucketSample createBucketSample = new CreateBucketSample();
+        AddBucketOwnerSample addBucketOwnerSample = new AddBucketOwnerSample();
+        RemoveBucketOwnerSample removeBucketOwnerSample = new RemoveBucketOwnerSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
-        var bucketName = Guid.NewGuid().ToString();
-        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
-        _bucketFixture.TempBucketNames.Add(bucketName);
 
-        var metadata = getBucketMetadataSample.GetBucketMetadata(bucketName);
-        Assert.NotNull(metadata);
+        // Add bucket owner.
+        addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
+
+        // Remove bucket owner.
+        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
+
+        // Get bucket metadata.
+        var bucketMetadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketNameGeneric);
+        Assert.Null(bucketMetadata.Acl);
     }
 }

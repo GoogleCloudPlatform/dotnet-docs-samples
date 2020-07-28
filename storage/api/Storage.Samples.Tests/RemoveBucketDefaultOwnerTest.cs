@@ -16,26 +16,29 @@ using System.Linq;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class BucketDefaultOwnerTest
+public class RemoveBucketDefaultOwnerTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public BucketDefaultOwnerTest(BucketFixture bucketFixture)
+    public RemoveBucketDefaultOwnerTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void BucketDefaultOwner()
+    public void TestRemoveBucketDefaultOwner()
     {
         var addBucketDefaultOwnerSample = new AddBucketDefaultOwnerSample();
         RemoveBucketDefaultOwnerSample removeBucketDefaultOwnerSample = new RemoveBucketDefaultOwnerSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
 
-        var updatedBucket = addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
-        Assert.Contains(updatedBucket.DefaultObjectAcl.Where(c => c.Email != null && c.Role == "OWNER").Select(c => c.Email), c => c.Contains(_bucketFixture.ServiceAccountEmail));
+        // Add bucket default owner.
+        addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
 
+        // Remove bucket default owner.
         removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
+
+        // Get bucket metadata.
         var metadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketNameGeneric);
 
         Assert.Null(metadata.DefaultObjectAcl);
