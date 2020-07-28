@@ -29,8 +29,9 @@ public class GetSubscriptionPolicyTest
     [Fact]
     public void GetSubscriptionPolicy()
     {
-        string topicId = "testTopicGetSubscriptionIamPolicy" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionGetSubscriptionIamPolicy";
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicGetSubscriptionIamPolicy{randomName}";
+        string subscriptionId = $"testSubscriptionGetSubscriptionIamPolicy{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);

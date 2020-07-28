@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,8 +33,9 @@ public class PublishBatchMessageTest
     [Fact]
     public async void PublishBatchMessagesAsync()
     {
-        string topicId = "testTopicForBatchMessageCreation" + _pubsubFixture.RandomName();
-        string subscriptionId = "testSubscriptionForBatchMessageCreation" + _pubsubFixture.RandomName();
+        string randomName = _pubsubFixture.RandomName();
+        string topicId = $"testTopicForBatchMessageCreation{randomName}";
+        string subscriptionId = $"testSubscriptionForBatchMessageCreation{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);

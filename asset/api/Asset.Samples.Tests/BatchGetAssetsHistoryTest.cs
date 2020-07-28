@@ -29,7 +29,7 @@ public class BatchGetAssetsHistoryTest
         _sample = new BatchGetAssetsHistorySample();
     }
 
-    [Fact]
+    [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1141")]
     public void TestBatchGetAssetsHistory()
     {
         // Run the sample code.

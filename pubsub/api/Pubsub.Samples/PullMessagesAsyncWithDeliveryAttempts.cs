@@ -12,44 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_subscriber_flow_settings]
+// [START pubsub_dead_letter_delivery_attempt]
 
-using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
-using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class PullMessagesWithFlowControlAsyncSample
+public class PullMessagesAsyncWithDeliveryAttemptsSample
 {
-    public async Task<int> PullMessagesWithFlowControlAsync(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<int> PullMessagesAsyncWithDeliveryAttempts(string projectId, string subscriptionId, bool acknowledge)
     {
+        // This is an existing subscription with a dead letter policy.
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
-        int messageCount = 0;
-        SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName,
-            settings: new SubscriberClient.Settings()
-            {
-                AckExtensionWindow = TimeSpan.FromSeconds(4),
-                AckDeadline = TimeSpan.FromSeconds(10),
-                FlowControlSettings = new FlowControlSettings(maxOutstandingElementCount: 100, maxOutstandingByteCount: 10240)
-            });
-        // SubscriberClient runs your message handle function on multiple
-        // threads to maximize throughput.
+
+        SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
+
+        int deliveryAttempt = 0;
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             string text = Encoding.UTF8.GetString(message.Data.ToArray());
-            Console.WriteLine($"Message {message.MessageId}: {text}");
-            Interlocked.Increment(ref messageCount);
+            System.Console.WriteLine($"Delivery Attempt: {message.GetDeliveryAttempt()}");
+            if (message.GetDeliveryAttempt() != null)
+            {
+                deliveryAttempt = message.GetDeliveryAttempt().Value;
+            }
             return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);
         });
-        // Run for 5 seconds.
-        await Task.Delay(5000);
+        // Run for 7 seconds.
+        await Task.Delay(7000);
         await subscriber.StopAsync(CancellationToken.None);
         // Lets make sure that the start task finished successfully after the call to stop.
         await startTask;
-        return messageCount;
+        return deliveryAttempt;
     }
 }
-// [END pubsub_subscriber_flow_settings]
+// [END pubsub_dead_letter_delivery_attempt]

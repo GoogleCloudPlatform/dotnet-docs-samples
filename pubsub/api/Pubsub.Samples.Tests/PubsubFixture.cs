@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.PubSub.V1;
+using Grpc.Core;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -20,13 +21,15 @@ using Xunit;
 [CollectionDefinition(nameof(PubsubFixture))]
 public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
 {
-    public readonly string ProjectId;
-    public List<string> TempTopicIds { get; set; } = new List<string>();
-    public List<string> TempSubscriptionIds { get; set; } = new List<string>();
+    public string ProjectId { get; }
+    public List<string> TempTopicIds { get; } = new List<string>();
+    public List<string> TempSubscriptionIds { get; } = new List<string>();
+    public string DeadLetterTopic { get; } = $"testDeadLetterTopic{Guid.NewGuid().ToString().Substring(0, 18)}";
 
     public PubsubFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        CreateTopic(DeadLetterTopic);
     }
 
     public void Dispose()
@@ -35,11 +38,25 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         var deleteSubscriptionSampleObject = new DeleteSubscriptionSample();
         foreach (string subscriptionId in TempSubscriptionIds)
         {
-            deleteSubscriptionSampleObject.DeleteSubscription(ProjectId, subscriptionId);
+            try
+            {
+                deleteSubscriptionSampleObject.DeleteSubscription(ProjectId, subscriptionId);
+            }
+            catch (RpcException)
+            {
+                // Do nothing, we are deleting on a best effort basis.
+            }
         }
         foreach (string topicId in TempTopicIds)
         {
-            deleteTopicSampleObject.DeleteTopic(ProjectId, topicId);
+            try
+            {
+                deleteTopicSampleObject.DeleteTopic(ProjectId, topicId);
+            }
+            catch (RpcException)
+            {
+                // Do nothing, we are deleting on a best effort basis.
+            }
         }
     }
 
