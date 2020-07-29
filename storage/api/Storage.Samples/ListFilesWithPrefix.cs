@@ -26,7 +26,7 @@ public class ListFilesWithPrefixSample
     /// The delimiter argument can be used to restrict the results to only the
     /// objects in the given "directory". Without the delimiter, the entire  tree
     /// under the prefix is returned.
-    /// For example, given these blobs:
+    /// For example, given these objects:
     ///   /a/1.txt
     ///   /a/b/2.txt
     ///
@@ -35,6 +35,7 @@ public class ListFilesWithPrefixSample
     ///   /a/b/2.txt
     ///
     /// However, if you specify prefix="a/" and delimiter="/", you'll get back:
+    ///   /a/1.txt
     /// </summary>
     /// <param name="bucketName">The bucket to list the objects from.</param>
     /// <param name="prefix">The prefix to match. Only objects with names that start with this string will
