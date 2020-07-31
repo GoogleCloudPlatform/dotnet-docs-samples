@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Events.SystemTextJson.Cloud.Storage.V1;
+using Google.Events.Protobuf.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,24 +26,9 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task CloudEventInput()
         {
-            var client = Server.CreateClient();
-            var request = new HttpRequestMessage
-            {
-                RequestUri = new Uri("uri", UriKind.Relative),
-                // CloudEvent headers
-                Headers =
-                {
-                    { "ce-type", StorageObjectData.FinalizedCloudEventType },
-                    { "ce-id", "1234" },
-                    { "ce-source", "//storage.googleapis.com/" },
-                    { "ce-specversion", "1.0" }
-                },
-                Content = new StringContent("{\"name\":\"new-file.txt\"}", Encoding.UTF8, "application/json"),
-                Method = HttpMethod.Post
-            };
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var logEntry = Assert.Single(Server.GetLogEntries(typeof(HelloGcs.Function)));
+            var data = new StorageObjectData { Name = "new-file.txt" };
+            await ExecuteFunctionAsync(StorageObjectData.FinalizedCloudEventType, data);
+            var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal("File new-file.txt uploaded", logEntry.Message);
             Assert.Equal(LogLevel.Information, logEntry.Level);
         }
@@ -54,24 +36,9 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task ObjectDeletedEvent()
         {
-            var client = Server.CreateClient();
-            var request = new HttpRequestMessage
-            {
-                RequestUri = new Uri("uri", UriKind.Relative),
-                // CloudEvent headers
-                Headers =
-                {
-                    { "ce-type", StorageObjectData.DeletedCloudEventType },
-                    { "ce-id", "1234" },
-                    { "ce-source", "//storage.googleapis.com/" },
-                    { "ce-specversion", "1.0" }
-                },
-                Content = new StringContent("{\"name\":\"new-file.txt\"}", Encoding.UTF8, "application/json"),
-                Method = HttpMethod.Post
-            };
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var logEntry = Assert.Single(Server.GetLogEntries(typeof(HelloGcs.Function)));
+            var data = new StorageObjectData { Name = "new-file.txt" };
+            await ExecuteFunctionAsync(StorageObjectData.DeletedCloudEventType, data);
+            var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal($"Unsupported event type: {StorageObjectData.DeletedCloudEventType}", logEntry.Message);
             Assert.Equal(LogLevel.Warning, logEntry.Level);
         }
