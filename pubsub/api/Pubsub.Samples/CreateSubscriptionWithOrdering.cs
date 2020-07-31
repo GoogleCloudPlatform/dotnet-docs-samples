@@ -29,14 +29,13 @@ public class CreateSubscriptionWithOrderingSample
         {
             SubscriptionName = subscriptionName,
             TopicAsTopicName = topicName,
-            AckDeadlineSeconds = 30,
             EnableMessageOrdering = true
         };
 
         Subscription subscription = null;
         try
         {
-            subscription = subscriber.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 60);
+            subscription = subscriber.CreateSubscription(subscriptionRequest);
         }
         catch (RpcException e) when (e.Status.StatusCode == StatusCode.AlreadyExists)
         {
