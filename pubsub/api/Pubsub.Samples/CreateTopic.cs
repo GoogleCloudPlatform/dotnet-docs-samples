@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START pubsub_create_topic]
-// [START pubsub_quickstart_create_topic]
 
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
@@ -39,5 +38,4 @@ public class CreateTopicSample
         return topic;
     }
 }
-// [END pubsub_quickstart_create_topic]
 // [END pubsub_create_topic]
