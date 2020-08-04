@@ -28,19 +28,17 @@ public class PublishMessageWithCustomAttributesSample
         PublisherClient publisher = await PublisherClient.CreateAsync(topicName);
 
         int publishedMessageCount = 0;
+        var pubsubMessage = new PubsubMessage
         {
-            var pubsubMessage = new PubsubMessage
-            {
-                // The data is any arbitrary ByteString. Here, we're using text.
-                Data = ByteString.CopyFromUtf8("Hello, Pubsub"),
-                // The attributes provide metadata in a string-to-string dictionary.
-                Attributes = { { "description", "Simple text message" } }
-            };
-            string message = await publisher.PublishAsync(pubsubMessage);
-            Console.WriteLine($"Published message {message}");
-            Interlocked.Increment(ref publishedMessageCount);
-            return publishedMessageCount;
-        }
+            // The data is any arbitrary ByteString. Here, we're using text.
+            Data = ByteString.CopyFromUtf8("Hello, Pubsub"),
+            // The attributes provide metadata in a string-to-string dictionary.
+            Attributes = { { "description", "Simple text message" } }
+        };
+        string message = await publisher.PublishAsync(pubsubMessage);
+        Console.WriteLine($"Published message {message}");
+        Interlocked.Increment(ref publishedMessageCount);
+        return publishedMessageCount;
     }
 }
 // [END pubsub_publish_custom_attributes]

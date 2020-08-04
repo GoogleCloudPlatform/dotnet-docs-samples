@@ -16,6 +16,7 @@
 
 using Google.Cloud.PubSub.V1;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -23,14 +24,14 @@ using System.Threading.Tasks;
 
 public class PullMessagesAsyncWithCustomAttributesSample
 {
-    public async Task<int> PullMessagesAsyncWithDeliveryAttempts(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<Dictionary<string, string>> PullMessagesAsyncWithCustomAttributes(string projectId, string subscriptionId, bool acknowledge)
     {
         // This is an existing subscription with a dead letter policy.
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
 
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
 
-        int deliveryAttempt = 0;
+        var attributes = new Dictionary<string, string>();
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             string text = Encoding.UTF8.GetString(message.Data.ToArray());
@@ -39,6 +40,7 @@ public class PullMessagesAsyncWithCustomAttributesSample
             {
                 foreach (var attribute in message.Attributes)
                 {
+                    attributes.Add(attribute.Key, attribute.Value);
                     Console.WriteLine($"{attribute.Key} = {attribute.Value}");
                 }
             }
@@ -49,7 +51,7 @@ public class PullMessagesAsyncWithCustomAttributesSample
         await subscriber.StopAsync(CancellationToken.None);
         // Lets make sure that the start task finished successfully after the call to stop.
         await startTask;
-        return deliveryAttempt;
+        return attributes;
     }
 }
 // [END pubsub_subscriber_async_pull_custom_attributes]
