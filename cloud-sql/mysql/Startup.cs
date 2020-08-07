@@ -67,7 +67,8 @@ namespace CloudSql
         DbConnection InitializeDatabase()
         {
             DbConnection connection;
-            string database = Configuration["CloudSQL:Database"];
+            string database = Environment.GetEnvironmentVariable("DB_NAME");
+
             connection = GetMySqlConnection();
             connection.Open();
             using (var createTableCommand = connection.CreateCommand())
@@ -85,25 +86,8 @@ namespace CloudSql
             return connection;
         }
 
-        DbConnection NewMysqlConnection()
+        void SetDbConfigOptions(MySqlConnectionStringBuilder connectionString)
         {
-            // [START cloud_sql_mysql_dotnet_ado_connection]
-            var connectionString = new MySqlConnectionStringBuilder(
-                Configuration["CloudSql:ConnectionString"])
-            // ConnectionString is set in appsettings.json formatted as follows
-            // depending upon where your app is running:
-            // Running Locally ConnectionString: 
-            // "Uid=aspnetuser;Pwd=;Host=127.0.0.1;Database=votes"
-            // Cloud Run ConnectionString: 
-            // "Server=/cloudsql/your-project-id:us-central1:instance-name;Database=votes;User=;Password=;Protocol=unix"
-            // App Engine ConnectionString: 
-            // "Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes"
-            {
-                // Connecting to a local proxy that does not support ssl.
-                SslMode = MySqlSslMode.None,
-            };
-            connectionString.Pooling = true;
-            // [START_EXCLUDE]
             // [START cloud_sql_mysql_dotnet_ado_limit]
             // MaximumPoolSize sets maximum number of connections allowed in the pool.            
             connectionString.MaximumPoolSize = 5;
@@ -125,10 +109,56 @@ namespace CloudSql
             // connection always returns to pool.
             connectionString.ConnectionLifeTime = 1800; // 30 minutes
             // [END cloud_sql_mysql_dotnet_ado_lifetime]
+        }
+
+        DbConnection NewMysqlTCPConnection()
+        {
+            // [START cloud_sql_mysql_dotnet_ado_connection_tcp]
+            var connectionString = new MySqlConnectionStringBuilder()
+            {
+                // Connecting to a local proxy that does not support ssl.
+                SslMode = MySqlSslMode.None,
+
+                Server = Environment.GetEnvironmentVariable("DB_HOST"),
+                UserID = Environment.GetEnvironmentVariable("DB_USER"),
+                Password = Environment.GetEnvironmentVariable("DB_PASS"),
+                Database = Environment.GetEnvironmentVariable("DB_NAME"),
+            };
+            connectionString.Pooling = true;
+            // Specify additional properties here.
+            // [START_EXCLUDE]
+            SetDbConfigOptions(connectionString);
             // [END_EXCLUDE]
             DbConnection connection =
                 new MySqlConnection(connectionString.ConnectionString);
-            // [END cloud_sql_mysql_dotnet_ado_connection]
+            // [END cloud_sql_mysql_dotnet_ado_connection_tcp]
+            return connection;
+        }
+
+        DbConnection NewMysqlUnixSocketConnection()
+        {
+            // [START cloud_sql_mysql_dotnet_ado_connection_socket]
+            String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
+            String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
+            var connectionString = new MySqlConnectionStringBuilder()
+            {
+                // Connecting to a local proxy that does not support ssl.
+                SslMode = MySqlSslMode.None,
+
+                Server = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
+                UserID = Environment.GetEnvironmentVariable("DB_USER"),
+                Password = Environment.GetEnvironmentVariable("DB_PASS"),
+                Database = Environment.GetEnvironmentVariable("DB_NAME"),
+                ConnectionProtocol = MySqlConnectionProtocol.UnixSocket
+            };
+            connectionString.Pooling = true;
+            // Specify additional properties here.
+            // [START_EXCLUDE]
+            SetDbConfigOptions(connectionString);
+            // [END_EXCLUDE]
+            DbConnection connection =
+                new MySqlConnection(connectionString.ConnectionString);
+            // [END cloud_sql_mysql_dotnet_ado_connection_socket]
             return connection;
         }
 
@@ -146,7 +176,19 @@ namespace CloudSql
                 {
                     // Log any warnings here.
                 })
-                .Execute(() => NewMysqlConnection());
+                .Execute(() =>
+                {
+                    // Return a new connection.
+                    // [START_EXCLUDE]
+                    if (Environment.GetEnvironmentVariable("DB_HOST") != null)
+                    {
+                        return NewMysqlTCPConnection();
+                    } else
+                    {
+                        return NewMysqlUnixSocketConnection();
+                    }
+                    // [END_EXCLUDE]
+                });
             // [END cloud_sql_mysql_dotnet_ado_backoff]
             return connection;
         }
