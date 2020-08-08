@@ -67,7 +67,6 @@ namespace CloudSql
         DbConnection InitializeDatabase()
         {
             DbConnection connection;
-            string database = Environment.GetEnvironmentVariable("DB_NAME");
 
             connection = GetMySqlConnection();
             connection.Open();
