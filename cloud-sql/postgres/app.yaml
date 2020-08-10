@@ -2,5 +2,11 @@
 runtime: aspnetcore
 env: flex
 
+env_variables:
+    DB_USER: <your-username>
+    DB_PASS: <your-password>
+    DB_NAME: <your-database-name>
+    DB_HOST: cloudsql
+
 beta_settings:
-    cloud_sql_instances: "your-project-id:us-central1:instance-name=tcp:5432"
+    cloud_sql_instances: "<project-name>:<region>:<instance-name>=tcp:5432"
