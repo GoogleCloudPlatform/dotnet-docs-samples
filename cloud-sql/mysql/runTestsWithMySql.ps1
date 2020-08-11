@@ -28,11 +28,14 @@ $proxy = Start-Job -ArgumentList (Get-Location) -ScriptBlock {
 	./cloud_sql_proxy.exe --instances=$env:TEST_CLOUDSQL2_MYSQL_INSTANCE=tcp:3306 `
 		--credential_file=$GOOGLE_APPLICATION_CREDENTIALS
 }
+
 try {
+	$env:DB_HOST="cloudsql"
+	$env:DB_USER="aspnetuser"
+	$env:DB_PASS=""
+	$env:DB_NAME="votes"
 	dotnet restore
 	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
-	BackupAndEdit-TextFile "appsettings.json" `
-		@{'Uid=aspnetuser;Pwd=;Host=cloudsql;Database=votes' = $env:TEST_CLOUDSQL2_MYSQL_VOTES_CONNECTIONSTRING} `
 	{
 		dotnet build
 		Receive-Job $proxy -ErrorAction 'SilentlyContinue'
