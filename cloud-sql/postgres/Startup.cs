@@ -110,7 +110,7 @@ namespace CloudSql
             // [START cloud_sql_postgres_dotnet_ado_connection_tcp]
             var connectionString = new NpgsqlConnectionStringBuilder()
             {
-                // Connecting to a local proxy that does not support ssl.
+                // The Cloud SQL proxy provides encryption between the proxy and instance. 
                 SslMode = SslMode.Disable,
 
                 Host = Environment.GetEnvironmentVariable("DB_HOST"),
@@ -136,7 +136,7 @@ namespace CloudSql
             String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
             var connectionString = new NpgsqlConnectionStringBuilder()
             {
-                // Connecting to a local proxy that does not support ssl.
+                // The Cloud SQL proxy provides encryption between the proxy and instance. 
                 SslMode = SslMode.Disable,
 
                 Host = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),

@@ -115,7 +115,7 @@ namespace CloudSql
             // [START cloud_sql_mysql_dotnet_ado_connection_tcp]
             var connectionString = new MySqlConnectionStringBuilder()
             {
-                // Connecting to a local proxy that does not support ssl.
+                // The Cloud SQL proxy provides encryption between the proxy and instance. 
                 SslMode = MySqlSslMode.None,
 
                 Server = Environment.GetEnvironmentVariable("DB_HOST"),
@@ -141,7 +141,7 @@ namespace CloudSql
             String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
             var connectionString = new MySqlConnectionStringBuilder()
             {
-                // Connecting to a local proxy that does not support ssl.
+                // The Cloud SQL proxy provides encryption between the proxy and instance. 
                 SslMode = MySqlSslMode.None,
 
                 Server = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
