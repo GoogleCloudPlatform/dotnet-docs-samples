@@ -82,11 +82,6 @@ PS > dotnet run
 ```
 #### Visual Studio 2017
 
-[Google Cloud Tools for Visual Studio](
-https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
-make it easy to deploy to App Engine.  Install them if you are running Visual Studio on Windows.
-Cloud Tools for Visual Studio does not support Visual Studio 2017 for Mac.
-
 Download and run the [Google Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy).
 
 Then, navigate to the project options menu. Select the default configuration, then set the following environment variables:

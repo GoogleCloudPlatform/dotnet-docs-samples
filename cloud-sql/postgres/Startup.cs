@@ -113,6 +113,9 @@ namespace CloudSql
                 // The Cloud SQL proxy provides encryption between the proxy and instance. 
                 SslMode = SslMode.Disable,
 
+                // Remember - storing secrets in plaintext is potentially unsafe. Consider using
+                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
+                // secrets secret.
                 Host = Environment.GetEnvironmentVariable("DB_HOST"),
                 Username = Environment.GetEnvironmentVariable("DB_USER"),
                 Password = Environment.GetEnvironmentVariable("DB_PASS"),
@@ -138,7 +141,9 @@ namespace CloudSql
             {
                 // The Cloud SQL proxy provides encryption between the proxy and instance. 
                 SslMode = SslMode.Disable,
-
+                // Remember - storing secrets in plaintext is potentially unsafe. Consider using
+                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
+                // secrets secret.
                 Host = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
                 Username = Environment.GetEnvironmentVariable("DB_USER"),
                 Password = Environment.GetEnvironmentVariable("DB_PASS"),
