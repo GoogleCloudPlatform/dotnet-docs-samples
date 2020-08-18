@@ -50,6 +50,9 @@ export DB_PASS='<DB_PASSWORD>'
 export DB_NAME='<DB_NAME>'
 ```
 
+Note: Saving credentials in environment variables is convenient, but not secure - consider a more secure solution such as [Cloud Secret Manager](https://cloud.google.com/secret-manager) to help keep secrets safe.
+
+
 Then use this command to launch the proxy in the background:
 ```bash
 ./cloud_sql_proxy -instances=<project-id>:<region>:<instance-name>=tcp:5432 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
@@ -70,6 +73,9 @@ $env:DB_USER="<DB_USER_NAME>"
 $env:DB_PASS="<DB_PASSWORD>"
 $env:DB_NAME="<DB_NAME>"
 ```
+
+Note: Saving credentials in environment variables is convenient, but not secure - consider a more secure solution such as [Cloud Secret Manager](https://cloud.google.com/secret-manager) to help keep secrets safe.
+
 
 Then use this command to launch the proxy in a separate PowerShell session:
 ```powershell
@@ -92,6 +98,9 @@ DB_USER : '<DB_USER_NAME>'
 DB_PASS : '<DB_PASSWORD>'
 DB_NAME : '<DB_NAME>'
 ```
+
+Note: Saving credentials in environment variables is convenient, but not secure - consider a more secure solution such as [Cloud Secret Manager](https://cloud.google.com/secret-manager) to help keep secrets safe.
+
 
 Finally, run the application by clicking the arrow button in the main toolbar, or by pressing F5.
 
