@@ -20,38 +20,46 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-public class InsertStructSampleDataAsyncSample
+public class InsertStructDataAsyncSample
 {
-    public async Task<int> InsertStructSampleDataAsync(string projectId, string instanceId, string databaseId)
+    public class Singer
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        public int SingerId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
+
+    public async Task<int> InsertStructDataAsync(string projectId, string instanceId, string databaseId)
+    {
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/" +
+            $"databases/{databaseId}";
         List<Singer> singers = new List<Singer> {
             new Singer {SingerId = 6, FirstName = "Elena", LastName = "Campbell"},
             new Singer {SingerId = 7, FirstName = "Gabriel", LastName = "Wright"},
             new Singer {SingerId = 8, FirstName = "Benjamin", LastName = "Martinez"},
             new Singer {SingerId = 9, FirstName = "Hannah", LastName = "Harris"},
-            new Singer {SingerId = 11, FirstName = "Anthony", LastName = "Hunter"},
-            new Singer {SingerId = 12, FirstName = "Earlean", LastName = "Holland"},
+            new Singer {SingerId = 10, FirstName = "Anthony", LastName = "Hunter"},
+            new Singer {SingerId = 11, FirstName = "Earlean", LastName = "Holland"},
         };
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
             await connection.OpenAsync();
 
-            // Insert rows into the Singers table.
-            var cmd = connection.CreateInsertCommand("Singers",
-                new SpannerParameterCollection {
-                        {"SingerId", SpannerDbType.Int64},
-                        {"FirstName", SpannerDbType.String},
-                        {"LastName", SpannerDbType.String}
-            });
             var rows = await Task.WhenAll(singers.Select(singer =>
-              {
-                  cmd.Parameters["SingerId"].Value = singer.SingerId;
-                  cmd.Parameters["FirstName"].Value = singer.FirstName;
-                  cmd.Parameters["LastName"].Value = singer.LastName;
-                  return cmd.ExecuteNonQueryAsync();
-              }));
+            {
+                // Insert rows into the Singers table.
+                var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection {
+                    {"SingerId", SpannerDbType.Int64},
+                    {"FirstName", SpannerDbType.String},
+                    {"LastName", SpannerDbType.String}
+                });
+
+                cmd.Parameters["SingerId"].Value = singer.SingerId;
+                cmd.Parameters["FirstName"].Value = singer.FirstName;
+                cmd.Parameters["LastName"].Value = singer.LastName;
+                return cmd.ExecuteNonQueryAsync();
+            }));
             Console.WriteLine("Inserted struct data.");
             return rows.Sum();
         }

@@ -23,12 +23,14 @@ public class DeleteDatabaseAsyncSample
         // The IAM Role "Cloud Spanner Database Admin" is required for
         // performing Administration operations on the database.
         // For more info see https://cloud.google.com/spanner/docs/iam#roles
-        string AdminConnectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
-        using (var connection = new SpannerConnection(AdminConnectionString))
-        using (var cmd = connection.CreateDdlCommand($@"DROP DATABASE {databaseId}"))
+        string adminConnectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
+        using (var connection = new SpannerConnection(adminConnectionString))
         {
-            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            using (var cmd = connection.CreateDdlCommand($@"DROP DATABASE {databaseId}"))
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            Console.WriteLine($"Done deleting database: {databaseId}");
         }
-        Console.WriteLine($"Done deleting database: {databaseId}");
     }
 }

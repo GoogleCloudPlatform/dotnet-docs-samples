@@ -21,14 +21,19 @@ public class CreateCustomDatabaseAsyncSample
 {
     public async Task CreateCustomDatabaseAsync(string projectId, string instanceId, string databaseId)
     {
-        // Initialize request connection string for database creation.
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
-        // Make the request.
-        using (var connection = new SpannerConnection(connectionString))
+        try
         {
-            string createStatement = $"CREATE DATABASE `{databaseId}`";
-            var cmd = connection.CreateDdlCommand(createStatement);
-            await cmd.ExecuteNonQueryAsync();
+            using (var connection = new SpannerConnection(connectionString))
+            {
+                string createStatement = $"CREATE DATABASE `{databaseId}`";
+                var cmd = connection.CreateDdlCommand(createStatement);
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+        catch (SpannerException e) when (e.ErrorCode == ErrorCode.AlreadyExists)
+        {
+            // Database Already Exists.
         }
     }
 }

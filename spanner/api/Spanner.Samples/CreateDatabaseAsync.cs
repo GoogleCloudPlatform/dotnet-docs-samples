@@ -21,9 +21,8 @@ public class CreateDatabaseAsyncSample
 {
     public async Task CreateDatabaseAsyncAsync(string projectId, string instanceId, string databaseId)
     {
-        // Initialize request connection string for database creation.
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
-        // Make the request.
+
         using (var connection = new SpannerConnection(connectionString))
         {
             string createStatement = $"CREATE DATABASE `{databaseId}`";
@@ -42,7 +41,7 @@ public class CreateDatabaseAsyncSample
                      LastName STRING(1024),
                      ComposerInfo   BYTES(MAX)
                  ) PRIMARY KEY (SingerId)";
-            // Make the request.
+
             var cmd = connection.CreateDdlCommand(createTableStatement);
             await cmd.ExecuteNonQueryAsync();
             // Define create table statement for table #2.
@@ -53,7 +52,7 @@ public class CreateDatabaseAsyncSample
                      AlbumTitle   STRING(MAX)
                  ) PRIMARY KEY (SingerId, AlbumId),
                  INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
-            // Make the request.
+
             cmd = connection.CreateDdlCommand(createTableStatement);
             await cmd.ExecuteNonQueryAsync();
         }

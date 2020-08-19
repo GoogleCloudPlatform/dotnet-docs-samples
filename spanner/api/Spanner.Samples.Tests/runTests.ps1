@@ -12,9 +12,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# TODO: Resurrect this test when bug 68199801 is fixed.
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
-Require-Platform Win*
-Set-TestTimeout 1800
 
- dotnet test --test-adapter-path:. --logger:junit -v n
+ dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }

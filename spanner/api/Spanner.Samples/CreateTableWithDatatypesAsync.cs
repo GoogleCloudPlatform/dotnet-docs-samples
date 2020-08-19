@@ -22,7 +22,8 @@ public class CreateTableWithDatatypesAsyncSample
     public async Task CreateTableWithDatatypesAsync(string projectId, string instanceId, string databaseId)
     {
         // Initialize request connection string for database creation.
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/" +
+            $"databases/{databaseId}";
         using (var connection = new SpannerConnection(connectionString))
         {
             // Define create table statement for table with supported datatypes columns.
@@ -39,7 +40,7 @@ public class CreateTableWithDatatypesAsyncSample
                     LastUpdateTime TIMESTAMP NOT NULL 
                         OPTIONS (allow_commit_timestamp=true)
                 ) PRIMARY KEY (VenueId)";
-            // Make the request.
+
             var cmd = connection.CreateDdlCommand(createTableStatement);
             await cmd.ExecuteNonQueryAsync();
         }

@@ -20,13 +20,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-public class InsertSampleDataAsyncSample
+public class InsertDataAsyncSample
 {
-    public async Task InsertSampleDataAsync(string projectId, string instanceId, string databaseId)
+    public class Singer
     {
+        public int SingerId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
+
+    public class Album
+    {
+        public int SingerId { get; set; }
+        public int AlbumId { get; set; }
+        public string AlbumTitle { get; set; }
+    }
+
+    public async Task InsertDataAsync(string projectId, string instanceId, string databaseId)
+    {
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/" +
+            $"databases/{databaseId}";
         const int firstSingerId = 1;
         const int secondSingerId = 2;
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         List<Singer> singers = new List<Singer>
         {
             new Singer { SingerId = firstSingerId, FirstName = "Marc", LastName = "Richards" },
@@ -48,32 +63,31 @@ public class InsertSampleDataAsyncSample
         {
             await connection.OpenAsync();
 
-            // Insert rows into the Singers table.
-            var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
-            {
-                { "SingerId", SpannerDbType.Int64 },
-                { "FirstName", SpannerDbType.String },
-                { "LastName", SpannerDbType.String }
-            });
             await Task.WhenAll(singers.Select(singer =>
             {
+                // Insert rows into the Singers table.
+                var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
+                {
+                    { "SingerId", SpannerDbType.Int64 },
+                    { "FirstName", SpannerDbType.String },
+                    { "LastName", SpannerDbType.String }
+                });
+
                 cmd.Parameters["SingerId"].Value = singer.SingerId;
                 cmd.Parameters["FirstName"].Value = singer.FirstName;
                 cmd.Parameters["LastName"].Value = singer.LastName;
                 return cmd.ExecuteNonQueryAsync();
             }));
 
-            // Insert rows into the Albums table.
-            cmd = connection.CreateInsertCommand("Albums",
-                new SpannerParameterCollection
+            await Task.WhenAll(albums.Select(album =>
+            {
+                // Insert rows into the Albums table.
+                var cmd = connection.CreateInsertCommand("Albums", new SpannerParameterCollection
                 {
                     { "SingerId", SpannerDbType.Int64 },
                     { "AlbumId", SpannerDbType.Int64 },
                     { "AlbumTitle", SpannerDbType.String }
                 });
-
-            await Task.WhenAll(albums.Select(album =>
-            {
                 cmd.Parameters["SingerId"].Value = album.SingerId;
                 cmd.Parameters["AlbumId"].Value = album.AlbumId;
                 cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;

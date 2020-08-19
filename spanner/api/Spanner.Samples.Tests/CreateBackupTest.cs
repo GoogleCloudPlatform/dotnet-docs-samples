@@ -29,7 +29,8 @@ public class CreateBackupTest
     public void TestCreateBackup()
     {
         CreateBackupSample createBackupSample = new CreateBackupSample();
-        // Backup is already exists it should throw exception.
-        Assert.Throws<RpcException>(() => createBackupSample.CreateBackup(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId, _spannerFixture.BackupId));
+        // Backup already exists since it was created in the test setup so it should throw an exception.
+        var exception = Assert.Throws<RpcException>(() => createBackupSample.CreateBackup(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId, _spannerFixture.BackupId));
+        Assert.Equal(StatusCode.AlreadyExists, exception.StatusCode);
     }
 }

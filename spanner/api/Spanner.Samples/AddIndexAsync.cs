@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ public class AddIndexAsyncSample
 {
     public async Task AddIndexAsync(string projectId, string instanceId, string databaseId)
     {
-        // Initialize request argument(s).
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
         string createStatement = "CREATE INDEX AlbumsByAlbumTitle ON Albums(AlbumTitle)";
-        // Make the request.
+
         using (var connection = new SpannerConnection(connectionString))
         {
             var createCmd = connection.CreateDdlCommand(createStatement);

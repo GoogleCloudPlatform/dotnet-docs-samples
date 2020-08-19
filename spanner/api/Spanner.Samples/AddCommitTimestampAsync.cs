@@ -22,10 +22,10 @@ public class AddCommitTimestampAsyncSample
 {
     public async Task AddCommitTimestampAsync(string projectId, string instanceId, string databaseId)
     {
-        // Initialize request argument(s).
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}"
+            + $"/databases/{databaseId}";
         string alterStatement = "ALTER TABLE Albums ADD COLUMN LastUpdateTime TIMESTAMP OPTIONS (allow_commit_timestamp=true)";
-        // Make the request.
+
         using (var connection = new SpannerConnection(connectionString))
         {
             var updateCmd = connection.CreateDdlCommand(alterStatement);

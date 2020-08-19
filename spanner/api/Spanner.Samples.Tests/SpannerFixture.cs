@@ -24,28 +24,32 @@ using System.Threading.Tasks;
 using Xunit;
 
 [CollectionDefinition(nameof(SpannerFixture))]
-public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
+public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 {
-    public string ProjectId { get; set; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // Allow environment variables to override the default instance and database names.
-    public string InstanceId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
-    public string DatabaseId { get; set; } = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    public string BackupDatabaseId { get; set; } = "my-test-database";
-    public string BackupId { get; set; } = "my-test-database-backup";
-    public string ToBeCancelledBackupId { get; set; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    public string RestoredDatabaseId { get; set; } = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    public List<string> DatabasesToDelete { get; set; } = new List<string>();
+    public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
+    public string DatabaseId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string BackupDatabaseId { get; } = "my-test-database";
+    public string BackupId { get; } = "my-test-database-backup";
+    public string ToBeCancelledBackupId { get; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string RestoredDatabaseId { get; } = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
 
-    public SpannerFixture()
+    public async Task InitializeAsync()
     {
         // Don't need to cleanup stale Backups and Databases when instance is new.
         var isExistingInstance = InitializeInstance();
         if (isExistingInstance)
         {
-            DeleteStaleBackupsAndDatabases();
+            await DeleteStaleBackupsAndDatabasesAsync();
         }
-        InitializeDatabase();
-        InitializeBackup();
+        await InitializeDatabaseAsync();
+        await InitializeBackupAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 
     private bool InitializeInstance()
@@ -65,7 +69,7 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         }
     }
 
-    private void DeleteStaleBackupsAndDatabases()
+    private async Task DeleteStaleBackupsAndDatabasesAsync()
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
@@ -73,8 +77,8 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
             .Where(c => c.DatabaseName.DatabaseId.StartsWith("my-db-") || c.DatabaseName.DatabaseId.StartsWith("my-restore-db-"));
         var databasesToDelete = new List<string>();
 
-        // Delete all the databases created before 4 hrs.
-        var timestamp = DateTimeOffset.UtcNow.AddHours(-4).ToUnixTimeMilliseconds();
+        // Delete all the databases created before 72 hrs.
+        var timestamp = DateTimeOffset.UtcNow.AddHours(-72).ToUnixTimeMilliseconds();
         foreach (var database in databases)
         {
             var databaseId = database.DatabaseName.DatabaseId.Replace("my-restore-db-", "").Replace("my-db-", "");
@@ -84,7 +88,7 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
             }
         }
 
-        Console.Out.WriteLineAsync($"{databasesToDelete.Count} old databases found.");
+        await Console.Out.WriteLineAsync($"{databasesToDelete.Count} old databases found.");
 
         // Get backups.
         ListBackupsRequest request = new ListBackupsRequest
@@ -97,7 +101,7 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         // Backups that belong to the databases to be deleted.
         var backupsToDelete = backups.Where(c => databasesToDelete.Contains(DatabaseName.Parse(c.Database).DatabaseId));
 
-        Console.Out.WriteLineAsync($"{backupsToDelete.Count()} old backups found.");
+        await Console.Out.WriteLineAsync($"{backupsToDelete.Count()} old backups found.");
 
         // Delete the backups.
         foreach (var backup in backupsToDelete)
@@ -116,64 +120,56 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
             try
             {
                 DeleteDatabaseAsyncSample deleteDatabaseAsyncSample = new DeleteDatabaseAsyncSample();
-                deleteDatabaseAsyncSample.DeleteDatabaseAsync(ProjectId, InstanceId, databaseId).Wait();
+                await deleteDatabaseAsyncSample.DeleteDatabaseAsync(ProjectId, InstanceId, databaseId);
             }
             catch (Exception) { }
         }
     }
 
-    private void InitializeDatabase()
+    private async Task InitializeDatabaseAsync()
     {
         // If the database has not been initialized, retry.
         CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
-        InsertSampleDataAsyncSample insertSampleDataAsyncSample = new InsertSampleDataAsyncSample();
-        InsertStructSampleDataAsyncSample insertStructSampleDataAsyncSample = new InsertStructSampleDataAsyncSample();
+        InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+        InsertStructDataAsyncSample insertStructDataAsyncSample = new InsertStructDataAsyncSample();
         AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
         AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
         AddIndexAsyncSample addIndexAsyncSample = new AddIndexAsyncSample();
         AddStoringIndexAsyncSample addStoringIndexAsyncSample = new AddStoringIndexAsyncSample();
         CreateTableWithDatatypesAsyncSample createTableWithDatatypesAsyncSample = new CreateTableWithDatatypesAsyncSample();
-        WriteDatatypesDataAsyncSample writeDatatypesDataAsyncSample = new WriteDatatypesDataAsyncSample();
-        createDatabaseAsyncSample.CreateDatabaseAsyncAsync(ProjectId, InstanceId, DatabaseId).Wait();
-        insertSampleDataAsyncSample.InsertSampleDataAsync(ProjectId, InstanceId, DatabaseId).Wait();
-        insertStructSampleDataAsyncSample.InsertStructSampleDataAsync(ProjectId, InstanceId, DatabaseId).Wait();
-        addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, DatabaseId).Wait();
-        addCommitTimestampAsyncSample.AddCommitTimestampAsync(ProjectId, InstanceId, DatabaseId).Wait();
-        addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId).Wait();
+        InsertDatatypesDataAsyncSample insertDatatypesDataAsyncSample = new InsertDatatypesDataAsyncSample();
+        await createDatabaseAsyncSample.CreateDatabaseAsyncAsync(ProjectId, InstanceId, DatabaseId);
+        await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, DatabaseId);
+        await insertStructDataAsyncSample.InsertStructDataAsync(ProjectId, InstanceId, DatabaseId);
+        await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, DatabaseId);
+        await addCommitTimestampAsyncSample.AddCommitTimestampAsync(ProjectId, InstanceId, DatabaseId);
+        await addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId);
         // Create a new table that includes supported datatypes.
-        createTableWithDatatypesAsyncSample.CreateTableWithDatatypesAsync(ProjectId, InstanceId, DatabaseId).Wait();
+        await createTableWithDatatypesAsyncSample.CreateTableWithDatatypesAsync(ProjectId, InstanceId, DatabaseId);
         // Write data to the new table.
-        writeDatatypesDataAsyncSample.WriteDatatypesDataAsync(ProjectId, InstanceId, DatabaseId).Wait();
+        await insertDatatypesDataAsyncSample.InsertDatatypesDataAsync(ProjectId, InstanceId, DatabaseId);
         // Add storing Index on table.
-        addStoringIndexAsyncSample.AddStoringIndexAsync(ProjectId, InstanceId, DatabaseId).Wait();
+        await addStoringIndexAsyncSample.AddStoringIndexAsync(ProjectId, InstanceId, DatabaseId);
         // Update the value of MarketingBudgets.
-        RefillMarketingBudgetsAsync(300000, 300000).Wait();
-        DatabasesToDelete.Add(DatabaseId);
+        await RefillMarketingBudgetsAsync(300000, 300000);
     }
 
-    private void InitializeBackup()
+    private async Task InitializeBackupAsync()
     {
         // Sample database for backup and restore tests.
         try
         {
             CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
-            InsertSampleDataAsyncSample insertSampleDataAsyncSample = new InsertSampleDataAsyncSample();
-            createDatabaseAsyncSample.CreateDatabaseAsyncAsync(ProjectId, InstanceId, BackupDatabaseId).Wait();
-            insertSampleDataAsyncSample.InsertSampleDataAsync(ProjectId, InstanceId, BackupDatabaseId).Wait();
+            InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+            await createDatabaseAsyncSample.CreateDatabaseAsyncAsync(ProjectId, InstanceId, BackupDatabaseId);
+            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, BackupDatabaseId);
         }
-        catch (Exception e)
+        catch (Exception e) when (e.ToString().Contains("Database already exists"))
         {
-            // We intentionally keep an existing database around to reduce the
+            // We intentionally keep an existing database around to reduce
             // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
-            if (e.ToString().Contains("Database already exists"))
-            {
-                Console.WriteLine($"Database {BackupDatabaseId} already exists.");
-            }
-            else
-            {
-                throw;
-            }
+            Console.WriteLine($"Database {BackupDatabaseId} already exists.");
         }
 
         try
@@ -183,22 +179,16 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
         }
         catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
         {
-            // We intentionally keep an existing backup around to reduce the
+            // We intentionally keep an existing backup around to reduce
             // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
             Console.WriteLine($"Backup {BackupId} already exists.");
         }
-        catch (RpcException e) when (e.StatusCode == StatusCode.FailedPrecondition)
+        catch (RpcException e) when (e.StatusCode == StatusCode.FailedPrecondition
+        && e.Message.Contains("maximum number of pending backups (1) for the database has been reached"))
         {
             // It's ok backup has been in progress in another test cycle.
-            if (e.Message.Contains("maximum number of pending backups (1) for the database has been reached"))
-            {
-                Console.WriteLine($"Backup {BackupId} already in progress.");
-            }
-            else
-            {
-                throw;
-            }
+            Console.WriteLine($"Backup {BackupId} already in progress.");
         }
     }
 
@@ -212,39 +202,27 @@ public class SpannerFixture : IDisposable, ICollectionFixture<SpannerFixture>
 
     public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget)
     {
-        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
+        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/" +
+            $"databases/{DatabaseId}";
         // Create connection to Cloud Spanner.
         using (var connection = new SpannerConnection(connectionString))
         {
             await connection.OpenAsync();
-            var cmd = connection.CreateUpdateCommand("Albums",
-            new SpannerParameterCollection
+
+            for (int i = 1; i <= 2; ++i)
             {
+                var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
+                {
                     {"SingerId", SpannerDbType.Int64},
                     {"AlbumId", SpannerDbType.Int64},
                     {"MarketingBudget", SpannerDbType.Int64},
-            });
-            for (int i = 1; i <= 2; ++i)
-            {
+                });
+
                 cmd.Parameters["SingerId"].Value = i;
                 cmd.Parameters["AlbumId"].Value = i;
                 cmd.Parameters["MarketingBudget"].Value = i == 1 ? firstAlbumBudget : secondAlbumBudget;
                 await cmd.ExecuteNonQueryAsync();
             }
-        }
-    }
-
-    public void Dispose()
-    {
-
-        DeleteDatabaseAsyncSample deleteDatabaseAsyncSample = new DeleteDatabaseAsyncSample();
-        foreach (var databaseId in DatabasesToDelete)
-        {
-            try
-            {
-                deleteDatabaseAsyncSample.DeleteDatabaseAsync(ProjectId, InstanceId, databaseId).Wait();
-            }
-            catch (Exception) { }
         }
     }
 }

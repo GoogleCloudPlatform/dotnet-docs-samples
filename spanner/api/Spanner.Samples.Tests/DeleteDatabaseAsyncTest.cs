@@ -13,26 +13,30 @@
 // limitations under the License.
 
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class CreateCustomDatabaseTest
+public class DeleteDatabaseAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public CreateCustomDatabaseTest(SpannerFixture spannerFixture)
+    public DeleteDatabaseAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async void TestCreateCustomDatabaseTest()
+    public async Task TestDeleteDatabaseAsync()
     {
         var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-        CreateCustomDatabaseAsyncSample sample = new CreateCustomDatabaseAsyncSample();
-        await sample.CreateCustomDatabaseAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        CreateCustomDatabaseAsyncSample createDatabaseSample = new CreateCustomDatabaseAsyncSample();
+        DeleteDatabaseAsyncSample deleteDatabaseAsyncSample = new DeleteDatabaseAsyncSample();
+        await createDatabaseSample.CreateCustomDatabaseAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
         var databases = _spannerFixture.GetDatabases();
         Assert.Contains(databases, d => d.DatabaseName.DatabaseId == databaseId);
-        _spannerFixture.DatabasesToDelete.Add(databaseId);
+        await deleteDatabaseAsyncSample.DeleteDatabaseAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        databases = _spannerFixture.GetDatabases();
+        Assert.DoesNotContain(databases, d => d.DatabaseName.DatabaseId == databaseId);
     }
 }
