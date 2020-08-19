@@ -65,15 +65,15 @@ public class InsertDatatypesDataAsyncSample
         {
                 new Venue {VenueId = 4, VenueName = "Venue 4", VenueInfo = exampleBytes1,
                     Capacity = 1800, AvailableDates = availableDates1,
-                    LastContactDate = DateTime.Parse("2018-09-02"),
+                    LastContactDate = new DateTime(2018,09,02),
                     OutdoorVenue = false, PopularityScore = 0.85543f},
                 new Venue {VenueId = 19, VenueName = "Venue 19", VenueInfo = exampleBytes2,
                     Capacity = 6300, AvailableDates = availableDates2,
-                    LastContactDate = DateTime.Parse("2019-01-15"),
+                    LastContactDate = new DateTime(2019,01,15),
                     OutdoorVenue = true, PopularityScore = 0.98716f},
                 new Venue {VenueId = 42, VenueName = "Venue 42", VenueInfo = exampleBytes3,
                     Capacity = 3000, AvailableDates = availableDates3,
-                    LastContactDate = DateTime.Parse("2018-10-01"),
+                    LastContactDate = new DateTime(2018,10,01),
                     OutdoorVenue = false, PopularityScore = 0.72598f},
         };
         // Create connection to Cloud Spanner.
