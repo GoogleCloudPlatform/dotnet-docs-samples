@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Events.SystemTextJson.Cloud.Storage.V1;
+using Google.Events.Protobuf.Cloud.Storage.V1;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -38,27 +36,12 @@ namespace HelloWorld.Tests
                 Name = "new-file.txt",
                 Bucket = "my-bucket",
                 Metageneration = 23,
-                TimeCreated = new DateTimeOffset(2020, 7, 9, 13, 0, 5, TimeSpan.Zero),
-                Updated = new DateTimeOffset(2020, 7, 9, 13, 23, 25, TimeSpan.Zero)
+                TimeCreated = new DateTimeOffset(2020, 7, 9, 13, 0, 5, TimeSpan.Zero).ToTimestamp(),
+                Updated = new DateTimeOffset(2020, 7, 9, 13, 23, 25, TimeSpan.Zero).ToTimestamp()
             };
-            var request = new HttpRequestMessage
-            {
-                RequestUri = new Uri("uri", UriKind.Relative),
-                // CloudEvent headers
-                Headers =
-                {
-                    { "ce-type", StorageObjectData.DeletedCloudEventType },
-                    { "ce-id", "1234" },
-                    { "ce-source", "//storage.googleapis.com/" },
-                    { "ce-specversion", "1.0" }
-                },
-                Content = new StringContent(JsonSerializer.Serialize(data)),
-                Method = HttpMethod.Post
-            };
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await ExecuteFunctionAsync(StorageObjectData.DeletedCloudEventType, data);
 
-            var logs = Server.GetLogEntries(typeof(HelloGcsGeneric.Function));
+            var logs = GetFunctionLogEntries();
             Assert.All(logs, entry => Assert.Equal(LogLevel.Information, entry.Level));
 
             var actualMessages = logs.Select(entry => entry.Message).ToList();

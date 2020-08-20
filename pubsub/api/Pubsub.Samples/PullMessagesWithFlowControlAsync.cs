@@ -37,17 +37,18 @@ public class PullMessagesWithFlowControlAsyncSample
             });
         // SubscriberClient runs your message handle function on multiple
         // threads to maximize throughput.
-        Task startTask = subscriber.StartAsync(
-            async (PubsubMessage message, CancellationToken cancel) =>
-            {
-                string text = Encoding.UTF8.GetString(message.Data.ToArray());
-                Console.WriteLine($"Message {message.MessageId}: {text}");
-                Interlocked.Increment(ref messageCount);
-                return acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack;
-            });
+        Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
+        {
+            string text = Encoding.UTF8.GetString(message.Data.ToArray());
+            Console.WriteLine($"Message {message.MessageId}: {text}");
+            Interlocked.Increment(ref messageCount);
+            return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);
+        });
         // Run for 5 seconds.
         await Task.Delay(5000);
         await subscriber.StopAsync(CancellationToken.None);
+        // Lets make sure that the start task finished successfully after the call to stop.
+        await startTask;
         return messageCount;
     }
 }
