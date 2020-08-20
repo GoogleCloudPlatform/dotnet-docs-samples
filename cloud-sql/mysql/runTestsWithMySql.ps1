@@ -28,25 +28,23 @@ $proxy = Start-Job -ArgumentList (Get-Location) -ScriptBlock {
 	./cloud_sql_proxy.exe --instances=$env:TEST_CLOUDSQL2_MYSQL_INSTANCE=tcp:3306 `
 		--credential_file=$GOOGLE_APPLICATION_CREDENTIALS
 }
-
+$env:DB_HOST=$env:TEST_CLOUDSQL2_HOST
+$env:DB_USER=$env:TEST_CLOUDSQL2_USER
+$env:DB_PASS=$env:TEST_CLOUDSQL2_VOTES_PASS
+$env:DB_NAME=$env:TEST_CLOUDSQL2_VOTES_NAME
 try {
-	$env:DB_HOST="cloudsql"
-	$env:DB_USER="aspnetuser"
-	$env:DB_PASS=""
-	$env:DB_NAME="votes"
 	dotnet restore
-	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
-	{
-		dotnet build
-		Receive-Job $proxy -ErrorAction 'SilentlyContinue'
-		try {
-			Run-KestrelTest 5567 -CasperJs11
-		} finally {
-			Move-TestResults MySql
-		}
+	Receive-Job $proxy -ErrorAction 'Continue'
+	dotnet build
+	Receive-Job $proxy -ErrorAction 'Continue'
+	try {
+		Run-KestrelTest 5567 -CasperJs11
+	} finally {
+		Move-TestResults MySql
 	}
+
 } finally {
 	Stop-Job $proxy
-	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
+	Receive-Job $proxy -ErrorAction 'Continue'
 	Remove-Job $proxy
 }
