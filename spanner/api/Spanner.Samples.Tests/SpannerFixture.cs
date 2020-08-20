@@ -119,8 +119,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             try
             {
-                DeleteDatabaseAsyncSample deleteDatabaseAsyncSample = new DeleteDatabaseAsyncSample();
-                await deleteDatabaseAsyncSample.DeleteDatabaseAsync(ProjectId, InstanceId, databaseId);
+                await DeleteDatabaseAsync(databaseId);
             }
             catch (Exception) { }
         }
@@ -131,23 +130,13 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         // If the database has not been initialized, retry.
         CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
         InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
-        InsertStructDataAsyncSample insertStructDataAsyncSample = new InsertStructDataAsyncSample();
         AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
-        AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
         AddIndexAsyncSample addIndexAsyncSample = new AddIndexAsyncSample();
         AddStoringIndexAsyncSample addStoringIndexAsyncSample = new AddStoringIndexAsyncSample();
-        CreateTableWithDatatypesAsyncSample createTableWithDatatypesAsyncSample = new CreateTableWithDatatypesAsyncSample();
-        InsertDatatypesDataAsyncSample insertDatatypesDataAsyncSample = new InsertDatatypesDataAsyncSample();
         await createDatabaseAsyncSample.CreateDatabaseAsyncAsync(ProjectId, InstanceId, DatabaseId);
         await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, DatabaseId);
-        await insertStructDataAsyncSample.InsertStructDataAsync(ProjectId, InstanceId, DatabaseId);
         await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, DatabaseId);
-        await addCommitTimestampAsyncSample.AddCommitTimestampAsync(ProjectId, InstanceId, DatabaseId);
         await addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId);
-        // Create a new table that includes supported datatypes.
-        await createTableWithDatatypesAsyncSample.CreateTableWithDatatypesAsync(ProjectId, InstanceId, DatabaseId);
-        // Write data to the new table.
-        await insertDatatypesDataAsyncSample.InsertDatatypesDataAsync(ProjectId, InstanceId, DatabaseId);
         // Add storing Index on table.
         await addStoringIndexAsyncSample.AddStoringIndexAsync(ProjectId, InstanceId, DatabaseId);
         // Update the value of MarketingBudgets.
@@ -189,6 +178,18 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             // It's ok backup has been in progress in another test cycle.
             Console.WriteLine($"Backup {BackupId} already in progress.");
+        }
+    }
+
+    private async Task DeleteDatabaseAsync(string databaseId)
+    {
+        string adminConnectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}";
+        using (var connection = new SpannerConnection(adminConnectionString))
+        {
+            using (var cmd = connection.CreateDdlCommand($@"DROP DATABASE {databaseId}"))
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
     }
 
