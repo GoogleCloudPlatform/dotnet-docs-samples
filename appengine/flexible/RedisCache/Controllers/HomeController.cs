@@ -32,7 +32,7 @@ namespace RedisCache.Controllers
             _redisOptions = options.Value;
         }
 
-        // [BEGIN redis_cache]
+        // [START redis_cache]
         [HttpGet]
         [HttpPost]
         public IActionResult Index(WhoForm whoForm)
