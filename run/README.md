@@ -12,8 +12,8 @@ This directory contains samples for [Google Cloud Run](https://cloud.run). [Clou
 |           Sample                |        Description       |     Deploy    |
 | ------------------------------- | ------------------------ | ------------- |
 |[Hello World][helloworld]&nbsp;&#10149; | Quickstart | [<img src="https://storage.googleapis.com/cloudrun/button.svg" alt="Run on Google Cloud" height="30">][run_button_helloworld] |
-|[Events – GCS][events_gcs]| Use Cloud Storage with Cloud Run | - |
-|[Anthos Events – GCS][anthos_events_gcs]| Use Cloud Storage with Cloud Run on Anthos | - |
+|[Events – GCS][events_storage]| Use Cloud Storage with Cloud Run | - |
+|[Anthos Events – GCS][anthos_events_storage]| Use Cloud Storage with Cloud Run on Anthos | - |
 |[Events – Pub/Sub][events_pubsub]| Use Pub/Sub with Cloud Run | - |
 |[Anthos Events – Pub/Sub][anthos_events_pubsub]| Use Pub/Sub with Cloud Run on Anthos | - |
 
@@ -110,7 +110,7 @@ for more information.
 [helloworld]: https://github.com/knative/docs/tree/master/docs/serving/samples/hello-world/helloworld-csharp
 [run_button_helloworld]: https://deploy.cloud.run/?git_repo=https://github.com/knative/docs&dir=docs/serving/samples/hello-world/helloworld-csharp
 [testing]: https://cloud.google.com/run/docs/testing/local#running_locally_using_docker_with_access_to_services
-[events_gcs]: events-gcs
-[anthos_events_gcs]: events-gcs/anthos.md
+[events_storage]: events-storage
+[anthos_events_storage]: events-storage/anthos.md
 [events_pubsub]: events-pubsub
 [anthos_events_pubsub]: events-pubsub/anthos.md
