@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Functions.Invoker" Version="1.0.0-alpha08" />
+    <PackageReference Include="Google.Cloud.Functions.Invoker" Version="1.0.0-alpha09" />
     <PackageReference Include="Google.Cloud.Storage.V1" Version="3.2.0" />
     <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
-    <PackageReference Include="Google.Events.SystemTextJson" Version="1.0.0-alpha03" />
+    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0-alpha04" />
   </ItemGroup>
 </Project>
