@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using CloudNative.CloudEvents;
+using Google.Cloud.Functions.Invoker.Testing;
+using Google.Events;
 using Google.Events.Protobuf.Cloud.Storage.V1;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
@@ -31,6 +34,7 @@ namespace HelloWorld.Tests
 
             var created = DateTimeOffset.UtcNow.AddMinutes(-5);
             var updated = created.AddMinutes(2);
+            var cloudEvent = new CloudEvent(StorageObjectData.DeletedCloudEventType, new Uri("//storage.googleapis.com"), "1234");
             var data = new StorageObjectData
             {
                 Name = "new-file.txt",
@@ -39,15 +43,17 @@ namespace HelloWorld.Tests
                 TimeCreated = new DateTimeOffset(2020, 7, 9, 13, 0, 5, TimeSpan.Zero).ToTimestamp(),
                 Updated = new DateTimeOffset(2020, 7, 9, 13, 23, 25, TimeSpan.Zero).ToTimestamp()
             };
-            await ExecuteFunctionAsync(StorageObjectData.DeletedCloudEventType, data);
+            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
+
+            await ExecuteCloudEventRequestAsync(cloudEvent);
 
             var logs = GetFunctionLogEntries();
             Assert.All(logs, entry => Assert.Equal(LogLevel.Information, entry.Level));
 
-            var actualMessages = logs.Select(entry => entry.Message).ToList();
+            var actualMessages = logs.Select(entry => entry.Message).ToArray();
             var expectedMessages = new[]
             {
-                $"Event: 1234",
+                "Event: 1234",
                 $"Event Type: {StorageObjectData.DeletedCloudEventType}",
                 "Bucket: my-bucket",
                 "File: new-file.txt",

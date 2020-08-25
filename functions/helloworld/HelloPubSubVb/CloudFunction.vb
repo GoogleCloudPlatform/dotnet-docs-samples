@@ -16,7 +16,7 @@
 Imports System.Threading
 Imports CloudNative.CloudEvents
 Imports Google.Cloud.Functions.Framework
-Imports Google.Events.SystemTextJson.Cloud.PubSub.V1
+Imports Google.Events.Protobuf.Cloud.PubSub.V1
 Imports Microsoft.Extensions.Logging
 
 Public Class CloudFunction
