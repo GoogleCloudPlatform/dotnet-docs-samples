@@ -28,7 +28,7 @@ public class QuickStart
     {
         // TODO: Replace with your project ID
         var projectId = "your-project";
-        // TODO: Replace with the ID of your member in the form "member:user@example.com"
+        // TODO: Replace with the ID of your member in the form "user:member@example.com"
         var member = "your-member";
         // Role to be granted
         var role = "roles/logging.logWriter";
