@@ -15,11 +15,12 @@
 // [START functions_imagemagick_setup]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
-using Google.Cloud.Functions.Invoker.DependencyInjection;
+using Google.Cloud.Functions.Invoker;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.Vision.V1;
-using Google.Events.SystemTextJson.Cloud.Storage.V1;
+using Google.Events.Protobuf.Cloud.Storage.V1;
 using Grpc.Core;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -36,12 +37,10 @@ namespace ImageMagick
     // Dependency injection configuration, executed during server startup.
     public class Startup : FunctionsStartup
     {
-        public override void Configure(IFunctionsHostBuilder builder)
-        {
-            builder.Services
+        public override void ConfigureServices(WebHostBuilderContext context, IServiceCollection services) =>
+            services
                 .AddSingleton(ImageAnnotatorClient.Create())
                 .AddSingleton(StorageClient.Create());
-        }
     }
 
     public class Function : ICloudEventFunction<StorageObjectData>
