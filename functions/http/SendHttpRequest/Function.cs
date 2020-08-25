@@ -14,7 +14,8 @@
 
 // [START functions_concepts_requests]
 using Google.Cloud.Functions.Framework;
-using Google.Cloud.Functions.Invoker.DependencyInjection;
+using Google.Cloud.Functions.Invoker;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
@@ -28,13 +29,13 @@ namespace SendHttpRequest
     // Dependency injection configuration, executed during server startup.
     public class Startup : FunctionsStartup
     {
-        public override void Configure(IFunctionsHostBuilder builder)
+        public override void ConfigureServices(WebHostBuilderContext context, IServiceCollection services)
         {
             // Make IHttpClientFactory available for dependency injection.
             // There are many options here; see
             // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests
             // for more details.
-            builder.Services.AddHttpClient();
+            services.AddHttpClient();
         }
     }
 

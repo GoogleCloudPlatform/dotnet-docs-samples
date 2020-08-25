@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+using Google.Cloud.Functions.Invoker.Testing;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -33,13 +34,11 @@ namespace Http.Tests
                 RequestUri = new Uri("uri", UriKind.Relative)
             };
 
-            using (var client = Server.CreateClient())
-            {
-                var response = await client.SendAsync(request);
-                Assert.Equal(expectedStatus, response.StatusCode);
-                var actualContent = await response.Content.ReadAsStringAsync();
-                Assert.Equal(expectedContent, actualContent);
-            }
+            using var client = Server.CreateClient();
+            using var response = await client.SendAsync(request);
+            Assert.Equal(expectedStatus, response.StatusCode);
+            var actualContent = await response.Content.ReadAsStringAsync();
+            Assert.Equal(expectedContent, actualContent);
         }
     }
 }
