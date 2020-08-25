@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using CloudNative.CloudEvents;
+using Google.Cloud.Functions.Invoker.Testing;
+using Google.Events;
 using Google.Events.Protobuf.Cloud.PubSub.V1;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,11 +34,11 @@ namespace Concepts.Tests
         public async Task Processing(string textData, int ageInSeconds, string expectedLog)
         {
             var cloudEvent = new CloudEvent(MessagePublishedData.MessagePublishedCloudEventType,
-                new Uri("//pubsub.googleapis.com"), "1234", DateTime.UtcNow.AddSeconds(-ageInSeconds))
-            {
-                Data = new MessagePublishedData { Message = new PubsubMessage { TextData = textData } }
-            };
-            await ExecuteCloudEventFunctionAsync(cloudEvent);
+                new Uri("//pubsub.googleapis.com"), "1234", DateTime.UtcNow.AddSeconds(-ageInSeconds));
+            var data = new MessagePublishedData { Message = new PubsubMessage { TextData = textData } };
+            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
+
+            await ExecuteCloudEventRequestAsync(cloudEvent);
             var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal(LogLevel.Information, logEntry.Level);
             Assert.Equal(expectedLog, logEntry.Message);
