@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Functions.Invoker.Testing;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -25,13 +28,8 @@ namespace Logging.Tests
         {
             var (stdout, stderr) = await RunWithConsoleRedirection(async () =>
             {
-                using (var client = Server.CreateClient())
-                {
-                    var response = await client.GetAsync("uri");
-                    response.EnsureSuccessStatusCode();
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    Assert.Equal("Messages successfully logged!", responseBody);
-                };
+                var responseBody = await ExecuteHttpGetRequestAsync("uri");
+                Assert.Equal("Messages successfully logged!", responseBody);
             });
 
             // The console output will include ASP.NET Core logs (including the info and warning
@@ -46,6 +44,27 @@ namespace Logging.Tests
 
             var warning  = Assert.Single(logEntries, entry => entry.Level == LogLevel.Warning);
             Assert.Equal("I am a warning log!", warning.Message);
+        }
+
+        public async Task<(string stdout, string stderr)> RunWithConsoleRedirection(Func<Task> func)
+        {
+            var originalOut = Console.Out;
+            var originalError = Console.Error;
+            try
+            {
+                var outWriter = new StringWriter { NewLine = "\n" };
+                var errorWriter = new StringWriter { NewLine = "\n" };
+                Console.SetOut(outWriter);
+                Console.SetError(errorWriter);
+
+                await func().ConfigureAwait(false);
+                return (outWriter.ToString(), errorWriter.ToString());
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+                Console.SetError(originalError);
+            }
         }
     }
 }
