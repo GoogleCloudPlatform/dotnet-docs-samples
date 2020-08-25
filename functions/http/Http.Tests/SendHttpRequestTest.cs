@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+using Google.Cloud.Functions.Invoker.Testing;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -22,14 +23,9 @@ namespace Http.Tests
         [Fact]
         public async Task SuccessfulRequest()
         {
-            using (var client = Server.CreateClient())
-            {
-                var response = await client.GetAsync("uri");
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                var actualContent = await response.Content.ReadAsStringAsync();
-                var expectedContent = "Received code '200' from URL 'http://example.com'.";
-                Assert.Equal(expectedContent, actualContent);
-            }
+            var actualContent = await ExecuteHttpGetRequestAsync("uri");
+            var expectedContent = "Received code '200' from URL 'http://example.com'.";
+            Assert.Equal(expectedContent, actualContent);
         }
     }
 }
