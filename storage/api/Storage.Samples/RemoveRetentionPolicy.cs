@@ -19,28 +19,20 @@ using System;
 
 public class RemoveRetentionPolicySample
 {
-    /// <summary>
-    /// Removes bucket's retention policy.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
     public void RemoveRetentionPolicy(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
         if (bucket.RetentionPolicy != null)
         {
-            bool? isLockedOrNull = bucket?.RetentionPolicy.IsLocked;
-            bool isLocked = isLockedOrNull.HasValue ? isLockedOrNull.Value : false;
+            bool isLocked = bucket.RetentionPolicy.IsLocked ?? false;
             if (isLocked)
             {
                 throw new Exception("Retention Policy is locked.");
             }
 
             bucket.RetentionPolicy.RetentionPeriod = null;
-            storage.UpdateBucket(bucket, new UpdateBucketOptions
-            {
-                IfMetagenerationMatch = bucket.Metageneration
-            });
+            storage.UpdateBucket(bucket);
 
             Console.WriteLine($"Retention period for {bucketName} has been removed.");
         }

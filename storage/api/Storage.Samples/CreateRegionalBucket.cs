@@ -32,7 +32,7 @@ public class CreateRegionalBucketSample
     /// and determines the SLA and the cost of storage. Values include MULTI_REGIONAL,
     /// REGIONAL, STANDARD, NEARLINE, COLDLINE, ARCHIVE, and DURABLE_REDUCED_AVAILABILITY.
     /// If this value is not specified when the bucket is created, it will default to
-    /// STANDARD. For more information, see storage classes.</param>
+    /// STANDARD.</param>
     public Bucket CreateRegionalBucket(
         string projectId = "your-project-id",
         string bucketName = "your-unique-bucket-name",

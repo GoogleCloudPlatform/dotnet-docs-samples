@@ -20,12 +20,6 @@ using System;
 
 public class DisableRequesterPaysSample
 {
-    /// <summary>
-    /// Disables a bucket's requester pays.
-    /// </summary>
-    /// <param name="projectId">Project Id. If set, this is the ID of the project which will be billed for the request.
-    /// The caller must have suitable permissions for the project being billed.</param>
-    /// <param name="bucketName">The name of the bucket.</param>
     public Bucket DisableRequesterPays(
         string projectId = "your-project-id",
         string bucketName = "your-unique-bucket-name")
@@ -39,8 +33,6 @@ public class DisableRequesterPaysSample
         bucket.Billing.RequesterPays = false;
         bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
         {
-            // Use IfMetagenerationMatch to avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration,
             UserProject = projectId
         });
         Console.WriteLine($"Requester pays disabled for bucket {bucketName}.");

@@ -20,20 +20,12 @@ using System;
 
 public class EnableBucketDefaultEventBasedHoldSample
 {
-    /// <summary>
-    /// Enables a bucket's default event based hold.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
     public Bucket EnableBucketDefaultEventBasedHold(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
         bucket.DefaultEventBasedHold = true;
-        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            // Use IfMetagenerationMatch to avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration
-        });
+        bucket = storage.UpdateBucket(bucket);
         Console.WriteLine($"Default event-based hold was enabled for {bucketName}");
         return bucket;
     }

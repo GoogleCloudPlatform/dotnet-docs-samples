@@ -20,10 +20,6 @@ using static Google.Apis.Storage.v1.Data.Bucket;
 
 public class GetRetentionPolicySample
 {
-    /// <summary>
-    /// Gets a bucket's retention policy.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
     public RetentionPolicyData GetRetentionPolicy(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
@@ -34,8 +30,7 @@ public class GetRetentionPolicySample
             Console.WriteLine("Retention policy:");
             Console.WriteLine($"Period: {bucket.RetentionPolicy.RetentionPeriod}");
             Console.WriteLine($"Effective time: {bucket.RetentionPolicy.EffectiveTime}");
-            bool? isLockedOrNull = bucket?.RetentionPolicy.IsLocked;
-            bool isLocked = isLockedOrNull.HasValue ? isLockedOrNull.Value : false;
+            bool isLocked = bucket.RetentionPolicy.IsLocked ?? false;
             Console.WriteLine($"Policy locked: {isLocked}");
         }
         return bucket.RetentionPolicy;

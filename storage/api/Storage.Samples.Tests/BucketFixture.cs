@@ -27,6 +27,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     public SortedDictionary<string, SortedSet<string>> TempBucketFiles { get; } = new SortedDictionary<string, SortedSet<string>>();
     public string BucketNameGeneric { get; } = Guid.NewGuid().ToString();
     public string BucketNameRegional { get; } = Guid.NewGuid().ToString();
+    public string TestLocation { get; } = "us-west1";
     public string FileName { get; } = "Hello.txt";
     public string FilePath { get; } = "Resources/Hello.txt";
     public string KmsKeyRing { get; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYRING");
@@ -49,16 +50,17 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
 
         // create regional bucket
         CreateRegionalBucketSample createRegionalBucketSample = new CreateRegionalBucketSample();
-        createRegionalBucketSample.CreateRegionalBucket(ProjectId, BucketNameRegional, KmsKeyLocation, StorageClasses.Regional);
+        createRegionalBucketSample.CreateRegionalBucket(ProjectId, BucketNameRegional, TestLocation, StorageClasses.Regional);
         SleepAfterBucketCreateDelete();
         TempBucketNames.Add(BucketNameRegional);
 
         //upload file to BucketName
         UploadFileSample uploadFileSample = new UploadFileSample();
-        uploadFileSample.UploadFile(BucketNameGeneric, FilePath);
+        uploadFileSample.UploadFile(BucketNameGeneric, FilePath, FileName);
 
         Collect(FileName);
     }
+
     public void Dispose()
     {
         DeleteBucketSample deleteBucketSample = new DeleteBucketSample();

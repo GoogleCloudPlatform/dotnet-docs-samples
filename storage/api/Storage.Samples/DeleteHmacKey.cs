@@ -12,23 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_copy_file]
+// [START storage_delete_hmac_key]
 
 using Google.Cloud.Storage.V1;
 using System;
 
-public class CopyFileSample
+public class DeleteHmacKeySample
 {
-    public void CopyFile(
-        string sourceBucketName = "source-bucket-name",
-        string sourceObjectName = "source-file",
-        string destBucketName = "destination-bucket-name",
-        string destObjectName = "destination-file-name")
+    public void DeleteHmacKey(
+        string projectId = "your-project-id",
+        string accessId = "your-access-id")
     {
         var storage = StorageClient.Create();
-        storage.CopyObject(sourceBucketName, sourceObjectName, destBucketName, destObjectName);
+        storage.DeleteHmacKey(projectId, accessId);
 
-        Console.WriteLine($"Copied {sourceBucketName}/{sourceObjectName} to " + $"{destBucketName}/{destObjectName}.");
+        Console.WriteLine($"Key {accessId} was deleted.");
     }
 }
-// [END storage_copy_file]
+// [END storage_delete_hmac_key]

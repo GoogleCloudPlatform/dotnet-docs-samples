@@ -20,24 +20,14 @@ using System.IO;
 
 public class UploadFileWithKmsKeySample
 {
-    /// <summary>
-    /// Uploads object with kms key.
-    /// </summary>
-    /// <param name="projectId">The Project Id.</param>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="keyLocation">Key Location.</param>
-    /// <param name="kmsKeyRing">KMS key Ring.</param>
-    /// <param name="kmsKeyName">KMS key Name</param>
-    /// <param name="localPath">The local path.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public void UploadFileWithKmsKey(
         string projectId = "your-project-id",
         string bucketName = "your-unique-bucket-name",
         string keyLocation = "us-west1",
         string kmsKeyRing = "kms-key-ring",
         string kmsKeyName = "key-name",
-        string localPath = "path/to/your/file",
-        string objectName = null)
+        string localPath = "my-local-path/my-file-name",
+        string objectName = "my-file-name")
     {
         string keyPrefix = $"projects/{projectId}/locations/{keyLocation}";
         string fullKeyringName = $"{keyPrefix}/keyRings/{kmsKeyRing}";
@@ -46,7 +36,6 @@ public class UploadFileWithKmsKeySample
         var storage = StorageClient.Create();
         using (var f = File.OpenRead(localPath))
         {
-            objectName = objectName ?? Path.GetFileName(localPath);
             storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions { KmsKeyName = fullKeyName });
             Console.WriteLine($"Uploaded {objectName}.");
         }

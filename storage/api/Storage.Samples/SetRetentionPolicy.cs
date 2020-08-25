@@ -40,10 +40,7 @@ public class SetRetentionPolicySample
         var bucket = storage.GetBucket(bucketName);
         bucket.RetentionPolicy = new RetentionPolicyData { RetentionPeriod = retentionPeriod };
 
-        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            IfMetagenerationMatch = bucket.Metageneration
-        });
+        bucket = storage.UpdateBucket(bucket);
 
         Console.WriteLine($"Retention policy for {bucketName} was set to {retentionPeriod}");
         return bucket.RetentionPolicy;

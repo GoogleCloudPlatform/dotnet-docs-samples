@@ -12,26 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_delete_hmac_key]
+// [START storage_list_hmac_keys]
 
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
 
-public class HmacKeyDeleteSample
+public class ListHmacKeysSample
 {
-    /// <summary>
-    /// Deletes an HMAC key
-    /// </summary>
-    /// <param name="projectId">The ID of the project containing the HMAC key to delete.</param>
-    /// <param name="accessId">The ID of the HMAC key to delete.</param>
-    public void DeleteHmacKey(
-        string projectId = "your-project-id",
-        string accessId = "your-access-id")
+    public IEnumerable<HmacKeyMetadata> ListHmacKeys(string projectId = "your-project-id")
     {
         var storage = StorageClient.Create();
-        storage.DeleteHmacKey(projectId, accessId);
+        var keys = storage.ListHmacKeys(projectId);
 
-        Console.WriteLine($"Key {accessId} was deleted.");
+        foreach (var metadata in keys)
+        {
+            Console.WriteLine($"Service Account Email: {metadata.ServiceAccountEmail}");
+            Console.WriteLine($"Access ID: {metadata.AccessId}");
+        }
+        return keys;
     }
 }
-// [END storage_delete_hmac_key]
+// [END storage_list_hmac_keys]

@@ -21,11 +21,6 @@ using System.Collections.Generic;
 
 public class PrintFileAclSample
 {
-    /// <summary>
-    /// Prints an object's Acl.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public IEnumerable<ObjectAccessControl> PrintObjectAcl(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name")

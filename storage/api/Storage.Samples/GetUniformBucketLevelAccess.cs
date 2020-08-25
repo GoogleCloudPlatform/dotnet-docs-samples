@@ -20,10 +20,6 @@ using static Google.Apis.Storage.v1.Data.Bucket.IamConfigurationData;
 
 public class GetUniformBucketLevelAccessSample
 {
-    /// <summary>
-    /// Get an uniform bucket level access.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
     public UniformBucketLevelAccessData GetUniformBucketLevelAccess(
         string bucketName = "your-unique-bucket-name")
     {
@@ -31,8 +27,7 @@ public class GetUniformBucketLevelAccessSample
         var bucket = storage.GetBucket(bucketName);
         var uniformBucketLevelAccess = bucket.IamConfiguration.UniformBucketLevelAccess;
 
-        bool? enabledOrNull = uniformBucketLevelAccess?.Enabled;
-        bool uniformBucketLevelAccessEnabled = enabledOrNull.HasValue ? enabledOrNull.Value : false;
+        bool uniformBucketLevelAccessEnabled = uniformBucketLevelAccess.Enabled ?? false;
         if (uniformBucketLevelAccessEnabled)
         {
             Console.WriteLine($"Uniform bucket-level access is enabled for {bucketName}.");

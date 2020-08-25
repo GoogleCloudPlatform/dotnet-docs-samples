@@ -32,12 +32,10 @@ public class AddBucketIamMemberTest
         string memberType = "serviceAccount";
         var addBucketIamMemberSample = new AddBucketIamMemberSample();
         RemoveBucketIamMemberSample removeBucketIamMemberSample = new RemoveBucketIamMemberSample();
-        ViewBucketIamMembersSample viewBucketIamMembersSample = new ViewBucketIamMembersSample();
 
         // Add bucket Iam member.
         var result = addBucketIamMemberSample.AddBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
-        Assert.Contains(result.Bindings, b => b.Role == role);
-        Assert.Contains(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        Assert.Contains(result.Bindings, b => b.Role == role && b.Members.Contains($"{memberType}:{_bucketFixture.ServiceAccountEmail}"));
 
         // Remove bucket Iam member.
         removeBucketIamMemberSample.RemoveBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");

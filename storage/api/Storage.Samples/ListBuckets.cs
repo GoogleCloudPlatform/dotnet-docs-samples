@@ -21,10 +21,6 @@ using System.Collections.Generic;
 
 public class ListBucketsSample
 {
-    /// <summary>
-    /// Lists the buckets for a given project.
-    /// </summary>
-    /// <param name="projectId">The ID of the project to list the buckets from.</param>
     public IEnumerable<Bucket> ListBuckets(string projectId = "your-project-id")
     {
         var storage = StorageClient.Create();

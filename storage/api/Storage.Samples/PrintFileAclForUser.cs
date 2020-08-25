@@ -22,12 +22,6 @@ using System.Linq;
 
 public class PrintFileAclForUserSample
 {
-    /// <summary>
-    /// Prints an object's Acl for specific user.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
-    /// <param name="userEmail">The use email.</param>
     public IEnumerable<ObjectAccessControl> PrintFileAclForUser(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name",

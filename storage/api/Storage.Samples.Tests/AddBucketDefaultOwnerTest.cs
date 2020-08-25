@@ -33,7 +33,7 @@ public class AddBucketDefaultOwnerTest
 
         // Add bucket default owner.
         var updatedBucket = addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
-        Assert.Contains(updatedBucket.DefaultObjectAcl.Where(c => c.Email != null && c.Role == "OWNER").Select(c => c.Email), c => c.Contains(_bucketFixture.ServiceAccountEmail));
+        Assert.Contains(updatedBucket.DefaultObjectAcl, acl => acl.Role == "OWNER" && acl.Email == _bucketFixture.ServiceAccountEmail);
 
         // Remove bucket default owner.
         removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);

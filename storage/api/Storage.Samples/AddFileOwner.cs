@@ -20,12 +20,6 @@ using System;
 
 public class AddFileOwnerSample
 {
-    /// <summary>
-    /// Adds a file owner.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">File/Object Name.</param>
-    /// <param name="userEmail">The user Email that holding the owner permission.</param>
     public Google.Apis.Storage.v1.Data.Object AddFileOwner(
         string bucketName = "your-unique-bucket-name",
         string objectName = "my-file-name",
@@ -43,11 +37,7 @@ public class AddFileOwnerSample
             Entity = $"user-{userEmail}",
             Role = "OWNER",
         });
-        var updatedObject = storage.UpdateObject(storageObject, new UpdateObjectOptions
-        {
-            // Avoid race conditions.
-            IfMetagenerationMatch = storageObject.Metageneration,
-        });
+        var updatedObject = storage.UpdateObject(storageObject);
         Console.WriteLine($"Added user { userEmail} as an owner on file { objectName}.");
         return updatedObject;
     }

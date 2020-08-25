@@ -19,17 +19,12 @@ using System;
 
 public class GetMetadataSample
 {
-    /// <summary>
-    /// Fetches the information about an object .
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public Google.Apis.Storage.v1.Data.Object GetMetadata(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
-        var storageObject = storage.GetObject(bucketName, objectName);
+        var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions { Projection = Projection.Full });
         Console.WriteLine($"Bucket:\t{storageObject.Bucket}");
         Console.WriteLine($"CacheControl:\t{storageObject.CacheControl}");
         Console.WriteLine($"ComponentCount:\t{storageObject.ComponentCount}");
@@ -51,11 +46,9 @@ public class GetMetadataSample
         Console.WriteLine($"StorageClass:\t{storageObject.StorageClass}");
         Console.WriteLine($"TimeCreated:\t{storageObject.TimeCreated}");
         Console.WriteLine($"Updated:\t{storageObject.Updated}");
-        bool? eventBasedHoldOrNull = storageObject?.EventBasedHold;
-        bool eventBasedHold = eventBasedHoldOrNull.HasValue ? eventBasedHoldOrNull.Value : false;
+        bool eventBasedHold = storageObject.EventBasedHold ?? false;
         Console.WriteLine("Event-based hold enabled? {0}", eventBasedHold);
-        bool? temporaryHoldOrNull = storageObject?.TemporaryHold;
-        bool temporaryHold = temporaryHoldOrNull.HasValue ? temporaryHoldOrNull.Value : false;
+        bool temporaryHold = storageObject.TemporaryHold ?? false;
         Console.WriteLine("Temporary hold enabled? {0}", temporaryHold);
         Console.WriteLine($"RetentionExpirationTime\t{storageObject.RetentionExpirationTime}");
         return storageObject;

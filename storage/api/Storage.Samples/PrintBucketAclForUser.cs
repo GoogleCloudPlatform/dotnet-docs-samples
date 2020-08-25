@@ -22,11 +22,6 @@ using System.Linq;
 
 public class PrintBucketAclForUserSample
 {
-    /// <summary>
-    /// Prints a Bucket's Acl for specific user.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="userEmail">The use email.</param>
     public IEnumerable<BucketAccessControl> PrintBucketAclForUser(
         string bucketName = "your-unique-bucket-name",
         string userEmail = "dev@iam.gserviceaccount.com")

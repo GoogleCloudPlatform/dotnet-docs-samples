@@ -22,11 +22,6 @@ using System.Linq;
 
 public class RemoveBucketDefaultOwnerSample
 {
-    /// <summary>
-    /// Removes a bucket's default owner.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="userEmail">The user email.</param>
     public void RemoveBucketDefaultOwner(
         string bucketName = "your-unique-bucket-name",
         string userEmail = "user@iam.gserviceaccount.com")
@@ -43,11 +38,7 @@ public class RemoveBucketDefaultOwnerSample
 
         bucket.DefaultObjectAcl = bucket.DefaultObjectAcl.Where((acl) => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
 
-        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            // Avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration,
-        });
+        var updatedBucket = storage.UpdateBucket(bucket);
         Console.WriteLine($"Removed user {userEmail} from bucket {bucketName}.");
     }
 }

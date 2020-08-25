@@ -20,28 +20,16 @@ using System.IO;
 
 public class DownloadFileRequesterPaysSample
 {
-    /// <summary>
-    /// Downloads the data for an object from storage with project which will be billed for the request.
-    /// </summary>
-    /// <param name="projectId">ID of the project which will be billed for the request.
-    /// The caller must have suitable permissions for the project being billed.</param>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
-    /// <param name="localPath">Local path to write the data into.</param>
     public void DownloadFileRequesterPays(
         string projectId = "your-project-id",
         string bucketName = "your-unique-bucket-name",
         string objectName = "my-file-name",
-        string localPath = null)
+        string localPath = "my-local-path/my-file-name")
     {
         var storage = StorageClient.Create();
-        localPath = localPath ?? Path.GetFileName(objectName);
         using (var outputFile = File.OpenWrite(localPath))
         {
-            storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions
-            {
-                UserProject = projectId
-            });
+            storage.DownloadObject(bucketName, objectName, outputFile);
         }
         Console.WriteLine($"Downloaded {objectName} to {localPath} paid by {projectId}.");
     }

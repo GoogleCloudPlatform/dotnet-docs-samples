@@ -20,23 +20,15 @@ using System.IO;
 
 public class UploadFileRequesterPaysSample
 {
-    /// <summary>
-    /// Uploads object with requester pays.
-    /// </summary>
-    /// <param name="projectId">ID of the project which will be billed for the request.</param>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="localPath">The local path.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public void UploadFileRequesterPays(
         string projectId = "your-project-id",
         string bucketName = "your-unique-bucket-name",
-        string localPath = "path/to/your/file",
-        string objectName = null)
+        string localPath = "my-local-path/my-file-name",
+        string objectName = "my-file-name")
     {
         var storage = StorageClient.Create();
         using (var f = File.OpenRead(localPath))
         {
-            objectName = objectName ?? Path.GetFileName(localPath);
             storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions { UserProject = projectId, });
             Console.WriteLine($"Uploaded {objectName}.");
         }

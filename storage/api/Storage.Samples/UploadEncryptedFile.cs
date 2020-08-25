@@ -20,24 +20,15 @@ using System.IO;
 
 public class UploadEncryptedFileSample
 {
-    /// <summary>
-    /// Uploads an encrypted file for object.
-    /// </summary>
-    /// <param name="key">The encryption key to use for this operation. 
-    /// If this property is null, the Google.Cloud.Storage.V1.StorageClient.EncryptionKey will be used instead</param>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="localPath">The local path.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public void UploadEncryptedFile(
         string key = "3eFsTXPvqi3BpT2ipFCGirslh1Jgc6ikjoAu2oQ5JcI=",
         string bucketName = "your-unique-bucket-name",
-        string localPath = "path/to/your/file",
-        string objectName = null)
+        string localPath = "my-local-path/my-file-name",
+        string objectName = "my-file-name")
     {
         var storage = StorageClient.Create();
         using (var f = File.OpenRead(localPath))
         {
-            objectName = objectName ?? Path.GetFileName(localPath);
             storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions
             {
                 EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(key))

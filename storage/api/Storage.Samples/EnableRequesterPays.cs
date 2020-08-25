@@ -20,26 +20,13 @@ using System;
 
 public class EnableRequesterPaysSample
 {
-    /// <summary>
-    /// Enables a bucket's requester pays.
-    /// </summary>
-    /// <param name="projectId">Project Id. If set, this is the ID of the project which will be billed for the request.
-    /// The caller must have suitable permissions for the project being billed.</param>
-    /// <param name="bucketName">The name of the bucket.</param>
-    public Bucket EnableRequesterPays(
-        string projectId = "your-project-id",
-        string bucketName = "your-unique-bucket-name")
+    public Bucket EnableRequesterPays(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName, new GetBucketOptions { UserProject = projectId });
+        var bucket = storage.GetBucket(bucketName);
         bucket.Billing = bucket.Billing ?? new Bucket.BillingData();
         bucket.Billing.RequesterPays = true;
-        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            // Use IfMetagenerationMatch to avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration,
-            UserProject = projectId
-        });
+        bucket = storage.UpdateBucket(bucket);
         Console.WriteLine($"Requester pays requests have been enabled for bucket {bucketName}.");
         return bucket;
     }

@@ -22,14 +22,15 @@ using System.Collections.Generic;
 public class AddBucketConditionalIamBindingSample
 {
     /// <summary>
-    /// Adds a conditional Iam policy information about a bucket.
+    /// Adds a conditional Iam policy to a bucket.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="role">The role to which members belong.</param>
-    /// <param name="member">A collection of identifiers for members who may assume the provided role.</param>
+    /// <param name="role">The role that members may assume.</param>
+    /// <param name="member">The identifier of the member who may assume the provided role.</param>
     /// <param name="title">Title for the expression.</param>
     /// <param name="description">Description of the expression.</param>
-    /// <param name="expression">Textual representation of an expression in Common Expression Language syntax.</param>
+    /// <param name="expression">Describes the conditions that need to be met for the policy to be applied.
+    /// It's represented as a string using Common Expression Language syntax.</param>
     public Policy AddBucketConditionalIamBinding(
         string bucketName = "your-unique-bucket-name",
         string role = "roles/storage.objectViewer",
@@ -39,13 +40,8 @@ public class AddBucketConditionalIamBindingSample
         string expression = "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")")
     {
         var storage = StorageClient.Create();
-        var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions
-        {
-            RequestedPolicyVersion = 3
-        });
-
+        var policy = storage.GetBucketIamPolicy(bucketName);
         policy.Version = 3;
-
         Policy.BindingsData bindingToAdd = new Policy.BindingsData
         {
             Role = role,

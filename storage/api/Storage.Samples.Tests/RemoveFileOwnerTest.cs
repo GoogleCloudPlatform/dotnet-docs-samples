@@ -24,6 +24,6 @@ public class RemoveFileOwnerTest
         removeFileOwnerSample.RemoveFileOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, _bucketFixture.ServiceAccountEmail);
 
         var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName);
-        Assert.Null(metadata.Acl);
+        Assert.DoesNotContain(metadata.Acl, acl => acl.Email == _bucketFixture.ServiceAccountEmail && acl.Role == "OWNER");
     }
 }

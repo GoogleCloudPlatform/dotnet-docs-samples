@@ -20,12 +20,6 @@ using System.Linq;
 
 public class RemoveBucketIamMemberSample
 {
-    /// <summary>
-    /// Removes the IAM policy information about a bucket.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="role">The role to which members belong.</param>
-    /// <param name="member">A collection of identifiers for members who may assume the provided role.</param>
     public void RemoveBucketIamMember(
         string bucketName = "your-unique-bucket-name",
         string role = "roles/storage.objectViewer",

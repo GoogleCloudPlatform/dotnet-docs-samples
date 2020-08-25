@@ -20,12 +20,6 @@ using System.Linq;
 
 public class RemoveFileOwnerSample
 {
-    /// <summary>
-    /// Removes a file's owner.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
-    /// <param name="userEmail">The user email.</param>
     public void RemoveFileOwner(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name",
@@ -36,11 +30,7 @@ public class RemoveFileOwnerSample
         if (null == storageObject.Acl)
             return;
         storageObject.Acl = storageObject.Acl.Where((acl) => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
-        var updatedObject = storage.UpdateObject(storageObject, new UpdateObjectOptions
-        {
-            // Avoid race conditions.
-            IfMetagenerationMatch = storageObject.Metageneration,
-        });
+        var updatedObject = storage.UpdateObject(storageObject);
         Console.WriteLine($"Removed user {userEmail} from file {objectName}.");
     }
 }

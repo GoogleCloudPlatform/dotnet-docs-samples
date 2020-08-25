@@ -20,11 +20,6 @@ using System;
 
 public class AddBucketDefaultOwnerSample
 {
-    /// <summary>
-    /// Adds a bucket default owner.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="userEmail">The user Email that holding the owner permission.</param>
     public Bucket AddBucketDefaultOwner(
         string bucketName = "your-unique-bucket-name",
         string userEmail = "dev@iam.gserviceaccount.com")
@@ -38,12 +33,8 @@ public class AddBucketDefaultOwnerSample
             Entity = $"user-{userEmail}",
             Role = "OWNER",
         });
-        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            // Avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration,
-        });
-        Console.WriteLine($"Added user { userEmail} as an owner on bucket { bucketName}.");
+        var updatedBucket = storage.UpdateBucket(bucket);
+        Console.WriteLine($"Added user { userEmail} as a default owner on bucket { bucketName}.");
         return updatedBucket;
     }
 }

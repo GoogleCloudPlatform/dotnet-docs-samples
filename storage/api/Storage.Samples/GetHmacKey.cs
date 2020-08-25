@@ -18,13 +18,8 @@ using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
-public class HmacKeyGetSample
+public class GetHmacKeySample
 {
-    /// <summary>
-    /// Fetches metadata for the specified HMAC key.
-    /// </summary>
-    /// <param name="projectId">The project containing the HMAC key.</param>
-    /// <param name="accessId">The ID of the HMAC key.</param>
     public HmacKeyMetadata GetHmacKey(
         string projectId = "your-project-id",
         string accessId = "your-access-id")

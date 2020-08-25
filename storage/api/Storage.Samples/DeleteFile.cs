@@ -19,11 +19,6 @@ using System;
 
 public class DeleteFileSample
 {
-    /// <summary>
-    /// Deletes a version of the specified object.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket containing the object.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public void DeleteFile(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name")

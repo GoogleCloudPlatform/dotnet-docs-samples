@@ -21,17 +21,12 @@ using System.Net.Http;
 
 public class GenerateV4UploadSignedUrlSample
 {
-    /// <summary>
-    /// Generates V4 upload signed Url.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public string GenerateV4UploadSignedUrl(
         string bucketName = "your-unique-bucket-name",
-        string objectName = "your-object-name")
+        string objectName = "your-object-name",
+        string credentialFilePath = "my-local-path/my-credential-file-name")
     {
-        var credential = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
-        UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(credential);
+        UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(credentialFilePath);
 
         var contentHeaders = new Dictionary<string, IEnumerable<string>>
         {

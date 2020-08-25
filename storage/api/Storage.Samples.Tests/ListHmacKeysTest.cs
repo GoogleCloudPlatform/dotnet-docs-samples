@@ -30,8 +30,8 @@ public class ListHmacKeysTest
     {
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
         ListHmacKeysSample listHmacKeysSample = new ListHmacKeysSample();
-        HmacKeyDeactivateSample hmacKeyDeactivateSample = new HmacKeyDeactivateSample();
-        HmacKeyDeleteSample hmacKeyDeleteSample = new HmacKeyDeleteSample();
+        DeactivateHmacKeySample hmacKeyDeactivateSample = new DeactivateHmacKeySample();
+        DeleteHmacKeySample hmacKeyDeleteSample = new DeleteHmacKeySample();
 
         // These need to all run as one test so that we can use the created key in every test.
         _bucketFixture.DeleteAllHmacKeys();

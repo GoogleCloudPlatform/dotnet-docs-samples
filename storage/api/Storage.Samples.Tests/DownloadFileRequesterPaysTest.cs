@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.IO;
 using Xunit;
 
@@ -29,14 +30,9 @@ public class DownloadFileRequesterPaysTest
     public void TestDownloadFileRequesterPays()
     {
         var downloadFileRequesterPaysSample = new DownloadFileRequesterPaysSample();
-        UploadFileRequesterPaysSample uploadFileRequesterPaysSample = new UploadFileRequesterPaysSample();
-
-        // upload file request pays
-        uploadFileRequesterPaysSample.UploadFileRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
-            _bucketFixture.Collect("HelloDownloadObjectRequesterPays.txt"));
 
         // download file request pays
-        downloadFileRequesterPaysSample.DownloadFileRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric, "HelloDownloadObjectRequesterPays.txt", "HelloDownloadObjectRequesterPays2.txt");
+        downloadFileRequesterPaysSample.DownloadFileRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric, _bucketFixture.FileName, "HelloDownloadObjectRequesterPays2.txt");
         Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("HelloDownloadObjectRequesterPays2.txt"));
         File.Delete("HelloDownloadObjectRequesterPays2.txt");
     }

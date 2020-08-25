@@ -21,11 +21,6 @@ using System;
 
 public class CreateBucketSample
 {
-    /// <summary>
-    /// Creates a storage bucket.
-    /// </summary>
-    /// <param name="projectId">The ID of the project to create the buckets in.</param>
-    /// <param name="bucketName">The name of the bucket to create.</param>
     public Bucket CreateBucket(
         string projectId = "your-project-id",
         string bucketName = "your-unique-bucket-name")

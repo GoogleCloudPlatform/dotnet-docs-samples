@@ -19,10 +19,6 @@ using System;
 
 public class DeleteBucketSample
 {
-    /// <summary>
-    /// Deletes a bucket.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket to delete.</param>
     public void DeleteBucket(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();

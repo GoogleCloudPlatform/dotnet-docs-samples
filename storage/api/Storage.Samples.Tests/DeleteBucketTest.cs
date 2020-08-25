@@ -36,6 +36,8 @@ public class DeleteBucketTest
         createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
         _bucketFixture.SleepAfterBucketCreateDelete();
         deleteBucketSample.DeleteBucket(bucketName);
-        Assert.Throws<GoogleApiException>(() => getBucketMetadataSample.GetBucketMetadata(bucketName));
+        _bucketFixture.SleepAfterBucketCreateDelete();
+        var exception = Assert.Throws<GoogleApiException>(() => getBucketMetadataSample.GetBucketMetadata(bucketName));
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, exception.HttpStatusCode);
     }
 }

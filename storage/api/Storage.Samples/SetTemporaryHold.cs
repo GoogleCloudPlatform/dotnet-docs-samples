@@ -18,11 +18,6 @@ using Google.Cloud.Storage.V1;
 
 public class SetTemporaryHoldSample
 {
-    /// <summary>
-    /// Sets an object's temporary hold.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public void SetTemporaryHold(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name")
@@ -30,11 +25,7 @@ public class SetTemporaryHoldSample
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);
         storageObject.TemporaryHold = true;
-        storage.UpdateObject(storageObject, new UpdateObjectOptions
-        {
-            // Use IfMetagenerationMatch to avoid race conditions.
-            IfMetagenerationMatch = storageObject.Metageneration,
-        });
+        storage.UpdateObject(storageObject);
         System.Console.WriteLine($"Temporary hold was set for {objectName}.");
     }
 }

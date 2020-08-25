@@ -20,14 +20,6 @@ using System;
 
 public class EnableDefaultKMSKeySample
 {
-    /// <summary>
-    /// Enables a bucket's default KMS key.
-    /// </summary>
-    /// <param name="projectId">The Project Id.</param>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="keyLocation">Key Location.</param>
-    /// <param name="kmsKeyRing">KMS key Ring.</param>
-    /// <param name="kmsKeyName">KMS key Name</param>
     public Bucket EnableDefaultKMSKey(
         string projectId = "your-project-id",
         string bucketName = "your-unique-bucket-name",
@@ -35,17 +27,14 @@ public class EnableDefaultKMSKeySample
         string kmsKeyRing = "kms-key-ring",
         string kmsKeyName = "key-name")
     {
+        // KMS Key identifier of an already created KMS key.
         string keyPrefix = $"projects/{projectId}/locations/{keyLocation}";
         string fullKeyringName = $"{keyPrefix}/keyRings/{kmsKeyRing}";
         string fullKeyName = $"{fullKeyringName}/cryptoKeys/{kmsKeyName}";
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
         bucket.Encryption = new Bucket.EncryptionData { DefaultKmsKeyName = fullKeyName };
-        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            // Avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration,
-        });
+        var updatedBucket = storage.UpdateBucket(bucket);
         Console.WriteLine($"Default KMS key for {bucketName} was set to {kmsKeyName}.");
         return updatedBucket;
     }

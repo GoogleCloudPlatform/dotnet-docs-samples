@@ -19,11 +19,6 @@ using System;
 
 public class ReleaseEventBasedHoldSample
 {
-    /// <summary>
-    /// Releases an object's event based hold.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public void ReleaseEventBasedHold(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name")
@@ -31,11 +26,7 @@ public class ReleaseEventBasedHoldSample
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);
         storageObject.EventBasedHold = false;
-        storageObject = storage.UpdateObject(storageObject, new UpdateObjectOptions
-        {
-            // Use IfMetagenerationMatch to avoid race conditions.
-            IfMetagenerationMatch = storageObject.Metageneration,
-        });
+        storage.UpdateObject(storageObject);
         Console.WriteLine($"Event-based hold was released for {objectName}.");
     }
 }

@@ -29,8 +29,8 @@ public class CopyFileTest
     {
         CopyFileSample copyFileSample = new CopyFileSample();
         ListFilesSample listFilesSample = new ListFilesSample();
-        copyFileSample.CopyFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, _bucketFixture.BucketNameRegional,
-            _bucketFixture.CollectRegionalObject("CopyFile.txt"));
+        copyFileSample.CopyFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName,
+            _bucketFixture.BucketNameRegional, _bucketFixture.CollectRegionalObject("CopyFile.txt"));
         var files = listFilesSample.ListFiles(_bucketFixture.BucketNameRegional);
         Assert.Contains(files, c => c.Name == "CopyFile.txt");
     }

@@ -17,14 +17,10 @@
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
 
 public class AddBucketOwnerSample
 {
-    /// <summary>
-    /// Adds a bucket owner.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="userEmail">The user Email that holding the owner permission.</param>
     public Bucket AddBucketOwner(
         string bucketName = "your-unique-bucket-name",
         string userEmail = "dev@iam.gserviceaccount.com")
@@ -32,18 +28,16 @@ public class AddBucketOwnerSample
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
 
+        bucket.Acl = bucket.Acl ?? new List<BucketAccessControl>();
+
         bucket.Acl.Add(new BucketAccessControl
         {
             Bucket = bucketName,
             Entity = $"user-{userEmail}",
             Role = "OWNER",
         });
-        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            // Avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration,
-        });
-        Console.WriteLine($"Added user { userEmail} as an owner on bucket { bucketName}.");
+        var updatedBucket = storage.UpdateBucket(bucket);
+        Console.WriteLine($"Added user { userEmail } as an owner on bucket { bucketName }.");
         return updatedBucket;
     }
 }

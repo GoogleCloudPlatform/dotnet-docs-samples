@@ -20,11 +20,6 @@ using System.Linq;
 
 public class RemoveBucketOwnerSample
 {
-    /// <summary>
-    /// Removes a bucket's owner.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="userEmail">The user email.</param>
     public void RemoveBucketOwner(
         string bucketName = "your-unique-bucket-name",
         string userEmail = "dev@iam.gserviceaccount.com")
@@ -34,11 +29,7 @@ public class RemoveBucketOwnerSample
         if (null == bucket.Acl)
             return;
         bucket.Acl = bucket.Acl.Where((acl) => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
-        var updatedBucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            // Avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration,
-        });
+        var updatedBucket = storage.UpdateBucket(bucket);
         Console.WriteLine($"Removed user {userEmail} from bucket {bucketName}.");
     }
 }

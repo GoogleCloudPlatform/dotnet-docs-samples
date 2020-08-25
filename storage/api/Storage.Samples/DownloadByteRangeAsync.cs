@@ -19,40 +19,33 @@ using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
-public class DownloadByteRangeSample
+public class DownloadByteRangeAsyncSample
 {
-    /// <summary>
-    /// Downloads a byte range to local path.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object.</param>
-    /// <param name="firstByte">The first byte of the object content.</param>
-    /// <param name="lastByte">The last byte of the object content.</param>
-    /// <param name="localPath">Local Path where file will be downloaded.</param>
-    public void DownloadByteRange(
+    public async Task DownloadByteRangeAsync(
         string bucketName = "your-unique-bucket-name",
         string objectName = "my-file-name",
         long firstByte = 0,
         long lastByte = 20,
-        string localPath = null)
+        string localPath = "my-local-path/my-file-name")
     {
         var storageClient = StorageClient.Create();
-        localPath = localPath ?? $"{Path.GetFileName(objectName)}_{firstByte}-{lastByte}";
 
         // Create an HTTP request for the media, for a limited byte range.
         StorageService storage = storageClient.Service;
         var uri = new Uri($"{storage.BaseUri}b/{bucketName}/o/{objectName}?alt=media");
 
         var request = new HttpRequestMessage { RequestUri = uri };
-        request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(firstByte, lastByte);
+        request.Headers.Range = new RangeHeaderValue(firstByte, lastByte);
 
         using (var outputFile = File.OpenWrite(localPath))
         {
             // Use the HttpClient in the storage object because it supplies
             // all the authentication headers we need.
-            var response = storage.HttpClient.SendAsync(request).Result;
-            response.Content.CopyToAsync(outputFile, null).Wait();
+            var response = await storage.HttpClient.SendAsync(request);
+            await response.Content.CopyToAsync(outputFile, null);
             Console.WriteLine($"Downloaded {objectName} to {localPath}.");
         }
     }

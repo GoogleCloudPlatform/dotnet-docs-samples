@@ -20,23 +20,13 @@ using System;
 
 public class DisableUniformBucketLevelAccessSample
 {
-    /// <summary>
-    /// Disables a bucket's uniform bucket level access.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
     public Bucket DisableUniformBucketLevelAccess(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
         bucket.IamConfiguration.UniformBucketLevelAccess.Enabled = false;
-        /** THIS IS A WORKAROUND */
         bucket.IamConfiguration.BucketPolicyOnly.Enabled = false;
-        /** THIS IS A WORKAROUND */
-        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            // Use IfMetagenerationMatch to avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration,
-        });
+        bucket = storage.UpdateBucket(bucket);
 
         Console.WriteLine($"Uniform bucket-level access was disabled for {bucketName}.");
         return bucket;

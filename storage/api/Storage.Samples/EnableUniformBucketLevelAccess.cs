@@ -20,20 +20,12 @@ using System;
 
 public class EnableUniformBucketLevelAccessSample
 {
-    /// <summary>
-    /// Enables an uniform bucket level access.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
     public Bucket EnableUniformBucketLevelAccess(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
         bucket.IamConfiguration.UniformBucketLevelAccess.Enabled = true;
-        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
-        {
-            // Use IfMetagenerationMatch to avoid race conditions.
-            IfMetagenerationMatch = bucket.Metageneration,
-        });
+        bucket = storage.UpdateBucket(bucket);
 
         Console.WriteLine($"Uniform bucket-level access was enabled for {bucketName}.");
         return bucket;

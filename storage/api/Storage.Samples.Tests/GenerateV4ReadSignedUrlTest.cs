@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Net.Http;
 using Xunit;
 
@@ -28,11 +29,9 @@ public class GenerateV4ReadSignedUrlTest
     [Fact]
     public async void GenerateV4ReadSignedUrl()
     {
-        var uploadFileSample = new UploadFileSample();
         GenerateV4SignedReadUrlSample generateV4SignedReadUrlSample = new GenerateV4SignedReadUrlSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
-            _bucketFixture.Collect("HelloV4SignUrl.txt"));
-        var signedUrl = generateV4SignedReadUrlSample.GenerateV4SignedReadUrl(_bucketFixture.BucketNameGeneric, "HelloV4SignUrl.txt");
+        var credentialFilePath = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
+        var signedUrl = generateV4SignedReadUrlSample.GenerateV4SignedReadUrl(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, credentialFilePath);
 
         using (var client = new HttpClient())
         {

@@ -40,6 +40,6 @@ public class RemoveBucketDefaultOwnerTest
         // Get bucket metadata.
         var metadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketNameGeneric);
 
-        Assert.Null(metadata.DefaultObjectAcl);
+        Assert.DoesNotContain(metadata.DefaultObjectAcl, acl => acl.Email == _bucketFixture.ServiceAccountEmail && acl.Role == "OWNER");
     }
 }

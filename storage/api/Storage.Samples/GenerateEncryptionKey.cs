@@ -19,9 +19,6 @@ using System;
 
 public class GenerateEncryptionKeySample
 {
-    /// <summary>
-    /// Generates a random encryption key using System.Security.Cryptography.RandomNumberGenerator.
-    /// </summary>
     public string GenerateEncryptionKey()
     {
         var encryptionKey = EncryptionKey.Generate().Base64Key;

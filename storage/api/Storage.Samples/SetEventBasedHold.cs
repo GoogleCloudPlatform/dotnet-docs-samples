@@ -19,11 +19,6 @@ using System;
 
 public class SetEventBasedHoldSample
 {
-    /// <summary>
-    /// Sets an object's event based hold.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the object within the bucket.</param>
     public void SetEventBasedHold(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name")
@@ -31,11 +26,7 @@ public class SetEventBasedHoldSample
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);
         storageObject.EventBasedHold = true;
-        storage.UpdateObject(storageObject, new UpdateObjectOptions
-        {
-            // Use IfMetagenerationMatch to avoid race conditions.
-            IfMetagenerationMatch = storageObject.Metageneration
-        });
+        storage.UpdateObject(storageObject);
         Console.WriteLine($"Event-based hold was set for {objectName}.");
     }
 }

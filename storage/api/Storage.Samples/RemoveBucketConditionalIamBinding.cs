@@ -21,14 +21,6 @@ using System.Linq;
 
 public class RemoveBucketConditionalIamBindingSample
 {
-    /// <summary>
-    /// Removes a bucket's conditional Iam binding.
-    /// </summary>
-    /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="role">The role to which members belong.</param>
-    /// <param name="title">Title for the expression.</param>
-    /// <param name="description">Description of the expression.</param>
-    /// <param name="expression">Textual representation of an expression in Common Expression Language syntax.</param>
     public Policy RemoveBucketConditionalIamBinding(
         string bucketName = "your-unique-bucket-name",
         string role = "roles/storage.objectViewer",

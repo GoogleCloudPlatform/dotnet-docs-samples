@@ -12,29 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_activate_hmac_key]
+// [START storage_deactivate_hmac_key]
 
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
-public class HmacKeyActivateSample
+public class DeactivateHmacKeySample
 {
-    /// <summary>
-    /// Activates an HMAC key's metadata.
-    /// </summary>
-    /// <param name="projectId">The project containing the HMAC key.</param>
-    /// <param name="accessId">The ID of the HMAC Key.</param>
-    public HmacKeyMetadata ActivateHmacKey(
+    public void DeactivateHmacKey(
         string projectId = "your-project-id",
-        string accessId = "access-id")
+        string accessId = "your-access-id")
     {
         var storage = StorageClient.Create();
         var metadata = storage.GetHmacKey(projectId, accessId);
-        metadata.State = HmacKeyStates.Active;
+        metadata.State = HmacKeyStates.Inactive;
         var updatedMetadata = storage.UpdateHmacKey(metadata);
 
-        Console.WriteLine("The HMAC key is now active.");
+        Console.WriteLine("The HMAC key is now inactive.");
         Console.WriteLine("The HMAC key metadata is:");
         Console.WriteLine($"ID: {updatedMetadata.Id}");
         Console.WriteLine($"Access ID: {updatedMetadata.AccessId}");
@@ -44,7 +38,6 @@ public class HmacKeyActivateSample
         Console.WriteLine($"Time Created: {updatedMetadata.TimeCreated}");
         Console.WriteLine($"Time Updated: {updatedMetadata.Updated}");
         Console.WriteLine($"ETag: {updatedMetadata.ETag}");
-        return updatedMetadata;
     }
 }
-// [END storage_activate_hmac_key]
+// [END storage_deactivate_hmac_key]
