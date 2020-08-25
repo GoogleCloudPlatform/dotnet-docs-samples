@@ -16,7 +16,7 @@
 namespace HelloPubSubFSharp
 
 open Google.Cloud.Functions.Framework
-open Google.Events.SystemTextJson.Cloud.PubSub.V1
+open Google.Events.Protobuf.Cloud.PubSub.V1
 open Microsoft.Extensions.Logging
 open System
 open System.Threading.Tasks

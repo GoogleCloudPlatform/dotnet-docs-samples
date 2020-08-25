@@ -15,7 +15,7 @@
 // [START functions_helloworld_storage]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
-using Google.Events.SystemTextJson.Cloud.Storage.V1;
+using Google.Events.Protobuf.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
