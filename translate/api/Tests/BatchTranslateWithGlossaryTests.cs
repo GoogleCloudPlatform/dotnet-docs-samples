@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
             _fixture = fixture;
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1160")]
         public void BatchTranslateTextWithGlossaryTest()
         {
             string outputUri =
