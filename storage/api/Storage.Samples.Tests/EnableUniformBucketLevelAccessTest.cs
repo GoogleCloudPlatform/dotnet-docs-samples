@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
@@ -27,15 +28,21 @@ public class EnableUniformBucketLevelAccessTest
     [Fact]
     public void TestEnableUniformBucketLevelAccess()
     {
+        CreateBucketSample createBucketSample = new CreateBucketSample();
         EnableUniformBucketLevelAccessSample enableUniformBucketLevelAccessSample = new EnableUniformBucketLevelAccessSample();
         DisableUniformBucketLevelAccessSample disableUniformBucketLevelAccessSample = new DisableUniformBucketLevelAccessSample();
 
+        var bucketName = Guid.NewGuid().ToString();
+        // Create bucket
+        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
+        _bucketFixture.SleepAfterBucketCreateDelete();
+        _bucketFixture.TempBucketNames.Add(bucketName);
         // Enable Uniform bucket level access.
-        var updatedBucket = enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
+        var updatedBucket = enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(bucketName);
 
         Assert.True(updatedBucket.IamConfiguration.UniformBucketLevelAccess.Enabled);
 
         // Disable Uniform bucket level access.
-        disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
+        disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(bucketName);
     }
 }

@@ -15,33 +15,28 @@
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class PrintBucketAclTest
+public class PrintBucketAclForUserTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public PrintBucketAclTest(BucketFixture bucketFixture)
+    public PrintBucketAclForUserTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void TestPrintBucketAcl()
+    public void TestPrintBucketAclForUser()
     {
-        PrintBucketAclSample printBucketAclSample = new PrintBucketAclSample();
+        PrintBucketAclForUserSample printBucketAclForUserSample = new PrintBucketAclForUserSample();
         AddBucketOwnerSample addBucketOwnerSample = new AddBucketOwnerSample();
         RemoveBucketOwnerSample removeBucketOwnerSample = new RemoveBucketOwnerSample();
         string userEmail = _bucketFixture.ServiceAccountEmail;
 
-        // print bucket acl
-        var bucketAcl = printBucketAclSample.PrintBucketAcl(_bucketFixture.BucketNameGeneric);
-        Assert.DoesNotContain(bucketAcl, c => c.Email == userEmail);
-
         // add bucket owner
         addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
 
-        // print bucket acl
-        bucketAcl = printBucketAclSample.PrintBucketAcl(_bucketFixture.BucketNameGeneric);
-        Assert.Contains(bucketAcl, c => c.Email == userEmail);
+        var bucketAclForUser = printBucketAclForUserSample.PrintBucketAclForUser(_bucketFixture.BucketNameGeneric, userEmail);
+        Assert.Contains(bucketAclForUser, c => c.Email == userEmail);
 
         // remove owner.
         removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);

@@ -15,33 +15,27 @@
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class RetentionPolicyTest
+public class SetRetentionPolicyTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public RetentionPolicyTest(BucketFixture bucketFixture)
+    public SetRetentionPolicyTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void RetentionPolicy()
+    public void TestSetRetentionPolicy()
     {
-        GetRetentionPolicySample getRetentionPolicySample = new GetRetentionPolicySample();
         SetRetentionPolicySample setRetentionPolicySample = new SetRetentionPolicySample();
         RemoveRetentionPolicySample removeRetentionPolicySample = new RemoveRetentionPolicySample();
         var retentionPeriod = 5;
 
         // Set retention policy.
-        setRetentionPolicySample.SetRetentionPolicy(_bucketFixture.BucketNameGeneric, retentionPeriod);
-
-        // Get retention policy.
-        var result = getRetentionPolicySample.GetRetentionPolicy(_bucketFixture.BucketNameGeneric);
-        Assert.Equal(result.RetentionPeriod, retentionPeriod);
+        var retentionPolicy = setRetentionPolicySample.SetRetentionPolicy(_bucketFixture.BucketNameGeneric, retentionPeriod);
+        Assert.Equal(retentionPolicy.RetentionPeriod, retentionPeriod);
 
         // Remove retention policy.
         removeRetentionPolicySample.RemoveRetentionPolicy(_bucketFixture.BucketNameGeneric);
-        result = getRetentionPolicySample.GetRetentionPolicy(_bucketFixture.BucketNameGeneric);
-        Assert.Null(result);
     }
 }

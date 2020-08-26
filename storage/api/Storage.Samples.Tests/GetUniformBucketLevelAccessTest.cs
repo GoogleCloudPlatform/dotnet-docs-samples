@@ -12,32 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class UniformBucketLevelAccessTest
+public class GetUniformBucketLevelAccessTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public UniformBucketLevelAccessTest(BucketFixture bucketFixture)
+    public GetUniformBucketLevelAccessTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void UniformBucketLevelAccess()
+    public void TestGetUniformBucketLevelAccess()
     {
+        CreateBucketSample createBucketSample = new CreateBucketSample();
         EnableUniformBucketLevelAccessSample enableUniformBucketLevelAccessSample = new EnableUniformBucketLevelAccessSample();
-        GetUniformBucketLevelAccessSample getUniformBucketLevelAccessSample = new GetUniformBucketLevelAccessSample();
         DisableUniformBucketLevelAccessSample disableUniformBucketLevelAccessSample = new DisableUniformBucketLevelAccessSample();
+        GetUniformBucketLevelAccessSample getUniformBucketLevelAccessSample = new GetUniformBucketLevelAccessSample();
 
-        var bucket = enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
-        Assert.True(bucket.IamConfiguration.UniformBucketLevelAccess.Enabled);
+        var bucketName = Guid.NewGuid().ToString();
+        // Create bucket
+        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
+        _bucketFixture.SleepAfterBucketCreateDelete();
+        _bucketFixture.TempBucketNames.Add(bucketName);
 
-        var uniformBucketLevelAccess = getUniformBucketLevelAccessSample.GetUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
+        // Enable Uniform bucket level access.
+        enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(bucketName);
+
+        var uniformBucketLevelAccess = getUniformBucketLevelAccessSample.GetUniformBucketLevelAccess(bucketName);
         Assert.True(uniformBucketLevelAccess.Enabled);
 
-        bucket = disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
-        Assert.False(bucket.IamConfiguration.UniformBucketLevelAccess.Enabled);
+        // Disable Uniform bucket level access.
+        disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(bucketName);
     }
 }

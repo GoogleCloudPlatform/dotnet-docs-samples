@@ -29,7 +29,6 @@ public class DisableRequesterPaysTest
     public void TestDisableRequesterPays()
     {
         CreateBucketSample createBucketSample = new CreateBucketSample();
-        GetRequesterPaysStatusSample getRequesterPaysStatusSample = new GetRequesterPaysStatusSample();
         EnableRequesterPaysSample enableRequesterPaysSample = new EnableRequesterPaysSample();
         DisableRequesterPaysSample disableRequesterPaysSample = new DisableRequesterPaysSample();
 
