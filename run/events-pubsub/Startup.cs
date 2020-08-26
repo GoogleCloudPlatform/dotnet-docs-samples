@@ -46,17 +46,11 @@ public class Startup
             endpoints.MapPost("/", async context =>
             {
                 var cloudEvent = await context.Request.ReadCloudEventAsync();
-                if (cloudEvent == null)
-                {
-                    context.Response.StatusCode = 400;
-                    await context.Response.WriteAsync("Bad request: No CloudEvent received");
-                    return;
-                }
                 logger.LogInformation("Received CloudEvent\n" + GetEventLog(cloudEvent));
 
                 var messagePublishedData = CloudEventConverters.ConvertCloudEventData<MessagePublishedData>(cloudEvent);
-                var pubSubMessage = messagePublishedData?.Message;
-                if (messagePublishedData == null || pubSubMessage == null)
+                var pubSubMessage = messagePublishedData.Message;
+                if (pubSubMessage == null)
                 {
                     context.Response.StatusCode = 400;
                     await context.Response.WriteAsync("Bad request: Invalid Pub/Sub message format");
