@@ -26,10 +26,9 @@ namespace GoogleCloudSamples
             Fixture = fixture;
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1159")]
         public void TestInspectStringMultipleRules_PatientRule()
         {
-            string testData = "patient: Jane Doe";
+            string testData = "name of patient: Jane Doe";
             var response = InspectStringMultipleRules.Inspect(Fixture.ProjectId, testData);
 
             Assert.Contains(response.Result.Findings, f => f.Likelihood == Likelihood.VeryLikely);
@@ -38,7 +37,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestInspectStringMultipleRules_DoctorRule()
         {
-            string testData = "doctor: Jane Doe";
+            string testData = "name of doctor: Jane Doe";
             var response = InspectStringMultipleRules.Inspect(Fixture.ProjectId, testData);
 
             Assert.False(response.Result.Findings.Any());
@@ -47,7 +46,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestInspectStringMultipleRules_QuasimodoRule()
         {
-            string testData = "patient: Quasimodo";
+            string testData = "name of patient: Quasimodo";
             var response = InspectStringMultipleRules.Inspect(Fixture.ProjectId, testData);
 
             Assert.False(response.Result.Findings.Any());
