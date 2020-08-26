@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
@@ -27,30 +28,37 @@ public class AddBucketConditionalIamBindingTest
     [Fact]
     public void TestAddBucketConditionalIamBinding()
     {
+        CreateBucketSample createBucketSample = new CreateBucketSample();
         AddBucketConditionalIamBindingSample addBucketConditionalIamBindingSample = new AddBucketConditionalIamBindingSample();
         RemoveBucketConditionalIamBindingSample removeBucketConditionalIamBindingSample = new RemoveBucketConditionalIamBindingSample();
         ViewBucketIamMembersSample viewBucketIamMembersSample = new ViewBucketIamMembersSample();
         EnableUniformBucketLevelAccessSample enableUniformBucketLevelAccessSample = new EnableUniformBucketLevelAccessSample();
         DisableUniformBucketLevelAccessSample disableUniformBucketLevelAccessSample = new DisableUniformBucketLevelAccessSample();
+        var bucketName = Guid.NewGuid().ToString();
         string memberType = "serviceAccount";
         string role = "roles/storage.objectViewer";
 
+        // Create bucket
+        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
+        _bucketFixture.SleepAfterBucketCreateDelete();
+        _bucketFixture.TempBucketNames.Add(bucketName);
+
         // Enable Uniform bucket level access.
-        enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
+        enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(bucketName);
 
         // Add Conditional Binding.
-        var policy = addBucketConditionalIamBindingSample.AddBucketConditionalIamBinding(_bucketFixture.BucketNameGeneric,
+        var policy = addBucketConditionalIamBindingSample.AddBucketConditionalIamBinding(bucketName,
            role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}", "title", "description",
            "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
 
         Assert.Contains(policy.Bindings, c => c.Members.Contains($"{memberType}:{_bucketFixture.ServiceAccountEmail}"));
 
         // Remove Conditional Binding.
-        removeBucketConditionalIamBindingSample.RemoveBucketConditionalIamBinding(_bucketFixture.BucketNameGeneric,
+        removeBucketConditionalIamBindingSample.RemoveBucketConditionalIamBinding(bucketName,
             role, "title", "description",
             "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
 
         // Disable Uniform bucket level access.
-        disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
+        disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(bucketName);
     }
 }

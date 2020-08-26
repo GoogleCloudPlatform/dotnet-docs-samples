@@ -12,33 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class GetRequesterPaysStatusTest
+public class DisableRequesterPaysTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public GetRequesterPaysStatusTest(BucketFixture bucketFixture)
+    public DisableRequesterPaysTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void TestGetRequesterPaysStatus()
+    public void TestDisableRequesterPays()
     {
+        CreateBucketSample createBucketSample = new CreateBucketSample();
         GetRequesterPaysStatusSample getRequesterPaysStatusSample = new GetRequesterPaysStatusSample();
         EnableRequesterPaysSample enableRequesterPaysSample = new EnableRequesterPaysSample();
         DisableRequesterPaysSample disableRequesterPaysSample = new DisableRequesterPaysSample();
 
-        // Enable request pay.
-        enableRequesterPaysSample.EnableRequesterPays(_bucketFixture.BucketNameGeneric);
+        var bucketName = Guid.NewGuid().ToString();
+        // Create bucket
+        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
+        _bucketFixture.SleepAfterBucketCreateDelete();
+        _bucketFixture.TempBucketNames.Add(bucketName);
 
-        // Get status.
-        var status = getRequesterPaysStatusSample.GetRequesterPaysStatus(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric);
-        Assert.True(status);
+        // Enable request pay.
+        enableRequesterPaysSample.EnableRequesterPays(bucketName);
 
         // Disable request pay.
-        disableRequesterPaysSample.DisableRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric);
+        var bucket = disableRequesterPaysSample.DisableRequesterPays(_bucketFixture.ProjectId, bucketName);
+        Assert.False(bucket.Billing?.RequesterPays);
     }
 }
