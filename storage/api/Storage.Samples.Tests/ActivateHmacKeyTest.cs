@@ -15,26 +15,23 @@
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class HmacKeyActivateTest
+public class ActivateHmacKeyTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public HmacKeyActivateTest(BucketFixture bucketFixture)
+    public ActivateHmacKeyTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void TestHmacKeyActivate()
+    public void TestActivateHmacKey()
     {
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
-        GetHmacKeySample hmacKeyGetSample = new GetHmacKeySample();
-        DeactivateHmacKeySample hmacKeyDeactivateSample = new DeactivateHmacKeySample();
-        ActivateHmacKeySample hmacKeyActivateSample = new ActivateHmacKeySample();
-        DeleteHmacKeySample hmacKeyDeleteSample = new DeleteHmacKeySample();
-
-        // These need to all run as one test so that we can use the created key in every test.
-        _bucketFixture.DeleteAllHmacKeys();
+        GetHmacKeySample getHmacKeySample = new GetHmacKeySample();
+        DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
+        ActivateHmacKeySample activateHmacKeySample = new ActivateHmacKeySample();
+        DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
 
         string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
 
@@ -42,17 +39,17 @@ public class HmacKeyActivateTest
         var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
 
         // Deactivate key.
-        hmacKeyDeactivateSample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
 
         // Activate key.
-        hmacKeyActivateSample.ActivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-        var keyMetadata = hmacKeyGetSample.GetHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        activateHmacKeySample.ActivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        var keyMetadata = getHmacKeySample.GetHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
         Assert.Equal("ACTIVE", keyMetadata.State);
 
         // Deactivate key.
-        hmacKeyDeactivateSample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
 
         // Delete key.
-        hmacKeyDeleteSample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        deleteHmacKeySample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
     }
 }

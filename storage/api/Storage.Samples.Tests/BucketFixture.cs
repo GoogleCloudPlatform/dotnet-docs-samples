@@ -139,19 +139,4 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
                 throw new InvalidOperationException($"Unable to retrieve service account email address for credential type {cred.GetType()}");
         }
     }
-
-    internal void DeleteAllHmacKeys()
-    {
-        var client = StorageClient.Create();
-        var key = client.ListHmacKeys(ProjectId);
-        foreach (var metadata in key)
-        {
-            if (metadata.State == "ACTIVE")
-            {
-                metadata.State = HmacKeyStates.Inactive;
-                client.UpdateHmacKey(metadata);
-            }
-            client.DeleteHmacKey(ProjectId, metadata.AccessId);
-        }
-    }
 }

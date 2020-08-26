@@ -15,25 +15,22 @@
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class HmacKeyDeleteTest
+public class DeleteHmacKeyTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public HmacKeyDeleteTest(BucketFixture bucketFixture)
+    public DeleteHmacKeyTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void TestHmacKeyDelete()
+    public void TestDeleteHmacKey()
     {
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
-        GetHmacKeySample hmacKeyGetSample = new GetHmacKeySample();
-        DeactivateHmacKeySample hmacKeyDeactivateSample = new DeactivateHmacKeySample();
-        DeleteHmacKeySample hmacKeyDeleteSample = new DeleteHmacKeySample();
-
-        // These need to all run as one test so that we can use the created key in every test.
-        _bucketFixture.DeleteAllHmacKeys();
+        GetHmacKeySample getHmacKeySample = new GetHmacKeySample();
+        DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
+        DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
 
         string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
 
@@ -41,13 +38,13 @@ public class HmacKeyDeleteTest
         var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
 
         // Deactivate key.
-        hmacKeyDeactivateSample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
 
         // Delete key.
-        hmacKeyDeleteSample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        deleteHmacKeySample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
 
         // Get key.
-        var keyMetadata = hmacKeyGetSample.GetHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        var keyMetadata = getHmacKeySample.GetHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
         Assert.Equal("DELETED", keyMetadata.State);
     }
 }

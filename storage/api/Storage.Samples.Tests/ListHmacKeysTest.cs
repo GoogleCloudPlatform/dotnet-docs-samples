@@ -30,11 +30,8 @@ public class ListHmacKeysTest
     {
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
         ListHmacKeysSample listHmacKeysSample = new ListHmacKeysSample();
-        DeactivateHmacKeySample hmacKeyDeactivateSample = new DeactivateHmacKeySample();
-        DeleteHmacKeySample hmacKeyDeleteSample = new DeleteHmacKeySample();
-
-        // These need to all run as one test so that we can use the created key in every test.
-        _bucketFixture.DeleteAllHmacKeys();
+        DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
+        DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
 
         string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
 
@@ -43,14 +40,12 @@ public class ListHmacKeysTest
 
         // List keys.
         var keys = listHmacKeysSample.ListHmacKeys(_bucketFixture.ProjectId).ToList();
-        Assert.Single(keys);
+        Assert.Contains(keys, key => key.AccessId == key.AccessId);
 
         // Deactivate key.
-        hmacKeyDeactivateSample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
 
         // Delete key.
-        hmacKeyDeleteSample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-        keys = listHmacKeysSample.ListHmacKeys(_bucketFixture.ProjectId).ToList();
-        Assert.Empty(keys);
+        deleteHmacKeySample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
     }
 }
