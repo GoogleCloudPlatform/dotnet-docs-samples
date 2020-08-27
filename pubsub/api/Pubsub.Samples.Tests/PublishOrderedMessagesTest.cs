@@ -39,7 +39,7 @@ public class PublishOrderedMessageTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        Dictionary<string, string> messages = new Dictionary<string, string> { {"Hello World!", "Key1"}, {"Good day.", "Key2"}, {"Bye bye.", "Key1"} };
+        Dictionary<string, string> messages = new Dictionary<string, string> { { "Key1", "Hello World!" }, { "Key2", "Good day." }, { "Key1", "Bye bye" } };
 
         var output = await _publishOrderedMessagesAsyncSample.PublishOrderedMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
         Assert.Equal(messages.Count, output);
