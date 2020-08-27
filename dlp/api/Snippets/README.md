@@ -1,4 +1,4 @@
-# .NET Cloud Translation API Samples
+# .NET Cloud DLP API Samples
 
 A collection of samples that demonstrate how to call the
 [Google Cloud DLP API](https://cloud.google.com/dlp/) from C#.

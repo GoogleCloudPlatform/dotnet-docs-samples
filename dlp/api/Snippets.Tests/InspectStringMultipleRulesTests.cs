@@ -26,6 +26,7 @@ namespace GoogleCloudSamples
             Fixture = fixture;
         }
 
+        [Fact]
         public void TestInspectStringMultipleRules_PatientRule()
         {
             string testData = "name of patient: Jane Doe";
