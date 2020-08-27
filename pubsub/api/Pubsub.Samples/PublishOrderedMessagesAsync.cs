@@ -21,10 +21,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 
 public class PublishOrderedMessagesAsyncSample
 {
-    public async Task<int> PublishOrderedMessagesAsync(string projectId, string topicId, IEnumerable<KeyValuePair<string, string>> messagesAndKeys)
+    public async Task<int> PublishOrderedMessagesAsync(string projectId, string topicId, IEnumerable<(string, string)> keysAndMessages)
     {
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
 
@@ -36,17 +37,17 @@ public class PublishOrderedMessagesAsyncSample
         PublisherClient publisher = await PublisherClient.CreateAsync(topicName, settings: customSettings);
 
         int publishedMessageCount = 0;
-        var publishTasks = messagesAndKeys.Select(async messageAndKey =>
+        var publishTasks = keysAndMessages.Select(async keyAndMessage =>
         {
             try
             {
-                string message = await publisher.PublishAsync(messageAndKey.Value, messageAndKey.Key);
+                string message = await publisher.PublishAsync(keyAndMessage.Item1, keyAndMessage.Item2);
                 Console.WriteLine($"Published message {message}");
                 Interlocked.Increment(ref publishedMessageCount);
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"An error occurred when publishing message {messageAndKey.Key}: {exception.Message}");
+                Console.WriteLine($"An error occurred when publishing message {keyAndMessage.Item2}: {exception.Message}");
             }
         });
         await Task.WhenAll(publishTasks);

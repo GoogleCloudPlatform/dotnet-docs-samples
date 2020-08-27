@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -33,19 +34,19 @@ public class ResumePublishTest
     public async void PublishMessage()
     {
         string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForMessageCreation{randomName}";
-        string subscriptionId = $"testSubscriptionForMessageCreation{randomName}";
+        string topicId = $"testTopicForResumePublish{randomName}";
+        string subscriptionId = $"testSubscriptionForResumePublish{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        Dictionary<string, string> messages = new Dictionary<string, string> { {"Hello World!", "Key1"}, {"Good day.", "Key2"}, {"Bye bye.", "Key1"} };
+        List<(string, string)> messages = new List<(string, string)> { ( "Key1", "Hello World!" ), ( "Key2", "Good day." ), ( "Key1", "Bye bye"  ) };
 
         var publishedMessages = await _ResumePublishSample.PublishOrderedMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
-        Assert.Equal(messages.Count, output);
+        Assert.Equal(messages.Count, publishedMessages);
 
         // Pull the Message to confirm it is valid
         var pulledMessages = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(result > 0);
+        Assert.True(pulledMessages > 0);
     }
 }
