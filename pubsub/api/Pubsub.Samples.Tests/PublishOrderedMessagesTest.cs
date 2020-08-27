@@ -33,8 +33,8 @@ public class PublishOrderedMessageTest
     public async void PublishMessage()
     {
         string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForMessageCreation{randomName}";
-        string subscriptionId = $"testSubscriptionForMessageCreation{randomName}";
+        string topicId = $"testTopicForPublishOrdered{randomName}";
+        string subscriptionId = $"testSubscriptionForPublishOrdered{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
