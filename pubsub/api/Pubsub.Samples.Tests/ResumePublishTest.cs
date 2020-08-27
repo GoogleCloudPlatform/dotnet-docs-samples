@@ -41,7 +41,7 @@ public class ResumePublishTest
 
         Dictionary<string, string> messages = new Dictionary<string, string> { {"Hello World!", "Key1"}, {"Good day.", "Key2"}, {"Bye bye.", "Key1"} };
 
-        var output = await _ResumePublishSample.PublishOrderedMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
+        var publishedMessages = await _ResumePublishSample.PublishOrderedMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
         Assert.Equal(messages.Count, output);
 
         // Pull the Message to confirm it is valid
