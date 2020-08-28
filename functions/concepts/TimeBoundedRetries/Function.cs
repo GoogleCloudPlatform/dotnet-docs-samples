@@ -15,7 +15,7 @@
 // [START functions_tips_infinite_retries]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
-using Google.Events.SystemTextJson.Cloud.PubSub.V1;
+using Google.Events.Protobuf.Cloud.PubSub.V1;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;

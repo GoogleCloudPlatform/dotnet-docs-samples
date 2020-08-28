@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Functions.Invoker.Testing;
+using Google.Events.Protobuf.Cloud.Audit.V1;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,8 +28,8 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task EmptyRequest()
         {
-            var client = Server.CreateClient();
-            var response = await client.GetAsync("uri");
+            using var client = Server.CreateClient();
+            using var response = await client.GetAsync("uri");
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("Hello world!", responseBody);
@@ -34,8 +38,8 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task NameInQuery()
         {
-            var client = Server.CreateClient();
-            var response = await client.GetAsync("uri?name=test");
+            using var client = Server.CreateClient();
+            using var response = await client.GetAsync("uri?name=test");
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("Hello test!", responseBody);
@@ -44,8 +48,8 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task JsonWithNameInBody()
         {
-            var client = Server.CreateClient();
-            var content = new StringContent("{\"name\":\"test\"}", Encoding.UTF8, "application/json");
+            using var client = Server.CreateClient();
+            using var content = new StringContent("{\"name\":\"test\"}", Encoding.UTF8, "application/json");
             var response = await client.PostAsync("uri", content);
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
@@ -55,8 +59,8 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task JsonWithoutNameInBody()
         {
-            var client = Server.CreateClient();
-            var content = new StringContent("{\"foo\":\"test\"}", Encoding.UTF8, "application/json");
+            using var client = Server.CreateClient();
+            using var content = new StringContent("{\"foo\":\"test\"}", Encoding.UTF8, "application/json");
             var response = await client.PostAsync("uri", content);
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
@@ -68,12 +72,15 @@ namespace HelloWorld.Tests
         {
             // If the JSON is invalid, we log an error but don't fail.
             // TODO: Check that the error is logged. (Maybe this is something we should do in the FunctionTestServer...)
-            var client = Server.CreateClient();
-            var content = new StringContent("{\"name\":\"test\",invalid}", Encoding.UTF8, "application/json");
+            using var client = Server.CreateClient();
+            using var content = new StringContent("{\"name\":\"test\",invalid}", Encoding.UTF8, "application/json");
             var response = await client.PostAsync("uri", content);
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("Hello world!", responseBody);
+            var error = Assert.Single(Server.GetFunctionLogEntries());
+            Assert.Equal("Error parsing JSON request", error.Message);
+            Assert.Equal(LogLevel.Error, error.Level);
         }
     }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Functions.Invoker.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,10 +23,7 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task EmptyRequest()
         {
-            var client = Server.CreateClient();
-            var response = await client.GetAsync("uri");
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
+            var responseBody = await ExecuteHttpGetRequestAsync("uri");
             Assert.Equal("Hello World!", responseBody);
         }
     }

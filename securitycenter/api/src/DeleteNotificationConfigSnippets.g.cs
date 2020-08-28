@@ -32,4 +32,4 @@ public class DeleteNotificationConfigSnippets
         return true;
     }
 }
-// [END] scc_delete_notification_config]
+// [END scc_delete_notification_config]

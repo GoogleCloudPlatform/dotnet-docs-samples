@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using CloudNative.CloudEvents;
+using Google.Cloud.Functions.Invoker.Testing;
+using Google.Events;
 using Google.Events.Protobuf.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,8 +31,11 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task CloudEventInput()
         {
+            var cloudEvent = new CloudEvent(StorageObjectData.FinalizedCloudEventType, new Uri("//storage.googleapis.com"));
             var data = new StorageObjectData { Name = "new-file.txt" };
-            await ExecuteFunctionAsync(StorageObjectData.FinalizedCloudEventType, data);
+            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
+
+            await ExecuteCloudEventRequestAsync(cloudEvent);
             var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal("File new-file.txt uploaded", logEntry.Message);
             Assert.Equal(LogLevel.Information, logEntry.Level);
@@ -36,8 +44,11 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task ObjectDeletedEvent()
         {
+            var cloudEvent = new CloudEvent(StorageObjectData.DeletedCloudEventType, new Uri("//storage.googleapis.com"));
             var data = new StorageObjectData { Name = "new-file.txt" };
-            await ExecuteFunctionAsync(StorageObjectData.DeletedCloudEventType, data);
+            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
+
+            await ExecuteCloudEventRequestAsync(cloudEvent);
             var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal($"Unsupported event type: {StorageObjectData.DeletedCloudEventType}", logEntry.Message);
             Assert.Equal(LogLevel.Warning, logEntry.Level);
@@ -46,9 +57,9 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task NotCloudEvent()
         {
-            var client = Server.CreateClient();
-            var response = await client.GetAsync("uri");
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            await ExecuteHttpRequestAsync(
+                new HttpRequestMessage(HttpMethod.Get, "uri"),
+                response => Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode));
 
             // Check that the cause of the failure is as expected. This is somewhat implementation-specific
             // (we're checking the logs for something that's not in this repo) but is easy to change if necessary,

@@ -49,7 +49,7 @@ namespace RedisCache
             redisEndpoint = new string[] { null, "", "your-redis-endpoint" }
                 .Contains(redisEndpoint) ?
                 "" : WorkAroundIssue463(redisEndpoint);
-            // [BEGIN redis_startup]
+            // [START redis_startup]
             services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = redisEndpoint;

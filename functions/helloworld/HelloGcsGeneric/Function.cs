@@ -15,7 +15,7 @@
 // [START functions_helloworld_storage_generic]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
-using Google.Events.SystemTextJson.Cloud.Storage.V1;
+using Google.Events.Protobuf.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,8 +36,8 @@ namespace HelloGcsGeneric
             _logger.LogInformation("Bucket: {bucket}", data.Bucket);
             _logger.LogInformation("File: {file}", data.Name);
             _logger.LogInformation("Metageneration: {metageneration}", data.Metageneration);
-            _logger.LogInformation("Created: {created:s}", data.TimeCreated);
-            _logger.LogInformation("Updated: {updated:s}", data.Updated);
+            _logger.LogInformation("Created: {created:s}", data.TimeCreated.ToDateTimeOffset());
+            _logger.LogInformation("Updated: {updated:s}", data.Updated.ToDateTimeOffset());
             return Task.CompletedTask;
         }
     }

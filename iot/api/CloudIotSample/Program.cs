@@ -1431,8 +1431,6 @@ namespace GoogleCloudSamples
         }
         //[END iot_clear_registry]
 
-        //[START iot_attach_device]
-
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
