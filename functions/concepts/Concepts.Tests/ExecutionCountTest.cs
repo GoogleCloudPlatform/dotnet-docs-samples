@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Functions.Invoker.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,8 +25,8 @@ namespace Concepts.Tests
         [Fact]
         public async Task TwoRequests()
         {
-            string request1 = await ExecuteHttpFunctionAsync();
-            string request2 = await ExecuteHttpFunctionAsync();
+            string request1 = await ExecuteHttpGetRequestAsync();
+            string request2 = await ExecuteHttpGetRequestAsync();
 
             Assert.Equal("Server execution count: 1", request1);
             Assert.Equal("Server execution count: 2", request2);

@@ -66,7 +66,7 @@ namespace GoogleCloudSamples
 
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1163")]
         public void TestQuickStart()
         {
             var role = "roles/logging.logWriter";

@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
-    <PackageReference Include="Google.Cloud.Functions.Invoker.Testing" Version="1.0.0-alpha08" />
-    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0-alpha03" />
+    <PackageReference Include="Google.Cloud.Functions.Invoker.Testing" Version="1.0.0-alpha09" />
+    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0-alpha04" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />

@@ -26,7 +26,7 @@ namespace GoogleCloudSamples
             Fixture = fixture;
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1159")]
         public void TestInspectStringMultipleRules_PatientRule()
         {
             string testData = "patient: Jane Doe";
