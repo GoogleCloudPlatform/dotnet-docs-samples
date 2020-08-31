@@ -26,6 +26,7 @@ public class GenerateV4SignedReadUrlSample
         string credentialFilePath = "my-local-path/my-credential-file-name")
     {
         UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(credentialFilePath);
+        // V4 is the default signing version.
         string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
         Console.WriteLine("Generated GET signed URL:");
         Console.WriteLine(url);
