@@ -14,7 +14,7 @@
 
 
 // [START bigtable_filters_print]
-
+// [START bigtable_filters_imports]
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using System;

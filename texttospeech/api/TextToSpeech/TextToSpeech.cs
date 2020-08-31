@@ -254,7 +254,7 @@ namespace GoogleCloudSamples
                 response.AudioContent.WriteTo(output);
             }
         }
-        // [START tts_synthesize_text_file]
+        // [END tts_synthesize_text_file]
 
         // [START tts_synthesize_ssml_file]
         /// <summary>
@@ -294,7 +294,7 @@ namespace GoogleCloudSamples
                 response.AudioContent.WriteTo(output);
             }
         }
-        // [START tts_synthesize_ssml_file]
+        // [END tts_synthesize_ssml_file]
 
         // [START tts_synthesize_text_audio_profile]
         /// <summary>

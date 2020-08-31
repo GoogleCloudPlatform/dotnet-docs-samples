@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using CloudNative.CloudEvents;
+using Google.Cloud.Functions.Invoker.Testing;
+using Google.Events;
 using Google.Events.Protobuf.Cloud.PubSub.V1;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,12 +28,14 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task MessageWithTextData()
         {
-            var message = new MessagePublishedData
+            var cloudEvent = new CloudEvent(MessagePublishedData.MessagePublishedCloudEventType, new Uri("//pubsub.googleapis.com"));
+            var data = new MessagePublishedData
             {
                  Message = new PubsubMessage { TextData = "PubSub user" }
             };
+            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
 
-            await ExecuteFunctionAsync(MessagePublishedData.MessagePublishedCloudEventType, message);
+            await ExecuteCloudEventRequestAsync(cloudEvent);
             var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal("Hello PubSub user", logEntry.Message);
             Assert.Equal(LogLevel.Information, logEntry.Level);
@@ -38,12 +44,14 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task MessageWithoutTextData()
         {
-            var message = new MessagePublishedData
+            var cloudEvent = new CloudEvent(MessagePublishedData.MessagePublishedCloudEventType, new Uri("//pubsub.googleapis.com"));
+            var data = new MessagePublishedData
             {
                 Message = new PubsubMessage { Attributes = { { "key", "value" } } }
             };
+            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
 
-            await ExecuteFunctionAsync(MessagePublishedData.MessagePublishedCloudEventType, message);
+            await ExecuteCloudEventRequestAsync(cloudEvent);
             var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal("Hello world", logEntry.Message);
             Assert.Equal(LogLevel.Information, logEntry.Level);

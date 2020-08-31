@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Functions.Invoker.Testing;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -27,7 +28,7 @@ namespace Concepts.Tests
         public async Task VariableSet()
         {
             Environment.SetEnvironmentVariable("FOO", "Test foo value");
-            var responseBody = await ExecuteHttpFunctionAsync();
+            var responseBody = await ExecuteHttpGetRequestAsync();
             Assert.Equal("Test foo value", responseBody);
         }
 
@@ -35,7 +36,7 @@ namespace Concepts.Tests
         public async Task VariableNotSet()
         {
             Environment.SetEnvironmentVariable("FOO", null);
-            var responseBody = await ExecuteHttpFunctionAsync();
+            var responseBody = await ExecuteHttpGetRequestAsync();
             Assert.Equal("Specified environment variable is not set.", responseBody);
         }
     }
