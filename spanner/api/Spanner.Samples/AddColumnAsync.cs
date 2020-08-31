@@ -26,11 +26,9 @@ public class AddColumnAsyncSample
             + $"/databases/{databaseId}";
         string alterStatement = "ALTER TABLE Albums ADD COLUMN MarketingBudget INT64";
 
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            var updateCmd = connection.CreateDdlCommand(alterStatement);
-            await updateCmd.ExecuteNonQueryAsync();
-        }
+        using var connection = new SpannerConnection(connectionString);
+        var updateCmd = connection.CreateDdlCommand(alterStatement);
+        await updateCmd.ExecuteNonQueryAsync();
         Console.WriteLine("Added the MarketingBudget column.");
     }
 }

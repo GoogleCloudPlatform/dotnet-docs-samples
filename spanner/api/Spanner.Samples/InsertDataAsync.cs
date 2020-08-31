@@ -40,61 +40,57 @@ public class InsertDataAsyncSample
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/" +
             $"databases/{databaseId}";
-        const int firstSingerId = 1;
-        const int secondSingerId = 2;
         List<Singer> singers = new List<Singer>
         {
-            new Singer { SingerId = firstSingerId, FirstName = "Marc", LastName = "Richards" },
-            new Singer { SingerId = secondSingerId, FirstName = "Catalina", LastName = "Smith" },
+            new Singer { SingerId = 1, FirstName = "Marc", LastName = "Richards" },
+            new Singer { SingerId = 2, FirstName = "Catalina", LastName = "Smith" },
             new Singer { SingerId = 3, FirstName = "Alice", LastName = "Trentor" },
             new Singer { SingerId = 4, FirstName = "Lea", LastName = "Martin" },
             new Singer { SingerId = 5, FirstName = "David", LastName = "Lomond" },
         };
         List<Album> albums = new List<Album>
         {
-            new Album { SingerId = firstSingerId, AlbumId = 1, AlbumTitle = "Total Junk" },
-            new Album { SingerId = firstSingerId, AlbumId = 2, AlbumTitle = "Go, Go, Go" },
-            new Album { SingerId = secondSingerId, AlbumId = 1, AlbumTitle = "Green" },
-            new Album { SingerId = secondSingerId, AlbumId = 2, AlbumTitle = "Forever Hold your Peace" },
-            new Album { SingerId = secondSingerId, AlbumId = 3, AlbumTitle = "Terrified" },
+            new Album { SingerId = 1, AlbumId = 1, AlbumTitle = "Total Junk" },
+            new Album { SingerId = 1, AlbumId = 2, AlbumTitle = "Go, Go, Go" },
+            new Album { SingerId = 2, AlbumId = 1, AlbumTitle = "Green" },
+            new Album { SingerId = 2, AlbumId = 2, AlbumTitle = "Forever Hold your Peace" },
+            new Album { SingerId = 2, AlbumId = 3, AlbumTitle = "Terrified" },
         };
         // Create connection to Cloud Spanner.
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            await connection.OpenAsync();
+        using var connection = new SpannerConnection(connectionString);
+        await connection.OpenAsync();
 
-            await Task.WhenAll(singers.Select(singer =>
+        await Task.WhenAll(singers.Select(singer =>
+        {
+            // Insert rows into the Singers table.
+            var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
             {
-                // Insert rows into the Singers table.
-                var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
-                {
                     { "SingerId", SpannerDbType.Int64 },
                     { "FirstName", SpannerDbType.String },
                     { "LastName", SpannerDbType.String }
-                });
+            });
 
-                cmd.Parameters["SingerId"].Value = singer.SingerId;
-                cmd.Parameters["FirstName"].Value = singer.FirstName;
-                cmd.Parameters["LastName"].Value = singer.LastName;
-                return cmd.ExecuteNonQueryAsync();
-            }));
+            cmd.Parameters["SingerId"].Value = singer.SingerId;
+            cmd.Parameters["FirstName"].Value = singer.FirstName;
+            cmd.Parameters["LastName"].Value = singer.LastName;
+            return cmd.ExecuteNonQueryAsync();
+        }));
 
-            await Task.WhenAll(albums.Select(album =>
+        await Task.WhenAll(albums.Select(album =>
+        {
+            // Insert rows into the Albums table.
+            var cmd = connection.CreateInsertCommand("Albums", new SpannerParameterCollection
             {
-                // Insert rows into the Albums table.
-                var cmd = connection.CreateInsertCommand("Albums", new SpannerParameterCollection
-                {
                     { "SingerId", SpannerDbType.Int64 },
                     { "AlbumId", SpannerDbType.Int64 },
                     { "AlbumTitle", SpannerDbType.String }
-                });
-                cmd.Parameters["SingerId"].Value = album.SingerId;
-                cmd.Parameters["AlbumId"].Value = album.AlbumId;
-                cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;
-                return cmd.ExecuteNonQueryAsync();
-            }));
-            Console.WriteLine("Inserted data.");
-        }
+            });
+            cmd.Parameters["SingerId"].Value = album.SingerId;
+            cmd.Parameters["AlbumId"].Value = album.AlbumId;
+            cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;
+            return cmd.ExecuteNonQueryAsync();
+        }));
+        Console.WriteLine("Data inserted.");
     }
 }
 // [END spanner_insert_data]

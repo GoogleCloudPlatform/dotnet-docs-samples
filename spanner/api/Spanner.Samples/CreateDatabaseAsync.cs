@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 public class CreateDatabaseAsyncSample
 {
-    public async Task CreateDatabaseAsyncAsync(string projectId, string instanceId, string databaseId)
+    public async Task CreateDatabaseAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
 
@@ -30,16 +30,16 @@ public class CreateDatabaseAsyncSample
             await cmd.ExecuteNonQueryAsync();
         }
         // Update connection string with Database ID for table creation.
-        connectionString = connectionString + $"/databases/{databaseId}";
+        connectionString += $"/databases/{databaseId}";
         using (var connection = new SpannerConnection(connectionString))
         {
             // Define create table statement for table #1.
             string createTableStatement =
-           @"CREATE TABLE Singers (
+            @"CREATE TABLE Singers (
                      SingerId INT64 NOT NULL,
-                     FirstName    STRING(1024),
+                     FirstName STRING(1024),
                      LastName STRING(1024),
-                     ComposerInfo   BYTES(MAX)
+                     ComposerInfo BYTES(MAX)
                  ) PRIMARY KEY (SingerId)";
 
             var cmd = connection.CreateDdlCommand(createTableStatement);
@@ -47,9 +47,9 @@ public class CreateDatabaseAsyncSample
             // Define create table statement for table #2.
             createTableStatement =
             @"CREATE TABLE Albums (
-                     SingerId     INT64 NOT NULL,
-                     AlbumId      INT64 NOT NULL,
-                     AlbumTitle   STRING(MAX)
+                     SingerId INT64 NOT NULL,
+                     AlbumId INT64 NOT NULL,
+                     AlbumTitle STRING(MAX)
                  ) PRIMARY KEY (SingerId, AlbumId),
                  INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
 

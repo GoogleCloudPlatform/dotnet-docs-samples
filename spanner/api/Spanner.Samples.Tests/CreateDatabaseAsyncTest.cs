@@ -31,7 +31,7 @@ public class CreateDatabaseAsyncTest
     {
         var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
         CreateDatabaseAsyncSample sample = new CreateDatabaseAsyncSample();
-        await sample.CreateDatabaseAsyncAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        await sample.CreateDatabaseAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
         var databases = _spannerFixture.GetDatabases();
         Assert.Contains(databases, d => d.DatabaseName.DatabaseId == databaseId);
     }

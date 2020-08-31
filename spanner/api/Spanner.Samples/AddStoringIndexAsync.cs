@@ -26,11 +26,9 @@ public class AddStoringIndexAsyncSample
             + $"/databases/{databaseId}";
         string createStatement = "CREATE INDEX AlbumsByAlbumTitle2 ON Albums(AlbumTitle) STORING (MarketingBudget)";
 
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            var createCmd = connection.CreateDdlCommand(createStatement);
-            await createCmd.ExecuteNonQueryAsync();
-        }
+        using var connection = new SpannerConnection(connectionString);
+        var createCmd = connection.CreateDdlCommand(createStatement);
+        await createCmd.ExecuteNonQueryAsync();
         Console.WriteLine("Added the AlbumsByAlbumTitle2 index.");
     }
 }

@@ -133,7 +133,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
         AddIndexAsyncSample addIndexAsyncSample = new AddIndexAsyncSample();
         AddStoringIndexAsyncSample addStoringIndexAsyncSample = new AddStoringIndexAsyncSample();
-        await createDatabaseAsyncSample.CreateDatabaseAsyncAsync(ProjectId, InstanceId, DatabaseId);
+        await createDatabaseAsyncSample.CreateDatabaseAsync(ProjectId, InstanceId, DatabaseId);
         await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, DatabaseId);
         await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, DatabaseId);
         await addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId);
@@ -150,7 +150,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
             InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
-            await createDatabaseAsyncSample.CreateDatabaseAsyncAsync(ProjectId, InstanceId, BackupDatabaseId);
+            await createDatabaseAsyncSample.CreateDatabaseAsync(ProjectId, InstanceId, BackupDatabaseId);
             await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, BackupDatabaseId);
         }
         catch (Exception e) when (e.ToString().Contains("Database already exists"))
@@ -184,13 +184,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     private async Task DeleteDatabaseAsync(string databaseId)
     {
         string adminConnectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}";
-        using (var connection = new SpannerConnection(adminConnectionString))
-        {
-            using (var cmd = connection.CreateDdlCommand($@"DROP DATABASE {databaseId}"))
-            {
-                await cmd.ExecuteNonQueryAsync();
-            }
-        }
+        using var connection = new SpannerConnection(adminConnectionString);
+        using var cmd = connection.CreateDdlCommand($@"DROP DATABASE {databaseId}");
+        await cmd.ExecuteNonQueryAsync();
     }
 
     public IEnumerable<Database> GetDatabases()
@@ -206,24 +202,22 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/" +
             $"databases/{DatabaseId}";
         // Create connection to Cloud Spanner.
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            await connection.OpenAsync();
+        using var connection = new SpannerConnection(connectionString);
+        await connection.OpenAsync();
 
-            for (int i = 1; i <= 2; ++i)
-            {
-                var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
+        for (int i = 1; i <= 2; ++i)
+        {
+            var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
                 {
                     {"SingerId", SpannerDbType.Int64},
                     {"AlbumId", SpannerDbType.Int64},
                     {"MarketingBudget", SpannerDbType.Int64},
                 });
 
-                cmd.Parameters["SingerId"].Value = i;
-                cmd.Parameters["AlbumId"].Value = i;
-                cmd.Parameters["MarketingBudget"].Value = i == 1 ? firstAlbumBudget : secondAlbumBudget;
-                await cmd.ExecuteNonQueryAsync();
-            }
+            cmd.Parameters["SingerId"].Value = i;
+            cmd.Parameters["AlbumId"].Value = i;
+            cmd.Parameters["MarketingBudget"].Value = i == 1 ? firstAlbumBudget : secondAlbumBudget;
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }

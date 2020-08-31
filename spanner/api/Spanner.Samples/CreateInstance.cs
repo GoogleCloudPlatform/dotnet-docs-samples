@@ -39,10 +39,10 @@ public class CreateInstanceSample
                 { "cloud_spanner_samples", "true" },
             }
         };
-        ProjectName parentAsProjectName = ProjectName.FromProject(projectId);
+        ProjectName projectName = ProjectName.FromProject(projectId);
 
         // Make the CreateInstance request.
-        Operation<Instance, CreateInstanceMetadata> response = instanceAdminClient.CreateInstance(parentAsProjectName, instanceId, instance);
+        Operation<Instance, CreateInstanceMetadata> response = instanceAdminClient.CreateInstance(projectName, instanceId, instance);
 
         Console.WriteLine("Waiting for the operation to finish.");
 

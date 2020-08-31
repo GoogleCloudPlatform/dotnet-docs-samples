@@ -33,10 +33,10 @@ public class CreateBackupSample
             DatabaseAsDatabaseName = DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId),
             ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp()
         };
-        InstanceName parentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId);
+        InstanceName instanceName = InstanceName.FromProjectInstance(projectId, instanceId);
 
         // Make the CreateBackup request.
-        Operation<Backup, CreateBackupMetadata> response = databaseAdminClient.CreateBackup(parentAsInstanceName, backup, backupId);
+        Operation<Backup, CreateBackupMetadata> response = databaseAdminClient.CreateBackup(instanceName, backup, backupId);
 
         Console.WriteLine("Waiting for the operation to finish.");
 

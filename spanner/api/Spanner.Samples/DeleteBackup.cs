@@ -25,9 +25,8 @@ public class DeleteBackupSample
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
         // Make the DeleteBackup request.
-        BackupName backupAsBackupName =
-            BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
-        databaseAdminClient.DeleteBackup(backupAsBackupName);
+        BackupName backupName = BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
+        databaseAdminClient.DeleteBackup(backupName);
 
         Console.WriteLine("Backup deleted successfully.");
     }

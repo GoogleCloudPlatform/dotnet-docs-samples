@@ -26,11 +26,9 @@ public class AddIndexAsyncSample
             + $"/databases/{databaseId}";
         string createStatement = "CREATE INDEX AlbumsByAlbumTitle ON Albums(AlbumTitle)";
 
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            var createCmd = connection.CreateDdlCommand(createStatement);
-            await createCmd.ExecuteNonQueryAsync();
-        }
+        using var connection = new SpannerConnection(connectionString);
+        var createCmd = connection.CreateDdlCommand(createStatement);
+        await createCmd.ExecuteNonQueryAsync();
         Console.WriteLine("Added the AlbumsByAlbumTitle index.");
     }
 }
