@@ -17,12 +17,12 @@ with a SQL Server database when running in Google App Engine Flexible Environmen
 1.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md)
     or newer.
 
-1.  Create a Cloud SQL for Postgres instance by following these 
-    [instructions](https://cloud.google.com/sql/docs/postgres/create-instance).
+1.  Create a Cloud SQL for SQL Server instance by following these 
+    [instructions](https://cloud.google.com/sql/docs/sqlserver/create-instance).
     Note the connection string, database user, and database password that you create.
 
 1.  Create a database for your application by following these 
-    [instructions](https://cloud.google.com/sql/docs/postgres/create-manage-databases).
+    [instructions](https://cloud.google.com/sql/docs/sqlserver/create-manage-databases).
     Note the database name. 
 
 1.  Replace `your-project-id` in [appsettings.json](appsettings.json) with your Google Cloud Project's project id.
@@ -31,7 +31,7 @@ with a SQL Server database when running in Google App Engine Flexible Environmen
 
 To run this application locally, download and install the `cloud_sql_proxy` by
 following the instructions
-[here](https://cloud.google.com/sql/docs/postgres/sql-proxy#install).
+[here](https://cloud.google.com/sql/docs/sqlserver/sql-proxy#install).
 
 Instructions are provided below for using the proxy with a TCP connection or a Unix Domain Socket.
 On Linux or Mac OS you can use either option, but on Windows the proxy currently requires a TCP connection.
