@@ -87,13 +87,18 @@ namespace CloudSql
 
         DbConnection NewSqlServerConnection()
         {
-            // [START cloud_sql_server_dotnet_ado_connection]
-            var connectionString = new SqlConnectionStringBuilder(
-                Configuration["CloudSql:ConnectionString"])
-            // ConnectionString set in appsetings.json formatted as:
-            // "User Id=sqlserver;Password=;Server=cloudsql;Database=votes;"
+            // [START cloud_sql_server_dotnet_ado_connection_tcp]
+            var connectionString = new SqlConnectionStringBuilder()
             {
-                // Connecting to a local proxy that does not support ssl.
+                // Remember - storing secrets in plaintext is potentially unsafe. Consider using
+                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
+                // secrets secret.
+                DataSource = Environment.GetEnvironmentVariable("DB_HOST"),
+                UserID = Environment.GetEnvironmentVariable("DB_USER"),
+                Password = Environment.GetEnvironmentVariable("DB_PASS"),
+                InitialCatalog = Environment.GetEnvironmentVariable("DB_NAME"),
+
+                // The Cloud SQL proxy provides encryption between the proxy and instance
                 Encrypt = false,
             };
             connectionString.Pooling = true;
@@ -118,7 +123,7 @@ namespace CloudSql
             // [END_EXCLUDE]
             DbConnection connection =
                 new SqlConnection(connectionString.ConnectionString);
-            // [END cloud_sql_server_dotnet_ado_connection]
+            // [END cloud_sql_server_dotnet_ado_connection_tcp]
             return connection;
         }
 
