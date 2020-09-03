@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatastoreTest", "..\TaskLis
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "testutil", "..\..\..\testutil\testutil.csproj", "{48E1FB15-BEB8-4847-BAAF-38891F507029}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Google.Cloud.Datastore.Admin.V1", "..\..\..\..\google-cloud-dotnet\apis\Google.Cloud.Datastore.Admin.V1\Google.Cloud.Datastore.Admin.V1\Google.Cloud.Datastore.Admin.V1.csproj", "{33FB768D-5943-4251-B150-C381B5BEDB74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,18 @@ Global
 		{48E1FB15-BEB8-4847-BAAF-38891F507029}.Release|x64.Build.0 = Release|Any CPU
 		{48E1FB15-BEB8-4847-BAAF-38891F507029}.Release|x86.ActiveCfg = Release|Any CPU
 		{48E1FB15-BEB8-4847-BAAF-38891F507029}.Release|x86.Build.0 = Release|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Debug|x64.Build.0 = Debug|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Debug|x86.Build.0 = Debug|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Release|x64.ActiveCfg = Release|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Release|x64.Build.0 = Release|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Release|x86.ActiveCfg = Release|Any CPU
+		{33FB768D-5943-4251-B150-C381B5BEDB74}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
