@@ -31,11 +31,9 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task CloudEventInput()
         {
-            var cloudEvent = new CloudEvent(StorageObjectData.FinalizedCloudEventType, new Uri("//storage.googleapis.com"));
             var data = new StorageObjectData { Name = "new-file.txt" };
-            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
+            await ExecuteCloudEventRequestAsync(StorageObjectData.FinalizedCloudEventType, data);
 
-            await ExecuteCloudEventRequestAsync(cloudEvent);
             var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal("File new-file.txt uploaded", logEntry.Message);
             Assert.Equal(LogLevel.Information, logEntry.Level);
@@ -44,11 +42,9 @@ namespace HelloWorld.Tests
         [Fact]
         public async Task ObjectDeletedEvent()
         {
-            var cloudEvent = new CloudEvent(StorageObjectData.DeletedCloudEventType, new Uri("//storage.googleapis.com"));
             var data = new StorageObjectData { Name = "new-file.txt" };
-            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
+            await ExecuteCloudEventRequestAsync(StorageObjectData.DeletedCloudEventType, data);
 
-            await ExecuteCloudEventRequestAsync(cloudEvent);
             var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal($"Unsupported event type: {StorageObjectData.DeletedCloudEventType}", logEntry.Message);
             Assert.Equal(LogLevel.Warning, logEntry.Level);
