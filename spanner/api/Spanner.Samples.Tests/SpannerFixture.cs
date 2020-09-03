@@ -209,9 +209,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
                 {
-                    {"SingerId", SpannerDbType.Int64},
-                    {"AlbumId", SpannerDbType.Int64},
-                    {"MarketingBudget", SpannerDbType.Int64},
+                    { "SingerId", SpannerDbType.Int64 },
+                    { "AlbumId", SpannerDbType.Int64 },
+                    { "MarketingBudget", SpannerDbType.Int64 },
                 });
 
             cmd.Parameters["SingerId"].Value = i;

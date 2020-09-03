@@ -29,6 +29,7 @@ public class CreateDatabaseAsyncSample
             var cmd = connection.CreateDdlCommand(createStatement);
             await cmd.ExecuteNonQueryAsync();
         }
+
         // Update connection string with Database ID for table creation.
         connectionString += $"/databases/{databaseId}";
         using (var connection = new SpannerConnection(connectionString))
