@@ -45,6 +45,7 @@ public class CreateDatabaseAsyncSample
 
             var cmd = connection.CreateDdlCommand(createTableStatement);
             await cmd.ExecuteNonQueryAsync();
+
             // Define create table statement for table #2.
             createTableStatement =
             @"CREATE TABLE Albums (
