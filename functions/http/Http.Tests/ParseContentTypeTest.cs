@@ -51,11 +51,12 @@ namespace Http.Tests
             var expectedStatusCode = expectedName is null ? HttpStatusCode.BadRequest : HttpStatusCode.OK;
             var expectedContent = expectedName is null ? "" : $"Hello {expectedName}!";
 
-            using var client = Server.CreateClient();
-            using var response = await client.SendAsync(request);
-            Assert.Equal(expectedStatusCode, response.StatusCode);
-            var actualContent = await response.Content.ReadAsStringAsync();
-            Assert.Equal(expectedContent, actualContent);
+            await ExecuteHttpRequestAsync(request, async response =>
+            {
+                Assert.Equal(expectedStatusCode, response.StatusCode);
+                var actualContent = await response.Content.ReadAsStringAsync();
+                Assert.Equal(expectedContent, actualContent);
+            });
         }
     }
 }
