@@ -108,6 +108,8 @@ namespace CloudSql
         DbConnection NewPostgreSqlTCPConnection()
         {
             // [START cloud_sql_postgres_dotnet_ado_connection_tcp]
+            // Equivalent connection string: 
+            // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
             var connectionString = new NpgsqlConnectionStringBuilder()
             {
                 // The Cloud SQL proxy provides encryption between the proxy and instance. 
@@ -135,6 +137,8 @@ namespace CloudSql
         DbConnection NewPostgreSqlUnixSocketConnection()
         {
             // [START cloud_sql_postgres_dotnet_ado_connection_socket]
+            // Equivalent connection string: 
+            // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>"
             String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
             String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
             var connectionString = new NpgsqlConnectionStringBuilder()

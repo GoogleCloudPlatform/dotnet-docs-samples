@@ -113,6 +113,8 @@ namespace CloudSql
         DbConnection NewMysqlTCPConnection()
         {
             // [START cloud_sql_mysql_dotnet_ado_connection_tcp]
+            // Equivalent connection string: 
+            // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
             var connectionString = new MySqlConnectionStringBuilder()
             {
                 // The Cloud SQL proxy provides encryption between the proxy and instance. 
@@ -140,6 +142,8 @@ namespace CloudSql
         DbConnection NewMysqlUnixSocketConnection()
         {
             // [START cloud_sql_mysql_dotnet_ado_connection_socket]
+            // Equivalent connection string: 
+            // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>;Protocol=unix"
             String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
             String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
             var connectionString = new MySqlConnectionStringBuilder()

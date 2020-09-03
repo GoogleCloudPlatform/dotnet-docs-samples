@@ -88,6 +88,8 @@ namespace CloudSql
         DbConnection NewSqlServerConnection()
         {
             // [START cloud_sql_server_dotnet_ado_connection_tcp]
+            // Equivalent connection string: 
+            // "User Id=<DB_USER>;Password=<DB_PASS>;Server=<DB_HOST>;Database=<DB_NAME>;"
             var connectionString = new SqlConnectionStringBuilder()
             {
                 // Remember - storing secrets in plaintext is potentially unsafe. Consider using
