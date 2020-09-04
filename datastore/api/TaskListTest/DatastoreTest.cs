@@ -18,7 +18,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Xunit;
-using System.Threading;
 
 namespace GoogleCloudSamples
 {
@@ -42,10 +41,12 @@ namespace GoogleCloudSamples
             // Eventually consistency can take a long time.
             MaxTryCount = 8
         };
+        private readonly string _bucketName;
 
         public DatastoreTest()
         {
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            _bucketName = Environment.GetEnvironmentVariable("CLOUD_STORAGE_BUCKET");
             _db = DatastoreDb.Create(_projectId, TestUtil.RandomName());
             _keyFactory = _db.CreateKeyFactory("Task");
             _sampleTask = new Entity()
@@ -1125,6 +1126,50 @@ namespace GoogleCloudSamples
             // Avoid test failure due to float rounding differences.
             task["created"] = new DateTime(2016, 8, 12, 9, 0, 0, DateTimeKind.Utc);
             AssertValidEntity(task);
+        }
+
+        [Fact]
+        public void TestExportEntities()
+        {
+            ExportEntitiesSample exportEntitiesSample = new ExportEntitiesSample();
+            var outputUrl = exportEntitiesSample.ExportEntities(_projectId, $"gs://{_bucketName}", "Task");
+            Assert.NotNull(outputUrl);
+        }
+
+        [Fact]
+        public void TestImportEntities()
+        {
+            ExportEntitiesSample exportEntitiesSample = new ExportEntitiesSample();
+            ImportEntitiesSample importEntitiesSample = new ImportEntitiesSample();
+            var outputUrl = exportEntitiesSample.ExportEntities(_projectId, $"gs://{_bucketName}", "Task");
+            var isCompleted = importEntitiesSample.ImportEntities(_projectId, outputUrl, "Task");
+            Assert.True(isCompleted);
+        }
+
+        // Currently, we don't have any API to create index.
+        // It Just verify that ListIndexes does not throw any Exception.
+        [Fact]
+        public void TestListIndexes()
+        {
+            ListIndexesSample listIndexesSample = new ListIndexesSample();
+            var exception = Record.Exception(() => listIndexesSample.ListIndexes(_projectId).ToList());
+            Assert.Null(exception);
+        }
+
+        // Currently, we don't have any API to create index.
+        // It Just verify that if any index is available than GetIndex does not throw any Exception.
+        [Fact]
+        public void TestGetIndex()
+        {
+            ListIndexesSample listIndexesSample = new ListIndexesSample();
+            GetIndexSample getIndexSample = new GetIndexSample();
+            var indexes = listIndexesSample.ListIndexes(_projectId).ToList();
+            if (indexes.Any())
+            {
+                var firstIndexId = indexes.FirstOrDefault().IndexId;
+                var exception = Record.Exception(() => getIndexSample.GetIndex(_projectId, firstIndexId));
+                Assert.Null(exception);
+            }
         }
     }
 }
