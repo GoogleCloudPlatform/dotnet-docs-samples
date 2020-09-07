@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -15,11 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cors\Cors.csproj" />
-    <ProjectReference Include="..\HttpFormData\HttpFormData.csproj" />
-    <ProjectReference Include="..\HttpRequestMethod\HttpRequestMethod.csproj" />
-    <ProjectReference Include="..\ParseContentType\ParseContentType.csproj" />
-    <ProjectReference Include="..\SendHttpRequest\SendHttpRequest.csproj" />
+    <ProjectReference Include="..\FirebaseAuth\FirebaseAuth.csproj" />
+    <ProjectReference Include="..\FirebaseFirestore\FirebaseFirestore.csproj" />
+    <ProjectReference Include="..\FirebaseRemoteConfig\FirebaseRemoteConfig.csproj" />
+    <ProjectReference Include="..\FirebaseRtdb\FirebaseRtdb.csproj" />
+    <ProjectReference Include="..\FirestoreReactive\FirestoreReactive.csproj" />
   </ItemGroup>
 
 </Project>
