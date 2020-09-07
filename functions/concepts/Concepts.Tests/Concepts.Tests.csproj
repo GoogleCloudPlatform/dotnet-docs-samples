@@ -19,6 +19,7 @@
     <ProjectReference Include="..\EnvironmentVariables\EnvironmentVariables.csproj" />
     <ProjectReference Include="..\ExecutionCount\ExecutionCount.csproj" />
     <ProjectReference Include="..\FileSystem\FileSystem.csproj" />
+    <ProjectReference Include="..\LazyFields\LazyFields.csproj" />
     <ProjectReference Include="..\Retry\Retry.csproj" />
     <ProjectReference Include="..\Scopes\Scopes.csproj" />
     <ProjectReference Include="..\TimeBoundedRetries\TimeBoundedRetries.csproj" />
