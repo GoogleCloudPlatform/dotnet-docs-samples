@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Functions.Invoker.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,7 +23,7 @@ namespace Concepts.Tests
         [Fact]
         public async Task ResponseText()
         {
-            var responseBody = await ExecuteHttpFunctionAsync();
+            var responseBody = await ExecuteHttpGetRequestAsync();
             Assert.Equal("Global: 362880; function: 45", responseBody);
         }
     }

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Functions.Invoker.Testing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,12 +40,8 @@ namespace Http.Tests
                 RequestUri = new Uri("uri", UriKind.Relative),
                 Content = content
             };
-
-            using (var client = Server.CreateClient())
-            {
-                var response = await client.SendAsync(request);
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            }
+            await ExecuteHttpRequestAsync(request,
+                response => Assert.Equal(HttpStatusCode.OK, response.StatusCode));
 
             var logEntries = GetFunctionLogEntries().ToList();
 
@@ -65,11 +61,8 @@ namespace Http.Tests
                 Content = new FormUrlEncodedContent(new[] { KeyValuePair.Create("foo", "bar") })
             };
 
-            using (var client = Server.CreateClient())
-            {
-                var response = await client.SendAsync(request);
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            }
+            await ExecuteHttpRequestAsync(request,
+                response => Assert.Equal(HttpStatusCode.OK, response.StatusCode));
 
             var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal(LogLevel.Information, logEntry.Level);
@@ -79,11 +72,8 @@ namespace Http.Tests
         [Fact]
         public async Task NonPostRequestRejected()
         {
-            using (var client = Server.CreateClient())
-            {
-                var response = await client.GetAsync("uri");
-                Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
-            }
+            await ExecuteHttpRequestAsync(new HttpRequestMessage(HttpMethod.Get, "uri"),
+                response => Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode));
         }
     }
 }

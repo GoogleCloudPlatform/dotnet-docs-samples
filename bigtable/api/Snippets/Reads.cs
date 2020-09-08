@@ -14,6 +14,7 @@
 
 
 // [START bigtable_reads_print]
+// [START bigtable_reads_imports]
 using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using System;

@@ -15,7 +15,7 @@
 // [START functions_helloworld_pubsub]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
-using Google.Events.SystemTextJson.Cloud.PubSub.V1;
+using Google.Events.Protobuf.Cloud.PubSub.V1;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;

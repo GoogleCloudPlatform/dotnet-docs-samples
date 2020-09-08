@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Functions.Invoker.Testing;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -25,28 +26,28 @@ namespace Http.Tests
         [Fact]
         public async Task GetRequest()
         {
-            using (var client = Server.CreateClient())
+            var request = new HttpRequestMessage(HttpMethod.Get, "uri");
+
+            await ExecuteHttpRequestAsync(request, async response =>
             {
-                var response = await client.GetAsync("uri");
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 Assert.Single(response.Headers.GetValues("Access-Control-Allow-Origin"), "*");
                 var actualContent = await response.Content.ReadAsStringAsync();
                 var expectedContent = "CORS headers set successfully!";
                 Assert.Equal(expectedContent, actualContent);
-            }
+            });
         }
 
         [Fact]
         public async Task OptionsRequest()
         {
-            using (var client = Server.CreateClient())
+            var request = new HttpRequestMessage
             {
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Options,
-                    RequestUri = new Uri("uri", UriKind.Relative)
-                };
-                var response = await client.SendAsync(request);
+                Method = HttpMethod.Options,
+                RequestUri = new Uri("uri", UriKind.Relative)
+            };
+            await ExecuteHttpRequestAsync(request, async response =>
+            {
                 Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
                 Assert.Single(response.Headers.GetValues("Access-Control-Allow-Origin"), "*");
                 Assert.Single(response.Headers.GetValues("Access-Control-Allow-Methods"), "GET");
@@ -55,7 +56,7 @@ namespace Http.Tests
 
                 var actualContent = await response.Content.ReadAsStringAsync();
                 Assert.Empty(actualContent);
-            }
+            });
         }
     }
 }
