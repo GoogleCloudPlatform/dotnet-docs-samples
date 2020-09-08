@@ -14,47 +14,20 @@
 
 using Google.Apis.Kgsearch.v1;
 using Google.Apis.Kgsearch.v1.Data;
-using Google.Apis.Services;
 using Google.Cloud.Functions.Framework;
-using Google.Cloud.Functions.Invoker;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using System;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-[assembly: FunctionsStartup(typeof(SlackKnowledgeGraphSearch.Startup))]
-
 namespace SlackKnowledgeGraphSearch
 {
-    // [START functions_slack_setup]
-    public class Startup : FunctionsStartup
-    {
-        private static readonly TimeSpan SlackTimestampTolerance = TimeSpan.FromMinutes(5);
-
-        public override void ConfigureServices(WebHostBuilderContext context, IServiceCollection services)
-        {
-            // These can come from an environment variable or a configuration file.
-            string kgApiKey = context.Configuration["KG_API_KEY"];
-            string slackSigningSecret = context.Configuration["SLACK_SECRET"];
-
-            services.AddSingleton(new KgsearchService(new BaseClientService.Initializer
-            {
-                ApiKey = kgApiKey
-            }));
-            services.AddSingleton(new SlackRequestVerifier(slackSigningSecret, SlackTimestampTolerance));
-            base.ConfigureServices(context, services);
-        }
-    }
-    // [END functions_slack_setup]
-
     public class Function : IHttpFunction
     {
+        // [START functions_slack_search]
         private readonly ILogger _logger;
         private readonly KgsearchService _kgService;
         private readonly SlackRequestVerifier _verifier;
@@ -62,7 +35,6 @@ namespace SlackKnowledgeGraphSearch
         public Function(ILogger<Function> logger, KgsearchService kgService, SlackRequestVerifier verifier) =>
             (_logger, _kgService, _verifier) = (logger, kgService, verifier);
 
-        // [START functions_slack_search]
         public async Task HandleAsync(HttpContext context)
         {
             var request = context.Request;
@@ -98,7 +70,7 @@ namespace SlackKnowledgeGraphSearch
                 return;
             }
 
-            var form = await request.ReadFormAsync().ConfigureAwait(false);
+            var form = await request.ReadFormAsync();
             if (!form.TryGetValue("text", out var query))
             {
                 _logger.LogWarning("Slack request form did not contain a text element");

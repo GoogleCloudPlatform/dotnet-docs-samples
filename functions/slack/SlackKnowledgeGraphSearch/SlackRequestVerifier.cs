@@ -11,6 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// [START functions_verify_webhook]
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Security.Cryptography;
@@ -18,7 +20,6 @@ using System.Text;
 
 namespace SlackKnowledgeGraphSearch
 {
-    // [START functions_verify_webhook]
     public class SlackRequestVerifier
     {
         private const string Version = "v0";
@@ -81,5 +82,5 @@ namespace SlackKnowledgeGraphSearch
             return builder.ToString();
         }
     }
-    // [END functions_verify_webhook]
 }
+// [END functions_verify_webhook]
