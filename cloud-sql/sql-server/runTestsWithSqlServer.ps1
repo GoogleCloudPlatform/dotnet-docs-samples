@@ -28,20 +28,21 @@ $proxy = Start-Job -ArgumentList (Get-Location) -ScriptBlock {
 	./cloud_sql_proxy.exe --instances=$env:TEST_CLOUDSQL2_SQLSERVER_INSTANCE=tcp:1433 `
 		--credential_file=$env:GOOGLE_APPLICATION_CREDENTIALS
 }
+$env:DB_HOST=$env:TEST_CLOUDSQL2_HOST
+$env:DB_USER=$env:TEST_CLOUDSQL2_SQLSERVER_USER
+$env:DB_PASS=$env:TEST_CLOUDSQL2_SQLSERVER_PASS
+$env:DB_NAME=$env:TEST_CLOUDSQL2_VOTES_NAME
 try {
 	dotnet restore
 	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
-	BackupAndEdit-TextFile "appsettings.json" `
-		@{'User Id=sqlserver;Password=;Server=cloudsql;Database=votes;' = $env:TEST_CLOUDSQL2_SQLSERVER_VOTES_CONNECTIONSTRING} `
-	{
-		dotnet build
-		Receive-Job $proxy -ErrorAction 'SilentlyContinue'
-		try {
-			Run-KestrelTest 5567 -CasperJs11
-		} finally {
-			Move-TestResults SqlServer
-		}
+	dotnet build
+	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
+	try {
+		Run-KestrelTest 5567 -CasperJs11
+	} finally {
+		Move-TestResults SqlServer
 	}
+
 } finally {
 	Stop-Job $proxy
 	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
