@@ -2,5 +2,14 @@
 runtime: aspnetcore
 env: flex
 
+# Remember - storing secrets in plaintext is potentially unsafe. Consider using
+# something like https://cloud.google.com/secret-manager/docs/overview to help keep
+# secrets secret.
+env_variables:
+    DB_USER: <your-username>
+    DB_PASS: <your-password>
+    DB_NAME: <your-database-name>
+    DB_HOST: cloudsql
+
 beta_settings:
-    cloud_sql_instances: "your-project-id:us-central1:instance-name=tcp:3306"
+    cloud_sql_instances: "<project-name>:<region>:<instance-name>=tcp:3306"
