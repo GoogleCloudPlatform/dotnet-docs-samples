@@ -51,6 +51,12 @@ public class GetMetadataSample
         bool temporaryHold = storageObject.TemporaryHold ?? false;
         Console.WriteLine("Temporary hold enabled? {0}", temporaryHold);
         Console.WriteLine($"RetentionExpirationTime\t{storageObject.RetentionExpirationTime}");
+        Console.WriteLine("Metadata: ");
+        foreach (var metadata in storageObject.Metadata)
+        {
+            Console.WriteLine($"{metadata.Key}:\t{metadata.Value}");
+        }
+        Console.WriteLine($"CustomTime:\t{storageObject.CustomTime}");
         return storageObject;
     }
 }
