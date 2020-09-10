@@ -135,7 +135,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         AddStoringIndexAsyncSample addStoringIndexAsyncSample = new AddStoringIndexAsyncSample();
         await createDatabaseAsyncSample.CreateDatabaseAsync(ProjectId, InstanceId, DatabaseId);
         await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, DatabaseId);
+        await InsertStructDataAsync();
         await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, DatabaseId);
+        await AddCommitTimestampAsync();
         await addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId);
         // Add storing Index on table.
         await addStoringIndexAsyncSample.AddStoringIndexAsync(ProjectId, InstanceId, DatabaseId);
@@ -201,7 +203,6 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     {
         string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/" +
             $"databases/{DatabaseId}";
-        // Create connection to Cloud Spanner.
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
@@ -219,5 +220,52 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             cmd.Parameters["MarketingBudget"].Value = i == 1 ? firstAlbumBudget : secondAlbumBudget;
             await cmd.ExecuteNonQueryAsync();
         }
+    }
+
+    private async Task InsertStructDataAsync()
+    {
+        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
+        List<Singer> singers = new List<Singer>
+        {
+            new Singer { SingerId = 6, FirstName = "Elena", LastName = "Campbell" },
+            new Singer { SingerId = 7, FirstName = "Gabriel", LastName = "Wright" },
+            new Singer { SingerId = 8, FirstName = "Benjamin", LastName = "Martinez" },
+            new Singer { SingerId = 9, FirstName = "Hannah", LastName = "Harris" },
+            new Singer { SingerId = 10, FirstName = "Anthony", LastName = "Hunter" },
+            new Singer { SingerId = 11, FirstName = "Earlean", LastName = "Holland" },
+};
+
+        using var connection = new SpannerConnection(connectionString);
+        await connection.OpenAsync();
+
+        var cmd = connection.CreateInsertCommand("Singers",
+              new SpannerParameterCollection
+              {
+                  { "SingerId", SpannerDbType.Int64 },
+                  { "FirstName", SpannerDbType.String },
+                  { "LastName", SpannerDbType.String }
+              });
+        var rows = await Task.WhenAll(singers.Select(singer =>
+        {
+            cmd.Parameters["SingerId"].Value = singer.SingerId;
+            cmd.Parameters["FirstName"].Value = singer.FirstName;
+            cmd.Parameters["LastName"].Value = singer.LastName;
+            return cmd.ExecuteNonQueryAsync();
+        }));
+    }
+    private async Task AddCommitTimestampAsync()
+    {
+        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
+        string alterStatement = "ALTER TABLE Albums ADD COLUMN LastUpdateTime TIMESTAMP OPTIONS (allow_commit_timestamp=true)";
+        using var connection = new SpannerConnection(connectionString);
+        var updateCmd = connection.CreateDdlCommand(alterStatement);
+        await updateCmd.ExecuteNonQueryAsync();
+    }
+
+    private class Singer
+    {
+        public int SingerId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }
