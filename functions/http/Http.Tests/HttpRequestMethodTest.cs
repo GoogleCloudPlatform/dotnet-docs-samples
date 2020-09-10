@@ -34,11 +34,12 @@ namespace Http.Tests
                 RequestUri = new Uri("uri", UriKind.Relative)
             };
 
-            using var client = Server.CreateClient();
-            using var response = await client.SendAsync(request);
-            Assert.Equal(expectedStatus, response.StatusCode);
-            var actualContent = await response.Content.ReadAsStringAsync();
-            Assert.Equal(expectedContent, actualContent);
+            await ExecuteHttpRequestAsync(request, async response =>
+            {
+                Assert.Equal(expectedStatus, response.StatusCode);
+                var actualContent = await response.Content.ReadAsStringAsync();
+                Assert.Equal(expectedContent, actualContent);
+            });
         }
     }
 }

@@ -3,103 +3,126 @@
 This sample application demonstrates how to store data in Google Cloud SQL
 with a SQL Server database when running in Google App Engine Flexible Environment.
 
-## Prerequisites
+# Prerequisites
 
-0.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
+1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
   
 1.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=sqladmin.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud SQL API.
 
-2.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
+1.  Install the [Google Cloud SDK](https://cloud.google.com/sdk/).  The Google Cloud SDK
     is required to deploy .NET applications to App Engine.
 
-3.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md)
+1.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md)
     or newer.
 
-4.  [Create a Google Cloud SQL "SQL Server" instance](
-    https://console.cloud.google.com/sql/choose-instance-engine).
+1.  Create a Cloud SQL for SQL Server instance by following these 
+    [instructions](https://cloud.google.com/sql/docs/sqlserver/create-instance).
+    Note the connection string, database user, and database password that you create.
 
-6.  Under the instance's "USERS" tab, create a new user. Note the "User name" and "Password".
+1.  Create a database for your application by following these 
+    [instructions](https://cloud.google.com/sql/docs/sqlserver/create-manage-databases).
+    Note the database name. 
 
-7.  Create a new database in your Google Cloud SQL instance.
-    
-    1.  List your database instances in [Cloud Cloud Console](
-        https://console.cloud.google.com/sql/instances/).
-    
-    2.  Click your Instance Id to see Instance details.
+1.  Replace `your-project-id` in [appsettings.json](appsettings.json) with your Google Cloud Project's project id.
 
-    3.  Click DATABASES.
+## Running locally
 
-    4.  Click **Create database**.
+To run this application locally, download and install the `cloud_sql_proxy` by
+following the instructions
+[here](https://cloud.google.com/sql/docs/sqlserver/sql-proxy#install).
 
-    2.  For **Database name**, enter `votes`.
+Instructions are provided below for using the proxy with a TCP connection or a Unix Domain Socket.
+On Linux or Mac OS you can use either option, but on Windows the proxy currently requires a TCP connection.
 
-    3.  Click **CREATE**.
+### Launch proxy with TCP
+
+To run the sample locally with a TCP connection, set environment variables and launch the proxy as shown below.
+
+#### Linux / Mac OS
+Use these terminal commands to initialize environment variables:
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service/account/key.json
+export DB_HOST='127.0.0.1'
+export DB_USER='<DB_USER_NAME>'
+export DB_PASS='<DB_PASSWORD>'
+export DB_NAME='<DB_NAME>'
+```
+
+Note: Saving credentials in environment variables is convenient, but not secure - consider a more secure solution such as [Cloud Secret Manager](https://cloud.google.com/secret-manager) to help keep secrets safe.
 
 
-8.  Edit [appsettings.json](appsettings.json).  Update the connection string
-    with the "User name" and "Password" you previously created on the Cloud SQL instance.
+Then use this command to launch the proxy in the background:
+```bash
+./cloud_sql_proxy -instances=<project-id>:<region>:<instance-name>=tcp:1433 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
+```
 
-## ![PowerShell](../.resources/powershell.png) Using PowerShell
+Finally, run the following commands:
+```bash
+dotnet restore
+dotnet run
+```
 
-### Run Locally
+#### Windows/PowerShell
+Use these PowerShell commands to initialize environment variables:
+```powershell
+$env:GOOGLE_APPLICATION_CREDENTIALS="<CREDENTIALS_JSON_FILE>"
+$env:DB_HOST="127.0.0.1"
+$env:DB_USER="<DB_USER_NAME>"
+$env:DB_PASS="<DB_PASSWORD>"
+$env:DB_NAME="<DB_NAME>"
+```
 
-1.  Download the Google Cloud SQL Proxy by following
-    the instructions in the
-	[Installing the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy#install)
-	section of the page for installing the Cloud SQL Proxy for MySQL, which are the same for SQL Server.
+Note: Saving credentials in environment variables is convenient, but not secure - consider a more secure solution such as [Cloud Secret Manager](https://cloud.google.com/secret-manager) to help keep secrets safe.
 
-2.  Run the Google Cloud SQL Proxy in Powershell using TCP (replace "myProject" and "myInstance" with the values for your project and instance):
 
-	```psm1
-    ./cloud_sql_proxy -instances=myProject:us-central1:myInstance=tcp:1433 sqlserver -u sqlserver --host 127.0.0.1
-	```
+Then use this command to launch the proxy in a separate PowerShell session:
+```powershell
+Start-Process -filepath "C:\<path to proxy exe>" -ArgumentList "-instances=<project-id>:<region>:<instance-name>=tcp:1433 -credential_file=<CREDENTIALS_JSON_FILE>"
+```
+Finally, run the following commands:
+```psm1
+PS > dotnet restore
+PS > dotnet run
+```
+#### Visual Studio 2017
 
-3.  Edit [appsettings.json](appsettings.json).  Replace `cloudsql` with `127.0.0.1` in the connection string.
+Download and run the [Google Cloud SQL Proxy](https://cloud.google.com/sql/docs/sqlserver/sql-proxy).
 
-4.  With the Cloud SQL Proxy running, open another Powershell window and run the sample app:
+Then, navigate to the project options menu. Select the default configuration, then set the following environment variables:
 
-    ```psm1
-    PS > dotnet restore
-    PS > dotnet run
-    ```
+```
+DB_HOST : '127.0.0.1' 
+DB_USER : '<DB_USER_NAME>' 
+DB_PASS : '<DB_PASSWORD>'
+DB_NAME : '<DB_NAME>'
+```
+
+Note: Saving credentials in environment variables is convenient, but not secure - consider a more secure solution such as [Cloud Secret Manager](https://cloud.google.com/secret-manager) to help keep secrets safe.
+
+
+Finally, run the application by clicking the arrow button in the main toolbar, or by pressing F5.
+
 
 ### Deploy to App Engine Flexible
 
 1.  Edit [app.yaml](app.yaml).  Replace `your-project-id:us-central1:instance-name`
-    with your instance connection name, and leave the tcp port number set to 
-    `1433` for a SQL Server instance.
+    with your instance connection name, and update the tcp port number to 
+    `1433` for a SQL Server instance. Update the values
+    for `DB_USER`, `DB_PASS`, and `DB_NAME`
 
-2.  Run in powershell:
+2.  Build and deploy the application:
 
+    #### Powershell
     ```psm1
     PS > dotnet restore
     PS > dotnet publish
     PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
     ```
-
-## ![Visual Studio](../.resources/visual-studio.png) Using Visual Studio 2017
-
-[Google Cloud Tools for Visual Studio](
-https://marketplace.visualstudio.com/items?itemName=GoogleCloudTools.GoogleCloudPlatformExtensionforVisualStudio)
-make it easy to deploy to App Engine.  Install them if you are running Visual Studio.
-
-### Run Locally
-
-1.  Download and run the [Google Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy).
-
-2.  Edit [appsettings.json](appsettings.json).  Replace `cloudsql` with `127.0.0.1` in the connection string.
-
-3.  Open **CloudSql.csproj**, and Press **F5**.
-
-### Deploy to App Engine Flexible
-
-0.  Edit [app.yaml](app.yaml).  Replace `your-project-id:us-central1:instance-name`
-    with your instance connection name.
-
-1.  In Solution Explorer, right-click the **CloudSql** project and choose **Publish CloudSql to Google Cloud**.
-
-2.  Click **App Engine Flex**.
-
-3.  Click **Publish**.
+        #### Bash
+    ```bash
+    dotnet restore
+    dotnet publish
+    gcloud beta app deploy ./bin/Debug/netcoreapp2.1/publish/app.yaml
+    ```
