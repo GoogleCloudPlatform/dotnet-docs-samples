@@ -9,7 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld.Tests", "HelloWo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloGcs", "HelloGcs\HelloGcs.csproj", "{48D84635-59D6-4C4C-9A4F-A3ACA7287F2A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloGcsGeneric", "HelloGcsGeneric\HelloGcsGeneric.csproj", "{259B45D0-BD76-4CC0-B4E6-4FAA1E1F4237}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloPubSub", "HelloPubSub\HelloPubSub.csproj", "{273F9215-252E-4744-BA14-89EAE97FC643}"
 EndProject

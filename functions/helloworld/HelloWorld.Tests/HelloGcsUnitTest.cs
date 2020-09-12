@@ -42,7 +42,7 @@ namespace HelloWorld.Tests
 
             // Check the log results
             var logEntry = Assert.Single(logger.ListLogEntries());
-            Assert.Equal("File new-file.txt uploaded", logEntry.Message);
+            Assert.Equal("File: new-file.txt", logEntry.Message);
             Assert.Equal(LogLevel.Information, logEntry.Level);
         }
     }

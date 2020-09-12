@@ -16,54 +16,53 @@ using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Invoker.Testing;
 using Google.Events;
 using Google.Events.Protobuf.Cloud.Storage.V1;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace HelloWorld.Tests
 {
-    public class HelloGcsTest : FunctionTestBase<HelloGcs.Function>
+    public class HelloGcsGenericTest : FunctionTestBase<HelloGcsGeneric.Function>
     {
         [Fact]
-        public async Task CloudEventInput()
+        public async Task CloudEventIsLogged()
         {
-            var data = new StorageObjectData { Name = "new-file.txt" };
-            await ExecuteCloudEventRequestAsync(StorageObjectData.FinalizedCloudEventType, data);
+            var client = Server.CreateClient();
 
-            var logEntry = Assert.Single(GetFunctionLogEntries());
-            Assert.Equal("File new-file.txt uploaded", logEntry.Message);
-            Assert.Equal(LogLevel.Information, logEntry.Level);
-        }
+            var created = DateTimeOffset.UtcNow.AddMinutes(-5);
+            var updated = created.AddMinutes(2);
+            var cloudEvent = new CloudEvent(StorageObjectData.DeletedCloudEventType, new Uri("//storage.googleapis.com"), "1234");
+            var data = new StorageObjectData
+            {
+                Name = "new-file.txt",
+                Bucket = "my-bucket",
+                Metageneration = 23,
+                TimeCreated = new DateTimeOffset(2020, 7, 9, 13, 0, 5, TimeSpan.Zero).ToTimestamp(),
+                Updated = new DateTimeOffset(2020, 7, 9, 13, 23, 25, TimeSpan.Zero).ToTimestamp()
+            };
+            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
 
-        [Fact]
-        public async Task ObjectDeletedEvent()
-        {
-            var data = new StorageObjectData { Name = "new-file.txt" };
-            await ExecuteCloudEventRequestAsync(StorageObjectData.DeletedCloudEventType, data);
+            await ExecuteCloudEventRequestAsync(cloudEvent);
 
-            var logEntry = Assert.Single(GetFunctionLogEntries());
-            Assert.Equal($"Unsupported event type: {StorageObjectData.DeletedCloudEventType}", logEntry.Message);
-            Assert.Equal(LogLevel.Warning, logEntry.Level);
-        }
+            var logs = GetFunctionLogEntries();
+            Assert.All(logs, entry => Assert.Equal(LogLevel.Information, entry.Level));
 
-        [Fact]
-        public async Task NotCloudEvent()
-        {
-            await ExecuteHttpRequestAsync(
-                new HttpRequestMessage(HttpMethod.Get, "uri"),
-                response => Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode));
+            var actualMessages = logs.Select(entry => entry.Message).ToArray();
+            var expectedMessages = new[]
+            {
+                "Event: 1234",
+                $"Event Type: {StorageObjectData.DeletedCloudEventType}",
+                "Bucket: my-bucket",
+                "File: new-file.txt",
+                "Metageneration: 23",
+                "Created: 2020-07-09T13:00:05",
+                "Updated: 2020-07-09T13:23:25",
+            };
 
-            // Check that the cause of the failure is as expected. This is somewhat implementation-specific
-            // (we're checking the logs for something that's not in this repo) but is easy to change if necessary,
-            // and is an additional level of comfort.
-            var errors = Server.GetLogEntries(typeof(Google.Cloud.Functions.Framework.CloudEventAdapter))
-                .Where(entry => entry.Level == LogLevel.Error);
-            var logEntry = Assert.Single(errors);
-            Assert.Equal("Unable to convert request to CloudEvent.", logEntry.Message);
+            Assert.Equal(expectedMessages, actualMessages);
         }
     }
 }
