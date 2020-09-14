@@ -95,10 +95,11 @@ namespace CloudSql
                 // Remember - storing secrets in plaintext is potentially unsafe. Consider using
                 // something like https://cloud.google.com/secret-manager/docs/overview to help keep
                 // secrets secret.
-                DataSource = Environment.GetEnvironmentVariable("DB_HOST"),
-                UserID = Environment.GetEnvironmentVariable("DB_USER"),
-                Password = Environment.GetEnvironmentVariable("DB_PASS"),
-                InitialCatalog = Environment.GetEnvironmentVariable("DB_NAME"),
+                DataSource = Environment.GetEnvironmentVariable("DB_HOST"),     // e.g. '127.0.0.1' 
+                                // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
+                UserID = Environment.GetEnvironmentVariable("DB_USER"),         // e.g. 'my-db-user'
+                Password = Environment.GetEnvironmentVariable("DB_PASS"),       // e.g. 'my-db-password'
+                InitialCatalog = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
 
                 // The Cloud SQL proxy provides encryption between the proxy and instance
                 Encrypt = false,

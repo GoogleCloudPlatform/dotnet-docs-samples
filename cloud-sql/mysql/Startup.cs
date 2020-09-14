@@ -123,10 +123,11 @@ namespace CloudSql
                 // Remember - storing secrets in plaintext is potentially unsafe. Consider using
                 // something like https://cloud.google.com/secret-manager/docs/overview to help keep
                 // secrets secret.
-                Server = Environment.GetEnvironmentVariable("DB_HOST"),
-                UserID = Environment.GetEnvironmentVariable("DB_USER"),
-                Password = Environment.GetEnvironmentVariable("DB_PASS"),
-                Database = Environment.GetEnvironmentVariable("DB_NAME"),
+                Server = Environment.GetEnvironmentVariable("DB_HOST"),   // e.g. '127.0.0.1'
+                                // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
+                UserID = Environment.GetEnvironmentVariable("DB_USER"),   // e.g. 'my-db-user'
+                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
+                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
             };
             connectionString.Pooling = true;
             // Specify additional properties here.
@@ -144,8 +145,8 @@ namespace CloudSql
             // [START cloud_sql_mysql_dotnet_ado_connection_socket]
             // Equivalent connection string: 
             // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>;Protocol=unix"
-            String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
-            String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
+            String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql"; 
+            String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME"); 
             var connectionString = new MySqlConnectionStringBuilder()
             {
                 // The Cloud SQL proxy provides encryption between the proxy and instance. 
@@ -153,10 +154,10 @@ namespace CloudSql
                 // Remember - storing secrets in plaintext is potentially unsafe. Consider using
                 // something like https://cloud.google.com/secret-manager/docs/overview to help keep
                 // secrets secret.
-                Server = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
-                UserID = Environment.GetEnvironmentVariable("DB_USER"),
-                Password = Environment.GetEnvironmentVariable("DB_PASS"),
-                Database = Environment.GetEnvironmentVariable("DB_NAME"),
+                Server = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName), 
+                UserID = Environment.GetEnvironmentVariable("DB_USER"),   // e.g. 'my-db-user
+                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
+                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
                 ConnectionProtocol = MySqlConnectionProtocol.UnixSocket
             };
             connectionString.Pooling = true;
