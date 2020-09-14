@@ -40,8 +40,8 @@ namespace HelloWorld.Tests
             var function = new HelloGcs.Function(logger);
             await function.HandleAsync(cloudEvent, data, CancellationToken.None);
 
-            // Check the log results
-            var logEntry = Assert.Single(logger.ListLogEntries());
+            // Check the log results - just the entry starting with "File:".
+            var logEntry = Assert.Single(logger.ListLogEntries(), entry => entry.Message.StartsWith("File:"));
             Assert.Equal("File: new-file.txt", logEntry.Message);
             Assert.Equal(LogLevel.Information, logEntry.Level);
         }

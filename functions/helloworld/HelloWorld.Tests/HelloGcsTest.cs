@@ -25,7 +25,7 @@ using Xunit;
 
 namespace HelloWorld.Tests
 {
-    public class HelloGcsGenericTest : FunctionTestBase<HelloGcsGeneric.Function>
+    public class HelloGcsTest : FunctionTestBase<HelloGcs.Function>
     {
         [Fact]
         public async Task CloudEventIsLogged()

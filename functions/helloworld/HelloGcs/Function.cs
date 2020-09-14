@@ -36,8 +36,8 @@ namespace HelloGcs
             _logger.LogInformation("Bucket: {bucket}", data.Bucket);
             _logger.LogInformation("File: {file}", data.Name);
             _logger.LogInformation("Metageneration: {metageneration}", data.Metageneration);
-            _logger.LogInformation("Created: {created:s}", data.TimeCreated.ToDateTimeOffset());
-            _logger.LogInformation("Updated: {updated:s}", data.Updated.ToDateTimeOffset());
+            _logger.LogInformation("Created: {created:s}", data.TimeCreated?.ToDateTimeOffset());
+            _logger.LogInformation("Updated: {updated:s}", data.Updated?.ToDateTimeOffset());
             return Task.CompletedTask;
         }
     }
