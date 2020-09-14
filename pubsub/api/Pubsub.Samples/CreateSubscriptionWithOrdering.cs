@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_create_ordered_subscription]
+// [START pubsub_enable_subscription_ordering]
 
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
@@ -44,4 +44,4 @@ public class CreateSubscriptionWithOrderingSample
         return subscription;
     }
 }
-// [END pubsub_create_ordered_subscription]
+// [END pubsub_enable_subscription_ordering]
