@@ -29,6 +29,9 @@ public class UploadFileWithKmsKeySample
         string localPath = "my-local-path/my-file-name",
         string objectName = "my-file-name")
     {
+        // KMS Key identifier of an already created KMS key.
+        // If you use the Google.Cloud.Kms.V1 library, you can construct these names using helper class CryptoKeyName.
+        // var fullKeyName = new CryptoKeyName(projectId, keyLocation, kmsKeyRing, kmsKeyName).ToString();
         string keyPrefix = $"projects/{projectId}/locations/{keyLocation}";
         string fullKeyringName = $"{keyPrefix}/keyRings/{kmsKeyRing}";
         string fullKeyName = $"{fullKeyringName}/cryptoKeys/{kmsKeyName}";
