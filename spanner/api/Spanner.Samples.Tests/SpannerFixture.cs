@@ -77,8 +77,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             .Where(c => c.DatabaseName.DatabaseId.StartsWith("my-db-") || c.DatabaseName.DatabaseId.StartsWith("my-restore-db-"));
         var databasesToDelete = new List<string>();
 
-        // Delete all the databases created before 72 hrs.
-        var timestamp = DateTimeOffset.UtcNow.AddHours(-72).ToUnixTimeMilliseconds();
+        // Delete all the databases created before 48 hrs.
+        var timestamp = DateTimeOffset.UtcNow.AddHours(-48).ToUnixTimeMilliseconds();
         foreach (var database in databases)
         {
             var databaseId = database.DatabaseName.DatabaseId.Replace("my-restore-db-", "").Replace("my-db-", "");
