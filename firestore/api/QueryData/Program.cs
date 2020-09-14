@@ -34,6 +34,7 @@ Where command is one of
     array-contains-any-query
     in-query
     in-query-array
+    collection-group-query
     chained-query
     composite-index-chained-query
     range-query
@@ -199,6 +200,41 @@ Where command is one of
             }
         }
 
+        private static async Task CollectionGroupQuery(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            CollectionReference citiesRef = db.Collection("cities");
+            // [START fs_collection_group_query_data_setup]
+            await citiesRef.Document("SF").Collection("landmarks").Document()
+                .CreateAsync(new { Name = "Golden Gate Bridge", Type = "bridge" });
+            await citiesRef.Document("SF").Collection("landmarks").Document()
+                .CreateAsync(new { Name = "Legion of Honor", Type = "museum" });
+            await citiesRef.Document("LA").Collection("landmarks").Document()
+                .CreateAsync(new { Name = "Griffith Park", Type = "park" });
+            await citiesRef.Document("DC").Collection("landmarks").Document()
+                .CreateAsync(new { Name = "Lincoln Memorial", Type = "memorial" });
+            await citiesRef.Document("DC").Collection("landmarks").Document()
+                .CreateAsync(new { Name = "National Air And Space Museum", Type = "museum" });
+            await citiesRef.Document("TOK").Collection("landmarks").Document()
+                .CreateAsync(new { Name = "Ueno Park", Type = "park" });
+            await citiesRef.Document("TOK").Collection("landmarks").Document()
+                .CreateAsync(new { Name = "National Museum of Nature and Science", Type = "museum" });
+            await citiesRef.Document("BJ").Collection("landmarks").Document()
+                .CreateAsync(new { Name = "Jingshan Park", Type = "park" });
+            await citiesRef.Document("BJ").Collection("landmarks").Document()
+                .CreateAsync(new { Name = "Beijing Ancient Observatory", Type = "museum" });
+            // [END fs_collection_group_query_data_setup]
+
+            // [START fs_collection_group_query]
+            Query museums = db.CollectionGroup("landmarks").WhereEqualTo("Type", "museum");
+            QuerySnapshot querySnapshot = await museums.GetSnapshotAsync();
+            foreach (DocumentSnapshot document in querySnapshot.Documents)
+            {
+                Console.WriteLine($"{document.Reference.Path}: {document.GetValue<string>("Name")}");
+            }
+            // [END fs_collection_group_query]
+        }
+
         private static async Task ChainedQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
@@ -300,6 +336,10 @@ Where command is one of
 
                 case "in-query-array":
                     InQueryWithArray(project).Wait();
+                    break;
+
+                case "collection-group-query":
+                    CollectionGroupQuery(project).Wait();
                     break;
 
                 case "chained-query":
