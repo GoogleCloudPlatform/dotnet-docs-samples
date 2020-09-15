@@ -118,10 +118,11 @@ namespace CloudSql
                 // Remember - storing secrets in plaintext is potentially unsafe. Consider using
                 // something like https://cloud.google.com/secret-manager/docs/overview to help keep
                 // secrets secret.
-                Host = Environment.GetEnvironmentVariable("DB_HOST"),
-                Username = Environment.GetEnvironmentVariable("DB_USER"),
-                Password = Environment.GetEnvironmentVariable("DB_PASS"),
-                Database = Environment.GetEnvironmentVariable("DB_NAME"),
+                Host = Environment.GetEnvironmentVariable("DB_HOST"),     // e.g. '127.0.0.1'
+                // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
+                Username = Environment.GetEnvironmentVariable("DB_USER"), // e.g. 'my-db-user'
+                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
+                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
             };
             connectionString.Pooling = true;
             // Specify additional properties here.
@@ -149,9 +150,9 @@ namespace CloudSql
                 // something like https://cloud.google.com/secret-manager/docs/overview to help keep
                 // secrets secret.
                 Host = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
-                Username = Environment.GetEnvironmentVariable("DB_USER"),
-                Password = Environment.GetEnvironmentVariable("DB_PASS"),
-                Database = Environment.GetEnvironmentVariable("DB_NAME"),
+                Username = Environment.GetEnvironmentVariable("DB_USER"), // e.g. 'my-db-user
+                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
+                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
                 
             };
             connectionString.Pooling = true;
