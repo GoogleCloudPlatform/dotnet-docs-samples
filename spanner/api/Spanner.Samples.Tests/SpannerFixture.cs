@@ -220,4 +220,50 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             await cmd.ExecuteNonQueryAsync();
         }
     }
+
+    public async Task CreateVenuesTableAndInsertDataAsync()
+    {
+        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/" +
+            $"databases/{DatabaseId}";
+        // Create connection to Cloud Spanner.
+        using (var connection = new SpannerConnection(connectionString))
+        {
+            // Define create table statement for Venues.
+            string createTableStatement =
+            @"CREATE TABLE Venues (
+                     VenueId INT64 NOT NULL,
+                     VenueName STRING(1024),
+                 ) PRIMARY KEY (VenueId)";
+
+            var cmd = connection.CreateDdlCommand(createTableStatement);
+            await cmd.ExecuteNonQueryAsync();
+
+            List<Venue> venues = new List<Venue>
+            {
+                new Venue { VenueId = 4, VenueName = "Venue 4" },
+                new Venue { VenueId = 19, VenueName = "Venue 19" },
+                new Venue { VenueId = 42, VenueName = "Venue 42" },
+            };
+
+            await Task.WhenAll(venues.Select(venue =>
+            {
+                // Insert rows into the Venues table.
+                var cmd = connection.CreateInsertCommand("Venues", new SpannerParameterCollection
+                {
+                        { "VenueId", SpannerDbType.Int64 },
+                        { "VenueName", SpannerDbType.String }
+                });
+
+                cmd.Parameters["VenueId"].Value = venue.VenueId;
+                cmd.Parameters["VenueName"].Value = venue.VenueName;
+                return cmd.ExecuteNonQueryAsync();
+            }));
+        }
+    }
+
+    private class Venue
+    {
+        public int VenueId { get; set; }
+        public string VenueName { get; set; }
+    }
 }
