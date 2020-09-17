@@ -69,9 +69,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-
     /// <summary>
-    /// Deletes first 5 database if no of database is more than 94.
+    /// Deletes 5 oldest databases if the number of databases is more than 94.
+    /// This is to avoid resource exhausted errors.
     /// </summary>
     private async Task DeleteStaleDatabasesAsync()
     {
@@ -85,26 +85,18 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             return;
         }
 
-        var databaseIdsWithCreatedTime = new Dictionary<string, long>();
-        foreach (var database in databases)
-        {
-            var databaseId = database.DatabaseName.DatabaseId.Replace("my-restore-db-", "").Replace("my-db-", "");
-            if (long.TryParse(databaseId, out long dbCreationTime))
-            {
-                databaseIdsWithCreatedTime.Add(database.DatabaseName.DatabaseId, dbCreationTime);
-            }
-        }
-
-        // Take first five databaseId from the list. 
-        var databasesToDelete = databaseIdsWithCreatedTime.OrderBy(c => c.Value)
-            .Take(5).Select(c => c.Key).ToList();
+        var databasesToDelete = databases
+            .OrderBy(db => long.TryParse(
+                db.DatabaseName.DatabaseId.Replace("my-db-", "").Replace("my-restore-db-", ""),
+                out long creationDate) ? creationDate : long.MaxValue)
+            .Take(5);
 
         // Delete the databases.
-        foreach (var databaseId in databasesToDelete)
+        foreach (var database in databasesToDelete)
         {
             try
             {
-                await DeleteDatabaseAsync(databaseId);
+                await DeleteDatabaseAsync(database.DatabaseName.DatabaseId);
             }
             catch (Exception) { }
         }
