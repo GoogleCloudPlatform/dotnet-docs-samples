@@ -41,7 +41,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         var isExistingInstance = InitializeInstance();
         if (isExistingInstance)
         {
-            await DeleteStaleBackupsAndDatabasesAsync();
+            await DeleteStaleDatabasesAsync();
         }
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
@@ -69,50 +69,35 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    private async Task DeleteStaleBackupsAndDatabasesAsync()
+
+    /// <summary>
+    /// Deletes first 5 database if no of database is more than 94.
+    /// </summary>
+    private async Task DeleteStaleDatabasesAsync()
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
         var databases = databaseAdminClient.ListDatabases(instanceName)
             .Where(c => c.DatabaseName.DatabaseId.StartsWith("my-db-") || c.DatabaseName.DatabaseId.StartsWith("my-restore-db-"));
-        var databasesToDelete = new List<string>();
 
-        // Delete all the databases created before 48 hrs.
-        var timestamp = DateTimeOffset.UtcNow.AddHours(-48).ToUnixTimeMilliseconds();
+        if (databases.Count() < 95)
+        {
+            return;
+        }
+
+        var databaseIdsWithCreatedTime = new Dictionary<string, long>();
         foreach (var database in databases)
         {
             var databaseId = database.DatabaseName.DatabaseId.Replace("my-restore-db-", "").Replace("my-db-", "");
-            if (long.TryParse(databaseId, out long dbCreationTime) && dbCreationTime <= timestamp)
+            if (long.TryParse(databaseId, out long dbCreationTime))
             {
-                databasesToDelete.Add(database.DatabaseName.DatabaseId);
+                databaseIdsWithCreatedTime.Add(database.DatabaseName.DatabaseId, dbCreationTime);
             }
         }
 
-        await Console.Out.WriteLineAsync($"{databasesToDelete.Count} old databases found.");
-
-        // Get backups.
-        ListBackupsRequest request = new ListBackupsRequest
-        {
-            ParentAsInstanceName = instanceName,
-            Filter = $"database:my-db-"
-        };
-        var backups = databaseAdminClient.ListBackups(request);
-
-        // Backups that belong to the databases to be deleted.
-        var backupsToDelete = backups.Where(c => databasesToDelete.Contains(DatabaseName.Parse(c.Database).DatabaseId));
-
-        await Console.Out.WriteLineAsync($"{backupsToDelete.Count()} old backups found.");
-
-        // Delete the backups.
-        foreach (var backup in backupsToDelete)
-        {
-            try
-            {
-                DeleteBackupSample deleteBackupSample = new DeleteBackupSample();
-                deleteBackupSample.DeleteBackup(ProjectId, InstanceId, backup.BackupName.BackupId);
-            }
-            catch (Exception) { }
-        }
+        // Take first five databaseId from the list. 
+        var databasesToDelete = databaseIdsWithCreatedTime.OrderBy(c => c.Value)
+            .Take(5).Select(c => c.Key).ToList();
 
         // Delete the databases.
         foreach (var databaseId in databasesToDelete)
