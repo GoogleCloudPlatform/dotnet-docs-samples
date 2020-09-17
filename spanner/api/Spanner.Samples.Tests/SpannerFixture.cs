@@ -38,13 +38,57 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public async Task InitializeAsync()
     {
         // Don't need to cleanup stale Backups and Databases when instance is new.
-        var isExistingInstance = InitializeInstance();
-        if (isExistingInstance)
-        {
-            await DeleteStaleBackupsAndDatabasesAsync();
-        }
+        InitializeInstance();
+        DelelteBackups();
+        DelelteDatabases();
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
+    }
+
+    public void DelelteBackups()
+    {
+        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+
+        var dataTime = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd");
+        var listBackupRequest = new ListBackupsRequest
+        {
+            Parent = InstanceName.Format(ProjectId, InstanceId),
+            Filter = $"create_time < {dataTime}"
+        };
+
+        var backups = databaseAdminClient.ListBackups(listBackupRequest);
+        foreach (var backup in backups)
+        {
+            var deleteBackupRequest = new DeleteBackupRequest()
+            {
+                Name = backup.Name
+            };
+            databaseAdminClient.DeleteBackup(deleteBackupRequest);
+        }
+    }
+
+    public void DelelteDatabases()
+    {
+        string adminConnectionString = $"Data Source=projects/{ProjectId}/"
+          + $"instances/{InstanceId}";
+
+        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+        InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
+        var databases = databaseAdminClient.ListDatabases(instanceName);
+
+        using var connection = new SpannerConnection(adminConnectionString);
+        foreach (var database in databases)
+        {
+            using var cmd = connection.CreateDdlCommand($@"DROP DATABASE {database.DatabaseName.DatabaseId}");
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                continue;
+            }
+        }
     }
 
     public Task DisposeAsync()
