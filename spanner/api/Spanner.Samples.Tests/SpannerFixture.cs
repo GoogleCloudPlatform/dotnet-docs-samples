@@ -250,8 +250,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             // Insert rows into the Venues table.
             using var cmd = connection.CreateInsertCommand("Venues", new SpannerParameterCollection
             {
-                    { "VenueId", SpannerDbType.Int64 },
-                    { "VenueName", SpannerDbType.String }
+                { "VenueId", SpannerDbType.Int64 },
+                { "VenueName", SpannerDbType.String }
             });
 
             cmd.Parameters["VenueId"].Value = venue.VenueId;
