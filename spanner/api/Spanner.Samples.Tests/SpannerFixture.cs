@@ -77,8 +77,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var databases = databaseAdminClient.ListDatabases(instanceName)
-            .Where(c => c.DatabaseName.DatabaseId.StartsWith("my-db-") || c.DatabaseName.DatabaseId.StartsWith("my-restore-db-"));
+        var databases = databaseAdminClient.ListDatabases(instanceName);
 
         if (databases.Count() < 95)
         {
