@@ -33,7 +33,7 @@ public class QueryDataWithNumericParameterAsyncSample
             $"/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
-        var cmd = connection.CreateSelectCommand(
+        using var cmd = connection.CreateSelectCommand(
             "SELECT VenueId, Revenue FROM Venues WHERE Revenue < @maxRevenue",
             new SpannerParameterCollection { { "maxRevenue", SpannerDbType.Numeric } });
 

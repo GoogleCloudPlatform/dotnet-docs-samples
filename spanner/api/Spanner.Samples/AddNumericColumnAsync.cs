@@ -27,7 +27,7 @@ public class AddNumericColumnAsyncSample
         string alterStatement = "ALTER TABLE Venues ADD COLUMN Revenue NUMERIC";
 
         using var connection = new SpannerConnection(connectionString);
-        var updateCmd = connection.CreateDdlCommand(alterStatement);
+        using var updateCmd = connection.CreateDdlCommand(alterStatement);
         await updateCmd.ExecuteNonQueryAsync();
         Console.WriteLine("Added the Revenue column.");
     }
