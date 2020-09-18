@@ -17,29 +17,22 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class QueryDataWithNumericParameterTest
+public class AddNumericColumnTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public QueryDataWithNumericParameterTest(SpannerFixture spannerFixture)
+    public AddNumericColumnTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestQueryDataWithNumericParameter()
+    public async Task TestAddNumericColumn()
     {
         await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
 
         AddNumericColumnAsyncSample addColumnSample = new AddNumericColumnAsyncSample();
         await addColumnSample.AddNumericColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        UpdateDataWithNumericAsyncSample updateNumericSample = new UpdateDataWithNumericAsyncSample();
-        await updateNumericSample.UpdateDataWithNumericAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        QueryDataWithNumericParameterAsyncSample queryNumericSample = new QueryDataWithNumericParameterAsyncSample();
-        var venues = await queryNumericSample.QueryDataWithNumericParameterAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(venues, v => v.VenueId == 4);
 
         await _spannerFixture.DeleteVenuesTable();
     }
