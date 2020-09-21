@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FirebaseAnalytics\FirebaseAnalytics.csproj" />
     <ProjectReference Include="..\FirebaseAuth\FirebaseAuth.csproj" />
     <ProjectReference Include="..\FirebaseFirestore\FirebaseFirestore.csproj" />
     <ProjectReference Include="..\FirebaseRemoteConfig\FirebaseRemoteConfig.csproj" />
