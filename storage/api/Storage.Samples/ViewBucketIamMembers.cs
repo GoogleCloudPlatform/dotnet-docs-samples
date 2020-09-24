@@ -23,7 +23,10 @@ public class ViewBucketIamMembersSample
     public Policy ViewBucketIamMembers(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var policy = storage.GetBucketIamPolicy(bucketName);
+        var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions
+        {
+            RequestedPolicyVersion = 3
+        });
         foreach (var binding in policy.Bindings)
         {
             Console.WriteLine($"Role: {binding.Role}");
