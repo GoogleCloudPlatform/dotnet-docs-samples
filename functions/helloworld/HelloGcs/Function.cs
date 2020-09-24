@@ -28,18 +28,16 @@ namespace HelloGcs
 
         public Function(ILogger<Function> logger) =>
             _logger = logger;
-       
+
         public Task HandleAsync(CloudEvent cloudEvent, StorageObjectData data, CancellationToken cancellationToken)
         {
-            if (cloudEvent.Type == StorageObjectData.FinalizedCloudEventType)
-            {
-                // Default event type for GCS-triggered functions
-                _logger.LogInformation("File {name} uploaded", data.Name);
-            }
-            else
-            {
-                _logger.LogWarning("Unsupported event type: {type}", cloudEvent.Type);
-            }
+            _logger.LogInformation("Event: {event}", cloudEvent.Id);
+            _logger.LogInformation("Event Type: {type}", cloudEvent.Type);
+            _logger.LogInformation("Bucket: {bucket}", data.Bucket);
+            _logger.LogInformation("File: {file}", data.Name);
+            _logger.LogInformation("Metageneration: {metageneration}", data.Metageneration);
+            _logger.LogInformation("Created: {created:s}", data.TimeCreated?.ToDateTimeOffset());
+            _logger.LogInformation("Updated: {updated:s}", data.Updated?.ToDateTimeOffset());
             return Task.CompletedTask;
         }
     }

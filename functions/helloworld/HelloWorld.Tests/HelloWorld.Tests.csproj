@@ -18,7 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\HelloPubSubFSharp\HelloPubSubFSharp.fsproj" />
     <ProjectReference Include="..\HelloPubSubVb\HelloPubSubVb.vbproj" />
-    <ProjectReference Include="..\HelloGcsGeneric\HelloGcsGeneric.csproj" />
     <ProjectReference Include="..\HelloGcs\HelloGcs.csproj" />
     <ProjectReference Include="..\HelloHttp\HelloHttp.csproj" />
     <ProjectReference Include="..\HelloPubSub\HelloPubSub.csproj" />
