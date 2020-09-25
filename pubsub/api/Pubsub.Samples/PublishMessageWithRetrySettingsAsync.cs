@@ -21,9 +21,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class PublishMessageWithRetrySettingsSample
+public class PublishMessageWithRetrySettingsAsyncSample
 {
-    public async Task<int> PublishMessageWithRetrySettings(string projectId, string topicId, string messageText)
+    public async Task<int> PublishMessageWithRetrySettingsAsync(string projectId, string topicId, string messageText)
     {
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
         // Retry settings control how the publisher handles retry-able failures
