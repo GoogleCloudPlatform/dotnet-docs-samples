@@ -45,6 +45,6 @@ public class UpdatePushConfigurationTest
         _updatePushConfigurationSample.UpdatePushConfiguration(_pubsubFixture.ProjectId, subscriptionId, updatedPushEndpoint);
 
         var subscriptions = _listSubscriptionsSample.ListSubscriptions(_pubsubFixture.ProjectId);
-        Assert.Contains(subscriptions.Where(c => c.SubscriptionName.SubscriptionId == subscriptionId), s => s.PushConfig.PushEndpoint == updatedPushEndpoint);
+        Assert.Contains(subscriptions, s => s.PushConfig.PushEndpoint == updatedPushEndpoint && s.SubscriptionName.SubscriptionId == subscriptionId);
     }
 }

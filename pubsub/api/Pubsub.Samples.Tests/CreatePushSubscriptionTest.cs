@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -19,11 +20,13 @@ public class CreatePushSubscriptionTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly CreatePushSubscriptionSample _createPushSubscriptionSample;
+    private ListSubscriptionsSample _listSubscriptionsSample;
 
     public CreatePushSubscriptionTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _createPushSubscriptionSample = new CreatePushSubscriptionSample();
+        _listSubscriptionsSample = new ListSubscriptionsSample();
     }
 
     [Fact]
@@ -33,9 +36,13 @@ public class CreatePushSubscriptionTest
         string topicId = $"testTopicForCreatePushSubscription{randomName}";
         string subscriptionId = $"testSubscriptionForCreatePushSubscription{randomName}";
         string pushEndpoint = "https://my-test-project.appspot.com/push";
+
         _pubsubFixture.CreateTopic(topicId);
-        var newlyCreatedSubscription = _createPushSubscriptionSample.CreatePushSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId, pushEndpoint);
+
+        _createPushSubscriptionSample.CreatePushSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId, pushEndpoint);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
-        Assert.Equal(newlyCreatedSubscription.PushConfig.PushEndpoint, pushEndpoint);
+
+        var subscriptions = _listSubscriptionsSample.ListSubscriptions(_pubsubFixture.ProjectId);
+        Assert.Contains(subscriptions, s => s.PushConfig.PushEndpoint == pushEndpoint && s.SubscriptionName.SubscriptionId == subscriptionId);
     }
 }
