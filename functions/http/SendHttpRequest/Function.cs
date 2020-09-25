@@ -14,7 +14,7 @@
 
 // [START functions_concepts_requests]
 using Google.Cloud.Functions.Framework;
-using Google.Cloud.Functions.Invoker;
+using Google.Cloud.Functions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
