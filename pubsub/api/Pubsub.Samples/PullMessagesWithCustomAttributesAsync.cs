@@ -22,15 +22,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class PullMessagesAsyncWithCustomAttributesSample
+public class PullMessagesWithCustomAttributesAsyncSample
 {
-    public async Task<Dictionary<string, string>> PullMessagesAsyncWithCustomAttributes(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<Dictionary<string, string>> PullMessagesWithCustomAttributesAsyncAsync(string projectId, string subscriptionId, bool acknowledge)
     {
-        // This is an existing subscription with a dead letter policy.
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
 
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
-
         var attributes = new Dictionary<string, string>();
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {

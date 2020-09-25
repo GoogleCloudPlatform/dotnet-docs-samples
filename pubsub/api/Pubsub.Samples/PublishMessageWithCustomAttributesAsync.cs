@@ -17,28 +17,27 @@
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
-public class PublishMessageWithCustomAttributesSample
+public class PublishMessageWithCustomAttributesAsyncSample
 {
-    public async Task<int> PublishMessageWithCustomAttributes(string projectId, string topicId)
+    public async Task PublishMessageWithCustomAttributesAsync(string projectId, string topicId)
     {
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
         PublisherClient publisher = await PublisherClient.CreateAsync(topicName);
 
-        int publishedMessageCount = 0;
         var pubsubMessage = new PubsubMessage
         {
             // The data is any arbitrary ByteString. Here, we're using text.
             Data = ByteString.CopyFromUtf8("Hello, Pubsub"),
             // The attributes provide metadata in a string-to-string dictionary.
-            Attributes = { { "description", "Simple text message" } }
+            Attributes = {
+                { "year", "2020" },
+                { "author", "unknown" }
+            }
         };
         string message = await publisher.PublishAsync(pubsubMessage);
         Console.WriteLine($"Published message {message}");
-        Interlocked.Increment(ref publishedMessageCount);
-        return publishedMessageCount;
     }
 }
 // [END pubsub_publish_custom_attributes]
