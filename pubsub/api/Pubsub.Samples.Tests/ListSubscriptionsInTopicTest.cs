@@ -41,6 +41,6 @@ public class ListSubscriptionsInTopicTest
         var subscriptions = _listSubscriptionsInTopicSample.ListSubscriptionsInTopic(_pubsubFixture.ProjectId, topicId).ToList();
 
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(_pubsubFixture.ProjectId, subscriptionId);
-        Assert.Contains(subscriptions, c => c == subscriptionName.ToString());
+        Assert.Contains(subscriptions, s => s == subscriptionName.ToString());
     }
 }
