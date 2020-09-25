@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 public class PullMessagesWithCustomAttributesAsyncSample
 {
-    public async Task<Dictionary<string, string>> PullMessagesWithCustomAttributesAsyncAsync(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<Dictionary<string, string>> PullMessagesWithCustomAttributesAsync(string projectId, string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
 

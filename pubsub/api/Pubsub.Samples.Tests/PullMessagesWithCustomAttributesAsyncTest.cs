@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -41,7 +40,7 @@ public class PullMessagesWithCustomAttributesAsyncTest
 
         await _publishMessageWithCustomAttributesAsyncSample.PublishMessageWithCustomAttributesAsync(_pubsubFixture.ProjectId, topicId);
 
-        var attributes = await _pullMessagesWithCustomAttributesAsyncSample.PullMessagesWithCustomAttributesAsyncAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        var attributes = await _pullMessagesWithCustomAttributesAsyncSample.PullMessagesWithCustomAttributesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
         Assert.Contains(attributes, a => a.Key == "year" && a.Value == "2020");
     }
 }
