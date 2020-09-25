@@ -15,7 +15,7 @@
 // [START functions_slack_setup]
 using Google.Apis.Kgsearch.v1;
 using Google.Apis.Services;
-using Google.Cloud.Functions.Invoker;
+using Google.Cloud.Functions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
