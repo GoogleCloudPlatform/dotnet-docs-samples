@@ -40,7 +40,10 @@ public class AddBucketConditionalIamBindingSample
         string expression = "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")")
     {
         var storage = StorageClient.Create();
-        var policy = storage.GetBucketIamPolicy(bucketName);
+        var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions
+        {
+            RequestedPolicyVersion = 3
+        });
         // Set the policy schema version. For more information, please refer to https://cloud.google.com/iam/docs/policies#versions.
         policy.Version = 3;
         Policy.BindingsData bindingToAdd = new Policy.BindingsData

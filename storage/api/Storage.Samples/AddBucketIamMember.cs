@@ -31,6 +31,9 @@ public class AddBucketIamMemberSample
         {
             RequestedPolicyVersion = 3
         });
+        // Set the policy schema version. For more information, please refer to https://cloud.google.com/iam/docs/policies#versions.
+        policy.Version = 3;
+
         Policy.BindingsData bindingToAdd = new Policy.BindingsData
         {
             Role = role,

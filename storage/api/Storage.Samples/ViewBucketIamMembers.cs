@@ -27,6 +27,9 @@ public class ViewBucketIamMembersSample
         {
             RequestedPolicyVersion = 3
         });
+        // Set the policy schema version. For more information, please refer to https://cloud.google.com/iam/docs/policies#versions.
+        policy.Version = 3;
+
         foreach (var binding in policy.Bindings)
         {
             Console.WriteLine($"Role: {binding.Role}");
