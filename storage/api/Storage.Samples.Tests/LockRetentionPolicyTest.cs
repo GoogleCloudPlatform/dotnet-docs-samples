@@ -30,12 +30,9 @@ public class LockRetentionPolicyTest
     {
         SetRetentionPolicySample setRetentionPolicySample = new SetRetentionPolicySample();
         LockRetentionPolicySample lockRetentionPolicySample = new LockRetentionPolicySample();
-        CreateBucketSample createBucketSample = new CreateBucketSample();
 
         var bucketName = Guid.NewGuid().ToString();
-        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
-        _bucketFixture.SleepAfterBucketCreateDelete();
-        _bucketFixture.TempBucketNames.Add(bucketName);
+        _bucketFixture.CreateBucket(bucketName);
 
         setRetentionPolicySample.SetRetentionPolicy(bucketName, 10);
         var result = lockRetentionPolicySample.LockRetentionPolicy(bucketName);

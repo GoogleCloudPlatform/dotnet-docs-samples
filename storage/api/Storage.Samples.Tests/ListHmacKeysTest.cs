@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
@@ -30,8 +29,6 @@ public class ListHmacKeysTest
     {
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
         ListHmacKeysSample listHmacKeysSample = new ListHmacKeysSample();
-        DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
-        DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
 
         string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
 
@@ -42,10 +39,7 @@ public class ListHmacKeysTest
         var keys = listHmacKeysSample.ListHmacKeys(_bucketFixture.ProjectId);
         Assert.Contains(keys, key => key.AccessId == key.AccessId);
 
-        // Deactivate key.
-        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-
         // Delete key.
-        deleteHmacKeySample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        _bucketFixture.DeleteHmacKey(key.Metadata.AccessId);
     }
 }

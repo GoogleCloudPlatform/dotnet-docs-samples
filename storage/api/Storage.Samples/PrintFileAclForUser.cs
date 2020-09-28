@@ -32,6 +32,7 @@ public class PrintFileAclForUserSample
         {
             Projection = Projection.Full
         });
+
         var fileAclForUser = storageObject.Acl.Where((acl) => acl.Entity == $"user-{userEmail}");
         foreach (var acl in fileAclForUser)
         {

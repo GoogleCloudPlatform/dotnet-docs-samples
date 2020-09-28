@@ -28,20 +28,14 @@ public class AddBucketConditionalIamBindingTest
     [Fact]
     public void TestAddBucketConditionalIamBinding()
     {
-        CreateBucketSample createBucketSample = new CreateBucketSample();
         AddBucketConditionalIamBindingSample addBucketConditionalIamBindingSample = new AddBucketConditionalIamBindingSample();
-        RemoveBucketConditionalIamBindingSample removeBucketConditionalIamBindingSample = new RemoveBucketConditionalIamBindingSample();
-        ViewBucketIamMembersSample viewBucketIamMembersSample = new ViewBucketIamMembersSample();
         EnableUniformBucketLevelAccessSample enableUniformBucketLevelAccessSample = new EnableUniformBucketLevelAccessSample();
-        DisableUniformBucketLevelAccessSample disableUniformBucketLevelAccessSample = new DisableUniformBucketLevelAccessSample();
         var bucketName = Guid.NewGuid().ToString();
         string memberType = "serviceAccount";
         string role = "roles/storage.objectViewer";
 
         // Create bucket
-        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
-        _bucketFixture.SleepAfterBucketCreateDelete();
-        _bucketFixture.TempBucketNames.Add(bucketName);
+        _bucketFixture.CreateBucket(bucketName);
 
         // Enable Uniform bucket level access.
         enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(bucketName);

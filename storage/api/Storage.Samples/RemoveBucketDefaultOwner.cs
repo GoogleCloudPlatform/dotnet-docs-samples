@@ -14,10 +14,8 @@
 
 // [START storage_remove_bucket_default_owner]
 
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 public class RemoveBucketDefaultOwnerSample
@@ -34,7 +32,6 @@ public class RemoveBucketDefaultOwnerSample
         }
         else
         {
-            bucket.Acl ??= new List<BucketAccessControl>();
             bucket.DefaultObjectAcl = bucket.DefaultObjectAcl.Where(acl => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
             var updatedBucket = storage.UpdateBucket(bucket);
             Console.WriteLine($"Removed user {userEmail} from bucket {bucketName}.");

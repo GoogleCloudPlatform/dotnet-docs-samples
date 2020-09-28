@@ -40,7 +40,7 @@ public class RemoveBucketConditionalIamBindingSample
               && binding.Condition != null
               && binding.Condition.Title == title
               && binding.Condition.Description == description
-              && binding.Condition.Expression == expression);
+              && binding.Condition.Expression == expression).ToList();
         if (bindingsToRemove.Count() > 0)
         {
             foreach (var binding in bindingsToRemove)

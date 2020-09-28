@@ -33,10 +33,8 @@ public class GenerateV4ReadSignedUrlTest
         var credentialFilePath = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
         var signedUrl = generateV4SignedReadUrlSample.GenerateV4SignedReadUrl(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, credentialFilePath);
 
-        using (var client = new HttpClient())
-        {
-            var response = await client.GetAsync(signedUrl);
-            Assert.InRange((int)response.StatusCode, 200, 299);
-        }
+        using var client = new HttpClient();
+        var response = await client.GetAsync(signedUrl);
+        Assert.InRange((int)response.StatusCode, 200, 299);
     }
 }

@@ -31,17 +31,14 @@ public class RemoveBucketIamMemberSample
             RequestedPolicyVersion = 3
         });
 
-        foreach (var binding in policy.Bindings)
+        foreach (var binding in policy.Bindings.Where(c => c.Role == role).ToList())
         {
-            if (binding.Role == role)
+            // Remove the role/member combo from the IAM policy.
+            binding.Members = binding.Members.Where(m => m != member).ToList();
+            // Remove role if it contains no members.
+            if (binding.Members.Count == 0)
             {
-                // Remove the role/member combo from the IAM policy.
-                binding.Members = binding.Members.Where(m => m != member).ToList();
-                // Remove role if it contains no members.
-                if (binding.Members.Count == 0)
-                {
-                    policy.Bindings.Remove(binding);
-                }
+                policy.Bindings.Remove(binding);
             }
         }
         // Set the modified IAM policy to be the current IAM policy.

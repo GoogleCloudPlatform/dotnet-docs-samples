@@ -27,13 +27,11 @@ public class DownloadFileRequesterPaysSample
         string localPath = "my-local-path/my-file-name")
     {
         var storage = StorageClient.Create();
-        using (var outputFile = File.OpenWrite(localPath))
+        using var outputFile = File.OpenWrite(localPath);
+        storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions
         {
-            storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions
-            {
-                UserProject = projectId
-            });
-        }
+            UserProject = projectId
+        });
         Console.WriteLine($"Downloaded {objectName} to {localPath} paid by {projectId}.");
     }
 }

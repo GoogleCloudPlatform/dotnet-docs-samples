@@ -27,13 +27,11 @@ public class DownloadEncryptedFileSample
         string localPath = "my-local-path/my-file-name")
     {
         var storage = StorageClient.Create();
-        using (var outputFile = File.OpenWrite(localPath))
+        using var outputFile = File.OpenWrite(localPath);
+        storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions
         {
-            storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions
-            {
-                EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(key))
-            });
-        }
+            EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(key))
+        });
         Console.WriteLine($"Downloaded {objectName} to {localPath}.");
     }
 }

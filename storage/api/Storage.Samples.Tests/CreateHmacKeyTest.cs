@@ -28,19 +28,13 @@ public class CreateHmacKeyTest
     public void TestCreateHmacKey()
     {
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
-        DeactivateHmacKeySample hmacKeyDeactivateSample = new DeactivateHmacKeySample();
-        DeleteHmacKeySample hmacKeyDeleteSample = new DeleteHmacKeySample();
-
         string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
 
         // Create key.
         var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
         Assert.Equal(key.Metadata.ServiceAccountEmail, serviceAccountEmail);
 
-        // Deactivate key.
-        hmacKeyDeactivateSample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-
         // Delete key.
-        hmacKeyDeleteSample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        _bucketFixture.DeleteHmacKey(key.Metadata.AccessId);
     }
 }

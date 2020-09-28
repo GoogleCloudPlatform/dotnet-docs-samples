@@ -37,11 +37,9 @@ public class UploadFileWithKmsKeySample
         string fullKeyName = $"{fullKeyringName}/cryptoKeys/{kmsKeyName}";
 
         var storage = StorageClient.Create();
-        using (var f = File.OpenRead(localPath))
-        {
-            storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions { KmsKeyName = fullKeyName });
-            Console.WriteLine($"Uploaded {objectName}.");
-        }
+        using var fileStream = File.OpenRead(localPath);
+        storage.UploadObject(bucketName, objectName, null, fileStream, new UploadObjectOptions { KmsKeyName = fullKeyName });
+        Console.WriteLine($"Uploaded {objectName}.");
     }
 }
 // [END storage_upload_with_kms_key]

@@ -27,14 +27,12 @@ public class UploadEncryptedFileSample
         string objectName = "my-file-name")
     {
         var storage = StorageClient.Create();
-        using (var f = File.OpenRead(localPath))
+        using var fileStream = File.OpenRead(localPath);
+        storage.UploadObject(bucketName, objectName, null, fileStream, new UploadObjectOptions
         {
-            storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions
-            {
-                EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(key))
-            });
-            Console.WriteLine($"Uploaded {objectName}.");
-        }
+            EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(key))
+        });
+        Console.WriteLine($"Uploaded {objectName}.");
     }
 }
 // [END storage_upload_encrypted_file]

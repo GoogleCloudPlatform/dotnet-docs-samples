@@ -20,15 +20,23 @@ using System;
 
 public class DisableRequesterPaysSample
 {
-    public Bucket DisableRequesterPays(string bucketName = "your-unique-bucket-name")
+    public Bucket DisableRequesterPays(
+        string projectId = "your-project-id",
+        string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName);
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions
+        {
+            UserProject = projectId
+        });
 
         bucket.Billing ??= new Bucket.BillingData();
         bucket.Billing.RequesterPays = false;
 
-        bucket = storage.UpdateBucket(bucket);
+        bucket = storage.UpdateBucket(bucket, new UpdateBucketOptions
+        {
+            UserProject = projectId
+        });
         Console.WriteLine($"Requester pays disabled for bucket {bucketName}.");
         return bucket;
     }

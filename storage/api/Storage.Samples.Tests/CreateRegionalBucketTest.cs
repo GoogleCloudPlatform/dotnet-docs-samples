@@ -31,8 +31,12 @@ public class CreateRegionalBucketTest
     {
         CreateRegionalBucketSample createRegionalBucketSample = new CreateRegionalBucketSample();
         var bucketName = Guid.NewGuid().ToString();
-        var buket = createRegionalBucketSample.CreateRegionalBucket(_bucketFixture.ProjectId, bucketName, _bucketFixture.TestLocation, StorageClasses.Regional);
+        var buket = createRegionalBucketSample.CreateRegionalBucket(
+            _bucketFixture.ProjectId, bucketName, _bucketFixture.TestLocation, StorageClasses.Regional);
+
+        _bucketFixture.SleepAfterBucketCreateDelete();
         _bucketFixture.TempBucketNames.Add(bucketName);
+
         Assert.Equal(buket.Location.ToLower(), _bucketFixture.KmsKeyLocation.ToLower());
         Assert.Equal("regional", buket.StorageClass.ToLower());
     }

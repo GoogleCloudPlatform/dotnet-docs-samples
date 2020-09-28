@@ -27,8 +27,8 @@ public class DisableBucketLifecycleManagementTest
     [Fact]
     public void TestDisableBucketLifecycleManagement()
     {
-        var enableBucketLifecycleManagementSample = new EnableBucketLifecycleManagementSample();
-        var disableBucketLifecycleManagementSample = new DisableBucketLifecycleManagementSample();
+        EnableBucketLifecycleManagementSample enableBucketLifecycleManagementSample = new EnableBucketLifecycleManagementSample();
+        DisableBucketLifecycleManagementSample disableBucketLifecycleManagementSample = new DisableBucketLifecycleManagementSample();
 
         // Enable bucket lifecycle management.
         enableBucketLifecycleManagementSample.EnableBucketLifecycleManagement(_bucketFixture.BucketNameGeneric);

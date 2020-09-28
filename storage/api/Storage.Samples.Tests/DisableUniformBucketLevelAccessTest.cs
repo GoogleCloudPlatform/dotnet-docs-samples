@@ -28,15 +28,12 @@ public class DisableUniformBucketLevelAccessTest
     [Fact]
     public void TestDisableUniformBucketLevelAccess()
     {
-        CreateBucketSample createBucketSample = new CreateBucketSample();
         EnableUniformBucketLevelAccessSample enableUniformBucketLevelAccessSample = new EnableUniformBucketLevelAccessSample();
         DisableUniformBucketLevelAccessSample disableUniformBucketLevelAccessSample = new DisableUniformBucketLevelAccessSample();
 
         var bucketName = Guid.NewGuid().ToString();
         // Create bucket
-        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
-        _bucketFixture.SleepAfterBucketCreateDelete();
-        _bucketFixture.TempBucketNames.Add(bucketName);
+        _bucketFixture.CreateBucket(bucketName);
 
         // Enable Uniform bucket level access.
         enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(bucketName);

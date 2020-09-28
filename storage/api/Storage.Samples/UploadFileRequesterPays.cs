@@ -27,11 +27,9 @@ public class UploadFileRequesterPaysSample
         string objectName = "my-file-name")
     {
         var storage = StorageClient.Create();
-        using (var f = File.OpenRead(localPath))
-        {
-            storage.UploadObject(bucketName, objectName, null, f, new UploadObjectOptions { UserProject = projectId, });
-            Console.WriteLine($"Uploaded {objectName}.");
-        }
+        using var fileStream = File.OpenRead(localPath);
+        storage.UploadObject(bucketName, objectName, null, fileStream, new UploadObjectOptions { UserProject = projectId, });
+        Console.WriteLine($"Uploaded {objectName}.");
     }
 }
 // [END storage_upload_requester_pays]

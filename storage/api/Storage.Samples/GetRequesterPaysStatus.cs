@@ -19,10 +19,15 @@ using System;
 
 public class GetRequesterPaysStatusSample
 {
-    public bool GetRequesterPaysStatus(string bucketName = "your-unique-bucket-name")
+    public bool GetRequesterPaysStatus(
+        string projectId = "your-project-id",
+        string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName);
+        var bucket = storage.GetBucket(bucketName, new GetBucketOptions
+        {
+            UserProject = projectId
+        });
         bool requesterPays = bucket.Billing?.RequesterPays ?? false;
         Console.WriteLine($"RequesterPays: {requesterPays}");
         return requesterPays;

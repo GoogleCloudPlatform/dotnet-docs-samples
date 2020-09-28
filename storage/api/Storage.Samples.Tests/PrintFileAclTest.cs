@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
@@ -31,7 +30,6 @@ public class PrintFileAclTest
         PrintFileAclSample printFileAclSample = new PrintFileAclSample();
         UploadFileSample uploadFileSample = new UploadFileSample();
         AddFileOwnerSample addFileOwnerSample = new AddFileOwnerSample();
-        RemoveFileOwnerSample removeFileOwnerSample = new RemoveFileOwnerSample();
 
         string userEmail = _bucketFixture.ServiceAccountEmail;
         uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloAddObjectOwner.txt"));
@@ -46,7 +44,5 @@ public class PrintFileAclTest
         // print file acl
         fileAcl = printFileAclSample.PrintObjectAcl(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt");
         Assert.Contains(fileAcl, c => c.Email == userEmail);
-
-        removeFileOwnerSample.RemoveFileOwner(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt", userEmail);
     }
 }

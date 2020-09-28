@@ -32,10 +32,13 @@ public class PrintBucketAclForUserTest
         RemoveBucketOwnerSample removeBucketOwnerSample = new RemoveBucketOwnerSample();
         string userEmail = _bucketFixture.ServiceAccountEmail;
 
-        // add bucket owner
+        // Add bucket owner
         addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
 
         var bucketAclForUser = printBucketAclForUserSample.PrintBucketAclForUser(_bucketFixture.BucketNameGeneric, userEmail);
         Assert.All(bucketAclForUser, c => Assert.Equal(c.Email, userEmail));
+
+        // Remove bucket owner
+        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
     }
 }

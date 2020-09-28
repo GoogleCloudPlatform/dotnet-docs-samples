@@ -40,14 +40,12 @@ public class DownloadByteRangeAsyncSample
         var request = new HttpRequestMessage { RequestUri = uri };
         request.Headers.Range = new RangeHeaderValue(firstByte, lastByte);
 
-        using (var outputFile = File.OpenWrite(localPath))
-        {
-            // Use the HttpClient in the storage object because it supplies
-            // all the authentication headers we need.
-            var response = await storage.HttpClient.SendAsync(request);
-            await response.Content.CopyToAsync(outputFile, null);
-            Console.WriteLine($"Downloaded {objectName} to {localPath}.");
-        }
+        using var outputFile = File.OpenWrite(localPath);
+        // Use the HttpClient in the storage object because it supplies
+        // all the authentication headers we need.
+        var response = await storage.HttpClient.SendAsync(request);
+        await response.Content.CopyToAsync(outputFile, null);
+        Console.WriteLine($"Downloaded {objectName} to {localPath}.");
     }
 }
 // [END storage_download_byte_range]

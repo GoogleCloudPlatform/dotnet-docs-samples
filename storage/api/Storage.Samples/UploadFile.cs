@@ -26,11 +26,9 @@ public class UploadFileSample
         string objectName = "my-file-name")
     {
         var storage = StorageClient.Create();
-        using (var f = File.OpenRead(localPath))
-        {
-            storage.UploadObject(bucketName, objectName, null, f);
-            Console.WriteLine($"Uploaded {objectName}.");
-        }
+        using var fileStream = File.OpenRead(localPath);
+        storage.UploadObject(bucketName, objectName, null, fileStream);
+        Console.WriteLine($"Uploaded {objectName}.");
     }
 }
 // [END storage_upload_file]

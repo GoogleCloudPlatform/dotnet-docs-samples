@@ -43,10 +43,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
             throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
         }
         // create simple bucket
-        CreateBucketSample createBucketSample = new CreateBucketSample();
-        createBucketSample.CreateBucket(ProjectId, BucketNameGeneric);
-        SleepAfterBucketCreateDelete();
-        TempBucketNames.Add(BucketNameGeneric);
+        CreateBucket(BucketNameGeneric);
 
         // create regional bucket
         CreateRegionalBucketSample createRegionalBucketSample = new CreateRegionalBucketSample();
@@ -73,7 +70,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
                 {
                     deleteFileSample.DeleteFile(bucket.Key, file);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     // Do nothing, we delete on a best effort basis.
                 }
@@ -87,7 +84,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
                 deleteBucketSample.DeleteBucket(bucketName);
                 SleepAfterBucketCreateDelete();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // Do nothing, we delete on a best effort basis.
             }
@@ -100,8 +97,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     /// <returns>The objectName.</returns>
     private string Collect(string bucketName, string objectName)
     {
-        List<string> objectNames;
-        if (!TempBucketFiles.TryGetValue(bucketName, out objectNames))
+        if (!TempBucketFiles.TryGetValue(bucketName, out List<string> objectNames))
         {
             objectNames = TempBucketFiles[bucketName] = new List<string>();
         }
@@ -121,6 +117,25 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     /// </summary>
     /// <returns>The regional objectName.</returns>
     public string CollectRegionalObject(string objectName) => Collect(BucketNameRegional, objectName);
+
+    public void DeleteHmacKey(string accessId)
+    {
+        DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
+        DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
+
+        // Deactivate key.
+        deactivateHmacKeySample.DeactivateHmacKey(ProjectId, accessId);
+        // Delete key.
+        deleteHmacKeySample.DeleteHmacKey(ProjectId, accessId);
+    }
+
+    public void CreateBucket(string bucketName)
+    {
+        CreateBucketSample createBucketSample = new CreateBucketSample();
+        createBucketSample.CreateBucket(ProjectId, bucketName);
+        SleepAfterBucketCreateDelete();
+        TempBucketNames.Add(bucketName);
+    }
 
     /// <summary>
     /// Bucket creation/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.

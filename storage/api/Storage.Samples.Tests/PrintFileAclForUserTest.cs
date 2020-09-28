@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
@@ -28,11 +27,9 @@ public class PrintFileAclForUserTest
     [Fact]
     public void TestPrintFileAclForUser()
     {
-        PrintFileAclSample printFileAclSample = new PrintFileAclSample();
         PrintFileAclForUserSample printFileAclForUserSample = new PrintFileAclForUserSample();
         UploadFileSample uploadFileSample = new UploadFileSample();
         AddFileOwnerSample addFileOwnerSample = new AddFileOwnerSample();
-        RemoveFileOwnerSample removeFileOwnerSample = new RemoveFileOwnerSample();
 
         string userEmail = _bucketFixture.ServiceAccountEmail;
         uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloAddObjectOwnerForUser.txt"));

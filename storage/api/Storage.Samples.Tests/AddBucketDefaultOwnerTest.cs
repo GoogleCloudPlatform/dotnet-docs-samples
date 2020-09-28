@@ -27,7 +27,7 @@ public class AddBucketDefaultOwnerTest
     [Fact]
     public void TestAddBucketDefaultOwner()
     {
-        var addBucketDefaultOwnerSample = new AddBucketDefaultOwnerSample();
+        AddBucketDefaultOwnerSample addBucketDefaultOwnerSample = new AddBucketDefaultOwnerSample();
         RemoveBucketDefaultOwnerSample removeBucketDefaultOwnerSample = new RemoveBucketDefaultOwnerSample();
 
         // Add bucket default owner.

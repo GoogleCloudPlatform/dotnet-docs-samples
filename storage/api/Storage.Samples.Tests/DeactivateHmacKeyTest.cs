@@ -28,7 +28,6 @@ public class DeactivateHmacKeyTest
     public void TestDeactivateHmacKey()
     {
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
-        GetHmacKeySample getHmacKeySample = new GetHmacKeySample();
         DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
         DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
 
