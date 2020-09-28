@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // [START functions_http_integration_test]
-using Google.Cloud.Functions.Invoker.Testing;
+using Google.Cloud.Functions.Testing;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -55,7 +55,7 @@ namespace HelloHttp.Tests
         /// Executes the given request in the function in an in-memory test server,
         /// validates that the response status code is 200, and returns the text of the
         /// response body. FunctionTestServer{T} is provided by the
-        /// Google.Cloud.Functions.Invoker.Testing package.
+        /// Google.Cloud.Functions.Testing package.
         /// </summary>
         private static async Task<string> ExecuteRequest(HttpRequestMessage request)
         {
