@@ -32,9 +32,11 @@ public class EnableBucketDefaultEventBasedHoldTest
 
         // Enable default event based hold.
         var updatedBucket = enableBucketDefaultEventBasedHoldSample.EnableBucketDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
         Assert.True(updatedBucket.DefaultEventBasedHold);
 
         // Disable default event based hold.
         disableDefaultEventBasedHoldSample.DisableDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

@@ -34,6 +34,7 @@ public class PrintBucketDefaultAclTest
 
         // add default owner
         addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketNameGeneric, userEmail);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // print default owner
         var defaultBucketAcl = printBucketDefaultAclSample.PrintBucketDefaultAcl(_bucketFixture.BucketNameGeneric);
@@ -41,5 +42,6 @@ public class PrintBucketDefaultAclTest
 
         // remove default owner
         removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketNameGeneric, userEmail);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

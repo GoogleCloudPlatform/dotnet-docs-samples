@@ -33,8 +33,10 @@ public class AddBucketOwnerTest
         // Add bucket owner.
         var result = addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
         Assert.Contains(result.Acl, c => c.Role == "OWNER" && c.Email == _bucketFixture.ServiceAccountEmail);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove bucket owner.
         removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

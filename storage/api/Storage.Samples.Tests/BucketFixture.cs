@@ -48,7 +48,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
         // create regional bucket
         CreateRegionalBucketSample createRegionalBucketSample = new CreateRegionalBucketSample();
         createRegionalBucketSample.CreateRegionalBucket(ProjectId, BucketNameRegional, TestLocation, StorageClasses.Regional);
-        SleepAfterBucketCreateDelete();
+        SleepAfterBucketCreateUpdateDelete();
         TempBucketNames.Add(BucketNameRegional);
 
         //upload file to BucketName
@@ -70,7 +70,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
                 {
                     deleteFileSample.DeleteFile(bucket.Key, file);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // Do nothing, we delete on a best effort basis.
                 }
@@ -82,9 +82,9 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
             try
             {
                 deleteBucketSample.DeleteBucket(bucketName);
-                SleepAfterBucketCreateDelete();
+                SleepAfterBucketCreateUpdateDelete();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Do nothing, we delete on a best effort basis.
             }
@@ -133,14 +133,14 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     {
         CreateBucketSample createBucketSample = new CreateBucketSample();
         createBucketSample.CreateBucket(ProjectId, bucketName);
-        SleepAfterBucketCreateDelete();
+        SleepAfterBucketCreateUpdateDelete();
         TempBucketNames.Add(bucketName);
     }
 
     /// <summary>
-    /// Bucket creation/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.
+    /// Bucket creation/update/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.
     /// </summary>
-    internal void SleepAfterBucketCreateDelete() => Thread.Sleep(2000);
+    internal void SleepAfterBucketCreateUpdateDelete() => Thread.Sleep(2000);
 
     internal string GetServiceAccountEmail()
     {

@@ -33,6 +33,7 @@ public class GetRequesterPaysStatusTest
 
         // Enable request pay.
         enableRequesterPaysSample.EnableRequesterPays(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Get status.
         var status = getRequesterPaysStatusSample.GetRequesterPaysStatus(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric);
@@ -40,5 +41,6 @@ public class GetRequesterPaysStatusTest
 
         // Disable request pay.
         disableRequesterPaysSample.DisableRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

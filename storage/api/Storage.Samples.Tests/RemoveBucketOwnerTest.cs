@@ -33,9 +33,11 @@ public class RemoveBucketOwnerTest
 
         // Add bucket owner.
         addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove bucket owner.
         removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Get bucket metadata.
         var bucketMetadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketNameGeneric);

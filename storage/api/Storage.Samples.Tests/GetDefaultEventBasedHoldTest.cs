@@ -33,6 +33,7 @@ public class GetDefaultEventBasedHoldTest
 
         // Enable default event based hold.
         enableBucketDefaultEventBasedHoldSample.EnableBucketDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Get default event based hold.
         var defaultEventBasedHold = getDefaultEventBasedHoldSample.GetDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
@@ -40,5 +41,6 @@ public class GetDefaultEventBasedHoldTest
 
         // Disable default event based hold.
         disableDefaultEventBasedHoldSample.DisableDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

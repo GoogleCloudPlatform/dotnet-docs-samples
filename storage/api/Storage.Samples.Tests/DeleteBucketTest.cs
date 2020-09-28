@@ -34,10 +34,10 @@ public class DeleteBucketTest
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
         var bucketName = Guid.NewGuid().ToString();
         createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
-        _bucketFixture.SleepAfterBucketCreateDelete();
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         deleteBucketSample.DeleteBucket(bucketName);
-        _bucketFixture.SleepAfterBucketCreateDelete();
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         var exception = Assert.Throws<GoogleApiException>(() => getBucketMetadataSample.GetBucketMetadata(bucketName));
         Assert.Equal(System.Net.HttpStatusCode.NotFound, exception.HttpStatusCode);

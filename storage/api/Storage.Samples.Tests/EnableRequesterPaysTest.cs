@@ -36,9 +36,11 @@ public class EnableRequesterPaysTest
 
         // Enable request pay.
         var bucket = enableRequesterPaysSample.EnableRequesterPays(bucketName);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
         Assert.True(bucket.Billing?.RequesterPays);
 
         // Disable request pay.
         disableRequesterPaysSample.DisableRequesterPays(_bucketFixture.ProjectId, bucketName);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

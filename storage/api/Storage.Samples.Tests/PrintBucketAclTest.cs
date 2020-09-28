@@ -38,6 +38,7 @@ public class PrintBucketAclTest
 
         // add bucket owner
         addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // print bucket acl
         bucketAcl = printBucketAclSample.PrintBucketAcl(_bucketFixture.BucketNameGeneric);
@@ -45,5 +46,6 @@ public class PrintBucketAclTest
 
         // remove owner.
         removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

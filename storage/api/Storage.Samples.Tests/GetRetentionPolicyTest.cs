@@ -34,6 +34,7 @@ public class GetRetentionPolicyTest
 
         // Set retention policy.
         setRetentionPolicySample.SetRetentionPolicy(_bucketFixture.BucketNameGeneric, retentionPeriod);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Get retention policy.
         var result = getRetentionPolicySample.GetRetentionPolicy(_bucketFixture.BucketNameGeneric);
@@ -41,5 +42,6 @@ public class GetRetentionPolicyTest
 
         // Remove retention policy.
         removeRetentionPolicySample.RemoveRetentionPolicy(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

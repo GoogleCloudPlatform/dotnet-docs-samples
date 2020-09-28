@@ -32,9 +32,11 @@ public class EnableBucketLifecycleManagementTest
 
         // Enable bucket lifecycle management.
         var bucket = enableBucketLifecycleManagementSample.EnableBucketLifecycleManagement(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
         Assert.Contains(bucket.Lifecycle.Rule, r => r.Condition.Age == 100 && r.Action.Type == "Delete");
 
         // Disable bucket lifecycle management.
         disableBucketLifecycleManagementSample.DisableBucketLifecycleManagement(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

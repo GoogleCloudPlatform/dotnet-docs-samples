@@ -36,6 +36,7 @@ public class EnableUniformBucketLevelAccessTest
 
         // Enable Uniform bucket level access.
         var updatedBucket = enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(bucketName);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         Assert.True(updatedBucket.IamConfiguration.UniformBucketLevelAccess.Enabled);
     }

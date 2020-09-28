@@ -30,6 +30,7 @@ public class EnableDefaultKMSKeyTest
         EnableDefaultKMSKeySample enableDefaultKMSKeySample = new EnableDefaultKMSKeySample();
         var bucket = enableDefaultKMSKeySample.EnableDefaultKMSKey(_bucketFixture.ProjectId, _bucketFixture.BucketNameRegional,
               _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
         Assert.NotNull(bucket.Encryption.DefaultKmsKeyName);
     }
 }
