@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START run_events_pubsub_dockerfile]
+# [START run_events_gcs_dockerfile]
 
 # Use Microsoft's official build .NET image.
 # https://hub.docker.com/_/microsoft-dotnet-core-sdk/
@@ -39,5 +39,5 @@ WORKDIR /app
 COPY --from=build /app/out ./
 
 # Run the web service on container startup.
-ENTRYPOINT ["dotnet", "EventsPubSub.dll"]
-# [END run_events_pubsub_dockerfile]
+ENTRYPOINT ["dotnet", "AuditStorage.dll"]
+# [END run_events_gcs_dockerfile]

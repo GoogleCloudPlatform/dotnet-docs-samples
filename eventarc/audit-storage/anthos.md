@@ -6,26 +6,12 @@ already installed.
 
 ## Setup
 
-Login to gcloud:
-
-```sh
-gcloud auth login
-```
-
-Configure project id:
-
-```sh
-gcloud config set project [PROJECT-ID]
-```
-
 Configure environment variables:
 
 ```sh
 MY_RUN_SERVICE=gcs-service
 MY_RUN_CONTAINER=gcs-container
-MY_GCS_TRIGGER=gcs-trigger
 MY_GCS_BUCKET=gcs-bucket-$(gcloud config get-value project)
-MY_GCS_REGION=europe-west1
 ```
 
 ## Quickstart
@@ -34,7 +20,7 @@ Set cluster name, location and platform:
 
 ```sh
 gcloud config set run/cluster events-cluster
-gcloud config set run/cluster_location europe-west1-b
+gcloud config set run/cluster_location us-central1-b
 gcloud config set run/platform gke
 ```
 
@@ -51,7 +37,7 @@ Create a bucket:
 
 ```sh
 gsutil mb -p $(gcloud config get-value project) \
-    -l ${MY_GCS_REGION} \
+    -l us-central1 \
     gs://${MY_GCS_BUCKET}
 ```
 
@@ -75,10 +61,10 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
 Create Cloud Storage trigger:
 
 ```sh
-gcloud alpha events triggers create ${MY_GCS_TRIGGER} \
---target-service ${MY_RUN_SERVICE} \
---type=com.google.cloud.storage.object.finalize \
---parameters bucket=${MY_GCS_BUCKET}
+gcloud beta events triggers create my-gcs-trigger \
+  --target-service ${MY_RUN_SERVICE} \
+  --type=google.cloud.storage.object.v1.finalized \
+  --parameters bucket=${MY_GCS_BUCKET}
 ```
 
 ## Test
