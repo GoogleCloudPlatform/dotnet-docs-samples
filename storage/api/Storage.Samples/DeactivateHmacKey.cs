@@ -14,12 +14,13 @@
 
 // [START storage_deactivate_hmac_key]
 
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
 public class DeactivateHmacKeySample
 {
-    public void DeactivateHmacKey(
+    public HmacKeyMetadata DeactivateHmacKey(
         string projectId = "your-project-id",
         string accessId = "your-access-id")
     {
@@ -38,6 +39,7 @@ public class DeactivateHmacKeySample
         Console.WriteLine($"Time Created: {updatedMetadata.TimeCreated}");
         Console.WriteLine($"Time Updated: {updatedMetadata.Updated}");
         Console.WriteLine($"ETag: {updatedMetadata.ETag}");
+        return updatedMetadata;
     }
 }
 // [END storage_deactivate_hmac_key]

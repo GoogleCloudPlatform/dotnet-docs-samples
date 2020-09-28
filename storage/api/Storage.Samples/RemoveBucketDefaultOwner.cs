@@ -29,17 +29,16 @@ public class RemoveBucketDefaultOwnerSample
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
         if (bucket.DefaultObjectAcl == null)
-            return;
-
-        if (bucket.Acl == null)
         {
-            bucket.Acl = new List<BucketAccessControl>();
+            Console.WriteLine("No default owner to remove");
         }
-
-        bucket.DefaultObjectAcl = bucket.DefaultObjectAcl.Where((acl) => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
-
-        var updatedBucket = storage.UpdateBucket(bucket);
-        Console.WriteLine($"Removed user {userEmail} from bucket {bucketName}.");
+        else
+        {
+            bucket.Acl ??= new List<BucketAccessControl>();
+            bucket.DefaultObjectAcl = bucket.DefaultObjectAcl.Where(acl => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
+            var updatedBucket = storage.UpdateBucket(bucket);
+            Console.WriteLine($"Removed user {userEmail} from bucket {bucketName}.");
+        }
     }
 }
 // [END storage_remove_bucket_default_owner]

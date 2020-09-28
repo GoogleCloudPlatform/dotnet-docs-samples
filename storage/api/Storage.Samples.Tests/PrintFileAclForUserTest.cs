@@ -35,18 +35,13 @@ public class PrintFileAclForUserTest
         RemoveFileOwnerSample removeFileOwnerSample = new RemoveFileOwnerSample();
 
         string userEmail = _bucketFixture.ServiceAccountEmail;
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloAddObjectOwner.txt"));
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloAddObjectOwnerForUser.txt"));
 
         // add file owner
-        addFileOwnerSample.AddFileOwner(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt", userEmail);
-
-        // print file acl
-        var fileAcl = printFileAclSample.PrintObjectAcl(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt");
+        addFileOwnerSample.AddFileOwner(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwnerForUser.txt", userEmail);
 
         // Make sure we print-acl-for-user shows us the user, but not all the ACLs.
-        var fileAclForUser = printFileAclForUserSample.PrintFileAclForUser(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt", userEmail);
-        Assert.Contains(fileAcl, c => c.Email == userEmail && fileAcl.Count() > fileAclForUser.Count());
-
-        removeFileOwnerSample.RemoveFileOwner(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt", userEmail);
+        var fileAclForUser = printFileAclForUserSample.PrintFileAclForUser(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwnerForUser.txt", userEmail);
+        Assert.All(fileAclForUser, c => Assert.Equal(c.Email, userEmail));
     }
 }

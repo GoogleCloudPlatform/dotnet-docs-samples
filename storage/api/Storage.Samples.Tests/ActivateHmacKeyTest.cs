@@ -28,7 +28,6 @@ public class ActivateHmacKeyTest
     public void TestActivateHmacKey()
     {
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
-        GetHmacKeySample getHmacKeySample = new GetHmacKeySample();
         DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
         ActivateHmacKeySample activateHmacKeySample = new ActivateHmacKeySample();
         DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
@@ -42,8 +41,7 @@ public class ActivateHmacKeyTest
         deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
 
         // Activate key.
-        activateHmacKeySample.ActivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-        var keyMetadata = getHmacKeySample.GetHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        var keyMetadata = activateHmacKeySample.ActivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
         Assert.Equal("ACTIVE", keyMetadata.State);
 
         // Deactivate key.

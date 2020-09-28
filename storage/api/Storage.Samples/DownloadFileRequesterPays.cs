@@ -29,7 +29,10 @@ public class DownloadFileRequesterPaysSample
         var storage = StorageClient.Create();
         using (var outputFile = File.OpenWrite(localPath))
         {
-            storage.DownloadObject(bucketName, objectName, outputFile);
+            storage.DownloadObject(bucketName, objectName, outputFile, new DownloadObjectOptions
+            {
+                UserProject = projectId
+            });
         }
         Console.WriteLine($"Downloaded {objectName} to {localPath} paid by {projectId}.");
     }

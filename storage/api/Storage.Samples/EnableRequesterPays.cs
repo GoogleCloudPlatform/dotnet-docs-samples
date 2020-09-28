@@ -24,7 +24,7 @@ public class EnableRequesterPaysSample
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
-        bucket.Billing = bucket.Billing ?? new Bucket.BillingData();
+        bucket.Billing ??= new Bucket.BillingData();
         bucket.Billing.RequesterPays = true;
         bucket = storage.UpdateBucket(bucket);
         Console.WriteLine($"Requester pays requests have been enabled for bucket {bucketName}.");

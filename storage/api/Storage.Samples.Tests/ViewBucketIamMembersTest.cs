@@ -39,7 +39,6 @@ public class ViewBucketIamMembersTest
 
         // Get bucket Iam members.
         result = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketNameGeneric);
-        Assert.Contains(result.Bindings, b => b.Role == role);
         Assert.Contains(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
 
         // Remove bucket Iam members.

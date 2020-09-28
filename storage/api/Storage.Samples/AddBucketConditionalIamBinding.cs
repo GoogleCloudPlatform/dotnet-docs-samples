@@ -41,6 +41,7 @@ public class AddBucketConditionalIamBindingSample
     {
         var storage = StorageClient.Create();
         var policy = storage.GetBucketIamPolicy(bucketName);
+        // Set the policy schema version. For more information, please refer to https://cloud.google.com/iam/docs/policies#versions.
         policy.Version = 3;
         Policy.BindingsData bindingToAdd = new Policy.BindingsData
         {

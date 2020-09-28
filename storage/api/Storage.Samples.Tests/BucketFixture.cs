@@ -24,7 +24,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
 {
     public string ProjectId { get; }
     public IList<string> TempBucketNames { get; } = new List<string>();
-    public SortedDictionary<string, SortedSet<string>> TempBucketFiles { get; } = new SortedDictionary<string, SortedSet<string>>();
+    public Dictionary<string, List<string>> TempBucketFiles { get; } = new Dictionary<string, List<string>>();
     public string BucketNameGeneric { get; } = Guid.NewGuid().ToString();
     public string BucketNameRegional { get; } = Guid.NewGuid().ToString();
     public string TestLocation { get; } = "us-west1";
@@ -100,10 +100,10 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     /// <returns>The objectName.</returns>
     private string Collect(string bucketName, string objectName)
     {
-        SortedSet<string> objectNames;
+        List<string> objectNames;
         if (!TempBucketFiles.TryGetValue(bucketName, out objectNames))
         {
-            objectNames = TempBucketFiles[bucketName] = new SortedSet<string>();
+            objectNames = TempBucketFiles[bucketName] = new List<string>();
         }
         objectNames.Add(objectName);
         return objectName;

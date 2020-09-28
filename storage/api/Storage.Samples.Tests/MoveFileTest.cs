@@ -32,16 +32,13 @@ public class MoveFileTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
 
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloMove.txt"));
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, "HelloMove.txt");
         // Make sure the file doesn't exist until we move it there.
         Assert.Throws<GoogleApiException>(() => getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "ByeMove.txt"));
 
         moveFileSample.MoveFile(_bucketFixture.BucketNameGeneric, "HelloMove.txt", _bucketFixture.BucketNameGeneric, _bucketFixture.Collect("ByeMove.txt"));
 
-        // If we try to clean up "HelloMove.txt", it will fail because it moved.
-        _bucketFixture.TempBucketFiles[_bucketFixture.BucketNameGeneric].Remove("HelloMove.txt");
-
-        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "ByeMove.txt");
-        Assert.NotNull(metadata);
+        var exception = Assert.Throws<GoogleApiException>(() => getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "HelloMove.txt"));
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, exception.HttpStatusCode);
     }
 }

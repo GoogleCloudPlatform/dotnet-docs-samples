@@ -39,7 +39,7 @@ public class ListHmacKeysTest
         var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
 
         // List keys.
-        var keys = listHmacKeysSample.ListHmacKeys(_bucketFixture.ProjectId).ToList();
+        var keys = listHmacKeysSample.ListHmacKeys(_bucketFixture.ProjectId);
         Assert.Contains(keys, key => key.AccessId == key.AccessId);
 
         // Deactivate key.

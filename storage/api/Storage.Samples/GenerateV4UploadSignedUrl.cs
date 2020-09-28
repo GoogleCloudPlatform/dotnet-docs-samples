@@ -33,8 +33,8 @@ public class GenerateV4UploadSignedUrlSample
             { "Content-Type", new[] { "text/plain" } }
         };
 
-        UrlSigner.Options options = UrlSigner.Options.FromDuration(TimeSpan.FromHours(1))
-            .WithSigningVersion(SigningVersion.V4);
+        // V4 is the default signing version.
+        UrlSigner.Options options = UrlSigner.Options.FromDuration(TimeSpan.FromHours(1));
 
         UrlSigner.RequestTemplate template = UrlSigner.RequestTemplate
             .FromBucket(bucketName)

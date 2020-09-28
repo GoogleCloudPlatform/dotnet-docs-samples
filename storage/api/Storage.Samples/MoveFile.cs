@@ -23,12 +23,12 @@ public class MoveFileSample
         string sourceBucketName = "your-unique-bucket-name",
         string sourceObjectName = "your-object-name",
         string targetBucketName = "target-object-bucket",
-        string destObjectName = "target-object-name")
+        string targetObjectName = "target-object-name")
     {
         var storage = StorageClient.Create();
-        storage.CopyObject(sourceBucketName, sourceObjectName, targetBucketName, destObjectName);
+        storage.CopyObject(sourceBucketName, sourceObjectName, targetBucketName, targetObjectName);
         storage.DeleteObject(sourceBucketName, sourceObjectName);
-        Console.WriteLine($"Moved {sourceObjectName} to {destObjectName}.");
+        Console.WriteLine($"Moved {sourceObjectName} to {targetObjectName}.");
     }
 }
 // [END storage_move_file]

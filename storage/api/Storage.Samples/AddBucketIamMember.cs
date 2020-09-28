@@ -27,7 +27,10 @@ public class AddBucketIamMemberSample
         string member = "serviceAccount:dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
-        var policy = storage.GetBucketIamPolicy(bucketName);
+        var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions
+        {
+            RequestedPolicyVersion = 3
+        });
         Policy.BindingsData bindingToAdd = new Policy.BindingsData
         {
             Role = role,

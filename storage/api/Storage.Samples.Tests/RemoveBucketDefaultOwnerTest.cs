@@ -27,7 +27,7 @@ public class RemoveBucketDefaultOwnerTest
     [Fact]
     public void TestRemoveBucketDefaultOwner()
     {
-        var addBucketDefaultOwnerSample = new AddBucketDefaultOwnerSample();
+        AddBucketDefaultOwnerSample addBucketDefaultOwnerSample = new AddBucketDefaultOwnerSample();
         RemoveBucketDefaultOwnerSample removeBucketDefaultOwnerSample = new RemoveBucketDefaultOwnerSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
 

@@ -29,9 +29,7 @@ public class EnableRequesterPaysTest
     public void TestEnableRequesterPays()
     {
         CreateBucketSample createBucketSample = new CreateBucketSample();
-        GetRequesterPaysStatusSample getRequesterPaysStatusSample = new GetRequesterPaysStatusSample();
         EnableRequesterPaysSample enableRequesterPaysSample = new EnableRequesterPaysSample();
-        DisableRequesterPaysSample disableRequesterPaysSample = new DisableRequesterPaysSample();
 
         var bucketName = Guid.NewGuid().ToString();
         // Create bucket
@@ -42,8 +40,5 @@ public class EnableRequesterPaysTest
         // Enable request pay.
         var bucket = enableRequesterPaysSample.EnableRequesterPays(bucketName);
         Assert.True(bucket.Billing?.RequesterPays);
-
-        // Disable request pay.
-        disableRequesterPaysSample.DisableRequesterPays(_bucketFixture.ProjectId, bucketName);
     }
 }

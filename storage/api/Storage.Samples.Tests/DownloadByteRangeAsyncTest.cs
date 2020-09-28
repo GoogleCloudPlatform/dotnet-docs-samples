@@ -32,9 +32,14 @@ public class DownloadByteRangeAsyncTest
     {
         UploadFileSample uploadFileSample = new UploadFileSample();
         DownloadByteRangeAsyncSample downloadByteRangeSample = new DownloadByteRangeAsyncSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt",
+        uploadFileSample.UploadFile(
+            _bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt",
             _bucketFixture.Collect("HelloDownloadCompleteByteRange.txt"));
-        await downloadByteRangeSample.DownloadByteRangeAsync(_bucketFixture.BucketNameGeneric, "HelloDownloadCompleteByteRange.txt", 0, 20, "HelloDownloadCompleteByteRange.txt_0-20");
+
+        await downloadByteRangeSample.DownloadByteRangeAsync(
+            _bucketFixture.BucketNameGeneric, "HelloDownloadCompleteByteRange.txt", 0, 20,
+            "HelloDownloadCompleteByteRange.txt_0-20");
+
         var downloadedString = Encoding.UTF8.GetString(File.ReadAllBytes("HelloDownloadCompleteByteRange.txt_0-20"));
         Assert.Equal("\uFEFFHello Download Com", downloadedString);
         File.Delete("HelloDownloadCompleteByteRange.txt_0-20");

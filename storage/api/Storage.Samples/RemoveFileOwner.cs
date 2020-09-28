@@ -27,11 +27,16 @@ public class RemoveFileOwnerSample
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName, new GetObjectOptions { Projection = Projection.Full });
-        if (null == storageObject.Acl)
-            return;
-        storageObject.Acl = storageObject.Acl.Where((acl) => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
-        var updatedObject = storage.UpdateObject(storageObject);
-        Console.WriteLine($"Removed user {userEmail} from file {objectName}.");
+        if (storageObject.Acl == null)
+        {
+            Console.WriteLine("No owner to remove");
+        }
+        else
+        {
+            storageObject.Acl = storageObject.Acl.Where((acl) => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
+            var updatedObject = storage.UpdateObject(storageObject);
+            Console.WriteLine($"Removed user {userEmail} from file {objectName}.");
+        }
     }
 }
 // [END storage_remove_file_owner]

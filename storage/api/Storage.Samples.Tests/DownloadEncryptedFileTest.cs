@@ -34,7 +34,8 @@ public class DownloadEncryptedFileTest
         var key = generateEncryptionKeySample.GenerateEncryptionKey();
 
         // upload with key
-        uploadEncryptedFileSample.UploadEncryptedFile(key, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
+        uploadEncryptedFileSample.UploadEncryptedFile(
+            key, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
             _bucketFixture.Collect("HelloEncryptDownload.txt"));
 
         //download with key

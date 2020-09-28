@@ -36,9 +36,6 @@ public class PrintBucketAclForUserTest
         addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
 
         var bucketAclForUser = printBucketAclForUserSample.PrintBucketAclForUser(_bucketFixture.BucketNameGeneric, userEmail);
-        Assert.Contains(bucketAclForUser, c => c.Email == userEmail);
-
-        // remove owner.
-        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
+        Assert.All(bucketAclForUser, c => Assert.Equal(c.Email, userEmail));
     }
 }

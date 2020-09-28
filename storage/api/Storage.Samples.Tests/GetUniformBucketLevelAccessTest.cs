@@ -30,7 +30,6 @@ public class GetUniformBucketLevelAccessTest
     {
         CreateBucketSample createBucketSample = new CreateBucketSample();
         EnableUniformBucketLevelAccessSample enableUniformBucketLevelAccessSample = new EnableUniformBucketLevelAccessSample();
-        DisableUniformBucketLevelAccessSample disableUniformBucketLevelAccessSample = new DisableUniformBucketLevelAccessSample();
         GetUniformBucketLevelAccessSample getUniformBucketLevelAccessSample = new GetUniformBucketLevelAccessSample();
 
         var bucketName = Guid.NewGuid().ToString();
@@ -44,8 +43,5 @@ public class GetUniformBucketLevelAccessTest
 
         var uniformBucketLevelAccess = getUniformBucketLevelAccessSample.GetUniformBucketLevelAccess(bucketName);
         Assert.True(uniformBucketLevelAccess.Enabled);
-
-        // Disable Uniform bucket level access.
-        disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(bucketName);
     }
 }

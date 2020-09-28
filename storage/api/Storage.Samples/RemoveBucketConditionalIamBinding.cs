@@ -33,18 +33,20 @@ public class RemoveBucketConditionalIamBindingSample
         {
             RequestedPolicyVersion = 3
         });
+        // Set the policy schema version. For more information, please refer to https://cloud.google.com/iam/docs/policies#versions.
         policy.Version = 3;
+
         var bindingsToRemove = policy.Bindings.Where(binding => binding.Role == role
               && binding.Condition != null
               && binding.Condition.Title == title
               && binding.Condition.Description == description
-              && binding.Condition.Expression == expression).ToList();
-        if (bindingsToRemove.Count > 0)
+              && binding.Condition.Expression == expression);
+        if (bindingsToRemove.Count() > 0)
         {
-            bindingsToRemove.ForEach(binding =>
+            foreach (var binding in bindingsToRemove)
             {
                 policy.Bindings.Remove(binding);
-            });
+            }
             // Set the modified IAM policy to be the current IAM policy.
             policy = storage.SetBucketIamPolicy(bucketName, policy);
             Console.WriteLine("Conditional Binding was removed.");

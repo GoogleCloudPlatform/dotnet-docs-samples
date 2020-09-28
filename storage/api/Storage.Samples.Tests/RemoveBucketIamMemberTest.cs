@@ -35,16 +35,13 @@ public class RemoveBucketIamMemberTest
         ViewBucketIamMembersSample viewBucketIamMembersSample = new ViewBucketIamMembersSample();
 
         // Add bucket Iam member.
-        var result = addBucketIamMemberSample.AddBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
-        Assert.Contains(result.Bindings, b => b.Role == role);
-        Assert.Contains(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        addBucketIamMemberSample.AddBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
 
         // Remove bucket Iam member.
         removeBucketIamMemberSample.RemoveBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
 
         // Get bucket Iam member.
-        result = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketNameGeneric);
-        Assert.DoesNotContain(result.Bindings, b => b.Role == role);
+        var result = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketNameGeneric);
         Assert.DoesNotContain(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
     }
 }

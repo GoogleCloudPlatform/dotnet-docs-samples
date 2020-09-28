@@ -42,7 +42,7 @@ public class DisableRequesterPaysTest
         enableRequesterPaysSample.EnableRequesterPays(bucketName);
 
         // Disable request pay.
-        var bucket = disableRequesterPaysSample.DisableRequesterPays(_bucketFixture.ProjectId, bucketName);
+        var bucket = disableRequesterPaysSample.DisableRequesterPays(bucketName);
         Assert.False(bucket.Billing?.RequesterPays);
     }
 }

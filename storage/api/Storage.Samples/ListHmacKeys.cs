@@ -26,10 +26,10 @@ public class ListHmacKeysSample
         var storage = StorageClient.Create();
         var keys = storage.ListHmacKeys(projectId);
 
-        foreach (var metadata in keys)
+        foreach (var key in keys)
         {
-            Console.WriteLine($"Service Account Email: {metadata.ServiceAccountEmail}");
-            Console.WriteLine($"Access ID: {metadata.AccessId}");
+            Console.WriteLine($"Service Account Email: {key.ServiceAccountEmail}");
+            Console.WriteLine($"Access ID: {key.AccessId}");
         }
         return keys;
     }

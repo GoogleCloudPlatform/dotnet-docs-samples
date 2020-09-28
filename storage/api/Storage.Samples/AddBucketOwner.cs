@@ -28,7 +28,7 @@ public class AddBucketOwnerSample
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
 
-        bucket.Acl = bucket.Acl ?? new List<BucketAccessControl>();
+        bucket.Acl ??= new List<BucketAccessControl>();
 
         bucket.Acl.Add(new BucketAccessControl
         {

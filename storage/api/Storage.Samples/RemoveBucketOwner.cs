@@ -26,11 +26,16 @@ public class RemoveBucketOwnerSample
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName, new GetBucketOptions { Projection = Projection.Full });
-        if (null == bucket.Acl)
-            return;
-        bucket.Acl = bucket.Acl.Where((acl) => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
-        var updatedBucket = storage.UpdateBucket(bucket);
-        Console.WriteLine($"Removed user {userEmail} from bucket {bucketName}.");
+        if (bucket.Acl == null)
+        {
+            Console.WriteLine("No owner to remove");
+        }
+        else
+        {
+            bucket.Acl = bucket.Acl.Where(acl => !(acl.Entity == $"user-{userEmail}" && acl.Role == "OWNER")).ToList();
+            var updatedBucket = storage.UpdateBucket(bucket);
+            Console.WriteLine($"Removed user {userEmail} from bucket {bucketName}.");
+        }
     }
 }
 // [END storage_remove_bucket_owner]

@@ -27,7 +27,7 @@ public class MakePublicSample
     {
         var storage = StorageClient.Create();
         var storageObject = storage.GetObject(bucketName, objectName);
-        storageObject.Acl = storageObject.Acl ?? new List<ObjectAccessControl>();
+        storageObject.Acl ??= new List<ObjectAccessControl>();
         storage.UpdateObject(storageObject, new UpdateObjectOptions { PredefinedAcl = PredefinedObjectAcl.PublicRead });
         Console.WriteLine(objectName + " is now public and can be fetched from " + storageObject.MediaLink);
 

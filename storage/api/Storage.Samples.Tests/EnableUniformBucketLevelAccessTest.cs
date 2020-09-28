@@ -41,8 +41,5 @@ public class EnableUniformBucketLevelAccessTest
         var updatedBucket = enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(bucketName);
 
         Assert.True(updatedBucket.IamConfiguration.UniformBucketLevelAccess.Enabled);
-
-        // Disable Uniform bucket level access.
-        disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(bucketName);
     }
 }

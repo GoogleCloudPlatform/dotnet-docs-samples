@@ -22,7 +22,7 @@ public class ListFilesWithPrefixSample
 {
     /// <summary>
     /// Prefixes and delimiters can be used to emulate directory listings.
-    /// Prefixes can be used filter objects starting with prefix.
+    /// Prefixes can be used to filter objects starting with prefix.
     /// The delimiter argument can be used to restrict the results to only the
     /// objects in the given "directory". Without the delimiter, the entire  tree
     /// under the prefix is returned.

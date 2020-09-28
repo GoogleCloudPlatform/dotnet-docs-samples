@@ -26,20 +26,24 @@ public class RemoveBucketIamMemberSample
         string member = "serviceAccount:dev@iam.gserviceaccount.com")
     {
         var storage = StorageClient.Create();
-        var policy = storage.GetBucketIamPolicy(bucketName);
-        policy.Bindings.ToList().ForEach(response =>
+        var policy = storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions
         {
-            if (response.Role == role)
+            RequestedPolicyVersion = 3
+        });
+
+        foreach (var binding in policy.Bindings)
+        {
+            if (binding.Role == role)
             {
                 // Remove the role/member combo from the IAM policy.
-                response.Members = response.Members.Where(m => m != member).ToList();
+                binding.Members = binding.Members.Where(m => m != member).ToList();
                 // Remove role if it contains no members.
-                if (response.Members.Count == 0)
+                if (binding.Members.Count == 0)
                 {
-                    policy.Bindings.Remove(response);
+                    policy.Bindings.Remove(binding);
                 }
             }
-        });
+        }
         // Set the modified IAM policy to be the current IAM policy.
         storage.SetBucketIamPolicy(bucketName, policy);
         Console.WriteLine($"Removed {member} with role {role} from {bucketName}");

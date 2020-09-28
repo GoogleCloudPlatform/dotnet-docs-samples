@@ -21,16 +21,16 @@ using static Google.Apis.Storage.v1.Data.Bucket;
 public class SetRetentionPolicySample
 {
     /// <summary>
-    /// sets the bucket's retention policy.
+    /// Sets the bucket's retention policy.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="retentionPeriod">The bucket's retention policy. The retention policy enforces a minimum retention
+    /// <param name="retentionPeriod">The duration in seconds that objects need to be retained. The retention policy enforces a minimum retention
     /// time for all objects contained in the bucket, based on their creation time. Any
     /// attempt to overwrite or delete objects younger than the retention period will
     /// result in a PERMISSION_DENIED error. An unlocked retention policy can be modified
     /// or removed from the bucket via a storage.buckets.update operation. A locked retention
     /// policy cannot be removed or shortened in duration for the lifetime of the bucket.
-    /// Attempting to remove or decrease period of a locked retention policy will result
+    /// Attempting to remove or decrease the period of a locked retention policy will result
     /// in a PERMISSION_DENIED error.</param>
     public RetentionPolicyData SetRetentionPolicy(
         string bucketName = "your-unique-bucket-name",

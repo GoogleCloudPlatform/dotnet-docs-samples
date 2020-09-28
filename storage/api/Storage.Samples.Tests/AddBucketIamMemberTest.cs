@@ -29,7 +29,7 @@ public class AddBucketIamMemberTest
     {
         string role = "roles/storage.objectViewer";
         string memberType = "serviceAccount";
-        var addBucketIamMemberSample = new AddBucketIamMemberSample();
+        AddBucketIamMemberSample addBucketIamMemberSample = new AddBucketIamMemberSample();
         RemoveBucketIamMemberSample removeBucketIamMemberSample = new RemoveBucketIamMemberSample();
 
         // Add bucket Iam member.

@@ -24,7 +24,7 @@ public class ListFilesSample
         string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var storageObjects = storage.ListObjects(bucketName, "");
+        var storageObjects = storage.ListObjects(bucketName);
         Console.WriteLine($"Files in bucket {bucketName}:");
         foreach (var storageObject in storageObjects)
         {
