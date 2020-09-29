@@ -35,6 +35,6 @@ public class UploadFileWithKmsKeyTest
             _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName, _bucketFixture.FilePath, "HelloUploadWithKmsKey.txt");
 
         var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameRegional, "HelloUploadWithKmsKey.txt");
-        Assert.Equal(metadata.KmsKeyName, _bucketFixture.KmsKeyName);
+        Assert.Contains(_bucketFixture.KmsKeyName, metadata.KmsKeyName);
     }
 }
