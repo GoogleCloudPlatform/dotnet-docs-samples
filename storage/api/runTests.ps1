@@ -13,6 +13,8 @@
 # the License.
 Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
+Set-TestTimeout 6000
+
 BackupAndEdit-TextFile @("Storage\Storage.cs", "QuickStart\QuickStart.cs") `
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {
