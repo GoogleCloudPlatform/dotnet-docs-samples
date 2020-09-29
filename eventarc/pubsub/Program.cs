@@ -18,7 +18,7 @@ using Microsoft.Extensions.Hosting;
 
 public class Program
 {
-    // [START run_events_gcs_server]
+    // [START eventarc_pubsub_server]
     public static void Main(string[] args)
     {
         CreateHostBuilder(args).Build().Run();
@@ -34,5 +34,5 @@ public class Program
                 webBuilder.UseStartup<Startup>().UseUrls(url);
             });
     }
-    // [END run_events_gcs_server]
+    // [END eventarc_pubsub_server]
 }
