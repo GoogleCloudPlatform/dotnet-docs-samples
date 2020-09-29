@@ -1,38 +1,18 @@
-# Events for Cloud Run – GCS tutorial
+# Cloud Eventarc – Cloud Storage Events tutorial
 
 This sample shows how to create a service that processes GCS events.
 
 ## Setup
-
-Login to gcloud:
-
-```sh
-gcloud auth login
-```
-
-Configure project id:
-
-```sh
-gcloud config set project [PROJECT-ID]
-```
 
 Configure environment variables:
 
 ```sh
 MY_RUN_SERVICE=gcs-service
 MY_RUN_CONTAINER=gcs-container
-MY_GCS_TRIGGER=gcs-trigger
-MY_GCS_BUCKET=gcs-bucket-$(gcloud config get-value project)
+MY_GCS_BUCKET=$(gcloud config get-value project)-gcs-bucket
 ```
 
 ## Quickstart
-
-Set the Cloud Run region to one of the supported regions and platform:
-
-```sh
-gcloud config set run/region europe-west1
-gcloud config set run/platform managed
-```
 
 Deploy your Cloud Run service:
 
@@ -44,23 +24,23 @@ gcloud run deploy ${MY_RUN_SERVICE} \
  --allow-unauthenticated
 ```
 
-Create a bucket:
+Create a single region Cloud Storage bucket:
 
 ```sh
 gsutil mb -p $(gcloud config get-value project) \
-    -l $(gcloud config get-value run/region) \
+    -l us-central1 \
     gs://${MY_GCS_BUCKET}
 ```
 
 Create Cloud Storage trigger:
 
 ```sh
-gcloud alpha events triggers create ${MY_GCS_TRIGGER} \
- --target-service ${MY_RUN_SERVICE} \
- --type com.google.cloud.auditlog.event \
- --parameters methodName=storage.buckets.update \
- --parameters serviceName=storage.googleapis.com \
- --parameters resourceName=projects/_/buckets/${MY_GCS_BUCKET}
+gcloud beta events triggers create my-gcs-trigger \
+  --destination-run-service ${MY_RUN_SERVICE} \
+  --matching-criteria type=google.cloud.audit.log.v1.written \
+  --matching-criteria methodName=storage.buckets.update \
+  --matching-criteria serviceName=storage.googleapis.com \
+  --matching-criteria resourceName=projects/_/buckets/"$MY_GCS_BUCKET"
 ```
 
 ## Test
@@ -68,7 +48,7 @@ gcloud alpha events triggers create ${MY_GCS_TRIGGER} \
 Test your Cloud Run service by publishing a message to the topic:
 
 ```sh
-gsutil defstorageclass set STANDARD gs://${MY_GCS_BUCKET}
+gsutil defstorageclass set NEARLINE gs://${MY_GCS_BUCKET}
 ```
 
 Observe the Cloud Run service printing upon receiving an event in

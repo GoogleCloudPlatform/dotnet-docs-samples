@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START run_events_pubsub_handler]
+// [START eventarc_pubsub_handler]
 
 using CloudNative.CloudEvents;
 using Google.Events;
@@ -82,4 +82,4 @@ public class Startup
             + $"Data: {cloudEvent.Data}";
     }
 }
-// [END run_events_pubsub_handler]
+// [END eventarc_pubsub_handler]
