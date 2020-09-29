@@ -31,10 +31,10 @@ public class UploadFileWithKmsKeyTest
         GetMetadataSample getMetadataSample = new GetMetadataSample();
 
         // upload file with kms key
-        uploadFileWithKmsKeySample.UploadFileWithKmsKey(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric,
+        uploadFileWithKmsKeySample.UploadFileWithKmsKey(_bucketFixture.ProjectId, _bucketFixture.BucketNameRegional,
             _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName, _bucketFixture.FilePath, "HelloUploadWithKmsKey.txt");
 
-        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "HelloUploadWithKmsKey.txt");
+        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameRegional, "HelloUploadWithKmsKey.txt");
         Assert.Equal(metadata.KmsKeyName, _bucketFixture.KmsKeyName);
     }
 }
