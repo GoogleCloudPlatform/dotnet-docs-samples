@@ -21,6 +21,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -88,6 +89,7 @@ namespace GoogleCloudSamples
     {
         public BucketFixture()
         {
+            CleanupBuckets();
             BucketName = StorageTest.CreateRandomBucket();
             BucketName1 = StorageTest.CreateRandomRegionalBucket();
         }
@@ -99,6 +101,51 @@ namespace GoogleCloudSamples
 
         public string BucketName { get; private set; }
         public string BucketName1 { get; private set; }
+
+        public void CleanupBuckets()
+        {
+            var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            var storage = StorageClient.Create();
+            var buckets = storage.ListBuckets(projectId);
+            foreach (var bucket in buckets)
+            {
+                var bucketName = bucket.Name;
+                var isFileDeleteError = false;
+                var storageObjects = storage.ListObjects(bucketName, options: new ListObjectsOptions
+                {
+                    UserProject = projectId
+                });
+                foreach (var storageObject in storageObjects)
+                {
+                    try
+                    {
+                        storage.DeleteObject(bucketName, storageObject.Name, new DeleteObjectOptions
+                        {
+                            UserProject = projectId
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        isFileDeleteError = true;
+                        continue;
+                    }
+                }
+                if (!isFileDeleteError)
+                {
+                    try
+                    {
+                        storage.DeleteBucket(bucketName, new DeleteBucketOptions
+                        {
+                            UserProject = projectId
+                        });
+                        Console.WriteLine($"Deleted {bucketName}.");
+                        Thread.Sleep(1000);
+                    }
+                    catch (Exception) { }
+
+                }
+            }
+        }
     }
 
     public class GarbageCollector : IDisposable
