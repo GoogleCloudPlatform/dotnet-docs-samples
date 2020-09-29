@@ -1,3 +1,4 @@
+<!-- [START functions_csharp_project] -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,3 +9,4 @@
     <PackageReference Include="Google.Cloud.Functions.Hosting" Version="1.0.0-alpha12" />
   </ItemGroup>
 </Project>
+<!-- [END functions_csharp_project] -->
