@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.0.2" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
-    <PackageReference Include="Google.Cloud.Datastore.V1" Version="3.0.0" />
+    <PackageReference Include="Google.Cloud.Datastore.V1" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.0.2" />
   </ItemGroup>
