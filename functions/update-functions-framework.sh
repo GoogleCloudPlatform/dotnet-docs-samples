@@ -11,6 +11,6 @@ fi
 for proj in $(find . -name '*proj')
 do
   sed -i -e "s/Include=\"Google.Cloud.Functions.Framework\" Version=\".*\"/Include=\"Google.Cloud.Functions.Framework\" Version=\"$1\"/g" $proj
-  sed -i -e "s/Include=\"Google.Cloud.Functions.Invoker\" Version=\".*\"/Include=\"Google.Cloud.Functions.Invoker\" Version=\"$1\"/g" $proj
-  sed -i -e "s/Include=\"Google.Cloud.Functions.Invoker.Testing\" Version=\".*\"/Include=\"Google.Cloud.Functions.Invoker.Testing\" Version=\"$1\"/g" $proj
+  sed -i -e "s/Include=\"Google.Cloud.Functions.Hosting\" Version=\".*\"/Include=\"Google.Cloud.Functions.Hosting\" Version=\"$1\"/g" $proj
+  sed -i -e "s/Include=\"Google.Cloud.Functions.Testing\" Version=\".*\"/Include=\"Google.Cloud.Functions.Testing\" Version=\"$1\"/g" $proj
 done

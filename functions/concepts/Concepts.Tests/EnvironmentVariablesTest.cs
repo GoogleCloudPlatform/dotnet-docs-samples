@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Functions.Invoker.Testing;
+using Google.Cloud.Functions.Testing;
 using System;
 using System.Threading.Tasks;
 using Xunit;

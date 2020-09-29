@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using CloudNative.CloudEvents;
-using Google.Cloud.Functions.Invoker.Testing;
+using Google.Cloud.Functions.Testing;
 using Google.Events;
 using Google.Events.Protobuf.Firebase.RemoteConfig.V1;
 using System;
