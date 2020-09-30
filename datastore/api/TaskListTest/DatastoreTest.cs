@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Xunit;
+using System.Threading;
 
 namespace GoogleCloudSamples
 {
@@ -41,12 +42,10 @@ namespace GoogleCloudSamples
             // Eventually consistency can take a long time.
             MaxTryCount = 8
         };
-        private readonly string _bucketName;
 
         public DatastoreTest()
         {
             _projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            _bucketName = Environment.GetEnvironmentVariable("CLOUD_STORAGE_BUCKET");
             _db = DatastoreDb.Create(_projectId, TestUtil.RandomName());
             _keyFactory = _db.CreateKeyFactory("Task");
             _sampleTask = new Entity()
