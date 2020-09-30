@@ -15,7 +15,6 @@
 // [START spanner_read_data_with_storing_index]
 
 using Google.Cloud.Spanner.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -28,10 +27,9 @@ public class QueryDataWithStoringIndexAsyncSample
     }
 
     public async Task<List<Album>> QueryDataWithStoringIndexAsync(string projectId, string instanceId, string databaseId,
-        string startTitle = "Aardvark", string endTitle = "Goo")
+        string startTitle, string endTitle)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
         var cmd = connection.CreateSelectCommand(
@@ -40,23 +38,18 @@ public class QueryDataWithStoringIndexAsyncSample
             + $"WHERE AlbumTitle >= @startTitle "
             + $"AND AlbumTitle < @endTitle",
             new SpannerParameterCollection {
-                { "startTitle", SpannerDbType.String },
-                { "endTitle", SpannerDbType.String }
+                { "startTitle", SpannerDbType.String, startTitle },
+                { "endTitle", SpannerDbType.String, endTitle }
             });
-
-        cmd.Parameters["startTitle"].Value = startTitle;
-        cmd.Parameters["endTitle"].Value = endTitle;
 
         var albums = new List<Album>();
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            var albumId = reader.GetFieldValue<int>("AlbumId");
-            var albumTitle = reader.GetFieldValue<string>("AlbumTitle");
             albums.Add(new Album
             {
-                AlbumId = albumId,
-                AlbumTitle = albumTitle,
+                AlbumId = reader.GetFieldValue<int>("AlbumId"),
+                AlbumTitle = reader.GetFieldValue<string>("AlbumTitle"),
             });
         }
         return albums;

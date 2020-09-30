@@ -34,9 +34,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string BackupId { get; } = "my-test-database-backup";
     public string ToBeCancelledBackupId { get; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string RestoredDatabaseId { get; } = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string ConnectionString { get; set; }
 
     public async Task InitializeAsync()
     {
+        ConnectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
         // Don't need to cleanup stale Backups and Databases when instance is new.
         var isExistingInstance = InitializeInstance();
         if (isExistingInstance)
@@ -177,9 +179,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget)
     {
-        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/" +
-            $"databases/{DatabaseId}";
-        using var connection = new SpannerConnection(connectionString);
+        using var connection = new SpannerConnection(ConnectionString);
         await connection.OpenAsync();
 
         for (int i = 1; i <= 2; ++i)
@@ -200,10 +200,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public async Task CreateVenuesTableAndInsertDataAsync()
     {
-        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/" +
-            $"databases/{DatabaseId}";
         // Create connection to Cloud Spanner.
-        using var connection = new SpannerConnection(connectionString);
+        using var connection = new SpannerConnection(ConnectionString);
 
         // Define create table statement for Venues.
         string createTableStatement =
@@ -239,10 +237,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public async Task DeleteVenuesTable()
     {
-        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/" +
-            $"databases/{DatabaseId}";
         // Create connection to Cloud Spanner.
-        using var connection = new SpannerConnection(connectionString);
+        using var connection = new SpannerConnection(ConnectionString);
 
         // Drop the Venues table.
         using var cmd = connection.CreateDdlCommand(@"DROP TABLE Venues");
@@ -257,7 +253,6 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task InsertStructDataAsync()
     {
-        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
         List<Singer> singers = new List<Singer>
         {
             new Singer { SingerId = 6, FirstName = "Elena", LastName = "Campbell" },
@@ -268,18 +263,19 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             new Singer { SingerId = 11, FirstName = "Earlean", LastName = "Holland" }
         };
 
-        using var connection = new SpannerConnection(connectionString);
+        using var connection = new SpannerConnection(ConnectionString);
         await connection.OpenAsync();
 
-        var cmd = connection.CreateInsertCommand("Singers",
+        var rows = await Task.WhenAll(singers.Select(singer =>
+        {
+            var cmd = connection.CreateInsertCommand("Singers",
               new SpannerParameterCollection
               {
                   { "SingerId", SpannerDbType.Int64 },
                   { "FirstName", SpannerDbType.String },
                   { "LastName", SpannerDbType.String }
               });
-        var rows = await Task.WhenAll(singers.Select(singer =>
-        {
+
             cmd.Parameters["SingerId"].Value = singer.SingerId;
             cmd.Parameters["FirstName"].Value = singer.FirstName;
             cmd.Parameters["LastName"].Value = singer.LastName;
@@ -289,9 +285,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task AddCommitTimestampAsync()
     {
-        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
         string alterStatement = "ALTER TABLE Albums ADD COLUMN LastUpdateTime TIMESTAMP OPTIONS (allow_commit_timestamp=true)";
-        using var connection = new SpannerConnection(connectionString);
+        using var connection = new SpannerConnection(ConnectionString);
         var updateCmd = connection.CreateDdlCommand(alterStatement);
         await updateCmd.ExecuteNonQueryAsync();
     }

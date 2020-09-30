@@ -30,28 +30,20 @@ public class QueryDataWithTimestampColumnAsyncSample
 
     public async Task<List<Album>> QueryDataWithTimestampColumnAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+
+        using var connection = new SpannerConnection(connectionString);
+        using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, LastUpdateTime FROM Albums");
 
         var albums = new List<Album>();
-        using var connection = new SpannerConnection(connectionString);
-        var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, LastUpdateTime FROM Albums");
-
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            DateTime? timestamp = null;
-            if (reader["LastUpdateTime"] != DBNull.Value)
-            {
-                timestamp = reader.GetFieldValue<DateTime>("LastUpdateTime");
-            }
-            var singerId = reader.GetFieldValue<int>("SingerId");
-            var albumId = reader.GetFieldValue<int>("AlbumId");
             albums.Add(new Album
             {
-                SingerId = singerId,
-                AlbumId = albumId,
-                LastUpdateTime = timestamp
+                SingerId = reader.GetFieldValue<int>("SingerId"),
+                AlbumId = reader.GetFieldValue<int>("AlbumId"),
+                LastUpdateTime = reader.IsDBNull(reader.GetOrdinal("LastUpdateTime")) ? (DateTime?)null : reader.GetFieldValue<DateTime>("LastUpdateTime")
             });
         }
         return albums;

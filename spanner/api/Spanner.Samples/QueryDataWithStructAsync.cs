@@ -15,7 +15,6 @@
 // [START spanner_query_data_with_struct]
 
 using Google.Cloud.Spanner.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -31,8 +30,7 @@ public class QueryDataWithStructAsyncSample
         };
         // [END spanner_create_struct_with_data]
 
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         var singerIds = new List<int>();
         using var connection = new SpannerConnection(connectionString);
@@ -45,10 +43,7 @@ public class QueryDataWithStructAsyncSample
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            var singerId = reader.GetFieldValue<int>("SingerId");
-            singerIds.Add(singerId);
-
-            Console.WriteLine($"SingerId: {singerId}");
+            singerIds.Add(reader.GetFieldValue<int>("SingerId"));
         }
         return singerIds;
     }

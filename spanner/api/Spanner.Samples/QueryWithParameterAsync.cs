@@ -15,7 +15,6 @@
 // [START spanner_query_with_parameter]
 
 using Google.Cloud.Spanner.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -30,26 +29,21 @@ public class QueryWithParameterAsyncSample
 
     public async Task<List<Singer>> QueryWithParameterAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
-        var singers = new List<Singer>();
-        var cmd = connection.CreateSelectCommand($"SELECT SingerId, FirstName, LastName FROM Singers WHERE LastName = @lastName",
-            new SpannerParameterCollection { { "lastName", SpannerDbType.String } });
+        using var cmd = connection.CreateSelectCommand($"SELECT SingerId, FirstName, LastName FROM Singers WHERE LastName = @lastName",
+            new SpannerParameterCollection { { "lastName", SpannerDbType.String, "Richards" } });
 
-        cmd.Parameters["lastName"].Value = "Richards";
+        var singers = new List<Singer>();
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            var singerId = reader.GetFieldValue<int>("SingerId");
-            var firstName = reader.GetFieldValue<string>("FirstName");
-            var lastName = reader.GetFieldValue<string>("LastName");
             singers.Add(new Singer
             {
-                SingerId = singerId,
-                FirstName = firstName,
-                LastName = lastName
+                SingerId = reader.GetFieldValue<int>("SingerId"),
+                FirstName = reader.GetFieldValue<string>("FirstName"),
+                LastName = reader.GetFieldValue<string>("LastName")
             });
         }
         return singers;

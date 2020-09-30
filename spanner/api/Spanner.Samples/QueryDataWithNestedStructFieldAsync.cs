@@ -23,14 +23,16 @@ public class QueryDataWithNestedStructFieldAsyncSample
 {
     public async Task<List<int>> QueryDataWithNestedStructFieldAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
+        // [START spanner_create_user_defined_struct]
         SpannerStruct name1 = new SpannerStruct
         {
             { "FirstName", SpannerDbType.String, "Elena" },
             { "LastName", SpannerDbType.String, "Campbell" }
         };
+        // [END spanner_create_user_defined_struct]
+
         SpannerStruct name2 = new SpannerStruct
         {
             { "FirstName", SpannerDbType.String, "Hannah" },
@@ -57,7 +59,7 @@ public class QueryDataWithNestedStructFieldAsyncSample
             var singerId = reader.GetFieldValue<int>("SingerId");
             singerIds.Add(singerId);
             Console.WriteLine($"SingerId: {singerId}");
-            Console.WriteLine(reader.GetFieldValue<string>(1));
+            Console.WriteLine($"Song Name: {reader.GetFieldValue<string>(1)}");
         }
         return singerIds;
     }

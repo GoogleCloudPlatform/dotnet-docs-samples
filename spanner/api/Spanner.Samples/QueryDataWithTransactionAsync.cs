@@ -31,8 +31,7 @@ public class QueryDataWithTransactionAsyncSample
 
     public async Task<List<Album>> QueryDataWithTransactionAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         var albums = new List<Album>();
         using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
@@ -42,7 +41,7 @@ public class QueryDataWithTransactionAsyncSample
         // transaction read only when it connects to the outer
         // transaction scope.
         await connection.OpenAsReadOnlyAsync();
-        var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
+        using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
 
         // Read #1.
         using (var reader = await cmd.ExecuteReaderAsync())
@@ -62,14 +61,11 @@ public class QueryDataWithTransactionAsyncSample
         {
             while (await reader.ReadAsync())
             {
-                var singerId = reader.GetFieldValue<int>("SingerId");
-                var albumId = reader.GetFieldValue<int>("AlbumId");
-                var albumTitle = reader.GetFieldValue<string>("AlbumTitle");
                 albums.Add(new Album
                 {
-                    AlbumId = albumId,
-                    SingerId = singerId,
-                    AlbumTitle = albumTitle
+                    AlbumId = reader.GetFieldValue<int>("AlbumId"),
+                    SingerId = reader.GetFieldValue<int>("SingerId"),
+                    AlbumTitle = reader.GetFieldValue<string>("AlbumTitle")
                 });
             }
         }

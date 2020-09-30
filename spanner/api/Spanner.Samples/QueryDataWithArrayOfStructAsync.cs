@@ -15,7 +15,6 @@
 // [START spanner_query_data_with_array_of_struct]
 
 using Google.Cloud.Spanner.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -23,14 +22,6 @@ public class QueryDataWithArrayOfStructAsyncSample
 {
     public async Task<List<int>> QueryDataWithArrayOfStructAsync(string projectId, string instanceId, string databaseId)
     {
-        // [START spanner_create_user_defined_struct]
-        var nameType = new SpannerStruct
-        {
-            { "FirstName", SpannerDbType.String, null },
-            { "LastName", SpannerDbType.String, null }
-        };
-        // [END spanner_create_user_defined_struct]
-
         // [START spanner_create_array_of_struct_with_data]
         var bandMembers = new List<SpannerStruct>
         {
@@ -41,22 +32,16 @@ public class QueryDataWithArrayOfStructAsyncSample
         // [END spanner_create_array_of_struct_with_data]
 
         var singerIds = new List<int>();
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using var connection = new SpannerConnection(connectionString);
         using var cmd = connection.CreateSelectCommand(
-            "SELECT SingerId FROM Singers "
-            + "WHERE STRUCT<FirstName STRING, LastName STRING> "
+            "SELECT SingerId FROM Singers WHERE STRUCT<FirstName STRING, LastName STRING> "
             + "(FirstName, LastName) IN UNNEST(@names)");
+        cmd.Parameters.Add("names", SpannerDbType.ArrayOf(bandMembers[0].GetSpannerDbType()), bandMembers);
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
         {
-            cmd.Parameters.Add("names", SpannerDbType.ArrayOf(nameType.GetSpannerDbType()), bandMembers);
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                var singerId = reader.GetFieldValue<int>("SingerId");
-                singerIds.Add(singerId);
-                Console.WriteLine($"SingerId: {singerId}");
-            }
+            singerIds.Add(reader.GetFieldValue<int>("SingerId"));
         }
         return singerIds;
     }

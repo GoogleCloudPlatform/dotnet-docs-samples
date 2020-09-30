@@ -30,8 +30,7 @@ public class QueryDataWithTransactionCoreAsyncSample
 
     public async Task<List<Album>> QueryDataWithTransactionCoreAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         var albums = new List<Album>();
 
@@ -39,7 +38,7 @@ public class QueryDataWithTransactionCoreAsyncSample
         await connection.OpenAsync();
 
         using var transaction = await connection.BeginReadOnlyTransactionAsync();
-        var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
+        using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
         cmd.Transaction = transaction;
 
         // Read #1.
@@ -60,14 +59,11 @@ public class QueryDataWithTransactionCoreAsyncSample
         {
             while (await reader.ReadAsync())
             {
-                var singerId = reader.GetFieldValue<int>("SingerId");
-                var albumId = reader.GetFieldValue<int>("AlbumId");
-                var albumTitle = reader.GetFieldValue<string>("AlbumTitle");
                 albums.Add(new Album
                 {
-                    AlbumId = albumId,
-                    SingerId = singerId,
-                    AlbumTitle = albumTitle
+                    AlbumId = reader.GetFieldValue<int>("AlbumId"),
+                    SingerId = reader.GetFieldValue<int>("SingerId"),
+                    AlbumTitle = reader.GetFieldValue<string>("AlbumTitle")
                 });
             }
         }

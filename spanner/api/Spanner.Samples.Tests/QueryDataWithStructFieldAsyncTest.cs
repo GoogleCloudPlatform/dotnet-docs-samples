@@ -30,6 +30,6 @@ public class QueryDataWithStructFieldAsyncTest
     {
         QueryDataWithStructFieldAsyncSample sample = new QueryDataWithStructFieldAsyncSample();
         var singerIds = await sample.QueryDataWithStructFieldAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(singerIds, c => c == 6);
+        Assert.Contains(6, singerIds);
     }
 }

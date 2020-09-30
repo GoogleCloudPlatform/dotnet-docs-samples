@@ -22,20 +22,19 @@ public class UpdateDataWithTimestampColumnAsyncSample
 {
     public async Task<int> UpdateDataWithTimestampColumnAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
-        var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
+        using var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
         {
             { "SingerId", SpannerDbType.Int64 },
             { "AlbumId", SpannerDbType.Int64 },
             { "MarketingBudget", SpannerDbType.Int64 },
             { "LastUpdateTime", SpannerDbType.Timestamp },
-});
+        });
 
         var rowCount = 0;
-        var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Albums");
+        using var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Albums");
         using var reader = await cmdLookup.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
@@ -47,7 +46,7 @@ public class UpdateDataWithTimestampColumnAsyncSample
                 cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
                 rowCount += await cmd.ExecuteNonQueryAsync();
             }
-            if (reader.GetInt64(0) == 2 && reader.GetInt64(1) == 2)
+            if (reader.GetFieldValue<int>("SingerId") == 2 && reader.GetFieldValue<int>("AlbumId") == 2)
             {
                 cmd.Parameters["SingerId"].Value = reader.GetFieldValue<int>("SingerId");
                 cmd.Parameters["AlbumId"].Value = reader.GetFieldValue<int>("AlbumId");

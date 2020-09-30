@@ -29,7 +29,8 @@ public class QueryDataWithIndexAsyncTest
     public async Task TestQueryDataWithIndexAsync()
     {
         QueryDataWithIndexAsyncSample sample = new QueryDataWithIndexAsyncSample();
-        var albums = await sample.QueryDataWithIndexAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        var albums = await sample.QueryDataWithIndexAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
+            _spannerFixture.DatabaseId, "Aardvark", "Goo");
         Assert.Equal(2, albums.Count);
     }
 }

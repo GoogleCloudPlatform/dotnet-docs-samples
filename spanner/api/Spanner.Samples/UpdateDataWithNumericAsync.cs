@@ -31,8 +31,7 @@ public class UpdateDataWithNumericAsyncSample
 
     public async Task UpdateDataWithNumericAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/" +
-            $"databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         List<Venue> venues = new List<Venue>
         {
             new Venue { VenueId = 4, Revenue = SpannerNumeric.Parse("35000") },
@@ -48,12 +47,9 @@ public class UpdateDataWithNumericAsyncSample
             // Update rows in the Venues table.
             using var cmd = connection.CreateUpdateCommand("Venues", new SpannerParameterCollection
             {
-                    { "VenueId", SpannerDbType.Int64 },
-                    { "Revenue", SpannerDbType.Numeric }
+                    { "VenueId", SpannerDbType.Int64, venue.VenueId },
+                    { "Revenue", SpannerDbType.Numeric, venue.Revenue }
             });
-
-            cmd.Parameters["VenueId"].Value = venue.VenueId;
-            cmd.Parameters["Revenue"].Value = venue.Revenue;
             return cmd.ExecuteNonQueryAsync();
         }));
 

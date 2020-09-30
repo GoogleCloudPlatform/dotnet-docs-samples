@@ -25,11 +25,10 @@ public class ReadWriteWithTransactionAsyncSample
     {
         // This sample transfers 200,000 from the MarketingBudget
         // field of the second Album to the first Album. Make sure to run
-        // the addColumn and writeDataToNewColumn samples first,
+        // the Add Column and Write Data To New Column samples first,
         // in that order.
 
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         decimal transferAmount = 200000;
@@ -37,9 +36,9 @@ public class ReadWriteWithTransactionAsyncSample
         decimal firstBudget = 0;
 
         using var connection = new SpannerConnection(connectionString);
-        var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Albums WHERE SingerId = 2 AND AlbumId = 2");
+        using var cmdLookup1 = connection.CreateSelectCommand("SELECT * FROM Albums WHERE SingerId = 2 AND AlbumId = 2");
 
-        using (var reader = await cmdLookup.ExecuteReaderAsync())
+        using (var reader = await cmdLookup1.ExecuteReaderAsync())
         {
             while (await reader.ReadAsync())
             {
@@ -56,8 +55,8 @@ public class ReadWriteWithTransactionAsyncSample
         }
 
         // Read the first album's budget.
-        cmdLookup = connection.CreateSelectCommand("SELECT * FROM Albums WHERE SingerId = 1 and AlbumId = 1");
-        using (var reader = await cmdLookup.ExecuteReaderAsync())
+        using var cmdLookup2 = connection.CreateSelectCommand("SELECT * FROM Albums WHERE SingerId = 1 and AlbumId = 1");
+        using (var reader = await cmdLookup2.ExecuteReaderAsync())
         {
             while (await reader.ReadAsync())
             {
@@ -66,7 +65,7 @@ public class ReadWriteWithTransactionAsyncSample
         }
 
         // Specify update command parameters.
-        var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
+        using var cmdUpdate = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
         {
             { "SingerId", SpannerDbType.Int64 },
             { "AlbumId", SpannerDbType.Int64 },
@@ -75,17 +74,17 @@ public class ReadWriteWithTransactionAsyncSample
 
         // Update second album to remove the transfer amount.
         secondBudget -= transferAmount;
-        cmd.Parameters["SingerId"].Value = 2;
-        cmd.Parameters["AlbumId"].Value = 2;
-        cmd.Parameters["MarketingBudget"].Value = secondBudget;
-        var rowCount = await cmd.ExecuteNonQueryAsync();
+        cmdUpdate.Parameters["SingerId"].Value = 2;
+        cmdUpdate.Parameters["AlbumId"].Value = 2;
+        cmdUpdate.Parameters["MarketingBudget"].Value = secondBudget;
+        var rowCount = await cmdUpdate.ExecuteNonQueryAsync();
 
         // Update first album to add the transfer amount.
         firstBudget += transferAmount;
-        cmd.Parameters["SingerId"].Value = 1;
-        cmd.Parameters["AlbumId"].Value = 1;
-        cmd.Parameters["MarketingBudget"].Value = firstBudget;
-        rowCount += await cmd.ExecuteNonQueryAsync();
+        cmdUpdate.Parameters["SingerId"].Value = 1;
+        cmdUpdate.Parameters["AlbumId"].Value = 1;
+        cmdUpdate.Parameters["MarketingBudget"].Value = firstBudget;
+        rowCount += await cmdUpdate.ExecuteNonQueryAsync();
         scope.Complete();
         Console.WriteLine("Transaction complete.");
         return rowCount;

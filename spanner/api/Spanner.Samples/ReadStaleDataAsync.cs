@@ -30,29 +30,25 @@ public class ReadStaleDataAsyncSample
 
     public async Task<List<Album>> ReadStaleDataAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
-
-        var albums = new List<Album>();
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
         var staleness = TimestampBound.OfExactStaleness(TimeSpan.FromSeconds(15));
         using var transaction = await connection.BeginReadOnlyTransactionAsync(staleness);
-        var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
+        using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
         cmd.Transaction = transaction;
 
+        var albums = new List<Album>();
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            var singerId = reader.GetFieldValue<int>("SingerId");
-            var albumId = reader.GetFieldValue<int>("AlbumId");
-            var albumTitle = reader.GetFieldValue<string>("AlbumTitle");
             albums.Add(new Album
             {
-                SingerId = singerId,
-                AlbumId = albumId,
-                AlbumTitle = albumTitle
+                SingerId = reader.GetFieldValue<int>("SingerId"),
+                AlbumId = reader.GetFieldValue<int>("AlbumId"),
+                AlbumTitle = reader.GetFieldValue<string>("AlbumTitle")
             });
         }
         return albums;

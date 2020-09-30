@@ -15,7 +15,6 @@
 // [START spanner_query_data_with_new_column]
 
 using Google.Cloud.Spanner.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -30,28 +29,20 @@ public class QueryNewColumnAsyncSample
 
     public async Task<List<Album>> QueryNewColumnAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         var albums = new List<Album>();
         using var connection = new SpannerConnection(connectionString);
-        var cmd = connection.CreateSelectCommand("SELECT * FROM Albums");
+        using var cmd = connection.CreateSelectCommand("SELECT * FROM Albums");
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            long? budget = null;
-            if (reader["MarketingBudget"] != DBNull.Value)
-            {
-                budget = reader.GetFieldValue<long>("MarketingBudget");
-            }
-            var singerId = reader.GetFieldValue<int>("SingerId");
-            var albumId = reader.GetFieldValue<int>("AlbumId");
             albums.Add(new Album
             {
-                SingerId = singerId,
-                AlbumId = albumId,
-                MarketingBudget = budget
-            });
+                SingerId = reader.GetFieldValue<int>("SingerId"),
+                AlbumId = reader.GetFieldValue<int>("AlbumId"),
+                MarketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? (long?)null : reader.GetFieldValue<long>("MarketingBudget")
+            }); ;
         }
         return albums;
     }

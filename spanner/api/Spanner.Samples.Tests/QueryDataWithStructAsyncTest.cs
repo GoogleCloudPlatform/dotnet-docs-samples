@@ -29,6 +29,6 @@ public class QueryDataWithStructAsyncTest
     {
         QueryDataWithStructAsyncSample sample = new QueryDataWithStructAsyncSample();
         var singerIds = await sample.QueryDataWithStructAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(singerIds, c => c == 6);
+        Assert.Contains(6, singerIds);
     }
 }

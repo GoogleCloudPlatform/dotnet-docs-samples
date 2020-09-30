@@ -29,38 +29,30 @@ public class QueryDataWithIndexAsyncSample
     }
 
     public async Task<List<Album>> QueryDataWithIndexAsync(string projectId, string instanceId, string databaseId,
-        string startTitle = "Aardvark", string endTitle = "Goo")
+        string startTitle, string endTitle)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
-
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using var connection = new SpannerConnection(connectionString);
-        var cmd = connection.CreateSelectCommand(
+        using var cmd = connection.CreateSelectCommand(
             "SELECT AlbumId, AlbumTitle, MarketingBudget FROM Albums@ "
             + "{FORCE_INDEX=AlbumsByAlbumTitle} "
             + $"WHERE AlbumTitle >= @startTitle "
             + $"AND AlbumTitle < @endTitle",
             new SpannerParameterCollection
             {
-                { "startTitle", SpannerDbType.String },
-                { "endTitle", SpannerDbType.String }
+                { "startTitle", SpannerDbType.String, startTitle },
+                { "endTitle", SpannerDbType.String, endTitle }
             });
-
-        cmd.Parameters["startTitle"].Value = startTitle;
-        cmd.Parameters["endTitle"].Value = endTitle;
 
         var albums = new List<Album>();
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            var marketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? 0 : reader.GetFieldValue<long>("MarketingBudget");
-            var albumId = reader.GetFieldValue<int>("AlbumId");
-            var albumTitle = reader.GetFieldValue<string>("AlbumTitle");
             albums.Add(new Album
             {
-                AlbumId = albumId,
-                AlbumTitle = albumTitle,
-                MarketingBudget = marketingBudget
+                AlbumId = reader.GetFieldValue<int>("AlbumId"),
+                AlbumTitle = reader.GetFieldValue<string>("AlbumTitle"),
+                MarketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? 0 : reader.GetFieldValue<long>("MarketingBudget")
             });
         }
         return albums;

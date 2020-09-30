@@ -23,41 +23,37 @@ public class CreateDatabaseAsyncSample
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
 
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            string createStatement = $"CREATE DATABASE `{databaseId}`";
-            var cmd = connection.CreateDdlCommand(createStatement);
-            await cmd.ExecuteNonQueryAsync();
-        }
+        using var connection1 = new SpannerConnection(connectionString);
+        string createStatement = $"CREATE DATABASE `{databaseId}`";
+        using var createDbCommand = connection1.CreateDdlCommand(createStatement);
+        await createDbCommand.ExecuteNonQueryAsync();
 
         // Update connection string with Database ID for table creation.
         connectionString += $"/databases/{databaseId}";
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            // Define create table statement for table #1.
-            string createTableStatement =
-            @"CREATE TABLE Singers (
+        using var connection2 = new SpannerConnection(connectionString);
+        // Define create table statement for table #1.
+        string createTableStatement =
+        @"CREATE TABLE Singers (
                      SingerId INT64 NOT NULL,
                      FirstName STRING(1024),
                      LastName STRING(1024),
                      ComposerInfo BYTES(MAX)
                  ) PRIMARY KEY (SingerId)";
 
-            var cmd = connection.CreateDdlCommand(createTableStatement);
-            await cmd.ExecuteNonQueryAsync();
+        using var createTableCommand = connection2.CreateDdlCommand(createTableStatement);
+        await createTableCommand.ExecuteNonQueryAsync();
 
-            // Define create table statement for table #2.
-            createTableStatement =
-            @"CREATE TABLE Albums (
+        // Define create table statement for table #2.
+        createTableStatement =
+        @"CREATE TABLE Albums (
                      SingerId INT64 NOT NULL,
                      AlbumId INT64 NOT NULL,
                      AlbumTitle STRING(MAX)
                  ) PRIMARY KEY (SingerId, AlbumId),
                  INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
 
-            cmd = connection.CreateDdlCommand(createTableStatement);
-            await cmd.ExecuteNonQueryAsync();
-        }
+        using var createTableCommand1 = connection2.CreateDdlCommand(createTableStatement);
+        await createTableCommand1.ExecuteNonQueryAsync();
     }
 }
 // [END spanner_create_database]
