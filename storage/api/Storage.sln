@@ -2,8 +2,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage", "Storage\Storage.csproj", "{CA868BE7-6D36-4974-AD2A-9FAB12841702}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage.Samples", "Storage.Samples\Storage.Samples.csproj", "{727EF6DC-92EC-4AB5-A175-CA53268A9243}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage.Samples.Tests", "Storage.Samples.Tests\Storage.Samples.Tests.csproj", "{39B3EF11-7DA6-4CF4-85E7-ED213C25CA57}"
@@ -18,18 +16,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Debug|x64.Build.0 = Debug|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Debug|x86.Build.0 = Debug|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Release|x64.ActiveCfg = Release|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Release|x64.Build.0 = Release|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Release|x86.ActiveCfg = Release|Any CPU
-		{CA868BE7-6D36-4974-AD2A-9FAB12841702}.Release|x86.Build.0 = Release|Any CPU
 		{727EF6DC-92EC-4AB5-A175-CA53268A9243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{727EF6DC-92EC-4AB5-A175-CA53268A9243}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{727EF6DC-92EC-4AB5-A175-CA53268A9243}.Debug|x64.ActiveCfg = Debug|Any CPU
