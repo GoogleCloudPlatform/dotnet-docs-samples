@@ -15,7 +15,7 @@
 // [START functions_imagemagick_setup]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
-using Google.Cloud.Functions.Invoker;
+using Google.Cloud.Functions.Hosting;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.Vision.V1;
 using Google.Events.Protobuf.Cloud.Storage.V1;

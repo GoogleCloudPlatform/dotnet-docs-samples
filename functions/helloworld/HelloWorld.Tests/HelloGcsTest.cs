@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using CloudNative.CloudEvents;
-using Google.Cloud.Functions.Invoker.Testing;
+using Google.Cloud.Functions.Testing;
 using Google.Events;
 using Google.Events.Protobuf.Cloud.Storage.V1;
 using Google.Protobuf.WellKnownTypes;
