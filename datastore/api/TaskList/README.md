@@ -17,18 +17,11 @@ can use [this older sample](
 
 1.  **Follow the set-up instructions in [the documentation](https://cloud.google.com/dotnet/docs/setup).**
 
-2.  Enable APIs for your project.
+4.  Enable APIs for your project.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=datastore.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud Datastore API.
-    
-3. Set Environment Variables
-   1. GOOGLE_CLOUD_PROJECT - Google Cloud Project Id
-   2. CLOUD_STORAGE_BUCKET - Google Cloud Storage Bucket Name
 
-4. Roles to be set in your Service Account and App Engine default service account:
-    Datastore Import Export Admin, or Cloud Datastore Owner, or Owner Storage Admin, or Owner.
-
-5.  From the command line:
+9.  From the command line:
     ```ps1
     PS > dotnet restore
     PS > dotnet run
