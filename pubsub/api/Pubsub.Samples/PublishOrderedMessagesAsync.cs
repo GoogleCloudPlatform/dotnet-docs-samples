@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_quickstart_ordered_publisher]
+// [START pubsub_publish_with_ordering_keys]
 // [START pubsub_publish]
 
 using Google.Cloud.PubSub.V1;
@@ -55,4 +55,4 @@ public class PublishOrderedMessagesAsyncSample
     }
 }
 // [END pubsub_publish]
-// [END pubsub_quickstart_ordered_publisher]
+// [END pubsub_publish_with_ordering_keys]

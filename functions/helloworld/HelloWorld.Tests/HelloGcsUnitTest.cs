@@ -14,7 +14,7 @@
 
 // [START functions_storage_unit_test]
 using CloudNative.CloudEvents;
-using Google.Cloud.Functions.Invoker.Testing;
+using Google.Cloud.Functions.Testing;
 using Google.Events;
 using Google.Events.Protobuf.Cloud.Storage.V1;
 using Microsoft.Extensions.Logging;
@@ -40,9 +40,9 @@ namespace HelloWorld.Tests
             var function = new HelloGcs.Function(logger);
             await function.HandleAsync(cloudEvent, data, CancellationToken.None);
 
-            // Check the log results
-            var logEntry = Assert.Single(logger.ListLogEntries());
-            Assert.Equal("File new-file.txt uploaded", logEntry.Message);
+            // Check the log results - just the entry starting with "File:".
+            var logEntry = Assert.Single(logger.ListLogEntries(), entry => entry.Message.StartsWith("File:"));
+            Assert.Equal("File: new-file.txt", logEntry.Message);
             Assert.Equal(LogLevel.Information, logEntry.Level);
         }
     }

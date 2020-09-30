@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START functions_firestore_reactive]
+// [START functions_firebase_reactive]
 using CloudNative.CloudEvents;
 using Google.Cloud.Firestore;
 using Google.Cloud.Functions.Framework;
-using Google.Cloud.Functions.Invoker;
+using Google.Cloud.Functions.Hosting;
 using Google.Events.Protobuf.Cloud.Firestore.V1;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -80,4 +80,4 @@ namespace FirestoreReactive
         }
     }
 }
-// [END functions_firestore_reactive]
+// [END functions_firebase_reactive]

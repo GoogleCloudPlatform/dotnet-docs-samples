@@ -41,7 +41,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         var isExistingInstance = InitializeInstance();
         if (isExistingInstance)
         {
-            await DeleteStaleBackupsAndDatabasesAsync();
+            await DeleteStaleDatabasesAsync();
         }
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
@@ -69,57 +69,33 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    private async Task DeleteStaleBackupsAndDatabasesAsync()
+    /// <summary>
+    /// Deletes 5 oldest databases if the number of databases is more than 94.
+    /// This is to avoid resource exhausted errors.
+    /// </summary>
+    private async Task DeleteStaleDatabasesAsync()
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var databases = databaseAdminClient.ListDatabases(instanceName)
-            .Where(c => c.DatabaseName.DatabaseId.StartsWith("my-db-") || c.DatabaseName.DatabaseId.StartsWith("my-restore-db-"));
-        var databasesToDelete = new List<string>();
+        var databases = databaseAdminClient.ListDatabases(instanceName);
 
-        // Delete all the databases created before 72 hrs.
-        var timestamp = DateTimeOffset.UtcNow.AddHours(-72).ToUnixTimeMilliseconds();
-        foreach (var database in databases)
+        if (databases.Count() < 95)
         {
-            var databaseId = database.DatabaseName.DatabaseId.Replace("my-restore-db-", "").Replace("my-db-", "");
-            if (long.TryParse(databaseId, out long dbCreationTime) && dbCreationTime <= timestamp)
-            {
-                databasesToDelete.Add(database.DatabaseName.DatabaseId);
-            }
+            return;
         }
 
-        await Console.Out.WriteLineAsync($"{databasesToDelete.Count} old databases found.");
-
-        // Get backups.
-        ListBackupsRequest request = new ListBackupsRequest
-        {
-            ParentAsInstanceName = instanceName,
-            Filter = $"database:my-db-"
-        };
-        var backups = databaseAdminClient.ListBackups(request);
-
-        // Backups that belong to the databases to be deleted.
-        var backupsToDelete = backups.Where(c => databasesToDelete.Contains(DatabaseName.Parse(c.Database).DatabaseId));
-
-        await Console.Out.WriteLineAsync($"{backupsToDelete.Count()} old backups found.");
-
-        // Delete the backups.
-        foreach (var backup in backupsToDelete)
-        {
-            try
-            {
-                DeleteBackupSample deleteBackupSample = new DeleteBackupSample();
-                deleteBackupSample.DeleteBackup(ProjectId, InstanceId, backup.BackupName.BackupId);
-            }
-            catch (Exception) { }
-        }
+        var databasesToDelete = databases
+            .OrderBy(db => long.TryParse(
+                db.DatabaseName.DatabaseId.Replace("my-db-", "").Replace("my-restore-db-", ""),
+                out long creationDate) ? creationDate : long.MaxValue)
+            .Take(5);
 
         // Delete the databases.
-        foreach (var databaseId in databasesToDelete)
+        foreach (var database in databasesToDelete)
         {
             try
             {
-                await DeleteDatabaseAsync(databaseId);
+                await DeleteDatabaseAsync(database.DatabaseName.DatabaseId);
             }
             catch (Exception) { }
         }
@@ -219,5 +195,62 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             cmd.Parameters["MarketingBudget"].Value = i == 1 ? firstAlbumBudget : secondAlbumBudget;
             await cmd.ExecuteNonQueryAsync();
         }
+    }
+
+    public async Task CreateVenuesTableAndInsertDataAsync()
+    {
+        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/" +
+            $"databases/{DatabaseId}";
+        // Create connection to Cloud Spanner.
+        using var connection = new SpannerConnection(connectionString);
+
+        // Define create table statement for Venues.
+        string createTableStatement =
+        @"CREATE TABLE Venues (
+                 VenueId INT64 NOT NULL,
+                 VenueName STRING(1024),
+             ) PRIMARY KEY (VenueId)";
+
+        using var cmd = connection.CreateDdlCommand(createTableStatement);
+        await cmd.ExecuteNonQueryAsync();
+
+        List<Venue> venues = new List<Venue>
+        {
+            new Venue { VenueId = 4, VenueName = "Venue 4" },
+            new Venue { VenueId = 19, VenueName = "Venue 19" },
+            new Venue { VenueId = 42, VenueName = "Venue 42" },
+        };
+
+        await Task.WhenAll(venues.Select(venue =>
+        {
+            // Insert rows into the Venues table.
+            using var cmd = connection.CreateInsertCommand("Venues", new SpannerParameterCollection
+            {
+                { "VenueId", SpannerDbType.Int64 },
+                { "VenueName", SpannerDbType.String }
+            });
+
+            cmd.Parameters["VenueId"].Value = venue.VenueId;
+            cmd.Parameters["VenueName"].Value = venue.VenueName;
+            return cmd.ExecuteNonQueryAsync();
+        }));
+    }
+
+    public async Task DeleteVenuesTable()
+    {
+        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/" +
+            $"databases/{DatabaseId}";
+        // Create connection to Cloud Spanner.
+        using var connection = new SpannerConnection(connectionString);
+
+        // Drop the Venues table.
+        using var cmd = connection.CreateDdlCommand(@"DROP TABLE Venues");
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    private class Venue
+    {
+        public int VenueId { get; set; }
+        public string VenueName { get; set; }
     }
 }

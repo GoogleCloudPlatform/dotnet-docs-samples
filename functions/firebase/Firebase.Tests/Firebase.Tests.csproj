@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
-    <PackageReference Include="Google.Cloud.Functions.Invoker.Testing" Version="1.0.0-alpha11" />
+    <PackageReference Include="Google.Cloud.Functions.Testing" Version="1.0.0-alpha12" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FirebaseAnalytics\FirebaseAnalytics.csproj" />
     <ProjectReference Include="..\FirebaseAuth\FirebaseAuth.csproj" />
     <ProjectReference Include="..\FirebaseFirestore\FirebaseFirestore.csproj" />
     <ProjectReference Include="..\FirebaseRemoteConfig\FirebaseRemoteConfig.csproj" />
