@@ -32,7 +32,7 @@ public class QueryDataWithTimestampColumnAsyncTest
         UpdateDataWithTimestampColumnAsyncSample updateWithTimestamp = new UpdateDataWithTimestampColumnAsyncSample();
         await updateWithTimestamp.UpdateDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
         var albums = await sample.QueryDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(albums, a => a.AlbumId == 1 && a.LastUpdateTime != null);
-        Assert.Contains(albums, a => a.AlbumId == 2 && a.LastUpdateTime != null);
+        Assert.Contains(albums, a => a.AlbumId == 1 && a.SingerId == 1 && a.LastUpdateTime != null);
+        Assert.Contains(albums, a => a.AlbumId == 2 && a.SingerId == 2 && a.LastUpdateTime != null);
     }
 }

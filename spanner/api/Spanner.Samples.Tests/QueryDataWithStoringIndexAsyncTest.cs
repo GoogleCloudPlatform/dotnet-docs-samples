@@ -29,8 +29,7 @@ public class QueryDataWithStoringIndexAsyncTest
     public async Task TestQueryDataWithStoringIndexAsync()
     {
         QueryDataWithStoringIndexAsyncSample sample = new QueryDataWithStoringIndexAsyncSample();
-        var albums = await sample.QueryDataWithStoringIndexAsync(
-            _spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId, "Aardvark", "Goo");
-        Assert.Equal(2, albums.Count);
+        var albums = await sample.QueryDataWithStoringIndexAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Contains(albums, a => a.AlbumId == 1 && a.AlbumTitle == "Total Junk");
     }
 }

@@ -31,6 +31,6 @@ public class QueryDataWithIndexAsyncTest
         QueryDataWithIndexAsyncSample sample = new QueryDataWithIndexAsyncSample();
         var albums = await sample.QueryDataWithIndexAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
             _spannerFixture.DatabaseId, "Aardvark", "Goo");
-        Assert.Equal(2, albums.Count);
+        Assert.Contains(albums, a => a.AlbumId == 2 && a.AlbumTitle == "Go, Go, Go");
     }
 }

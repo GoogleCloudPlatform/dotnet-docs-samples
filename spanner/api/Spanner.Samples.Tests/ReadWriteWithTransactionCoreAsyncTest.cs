@@ -29,7 +29,7 @@ public class ReadWriteWithTransactionCoreAsyncTest
     public async Task TestReadWriteWithTransactionCoreAsync()
     {
         ReadWriteWithTransactionCoreAsyncSample sample = new ReadWriteWithTransactionCoreAsyncSample();
-        await _spannerFixture.RefillMarketingBudgetsAsync(30000, 40000);
+        await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000);
         var rowCount = await sample.ReadWriteWithTransactionCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
         Assert.Equal(2, rowCount);
     }

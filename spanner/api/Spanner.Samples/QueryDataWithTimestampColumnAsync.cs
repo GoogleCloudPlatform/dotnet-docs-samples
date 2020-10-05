@@ -26,6 +26,7 @@ public class QueryDataWithTimestampColumnAsyncSample
         public int SingerId { get; set; }
         public int AlbumId { get; set; }
         public DateTime? LastUpdateTime { get; set; }
+        public long? MarketingBudget { get; set; }
     }
 
     public async Task<List<Album>> QueryDataWithTimestampColumnAsync(string projectId, string instanceId, string databaseId)
@@ -33,7 +34,7 @@ public class QueryDataWithTimestampColumnAsyncSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
-        using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, LastUpdateTime FROM Albums");
+        using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, MarketingBudget, LastUpdateTime FROM Albums");
 
         var albums = new List<Album>();
         using var reader = await cmd.ExecuteReaderAsync();
@@ -43,7 +44,8 @@ public class QueryDataWithTimestampColumnAsyncSample
             {
                 SingerId = reader.GetFieldValue<int>("SingerId"),
                 AlbumId = reader.GetFieldValue<int>("AlbumId"),
-                LastUpdateTime = reader.IsDBNull(reader.GetOrdinal("LastUpdateTime")) ? (DateTime?)null : reader.GetFieldValue<DateTime>("LastUpdateTime")
+                LastUpdateTime = reader.IsDBNull(reader.GetOrdinal("LastUpdateTime")) ? (DateTime?)null : reader.GetFieldValue<DateTime>("LastUpdateTime"),
+                MarketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? 0 : reader.GetFieldValue<long>("MarketingBudget")
             });
         }
         return albums;

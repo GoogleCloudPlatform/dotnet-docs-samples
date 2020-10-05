@@ -32,7 +32,8 @@ public class QueryWithParameterAsyncSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
-        using var cmd = connection.CreateSelectCommand($"SELECT SingerId, FirstName, LastName FROM Singers WHERE LastName = @lastName",
+        using var cmd = connection.CreateSelectCommand(
+            $"SELECT SingerId, FirstName, LastName FROM Singers WHERE LastName = @lastName",
             new SpannerParameterCollection { { "lastName", SpannerDbType.String, "Richards" } });
 
         var singers = new List<Singer>();

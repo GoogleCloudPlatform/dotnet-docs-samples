@@ -22,13 +22,13 @@ public class ReadWriteWithTransactionCoreAsyncSample
 {
     public async Task<int> ReadWriteWithTransactionCoreAsync(string projectId, string instanceId, string databaseId)
     {
-        // This sample transfers 20,000 from the MarketingBudget
+        // This sample transfers 200,000 from the MarketingBudget
         // field of the second Album to the first Album. Make sure to run
         // the Add Column and Write Data To New Column samples first,
         // in that order.
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
-        decimal transferAmount = 20000;
+        decimal transferAmount = 200000;
         decimal secondBudget = 0;
         decimal firstBudget = 0;
 

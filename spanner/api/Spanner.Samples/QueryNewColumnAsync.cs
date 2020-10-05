@@ -24,7 +24,7 @@ public class QueryNewColumnAsyncSample
     {
         public int SingerId { get; set; }
         public int AlbumId { get; set; }
-        public long? MarketingBudget { get; set; }
+        public long MarketingBudget { get; set; }
     }
 
     public async Task<List<Album>> QueryNewColumnAsync(string projectId, string instanceId, string databaseId)
@@ -41,8 +41,8 @@ public class QueryNewColumnAsyncSample
             {
                 SingerId = reader.GetFieldValue<int>("SingerId"),
                 AlbumId = reader.GetFieldValue<int>("AlbumId"),
-                MarketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? (long?)null : reader.GetFieldValue<long>("MarketingBudget")
-            }); ;
+                MarketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? 0 : reader.GetFieldValue<long>("MarketingBudget")
+            });
         }
         return albums;
     }

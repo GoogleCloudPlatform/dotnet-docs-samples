@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,6 +32,7 @@ public class QueryDataWithArrayOfStructAsyncTest
     {
         QueryDataWithArrayOfStructAsyncSample sample = new QueryDataWithArrayOfStructAsyncSample();
         var singerIds = await sample.QueryDataWithArrayOfStructAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(new List<int> { 8, 7, 6 }, singerIds);
+        var expectedSingerIds = new List<int> { 8, 7, 6 };
+        Assert.Equal(singerIds.Intersect(expectedSingerIds), expectedSingerIds);
     }
 }

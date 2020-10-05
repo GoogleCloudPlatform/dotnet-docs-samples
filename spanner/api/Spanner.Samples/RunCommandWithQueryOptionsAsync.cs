@@ -29,7 +29,7 @@ public class RunCommandWithQueryOptionsAsyncSample
 
     public async Task<List<Album>> RunCommandWithQueryOptionsAsync(string projectId, string instanceId, string databaseId)
     {
-        var connectionString = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        var connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using var connection = new SpannerConnection(connectionString);
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
 

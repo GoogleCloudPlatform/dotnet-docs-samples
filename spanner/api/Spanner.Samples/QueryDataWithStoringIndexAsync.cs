@@ -24,23 +24,17 @@ public class QueryDataWithStoringIndexAsyncSample
     {
         public int AlbumId { get; set; }
         public string AlbumTitle { get; set; }
+        public long? MarketingBudget { get; set; }
     }
 
-    public async Task<List<Album>> QueryDataWithStoringIndexAsync(string projectId, string instanceId, string databaseId,
-        string startTitle, string endTitle)
+    public async Task<List<Album>> QueryDataWithStoringIndexAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
         var cmd = connection.CreateSelectCommand(
-            "SELECT AlbumId, AlbumTitle FROM Albums@ "
-            + "{FORCE_INDEX=AlbumsByAlbumTitle2} "
-            + $"WHERE AlbumTitle >= @startTitle "
-            + $"AND AlbumTitle < @endTitle",
-            new SpannerParameterCollection {
-                { "startTitle", SpannerDbType.String, startTitle },
-                { "endTitle", SpannerDbType.String, endTitle }
-            });
+            "SELECT AlbumId, AlbumTitle, MarketingBudget FROM Albums@ "
+            + "{FORCE_INDEX=AlbumsByAlbumTitle2}");
 
         var albums = new List<Album>();
         using var reader = await cmd.ExecuteReaderAsync();
@@ -50,6 +44,7 @@ public class QueryDataWithStoringIndexAsyncSample
             {
                 AlbumId = reader.GetFieldValue<int>("AlbumId"),
                 AlbumTitle = reader.GetFieldValue<string>("AlbumTitle"),
+                MarketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? 0 : reader.GetFieldValue<long>("MarketingBudget")
             });
         }
         return albums;

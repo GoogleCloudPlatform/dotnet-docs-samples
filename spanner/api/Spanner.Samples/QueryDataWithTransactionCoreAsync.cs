@@ -37,6 +37,7 @@ public class QueryDataWithTransactionCoreAsyncSample
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
+        // Open a new read only transaction.
         using var transaction = await connection.BeginReadOnlyTransactionAsync();
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
         cmd.Transaction = transaction;
