@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_subscriber_sync_pull_with_lease_management]
+// [START pubsub_subscriber_sync_pull_with_lease]
 
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
@@ -62,4 +62,4 @@ public class PullMessageWithLeaseManagementSample
         return messageCount;
     }
 }
-// [END pubsub_subscriber_sync_pull_with_lease_management]
+// [END pubsub_subscriber_sync_pull_with_lease]

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START pubsub_publish_with_ordering_keys]
-// [START pubsub_publish]
 
 using Google.Cloud.PubSub.V1;
 using System;
@@ -53,5 +52,4 @@ public class PublishOrderedMessagesAsyncSample
         return publishedMessageCount;
     }
 }
-// [END pubsub_publish]
 // [END pubsub_publish_with_ordering_keys]
