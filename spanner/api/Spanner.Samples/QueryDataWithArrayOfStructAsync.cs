@@ -22,6 +22,14 @@ public class QueryDataWithArrayOfStructAsyncSample
 {
     public async Task<List<int>> QueryDataWithArrayOfStructAsync(string projectId, string instanceId, string databaseId)
     {
+        // [START spanner_create_user_defined_struct] 
+        var nameType = new SpannerStruct
+        {
+            { "FirstName", SpannerDbType.String, null},
+            { "LastName", SpannerDbType.String, null}
+        };
+        // [END spanner_create_user_defined_struct] 
+
         // [START spanner_create_array_of_struct_with_data]
         var bandMembers = new List<SpannerStruct>
         {
@@ -37,7 +45,7 @@ public class QueryDataWithArrayOfStructAsyncSample
         using var cmd = connection.CreateSelectCommand(
             "SELECT SingerId FROM Singers WHERE STRUCT<FirstName STRING, LastName STRING> "
             + "(FirstName, LastName) IN UNNEST(@names)");
-        cmd.Parameters.Add("names", SpannerDbType.ArrayOf(bandMembers[0].GetSpannerDbType()), bandMembers);
+        cmd.Parameters.Add("names", SpannerDbType.ArrayOf(nameType.GetSpannerDbType()), bandMembers);
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {

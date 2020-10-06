@@ -23,38 +23,25 @@ public class UpdateDataWithTimestampColumnAsyncSample
     public async Task<int> UpdateDataWithTimestampColumnAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-
         using var connection = new SpannerConnection(connectionString);
-        using var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
-        {
-            { "SingerId", SpannerDbType.Int64 },
-            { "AlbumId", SpannerDbType.Int64 },
-            { "MarketingBudget", SpannerDbType.Int64 },
-            { "LastUpdateTime", SpannerDbType.Timestamp },
-        });
 
         var rowCount = 0;
-        using var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Albums");
-        using var reader = await cmdLookup.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+        using var updateCmd1 = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
         {
-            if (reader.GetFieldValue<int>("SingerId") == 1 && reader.GetFieldValue<int>("AlbumId") == 1)
-            {
-                cmd.Parameters["SingerId"].Value = reader.GetFieldValue<int>("SingerId");
-                cmd.Parameters["AlbumId"].Value = reader.GetFieldValue<int>("AlbumId");
-                cmd.Parameters["MarketingBudget"].Value = 1000000;
-                cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
-                rowCount += await cmd.ExecuteNonQueryAsync();
-            }
-            if (reader.GetFieldValue<int>("SingerId") == 2 && reader.GetFieldValue<int>("AlbumId") == 2)
-            {
-                cmd.Parameters["SingerId"].Value = reader.GetFieldValue<int>("SingerId");
-                cmd.Parameters["AlbumId"].Value = reader.GetFieldValue<int>("AlbumId");
-                cmd.Parameters["MarketingBudget"].Value = 750000;
-                cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
-                rowCount += await cmd.ExecuteNonQueryAsync();
-            }
-        }
+            { "SingerId", SpannerDbType.Int64, 1 },
+            { "AlbumId", SpannerDbType.Int64, 1 },
+            { "LastUpdateTime", SpannerDbType.Timestamp, SpannerParameter.CommitTimestamp },
+        });
+        rowCount += await updateCmd1.ExecuteNonQueryAsync();
+
+        using var updateCmd2 = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
+        {
+            { "SingerId", SpannerDbType.Int64, 2 },
+            { "AlbumId", SpannerDbType.Int64, 2 },
+            { "LastUpdateTime", SpannerDbType.Timestamp, SpannerParameter.CommitTimestamp },
+        });
+        rowCount += await updateCmd2.ExecuteNonQueryAsync();
+
         Console.WriteLine("Updated data.");
         return rowCount;
     }

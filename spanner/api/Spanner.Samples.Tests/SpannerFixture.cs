@@ -186,14 +186,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
                 {
-                    { "SingerId", SpannerDbType.Int64 },
-                    { "AlbumId", SpannerDbType.Int64 },
-                    { "MarketingBudget", SpannerDbType.Int64 },
+                    { "SingerId", SpannerDbType.Int64, i },
+                    { "AlbumId", SpannerDbType.Int64, i },
+                    { "MarketingBudget", SpannerDbType.Int64, i == 1 ? firstAlbumBudget : secondAlbumBudget },
                 });
-
-            cmd.Parameters["SingerId"].Value = i;
-            cmd.Parameters["AlbumId"].Value = i;
-            cmd.Parameters["MarketingBudget"].Value = i == 1 ? firstAlbumBudget : secondAlbumBudget;
             await cmd.ExecuteNonQueryAsync();
         }
     }
@@ -225,12 +221,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             // Insert rows into the Venues table.
             using var cmd = connection.CreateInsertCommand("Venues", new SpannerParameterCollection
             {
-                { "VenueId", SpannerDbType.Int64 },
-                { "VenueName", SpannerDbType.String }
+                { "VenueId", SpannerDbType.Int64, venue.VenueId },
+                { "VenueName", SpannerDbType.String, venue.VenueName }
             });
-
-            cmd.Parameters["VenueId"].Value = venue.VenueId;
-            cmd.Parameters["VenueName"].Value = venue.VenueName;
             return cmd.ExecuteNonQueryAsync();
         }));
     }
@@ -271,14 +264,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             var cmd = connection.CreateInsertCommand("Singers",
               new SpannerParameterCollection
               {
-                  { "SingerId", SpannerDbType.Int64 },
-                  { "FirstName", SpannerDbType.String },
-                  { "LastName", SpannerDbType.String }
+                  { "SingerId", SpannerDbType.Int64, singer.SingerId },
+                  { "FirstName", SpannerDbType.String, singer.FirstName },
+                  { "LastName", SpannerDbType.String, singer.LastName }
               });
 
-            cmd.Parameters["SingerId"].Value = singer.SingerId;
-            cmd.Parameters["FirstName"].Value = singer.FirstName;
-            cmd.Parameters["LastName"].Value = singer.LastName;
             return cmd.ExecuteNonQueryAsync();
         }));
     }

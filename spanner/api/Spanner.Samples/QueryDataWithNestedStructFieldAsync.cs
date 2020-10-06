@@ -25,14 +25,11 @@ public class QueryDataWithNestedStructFieldAsyncSample
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
-        // [START spanner_create_user_defined_struct]
         SpannerStruct name1 = new SpannerStruct
         {
             { "FirstName", SpannerDbType.String, "Elena" },
             { "LastName", SpannerDbType.String, "Campbell" }
         };
-        // [END spanner_create_user_defined_struct]
-
         SpannerStruct name2 = new SpannerStruct
         {
             { "FirstName", SpannerDbType.String, "Hannah" },
