@@ -1,9 +1,9 @@
-# Google Cloud Datastore Sample
+# IAM Quickstart Sample
 
 This sample demonstrates how to get started using the Google Cloud IAM APIs
 in C#.
 
-This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or
+This sample requires [.NET Core 2.1](https://www.microsoft.com/net/core) or
 later.  That means using [Visual Studio 2017](https://www.visualstudio.com/), 
 or the command line. 
 
@@ -19,6 +19,8 @@ or the command line.
     [Click here](https://console.cloud.google.com/flows/enableapi?apiid=iam.googleapis.com&showconfirmation=true)
     to visit Cloud Platform Console and enable the Google Cloud IAM API.
 
+1.  Replace the placeholder information in QuickStart.cs with your project-specific information. 
+
 1.  From the command line:
 
     ```bash
@@ -26,7 +28,8 @@ or the command line.
     dotnet run
     ```
 
-    The application should output a list of Cloud IAM roles.
+    The application should grant the member you inputted the Logs viewer role, print the permissions that
+    they have as a Logs viewer, then revoke their Logs viewer role.
 
 ## Contributing changes
 

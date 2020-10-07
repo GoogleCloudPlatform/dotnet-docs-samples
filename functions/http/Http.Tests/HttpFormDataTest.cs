@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Functions.Invoker.Testing;
+using Google.Cloud.Functions.Testing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;

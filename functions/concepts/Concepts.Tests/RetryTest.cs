@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using CloudNative.CloudEvents;
-using Google.Cloud.Functions.Invoker.Testing;
+using Google.Cloud.Functions.Testing;
 using Google.Events;
 using Google.Events.Protobuf.Cloud.PubSub.V1;
 using Microsoft.Extensions.Logging;
@@ -25,9 +25,6 @@ namespace Concepts.Tests
 {
     public class RetryTest : FunctionTestBase<Retry.Function>
     {
-        // This just makes the tests a little briefer.
-        private const string EventType = MessagePublishedData.MessagePublishedCloudEventType;
-
         public static TheoryData<PubsubMessage> NonRetryMessages = new TheoryData<PubsubMessage>
         {
             // Explicit retry=false
@@ -41,16 +38,15 @@ namespace Concepts.Tests
         [Fact]
         public async Task RetryTrue()
         {
-            var cloudEvent = new CloudEvent(MessagePublishedData.MessagePublishedCloudEventType, new Uri("//pubsub.googleapis.com"));
             var data = new MessagePublishedData
             {
                 Message = new PubsubMessage { TextData = "{ \"retry\": true }" }
             };
-            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
 
             // The test server propagates the exception to the caller. The real server would respond
             // with a status code of 500.
-            await Assert.ThrowsAsync<InvalidOperationException>(() => ExecuteCloudEventRequestAsync(cloudEvent));
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => ExecuteCloudEventRequestAsync(MessagePublishedData.MessagePublishedCloudEventType, data));
             Assert.Empty(GetFunctionLogEntries());
         }
 
@@ -58,11 +54,9 @@ namespace Concepts.Tests
         [MemberData(nameof(NonRetryMessages))]
         public async Task NoRetry(PubsubMessage message)
         {
-            var cloudEvent = new CloudEvent(MessagePublishedData.MessagePublishedCloudEventType, new Uri("//pubsub.googleapis.com"));
-            var data = new MessagePublishedData { Message = message };
-            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
-
-            await ExecuteCloudEventRequestAsync(cloudEvent);
+            await ExecuteCloudEventRequestAsync(
+                MessagePublishedData.MessagePublishedCloudEventType,
+                new MessagePublishedData { Message = message });
             var logEntry = Assert.Single(GetFunctionLogEntries());
             Assert.Equal(LogLevel.Information, logEntry.Level);
             Assert.Equal("Not retrying...", logEntry.Message);
