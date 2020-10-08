@@ -17,13 +17,12 @@
 using Google.Api.Gax;
 using Google.Api.Gax.Grpc;
 using Google.Cloud.Spanner.Common.V1;
-using Google.Cloud.Spanner.Data;
 using Google.Cloud.Spanner.V1;
-using static Google.Cloud.Spanner.V1.TransactionOptions.Types;
 using Grpc.Core;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static Google.Cloud.Spanner.V1.TransactionOptions.Types;
 
 public class CustomTimeoutsAndRetriesAsyncSample
 {
@@ -59,7 +58,7 @@ public class CustomTimeoutsAndRetriesAsyncSample
                 retryFilter: RetrySettings.FilterForStatusCodes(
                     new StatusCode[] {StatusCode.Unavailable, StatusCode.DeadlineExceeded})));
 
-        ResultSet result = await session.ExecuteSqlAsync(request, null);
+        ResultSet result = await session.ExecuteSqlAsync(request, callSettings);
         return result.Stats.RowCountExact;
     }
 }

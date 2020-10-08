@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,8 +29,8 @@ public class CustomTimeoutsAndRetriesTest
     public async Task CustomTimeoutsAndRetries()
     {
         CustomTimeoutsAndRetriesAsyncSample sample = new CustomTimeoutsAndRetriesAsyncSample();
-        var rows = await sample.CustomTimeoutsAndRetriesAsync(
+        var rowCount = await sample.CustomTimeoutsAndRetriesAsync(
             _spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(1, rows);
+        Assert.Equal(1, rowCount);
     }
 }
