@@ -1,4 +1,4 @@
-﻿# Copyright(c) 2016 Google Inc.
+﻿# Copyright(c) 2020 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -11,14 +11,5 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-Import-Module ..\..\BuildTools.psm1 -DisableNameChecking
 
-BackupAndEdit-TextFile @("Storage\Storage.cs", "QuickStart\QuickStart.cs") `
-    @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
-{
-    dotnet test --test-adapter-path:. --logger:junit .\StorageTest\StorageTest.csproj 2>&1 | %{ "$_" } 
-    if ($LASTEXITCODE -ne 0) { throw "FAILED" }
-    dotnet run --project .\QuickStart\QuickStart.csproj
-    if ($LASTEXITCODE -ne 0) { throw "FAILED" }
-}
-
+dotnet test --test-adapter-path:. --logger:junit  2>&1 | %{ "$_" }
