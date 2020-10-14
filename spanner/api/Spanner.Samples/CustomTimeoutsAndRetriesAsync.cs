@@ -39,7 +39,7 @@ public class CustomTimeoutsAndRetriesAsyncSample
         {
             ReadWrite = new ReadWrite()
         };
-        PooledSession session = await sessionPool.AcquireSessionAsync(
+        using PooledSession session = await sessionPool.AcquireSessionAsync(
             databaseName, transactionOptions, CancellationToken.None);
 
         ExecuteSqlRequest request = new ExecuteSqlRequest
@@ -48,17 +48,19 @@ public class CustomTimeoutsAndRetriesAsyncSample
         };
 
         // Prepare the call settings with custom timeout and retry settings.
-        CallSettings callSettings = CallSettingsExtensions.WithRetry(
-	    CallSettings.FromExpiration(Expiration.FromTimeout(TimeSpan.FromSeconds(60))),
-	    RetrySettings.FromExponentialBackoff(
+        CallSettings settings = CallSettings
+            .FromExpiration(Expiration.FromTimeout(TimeSpan.FromSeconds(60)))
+            .WithRetry(RetrySettings.FromExponentialBackoff(
                 maxAttempts: 12,
                 initialBackoff: TimeSpan.FromMilliseconds(500),
                 maxBackoff: TimeSpan.FromMilliseconds(6400),
                 backoffMultiplier: 1.5,
                 retryFilter: RetrySettings.FilterForStatusCodes(
-                    new StatusCode[] {StatusCode.Unavailable, StatusCode.DeadlineExceeded})));
+                    new StatusCode[] { StatusCode.Unavailable, StatusCode.DeadlineExceeded })));
 
-        ResultSet result = await session.ExecuteSqlAsync(request, callSettings);
+        ResultSet result = await session.ExecuteSqlAsync(request, settings);
+        await session.CommitAsync(new CommitRequest(), null);
+
         return result.Stats.RowCountExact;
     }
 }
