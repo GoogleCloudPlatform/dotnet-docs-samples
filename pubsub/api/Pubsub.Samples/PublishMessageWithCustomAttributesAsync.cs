@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 public class PublishMessageWithCustomAttributesAsyncSample
 {
-    public async Task PublishMessageWithCustomAttributesAsync(string projectId, string topicId)
+    public async Task PublishMessageWithCustomAttributesAsync(string projectId, string topicId, string messageText)
     {
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
         PublisherClient publisher = await PublisherClient.CreateAsync(topicName);
@@ -29,9 +29,10 @@ public class PublishMessageWithCustomAttributesAsyncSample
         var pubsubMessage = new PubsubMessage
         {
             // The data is any arbitrary ByteString. Here, we're using text.
-            Data = ByteString.CopyFromUtf8("Hello, Pubsub"),
+            Data = ByteString.CopyFromUtf8(messageText),
             // The attributes provide metadata in a string-to-string dictionary.
-            Attributes = {
+            Attributes =
+            {
                 { "year", "2020" },
                 { "author", "unknown" }
             }

@@ -16,13 +16,13 @@ using System.Collections.Generic;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class PublishOrderedMessageTest
+public class PublishOrderedMessagesAsyncTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly PublishOrderedMessagesAsyncSample _publishOrderedMessagesAsyncSample;
     private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
 
-    public PublishOrderedMessageTest(PubsubFixture pubsubFixture)
+    public PublishOrderedMessagesAsyncTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _publishOrderedMessagesAsyncSample = new PublishOrderedMessagesAsyncSample();
@@ -30,7 +30,7 @@ public class PublishOrderedMessageTest
     }
 
     [Fact]
-    public async void PublishMessage()
+    public async void PublishOrderedMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForOrderedPublish{randomName}";
@@ -39,7 +39,7 @@ public class PublishOrderedMessageTest
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        List<(string, string)> messages = new List<(string, string)> { ( "Key1", "Hello World!" ), ( "Key2", "Good day." ), ( "Key1", "Bye bye"  ) };
+        List<(string, string)> messages = new List<(string, string)> { ("Key1", "Hello World!"), ("Key2", "Good day."), ("Key1", "Bye bye") };
 
         var publishedMessages = await _publishOrderedMessagesAsyncSample.PublishOrderedMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
         Assert.Equal(messages.Count, publishedMessages);

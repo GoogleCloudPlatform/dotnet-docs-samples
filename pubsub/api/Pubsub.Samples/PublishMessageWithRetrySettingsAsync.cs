@@ -18,12 +18,11 @@ using Google.Api.Gax.Grpc;
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 public class PublishMessageWithRetrySettingsAsyncSample
 {
-    public async Task<int> PublishMessageWithRetrySettingsAsync(string projectId, string topicId, string messageText)
+    public async Task PublishMessageWithRetrySettingsAsync(string projectId, string topicId, string messageText)
     {
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
         // Retry settings control how the publisher handles retry-able failures
@@ -46,11 +45,8 @@ public class PublishMessageWithRetrySettingsAsyncSample
                        .WithTimeout(totalTimeout)
                    }
                )).ConfigureAwait(false);
-        int publishedMessageCount = 0;
         string message = await publisher.PublishAsync(messageText);
         Console.WriteLine($"Published message {message}");
-        Interlocked.Increment(ref publishedMessageCount);
-        return publishedMessageCount;
     }
 }
 // [END pubsub_publisher_retry_settings]

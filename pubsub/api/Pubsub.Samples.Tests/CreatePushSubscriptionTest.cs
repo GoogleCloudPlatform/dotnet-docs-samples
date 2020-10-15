@@ -38,10 +38,9 @@ public class CreatePushSubscriptionTest
 
         _pubsubFixture.CreateTopic(topicId);
 
-        _createPushSubscriptionSample.CreatePushSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId, pushEndpoint);
+        var subscription = _createPushSubscriptionSample.CreatePushSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId, pushEndpoint);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
 
-        var subscriptions = _listSubscriptionsSample.ListSubscriptions(_pubsubFixture.ProjectId);
-        Assert.Contains(subscriptions, s => s.PushConfig.PushEndpoint == pushEndpoint && s.SubscriptionName.SubscriptionId == subscriptionId);
+        Assert.Equal(subscription.PushConfig.PushEndpoint, pushEndpoint);
     }
 }

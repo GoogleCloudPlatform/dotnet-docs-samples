@@ -33,13 +33,14 @@ public class PublishMessageWithCustomAttributesAsyncTest
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForPublishMessageWithCustomAttributesAsync{randomName}";
         string subscriptionId = $"testSubscriptionForPublishMessageWithCustomAttributesAsync{randomName}";
+        string message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        await _publishMessageWithCustomAttributesAsyncSample.PublishMessageWithCustomAttributesAsync(_pubsubFixture.ProjectId, topicId);
+        await _publishMessageWithCustomAttributesAsyncSample.PublishMessageWithCustomAttributesAsync(_pubsubFixture.ProjectId, topicId, message);
 
-        var attributes = await _pullMessagesWithCustomAttributesAsyncSample.PullMessagesWithCustomAttributesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Contains(attributes, a => a.Key == "year" && a.Value == "2020");
+        var messages = await _pullMessagesWithCustomAttributesAsyncSample.PullMessagesWithCustomAttributesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.Contains(messages, m => m.Attributes.Keys.Contains("year") && m.Attributes.Values.Contains("2020"));
     }
 }

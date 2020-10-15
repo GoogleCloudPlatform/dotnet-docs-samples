@@ -24,21 +24,21 @@ using System.Threading.Tasks;
 
 public class PullMessagesWithCustomAttributesAsyncSample
 {
-    public async Task<Dictionary<string, string>> PullMessagesWithCustomAttributesAsync(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<List<PubsubMessage>> PullMessagesWithCustomAttributesAsync(string projectId, string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
 
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
-        var attributes = new Dictionary<string, string>();
+        var messages = new List<PubsubMessage>();
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
+            messages.Add(message);
             string text = Encoding.UTF8.GetString(message.Data.ToArray());
             Console.WriteLine($"Message {message.MessageId}: {text}");
             if (message.Attributes != null)
             {
                 foreach (var attribute in message.Attributes)
                 {
-                    attributes.Add(attribute.Key, attribute.Value);
                     Console.WriteLine($"{attribute.Key} = {attribute.Value}");
                 }
             }
@@ -49,7 +49,7 @@ public class PullMessagesWithCustomAttributesAsyncSample
         await subscriber.StopAsync(CancellationToken.None);
         // Lets make sure that the start task finished successfully after the call to stop.
         await startTask;
-        return attributes;
+        return messages;
     }
 }
 // [END pubsub_subscriber_async_pull_custom_attributes]

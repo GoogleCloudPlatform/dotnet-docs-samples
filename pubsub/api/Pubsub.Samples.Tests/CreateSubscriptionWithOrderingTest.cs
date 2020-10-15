@@ -38,6 +38,6 @@ public class CreateSubscriptionWithOrderingTest
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
         var subscription = _pubsubFixture.GetSubscription(subscriptionId);
 
-        Assert.Equal(true, subscription.EnableMessageOrdering);
+        Assert.True(subscription.EnableMessageOrdering);
     }
 }

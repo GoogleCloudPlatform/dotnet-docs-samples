@@ -26,7 +26,10 @@ public class CreatePushSubscriptionSample
 
         PushConfig pushConfig = new PushConfig { PushEndpoint = pushEndpoint };
 
-        var subscription = subscriber.CreateSubscription(subscriptionName, topicName, pushConfig, 60);
+        // The approximate amount of time in seconds (on a best-effort basis) Pub/Sub waits for the
+        // subscriber to acknowledge receipt before resending the message.
+        var ackDeadlineSeconds = 60;
+        var subscription = subscriber.CreateSubscription(subscriptionName, topicName, pushConfig, ackDeadlineSeconds);
         return subscription;
     }
 }
