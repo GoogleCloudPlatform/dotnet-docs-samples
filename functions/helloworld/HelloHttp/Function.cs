@@ -19,6 +19,7 @@
 using Google.Cloud.Functions.Framework;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -38,20 +39,26 @@ namespace HelloHttp
             // "world" is the default value
             string name = ((string) request.Query["name"]) ?? "world";
 
-            // Parse JSON request and check for "name" field
-            try
+            // If there's a body, parse it as JSON and check for "name" field.
+            using TextReader reader = new StreamReader(request.Body);
+            string text = await reader.ReadToEndAsync();
+            if (text.Length > 0)
             {
-                JsonElement json = await JsonSerializer.DeserializeAsync<JsonElement>(request.Body);
-                if (json.TryGetProperty("name", out JsonElement nameElement) &&
-                    nameElement.ValueKind == JsonValueKind.String)
+                try
                 {
-                    name = nameElement.GetString();
+                    JsonElement json = JsonSerializer.Deserialize<JsonElement>(text);
+                    if (json.TryGetProperty("name", out JsonElement nameElement) &&
+                        nameElement.ValueKind == JsonValueKind.String)
+                    {
+                        name = nameElement.GetString();
+                    }
+                }
+                catch (JsonException parseException)
+                {
+                    _logger.LogError(parseException, "Error parsing JSON request");
                 }
             }
-            catch (JsonException parseException)
-            {
-                _logger.LogError(parseException, "Error parsing JSON request");
-            }
+
             await context.Response.WriteAsync($"Hello {name}!");
         }
     }
