@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Talent.V4Beta1;
+using Google.Cloud.Talent.V4;
 using System;
 
 namespace GoogleCloudSamples

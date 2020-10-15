@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using static Google.Cloud.Talent.V4Beta1.SearchJobsRequest.Types;
-using static Google.Cloud.Talent.V4Beta1.SearchJobsRequest.Types.CustomRankingInfo.Types;
+using static Google.Cloud.Talent.V4.SearchJobsRequest.Types;
+using static Google.Cloud.Talent.V4.SearchJobsRequest.Types.CustomRankingInfo.Types;
 
-using Google.Cloud.Talent.V4Beta1;
+using Google.Cloud.Talent.V4;
 using System;
 
 namespace GoogleCloudSamples
@@ -56,7 +56,7 @@ namespace GoogleCloudSamples
             };
 
             var response = jobServiceClient.SearchJobs(request);
-            foreach (var result in response)
+            foreach (var result in response.MatchingJobs)
             {
                 Console.WriteLine($"Job summary: {result.JobSummary}");
                 Console.WriteLine($"Job title snippet: {result.JobTitleSnippet}");

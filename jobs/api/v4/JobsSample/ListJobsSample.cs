@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Google.Api.Gax;
-using Google.Cloud.Talent.V4Beta1;
+using Google.Cloud.Talent.V4;
 using System;
 
 namespace GoogleCloudSamples

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using static Google.Cloud.Talent.V4Beta1.Job.Types;
+using static Google.Cloud.Talent.V4.Job.Types;
 
-using Google.Cloud.Talent.V4Beta1;
+using Google.Cloud.Talent.V4;
 using System;
 
 namespace GoogleCloudSamples

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Talent.V4Beta1;
+using Google.Cloud.Talent.V4;
 using System;
 
 namespace GoogleCloudSamples
@@ -26,7 +26,7 @@ namespace GoogleCloudSamples
             TenantName tenant = TenantName.FromProjectTenant(projectId, tenantId);
             CompleteQueryRequest request = new CompleteQueryRequest
             {
-                ParentAsTenantName = tenant,
+                TenantAsTenantName = tenant,
                 Query = query, // partial text for job title
                 PageSize = 5, // limit for number of results
                 LanguageCodes = { "en-US" } // language code

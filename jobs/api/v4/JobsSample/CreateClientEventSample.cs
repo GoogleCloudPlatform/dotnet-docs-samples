@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using static Google.Cloud.Talent.V4Beta1.JobEvent.Types;
+using static Google.Cloud.Talent.V4.JobEvent.Types;
 
-using Google.Cloud.Talent.V4Beta1;
+using Google.Cloud.Talent.V4;
 using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;

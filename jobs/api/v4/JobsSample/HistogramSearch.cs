@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Talent.V4Beta1;
+using Google.Cloud.Talent.V4;
 using System;
 
 namespace GoogleCloudSamples
@@ -36,7 +36,7 @@ namespace GoogleCloudSamples
             };
 
             // Examples and formats are explained in the following link:
-            // https://cloud.google.com/talent-solution/job-search/docs/reference/rest/v4beta1/projects.tenants.jobs/search#body.request_body.FIELDS.histogram_queries
+            // https://cloud.google.com/talent-solution/job-search/docs/reference/rest/v4/projects.tenants.jobs/search#body.request_body.FIELDS.histogram_queries
             HistogramQuery histogramQuery = new HistogramQuery
             {
                 HistogramQuery_ = query
@@ -50,7 +50,7 @@ namespace GoogleCloudSamples
             request.HistogramQueries.Add(histogramQuery);
 
             var response = jobServiceClient.SearchJobs(request);
-            foreach (var result in response)
+            foreach (var result in response.MatchingJobs)
             {
                 Console.WriteLine($"Job summary: {result.JobSummary}");
                 Console.WriteLine($"Job title snippet: {result.JobTitleSnippet}");

@@ -5,7 +5,9 @@
     <StartupObject>GoogleCloudSamples.JobSearch</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Talent.V4Beta1" Version="2.0.0-beta02" />
     <ProjectReference Include="..\..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Talent.V4" Version="1.0.0-beta02" />
   </ItemGroup>
 </Project>
