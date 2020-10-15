@@ -3,7 +3,7 @@
 These samples demonstrate how to interact with the [Google Cloud Datastore Admin][Datastore] using C# and
 the .NET client libraries to call the Datastore Admin API.
 
-The samples requires [.NET Core 3.1][net-core] or later.  That means using
+These samples require [.NET Core 3.1][net-core] or later.  That means using
 [Visual Studio 2019](https://www.visualstudio.com/), or the command line.
 
 ## Setup
@@ -11,14 +11,8 @@ The samples requires [.NET Core 3.1][net-core] or later.  That means using
 1.  Set up a [.NET development environment](https://cloud.google.com/dotnet/docs/setup).
 
 2.  Enable APIs for your project.
-    [Click here][enable-api] to visit Cloud Platform Console and enable the Google Stackdriver Cloud Datastore API.
+    [Click here][enable-api] to visit Cloud Platform Console and enable the Google Cloud Datastore Admin API.
 
-3. Set Environment Variables
-   1. GOOGLE_CLOUD_PROJECT - Google Cloud Project Id
-   2. CLOUD_STORAGE_BUCKET - Google Cloud Storage Bucket Name
-
-4. Roles to be set in your Service Account and App Engine default service account:
-    Datastore Import Export Admin, or Cloud Datastore Owner, or Owner Storage Admin, or Owner.
 
 ## Contributing changes
 

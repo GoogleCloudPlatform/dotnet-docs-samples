@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google;
 using System.Linq;
 using Xunit;
 
@@ -28,16 +29,21 @@ public class GetIndexTest
     [Fact]
     public void TestGetIndex()
     {
-        // Currently, we don't have any API to create index.
-        // It Just verify that if any index is available than GetIndex does not throw any Exception.
+        // Currently, we don't have an API to create an index.
+        // The test just verifies that if any index exists then GetIndex does not throw any Exception.
         ListIndexesSample listIndexesSample = new ListIndexesSample();
         GetIndexSample getIndexSample = new GetIndexSample();
         var indexes = listIndexesSample.ListIndexes(_datastoreAdminFixture.ProjectId).ToList();
         if (indexes.Any())
         {
             var firstIndexId = indexes.First().IndexId;
-            var exception = Record.Exception(() => getIndexSample.GetIndex(_datastoreAdminFixture.ProjectId, firstIndexId));
-            Assert.Null(exception);
+            var index = getIndexSample.GetIndex(_datastoreAdminFixture.ProjectId, firstIndexId);
+            Assert.Equal(firstIndexId, index.IndexId);
+        }
+        else
+        {
+            var exception = Assert.Throws<GoogleApiException>(() => getIndexSample.GetIndex(_datastoreAdminFixture.ProjectId, "random-index-id"));
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, exception.HttpStatusCode);
         }
     }
 }

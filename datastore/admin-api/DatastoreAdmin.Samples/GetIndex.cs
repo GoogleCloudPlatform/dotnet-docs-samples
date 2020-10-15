@@ -16,10 +16,11 @@
 
 using Google.Cloud.Datastore.Admin.V1;
 using System;
+using Index = Google.Cloud.Datastore.Admin.V1.Index;
 
 public class GetIndexSample
 {
-    public Google.Cloud.Datastore.Admin.V1.Index GetIndex(
+    public Index GetIndex(
         string projectId = "your-project-id",
         string indexId = "your-index-id")
     {
@@ -33,7 +34,7 @@ public class GetIndexSample
             IndexId = indexId
         };
 
-        Google.Cloud.Datastore.Admin.V1.Index index = datastoreAdminClient.GetIndex(getIndexRequest);
+        Index index = datastoreAdminClient.GetIndex(getIndexRequest);
 
         Console.WriteLine($"Index Id: {index.IndexId}");
         Console.WriteLine($"Kind: {index.Kind}");

@@ -20,9 +20,9 @@ using Xunit;
 public class DatastoreAdminFixture : ICollectionFixture<DatastoreAdminFixture>, IDisposable
 {
     public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    public string BucketName { get; } = "grass-clump-479-node-perf-test"; //Environment.GetEnvironmentVariable("CLOUD_STORAGE_BUCKET");
+    public string BucketName { get; } = Environment.GetEnvironmentVariable("CLOUD_STORAGE_BUCKET");
     public string Namespace { get; } = Guid.NewGuid().ToString();
-    public string Kind { get; } = "datastore-admin-test-kind";
+    public string Kind { get; } = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}-test-kind";
 
     public DatastoreAdminFixture()
     {
@@ -44,8 +44,12 @@ public class DatastoreAdminFixture : ICollectionFixture<DatastoreAdminFixture>, 
 
     public void Dispose()
     {
-        DatastoreDb datastoreDb = DatastoreDb.Create(ProjectId, Namespace);
-        var deadEntities = datastoreDb.RunQuery(new Query(Kind));
-        datastoreDb.Delete(deadEntities.Entities);
+        try
+        {
+            DatastoreDb datastoreDb = DatastoreDb.Create(ProjectId, Namespace);
+            var deadEntities = datastoreDb.RunQuery(new Query(Kind));
+            datastoreDb.Delete(deadEntities.Entities);
+        }
+        catch (Exception) { }
     }
 }

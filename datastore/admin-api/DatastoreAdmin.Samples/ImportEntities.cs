@@ -24,7 +24,7 @@ public class ImportEntitiesSample
 {
     public bool ImportEntities(
         string projectId = "your-project-id",
-        string inputUrl = "gs://your-project-id-node-perf-test/2020-09-30T08:35:52_77113/2020-09-30T08:35:52_77113.overall_export_metadata",
+        string inputUrl = "gs://datastore-admin-bucket/2020-09-30T08:35:52_77113/2020-09-30T08:35:52_77113.overall_export_metadata",
         string kind = "your-kind-name")
     {
         // Create client

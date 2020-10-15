@@ -23,7 +23,7 @@ public class ExportEntitiesSample
     public string ExportEntities(
         string projectId = "your-project-id",
         string outputUrlPrefix = "gs://your-bucket-name",
-        string kind = "your-kind-name")
+        string kind = "Task")
     {
         // [START datastore_admin_client_create]
         // Create client
@@ -31,7 +31,7 @@ public class ExportEntitiesSample
         // [END datastore_admin_client_create]
 
         IDictionary<string, string> labels = new Dictionary<string, string> { { "cloud_datastore_samples", "true" }, };
-        EntityFilter entityFilter = new EntityFilter()
+        EntityFilter entityFilter = new EntityFilter
         {
             Kinds = { kind }
         };

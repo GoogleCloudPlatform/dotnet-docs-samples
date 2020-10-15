@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(DatastoreAdminFixture))]
@@ -28,10 +27,10 @@ public class ListIndexesTest
     [Fact]
     public void TestListIndexes()
     {
-        // Currently, we don't have any API to create index.
-        // It Just verify that ListIndexes does not throw any Exception.
+        // Currently we don't have an API to create an index.
+        // The test just verifies that ListIndexes does not throw any Exception.
         ListIndexesSample listIndexesSample = new ListIndexesSample();
-        var exception = Record.Exception(() => listIndexesSample.ListIndexes(_datastoreAdminFixture.ProjectId).ToList());
-        Assert.Null(exception);
+        var list = listIndexesSample.ListIndexes(_datastoreAdminFixture.ProjectId);
+        Assert.NotNull(list);
     }
 }
