@@ -21,9 +21,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-// Register the Startup class to configure dependency injection
-[assembly: FunctionsStartup(typeof(SendHttpRequest.Startup))]
-
 namespace SendHttpRequest
 {
     // Dependency injection configuration, executed during server startup.
@@ -31,27 +28,28 @@ namespace SendHttpRequest
     {
         public override void ConfigureServices(WebHostBuilderContext context, IServiceCollection services)
         {
-            // Make IHttpClientFactory available for dependency injection.
+            // Make an HttpClient available to our function via dependency injection.
             // There are many options here; see
             // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests
             // for more details.
-            services.AddHttpClient();
+            services.AddHttpClient<IHttpFunction, Function>();
         }
     }
 
-    // Function
+    // Function, decorated with the FunctionsStartup attribute to specify the startup class
+    // for dependency injection.
+    [FunctionsStartup(typeof(Startup))]
     public class Function : IHttpFunction
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
 
-        public Function(IHttpClientFactory httpClientFactory) =>
-            _httpClientFactory = httpClientFactory;
+        public Function(HttpClient httpClient) =>
+            _httpClient = httpClient;
 
         public async Task HandleAsync(HttpContext context)
         {
-            HttpClient client = _httpClientFactory.CreateClient();
             string url = "http://example.com";
-            using (HttpResponseMessage clientResponse = await client.GetAsync(url))
+            using (HttpResponseMessage clientResponse = await _httpClient.GetAsync(url))
             {
                 await context.Response.WriteAsync($"Received code '{(int) clientResponse.StatusCode}' from URL '{url}'.");
             }
