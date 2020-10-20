@@ -22,7 +22,7 @@ public class DatastoreAdminFixture : ICollectionFixture<DatastoreAdminFixture>, 
     public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     public string BucketName { get; } = Environment.GetEnvironmentVariable("CLOUD_STORAGE_BUCKET");
     public string Namespace { get; } = Guid.NewGuid().ToString();
-    public string Kind { get; } = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}-test-kind";
+    public string Kind { get; } = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}-Task";
 
     public DatastoreAdminFixture()
     {

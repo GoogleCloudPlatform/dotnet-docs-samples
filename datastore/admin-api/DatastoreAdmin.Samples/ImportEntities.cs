@@ -24,8 +24,8 @@ public class ImportEntitiesSample
 {
     public bool ImportEntities(
         string projectId = "your-project-id",
-        string inputUrl = "gs://datastore-admin-bucket/2020-09-30T08:35:52_77113/2020-09-30T08:35:52_77113.overall_export_metadata",
-        string kind = "your-kind-name")
+        string inputUrl = "gs://datastore-admin-bucket/data_to_import",
+        string kind = "Task")
     {
         // Create client
         DatastoreAdminClient datastoreAdminClient = DatastoreAdminClient.Create();
