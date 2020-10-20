@@ -23,14 +23,13 @@ public class CreateDatabaseAsyncSample
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
 
-        using var connection1 = new SpannerConnection(connectionString);
+        using var connection = new SpannerConnection(connectionString);
         string createStatement = $"CREATE DATABASE `{databaseId}`";
-        using var createDbCommand = connection1.CreateDdlCommand(createStatement);
+        using var createDbCommand = connection.CreateDdlCommand(createStatement);
         await createDbCommand.ExecuteNonQueryAsync();
 
         // Update connection string with Database ID for table creation.
         connectionString += $"/databases/{databaseId}";
-        using var connection2 = new SpannerConnection(connectionString);
         // Define create table statement for table #1.
         string createTableStatement =
         @"CREATE TABLE Singers (
@@ -40,7 +39,7 @@ public class CreateDatabaseAsyncSample
                      ComposerInfo BYTES(MAX)
                  ) PRIMARY KEY (SingerId)";
 
-        using var createTableCommand = connection2.CreateDdlCommand(createTableStatement);
+        using var createTableCommand = connection.CreateDdlCommand(createTableStatement);
         await createTableCommand.ExecuteNonQueryAsync();
 
         // Define create table statement for table #2.
@@ -52,7 +51,7 @@ public class CreateDatabaseAsyncSample
                  ) PRIMARY KEY (SingerId, AlbumId),
                  INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
 
-        using var createTableCommand1 = connection2.CreateDdlCommand(createTableStatement);
+        using var createTableCommand1 = connection.CreateDdlCommand(createTableStatement);
         await createTableCommand1.ExecuteNonQueryAsync();
     }
 }
