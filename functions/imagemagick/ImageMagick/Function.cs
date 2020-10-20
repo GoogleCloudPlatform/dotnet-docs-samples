@@ -29,9 +29,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-// Register the Startup class to configure dependency injection
-[assembly: FunctionsStartup(typeof(ImageMagick.Startup))]
-
 namespace ImageMagick
 {
     // Dependency injection configuration, executed during server startup.
@@ -43,6 +40,7 @@ namespace ImageMagick
                 .AddSingleton(StorageClient.Create());
     }
 
+    [FunctionsStartup(typeof(Startup))]
     public class Function : ICloudEventFunction<StorageObjectData>
     {
         /// <summary>
