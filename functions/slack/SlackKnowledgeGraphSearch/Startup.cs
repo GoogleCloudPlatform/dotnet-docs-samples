@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
+// Specify a startup class to use for dependency injection.
+// This can also be specified on the function type.
 [assembly: FunctionsStartup(typeof(SlackKnowledgeGraphSearch.Startup))]
 
 namespace SlackKnowledgeGraphSearch
