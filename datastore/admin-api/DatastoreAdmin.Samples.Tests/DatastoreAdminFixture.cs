@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.Datastore.V1;
+using Google.Cloud.Storage.V1;
 using System;
 using Xunit;
 
@@ -20,13 +21,14 @@ using Xunit;
 public class DatastoreAdminFixture : ICollectionFixture<DatastoreAdminFixture>, IDisposable
 {
     public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    public string BucketName { get; } = Environment.GetEnvironmentVariable("CLOUD_STORAGE_BUCKET");
+    public string BucketName { get; } = Guid.NewGuid().ToString();
     public string Namespace { get; } = Guid.NewGuid().ToString();
     public string Kind { get; } = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}-Task";
 
     public DatastoreAdminFixture()
     {
         CreateKeyFactory();
+        CreateBucket();
     }
 
     void CreateKeyFactory()
@@ -42,6 +44,12 @@ public class DatastoreAdminFixture : ICollectionFixture<DatastoreAdminFixture>, 
         datastoreDb.Insert(task);
     }
 
+    void CreateBucket()
+    {
+        var storage = StorageClient.Create();
+        storage.CreateBucket(ProjectId, BucketName);
+    }
+
     public void Dispose()
     {
         try
@@ -50,6 +58,19 @@ public class DatastoreAdminFixture : ICollectionFixture<DatastoreAdminFixture>, 
             var deadEntities = datastoreDb.RunQuery(new Query(Kind));
             datastoreDb.Delete(deadEntities.Entities);
         }
-        catch (Exception) { }
+        catch (Exception)
+        {
+            // Do nothing, we delete on a best effort basis.
+        }
+
+        try
+        {
+            var storage = StorageClient.Create();
+            storage.DeleteBucket(BucketName);
+        }
+        catch (Exception)
+        {
+            // Do nothing, we delete on a best effort basis.
+        }
     }
 }
