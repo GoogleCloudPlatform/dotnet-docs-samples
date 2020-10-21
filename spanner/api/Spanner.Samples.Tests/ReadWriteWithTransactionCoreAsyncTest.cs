@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,23 +16,21 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class AddNumericColumnTest
+public class ReadWriteWithTransactionCoreAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public AddNumericColumnTest(SpannerFixture spannerFixture)
+    public ReadWriteWithTransactionCoreAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestAddNumericColumn()
+    public async Task TestReadWriteWithTransactionCoreAsync()
     {
-        await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
-
-        AddNumericColumnAsyncSample addColumnSample = new AddNumericColumnAsyncSample();
-        await addColumnSample.AddNumericColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        await _spannerFixture.DeleteVenuesTable();
+        ReadWriteWithTransactionCoreAsyncSample sample = new ReadWriteWithTransactionCoreAsyncSample();
+        await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000);
+        var rowCount = await sample.ReadWriteWithTransactionCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Equal(2, rowCount);
     }
 }

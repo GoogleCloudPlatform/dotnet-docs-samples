@@ -22,12 +22,11 @@ public class AddIndexAsyncSample
 {
     public async Task AddIndexAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         string createStatement = "CREATE INDEX AlbumsByAlbumTitle ON Albums(AlbumTitle)";
 
         using var connection = new SpannerConnection(connectionString);
-        var createCmd = connection.CreateDdlCommand(createStatement);
+        using var createCmd = connection.CreateDdlCommand(createStatement);
         await createCmd.ExecuteNonQueryAsync();
         Console.WriteLine("Added the AlbumsByAlbumTitle index.");
     }

@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,44 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_query_with_numeric_parameter]
+// [START spanner_query_data_with_struct]
 
 using Google.Cloud.Spanner.Data;
-using Google.Cloud.Spanner.V1;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class QueryDataWithNumericParameterAsyncSample
+public class QueryDataWithStructAsyncSample
 {
-    public class Venue
+    public async Task<List<int>> QueryDataWithStructAsync(string projectId, string instanceId, string databaseId)
     {
-        public int VenueId { get; set; }
-        public SpannerNumeric Revenue { get; set; }
-    }
+        // [START spanner_create_struct_with_data]
+        var nameStruct = new SpannerStruct
+        {
+            { "FirstName", SpannerDbType.String, "Elena" },
+            { "LastName", SpannerDbType.String, "Campbell" },
+        };
+        // [END spanner_create_struct_with_data]
 
-    public async Task<List<Venue>> QueryDataWithNumericParameterAsync(string projectId, string instanceId, string databaseId)
-    {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
+        var singerIds = new List<int>();
         using var connection = new SpannerConnection(connectionString);
         using var cmd = connection.CreateSelectCommand(
-            "SELECT VenueId, Revenue FROM Venues WHERE Revenue < @maxRevenue",
-            new SpannerParameterCollection
-            {
-                { "maxRevenue", SpannerDbType.Numeric, SpannerNumeric.Parse("100000") }
-            });
+            "SELECT SingerId FROM Singers "
+            + "WHERE STRUCT<FirstName STRING, LastName STRING>"
+            + "(FirstName, LastName) = @name");
 
-        var venues = new List<Venue>();
+        cmd.Parameters.Add("name", nameStruct.GetSpannerDbType(), nameStruct);
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            venues.Add(new Venue
-            {
-                VenueId = reader.GetFieldValue<int>("VenueId"),
-                Revenue = reader.GetFieldValue<SpannerNumeric>("Revenue")
-            });
+            singerIds.Add(reader.GetFieldValue<int>("SingerId"));
         }
-        return venues;
+        return singerIds;
     }
 }
-// [END spanner_query_with_numeric_parameter]
+// [END spanner_query_data_with_struct]

@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,23 +16,22 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class AddNumericColumnTest
+public class QueryNewColumnAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public AddNumericColumnTest(SpannerFixture spannerFixture)
+    public QueryNewColumnAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestAddNumericColumn()
+    public async Task TestQueryNewColumnAsync()
     {
-        await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
-
-        AddNumericColumnAsyncSample addColumnSample = new AddNumericColumnAsyncSample();
-        await addColumnSample.AddNumericColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        await _spannerFixture.DeleteVenuesTable();
+        QueryNewColumnAsyncSample sample = new QueryNewColumnAsyncSample();
+        await _spannerFixture.RefillMarketingBudgetsAsync(100000, 500000);
+        var albums = await sample.QueryNewColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Contains(albums, a => a.AlbumId == 1 && a.MarketingBudget == 100000);
+        Assert.Contains(albums, a => a.AlbumId == 2 && a.MarketingBudget == 500000);
     }
 }
