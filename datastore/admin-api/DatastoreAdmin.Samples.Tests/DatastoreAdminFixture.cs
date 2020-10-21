@@ -66,6 +66,11 @@ public class DatastoreAdminFixture : ICollectionFixture<DatastoreAdminFixture>, 
         try
         {
             var storage = StorageClient.Create();
+            var storageObjects = storage.ListObjects(BucketName);
+            foreach (var storageObject in storageObjects)
+            {
+                storage.DeleteObject(BucketName, storageObject.Name);
+            }
             storage.DeleteBucket(BucketName);
         }
         catch (Exception)
