@@ -22,8 +22,7 @@ public class AddNumericColumnAsyncSample
 {
     public async Task AddNumericColumnAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         string alterStatement = "ALTER TABLE Venues ADD COLUMN Revenue NUMERIC";
 
         using var connection = new SpannerConnection(connectionString);

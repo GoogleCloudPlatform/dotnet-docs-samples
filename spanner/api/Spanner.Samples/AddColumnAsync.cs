@@ -22,12 +22,11 @@ public class AddColumnAsyncSample
 {
     public async Task AddColumnAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         string alterStatement = "ALTER TABLE Albums ADD COLUMN MarketingBudget INT64";
 
         using var connection = new SpannerConnection(connectionString);
-        var updateCmd = connection.CreateDdlCommand(alterStatement);
+        using var updateCmd = connection.CreateDdlCommand(alterStatement);
         await updateCmd.ExecuteNonQueryAsync();
         Console.WriteLine("Added the MarketingBudget column.");
     }

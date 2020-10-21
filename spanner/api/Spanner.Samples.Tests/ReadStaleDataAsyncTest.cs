@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,23 +16,20 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class AddNumericColumnTest
+public class ReadStaleDataAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public AddNumericColumnTest(SpannerFixture spannerFixture)
+    public ReadStaleDataAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestAddNumericColumn()
+    public async Task TestReadStaleDataAsync()
     {
-        await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
-
-        AddNumericColumnAsyncSample addColumnSample = new AddNumericColumnAsyncSample();
-        await addColumnSample.AddNumericColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        await _spannerFixture.DeleteVenuesTable();
+        ReadStaleDataAsyncSample sample = new ReadStaleDataAsyncSample();
+        var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Contains(albums, a => a.SingerId == 1 && a.AlbumId == 2 && a.AlbumTitle == "Go, Go, Go");
     }
 }
