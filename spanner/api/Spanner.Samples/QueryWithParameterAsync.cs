@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,44 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_query_with_numeric_parameter]
+// [START spanner_query_with_parameter]
 
 using Google.Cloud.Spanner.Data;
-using Google.Cloud.Spanner.V1;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class QueryDataWithNumericParameterAsyncSample
+public class QueryWithParameterAsyncSample
 {
-    public class Venue
+    public class Singer
     {
-        public int VenueId { get; set; }
-        public SpannerNumeric Revenue { get; set; }
+        public int SingerId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 
-    public async Task<List<Venue>> QueryDataWithNumericParameterAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<Singer>> QueryWithParameterAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
         using var cmd = connection.CreateSelectCommand(
-            "SELECT VenueId, Revenue FROM Venues WHERE Revenue < @maxRevenue",
-            new SpannerParameterCollection
-            {
-                { "maxRevenue", SpannerDbType.Numeric, SpannerNumeric.Parse("100000") }
-            });
+            $"SELECT SingerId, FirstName, LastName FROM Singers WHERE LastName = @lastName",
+            new SpannerParameterCollection { { "lastName", SpannerDbType.String, "Richards" } });
 
-        var venues = new List<Venue>();
+        var singers = new List<Singer>();
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            venues.Add(new Venue
+            singers.Add(new Singer
             {
-                VenueId = reader.GetFieldValue<int>("VenueId"),
-                Revenue = reader.GetFieldValue<SpannerNumeric>("Revenue")
+                SingerId = reader.GetFieldValue<int>("SingerId"),
+                FirstName = reader.GetFieldValue<string>("FirstName"),
+                LastName = reader.GetFieldValue<string>("LastName")
             });
         }
-        return venues;
+        return singers;
     }
 }
-// [END spanner_query_with_numeric_parameter]
+// [END spanner_query_with_parameter]

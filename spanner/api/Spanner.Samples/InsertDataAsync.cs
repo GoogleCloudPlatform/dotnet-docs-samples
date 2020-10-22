@@ -38,8 +38,7 @@ public class InsertDataAsyncSample
 
     public async Task InsertDataAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/" +
-            $"databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         List<Singer> singers = new List<Singer>
         {
             new Singer { SingerId = 1, FirstName = "Marc", LastName = "Richards" },
@@ -63,31 +62,24 @@ public class InsertDataAsyncSample
         await Task.WhenAll(singers.Select(singer =>
         {
             // Insert rows into the Singers table.
-            var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
+            using var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
             {
-                    { "SingerId", SpannerDbType.Int64 },
-                    { "FirstName", SpannerDbType.String },
-                    { "LastName", SpannerDbType.String }
+                    { "SingerId", SpannerDbType.Int64, singer.SingerId },
+                    { "FirstName", SpannerDbType.String, singer.FirstName },
+                    { "LastName", SpannerDbType.String, singer.LastName }
             });
-
-            cmd.Parameters["SingerId"].Value = singer.SingerId;
-            cmd.Parameters["FirstName"].Value = singer.FirstName;
-            cmd.Parameters["LastName"].Value = singer.LastName;
             return cmd.ExecuteNonQueryAsync();
         }));
 
         await Task.WhenAll(albums.Select(album =>
         {
             // Insert rows into the Albums table.
-            var cmd = connection.CreateInsertCommand("Albums", new SpannerParameterCollection
+            using var cmd = connection.CreateInsertCommand("Albums", new SpannerParameterCollection
             {
-                    { "SingerId", SpannerDbType.Int64 },
-                    { "AlbumId", SpannerDbType.Int64 },
-                    { "AlbumTitle", SpannerDbType.String }
+                    { "SingerId", SpannerDbType.Int64, album.SingerId },
+                    { "AlbumId", SpannerDbType.Int64, album.AlbumId },
+                    { "AlbumTitle", SpannerDbType.String,album.AlbumTitle }
             });
-            cmd.Parameters["SingerId"].Value = album.SingerId;
-            cmd.Parameters["AlbumId"].Value = album.AlbumId;
-            cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;
             return cmd.ExecuteNonQueryAsync();
         }));
         Console.WriteLine("Data inserted.");
