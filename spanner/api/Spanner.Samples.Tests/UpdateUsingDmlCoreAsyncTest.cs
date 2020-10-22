@@ -16,20 +16,20 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateDataWithTimestampColumnTest
+public class UpdateUsingDmlCoreAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateDataWithTimestampColumnTest(SpannerFixture spannerFixture)
+    public UpdateUsingDmlCoreAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateDataWithTimestampColumn()
+    public async Task TestUpdateUsingDmlCoreAsync()
     {
-        UpdateDataWithTimestampColumnAsyncSample sample = new UpdateDataWithTimestampColumnAsyncSample();
-        var rowCount = await sample.UpdateDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(2, rowCount);
+        UpdateUsingDmlCoreAsyncSample sample = new UpdateUsingDmlCoreAsyncSample();
+        var rowCount = await sample.UpdateUsingDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Equal(1, rowCount);
     }
 }
