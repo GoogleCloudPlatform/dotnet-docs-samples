@@ -16,36 +16,36 @@ using System.Collections.Generic;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class ResumePublishTest
+public class PublishOrderedMessagesAsyncTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly ResumePublishSample _ResumePublishSample;
+    private readonly PublishOrderedMessagesAsyncSample _publishOrderedMessagesAsyncSample;
     private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
 
-    public ResumePublishTest(PubsubFixture pubsubFixture)
+    public PublishOrderedMessagesAsyncTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _ResumePublishSample = new ResumePublishSample();
+        _publishOrderedMessagesAsyncSample = new PublishOrderedMessagesAsyncSample();
         _pullMessagesAsyncSample = new PullMessagesAsyncSample();
     }
 
     [Fact]
-    public async void PublishMessage()
+    public async void PublishOrderedMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForResumePublish{randomName}";
-        string subscriptionId = $"testSubscriptionForResumePublish{randomName}";
+        string topicId = $"testTopicForOrderedPublish{randomName}";
+        string subscriptionId = $"testSubscriptionForOrderedPublish{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        List<(string, string)> messages = new List<(string, string)> { ( "Key1", "Hello World!" ), ( "Key2", "Good day." ), ( "Key1", "Bye bye"  ) };
+        List<(string, string)> messages = new List<(string, string)> { ("Key1", "Hello World!"), ("Key2", "Good day."), ("Key1", "Bye bye") };
 
-        var publishedMessages = await _ResumePublishSample.PublishOrderedMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
+        var publishedMessages = await _publishOrderedMessagesAsyncSample.PublishOrderedMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
         Assert.Equal(messages.Count, publishedMessages);
 
         // Pull the Message to confirm it is valid
-        var pulledMessages = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(pulledMessages > 0);
+        var messagesPulled = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
+        Assert.True(messagesPulled > 0);
     }
 }

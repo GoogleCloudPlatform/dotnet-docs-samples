@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,41 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class PublishOrderedMessageTest
+public class PublishMessageWithRetrySettingsAsyncTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly PublishOrderedMessagesAsyncSample _publishOrderedMessagesAsyncSample;
+    private readonly PublishMessageWithRetrySettingsAsyncSample _publishMessageWithRetrySettingsAsyncSample;
     private readonly PullMessagesAsyncSample _pullMessagesAsyncSample;
 
-    public PublishOrderedMessageTest(PubsubFixture pubsubFixture)
+    public PublishMessageWithRetrySettingsAsyncTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _publishOrderedMessagesAsyncSample = new PublishOrderedMessagesAsyncSample();
+        _publishMessageWithRetrySettingsAsyncSample = new PublishMessageWithRetrySettingsAsyncSample();
         _pullMessagesAsyncSample = new PullMessagesAsyncSample();
     }
 
     [Fact]
-    public async void PublishMessage()
+    public async void PublishMessageWithRetrySettingsAsync()
     {
         string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForOrderedPublish{randomName}";
-        string subscriptionId = $"testSubscriptionForOrderedPublish{randomName}";
+        string topicId = $"testTopicForMessageWithRetrySettingsAsync{randomName}";
+        string subscriptionId = $"testSubscriptionForMessageWithRetrySettingsAsync{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        List<(string, string)> messages = new List<(string, string)> { ( "Key1", "Hello World!" ), ( "Key2", "Good day." ), ( "Key1", "Bye bye"  ) };
-
-        var publishedMessages = await _publishOrderedMessagesAsyncSample.PublishOrderedMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
-        Assert.Equal(messages.Count, publishedMessages);
+        await _publishMessageWithRetrySettingsAsyncSample
+            .PublishMessageWithRetrySettingsAsync(_pubsubFixture.ProjectId, topicId, "Hello World!");
 
         // Pull the Message to confirm it is valid
-        var messagesPulled = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(messagesPulled > 0);
+        var messageCount = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.Equal(1, messageCount);
     }
 }
