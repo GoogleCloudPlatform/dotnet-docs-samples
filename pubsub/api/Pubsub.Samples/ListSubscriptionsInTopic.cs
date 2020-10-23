@@ -12,30 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_create_topic]
+// [START pubsub_list_topic_subscriptions]
 
 using Google.Cloud.PubSub.V1;
-using Grpc.Core;
-using System;
+using System.Collections.Generic;
 
-public class CreateTopicSample
+public class ListSubscriptionsInTopicSample
 {
-    public Topic CreateTopic(string projectId, string topicId)
+    public IEnumerable<string> ListSubscriptionsInTopic(string projectId, string topicId)
     {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-        var topicName = TopicName.FromProjectTopic(projectId, topicId);
-        Topic topic = null;
-
-        try
-        {
-            topic = publisher.CreateTopic(topicName);
-            Console.WriteLine($"Topic {topic.Name} created.");
-        }
-        catch (RpcException e) when (e.Status.StatusCode == StatusCode.AlreadyExists)
-        {
-            Console.WriteLine($"Topic {topicName} already exists.");
-        }
-        return topic;
+        TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
+        IEnumerable<string> subscriptions = publisher.ListTopicSubscriptions(topicName);
+        return subscriptions;
     }
 }
-// [END pubsub_create_topic]
+// [END pubsub_list_topic_subscriptions]
