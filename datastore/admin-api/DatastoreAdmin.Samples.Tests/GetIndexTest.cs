@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google;
+using Grpc.Core;
 using System.Linq;
 using Xunit;
 
@@ -42,8 +42,8 @@ public class GetIndexTest
         }
         else
         {
-            var exception = Assert.Throws<GoogleApiException>(() => getIndexSample.GetIndex(_datastoreAdminFixture.ProjectId, "random-index-id"));
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, exception.HttpStatusCode);
+            var exception = Assert.Throws<RpcException>(() => getIndexSample.GetIndex(_datastoreAdminFixture.ProjectId, "random-index-id"));
+            Assert.Equal(StatusCode.InvalidArgument, exception.StatusCode);
         }
     }
 }
