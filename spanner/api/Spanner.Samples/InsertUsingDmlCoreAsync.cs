@@ -27,7 +27,7 @@ public class InsertUsingDmlCoreAsyncSample
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
-        using var cmd = connection.CreateDmlCommand("INSERT Singers (SingerId, FirstName, LastName) VALUES (12, 'Virginia', 'Watson')");
+        using var cmd = connection.CreateDmlCommand("INSERT Singers (SingerId, FirstName, LastName) VALUES (10, 'Virginia', 'Watson')");
         int rowCount = await cmd.ExecuteNonQueryAsync();
 
         Console.WriteLine($"{rowCount} row(s) inserted...");

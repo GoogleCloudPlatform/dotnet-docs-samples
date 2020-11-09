@@ -27,7 +27,7 @@ public class DeleteUsingPartitionedDmlCoreAsyncSample
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
-        using var cmd = connection.CreateDmlCommand("DELETE FROM Singers WHERE SingerId = 10");
+        using var cmd = connection.CreateDmlCommand("DELETE FROM Singers WHERE SingerId > 10");
         long rowCount = await cmd.ExecutePartitionedUpdateAsync();
 
         Console.WriteLine($"{rowCount} row(s) deleted...");

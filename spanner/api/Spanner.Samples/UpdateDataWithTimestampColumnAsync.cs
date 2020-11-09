@@ -30,6 +30,7 @@ public class UpdateDataWithTimestampColumnAsyncSample
         {
             { "SingerId", SpannerDbType.Int64, 1 },
             { "AlbumId", SpannerDbType.Int64, 1 },
+            { "MarketingBudget", SpannerDbType.Int64, 1000000 },
             { "LastUpdateTime", SpannerDbType.Timestamp, SpannerParameter.CommitTimestamp },
         });
         rowCount += await updateCmd1.ExecuteNonQueryAsync();
@@ -38,6 +39,7 @@ public class UpdateDataWithTimestampColumnAsyncSample
         {
             { "SingerId", SpannerDbType.Int64, 2 },
             { "AlbumId", SpannerDbType.Int64, 2 },
+            { "MarketingBudget", SpannerDbType.Int64, 750000 },
             { "LastUpdateTime", SpannerDbType.Timestamp, SpannerParameter.CommitTimestamp },
         });
         rowCount += await updateCmd2.ExecuteNonQueryAsync();

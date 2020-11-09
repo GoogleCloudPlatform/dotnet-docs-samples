@@ -251,9 +251,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             new Singer { SingerId = 6, FirstName = "Elena", LastName = "Campbell" },
             new Singer { SingerId = 7, FirstName = "Gabriel", LastName = "Wright" },
             new Singer { SingerId = 8, FirstName = "Benjamin", LastName = "Martinez" },
-            new Singer { SingerId = 9, FirstName = "Hannah", LastName = "Harris" },
-            new Singer { SingerId = 10, FirstName = "Anthony", LastName = "Hunter" },
-            new Singer { SingerId = 11, FirstName = "Earlean", LastName = "Holland" }
+            new Singer { SingerId = 9, FirstName = "Hannah", LastName = "Harris" }
         };
 
         using var connection = new SpannerConnection(ConnectionString);

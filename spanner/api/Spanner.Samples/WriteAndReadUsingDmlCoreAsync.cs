@@ -27,16 +27,16 @@ public class WriteAndReadUsingDmlCoreAsyncSample
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
-        using var createDmlCmd = connection.CreateDmlCommand(@"INSERT Singers (SingerId, FirstName, LastName) VALUES (16, 'Timothy', 'Campbell')");
+        using var createDmlCmd = connection.CreateDmlCommand(@"INSERT Singers (SingerId, FirstName, LastName) VALUES (11, 'Timothy', 'Campbell')");
         int rowCount = await createDmlCmd.ExecuteNonQueryAsync();
         Console.WriteLine($"{rowCount} row(s) inserted...");
 
         // Read newly inserted record.
-        using var createSelectCmd = connection.CreateSelectCommand(@"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId = 16");
+        using var createSelectCmd = connection.CreateSelectCommand(@"SELECT FirstName, LastName FROM Singers WHERE SingerId = 11");
         using var reader = await createSelectCmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            Console.WriteLine($"{reader.GetFieldValue<string>("SingerId")} {reader.GetFieldValue<string>("FirstName")}  {reader.GetFieldValue<string>("LastName")}");
+            Console.WriteLine($"{reader.GetFieldValue<string>("FirstName")}  {reader.GetFieldValue<string>("LastName")}");
         }
         return rowCount;
     }

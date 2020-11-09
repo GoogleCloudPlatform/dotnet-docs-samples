@@ -30,6 +30,6 @@ public class QueryWithParameterAsyncTest
     {
         QueryWithParameterAsyncSample sample = new QueryWithParameterAsyncSample();
         var singers = await sample.QueryWithParameterAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(singers, s => s.FirstName == "Marc" && s.LastName == "Richards" && s.SingerId == 1);
+        Assert.DoesNotContain(singers, s => s.FirstName == "Melissa" && s.LastName == "Garcia" && s.SingerId == 1);
     }
 }

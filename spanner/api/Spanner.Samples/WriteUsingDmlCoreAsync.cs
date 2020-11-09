@@ -29,9 +29,10 @@ public class WriteUsingDmlCoreAsyncSample
 
         SpannerCommand cmd = connection.CreateDmlCommand(
             "INSERT Singers (SingerId, FirstName, LastName) VALUES "
-               + "(17, 'Melissa', 'Garcia'), "
-               + "(18, 'Russell', 'Morales'), "
-               + "(19, 'Jacqueline', 'Long')");
+               + "(12, 'Melissa', 'Garcia'), "
+               + "(13, 'Russell', 'Morales'), "
+               + "(14, 'Jacqueline', 'Long'), "
+               + "(15, 'Dylan', 'Shaw')");
         int rowCount = await cmd.ExecuteNonQueryAsync();
 
         Console.WriteLine($"{rowCount} row(s) inserted...");

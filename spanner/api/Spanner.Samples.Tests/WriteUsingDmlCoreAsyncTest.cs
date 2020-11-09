@@ -30,6 +30,6 @@ public class WriteUsingDmlCoreAsyncTest
     {
         WriteUsingDmlCoreAsyncSample sample = new WriteUsingDmlCoreAsyncSample();
         var rowCount = await sample.WriteUsingDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        Assert.Equal(4, rowCount);
     }
 }
