@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START pubsub_publish_with_ordering_keys]
-// [START pubsub_publish]
 
 using Google.Cloud.PubSub.V1;
 using System;
@@ -21,7 +20,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System;
 
 public class PublishOrderedMessagesAsyncSample
 {
@@ -54,5 +52,4 @@ public class PublishOrderedMessagesAsyncSample
         return publishedMessageCount;
     }
 }
-// [END pubsub_publish]
 // [END pubsub_publish_with_ordering_keys]
