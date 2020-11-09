@@ -87,7 +87,7 @@ namespace CloudSql
 
         DbConnection NewSqlServerConnection()
         {
-            // [START cloud_sql_server_dotnet_ado_connection_tcp]
+            // [START cloud_sql_sqlserver_dotnet_ado_connection_tcp]
             // Equivalent connection string: 
             // "User Id=<DB_USER>;Password=<DB_PASS>;Server=<DB_HOST>;Database=<DB_NAME>;"
             var connectionString = new SqlConnectionStringBuilder()
@@ -106,33 +106,33 @@ namespace CloudSql
             };
             connectionString.Pooling = true;
             // [START_EXCLUDE]
-            // [START cloud_sql_server_dotnet_ado_limit]
+            // [START cloud_sql_sqlserver_dotnet_ado_limit]
             // MaximumPoolSize sets maximum number of connections allowed in the pool.            
             connectionString.MaxPoolSize = 5;
             // MinimumPoolSize sets the minimum number of connections in the pool.
             connectionString.MinPoolSize = 0;
-            // [END cloud_sql_server_dotnet_ado_limit]
-            // [START cloud_sql_server_dotnet_ado_timeout]
+            // [END cloud_sql_sqlserver_dotnet_ado_limit]
+            // [START cloud_sql_sqlserver_dotnet_ado_timeout]
             // ConnectionTimeout sets the time to wait (in seconds) while
             // trying to establish a connection before terminating the attempt.
             connectionString.ConnectTimeout = 15;
-            // [END cloud_sql_server_dotnet_ado_timeout]
-            // [START cloud_sql_server_dotnet_ado_lifetime]
+            // [END cloud_sql_sqlserver_dotnet_ado_timeout]
+            // [START cloud_sql_sqlserver_dotnet_ado_lifetime]
             // ADO.NET connection pooler removes a connection
             // from the pool after it's been idle for approximately
             // 4-8 minutes, or if the pooler detects that the
             // connection with the server no longer exists.
-            // [END cloud_sql_server_dotnet_ado_lifetime]
+            // [END cloud_sql_sqlserver_dotnet_ado_lifetime]
             // [END_EXCLUDE]
             DbConnection connection =
                 new SqlConnection(connectionString.ConnectionString);
-            // [END cloud_sql_server_dotnet_ado_connection_tcp]
+            // [END cloud_sql_sqlserver_dotnet_ado_connection_tcp]
             return connection;
         }
 
         DbConnection GetSqlServerConnection()
         {
-            // [START cloud_sql_server_dotnet_ado_backoff]
+            // [START cloud_sql_sqlserver_dotnet_ado_backoff]
             var connection = Policy
                 .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
                 .WaitAndRetry(new[]
@@ -145,7 +145,7 @@ namespace CloudSql
                     // Log any warnings here.
                 })
                 .Execute(() => NewSqlServerConnection());
-            // [END cloud_sql_server_dotnet_ado_backoff]
+            // [END cloud_sql_sqlserver_dotnet_ado_backoff]
             return connection;
         }
 
