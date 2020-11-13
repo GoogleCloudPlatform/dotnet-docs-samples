@@ -50,7 +50,7 @@ If you only want to run the complete sample refer to the application in the Lead
     ```
 
     ```
-    PS > dotnet run createSampleDatabase your-project-id my-instance my-database
+    PS > dotnet run create your-project-id my-instance my-database
     Waiting for operation to complete...
     Operation status: RanToCompletion
     Created sample database my-database on instance my-instance

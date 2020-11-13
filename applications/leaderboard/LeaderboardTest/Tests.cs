@@ -82,7 +82,7 @@ namespace GoogleCloudSamples.Leaderboard
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/928")]
+        [Fact]
         void TestLeaderboard()
         {
             // Insert Player records.
@@ -92,13 +92,7 @@ namespace GoogleCloudSamples.Leaderboard
             // Insert Scores records.
             ConsoleOutput insertScoresOutput = _spannerCmd.Run("insert",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "scores");
-            Assert.Equal(0, insertScoresOutput.ExitCode);
-            insertScoresOutput = _spannerCmd.Run("insert",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "scores");
-            Assert.Equal(0, insertScoresOutput.ExitCode);
-            insertScoresOutput = _spannerCmd.Run("insert",
-                _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "scores");
-            Assert.Equal(0, insertScoresOutput.ExitCode);
+            Assert.Equal(0, insertScoresOutput.ExitCode);           
             insertScoresOutput = _spannerCmd.Run("insert",
                 _fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, "scores");
             Assert.Equal(0, insertScoresOutput.ExitCode);

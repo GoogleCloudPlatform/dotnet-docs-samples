@@ -150,13 +150,12 @@ namespace GoogleCloudSamples.Leaderboard
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
 
-            using (TransactionScope scope = new TransactionScope(
-               TransactionScopeAsyncFlowOption.Enabled))
+            Int64 numberOfPlayers = 0;
+            using (var connection = new SpannerConnection(connectionString))
             {
-                Int64 numberOfPlayers = 0;
-                using (var connection = new SpannerConnection(connectionString))
+                await connection.OpenAsync();
+                await connection.RunWithRetriableTransactionAsync(async (transaction) =>
                 {
-                    await connection.OpenAsync();
                     // Execute a SQL statement to get current number of records
                     // in the Players table to use as an incrementing value 
                     // for each PlayerName to be inserted.
@@ -198,8 +197,7 @@ namespace GoogleCloudSamples.Leaderboard
                         cmdBatch.Add(cmdInsert);
                     }
                     await cmdBatch.ExecuteNonQueryAsync();
-                    scope.Complete();
-                }
+                });
             }
             Console.WriteLine("Done inserting player records...");
         }
@@ -211,13 +209,13 @@ namespace GoogleCloudSamples.Leaderboard
             $"Data Source=projects/{projectId}/instances/{instanceId}"
             + $"/databases/{databaseId}";
 
-            using (TransactionScope scope = new TransactionScope(
-               TransactionScopeAsyncFlowOption.Enabled))
+            // Insert 4 score records into the Scores table for each player
+            // in the Players table.
+            using (var connection = new SpannerConnection(connectionString))
             {
-                // Insert 4 score records into the Scores table for each player in the Players table.
-                using (var connection = new SpannerConnection(connectionString))
+                await connection.OpenAsync();
+                await connection.RunWithRetriableTransactionAsync(async (transaction) =>
                 {
-                    await connection.OpenAsync();
                     Random r = new Random();
                     bool playerRecordsFound = false;
                     SpannerBatchCommand cmdBatch =
@@ -269,13 +267,12 @@ namespace GoogleCloudSamples.Leaderboard
                         else
                         {
                             await cmdBatch.ExecuteNonQueryAsync();
-                            scope.Complete();
                             Console.WriteLine(
                                 "Done inserting score records..."
                             );
                         }
                     }
-                }
+                });
             }
         }
 
