@@ -212,7 +212,7 @@ namespace GoogleCloudSamples.Leaderboard
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
 
-            Int64 numberOfPlayers = 0;
+            long numberOfPlayers = 0;
             using (var connection = new SpannerConnection(connectionString))
             {
                 await connection.OpenAsync();
