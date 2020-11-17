@@ -39,9 +39,7 @@ namespace CloudDemo.Mvc.Controllers
 
         public static async Task<string> DetermineRuntime()
         {
-            //
             // Check for environment variables that indicate a specific runtime.
-            //
             foreach (var indicator in environmentIndicators)
             {
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(indicator.Key)))
@@ -50,19 +48,15 @@ namespace CloudDemo.Mvc.Controllers
                 }
             }
 
-            //
             // Check metadata server, which indicates GCE.
-            //
             if (await ComputeCredential.IsRunningOnComputeEngine())
             {
                 return "Compute Engine";
             }
             else
             {
-                //
                 // Metadata server not available, so it's probably not nunning
                 // on Google Cloud.
-                //
                 return null;
             }
         }
