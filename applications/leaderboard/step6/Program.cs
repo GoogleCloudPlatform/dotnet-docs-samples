@@ -169,7 +169,7 @@ namespace GoogleCloudSamples.Leaderboard
                 $"Data Source=projects/{projectId}/instances/{instanceId}"
                 + $"/databases/{databaseId}";
 
-            Int64 numberOfPlayers = 0;
+            long numberOfPlayers = 0;
             using (var connection = new SpannerConnection(connectionString))
             {
                 await connection.OpenAsync();
@@ -180,26 +180,10 @@ namespace GoogleCloudSamples.Leaderboard
                     // for each PlayerName to be inserted.
                     var cmd = connection.CreateSelectCommand(
                         @"SELECT Count(PlayerId) as PlayerCount FROM Players");
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            long parsedValue;
-                            if (reader["PlayerCount"] != DBNull.Value)
-                            {
-                                bool result = Int64.TryParse(
-                                    reader.GetFieldValue<string>("PlayerCount"),
-                                        out parsedValue);
-                                if (result)
-                                {
-                                    numberOfPlayers = parsedValue;
-                                }
-                            }
-                        }
-                    }
+                    numberOfPlayers = await cmd.ExecuteScalarAsync<long>();
                     // Insert 100 player records into the Players table.
                     SpannerBatchCommand cmdBatch = connection.CreateBatchDmlCommand();
-                    for (var x = 1; x <= 100; x++)
+                    for (int i = 0; i < 100; i++)
                     {
                         numberOfPlayers++;
                         SpannerCommand cmdInsert = connection.CreateDmlCommand(
@@ -245,11 +229,8 @@ namespace GoogleCloudSamples.Leaderboard
                     {
                         while (await reader.ReadAsync())
                         {
-                            if (!playerRecordsFound)
-                            {
-                                playerRecordsFound = true;
-                            }
-                            for (var x = 1; x <= 4; x++)
+                            playerRecordsFound = true;
+                            for (int i = 0; i < 4; i++)
                             {
                                 DateTime randomTimestamp = DateTime.Now
                                         .AddYears(r.Next(-2, 1))
