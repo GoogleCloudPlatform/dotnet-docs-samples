@@ -12,6 +12,11 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+& dotnet publish -c Release -f netcoreapp3.1 | Out-Default
 
-dotnet publish -c Release -f netcoreapp3.1
+if ($LastExitCode -ne 0)
+{
+    exit $LastExitCode
+}
+
+

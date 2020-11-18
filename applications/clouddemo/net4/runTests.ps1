@@ -16,5 +16,16 @@ Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 Require-Platform Win*
 
-nuget.exe restore
-msbuild /t:Clean,Build CloudDemo.Mvc\CloudDemo.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+& nuget.exe restore | Out-Default
+
+if ($LastExitCode -ne 0)
+{
+    exit $LastExitCode
+}
+
+& msbuild /t:Clean,Build CloudDemo.Mvc\CloudDemo.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile | Out-Default
+
+if ($LastExitCode -ne 0)
+{
+    exit $LastExitCode
+}
