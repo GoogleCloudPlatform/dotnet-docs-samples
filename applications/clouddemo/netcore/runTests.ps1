@@ -12,11 +12,4 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-& dotnet publish -c Release -f netcoreapp3.1 | Out-Default
-
-if ($LastExitCode -ne 0)
-{
-    exit $LastExitCode
-}
-
-
+& dotnet publish -c Release -f netcoreapp3.1 2>&1 | %{ "$_" }
