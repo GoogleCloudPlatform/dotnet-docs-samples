@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Spanner.Data" Version="3.0.0-beta02" />
+    <PackageReference Include="Google.Cloud.Spanner.Data" Version="3.3.0" />
   </ItemGroup>
 
   <ItemGroup>
