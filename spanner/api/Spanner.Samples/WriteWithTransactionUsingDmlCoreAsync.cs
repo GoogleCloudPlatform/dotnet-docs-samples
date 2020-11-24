@@ -30,7 +30,6 @@ public class WriteWithTransactionUsingDmlCoreAsyncSample
 
         decimal transferAmount = 200000;
         decimal secondBudget = 0;
-        decimal firstBudget = 0;
 
         // Create connection to Cloud Spanner.
         using var connection = new SpannerConnection(connectionString);
@@ -53,16 +52,8 @@ public class WriteWithTransactionUsingDmlCoreAsyncSample
             // will automatically roll back the transaction.
             if (secondBudget < transferAmount)
             {
-                throw new Exception($"The first album's budget {secondBudget} is less than the amount to transfer.");
+                throw new Exception($"The second album's budget {secondBudget} is less than the amount to transfer.");
             }
-        }
-        // Read the first album's budget.
-        cmdLookup = connection.CreateSelectCommand("SELECT * FROM Albums WHERE SingerId = 1 and AlbumId = 1");
-        cmdLookup.Transaction = transaction;
-        using var reader2 = await cmdLookup.ExecuteReaderAsync();
-        while (await reader2.ReadAsync())
-        {
-            firstBudget = reader2.GetFieldValue<decimal>("MarketingBudget");
         }
 
         // Update second album to remove the transfer amount.
@@ -73,9 +64,8 @@ public class WriteWithTransactionUsingDmlCoreAsyncSample
         var rowCount = await cmd.ExecuteNonQueryAsync();
 
         // Update first album to add the transfer amount.
-        firstBudget += transferAmount;
-        cmd = connection.CreateDmlCommand("UPDATE Albums SET MarketingBudget = @MarketingBudget WHERE SingerId = 1 and AlbumId = 1");
-        cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, firstBudget);
+        cmd = connection.CreateDmlCommand("UPDATE Albums SET MarketingBudget = MarketingBudget + @MarketingBudgetIncrement WHERE SingerId = 1 and AlbumId = 1");
+        cmd.Parameters.Add("MarketingBudgetIncrement", SpannerDbType.Int64, transferAmount);
         cmd.Transaction = transaction;
         rowCount += await cmd.ExecuteNonQueryAsync();
 
