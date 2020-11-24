@@ -32,7 +32,7 @@ public class BigQueryLoadFromFile
         var uploadCsvOptions = new UploadCsvOptions()
         {
             SkipLeadingRows = 1,  // Skips the file headers
-            Autodetect = true
+            Autodetect = true // Set to false if the table already exists
         };
         using (FileStream stream = File.Open(filePath, FileMode.Open))
         {
