@@ -30,6 +30,6 @@ public class UpdateUsingDmlWithStructCoreAsyncTest
     {
         UpdateUsingDmlWithStructCoreAsyncSample sample = new UpdateUsingDmlWithStructCoreAsyncSample();
         var rowCount = await sample.UpdateUsingDmlWithStructCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(0, rowCount);
+        Assert.True(rowCount >= 0);
     }
 }

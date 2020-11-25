@@ -30,6 +30,6 @@ public class DeleteUsingPartitionedDmlCoreAsyncTest
     {
         DeleteUsingPartitionedDmlCoreAsyncSample sample = new DeleteUsingPartitionedDmlCoreAsyncSample();
         var rowCount = await sample.DeleteUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(1, rowCount);
+        Assert.True(rowCount >= 1);
     }
 }
