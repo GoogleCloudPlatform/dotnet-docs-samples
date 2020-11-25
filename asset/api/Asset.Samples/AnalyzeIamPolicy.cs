@@ -19,33 +19,39 @@ using Google.Cloud.Asset.V1;
 using System.Collections.Generic;
 using System.Linq;
 
-public class AnalyzeIamPolicySample {
-  public AnalyzeIamPolicyResponse AnalyzeIamPolicy(string scope, string fullResourceName) {
-    // Create the client.
-    AssetServiceClient client = AssetServiceClient.Create();
+public class AnalyzeIamPolicySample
+{
+    public AnalyzeIamPolicyResponse AnalyzeIamPolicy(string scope, string fullResourceName)
+    {
+        // Create the client.
+        AssetServiceClient client = AssetServiceClient.Create();
 
-    // Build the request.
-    AnalyzeIamPolicyRequest request = new AnalyzeIamPolicyRequest {
-      AnalysisQuery =
-          new IamPolicyAnalysisQuery {
-            Scope = scope,
-            ResourceSelector =
-                new IamPolicyAnalysisQuery.Types.ResourceSelector {
-                  FullResourceName = fullResourceName,
-                },
-            Options =
-                new IamPolicyAnalysisQuery.Types.Options {
-                  ExpandGroups = true,
-                  OutputGroupEdges = true,
-                },
-          },
-    };
+        // Build the request.
+        AnalyzeIamPolicyRequest request = new AnalyzeIamPolicyRequest
+        {
+            AnalysisQuery =
+              new IamPolicyAnalysisQuery
+              {
+                  Scope = scope,
+                  ResourceSelector =
+                    new IamPolicyAnalysisQuery.Types.ResourceSelector
+                    {
+                        FullResourceName = fullResourceName,
+                    },
+                  Options =
+                    new IamPolicyAnalysisQuery.Types.Options
+                    {
+                        ExpandGroups = true,
+                        OutputGroupEdges = true,
+                    },
+              },
+        };
 
-    // Call the API.
-    AnalyzeIamPolicyResponse response = client.AnalyzeIamPolicy(request);
+        // Call the API.
+        AnalyzeIamPolicyResponse response = client.AnalyzeIamPolicy(request);
 
-    // Return the result.
-    return response;
-  }
+        // Return the result.
+        return response;
+    }
 }
 // [END asset_quickstart_analyze_iam_policy]

@@ -18,23 +18,26 @@ using System;
 using Xunit;
 
 [Collection(nameof(AssetFixture))]
-public class AnalyzeIamPolicyTest {
-  private readonly AssetFixture _fixture;
-  private readonly AnalyzeIamPolicySample _sample;
+public class AnalyzeIamPolicyTest
+{
+    private readonly AssetFixture _fixture;
+    private readonly AnalyzeIamPolicySample _sample;
 
-  public AnalyzeIamPolicyTest(AssetFixture fixture) {
-    _fixture = fixture;
-    _sample = new AnalyzeIamPolicySample();
-  }
+    public AnalyzeIamPolicyTest(AssetFixture fixture)
+    {
+        _fixture = fixture;
+        _sample = new AnalyzeIamPolicySample();
+    }
 
-  [Fact]
-  public void TestAnalyzeIamPolicy() {
-    // Run the sample code.
-    string scope = String.Format("projects/{0}", _fixture.ProjectId);
-    string fullResourceName =
-        String.Format("//cloudresourcemanager.googleapis.com/projects/{0}", _fixture.ProjectId);
-    var result = _sample.AnalyzeIamPolicy(scope, fullResourceName);
+    [Fact]
+    public void TestAnalyzeIamPolicy()
+    {
+        // Run the sample code.
+        string scope = String.Format("projects/{0}", _fixture.ProjectId);
+        string fullResourceName =
+            String.Format("//cloudresourcemanager.googleapis.com/projects/{0}", _fixture.ProjectId);
+        var result = _sample.AnalyzeIamPolicy(scope, fullResourceName);
 
-    Assert.Contains(fullResourceName, result.ToString());
-  }
+        Assert.Contains(fullResourceName, result.ToString());
+    }
 }

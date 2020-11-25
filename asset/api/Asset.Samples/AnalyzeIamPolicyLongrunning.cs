@@ -19,79 +19,94 @@ using Google.Cloud.Asset.V1;
 using System.Collections.Generic;
 using System.Linq;
 
-public class AnalyzeIamPolicyLongrunningSample {
-  public string AnalyzeIamPolicyLongrunningGcs(string scope, string fullResourceName, string uri) {
-    // Create the client.
-    AssetServiceClient client = AssetServiceClient.Create();
+public class AnalyzeIamPolicyLongrunningSample
+{
+    public string AnalyzeIamPolicyLongrunningGcs(string scope, string fullResourceName, string uri)
+    {
+        // Create the client.
+        AssetServiceClient client = AssetServiceClient.Create();
 
-    // Build the request.
-    AnalyzeIamPolicyLongrunningRequest request = new AnalyzeIamPolicyLongrunningRequest {
-      AnalysisQuery =
-          new IamPolicyAnalysisQuery {
-            Scope = scope,
-            ResourceSelector =
-                new IamPolicyAnalysisQuery.Types.ResourceSelector {
-                  FullResourceName = fullResourceName,
-                },
-            Options =
-                new IamPolicyAnalysisQuery.Types.Options {
-                  ExpandGroups = true,
-                  OutputGroupEdges = true,
-                },
-          },
-      OutputConfig =
-          new IamPolicyAnalysisOutputConfig {
-            GcsDestination =
-                new IamPolicyAnalysisOutputConfig.Types.GcsDestination {
-                  Uri = uri,
-                },
-          },
-    };
+        // Build the request.
+        AnalyzeIamPolicyLongrunningRequest request = new AnalyzeIamPolicyLongrunningRequest
+        {
+            AnalysisQuery =
+              new IamPolicyAnalysisQuery
+              {
+                  Scope = scope,
+                  ResourceSelector =
+                    new IamPolicyAnalysisQuery.Types.ResourceSelector
+                    {
+                        FullResourceName = fullResourceName,
+                    },
+                  Options =
+                    new IamPolicyAnalysisQuery.Types.Options
+                    {
+                        ExpandGroups = true,
+                        OutputGroupEdges = true,
+                    },
+              },
+            OutputConfig =
+              new IamPolicyAnalysisOutputConfig
+              {
+                  GcsDestination =
+                    new IamPolicyAnalysisOutputConfig.Types.GcsDestination
+                    {
+                        Uri = uri,
+                    },
+              },
+        };
 
-    // Start the analyze long-running operation
-    var operation = client.AnalyzeIamPolicyLongrunning(request);
-    // Wait for it to complete (or fail)
-    operation = operation.PollUntilCompleted();
-    // Return the metadata
-    return operation.Metadata.ToString();
-  }
+        // Start the analyze long-running operation
+        var operation = client.AnalyzeIamPolicyLongrunning(request);
+        // Wait for it to complete (or fail)
+        operation = operation.PollUntilCompleted();
+        // Return the metadata
+        return operation.Metadata.ToString();
+    }
 
-  public string AnalyzeIamPolicyLongrunningBigquery(string scope, string fullResourceName,
-                                                    string dataset, string tablePrefix) {
-    // Create the client.
-    AssetServiceClient client = AssetServiceClient.Create();
+    public string AnalyzeIamPolicyLongrunningBigquery(string scope, string fullResourceName,
+                                                      string dataset, string tablePrefix)
+    {
+        // Create the client.
+        AssetServiceClient client = AssetServiceClient.Create();
 
-    // Build the request.
-    AnalyzeIamPolicyLongrunningRequest request = new AnalyzeIamPolicyLongrunningRequest {
-      AnalysisQuery =
-          new IamPolicyAnalysisQuery {
-            Scope = scope,
-            ResourceSelector =
-                new IamPolicyAnalysisQuery.Types.ResourceSelector {
-                  FullResourceName = fullResourceName,
-                },
-            Options =
-                new IamPolicyAnalysisQuery.Types.Options {
-                  ExpandGroups = true,
-                  OutputGroupEdges = true,
-                },
-          },
-      OutputConfig =
-          new IamPolicyAnalysisOutputConfig {
-            BigqueryDestination =
-                new IamPolicyAnalysisOutputConfig.Types.BigQueryDestination {
-                  Dataset = dataset,
-                  TablePrefix = tablePrefix,
-                },
-          },
-    };
+        // Build the request.
+        AnalyzeIamPolicyLongrunningRequest request = new AnalyzeIamPolicyLongrunningRequest
+        {
+            AnalysisQuery =
+              new IamPolicyAnalysisQuery
+              {
+                  Scope = scope,
+                  ResourceSelector =
+                    new IamPolicyAnalysisQuery.Types.ResourceSelector
+                    {
+                        FullResourceName = fullResourceName,
+                    },
+                  Options =
+                    new IamPolicyAnalysisQuery.Types.Options
+                    {
+                        ExpandGroups = true,
+                        OutputGroupEdges = true,
+                    },
+              },
+            OutputConfig =
+              new IamPolicyAnalysisOutputConfig
+              {
+                  BigqueryDestination =
+                    new IamPolicyAnalysisOutputConfig.Types.BigQueryDestination
+                    {
+                        Dataset = dataset,
+                        TablePrefix = tablePrefix,
+                    },
+              },
+        };
 
-    // Start the analyze long-running operation
-    var operation = client.AnalyzeIamPolicyLongrunning(request);
-    // Wait for it to complete (or fail)
-    operation = operation.PollUntilCompleted();
-    // Return the metadata
-    return operation.Metadata.ToString();
-  }
+        // Start the analyze long-running operation
+        var operation = client.AnalyzeIamPolicyLongrunning(request);
+        // Wait for it to complete (or fail)
+        operation = operation.PollUntilCompleted();
+        // Return the metadata
+        return operation.Metadata.ToString();
+    }
 }
 // [END asset_quickstart_analyze_iam_policy_longrunning]
