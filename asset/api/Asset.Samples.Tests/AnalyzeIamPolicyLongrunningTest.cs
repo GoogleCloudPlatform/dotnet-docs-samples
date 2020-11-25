@@ -38,4 +38,18 @@ public class AnalyzeIamPolicyLongrunningTest {
 
     Assert.Contains(uri, metadata);
   }
+
+  [Fact]
+  public void TestAnalyzeIamPolicyLongrunningBigquery() {
+    // Run the sample code.
+    string scope = String.Format("projects/{0}", _fixture.ProjectId);
+    string fullResourceName =
+        String.Format("//cloudresourcemanager.googleapis.com/projects/{0}", _fixture.ProjectId);
+    string dataset =
+        String.Format("projects/{0}/datasets/{1}", _fixture.ProjectId, _fixture.DatasetId);
+    string metadata = _sample.AnalyzeIamPolicyLongrunningBigquery(
+        scope, fullResourceName, dataset, tablePrefix: "client_library_table");
+
+    Assert.Contains(dataset, metadata);
+  }
 }

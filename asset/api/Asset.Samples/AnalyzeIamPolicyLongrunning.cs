@@ -41,7 +41,10 @@ public class AnalyzeIamPolicyLongrunningSample {
           },
       OutputConfig =
           new IamPolicyAnalysisOutputConfig {
-            GcsDestination = new IamPolicyAnalysisOutputConfig.Types.GcsDestination { Uri = uri }
+            GcsDestination =
+                new IamPolicyAnalysisOutputConfig.Types.GcsDestination {
+                  Uri = uri,
+                },
           },
     };
 
@@ -49,7 +52,45 @@ public class AnalyzeIamPolicyLongrunningSample {
     var operation = client.AnalyzeIamPolicyLongrunning(request);
     // Wait for it to complete (or fail)
     operation = operation.PollUntilCompleted();
-    // Return the metadata.
+    // Return the metadata
+    return operation.Metadata.ToString();
+  }
+
+  public string AnalyzeIamPolicyLongrunningBigquery(string scope, string fullResourceName,
+                                                    string dataset, string tablePrefix) {
+    // Create the client.
+    AssetServiceClient client = AssetServiceClient.Create();
+
+    // Build the request.
+    AnalyzeIamPolicyLongrunningRequest request = new AnalyzeIamPolicyLongrunningRequest {
+      AnalysisQuery =
+          new IamPolicyAnalysisQuery {
+            Scope = scope,
+            ResourceSelector =
+                new IamPolicyAnalysisQuery.Types.ResourceSelector {
+                  FullResourceName = fullResourceName,
+                },
+            Options =
+                new IamPolicyAnalysisQuery.Types.Options {
+                  ExpandGroups = true,
+                  OutputGroupEdges = true,
+                },
+          },
+      OutputConfig =
+          new IamPolicyAnalysisOutputConfig {
+            BigqueryDestination =
+                new IamPolicyAnalysisOutputConfig.Types.BigQueryDestination {
+                  Dataset = dataset,
+                  TablePrefix = tablePrefix,
+                },
+          },
+    };
+
+    // Start the analyze long-running operation
+    var operation = client.AnalyzeIamPolicyLongrunning(request);
+    // Wait for it to complete (or fail)
+    operation = operation.PollUntilCompleted();
+    // Return the metadata
     return operation.Metadata.ToString();
   }
 }

@@ -22,45 +22,38 @@ using System.Threading;
 using Xunit;
 
 [CollectionDefinition(nameof(AssetFixture))]
-public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
-{
-    public string ProjectId { get; }
-    public string BucketName { get; }
-    public string DatasetId { get; }
-    private readonly RandomBucketFixture _bucketFixture;
-    private readonly BigQueryClient _bigQueryClient;
+public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture> {
+  public string ProjectId { get; }
+  public string BucketName { get; }
+  public string DatasetId { get; }
+  private readonly RandomBucketFixture _bucketFixture;
+  private readonly BigQueryClient _bigQueryClient;
 
-    public AssetFixture()
-    {
-        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        if (string.IsNullOrEmpty(ProjectId))
-        {
-            throw new Exception("missing GOOGLE_PROJECT_ID");
-        }
-
-        _bucketFixture = new RandomBucketFixture();
-        BucketName = _bucketFixture.BucketName;
-
-        _bigQueryClient = BigQueryClient.Create(ProjectId);
-        DatasetId = RandomDatasetId();
-        var dataset = new Dataset
-        {
-            Location = "US"
-        };
-        _bigQueryClient.CreateDataset(datasetId: DatasetId, dataset);
-
-        // Wait 10 seconds to let resource creation events go to CAI.
-        Thread.Sleep(10000);
+  public AssetFixture() {
+    ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    if (string.IsNullOrEmpty(ProjectId)) {
+      throw new Exception("missing GOOGLE_PROJECT_ID");
     }
 
-    public void Dispose()
-    {
-        _bucketFixture.Dispose();
-        _bigQueryClient.DeleteDataset(datasetId: DatasetId);
-    }
+    _bucketFixture = new RandomBucketFixture();
+    BucketName = _bucketFixture.BucketName;
 
-    public string RandomDatasetId()
-    {
-        return $"asset-csharp-{System.Guid.NewGuid()}".Replace('-', '_');
-    }
+    _bigQueryClient = BigQueryClient.Create(ProjectId);
+    DatasetId = RandomDatasetId();
+    var dataset = new Dataset { Location = "US" };
+    _bigQueryClient.CreateDataset(datasetId: DatasetId, dataset);
+
+    // Wait 10 seconds to let resource creation events go to CAI.
+    Thread.Sleep(10000);
+  }
+
+  public void Dispose() {
+    _bucketFixture.Dispose();
+    _bigQueryClient.DeleteDataset(datasetId: DatasetId,
+                                  options: new DeleteDatasetOptions() { DeleteContents = true });
+  }
+
+  public string RandomDatasetId() {
+    return $"asset-csharp-{System.Guid.NewGuid()}".Replace('-', '_');
+  }
 }
