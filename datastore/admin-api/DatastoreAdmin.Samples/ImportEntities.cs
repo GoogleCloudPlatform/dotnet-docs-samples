@@ -25,7 +25,8 @@ public class ImportEntitiesSample
     public bool ImportEntities(
         string projectId = "your-project-id",
         string inputUrl = "gs://datastore-admin-bucket/data_to_import",
-        string kind = "Task")
+        string kind = "Task",
+        string namespaceId = "default")
     {
         // Create client
         DatastoreAdminClient datastoreAdminClient = DatastoreAdminClient.Create();
@@ -33,7 +34,8 @@ public class ImportEntitiesSample
         IDictionary<string, string> labels = new Dictionary<string, string> { { "cloud_datastore_samples", "true" }, };
         EntityFilter entityFilter = new EntityFilter()
         {
-            Kinds = { kind }
+            Kinds = { kind },
+            NamespaceIds = { namespaceId }
         };
 
         Operation<Empty, ImportEntitiesMetadata> response = datastoreAdminClient.ImportEntities(projectId, labels, inputUrl, entityFilter);

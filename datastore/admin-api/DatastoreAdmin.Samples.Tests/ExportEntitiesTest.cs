@@ -29,7 +29,7 @@ public class ExportEntitiesTest
     {
         ExportEntitiesSample exportEntitiesSample = new ExportEntitiesSample();
         var outputUrl = exportEntitiesSample.ExportEntities(
-            _datastoreAdminFixture.ProjectId, $"gs://{_datastoreAdminFixture.BucketName}", _datastoreAdminFixture.Kind);
+            _datastoreAdminFixture.ProjectId, $"gs://{_datastoreAdminFixture.BucketName}", _datastoreAdminFixture.Kind, _datastoreAdminFixture.Namespace);
         Assert.NotNull(outputUrl);
     }
 }
