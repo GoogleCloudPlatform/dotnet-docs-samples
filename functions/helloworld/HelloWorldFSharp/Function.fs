@@ -22,6 +22,6 @@ type Function() =
     interface IHttpFunction with
         member this.HandleAsync context =
             async {
-                context.Response.WriteAsync "Hello World!" |> Async.AwaitTask |> ignore
+                do! context.Response.WriteAsync "Hello World!" |> Async.AwaitTask
             } |> Async.StartAsTask :> _
 // [END functions_helloworld_get]

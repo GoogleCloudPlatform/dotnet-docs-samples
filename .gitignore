@@ -27,3 +27,4 @@ env/
 applications/liftAndShiftPetshop/PrecompiledWeb/
 applications/liftAndShiftPetshop/Web/
 *.leu
+.cr/
