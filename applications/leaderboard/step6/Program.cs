@@ -235,7 +235,8 @@ namespace GoogleCloudSamples.Leaderboard
                                 DateTime randomTimestamp = DateTime.Now
                                         .AddYears(r.Next(-2, 1))
                                         .AddMonths(r.Next(-12, 1))
-                                        .AddDays(r.Next(-10, 1))
+                                        .AddDays(r.Next(-28, 0))
+                                        .AddHours(r.Next(-24, 0))
                                         .AddSeconds(r.Next(-60, 0))
                                         .AddMilliseconds(r.Next(-100000, 0));
                                 SpannerCommand cmdInsert =
