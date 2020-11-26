@@ -55,7 +55,7 @@ namespace CloudSql
                     options.Version = "Test";
                 });
             }
-            services.AddSingleton(typeof(DbConnection), (IServiceProvider) =>
+            services.AddScoped(typeof(DbConnection), (IServiceProvider) =>
                 InitializeDatabase());
             services.AddMvc(options =>
             {
@@ -78,7 +78,7 @@ namespace CloudSql
                         vote_id SERIAL NOT NULL,
                         time_cast timestamp NOT NULL,
                         candidate CHAR(6) NOT NULL,
-                        PRIMARY KEY (vote_id)   
+                        PRIMARY KEY (vote_id)
                     )";
                 createTableCommand.ExecuteNonQuery();
             }
@@ -88,7 +88,7 @@ namespace CloudSql
         void SetDbConfigOptions(MySqlConnectionStringBuilder connectionString)
         {
             // [START cloud_sql_mysql_dotnet_ado_limit]
-            // MaximumPoolSize sets maximum number of connections allowed in the pool.            
+            // MaximumPoolSize sets maximum number of connections allowed in the pool.
             connectionString.MaximumPoolSize = 5;
             // MinimumPoolSize sets the minimum number of connections in the pool.
             connectionString.MinimumPoolSize = 0;
@@ -113,11 +113,11 @@ namespace CloudSql
         DbConnection NewMysqlTCPConnection()
         {
             // [START cloud_sql_mysql_dotnet_ado_connection_tcp]
-            // Equivalent connection string: 
+            // Equivalent connection string:
             // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
             var connectionString = new MySqlConnectionStringBuilder()
             {
-                // The Cloud SQL proxy provides encryption between the proxy and instance. 
+                // The Cloud SQL proxy provides encryption between the proxy and instance.
                 SslMode = MySqlSslMode.None,
 
                 // Remember - storing secrets in plaintext is potentially unsafe. Consider using
@@ -143,13 +143,13 @@ namespace CloudSql
         DbConnection NewMysqlUnixSocketConnection()
         {
             // [START cloud_sql_mysql_dotnet_ado_connection_socket]
-            // Equivalent connection string: 
+            // Equivalent connection string:
             // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>;Protocol=unix"
             String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
             String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
             var connectionString = new MySqlConnectionStringBuilder()
             {
-                // The Cloud SQL proxy provides encryption between the proxy and instance. 
+                // The Cloud SQL proxy provides encryption between the proxy and instance.
                 SslMode = MySqlSslMode.None,
                 // Remember - storing secrets in plaintext is potentially unsafe. Consider using
                 // something like https://cloud.google.com/secret-manager/docs/overview to help keep
@@ -192,7 +192,8 @@ namespace CloudSql
                     if (Environment.GetEnvironmentVariable("DB_HOST") != null)
                     {
                         return NewMysqlTCPConnection();
-                    } else
+                    }
+                    else
                     {
                         return NewMysqlUnixSocketConnection();
                     }
