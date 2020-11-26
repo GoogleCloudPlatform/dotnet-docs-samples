@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatastoreAdmin.Samples", "DatastoreAdmin.Samples\DatastoreAdmin.Samples.csproj", "{2655154B-D926-4F98-B495-1C723C39B875}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatastoreAdmin.Samples.Tests", "DatastoreAdmin.Samples.Tests\DatastoreAdmin.Samples.Tests.csproj", "{A995AD2D-0E56-47F6-843A-4426CC5A4DB0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2655154B-D926-4F98-B495-1C723C39B875}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2655154B-D926-4F98-B495-1C723C39B875}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2655154B-D926-4F98-B495-1C723C39B875}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2655154B-D926-4F98-B495-1C723C39B875}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A995AD2D-0E56-47F6-843A-4426CC5A4DB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A995AD2D-0E56-47F6-843A-4426CC5A4DB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A995AD2D-0E56-47F6-843A-4426CC5A4DB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A995AD2D-0E56-47F6-843A-4426CC5A4DB0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9D2F0AD-B079-48EF-8B63-7511D77DCFD2}
+	EndGlobalSection
+EndGlobal
