@@ -17,4 +17,4 @@ Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 Require-Platform Win*
 
 & nuget.exe restore 2>&1 | %{ "$_" }
-& msbuild /t:Clean,Build CloudDemo.Mvc\CloudDemo.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:OutputPath=bin 2>&1 | %{ "$_" }
+& msbuild /t:clean /t:build "CloudDemo.Mvc\CloudDemo.Mvc.csproj" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:OutputPath=bin 2>&1 | %{ "$_" }
