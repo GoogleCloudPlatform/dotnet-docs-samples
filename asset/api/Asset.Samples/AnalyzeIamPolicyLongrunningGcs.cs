@@ -12,22 +12,23 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START asset_quickstart_analyze_iam_policy]
+// [START asset_quickstart_analyze_iam_policy_longrunning_gcs]
 
 using Google.Api.Gax;
 using Google.Cloud.Asset.V1;
 using System.Collections.Generic;
 using System.Linq;
 
-public class AnalyzeIamPolicySample
+public class AnalyzeIamPolicyLongrunningGcsSample
 {
-    public AnalyzeIamPolicyResponse AnalyzeIamPolicy(string scope, string fullResourceName)
+    public AnalyzeIamPolicyLongrunningRequest AnalyzeIamPolicyLongrunning(
+      string scope, string fullResourceName, string uri)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
 
         // Build the request.
-        AnalyzeIamPolicyRequest request = new AnalyzeIamPolicyRequest
+        AnalyzeIamPolicyLongrunningRequest request = new AnalyzeIamPolicyLongrunningRequest
         {
             AnalysisQuery = new IamPolicyAnalysisQuery
             {
@@ -42,13 +43,21 @@ public class AnalyzeIamPolicySample
                     OutputGroupEdges = true,
                 },
             },
+            OutputConfig = new IamPolicyAnalysisOutputConfig
+            {
+                GcsDestination = new IamPolicyAnalysisOutputConfig.Types.GcsDestination
+                {
+                    Uri = uri,
+                },
+            },
         };
 
-        // Call the API.
-        AnalyzeIamPolicyResponse response = client.AnalyzeIamPolicy(request);
-
-        // Return the result.
-        return response;
+        // Start the analyze long-running operation
+        var operation = client.AnalyzeIamPolicyLongrunning(request);
+        // Wait for it to complete
+        operation = operation.PollUntilCompleted();
+        // Return the metadata(request)
+        return operation.Metadata;
     }
 }
-// [END asset_quickstart_analyze_iam_policy]
+// [END asset_quickstart_analyze_iam_policy_longrunning_gcs]

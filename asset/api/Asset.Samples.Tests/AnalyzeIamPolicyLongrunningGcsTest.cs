@@ -14,19 +14,20 @@
  * the License.
  */
 
+using Google.Cloud.Asset.V1;
 using System;
 using Xunit;
 
 [Collection(nameof(AssetFixture))]
-public class AnalyzeIamPolicyLongrunningTest
+public class AnalyzeIamPolicyLongrunningGcsTest
 {
     private readonly AssetFixture _fixture;
-    private readonly AnalyzeIamPolicyLongrunningSample _sample;
+    private readonly AnalyzeIamPolicyLongrunningGcsSample _sample;
 
-    public AnalyzeIamPolicyLongrunningTest(AssetFixture fixture)
+    public AnalyzeIamPolicyLongrunningGcsTest(AssetFixture fixture)
     {
         _fixture = fixture;
-        _sample = new AnalyzeIamPolicyLongrunningSample();
+        _sample = new AnalyzeIamPolicyLongrunningGcsSample();
     }
 
     [Fact]
@@ -37,23 +38,9 @@ public class AnalyzeIamPolicyLongrunningTest
         string fullResourceName =
             String.Format("//cloudresourcemanager.googleapis.com/projects/{0}", _fixture.ProjectId);
         string uri = String.Format("gs://{0}/my-analysis.json", _fixture.BucketName);
-        string metadata = _sample.AnalyzeIamPolicyLongrunningGcs(scope, fullResourceName, uri);
+        AnalyzeIamPolicyLongrunningRequest returnedRequest =
+            _sample.AnalyzeIamPolicyLongrunning(scope, fullResourceName, uri);
 
-        Assert.Contains(uri, metadata);
-    }
-
-    [Fact]
-    public void TestAnalyzeIamPolicyLongrunningBigquery()
-    {
-        // Run the sample code.
-        string scope = String.Format("projects/{0}", _fixture.ProjectId);
-        string fullResourceName =
-            String.Format("//cloudresourcemanager.googleapis.com/projects/{0}", _fixture.ProjectId);
-        string dataset =
-            String.Format("projects/{0}/datasets/{1}", _fixture.ProjectId, _fixture.DatasetId);
-        string metadata = _sample.AnalyzeIamPolicyLongrunningBigquery(
-            scope, fullResourceName, dataset, tablePrefix: "client_library_table");
-
-        Assert.Contains(dataset, metadata);
+        Assert.Equal(uri, returnedRequest.OutputConfig.GcsDestination.Uri);
     }
 }

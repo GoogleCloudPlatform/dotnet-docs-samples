@@ -52,9 +52,16 @@ public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
 
     public void Dispose()
     {
-        _bucketFixture.Dispose();
-        _bigQueryClient.DeleteDataset(datasetId: DatasetId,
-                                      options: new DeleteDatasetOptions() { DeleteContents = true });
+        try
+        {
+            _bucketFixture.Dispose();
+            _bigQueryClient.DeleteDataset(
+              datasetId: DatasetId, options: new DeleteDatasetOptions() { DeleteContents = true });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Cleanup failed: " + e.ToString());
+        }
     }
 
     public string RandomDatasetId()
