@@ -1,0 +1,335 @@
+﻿/**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+body {
+    margin: 0;
+}
+
+/* Disable ugly boxes around images in IE10 */
+a img {
+    border: 0px;
+}
+
+::-moz-selection {
+    background-color: #B31412;
+    color: #fff;
+}
+
+::selection {
+    background-color: #B31412;
+    color: #fff;
+}
+
+.header .mdl-menu__container {
+    z-index: 50;
+    margin: 0 !important;
+}
+
+.mobile-title {
+    display: none !important;
+}
+
+
+.header {
+    overflow: visible;
+    background-color: white;
+}
+
+.header .material-icons {
+    color: #767777 !important;
+}
+
+.header .mdl-layout__drawer-button {
+    background: transparent;
+    color: #767777;
+}
+
+.header .mdl-navigation__link {
+    color: #757575;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.header .mdl-layout-title {
+    color: #757575;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.navigation-container {
+    /* Simple hack to make the overflow happen to the left instead... */
+    direction: rtl;
+    -webkit-order: 1;
+    -ms-flex-order: 1;
+    order: 1;
+    width: 500px;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navigation {
+    /* ... and now make sure the content is actually LTR */
+    direction: ltr;
+    -webkit-justify-content: flex-end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+    width: 800px;
+}
+
+.navigation .mdl-navigation__link {
+    display: inline-block;
+    height: 60px;
+    line-height: 68px;
+    background-color: transparent !important;
+    border-bottom: 4px solid transparent;
+}
+
+.navigation .mdl-navigation__link:hover {
+    border-bottom: 4px solid #EA4335;
+}
+
+.more-button {
+    -webkit-order: 3;
+    -ms-flex-order: 3;
+    order: 3;
+}
+
+.drawer {
+    border-right: none;
+}
+
+.drawer-separator {
+    height: 1px;
+    background-color: #dcdcdc;
+    margin: 8px 0;
+}
+
+.drawer .mdl-navigation__link.mdl-navigation__link {
+    font-size: 14px;
+    color: #757575;
+}
+
+.drawer span.mdl-navigation__link.mdl-navigation__link {
+    color: #EA4335;
+}
+
+.drawer .mdl-layout-title {
+    position: relative;
+    background: #ddd;
+    height: 160px;
+}
+
+.drawer .logo-image {
+    position: absolute;
+    bottom: 16px;
+}
+
+.main-section {
+    position: relative;
+    height: 400px;
+    width: auto;
+    background-color: #f3f3f3;
+    background: url('images/slide01.jpg') center 30% no-repeat;
+    background-size: cover;
+}
+
+.logo-font {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    line-height: 1;
+    color: #767777;
+    font-weight: 500;
+}
+
+.slogan {
+    font-size: 40px;
+    padding-top: 160px;
+}
+
+.sub-slogan {
+    font-size: 21px;
+    padding-top: 24px;
+}
+
+.link {
+    text-decoration: none;
+    color: #EA4335 !important;
+}
+
+.link:hover {
+    color: #B31412 !important;
+}
+
+.link .material-icons {
+    position: relative;
+    top: -1px;
+    vertical-align: middle;
+}
+
+.alt-link {
+    text-decoration: none;
+    color: #64ffda !important;
+    font-size: 16px;
+}
+
+.alt-link:hover {
+    color: #00bfa5 !important;
+}
+
+.alt-link .material-icons {
+    position: relative;
+    top: 6px;
+}
+
+.more-section {
+    padding: 80px 0;
+    max-width: 1044px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.more-section .section-title {
+    margin-left: 12px;
+    padding-bottom: 24px;
+}
+
+.card-container {
+}
+
+.card-container .mdl-card__media {
+    overflow: hidden;
+    background: transparent;
+}
+
+.card-container .mdl-card__media img {
+    width: 100%;
+}
+
+.card-container .mdl-card__title {
+    background: transparent;
+    height: auto;
+}
+
+.card-container .mdl-card__title-text {
+    color: black;
+    height: auto;
+}
+
+.card-container .mdl-card__supporting-text {
+    height: auto;
+    color: black;
+    padding-bottom: 56px;
+}
+
+.card-container .mdl-card__actions {
+    position: absolute;
+    bottom: 0;
+}
+
+.card-container .mdl-card__actions a {
+    border-top: none;
+    font-size: 14px;
+}
+
+.footer {
+    background-color: #fafafa;
+    position: relative;
+}
+
+.footer a:hover {
+    color: #EA4335;
+}
+
+.footer .mdl-mega-footer--top-section::after {
+    border-bottom: none;
+}
+
+.footer .mdl-mega-footer--middle-section::after {
+    border-bottom: none;
+}
+
+.footer .mdl-mega-footer--bottom-section {
+    position: relative;
+}
+
+.footer .mdl-mega-footer--bottom-section a {
+    margin-right: 2em;
+}
+
+.footer .mdl-mega-footer--right-section a .material-icons {
+    position: relative;
+    top: 6px;
+}
+
+.footer pre {
+    font-size: 12px;
+    line-height: 12px;
+    margin-left: 0px;
+}
+
+.link-menu:hover {
+    cursor: pointer;
+}
+
+.card-cell {
+    min-height: 300px;
+}
+
+/**** Mobile layout ****/
+@media (max-width: 900px) {
+    .navigation-container {
+        display: none;
+    }
+
+    .title {
+        display: none !important;
+    }
+
+    .mobile-title {
+        display: block !important;
+        position: absolute;
+        left: calc(50% - 70px);
+        top: 12px;
+        transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .more-button {
+        display: none;
+    }
+
+    .main-section {
+        height: 350px;
+    }
+
+    .slogan {
+        font-size: 26px;
+        margin: 0 16px;
+        padding-top: 24px;
+    }
+
+    .sub-slogan {
+        font-size: 16px;
+        margin: 0 16px;
+        padding-top: 8px;
+    }
+
+    .footer .mdl-mega-footer--bottom-section {
+        display: none;
+    }
+}

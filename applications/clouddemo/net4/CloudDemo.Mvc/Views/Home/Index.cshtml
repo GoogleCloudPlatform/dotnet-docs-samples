@@ -1,0 +1,121 @@
+﻿@{
+  /*
+   Copyright 2020 Google LLC
+
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+  */
+}
+
+@model CloudDemo.Mvc.Models.HomeViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="main-section mdl-typography--text-center">
+    @if (Model.IsRunningOnGoogleCloud)
+    {
+        <div class="logo-font slogan">
+            <div><img src="@Url.Content("~/Content/images/logo.png")" alt="Skylar approves"></div>
+            This app is running on @Html.DisplayFor(model => model.CloudRuntime)
+        </div>
+    }
+    else
+    {
+        <div class="logo-font slogan">Looks like this app has not been deployed yet...</div>
+    }
+</div>
+<div class="more-section">
+    <div class="section-title mdl-typography--display-1-color-contrast">Learn more about running .NET on Google Cloud</div>
+    <div class="card-container mdl-grid">
+        <div class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp card-cell">
+            <div class="mdl-card__title">
+                <h4 class="mdl-card__title-text">Deploy</h4>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class="mdl-typography--font-light mdl-typography--subhead">
+                    Explore options to deploy .NET applications
+                    on Google Cloud.
+                </span>
+            </div>
+            <div class="mdl-card__actions">
+                <a class="link mdl-button mdl-js-button mdl-typography--text-uppercase" href="https://cloud.google.com/run/docs">
+                    Cloud Run <i class="material-icons">chevron_right</i>
+                </a>
+                <a class="link mdl-button mdl-js-button mdl-typography--text-uppercase" href="https://cloud.google.com/kubernetes-engine/docs">
+                    Kubernetes Engine <i class="material-icons">chevron_right</i>
+                </a>
+                <a class="link mdl-button mdl-js-button mdl-typography--text-uppercase" href="https://cloud.google.com/compute">
+                    Compute Engine <i class="material-icons">chevron_right</i>
+                </a>
+            </div>
+        </div>
+
+        <div class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp card-cell">
+            <div class="mdl-card__title">
+                <h4 class="mdl-card__title-text">Automate</h4>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class="mdl-typography--font-light mdl-typography--subhead">
+                    Learn how to set up a CI/CD pipeline to deploy applications to Google Cloud.
+                </span>
+            </div>
+            <div class="mdl-card__actions">
+                <a class="link mdl-button mdl-js-button mdl-typography--text-uppercase" href="https://cloud.google.com/docs/tutorials#creating+a+pipeline">
+                    Tutorials
+                    <i class="material-icons">chevron_right</i>
+                </a>
+            </div>
+        </div>
+
+        <div class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp card-cell">
+            <div class="mdl-card__title">
+                <h4 class="mdl-card__title-text">Integrate</h4>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class="mdl-typography--font-light mdl-typography--subhead">
+                    Use the .NET client libraries to access Google Cloud APIs.
+                </span>
+            </div>
+            <div class="mdl-card__actions">
+                <a class="link mdl-button mdl-js-button mdl-typography--text-uppercase" href="https://github.com/GoogleCloudPlatform/google-cloud-dotnet">
+                    Client libraries <i class="material-icons">chevron_right</i>
+                </a>
+                <a class="link mdl-button mdl-js-button mdl-typography--text-uppercase" href="https://github.com/GoogleCloudPlatform/dotnet-docs-samples">
+                    Code samples <i class="material-icons">chevron_right</i>
+                </a>
+            </div>
+        </div>
+
+        <div class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp card-cell">
+            <div class="mdl-card__title">
+                <h4 class="mdl-card__title-text">Stay up to date</h4>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class="mdl-typography--font-light mdl-typography--subhead">
+                    Stay up to date on news about Google Cloud.
+
+                </span>
+            </div>
+            <div class="mdl-card__actions">
+                <a class="link mdl-button mdl-js-button mdl-typography--text-uppercase" href="https://cloud.google.com/blog/">
+                    Google Cloud blog <i class="material-icons">chevron_right</i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
