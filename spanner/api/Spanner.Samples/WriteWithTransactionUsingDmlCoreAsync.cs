@@ -24,7 +24,7 @@ public class WriteWithTransactionUsingDmlCoreAsyncSample
     {
         // This sample transfers 200,000 from the MarketingBudget
         // field of the second Album to the first Album. Make sure to run
-        // the addColumn and writeDataToNewColumn samples first,
+        // the AddColumnAsyncSample and WriteDataToNewColumnAsyncSample first,
         // in that order.
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
