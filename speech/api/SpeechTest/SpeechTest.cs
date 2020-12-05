@@ -74,6 +74,7 @@ namespace GoogleCloudSamples
         protected string _audioFlacPath = Path.Combine("resources", "audio.flac");
         protected string _audioWavPath = Path.Combine("resources", "commercial_mono.wav");
         protected string _audioSteroPath = Path.Combine("resources", "commercial_stereo.wav");
+        protected static readonly string s_AUDIO_FILE = "gs://cloud-samples-data/speech/commercial_mono.wav";
 
         [Fact]
         public void TestSync()
@@ -193,6 +194,14 @@ namespace GoogleCloudSamples
             var output = Run("sync", "-r", _audioFlacPath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Brooklyn", output.Stdout);
+        }
+
+        [Fact]
+        public void TestSyncRecognitionProfanityFilter()
+        {
+            var output = Run("sync", "-f", s_AUDIO_FILE);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Transcript:", output.Stdout);
         }
     }
 
