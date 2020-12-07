@@ -201,7 +201,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("sync", "-f", s_AUDIO_FILE);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Transcript:", output.Stdout);
+            Assert.Contains("Chromecast", output.Stdout);
         }
     }
 

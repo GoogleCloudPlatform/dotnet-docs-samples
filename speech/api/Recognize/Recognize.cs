@@ -432,7 +432,7 @@ namespace GoogleCloudSamples
             var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                SampleRateHertz = 16000,
+                SampleRateHertz = 8000,
                 LanguageCode = "en",
             }, RecognitionAudio.FromStorageUri(storageUri));
             foreach (var result in response.Results)
