@@ -141,10 +141,10 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSyncWords()
         {
-            var output = Run("sync", "-w", _audioRawPath);
+            var output = Run("sync", "-w", s_AUDIO_FILE);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Brooklyn", output.Stdout);
-            Assert.Contains("WordStartTime:", output.Stdout);
+            Assert.Contains("Chromecast", output.Stdout);
+            Assert.Contains("Chromecast", output.Stdout);
         }
 
         [Fact]
