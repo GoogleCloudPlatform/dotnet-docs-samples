@@ -38,6 +38,6 @@ public class AnalyzeIamPolicyTest
             $"//cloudresourcemanager.googleapis.com/projects/{_fixture.ProjectId}";
         var result = _sample.AnalyzeIamPolicy(scope, fullResourceName);
 
-        Assert.Equals(fullResourceName, result.MainAnalysis.AnalysisQuery.ResourceSelector.FullResourceName);
+        Assert.Equal(fullResourceName, result.MainAnalysis.AnalysisQuery.ResourceSelector.FullResourceName);
     }
 }

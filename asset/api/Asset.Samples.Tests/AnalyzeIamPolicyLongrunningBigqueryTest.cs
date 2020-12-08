@@ -34,11 +34,11 @@ public class AnalyzeIamPolicyLongrunningBigqueryTest
     public void TestAnalyzeIamPolicyLongrunningBigquery()
     {
         // Run the sample code.
-        string scope = String.Format("projects/{0}", _fixture.ProjectId);
+        string scope = $"projects/{_fixture.ProjectId}";
         string fullResourceName =
-            String.Format("//cloudresourcemanager.googleapis.com/projects/{0}", _fixture.ProjectId);
+            $"//cloudresourcemanager.googleapis.com/projects/{_fixture.ProjectId}";
         string dataset =
-            String.Format("projects/{0}/datasets/{1}", _fixture.ProjectId, _fixture.DatasetId);
+            $"projects/{_fixture.ProjectId}/datasets/{_fixture.DatasetId}";
         string tablePrefix = "client_library_table";
         AnalyzeIamPolicyLongrunningRequest returnedRequest =
             _sample.AnalyzeIamPolicyLongrunning(scope, fullResourceName, dataset, tablePrefix);
