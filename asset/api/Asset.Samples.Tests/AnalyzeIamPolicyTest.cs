@@ -33,7 +33,7 @@ public class AnalyzeIamPolicyTest
     public void TestAnalyzeIamPolicy()
     {
         // Run the sample code.
-        string scope = String.Format("projects/{0}", _fixture.ProjectId);
+        string scope = $"projects/{_fixture.ProjectId}";
         string fullResourceName =
             String.Format("//cloudresourcemanager.googleapis.com/projects/{0}", _fixture.ProjectId);
         var result = _sample.AnalyzeIamPolicy(scope, fullResourceName);
