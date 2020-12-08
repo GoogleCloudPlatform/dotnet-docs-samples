@@ -74,7 +74,7 @@ namespace GoogleCloudSamples
         protected string _audioFlacPath = Path.Combine("resources", "audio.flac");
         protected string _audioWavPath = Path.Combine("resources", "commercial_mono.wav");
         protected string _audioSteroPath = Path.Combine("resources", "commercial_stereo.wav");
-        protected static readonly string s_AUDIO_FILE = "gs://cloud-samples-data/speech/commercial_mono.wav";
+        protected const string AudioFilePath = "gs://cloud-samples-data/speech/commercial_mono.wav";
 
         [Fact]
         public void TestSync()
@@ -141,9 +141,8 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSyncWords()
         {
-            var output = Run("sync", "-w", s_AUDIO_FILE);
+            var output = Run("sync", "-w", AudioFilePath);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Chromecast", output.Stdout);
             Assert.Contains("Chromecast", output.Stdout);
         }
 
@@ -199,7 +198,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSyncRecognitionProfanityFilter()
         {
-            var output = Run("sync", "-f", s_AUDIO_FILE);
+            var output = Run("sync", "-f", AudioFilePath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Chromecast", output.Stdout);
         }

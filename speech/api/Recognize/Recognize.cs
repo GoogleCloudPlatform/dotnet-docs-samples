@@ -450,7 +450,7 @@ namespace GoogleCloudSamples
         static object SyncRecognizeWithProfanityFilterGcs(string storageUri)
         {
             var speech = SpeechClient.Create();
-            var response = speech.Recognize(new RecognitionConfig()
+            var response = speech.Recognize(new RecognitionConfig
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 SampleRateHertz = 8000,
@@ -700,8 +700,8 @@ namespace GoogleCloudSamples
                 >(args).MapResult(
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     SyncRecognizeGcs(opts.FilePath) : opts.EnableWordTimeOffsets ?
-                    SyncRecognizeWithProfanityFilterGcs(opts.FilePath) : opts.EnableProfanityFilter ?
-                    SyncRecognizeWords(opts.FilePath) : opts.EnableAutomaticPunctuation ?
+                    SyncRecognizeWords(opts.FilePath) : opts.EnableProfanityFilter ?
+                    SyncRecognizeWithProfanityFilterGcs(opts.FilePath) : opts.EnableAutomaticPunctuation ?
                     SyncRecognizePunctuation(opts.FilePath) : (opts.SelectModel != null) ?
                     SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : opts.UseEnhancedModel ?
                     SyncRecognizeEnhancedModel(opts.FilePath) : (opts.NumberOfChannels > 1) ?
