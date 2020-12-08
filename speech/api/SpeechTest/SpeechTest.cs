@@ -141,16 +141,9 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSyncWords()
         {
-<<<<<<< HEAD
             var output = Run("sync", "-w", AudioFilePath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Chromecast", output.Stdout);
-=======
-            var output = Run("sync", "-w", s_AUDIO_FILE);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Chromecast", output.Stdout);
-            Assert.Contains("Chromecast", output.Stdout);
->>>>>>> 9bcc13f3 (fix: fixed assert line for TestSyncWords)
         }
 
         [Fact]
