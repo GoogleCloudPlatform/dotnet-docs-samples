@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateDataWithTimestampColumnTest
+public class UpdateUsingPartitionedDmlCoreAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateDataWithTimestampColumnTest(SpannerFixture spannerFixture)
+    public UpdateUsingPartitionedDmlCoreAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateDataWithTimestampColumn()
+    public async void TestUpdateUsingPartitionedDmlCoreAsync()
     {
-        UpdateDataWithTimestampColumnAsyncSample sample = new UpdateDataWithTimestampColumnAsyncSample();
-        var rowCount = await sample.UpdateDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(2, rowCount);
+        UpdateUsingPartitionedDmlCoreAsyncSample sample = new UpdateUsingPartitionedDmlCoreAsyncSample();
+        var rowCount = await sample.UpdateUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Equal(3, rowCount);
     }
 }

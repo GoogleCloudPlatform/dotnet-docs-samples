@@ -25,19 +25,19 @@ public class ReadStaleDataAsyncSample
     {
         public int SingerId { get; set; }
         public int AlbumId { get; set; }
-        public string AlbumTitle { get; set; }
+        public long? MarketingBudget { get; set; }
     }
 
     public async Task<List<Album>> ReadStaleDataAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        
+
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
         var staleness = TimestampBound.OfExactStaleness(TimeSpan.FromSeconds(15));
         using var transaction = await connection.BeginReadOnlyTransactionAsync(staleness);
-        using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
+        using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, MarketingBudget FROM Albums");
         cmd.Transaction = transaction;
 
         var albums = new List<Album>();
@@ -48,7 +48,7 @@ public class ReadStaleDataAsyncSample
             {
                 SingerId = reader.GetFieldValue<int>("SingerId"),
                 AlbumId = reader.GetFieldValue<int>("AlbumId"),
-                AlbumTitle = reader.GetFieldValue<string>("AlbumTitle")
+                MarketingBudget = reader.IsDBNull(reader.GetOrdinal("MarketingBudget")) ? 0 : reader.GetFieldValue<long>("MarketingBudget")
             });
         }
         return albums;
