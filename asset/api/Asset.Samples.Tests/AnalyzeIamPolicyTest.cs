@@ -35,7 +35,7 @@ public class AnalyzeIamPolicyTest
         // Run the sample code.
         string scope = $"projects/{_fixture.ProjectId}";
         string fullResourceName =
-            String.Format("//cloudresourcemanager.googleapis.com/projects/{0}", _fixture.ProjectId);
+            $"//cloudresourcemanager.googleapis.com/projects/{_fixture.ProjectId}";
         var result = _sample.AnalyzeIamPolicy(scope, fullResourceName);
 
         Assert.Contains(fullResourceName, result.ToString());
