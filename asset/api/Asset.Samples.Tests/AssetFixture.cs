@@ -56,7 +56,7 @@ public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
         {
             _bucketFixture.Dispose();
             _bigQueryClient.DeleteDataset(
-              datasetId: DatasetId, options: new DeleteDatasetOptions() { DeleteContents = true });
+                datasetId: DatasetId, options: new DeleteDatasetOptions() { DeleteContents = true });
         }
         catch (Exception e)
         {
