@@ -43,10 +43,7 @@ public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
 
         _bigQueryClient = BigQueryClient.Create(ProjectId);
         DatasetId = RandomDatasetId();
-        var dataset = new Dataset
-        {
-            Location = "US"
-        };
+        var dataset = new Dataset { Location = "US" };
         _bigQueryClient.CreateDataset(datasetId: DatasetId, dataset);
 
         // Wait 10 seconds to let resource creation events go to CAI.
@@ -55,8 +52,16 @@ public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
 
     public void Dispose()
     {
-        _bucketFixture.Dispose();
-        _bigQueryClient.DeleteDataset(datasetId: DatasetId);
+        try
+        {
+            _bucketFixture.Dispose();
+            _bigQueryClient.DeleteDataset(
+                datasetId: DatasetId, options: new DeleteDatasetOptions() { DeleteContents = true });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Cleanup failed: " + e.ToString());
+        }
     }
 
     public string RandomDatasetId()
