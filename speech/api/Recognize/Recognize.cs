@@ -66,6 +66,9 @@ namespace GoogleCloudSamples
 
         [Option('l', HelpText = "Add word-level confidence values to transcription.")]
         public bool EnableWordLevelConfidence { get; set; }
+
+        [Option('f', HelpText = "Add profanity filtering to the transcription.")]
+        public bool EnableProfanityFilter { get; set; }
     }
 
     [Verb("with-context", HelpText = "Detects speech in an audio file."
@@ -429,7 +432,7 @@ namespace GoogleCloudSamples
             var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                SampleRateHertz = 16000,
+                SampleRateHertz = 8000,
                 LanguageCode = "en",
             }, RecognitionAudio.FromStorageUri(storageUri));
             foreach (var result in response.Results)
@@ -442,6 +445,29 @@ namespace GoogleCloudSamples
             return 0;
         }
         // [END speech_transcribe_sync_gcs]
+
+        // [START speech_transcribe_with_profanity_filter_sync_gcs]
+        static object SyncRecognizeWithProfanityFilterGcs(string storageUri)
+        {
+            var speech = SpeechClient.Create();
+            var response = speech.Recognize(new RecognitionConfig
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                SampleRateHertz = 8000,
+                LanguageCode = "en",
+                ProfanityFilter = true,
+            }, RecognitionAudio.FromStorageUri(storageUri));
+
+            foreach (var result in response.Results)
+            {
+                foreach (var alternative in result.Alternatives)
+                {
+                    Console.WriteLine(alternative.Transcript);
+                }
+            }
+            return 0;
+        }
+        // [END speech_transcribe_with_profanity_filter_sync_gcs]
 
         // [START speech_transcribe_async]
         static object LongRunningRecognize(string filePath)
@@ -674,7 +700,8 @@ namespace GoogleCloudSamples
                 >(args).MapResult(
                 (SyncOptions opts) => IsStorageUri(opts.FilePath) ?
                     SyncRecognizeGcs(opts.FilePath) : opts.EnableWordTimeOffsets ?
-                    SyncRecognizeWords(opts.FilePath) : opts.EnableAutomaticPunctuation ?
+                    SyncRecognizeWords(opts.FilePath) : opts.EnableProfanityFilter ?
+                    SyncRecognizeWithProfanityFilterGcs(opts.FilePath) : opts.EnableAutomaticPunctuation ?
                     SyncRecognizePunctuation(opts.FilePath) : (opts.SelectModel != null) ?
                     SyncRecognizeModelSelection(opts.FilePath, opts.SelectModel) : opts.UseEnhancedModel ?
                     SyncRecognizeEnhancedModel(opts.FilePath) : (opts.NumberOfChannels > 1) ?
