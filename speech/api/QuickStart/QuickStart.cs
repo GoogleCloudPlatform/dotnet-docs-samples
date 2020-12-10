@@ -25,6 +25,7 @@ namespace GoogleCloudSamples
     {
         // The GCS URI of the audio file to transcribe.
         public static string GcsUri = "gs://cloud-samples-data/speech/brooklyn_bridge.raw";
+
         public static void Main(string[] args)
         {
             var speech = SpeechClient.Create();
@@ -34,6 +35,7 @@ namespace GoogleCloudSamples
                 SampleRateHertz = 16000,
                 LanguageCode = "en",
             }, RecognitionAudio.FromStorageUri(GcsUri));
+
             foreach (var result in response.Results)
             {
                 foreach (var alternative in result.Alternatives)
