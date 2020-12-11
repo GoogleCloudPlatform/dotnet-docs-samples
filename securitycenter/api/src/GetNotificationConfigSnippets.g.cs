@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START securitycenter_get_notification_config]
 // [START scc_get_notification_config]
 
 using Google.Cloud.SecurityCenter.V1;
@@ -31,3 +32,4 @@ public class GetNotificationConfigSnippets
     }
 }
 // [END scc_get_notification_config]
+// [END securitycenter_get_notification_config]

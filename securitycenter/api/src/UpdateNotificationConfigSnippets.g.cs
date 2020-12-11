@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// [START securitycenter_update_notification_config]
 // [START scc_update_notification_config]
 
 using Google.Cloud.SecurityCenter.V1;
@@ -47,3 +48,4 @@ public class UpdateNotificationConfigSnippets
     }
 }
 // [END scc_update_notification_config]
+// [END securitycenter_update_notification_config]
