@@ -151,7 +151,7 @@ namespace GoogleCloudSamples
         {
             var output = Run("sync", "-p", _audioWavPath);
             Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Chromecast", output.Stdout);
+            Assert.Contains("Terrific. It's on the way.", output.Stdout);
         }
 
         [Fact]
