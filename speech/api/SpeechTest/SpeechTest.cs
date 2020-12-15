@@ -202,6 +202,14 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Chromecast", output.Stdout);
         }
+
+        [Fact]
+        public void TestSyncRecognitionMultiRegion()
+        {
+            var output = Run("sync", "-g", AudioFilePath);
+            Assert.Equal(0, output.ExitCode);
+            Assert.Contains("Chromecast", output.Stdout);
+        }
     }
 
     public class CloudStorageRecognizeTests : CommonRecognizeTests, IClassFixture<RandomBucketFixture>, System.IDisposable
