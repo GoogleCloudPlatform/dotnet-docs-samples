@@ -206,7 +206,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestSyncRecognitionMultiRegion()
         {
-            var output = Run("sync", "-g", AudioFilePath);
+            var output = Run("sync", "-d", AudioFilePath);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains("Chromecast", output.Stdout);
         }

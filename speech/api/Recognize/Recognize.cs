@@ -70,7 +70,7 @@ namespace GoogleCloudSamples
         [Option('f', HelpText = "Add profanity filtering to the transcription.")]
         public bool EnableProfanityFilter { get; set; }
 
-        [Option('g', HelpText = "Change the default Multi-Region endpoint.")]
+        [Option('d', HelpText = "Change the default Multi-Region endpoint.")]
         public bool MultiRegion { get; set; }
     }
 
