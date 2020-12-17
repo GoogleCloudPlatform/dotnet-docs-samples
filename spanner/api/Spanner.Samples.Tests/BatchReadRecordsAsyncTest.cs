@@ -12,24 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateUsingPartitionedDmlCoreAsyncTest
+public class BatchReadRecordsAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateUsingPartitionedDmlCoreAsyncTest(SpannerFixture spannerFixture)
+    public BatchReadRecordsAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateUsingPartitionedDmlCoreAsync()
+    public async Task TestBatchReadRecordsAsync()
     {
-        UpdateUsingPartitionedDmlCoreAsyncSample sample = new UpdateUsingPartitionedDmlCoreAsyncSample();
-        var rowCount = await sample.UpdateUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        BatchReadRecordsAsyncSample batchReadRecordsAsyncSample = new BatchReadRecordsAsyncSample();
+        var partitionAndReadRow = await batchReadRecordsAsyncSample.BatchReadRecordsAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.True(partitionAndReadRow.First() >= 9 && partitionAndReadRow.Last() > 0);
     }
 }

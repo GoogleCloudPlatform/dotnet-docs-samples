@@ -16,20 +16,20 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateUsingPartitionedDmlCoreAsyncTest
+public class QuickStartAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateUsingPartitionedDmlCoreAsyncTest(SpannerFixture spannerFixture)
+    public QuickStartAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateUsingPartitionedDmlCoreAsync()
+    public async Task TestQuickStartAsync()
     {
-        UpdateUsingPartitionedDmlCoreAsyncSample sample = new UpdateUsingPartitionedDmlCoreAsyncSample();
-        var rowCount = await sample.UpdateUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        QuickStartAsyncSample quickStartSample = new QuickStartAsyncSample();
+        var singers = await quickStartSample.QuickStartAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Contains(singers, s => s.SingerId == 1);
     }
 }

@@ -12,24 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateUsingPartitionedDmlCoreAsyncTest
+public class UpdateBackupTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateUsingPartitionedDmlCoreAsyncTest(SpannerFixture spannerFixture)
+    public UpdateBackupTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateUsingPartitionedDmlCoreAsync()
+    public void TestUpdateBackup()
     {
-        UpdateUsingPartitionedDmlCoreAsyncSample sample = new UpdateUsingPartitionedDmlCoreAsyncSample();
-        var rowCount = await sample.UpdateUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        UpdateBackupSample updateBackupSample = new UpdateBackupSample();
+        GetBackupsSample getBackupsSample = new GetBackupsSample();
+        var backups = getBackupsSample.GetBackups(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId, _spannerFixture.BackupId).ToList();
+        var updatedBackup = updateBackupSample.UpdateBackup(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupId);
+        var backup = backups.FirstOrDefault(c => c.BackupName.BackupId == _spannerFixture.BackupId);
+        Assert.NotEqual(backup.ExpireTime, updatedBackup.ExpireTime);
     }
 }

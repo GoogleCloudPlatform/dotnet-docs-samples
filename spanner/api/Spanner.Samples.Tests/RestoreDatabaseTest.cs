@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateUsingPartitionedDmlCoreAsyncTest
+public class RestoreDatabaseTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateUsingPartitionedDmlCoreAsyncTest(SpannerFixture spannerFixture)
+    public RestoreDatabaseTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateUsingPartitionedDmlCoreAsync()
+    public void TestRestoreDatabase()
     {
-        UpdateUsingPartitionedDmlCoreAsyncSample sample = new UpdateUsingPartitionedDmlCoreAsyncSample();
-        var rowCount = await sample.UpdateUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        RestoreDatabaseSample restoreDatabaseSample = new RestoreDatabaseSample();
+        restoreDatabaseSample.RestoreDatabase(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.RestoredDatabaseId, _spannerFixture.BackupId);
+        var databases = _spannerFixture.GetDatabases();
+        Assert.Contains(databases, d => d.DatabaseName.DatabaseId == _spannerFixture.RestoredDatabaseId);
     }
 }
