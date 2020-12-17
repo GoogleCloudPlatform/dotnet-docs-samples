@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_list_backups]
 // [START spanner_get_backups]
 
 using Google.Api.Gax;
@@ -95,3 +96,4 @@ public class GetBackupsSample
     }
 }
 // [END spanner_get_backups]
+// [END spanner_list_backups]
