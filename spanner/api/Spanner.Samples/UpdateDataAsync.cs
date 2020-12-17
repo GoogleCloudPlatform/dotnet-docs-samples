@@ -31,13 +31,13 @@ public class UpdateDataAsyncSample
             "UPDATE Albums SET MarketingBudget = @MarketingBudget "
             + "WHERE SingerId = 1 and AlbumId = 1");
         cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, 100000);
-        rowCount = +await cmd.ExecuteNonQueryAsync();
+        rowCount += await cmd.ExecuteNonQueryAsync();
 
         cmd = connection.CreateDmlCommand(
             "UPDATE Albums SET MarketingBudget = @MarketingBudget "
             + "WHERE SingerId = 2 and AlbumId = 2");
         cmd.Parameters.Add("MarketingBudget", SpannerDbType.Int64, 500000);
-        rowCount = +await cmd.ExecuteNonQueryAsync();
+        rowCount += await cmd.ExecuteNonQueryAsync();
 
         Console.WriteLine("Data Updated.");
         return rowCount;
