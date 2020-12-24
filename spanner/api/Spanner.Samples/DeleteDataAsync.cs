@@ -29,13 +29,6 @@ public class DeleteDataAsyncSample
         public string AlbumTitle { get; set; }
     }
 
-    public class Singer
-    {
-        public int SingerId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-    }
-
     public async Task<int> DeleteDataAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
