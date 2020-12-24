@@ -15,6 +15,7 @@
 // [START spanner_quickstart]
 
 using Google.Cloud.Spanner.Data;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -27,25 +28,22 @@ public class QuickStartAsyncSample
         public string LastName { get; set; }
     }
 
-    public async Task<List<Singer>> QuickStartAsync(string projectId, string instanceId, string databaseId)
+    public async Task<string> QuickStartAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
-        var singers = new List<Singer>();
         using var connection = new SpannerConnection(connectionString);
 
-        var cmd = connection.CreateSelectCommand(@"SELECT * from Singers");
+        // Execute a simple SQL statement.
+        string result = string.Empty;
+        var cmd = connection.CreateSelectCommand(@"SELECT ""Hello World"" as test");
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            singers.Add(new Singer
-            {
-                SingerId = reader.GetFieldValue<int>("SingerId"),
-                FirstName = reader.GetFieldValue<string>("FirstName"),
-                LastName = reader.GetFieldValue<string>("LastName")
-            });
+            result = reader.GetFieldValue<string>("test");
+            Console.WriteLine(result);
         }
-        return singers;
+        return result;
     }
 }
 // [END spanner_quickstart]

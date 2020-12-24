@@ -40,81 +40,7 @@ public class DeleteDataAsyncSample
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
-        // Create Sample Tables.
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            // Define create table statement for table #1.
-            string createTableStatement =
-           @"CREATE TABLE UpcomingSingers (
-                     SingerId INT64 NOT NULL,
-                     FirstName    STRING(1024),
-                     LastName STRING(1024),
-                     ComposerInfo   BYTES(MAX)
-                 ) PRIMARY KEY (SingerId)";
-            var cmd = connection.CreateDdlCommand(createTableStatement);
-            await cmd.ExecuteNonQueryAsync();
-
-            // Define create table statement for table #2.
-            createTableStatement =
-            @"CREATE TABLE UpcomingAlbums (
-                     SingerId     INT64 NOT NULL,
-                     AlbumId      INT64 NOT NULL,
-                     AlbumTitle   STRING(MAX)
-                 ) PRIMARY KEY (SingerId, AlbumId),
-                 INTERLEAVE IN PARENT UpcomingSingers ON DELETE CASCADE";
-            cmd = connection.CreateDdlCommand(createTableStatement);
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        // Insert Data into sample tables.
-        List<Singer> singers = new List<Singer>
-        {
-            new Singer { SingerId = 1, FirstName = "Marc", LastName = "Richards" },
-            new Singer { SingerId = 2, FirstName = "Catalina", LastName = "Smith" },
-            new Singer { SingerId = 3, FirstName = "Alice", LastName = "Trentor" },
-            new Singer { SingerId = 4, FirstName = "Lea", LastName = "Martin" },
-            new Singer { SingerId = 5, FirstName = "David", LastName = "Lomond" }
-        };
-        List<Album> albums = new List<Album>
-        {
-            new Album { SingerId = 1, AlbumId = 1, AlbumTitle = "Total Junk" },
-            new Album { SingerId = 1, AlbumId = 2, AlbumTitle = "Go, Go, Go" },
-            new Album { SingerId = 2, AlbumId = 1, AlbumTitle = "Green" },
-            new Album { SingerId = 2, AlbumId = 2, AlbumTitle = "Forever Hold your Peace" },
-            new Album { SingerId = 2, AlbumId = 3, AlbumTitle = "Terrified" }
-        };
-
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            await connection.OpenAsync();
-
-            // Insert rows into the Singers table.
-            await Task.WhenAll(singers.Select(singer =>
-            {
-                var cmd = connection.CreateInsertCommand("UpcomingSingers", new SpannerParameterCollection
-                {
-                    { "SingerId", SpannerDbType.Int64, singer.SingerId },
-                    { "FirstName", SpannerDbType.String, singer.FirstName },
-                    { "LastName", SpannerDbType.String, singer.LastName }
-                });
-                return cmd.ExecuteNonQueryAsync();
-            }));
-
-            // Insert rows into the Albums table.
-            await Task.WhenAll(albums.Select(album =>
-            {
-                var cmd = connection.CreateInsertCommand("UpcomingAlbums", new SpannerParameterCollection
-                {
-                    { "SingerId", SpannerDbType.Int64, album.SingerId },
-                    { "AlbumId", SpannerDbType.Int64, album.AlbumId },
-                    { "AlbumTitle", SpannerDbType.String, album.AlbumTitle }
-                });
-                return cmd.ExecuteNonQueryAsync();
-            }));
-            Console.WriteLine("Inserted data.");
-        }
-
-        albums = new List<Album>
+        var albums = new List<Album>
         {
             new Album { SingerId = 2, AlbumId = 1, AlbumTitle = "Green" },
             new Album { SingerId = 2, AlbumId = 3, AlbumTitle = "Terrified" },
@@ -125,45 +51,29 @@ public class DeleteDataAsyncSample
         {
             await connection.OpenAsync();
 
-            // Delete individual rows from the UpcomingAlbums table.
+            // Delete individual rows from the Albums table.
             var rowCountArray = await Task.WhenAll(albums.Select(album =>
             {
-                var cmd = connection.CreateDeleteCommand("UpcomingAlbums", new SpannerParameterCollection
+                var cmd = connection.CreateDeleteCommand("Albums", new SpannerParameterCollection
                 {
                     { "SingerId", SpannerDbType.Int64, album.SingerId },
                     { "AlbumId", SpannerDbType.Int64, album.AlbumId }
                 });
                 return cmd.ExecuteNonQueryAsync();
             }));
-            Console.WriteLine("Deleted individual rows in UpcomingAlbums.");
+            Console.WriteLine("Deleted individual rows in Albums.");
 
-            // Delete a range of rows from the UpcomingSingers table where the column key is >=3 and <5.
-            var cmd = connection.CreateDmlCommand("DELETE FROM UpcomingSingers WHERE SingerId >= 3 AND SingerId < 5");
+            // Delete a range of rows from the Singers table where the column key is >=3 and <5.
+            var cmd = connection.CreateDmlCommand("DELETE FROM Singers WHERE SingerId >= 3 AND SingerId < 5");
             rowCount = rowCountArray.Sum();
             rowCount += await cmd.ExecuteNonQueryAsync();
-            Console.WriteLine($"{rowCount} row(s) deleted from UpcomingSingers.");
+            Console.WriteLine($"{rowCount} row(s) deleted from Singers.");
 
-            // Delete remaining UpcomingSingers rows, which will also delete the remaining
-            // UpcomingAlbums rows since it was defined with ON DELETE CASCADE.
-            cmd = connection.CreateDmlCommand("DELETE FROM UpcomingSingers WHERE true");
+            // Delete remaining Singers rows, which will also delete the remaining
+            // Albums rows since it was defined with ON DELETE CASCADE.
+            cmd = connection.CreateDmlCommand("DELETE FROM Singers WHERE true");
             rowCount += await cmd.ExecuteNonQueryAsync();
-            Console.WriteLine($"{rowCount} row(s) deleted from UpcomingSingers.");
-        }
-
-        // Delete Sample Tables
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            foreach (var table in new List<string> { "UpcomingAlbums", "UpcomingSingers" })
-            {
-                try
-                {
-                    await connection.CreateDdlCommand($"DROP TABLE {table}").ExecuteNonQueryAsync();
-                }
-                catch (SpannerException e) when (e.ErrorCode == ErrorCode.NotFound)
-                {
-                    // Table does not exist.  Not a problem.
-                }
-            }
+            Console.WriteLine($"{rowCount} row(s) deleted from Singers.");
         }
         return rowCount;
     }

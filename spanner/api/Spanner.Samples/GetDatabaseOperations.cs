@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_list_database_operations]
 // [START spanner_get_database_operations]
 
 using Google.Cloud.Spanner.Admin.Database.V1;
@@ -27,7 +28,7 @@ public class GetDatabaseOperationsSample
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-        var filter = "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateDatabaseMetadata)";
+        var filter = "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.OptimizeRestoredDatabaseMetadata)";
 
         ListDatabaseOperationsRequest request = new ListDatabaseOperationsRequest
         {
@@ -50,3 +51,4 @@ public class GetDatabaseOperationsSample
     }
 }
 // [END spanner_get_database_operations]
+// [END spanner_list_database_operations]

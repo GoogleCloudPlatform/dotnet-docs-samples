@@ -29,7 +29,7 @@ public class QuickStartAsyncTest
     public async Task TestQuickStartAsync()
     {
         QuickStartAsyncSample quickStartSample = new QuickStartAsyncSample();
-        var singers = await quickStartSample.QuickStartAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(singers, s => s.SingerId == 1);
+        var result = await quickStartSample.QuickStartAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Equal("Hello World", result);
     }
 }
