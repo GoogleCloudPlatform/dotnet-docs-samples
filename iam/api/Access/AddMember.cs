@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START iam_modify_policy_add_member]
 // [START iam_modify_policy_member]
 
 using System.Linq;
@@ -27,3 +28,4 @@ public partial class AccessManager
     }
 }
 // [END iam_modify_policy_member]
+// [END iam_modify_policy_add_member]
