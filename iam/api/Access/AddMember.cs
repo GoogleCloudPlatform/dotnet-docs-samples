@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START iam_modify_policy_add_member]
-// [START iam_modify_policy_member]
 
 using System.Linq;
 using Google.Apis.CloudResourceManager.v1.Data;
@@ -27,5 +26,4 @@ public partial class AccessManager
         return policy;
     }
 }
-// [END iam_modify_policy_member]
 // [END iam_modify_policy_add_member]
