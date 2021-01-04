@@ -19,36 +19,29 @@ using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
 
-public class ResolveServiceTest : IDisposable
+public class ResolveServiceTest
 { 
     private readonly ServiceDirectoryFixture _fixture;
-    private readonly ResolveServiceSample _sample;
-    private string _namespaceId;
- 
+
     public ResolveServiceTest(ServiceDirectoryFixture fixture)
     {
         _fixture = fixture;
-        _sample = new ResolveServiceSample();
-    }
-
-    public void Dispose()
-    {
-        _fixture.DeleteNamespace(_namespaceId);
     }
 
     [Fact]
     public void ResolvesService()
     {
         // Setup namespace and service for the test.
-        _namespaceId = _fixture.RandomResourceId();
+        var namespaceId = _fixture.RandomResourceId();
         var serviceId = _fixture.RandomResourceId();
         var endpointId = _fixture.RandomResourceId();
-        _fixture.CreateNamespace(_namespaceId);
-        _fixture.CreateService(_namespaceId, serviceId);
-        _fixture.CreateEndpoint(_namespaceId, serviceId, endpointId);
+        _fixture.CreateNamespace(namespaceId);
+        _fixture.CreateService(namespaceId, serviceId);
+        _fixture.CreateEndpoint(namespaceId, serviceId, endpointId);
         // Run the sample code.
-        var service = _sample.ResolveService(projectId: _fixture.ProjectId,
-            locationId: _fixture.LocationId, namespaceId: _namespaceId, serviceId: serviceId);
+        var resolveServiceSample = new ResolveServiceSample();
+        var service = resolveServiceSample.ResolveService(projectId: _fixture.ProjectId,
+            locationId: _fixture.LocationId, namespaceId: namespaceId, serviceId: serviceId);
 
         Assert.Contains(serviceId, service.Name);
         Assert.Contains(endpointId, service.Endpoints[0].Name);

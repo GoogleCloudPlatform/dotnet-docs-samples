@@ -20,40 +20,33 @@ using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
 
-public class CreateServiceTest : IDisposable
+public class CreateServiceTest
 {
     private readonly ServiceDirectoryFixture _fixture;
-    private readonly CreateServiceSample _sample;
-    private string _namespaceId;
 
     public CreateServiceTest(ServiceDirectoryFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateServiceSample();
-    }
-
-    public void Dispose()
-    {
-        _fixture.DeleteNamespace(_namespaceId);
     }
 
     [Fact]
     public void CreatesEndpoint()
     {
         // Setup namespace for the test.
-        _namespaceId = _fixture.RandomResourceId();
-        _fixture.CreateNamespace(_namespaceId);
-
-        // Run the sample code.
+        var namespaceId = _fixture.RandomResourceId();
+        _fixture.CreateNamespace(namespaceId);
+        
         var serviceId = _fixture.RandomResourceId();
-        var result = _sample.CreateService(projectId: _fixture.ProjectId,
-            locationId: _fixture.LocationId, namespaceId: _namespaceId, serviceId: serviceId);
+        // Run the sample code.
+        var createServiceSample = new CreateServiceSample();
+        var result = createServiceSample.CreateService(_fixture.ProjectId,
+            _fixture.LocationId, namespaceId, serviceId);
 
         // Get the service.
-        string resourceName =
-            $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/namespaces/{_namespaceId}/services/{serviceId}";
+        var serviceName = ServiceName.FromProjectLocationNamespaceService(_fixture.ProjectId,
+            _fixture.LocationId, namespaceId, serviceId);
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        var service = registrationServiceClient.GetService(resourceName);
+        var service = registrationServiceClient.GetService(serviceName);
 
         Assert.Contains(serviceId, service.Name);
     }

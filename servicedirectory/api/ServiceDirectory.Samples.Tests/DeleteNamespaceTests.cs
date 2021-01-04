@@ -21,18 +21,14 @@ using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
 
-public class DeleteNamespaceTest : IDisposable
+public class DeleteNamespaceTest
 { 
     private readonly ServiceDirectoryFixture _fixture;
-    private readonly DeleteNamespaceSample _sample;
- 
+
     public DeleteNamespaceTest(ServiceDirectoryFixture fixture)
     {
         _fixture = fixture;
-        _sample = new DeleteNamespaceSample();
     }
-    
-    public void Dispose() {}
 
     [Fact]
     public void DeletesNamespace()
@@ -41,20 +37,14 @@ public class DeleteNamespaceTest : IDisposable
         var namespaceId = _fixture.RandomResourceId();
         _fixture.CreateNamespace(namespaceId);
         // Run the sample code.
-        _sample.DeleteNamespace(projectId: _fixture.ProjectId,
-            locationId: _fixture.LocationId, namespaceId: namespaceId);
+        var deleteNamespaceSample = new DeleteNamespaceSample();
+        deleteNamespaceSample.DeleteNamespace(_fixture.ProjectId, _fixture.LocationId, namespaceId);
         
         // Try to get the namespace.
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        string resourceName =
-            $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/namespaces/{namespaceId}";
-        try
-        {
-            registrationServiceClient.GetNamespace(resourceName);
-        }
-        catch (Grpc.Core.RpcException exception)
-        {
-            Assert.Equal(StatusCode.NotFound, exception.StatusCode);
-        }
+        var namespaceName =
+            NamespaceName.FromProjectLocationNamespace(_fixture.ProjectId, _fixture.LocationId, namespaceId);
+        var exception = Assert.Throws<RpcException>(() => registrationServiceClient.GetNamespace(namespaceName));
+        Assert.Equal(StatusCode.NotFound, exception.StatusCode);
     }
 }

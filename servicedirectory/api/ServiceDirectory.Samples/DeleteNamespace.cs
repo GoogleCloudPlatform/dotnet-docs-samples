@@ -16,7 +16,7 @@
 
 // [START servicedirectory_delete_namespace]
 
-using Google.Cloud.ServiceDirectory.V1Beta1;
+using Google.Cloud.ServiceDirectory.V1;
 
 public class DeleteNamespaceSample
 {
@@ -25,13 +25,8 @@ public class DeleteNamespaceSample
         // Create client
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
         // Initialize request argument(s)
-        DeleteNamespaceRequest request = new DeleteNamespaceRequest
-        {
-            NamespaceName = NamespaceName.FromProjectLocationNamespace(projectId, locationId, namespaceId),
-        };
-        // Make the request
-        registrationServiceClient.DeleteNamespace(request);
-        // End snippet
+        var namespaceName = NamespaceName.FromProjectLocationNamespace(projectId, locationId, namespaceId);
+        registrationServiceClient.DeleteNamespace(namespaceName);
     }
 }
 

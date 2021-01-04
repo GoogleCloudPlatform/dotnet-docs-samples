@@ -19,45 +19,33 @@ using System;
 using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
-
-public class CreateEndpointTest : IDisposable
+public class CreateEndpointTest
 { 
     private readonly ServiceDirectoryFixture _fixture;
-    private readonly CreateEndpointSample _sample;
-    private string _namespaceId;
 
     public CreateEndpointTest(ServiceDirectoryFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateEndpointSample();
-    }
-
-    public void Dispose()
-    {
-        _fixture.DeleteNamespace(_namespaceId);
     }
 
     [Fact]
     public void CreatesEndpoint()
     {
         // Setup namespace and service for test
-        _namespaceId = _fixture.RandomResourceId();
+        var namespaceId = _fixture.RandomResourceId();
         var serviceId = _fixture.RandomResourceId();
-        _fixture.CreateNamespace(_namespaceId);
-        _fixture.CreateService(_namespaceId, serviceId);
-        
+        _fixture.CreateNamespace(namespaceId);
+        _fixture.CreateService(namespaceId, serviceId);
+
         var endpointId = _fixture.RandomResourceId();
-        // Run the sample code.
-        var result = _sample.CreateEndpoint(projectId: _fixture.ProjectId,
-            locationId: _fixture.LocationId, namespaceId: _namespaceId, serviceId: serviceId,
-            endpointId: endpointId);
+        var createEndpointSample = new CreateEndpointSample();
 
-        // Get the endpoint.
-        string resourceName =
-            $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/namespaces/{_namespaceId}/services/{serviceId}/endpoints/{endpointId}";
+        var result = createEndpointSample.CreateEndpoint(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId, endpointId);
+
+        var endpointName = EndpointName.FromProjectLocationNamespaceServiceEndpoint(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId, endpointId);
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        var endpoint = registrationServiceClient.GetEndpoint(resourceName);
-
-        Assert.Contains(endpointId, endpoint.Name);
+        var endpoint = registrationServiceClient.GetEndpoint(endpointName);
+        
+        Assert.Equal(endpoint.Name, result.Name);
     }
 }

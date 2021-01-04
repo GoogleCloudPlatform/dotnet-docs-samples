@@ -17,16 +17,17 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ServiceDirectory.V1Beta1;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 [CollectionDefinition(nameof(ServiceDirectoryFixture))]
 public class ServiceDirectoryFixture : IDisposable, ICollectionFixture<ServiceDirectoryFixture>
 {
     public string ProjectId { get; }
-    public ProjectName ProjectName { get; }
+
+    public string LocationId { get; } = "us-east1";
     
-    public string LocationId { get; }
-    public LocationName LocationName { get; }
+    public IList<string> TempNamespaceIds { get; } = new List<string>();
 
     public ServiceDirectoryFixture()
     {
@@ -35,62 +36,52 @@ public class ServiceDirectoryFixture : IDisposable, ICollectionFixture<ServiceDi
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
-        ProjectName = new ProjectName(ProjectId);
-
-        LocationId = "us-east1";
-        LocationName = new LocationName(ProjectId, LocationId);
     }
     
     public string RandomResourceId()
     {
         return $"csharp-{Guid.NewGuid()}";
     }
-    
-    public void Dispose(){}
+
+    public void Dispose()
+    {
+        var registrationServiceClient = RegistrationServiceClient.Create();
+        foreach (var namespaceId in TempNamespaceIds)
+        {
+            try
+            {
+                var namespaceName = NamespaceName.FromProjectLocationNamespace(ProjectId, LocationId, namespaceId);
+                registrationServiceClient.DeleteNamespace(namespaceName);
+            }
+            catch (Exception)
+            {
+                // Do nothing, we delete on a best effort basis.
+            }
+        }
+    }
 
     public void CreateNamespace(string namespaceId)
     {
-        var registrationServiceClient = RegistrationServiceClient.Create();
-        var request = new CreateNamespaceRequest
-        {
-            ParentAsLocationName = LocationName.FromProjectLocation(ProjectId, LocationId),
-            NamespaceId = namespaceId,
-            Namespace = new Namespace(),
-        };
-        registrationServiceClient.CreateNamespace(request);
+        var createNamespaceSample = new CreateNamespaceSample();
+        createNamespaceSample.CreateNamespace(ProjectId, LocationId, namespaceId);
+        TempNamespaceIds.Add(namespaceId);
     }
 
     public void CreateService(string namespaceId, string serviceId)
     {
-        var registrationServiceClient = RegistrationServiceClient.Create();
-        var request = new CreateServiceRequest
-        {
-            ParentAsNamespaceName = NamespaceName.FromProjectLocationNamespace(ProjectId, LocationId, namespaceId),
-            ServiceId = serviceId,
-            Service = new Service(),
-        };
-        registrationServiceClient.CreateService(request);
+        var createServiceSample = new CreateServiceSample();
+        createServiceSample.CreateService(ProjectId, LocationId, namespaceId, serviceId);
     }
 
     public void CreateEndpoint(string namespaceId, string serviceId, string endpointId)
     {
-        var registrationServiceClient = RegistrationServiceClient.Create();
-        var request = new CreateEndpointRequest
-        {
-            ParentAsServiceName = ServiceName.FromProjectLocationNamespaceService(ProjectId, LocationId, namespaceId, serviceId),
-            EndpointId = endpointId,
-            Endpoint = new Endpoint(),
-        };
-        registrationServiceClient.CreateEndpoint(request);
+        var createEndpointSample = new CreateEndpointSample();
+        createEndpointSample.CreateEndpoint(ProjectId, LocationId, namespaceId, serviceId, endpointId);
     }
 
     public void DeleteNamespace(string namespaceId)
     {
-        var registrationServiceClient = RegistrationServiceClient.Create();
-        var request = new DeleteNamespaceRequest
-        {
-            NamespaceName = NamespaceName.FromProjectLocationNamespace(ProjectId, LocationId, namespaceId),
-        };
-        registrationServiceClient.DeleteNamespace(request);
+        var deleteNamespaceSample = new DeleteNamespaceSample();
+        deleteNamespaceSample.DeleteNamespace(ProjectId, LocationId, namespaceId);
     }
 }

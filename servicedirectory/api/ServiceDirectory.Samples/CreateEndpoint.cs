@@ -16,7 +16,7 @@
 
 // [START servicedirectory_create_endpoint]
 
-using Google.Cloud.ServiceDirectory.V1Beta1;
+using Google.Cloud.ServiceDirectory.V1;
 
 public class CreateEndpointSample
 {
@@ -27,15 +27,8 @@ public class CreateEndpointSample
         string endpointId = "test-endpoint")
     {
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        CreateEndpointRequest request = new CreateEndpointRequest
-        {
-                ParentAsServiceName = ServiceName.FromProjectLocationNamespaceService(projectId, locationId, namespaceId, serviceId),
-                EndpointId = endpointId,
-                Endpoint = new Endpoint(),
-        };
-        // Make the request
-        return registrationServiceClient.CreateEndpoint(request);
-        // End snippet
+        var serviceName = ServiceName.FromProjectLocationNamespaceService(projectId, locationId, namespaceId, serviceId);
+        return registrationServiceClient.CreateEndpoint(serviceName, new Endpoint(), endpointId);
     }
 }
 

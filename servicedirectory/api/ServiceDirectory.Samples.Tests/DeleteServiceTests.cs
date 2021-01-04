@@ -21,7 +21,7 @@ using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
 
-public class DeleteServiceTest : IDisposable
+public class DeleteServiceTest
 { 
     private readonly ServiceDirectoryFixture _fixture;
     private readonly DeleteServiceSample _sample;
@@ -33,11 +33,6 @@ public class DeleteServiceTest : IDisposable
         _sample = new DeleteServiceSample();
     }
 
-    public void Dispose()
-    {
-        _fixture.DeleteNamespace(_namespaceId);
-    }
-
     [Fact]
     public void DeletesService()
     {
@@ -47,20 +42,13 @@ public class DeleteServiceTest : IDisposable
         _fixture.CreateNamespace(_namespaceId);
         _fixture.CreateService(_namespaceId, serviceId);
         // Run the sample code.
-        _sample.DeleteService(projectId: _fixture.ProjectId,
-            locationId: _fixture.LocationId, namespaceId: _namespaceId, serviceId: serviceId);
+        _sample.DeleteService(_fixture.ProjectId, _fixture.LocationId, _namespaceId, serviceId);
         
         // Try to get the service.
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        string resourceName =
-            $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/namespaces/{_namespaceId}/services/{serviceId}";
-        try
-        {
-            registrationServiceClient.GetService(resourceName);
-        }
-        catch (Grpc.Core.RpcException exception)
-        {
-            Assert.Equal(StatusCode.NotFound, exception.StatusCode);
-        }
+        var serviceName = ServiceName.FromProjectLocationNamespaceService(_fixture.ProjectId, _fixture.LocationId, _namespaceId,
+                serviceId);
+        var exception = Assert.Throws<RpcException>(() => registrationServiceClient.GetService(serviceName));
+        Assert.Equal(StatusCode.NotFound, exception.StatusCode);
     }
 }

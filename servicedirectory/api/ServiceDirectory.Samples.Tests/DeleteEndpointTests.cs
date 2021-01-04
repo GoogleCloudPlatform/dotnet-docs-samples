@@ -21,48 +21,33 @@ using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
 
-public class DeleteEndpointTest : IDisposable
+public class DeleteEndpointTest
 { 
     private readonly ServiceDirectoryFixture _fixture;
-    private readonly DeleteEndpointSample _sample;
-    private string _namespaceId;
- 
+
     public DeleteEndpointTest(ServiceDirectoryFixture fixture)
     {
         _fixture = fixture;
-        _sample = new DeleteEndpointSample();
-    }
-
-    public void Dispose()
-    {
-        _fixture.DeleteNamespace(_namespaceId);
     }
 
     [Fact]
     public void DeletesEndpoint()
     {
         // Setup namespace, service, and endpoint for the test.
-        _namespaceId = _fixture.RandomResourceId();
+        var namespaceId = _fixture.RandomResourceId();
         var serviceId = _fixture.RandomResourceId();
         var endpointId = _fixture.RandomResourceId();
-        _fixture.CreateNamespace(_namespaceId);
-        _fixture.CreateService(_namespaceId, serviceId);
-        _fixture.CreateEndpoint(_namespaceId, serviceId, endpointId);
+        _fixture.CreateNamespace(namespaceId);
+        _fixture.CreateService(namespaceId, serviceId);
+        _fixture.CreateEndpoint(namespaceId, serviceId, endpointId);
         // Run the sample code.
-        _sample.DeleteEndpoint(projectId: _fixture.ProjectId,
-            locationId: _fixture.LocationId, namespaceId: _namespaceId, serviceId: serviceId, endpointId: endpointId);
+        var deleteEndpointSample = new DeleteEndpointSample();
+        deleteEndpointSample.DeleteEndpoint(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId, endpointId);
         
         // Try to get the endpoint.
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        string resourceName =
-            $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/namespaces/{_namespaceId}/services/{serviceId}";
-        try
-        {
-            registrationServiceClient.GetService(resourceName);
-        }
-        catch (Grpc.Core.RpcException exception)
-        {
-            Assert.Equal(StatusCode.NotFound, exception.StatusCode);
-        }
+        var endpointName = EndpointName.FromProjectLocationNamespaceServiceEndpoint(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId, endpointId);
+        var exception = Assert.Throws<RpcException>(() => registrationServiceClient.GetEndpoint(endpointName));
+        Assert.Equal(StatusCode.NotFound, exception.StatusCode);
     }
 }

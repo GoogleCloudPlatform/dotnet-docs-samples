@@ -19,21 +19,18 @@ using System;
 using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
-
 public class CreateNamespaceTest : IDisposable
 { 
     private readonly ServiceDirectoryFixture _fixture;
-    private readonly CreateNamespaceSample _sample;
     private string _namespaceId;
  
     public CreateNamespaceTest(ServiceDirectoryFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateNamespaceSample();
     }
     
     public void Dispose()
-    { 
+    {
         _fixture.DeleteNamespace(_namespaceId);
     }
 
@@ -42,15 +39,15 @@ public class CreateNamespaceTest : IDisposable
     {
         _namespaceId = _fixture.RandomResourceId();
         // Run the sample code.
-        var result = _sample.CreateNamespace(projectId: _fixture.ProjectId,
-            locationId: _fixture.LocationId, namespaceId: _namespaceId);
-        
-        // Get the namespace.
-        RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        string resourceName =
-            $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/namespaces/{_namespaceId}";
-        var namespaceVal = registrationServiceClient.GetNamespace(resourceName);
+        var createNamespaceSample = new CreateNamespaceSample();
+        var result = createNamespaceSample.CreateNamespace(_fixture.ProjectId, _fixture.LocationId, _namespaceId);
 
-        Assert.Contains(_namespaceId, namespaceVal.Name);
+        // Get the namespace.
+        var namespaceName =
+            NamespaceName.FromProjectLocationNamespace(_fixture.ProjectId, _fixture.LocationId, _namespaceId);
+        RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
+        var namespaceVal = registrationServiceClient.GetNamespace(namespaceName);
+
+        Assert.Contains(namespaceVal.Name, result.Name);
     }
 }

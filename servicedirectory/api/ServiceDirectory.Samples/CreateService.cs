@@ -16,7 +16,7 @@
 
 // [START servicedirectory_create_service]
 
-using Google.Cloud.ServiceDirectory.V1Beta1;
+using Google.Cloud.ServiceDirectory.V1;
 
 public class CreateServiceSample
 {
@@ -28,15 +28,8 @@ public class CreateServiceSample
         // Create client
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
         // Initialize request argument(s)
-        CreateServiceRequest request = new CreateServiceRequest
-        {
-            ParentAsNamespaceName = NamespaceName.FromProjectLocationNamespace(projectId, locationId, namespaceId),
-            ServiceId = serviceId,
-            Service = new Service(),
-        };
-        // Make the request
-        return registrationServiceClient.CreateService(request);
-        // End snippet
+        var namespaceName = NamespaceName.FromProjectLocationNamespace(projectId, locationId, namespaceId);
+        return registrationServiceClient.CreateService(namespaceName, new Service(), serviceId);
     }
 }
 

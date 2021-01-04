@@ -16,7 +16,7 @@
 
 // [START servicedirectory_resolve_service]
 
-using Google.Cloud.ServiceDirectory.V1Beta1;
+using Google.Cloud.ServiceDirectory.V1;
 
 public class ResolveServiceSample
 {
@@ -31,13 +31,10 @@ public class ResolveServiceSample
         ResolveServiceRequest request = new ResolveServiceRequest
         {
             ServiceName = ServiceName.FromProjectLocationNamespaceService(projectId, locationId, namespaceId, serviceId),
-            MaxEndpoints = 0,
-            EndpointFilter = "",
         };
         // Make the request
         ResolveServiceResponse response = lookupServiceClient.ResolveService(request);
         return response.Service;
-        // End snippet
     }
 }
 // [END servicedirectory_resolve_service]

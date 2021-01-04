@@ -16,7 +16,7 @@
 
 // [START servicedirectory_delete_service]
 
-using Google.Cloud.ServiceDirectory.V1Beta1;
+using Google.Cloud.ServiceDirectory.V1;
 
 public class DeleteServiceSample
 {
@@ -28,13 +28,8 @@ public class DeleteServiceSample
         // Create client
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
         // Initialize request argument(s)
-        DeleteServiceRequest request = new DeleteServiceRequest
-        {
-            ServiceName = ServiceName.FromProjectLocationNamespaceService(projectId, locationId, namespaceId, serviceId),
-        };
-        // Make the request
-        registrationServiceClient.DeleteService(request);
-        // End snippet
+        var serviceName = ServiceName.FromProjectLocationNamespaceService(projectId, locationId, namespaceId, serviceId);
+        registrationServiceClient.DeleteService(serviceName);
     }
 }
 

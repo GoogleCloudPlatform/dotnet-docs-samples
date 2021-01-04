@@ -16,7 +16,7 @@
 
 // [START servicedirectory_delete_endpoint]
 
-using Google.Cloud.ServiceDirectory.V1Beta1;
+using Google.Cloud.ServiceDirectory.V1;
 
 public class DeleteEndpointSample
 {
@@ -29,13 +29,8 @@ public class DeleteEndpointSample
         // Create client
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
         // Initialize request argument(s)
-        DeleteEndpointRequest request = new DeleteEndpointRequest
-        {
-            EndpointName = EndpointName.FromProjectLocationNamespaceServiceEndpoint(projectId, locationId, namespaceId, serviceId, endpointId),
-        };
-        // Make the request
-        registrationServiceClient.DeleteEndpoint(request);
-        // End snippet
+        var endpointName = EndpointName.FromProjectLocationNamespaceServiceEndpoint(projectId, locationId, namespaceId, serviceId, endpointId);
+        registrationServiceClient.DeleteEndpoint(endpointName);
     }
 }
 

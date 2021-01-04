@@ -17,7 +17,7 @@
 // [START servicedirectory_create_namespace]
 
 using Google.Api.Gax.ResourceNames;
-using Google.Cloud.ServiceDirectory.V1Beta1;
+using Google.Cloud.ServiceDirectory.V1;
 
 public class CreateNamespaceSample
 {
@@ -26,15 +26,8 @@ public class CreateNamespaceSample
         // Create client
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
         // Initialize request argument(s)
-        CreateNamespaceRequest request = new CreateNamespaceRequest
-        {
-            ParentAsLocationName = LocationName.FromProjectLocation(projectId, locationId),
-            NamespaceId = namespaceId,
-            Namespace = new Namespace(),
-        };
-        // Make the request
-        return registrationServiceClient.CreateNamespace(request);
-        // End snippet
+        var locationName = LocationName.FromProjectLocation(projectId, locationId);
+        return registrationServiceClient.CreateNamespace(locationName, new Namespace(), namespaceId);
     }
 }
 
