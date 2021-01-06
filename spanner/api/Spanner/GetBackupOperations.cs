@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START spanner_list_backup_operations]
-// [START spanner_get_backup_operations]
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
@@ -53,5 +52,4 @@ namespace GoogleCloudSamples.Spanner
         }
     }
 }
-// [END spanner_get_backup_operations]
 // [END spanner_list_backup_operations]

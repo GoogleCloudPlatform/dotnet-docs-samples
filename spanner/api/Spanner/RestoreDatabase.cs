@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START spanner_restore_backup]
-// [START spanner_restore_database]
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
@@ -60,5 +59,4 @@ namespace GoogleCloudSamples.Spanner
         }
     }
 }
-// [END spanner_restore_database]
 // [END spanner_restore_backup]
