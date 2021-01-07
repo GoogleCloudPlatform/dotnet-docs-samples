@@ -29,26 +29,24 @@ public class QueryDataWithNumericParameterAsyncSample
 
     public async Task<List<Venue>> QueryDataWithNumericParameterAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}" +
-            $"/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
         using var cmd = connection.CreateSelectCommand(
             "SELECT VenueId, Revenue FROM Venues WHERE Revenue < @maxRevenue",
-            new SpannerParameterCollection { { "maxRevenue", SpannerDbType.Numeric } });
-
-        cmd.Parameters["maxRevenue"].Value = SpannerNumeric.Parse("100000");
+            new SpannerParameterCollection
+            {
+                { "maxRevenue", SpannerDbType.Numeric, SpannerNumeric.Parse("100000") }
+            });
 
         var venues = new List<Venue>();
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            var venueId = reader.GetFieldValue<int>("VenueId");
-            var revenue = reader.GetFieldValue<SpannerNumeric>("Revenue");
             venues.Add(new Venue
             {
-                VenueId = venueId,
-                Revenue = revenue
+                VenueId = reader.GetFieldValue<int>("VenueId"),
+                Revenue = reader.GetFieldValue<SpannerNumeric>("Revenue")
             });
         }
         return venues;

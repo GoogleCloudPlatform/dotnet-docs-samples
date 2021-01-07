@@ -25,9 +25,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-// Register the startup class to provide the Firestore dependency.
-[assembly: FunctionsStartup(typeof(FirestoreReactive.Startup))]
-
 namespace FirestoreReactive
 {
     public class Startup : FunctionsStartup
@@ -36,6 +33,8 @@ namespace FirestoreReactive
             services.AddSingleton(FirestoreDb.Create());
     }
 
+    // Register the startup class to provide the Firestore dependency.
+    [FunctionsStartup(typeof(Startup))]
     public class Function : ICloudEventFunction<DocumentEventData>
     {
         private readonly ILogger _logger;

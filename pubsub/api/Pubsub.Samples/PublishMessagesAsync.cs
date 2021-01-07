@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // [START pubsub_quickstart_publisher]
-// [START pubsub_publish]
+// [START pubsub_publish_with_error_handler]
 
 using Google.Cloud.PubSub.V1;
 using System;
@@ -47,5 +47,5 @@ public class PublishMessagesAsyncSample
         return publishedMessageCount;
     }
 }
-// [END pubsub_publish]
+// [END pubsub_publish_with_error_handler]
 // [END pubsub_quickstart_publisher]

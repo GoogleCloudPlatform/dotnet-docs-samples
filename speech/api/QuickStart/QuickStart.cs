@@ -23,8 +23,9 @@ namespace GoogleCloudSamples
 {
     public class QuickStart
     {
-        // The name of the local audio file to transcribe
-        public static string DEMO_FILE = "audio.raw";
+        // The GCS URI of the audio file to transcribe.
+        public static string GcsUri = "gs://cloud-samples-data/speech/brooklyn_bridge.raw";
+
         public static void Main(string[] args)
         {
             var speech = SpeechClient.Create();
@@ -33,7 +34,8 @@ namespace GoogleCloudSamples
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 SampleRateHertz = 16000,
                 LanguageCode = "en",
-            }, RecognitionAudio.FromFile(DEMO_FILE));
+            }, RecognitionAudio.FromStorageUri(GcsUri));
+
             foreach (var result in response.Results)
             {
                 foreach (var alternative in result.Alternatives)

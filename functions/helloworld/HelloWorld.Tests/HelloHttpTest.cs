@@ -13,9 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.Functions.Testing;
-using Google.Events.Protobuf.Cloud.Audit.V1;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +31,7 @@ namespace HelloWorld.Tests
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("Hello world!", responseBody);
+            Assert.Empty(Server.GetFunctionLogEntries());
         }
 
         [Fact]
@@ -43,6 +42,7 @@ namespace HelloWorld.Tests
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("Hello test!", responseBody);
+            Assert.Empty(Server.GetFunctionLogEntries());
         }
 
         [Fact]
@@ -54,6 +54,7 @@ namespace HelloWorld.Tests
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("Hello test!", responseBody);
+            Assert.Empty(Server.GetFunctionLogEntries());
         }
 
         [Fact]
@@ -65,6 +66,7 @@ namespace HelloWorld.Tests
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("Hello world!", responseBody);
+            Assert.Empty(Server.GetFunctionLogEntries());
         }
 
         [Fact]

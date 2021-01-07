@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START iam_modify_policy_member]
+// [START iam_modify_policy_add_member]
 
 using System.Linq;
 using Google.Apis.CloudResourceManager.v1.Data;
@@ -26,4 +26,4 @@ public partial class AccessManager
         return policy;
     }
 }
-// [END iam_modify_policy_member]
+// [END iam_modify_policy_add_member]
