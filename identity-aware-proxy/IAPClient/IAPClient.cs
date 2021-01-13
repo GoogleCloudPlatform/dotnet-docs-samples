@@ -30,23 +30,20 @@ public class IAPClient
     /// </summary>
     /// <param name="iapClientId">The client ID observed on 
     /// https://console.cloud.google.com/apis/credentials. </param>
-    /// <param name="credentialsFilePath">Path to the credentials .json file
-    /// downloaded from https://console.cloud.google.com/apis/credentials.
-    /// </param>
     /// <param name="uri">HTTP URI to fetch.</param>
     /// <param name="cancellationToken">The token to propagate operation cancel notifications.</param>
     /// <returns>The HTTP response message.</returns>
     public async Task<HttpResponseMessage> InvokeRequestAsync(
-        string iapClientId, string credentialsFilePath, string uri, CancellationToken cancellationToken = default)
+        string iapClientId, string uri, CancellationToken cancellationToken = default)
     {
         // Get the OidcToken.
         // You only need to do this once in your application
         // as long as you can keep a reference to the returned OidcToken.
-        OidcToken oidcToken = await GetOidcTokenAsync(iapClientId, credentialsFilePath, cancellationToken).ConfigureAwait(false);
+        OidcToken oidcToken = await GetOidcTokenAsync(iapClientId, cancellationToken);
 
         // Before making an HTTP request, always obtain the string token from the OIDC token,
         // the OIDC token will refresh the string token if it expires.
-        string token = await oidcToken.GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+        string token = await oidcToken.GetAccessTokenAsync(cancellationToken);
 
         // Include the OIDC token in an Authorization: Bearer header to 
         // IAP-secured resource
@@ -54,7 +51,7 @@ public class IAPClient
         // For simplicity we are building the HttpClient directly.
         using HttpClient httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        return await httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
+        return await httpClient.GetAsync(uri, cancellationToken);
     }
 
     /// <summary>
@@ -62,20 +59,15 @@ public class IAPClient
     /// </summary>
     /// <param name="iapClientId">The client ID observed on 
     /// https://console.cloud.google.com/apis/credentials. </param>
-    /// <param name="credentialsFilePath">Path to the credentials .json file
-    /// downloaded from https://console.cloud.google.com/apis/credentials.
-    /// </param>
     /// <param name="cancellationToken">The token to propagate operation cancel notifications.</param>
     /// <returns>The HTTP response message.</returns>
-    public async Task<OidcToken> GetOidcTokenAsync(string iapClientId, string credentialsFilePath, CancellationToken cancellationToken)
+    public async Task<OidcToken> GetOidcTokenAsync(string iapClientId, CancellationToken cancellationToken)
     {
-        // Read credentials from the credentials .json file.
-        GoogleCredential credential = await GoogleCredential
-            .FromFileAsync(credentialsFilePath, cancellationToken).ConfigureAwait(false);
+        // Obtain the application default credentials.
+        GoogleCredential credential = await GoogleCredential.GetApplicationDefaultAsync(cancellationToken);
 
         // Request an OIDC token for the Cloud IAP-secured client ID.
-       return await credential
-            .GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(iapClientId), cancellationToken).ConfigureAwait(false);
+       return await credential.GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(iapClientId), cancellationToken);
     }
 }
 
