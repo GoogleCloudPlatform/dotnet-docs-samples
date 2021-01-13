@@ -20,14 +20,12 @@ namespace IAP.Samples.Tests
     [CollectionDefinition(nameof(IAPFixture))]
     public class IAPFixture : ICollectionFixture<IAPFixture>
     {
-        public string CredentialsFilePath { get; }
         public string IAPClientId { get; }
         public string IAPUri { get; }
         public string IAPTokenExpectedAudience { get; }
 
         public IAPFixture()
         {
-            CredentialsFilePath = GetEnvVarOrThrow("GOOGLE_APPLICATION_CREDENTIALS");
             IAPClientId = GetEnvVarOrThrow("TEST_IAP_CLIENT_ID");
             IAPUri = GetEnvVarOrThrow("TEST_IAP_URI");
             // The IAP token target audience is of the form /projects/<projectID>/apps/<iap-app-name>
