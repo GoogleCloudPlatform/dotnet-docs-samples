@@ -20,7 +20,10 @@ using Google.Cloud.ServiceDirectory.V1;
 
 public class DeleteNamespaceSample
 {
-    public void DeleteNamespace(string projectId = "projectId", string locationId = "us-east1", string namespaceId = "test-namespace")
+    public void DeleteNamespace(
+        string projectId = "projectId",
+        string locationId = "us-east1",
+        string namespaceId = "test-namespace")
     {
         // Create client
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();

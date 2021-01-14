@@ -32,9 +32,9 @@ public class ResolveServiceTest
     public void ResolvesService()
     {
         // Setup namespace and service for the test.
-        var namespaceId = _fixture.RandomResourceId();
-        var serviceId = _fixture.RandomResourceId();
-        var endpointId = _fixture.RandomResourceId();
+        var namespaceId = _fixture.RandomResourceId;
+        var serviceId = _fixture.RandomResourceId;
+        var endpointId = _fixture.RandomResourceId;
         _fixture.CreateNamespace(namespaceId);
         _fixture.CreateService(namespaceId, serviceId);
         _fixture.CreateEndpoint(namespaceId, serviceId, endpointId);

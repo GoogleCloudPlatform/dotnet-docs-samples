@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-using Google.Cloud.ServiceDirectory.V1Beta1;
-using System;
+
+using Google.Cloud.ServiceDirectory.V1;
 using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
@@ -32,12 +31,12 @@ public class CreateEndpointTest
     public void CreatesEndpoint()
     {
         // Setup namespace and service for test
-        var namespaceId = _fixture.RandomResourceId();
-        var serviceId = _fixture.RandomResourceId();
+        var namespaceId = _fixture.RandomResourceId;
+        var serviceId = _fixture.RandomResourceId;
         _fixture.CreateNamespace(namespaceId);
         _fixture.CreateService(namespaceId, serviceId);
 
-        var endpointId = _fixture.RandomResourceId();
+        var endpointId = _fixture.RandomResourceId;
         var createEndpointSample = new CreateEndpointSample();
 
         var result = createEndpointSample.CreateEndpoint(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId, endpointId);

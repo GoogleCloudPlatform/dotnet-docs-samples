@@ -14,8 +14,7 @@
  * limitations under the License.
  */
  
-using Google.Cloud.ServiceDirectory.V1Beta1;
-using System;
+using Google.Cloud.ServiceDirectory.V1;
 using Grpc.Core;
 using Xunit;
 
@@ -34,9 +33,9 @@ public class DeleteEndpointTest
     public void DeletesEndpoint()
     {
         // Setup namespace, service, and endpoint for the test.
-        var namespaceId = _fixture.RandomResourceId();
-        var serviceId = _fixture.RandomResourceId();
-        var endpointId = _fixture.RandomResourceId();
+        var namespaceId = _fixture.RandomResourceId;
+        var serviceId = _fixture.RandomResourceId;
+        var endpointId = _fixture.RandomResourceId;
         _fixture.CreateNamespace(namespaceId);
         _fixture.CreateService(namespaceId, serviceId);
         _fixture.CreateEndpoint(namespaceId, serviceId, endpointId);

@@ -20,7 +20,8 @@ using Google.Cloud.ServiceDirectory.V1;
 
 public class DeleteServiceSample
 {
-    public void DeleteService(string projectId = "my-project",
+    public void DeleteService(
+        string projectId = "my-project",
         string locationId = "us-east1",
         string namespaceId = "test-namespace",
         string serviceId = "test-service")

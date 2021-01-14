@@ -21,7 +21,10 @@ using Google.Cloud.ServiceDirectory.V1;
 
 public class CreateNamespaceSample
 {
-    public Namespace CreateNamespace(string projectId = "my-project", string locationId = "us-east1", string namespaceId = "test-namespace")
+    public Namespace CreateNamespace(
+        string projectId = "my-project",
+        string locationId = "us-east1",
+        string namespaceId = "test-namespace")
     {
         // Create client
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
  
-using Google.Cloud.ServiceDirectory.V1Beta1;
-using System;
+using Google.Cloud.ServiceDirectory.V1;
 using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
@@ -30,13 +29,13 @@ public class CreateServiceTest
     }
 
     [Fact]
-    public void CreatesEndpoint()
+    public void CreatesService()
     {
         // Setup namespace for the test.
-        var namespaceId = _fixture.RandomResourceId();
+        var namespaceId = _fixture.RandomResourceId;
         _fixture.CreateNamespace(namespaceId);
         
-        var serviceId = _fixture.RandomResourceId();
+        var serviceId = _fixture.RandomResourceId;
         // Run the sample code.
         var createServiceSample = new CreateServiceSample();
         var result = createServiceSample.CreateService(_fixture.ProjectId,

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
  
-using Google.Cloud.ServiceDirectory.V1Beta1;
-using System;
+using Google.Cloud.ServiceDirectory.V1;
 using Grpc.Core;
 using Xunit;
 
@@ -34,7 +33,7 @@ public class DeleteNamespaceTest
     public void DeletesNamespace()
     {
         // Setup namespace for the test.
-        var namespaceId = _fixture.RandomResourceId();
+        var namespaceId = _fixture.RandomResourceId;
         _fixture.CreateNamespace(namespaceId);
         // Run the sample code.
         var deleteNamespaceSample = new DeleteNamespaceSample();

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
  
-using Google.Cloud.ServiceDirectory.V1Beta1;
-using System;
+using Google.Cloud.ServiceDirectory.V1;
 using Grpc.Core;
 using Xunit;
 
@@ -24,29 +23,27 @@ using Xunit;
 public class DeleteServiceTest
 { 
     private readonly ServiceDirectoryFixture _fixture;
-    private readonly DeleteServiceSample _sample;
-    private string _namespaceId;
- 
+
     public DeleteServiceTest(ServiceDirectoryFixture fixture)
     {
         _fixture = fixture;
-        _sample = new DeleteServiceSample();
     }
 
     [Fact]
     public void DeletesService()
     {
         // Setup namespace and service for the test.
-        _namespaceId = _fixture.RandomResourceId();
-        var serviceId = _fixture.RandomResourceId();
-        _fixture.CreateNamespace(_namespaceId);
-        _fixture.CreateService(_namespaceId, serviceId);
+        var namespaceId = _fixture.RandomResourceId;
+        var serviceId = _fixture.RandomResourceId;
+        _fixture.CreateNamespace(namespaceId);
+        _fixture.CreateService(namespaceId, serviceId);
         // Run the sample code.
-        _sample.DeleteService(_fixture.ProjectId, _fixture.LocationId, _namespaceId, serviceId);
+        var deleteServiceSample = new DeleteServiceSample();
+        deleteServiceSample.DeleteService(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId);
         
         // Try to get the service.
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        var serviceName = ServiceName.FromProjectLocationNamespaceService(_fixture.ProjectId, _fixture.LocationId, _namespaceId,
+        var serviceName = ServiceName.FromProjectLocationNamespaceService(_fixture.ProjectId, _fixture.LocationId, namespaceId,
                 serviceId);
         var exception = Assert.Throws<RpcException>(() => registrationServiceClient.GetService(serviceName));
         Assert.Equal(StatusCode.NotFound, exception.StatusCode);

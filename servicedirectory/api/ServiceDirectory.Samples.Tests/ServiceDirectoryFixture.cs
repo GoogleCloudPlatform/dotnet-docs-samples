@@ -14,8 +14,7 @@
 * limitations under the License.
 */
 
-using Google.Api.Gax.ResourceNames;
-using Google.Cloud.ServiceDirectory.V1Beta1;
+using Google.Cloud.ServiceDirectory.V1;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -38,10 +37,7 @@ public class ServiceDirectoryFixture : IDisposable, ICollectionFixture<ServiceDi
         }
     }
     
-    public string RandomResourceId()
-    {
-        return $"csharp-{Guid.NewGuid()}";
-    }
+    public string RandomResourceId => $"csharp-{Guid.NewGuid()}";
 
     public void Dispose()
     {

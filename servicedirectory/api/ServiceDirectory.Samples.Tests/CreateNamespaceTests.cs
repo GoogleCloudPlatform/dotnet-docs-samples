@@ -14,37 +14,31 @@
  * limitations under the License.
  */
  
-using Google.Cloud.ServiceDirectory.V1Beta1;
-using System;
+using Google.Cloud.ServiceDirectory.V1;
 using Xunit;
 
 [Collection(nameof(ServiceDirectoryFixture))]
-public class CreateNamespaceTest : IDisposable
+public class CreateNamespaceTest
 { 
     private readonly ServiceDirectoryFixture _fixture;
-    private string _namespaceId;
- 
+
     public CreateNamespaceTest(ServiceDirectoryFixture fixture)
     {
         _fixture = fixture;
-    }
-    
-    public void Dispose()
-    {
-        _fixture.DeleteNamespace(_namespaceId);
     }
 
     [Fact]
     public void CreatesNamespace()
     {
-        _namespaceId = _fixture.RandomResourceId();
+        var namespaceId = _fixture.RandomResourceId;
+        _fixture.TempNamespaceIds.Add(namespaceId);
         // Run the sample code.
         var createNamespaceSample = new CreateNamespaceSample();
-        var result = createNamespaceSample.CreateNamespace(_fixture.ProjectId, _fixture.LocationId, _namespaceId);
+        var result = createNamespaceSample.CreateNamespace(_fixture.ProjectId, _fixture.LocationId, namespaceId);
 
         // Get the namespace.
         var namespaceName =
-            NamespaceName.FromProjectLocationNamespace(_fixture.ProjectId, _fixture.LocationId, _namespaceId);
+            NamespaceName.FromProjectLocationNamespace(_fixture.ProjectId, _fixture.LocationId, namespaceId);
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
         var namespaceVal = registrationServiceClient.GetNamespace(namespaceName);
 

@@ -20,7 +20,8 @@ using Google.Cloud.ServiceDirectory.V1;
 
 public class CreateServiceSample
 {
-    public Service CreateService(string projectId = "my-project",
+    public Service CreateService(
+        string projectId = "my-project",
         string locationId = "us-east1",
         string namespaceId = "test-namespace",
         string serviceId = "test-service")

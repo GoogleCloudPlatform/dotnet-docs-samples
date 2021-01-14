@@ -6,6 +6,5 @@
     
     <ItemGroup>
         <PackageReference Include="Google.Cloud.ServiceDirectory.V1" Version="1.0.0-beta01" />
-        <PackageReference Include="Google.Cloud.ServiceDirectory.V1Beta1" Version="1.0.0-beta02" />
     </ItemGroup>
 </Project>
