@@ -74,10 +74,4 @@ public class ServiceDirectoryFixture : IDisposable, ICollectionFixture<ServiceDi
         var createEndpointSample = new CreateEndpointSample();
         createEndpointSample.CreateEndpoint(ProjectId, LocationId, namespaceId, serviceId, endpointId);
     }
-
-    public void DeleteNamespace(string namespaceId)
-    {
-        var deleteNamespaceSample = new DeleteNamespaceSample();
-        deleteNamespaceSample.DeleteNamespace(ProjectId, LocationId, namespaceId);
-    }
 }
