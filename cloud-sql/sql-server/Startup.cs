@@ -63,31 +63,88 @@ namespace CloudSql
             _services = services;
         }
 
+        public class SqlServerConnection
+        {
+            public DbConnection GetSqlServerConnection(
+                SqlConnectionStringBuilder connectionString)
+            {
+                // [START cloud_sql_sqlserver_dotnet_ado_backoff]
+                var connection = Policy
+                    .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
+                    .WaitAndRetry(new[]
+                    {
+                        TimeSpan.FromSeconds(1),
+                        TimeSpan.FromSeconds(2),
+                        TimeSpan.FromSeconds(5)
+                    }, (result, timeSpan, retryCount, context) =>
+                    {
+                        // Log any warnings here.
+                    })
+                    .Execute(() => NewSqlServerConnection(connectionString));
+                // [END cloud_sql_sqlserver_dotnet_ado_backoff]
+                return connection;
+            }
+
+            public DbConnection NewSqlServerConnection(
+                    SqlConnectionStringBuilder connectionString)
+            {
+                // [START cloud_sql_sqlserver_dotnet_ado_connection_tcp]
+                // Equivalent connection string:
+                // "User Id=<DB_USER>;Password=<DB_PASS>;Server=<DB_HOST>;Database=<DB_NAME>;"
+                connectionString.Pooling = true;
+                // [START_EXCLUDE]
+                // [START cloud_sql_sqlserver_dotnet_ado_limit]
+                // MaximumPoolSize sets maximum number of connections allowed in the pool.
+                connectionString.MaxPoolSize = 5;
+                // MinimumPoolSize sets the minimum number of connections in the pool.
+                connectionString.MinPoolSize = 0;
+                // [END cloud_sql_sqlserver_dotnet_ado_limit]
+                // [START cloud_sql_sqlserver_dotnet_ado_timeout]
+                // ConnectionTimeout sets the time to wait (in seconds) while
+                // trying to establish a connection before terminating the attempt.
+                connectionString.ConnectTimeout = 15;
+                // [END cloud_sql_sqlserver_dotnet_ado_timeout]
+                // [START cloud_sql_sqlserver_dotnet_ado_lifetime]
+                // ADO.NET connection pooler removes a connection
+                // from the pool after it's been idle for approximately
+                // 4-8 minutes, or if the pooler detects that the
+                // connection with the server no longer exists.
+                // [END cloud_sql_sqlserver_dotnet_ado_lifetime]
+                // [END_EXCLUDE]
+                DbConnection connection =
+                    new SqlConnection(connectionString.ConnectionString);
+                // [END cloud_sql_sqlserver_dotnet_ado_connection_tcp]
+                return connection;
+            }
+        }
+
         DbConnection InitializeDatabase()
         {
             DbConnection connection;
-            string database = Configuration["CloudSQL:Database"];
-            connection = GetSqlServerConnection();
-            connection.Open();
-            using (var createTableCommand = connection.CreateCommand())
+            var connectionString = GetSqlServerConnectionString();
+            using (connection =
+                new SqlServerConnection().GetSqlServerConnection(connectionString))
             {
-                // Create the 'votes' table if it does not already exist.
-                createTableCommand.CommandText = @"
-                 IF OBJECT_ID(N'dbo.votes', N'U') IS NULL
-                   BEGIN
-                     CREATE TABLE dbo.votes(
-                       vote_id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
-                       time_cast datetime NOT NULL,
-                       candidate CHAR(6) NOT NULL)
-                   END";
-                createTableCommand.ExecuteNonQuery();
+                connection.Open();
+                using (var createTableCommand = connection.CreateCommand())
+                {
+                    // Create the 'votes' table if it does not already exist.
+                    createTableCommand.CommandText = @"
+                    IF OBJECT_ID(N'dbo.votes', N'U') IS NULL
+                    BEGIN
+                        CREATE TABLE dbo.votes(
+                        vote_id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
+                        time_cast datetime NOT NULL,
+                        candidate CHAR(6) NOT NULL)
+                    END";
+                    createTableCommand.ExecuteNonQuery();
+                }
             }
             return connection;
         }
 
-        DbConnection NewSqlServerConnection()
+        SqlConnectionStringBuilder NewSqlServerConnectionString()
         {
-            // [START cloud_sql_sqlserver_dotnet_ado_connection_tcp]
             // Equivalent connection string:
             // "User Id=<DB_USER>;Password=<DB_PASS>;Server=<DB_HOST>;Database=<DB_NAME>;"
             var connectionString = new SqlConnectionStringBuilder()
@@ -105,48 +162,23 @@ namespace CloudSql
                 Encrypt = false,
             };
             connectionString.Pooling = true;
-            // [START_EXCLUDE]
-            // [START cloud_sql_sqlserver_dotnet_ado_limit]
             // MaximumPoolSize sets maximum number of connections allowed in the pool.
             connectionString.MaxPoolSize = 5;
             // MinimumPoolSize sets the minimum number of connections in the pool.
             connectionString.MinPoolSize = 0;
-            // [END cloud_sql_sqlserver_dotnet_ado_limit]
-            // [START cloud_sql_sqlserver_dotnet_ado_timeout]
             // ConnectionTimeout sets the time to wait (in seconds) while
             // trying to establish a connection before terminating the attempt.
             connectionString.ConnectTimeout = 15;
-            // [END cloud_sql_sqlserver_dotnet_ado_timeout]
-            // [START cloud_sql_sqlserver_dotnet_ado_lifetime]
             // ADO.NET connection pooler removes a connection
             // from the pool after it's been idle for approximately
             // 4-8 minutes, or if the pooler detects that the
             // connection with the server no longer exists.
-            // [END cloud_sql_sqlserver_dotnet_ado_lifetime]
-            // [END_EXCLUDE]
-            DbConnection connection =
-                new SqlConnection(connectionString.ConnectionString);
-            // [END cloud_sql_sqlserver_dotnet_ado_connection_tcp]
-            return connection;
+            return connectionString;
         }
 
-        DbConnection GetSqlServerConnection()
+        SqlConnectionStringBuilder GetSqlServerConnectionString()
         {
-            // [START cloud_sql_sqlserver_dotnet_ado_backoff]
-            var connection = Policy
-                .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
-                .WaitAndRetry(new[]
-                {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(5)
-                }, (result, timeSpan, retryCount, context) =>
-                {
-                    // Log any warnings here.
-                })
-                .Execute(() => NewSqlServerConnection());
-            // [END cloud_sql_sqlserver_dotnet_ado_backoff]
-            return connection;
+            return NewSqlServerConnectionString();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -165,6 +197,8 @@ namespace CloudSql
                 app.UseGoogleExceptionLogging();
                 app.UseExceptionHandler("/Home/Error");
             }
+            // Create Database table if it does not exist.
+            InitializeDatabase();
 
             app.UseMvc(routes =>
             {

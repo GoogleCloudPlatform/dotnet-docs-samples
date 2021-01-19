@@ -21,7 +21,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
-using Npgsql;
 using System;
 using System.Data.Common;
 using System.Data;
@@ -55,8 +54,9 @@ namespace CloudSql
                     options.Version = "Test";
                 });
             }
-            services.AddScoped(typeof(DbConnection), (IServiceProvider) =>
-                InitializeDatabase());
+            services.AddScoped(typeof(MySqlConnectionStringBuilder),
+                (IServiceProvider) => GetMySqlConnectionString());
+            services.AddScoped<MySqlConnect>();
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(DbExceptionFilterAttribute));
@@ -64,25 +64,91 @@ namespace CloudSql
             _services = services;
         }
 
+        public class MySqlConnect
+        {
+            public DbConnection GetMySqlConnection(
+                MySqlConnectionStringBuilder connectionString)
+            {
+                // [START cloud_sql_mysql_dotnet_ado_backoff]
+                var connection = Policy
+                    .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
+                    .WaitAndRetry(new[]
+                    {
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(2),
+                    TimeSpan.FromSeconds(5)
+                    }, (result, timeSpan, retryCount, context) =>
+                    {
+                        // Log any warnings here.
+                    })
+                    .Execute(() =>
+                    {
+                        // Return a new connection.
+                        // [START_EXCLUDE]
+                        if (Environment.GetEnvironmentVariable("DB_HOST") != null)
+                        {
+                            return NewMysqlTCPConnection(connectionString);
+                        }
+                        else
+                        {
+                            return NewMysqlUnixSocketConnection(connectionString);
+                        }
+                        // [END_EXCLUDE]
+                    });
+                // [END cloud_sql_mysql_dotnet_ado_backoff]
+                return connection;
+            }
+
+            DbConnection NewMysqlTCPConnection(
+                MySqlConnectionStringBuilder connectionString)
+            {
+                // [START cloud_sql_mysql_dotnet_ado_connection_tcp]
+                // Equivalent connection string:
+                // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
+                connectionString.Pooling = true;
+                // Specify additional properties here.
+                DbConnection connection =
+                    new MySqlConnection(connectionString.ConnectionString);
+                // [END cloud_sql_mysql_dotnet_ado_connection_tcp]
+                return connection;
+            }
+
+            DbConnection NewMysqlUnixSocketConnection(
+                MySqlConnectionStringBuilder connectionString)
+            {
+                // [START cloud_sql_mysql_dotnet_ado_connection_socket]
+                // Equivalent connection string:
+                // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>;Protocol=unix"
+                connectionString.Pooling = true;
+                // Specify additional properties here.
+                DbConnection connection =
+                    new MySqlConnection(connectionString.ConnectionString);
+                // [END cloud_sql_mysql_dotnet_ado_connection_socket]
+                return connection;
+            }
+        }
         DbConnection InitializeDatabase()
         {
             DbConnection connection;
-
-            connection = GetMySqlConnection();
-            connection.Open();
-            using (var createTableCommand = connection.CreateCommand())
+            var connectionString = GetMySqlConnectionString();
+            using (connection =
+                new MySqlConnect().GetMySqlConnection(connectionString))
             {
-                createTableCommand.CommandText = @"
-                    CREATE TABLE IF NOT EXISTS
-                    votes(
-                        vote_id SERIAL NOT NULL,
-                        time_cast timestamp NOT NULL,
-                        candidate CHAR(6) NOT NULL,
-                        PRIMARY KEY (vote_id)
-                    )";
-                createTableCommand.ExecuteNonQuery();
+                connection.Open();
+                using (var createTableCommand = connection.CreateCommand())
+                {
+                    createTableCommand.CommandText = @"
+                        CREATE TABLE IF NOT EXISTS
+                        votes(
+                            vote_id SERIAL NOT NULL,
+                            time_cast timestamp NOT NULL,
+                            candidate CHAR(6) NOT NULL,
+                            PRIMARY KEY (vote_id)
+                        )";
+                    createTableCommand.ExecuteNonQuery();
+                }
+                return connection;
             }
-            return connection;
         }
 
         void SetDbConfigOptions(MySqlConnectionStringBuilder connectionString)
@@ -110,9 +176,8 @@ namespace CloudSql
             // [END cloud_sql_mysql_dotnet_ado_lifetime]
         }
 
-        DbConnection NewMysqlTCPConnection()
+        MySqlConnectionStringBuilder NewMysqlTCPConnectionString()
         {
-            // [START cloud_sql_mysql_dotnet_ado_connection_tcp]
             // Equivalent connection string:
             // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
             var connectionString = new MySqlConnectionStringBuilder()
@@ -131,18 +196,12 @@ namespace CloudSql
             };
             connectionString.Pooling = true;
             // Specify additional properties here.
-            // [START_EXCLUDE]
             SetDbConfigOptions(connectionString);
-            // [END_EXCLUDE]
-            DbConnection connection =
-                new MySqlConnection(connectionString.ConnectionString);
-            // [END cloud_sql_mysql_dotnet_ado_connection_tcp]
-            return connection;
+            return connectionString;
         }
 
-        DbConnection NewMysqlUnixSocketConnection()
+        MySqlConnectionStringBuilder NewMysqlUnixSocketConnectionString()
         {
-            // [START cloud_sql_mysql_dotnet_ado_connection_socket]
             // Equivalent connection string:
             // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>;Protocol=unix"
             String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
@@ -162,45 +221,20 @@ namespace CloudSql
             };
             connectionString.Pooling = true;
             // Specify additional properties here.
-            // [START_EXCLUDE]
             SetDbConfigOptions(connectionString);
-            // [END_EXCLUDE]
-            DbConnection connection =
-                new MySqlConnection(connectionString.ConnectionString);
-            // [END cloud_sql_mysql_dotnet_ado_connection_socket]
-            return connection;
+            return connectionString;
         }
 
-        DbConnection GetMySqlConnection()
+        MySqlConnectionStringBuilder GetMySqlConnectionString()
         {
-            // [START cloud_sql_mysql_dotnet_ado_backoff]
-            var connection = Policy
-                .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
-                .WaitAndRetry(new[]
-                {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(5)
-                }, (result, timeSpan, retryCount, context) =>
-                {
-                    // Log any warnings here.
-                })
-                .Execute(() =>
-                {
-                    // Return a new connection.
-                    // [START_EXCLUDE]
-                    if (Environment.GetEnvironmentVariable("DB_HOST") != null)
-                    {
-                        return NewMysqlTCPConnection();
-                    }
-                    else
-                    {
-                        return NewMysqlUnixSocketConnection();
-                    }
-                    // [END_EXCLUDE]
-                });
-            // [END cloud_sql_mysql_dotnet_ado_backoff]
-            return connection;
+            if (Environment.GetEnvironmentVariable("DB_HOST") != null)
+            {
+                return NewMysqlTCPConnectionString();
+            }
+            else
+            {
+                return NewMysqlUnixSocketConnectionString();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -219,6 +253,8 @@ namespace CloudSql
                 app.UseGoogleExceptionLogging();
                 app.UseExceptionHandler("/Home/Error");
             }
+            // Create Database table if it does not exist.
+            InitializeDatabase();
 
             app.UseMvc(routes =>
             {
