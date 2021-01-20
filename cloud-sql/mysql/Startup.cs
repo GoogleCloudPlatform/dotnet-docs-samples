@@ -127,7 +127,7 @@ namespace CloudSql
                 return connection;
             }
         }
-        DbConnection InitializeDatabase()
+        void InitializeDatabase()
         {
             DbConnection connection;
             var connectionString = GetMySqlConnectionString();
@@ -147,7 +147,6 @@ namespace CloudSql
                         )";
                     createTableCommand.ExecuteNonQuery();
                 }
-                return connection;
             }
         }
 

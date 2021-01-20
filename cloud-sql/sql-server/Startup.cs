@@ -54,8 +54,9 @@ namespace CloudSql
                     options.Version = "Test";
                 });
             }
-            services.AddScoped(typeof(DbConnection), (IServiceProvider) =>
-                InitializeDatabase());
+            services.AddScoped(typeof(SqlConnectionStringBuilder),
+                (IServiceProvider) => GetSqlServerConnectionString());
+            services.AddScoped<SqlServerConnection>();
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(DbExceptionFilterAttribute));
@@ -118,7 +119,7 @@ namespace CloudSql
             }
         }
 
-        DbConnection InitializeDatabase()
+        void InitializeDatabase()
         {
             DbConnection connection;
             var connectionString = GetSqlServerConnectionString();
@@ -140,7 +141,6 @@ namespace CloudSql
                     createTableCommand.ExecuteNonQuery();
                 }
             }
-            return connection;
         }
 
         SqlConnectionStringBuilder NewSqlServerConnectionString()

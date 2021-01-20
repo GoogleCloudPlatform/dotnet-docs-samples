@@ -32,8 +32,7 @@ namespace CloudSql.Controllers
         private readonly CloudSql.Startup.SqlServerConnection _connection;
 
         public HomeController(SqlConnectionStringBuilder connectionString,
-            CloudSql.Startup.SqlServerConnection connection
-        )
+            CloudSql.Startup.SqlServerConnection connection)
         {
             this._connectionString = connectionString;
             this._connection = connection;

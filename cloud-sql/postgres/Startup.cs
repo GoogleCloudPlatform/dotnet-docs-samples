@@ -128,7 +128,7 @@ namespace CloudSql
             }
         }
 
-        DbConnection InitializeDatabase()
+        void InitializeDatabase()
         {
             DbConnection connection;
             var connectionString = GetPostgreSqlConnectionString();
@@ -149,7 +149,6 @@ namespace CloudSql
                     createTableCommand.ExecuteNonQuery();
                 }
             }
-            return connection;
         }
 
         void SetDbConfigOptions(NpgsqlConnectionStringBuilder connectionString)
