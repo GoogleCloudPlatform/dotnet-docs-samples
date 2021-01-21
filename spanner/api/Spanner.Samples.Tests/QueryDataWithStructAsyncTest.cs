@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
@@ -25,7 +26,7 @@ public class QueryDataWithStructAsyncTest
     }
 
     [Fact]
-    public async void TestQueryDataWithStructAsync()
+    public async Task TestQueryDataWithStructAsync()
     {
         QueryDataWithStructAsyncSample sample = new QueryDataWithStructAsyncSample();
         var singerIds = await sample.QueryDataWithStructAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);

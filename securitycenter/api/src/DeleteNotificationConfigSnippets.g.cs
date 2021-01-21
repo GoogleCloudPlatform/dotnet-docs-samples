@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// [START securitycenter_delete_notification_config]
 // [START scc_delete_notification_config]
 
 using Google.Cloud.SecurityCenter.V1;
@@ -33,3 +34,4 @@ public class DeleteNotificationConfigSnippets
     }
 }
 // [END scc_delete_notification_config]
+// [END securitycenter_delete_notification_config]
