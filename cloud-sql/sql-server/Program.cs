@@ -24,6 +24,9 @@ namespace CloudSql
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
+            // Create Database table if it does not exist.
+            var connection = new CloudSql.Startup.SqlServerConnection();
+            connection.InitializeDatabase(connection.GetSqlServerConnectionString());
         }
 
         public static IWebHost BuildWebHost(string[] args) =>

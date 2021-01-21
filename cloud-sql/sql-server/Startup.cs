@@ -55,7 +55,7 @@ namespace CloudSql
                 });
             }
             services.AddScoped(typeof(SqlConnectionStringBuilder),
-                (IServiceProvider) => GetSqlServerConnectionString());
+                (IServiceProvider) => new SqlServerConnection().GetSqlServerConnectionString());
             services.AddScoped<SqlServerConnection>();
             services.AddMvc(options =>
             {
@@ -81,17 +81,55 @@ namespace CloudSql
                     {
                         // Log any warnings here.
                     })
-                    .Execute(() => NewSqlServerConnection(connectionString));
+                    .Execute(() => 
+                    {
+                        return new SqlConnection(connectionString.ConnectionString);
+                    });
                 // [END cloud_sql_sqlserver_dotnet_ado_backoff]
                 return connection;
             }
 
-            public DbConnection NewSqlServerConnection(
-                    SqlConnectionStringBuilder connectionString)
+            public void InitializeDatabase(SqlConnectionStringBuilder connectionString)
+            {
+                DbConnection connection;
+                using (connection =
+                    new SqlServerConnection().GetSqlServerConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var createTableCommand = connection.CreateCommand())
+                    {
+                        // Create the 'votes' table if it does not already exist.
+                        createTableCommand.CommandText = @"
+                        IF OBJECT_ID(N'dbo.votes', N'U') IS NULL
+                        BEGIN
+                            CREATE TABLE dbo.votes(
+                            vote_id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
+                            time_cast datetime NOT NULL,
+                            candidate CHAR(6) NOT NULL)
+                        END";
+                        createTableCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+            public SqlConnectionStringBuilder NewSqlServerConnectionString()
             {
                 // [START cloud_sql_sqlserver_dotnet_ado_connection_tcp]
                 // Equivalent connection string:
                 // "User Id=<DB_USER>;Password=<DB_PASS>;Server=<DB_HOST>;Database=<DB_NAME>;"
+                var connectionString = new SqlConnectionStringBuilder()
+                {
+                    // Remember - storing secrets in plaintext is potentially unsafe. Consider using
+                    // something like https://cloud.google.com/secret-manager/docs/overview to help keep
+                    // secrets secret.
+                    DataSource = Environment.GetEnvironmentVariable("DB_HOST"),     // e.g. '127.0.0.1'
+                    // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
+                    UserID = Environment.GetEnvironmentVariable("DB_USER"),         // e.g. 'my-db-user'
+                    Password = Environment.GetEnvironmentVariable("DB_PASS"),       // e.g. 'my-db-password'
+                    InitialCatalog = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
+
+                    // The Cloud SQL proxy provides encryption between the proxy and instance
+                    Encrypt = false,
+                };
                 connectionString.Pooling = true;
                 // [START_EXCLUDE]
                 // [START cloud_sql_sqlserver_dotnet_ado_limit]
@@ -112,73 +150,15 @@ namespace CloudSql
                 // connection with the server no longer exists.
                 // [END cloud_sql_sqlserver_dotnet_ado_lifetime]
                 // [END_EXCLUDE]
-                DbConnection connection =
-                    new SqlConnection(connectionString.ConnectionString);
+                return connectionString;
                 // [END cloud_sql_sqlserver_dotnet_ado_connection_tcp]
-                return connection;
             }
-        }
 
-        void InitializeDatabase()
-        {
-            DbConnection connection;
-            var connectionString = GetSqlServerConnectionString();
-            using (connection =
-                new SqlServerConnection().GetSqlServerConnection(connectionString))
+            public SqlConnectionStringBuilder GetSqlServerConnectionString()
             {
-                connection.Open();
-                using (var createTableCommand = connection.CreateCommand())
-                {
-                    // Create the 'votes' table if it does not already exist.
-                    createTableCommand.CommandText = @"
-                    IF OBJECT_ID(N'dbo.votes', N'U') IS NULL
-                    BEGIN
-                        CREATE TABLE dbo.votes(
-                        vote_id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
-                        time_cast datetime NOT NULL,
-                        candidate CHAR(6) NOT NULL)
-                    END";
-                    createTableCommand.ExecuteNonQuery();
-                }
+                return NewSqlServerConnectionString();
             }
-        }
 
-        SqlConnectionStringBuilder NewSqlServerConnectionString()
-        {
-            // Equivalent connection string:
-            // "User Id=<DB_USER>;Password=<DB_PASS>;Server=<DB_HOST>;Database=<DB_NAME>;"
-            var connectionString = new SqlConnectionStringBuilder()
-            {
-                // Remember - storing secrets in plaintext is potentially unsafe. Consider using
-                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
-                // secrets secret.
-                DataSource = Environment.GetEnvironmentVariable("DB_HOST"),     // e.g. '127.0.0.1'
-                // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
-                UserID = Environment.GetEnvironmentVariable("DB_USER"),         // e.g. 'my-db-user'
-                Password = Environment.GetEnvironmentVariable("DB_PASS"),       // e.g. 'my-db-password'
-                InitialCatalog = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
-
-                // The Cloud SQL proxy provides encryption between the proxy and instance
-                Encrypt = false,
-            };
-            connectionString.Pooling = true;
-            // MaximumPoolSize sets maximum number of connections allowed in the pool.
-            connectionString.MaxPoolSize = 5;
-            // MinimumPoolSize sets the minimum number of connections in the pool.
-            connectionString.MinPoolSize = 0;
-            // ConnectionTimeout sets the time to wait (in seconds) while
-            // trying to establish a connection before terminating the attempt.
-            connectionString.ConnectTimeout = 15;
-            // ADO.NET connection pooler removes a connection
-            // from the pool after it's been idle for approximately
-            // 4-8 minutes, or if the pooler detects that the
-            // connection with the server no longer exists.
-            return connectionString;
-        }
-
-        SqlConnectionStringBuilder GetSqlServerConnectionString()
-        {
-            return NewSqlServerConnectionString();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -197,8 +177,6 @@ namespace CloudSql
                 app.UseGoogleExceptionLogging();
                 app.UseExceptionHandler("/Home/Error");
             }
-            // Create Database table if it does not exist.
-            InitializeDatabase();
 
             app.UseMvc(routes =>
             {

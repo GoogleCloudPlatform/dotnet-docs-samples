@@ -32,6 +32,9 @@ namespace CloudSql
         public static void Main(string[] args)
         {
             BuildWebHost(args).Build().Run();
+            // Create Database table if it does not exist.
+            var connection = new CloudSql.Startup.PostgreSqlConnection();
+            connection.InitializeDatabase(connection.GetPostgreSqlConnectionString());
         }
 
         public static IWebHostBuilder BuildWebHost(string[] args)

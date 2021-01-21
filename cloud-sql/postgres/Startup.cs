@@ -55,7 +55,7 @@ namespace CloudSql
                 });
             }
             services.AddScoped(typeof(NpgsqlConnectionStringBuilder),
-                (IServiceProvider) => GetPostgreSqlConnectionString());
+                (IServiceProvider) => new PostgreSqlConnection().GetPostgreSqlConnectionString());
             services.AddScoped<PostgreSqlConnection>();
             services.AddMvc(options =>
             {
@@ -84,151 +84,121 @@ namespace CloudSql
                     .Execute(() =>
                     {
                         // Return a new connection.
-                        // [START_EXCLUDE]
-                        if (Environment.GetEnvironmentVariable("DB_HOST") != null)
-                        {
-                            return NewPostgreSqlTCPConnection(connectionString);
-                        }
-                        else
-                        {
-                            return NewPostgreSqlUnixSocketConnection(connectionString);
-                        }
-                        // [END_EXCLUDE]
+                        return new NpgsqlConnection(connectionString.ConnectionString);
                     });
                 // [END cloud_sql_postgres_dotnet_ado_backoff]
                 return connection;
             }
 
-            public DbConnection NewPostgreSqlTCPConnection(
-                NpgsqlConnectionStringBuilder connectionString)
+        public void InitializeDatabase(NpgsqlConnectionStringBuilder connectionString)
+            {
+                DbConnection connection;
+                using (connection =
+                    new PostgreSqlConnection().GetPostgreSqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var createTableCommand = connection.CreateCommand())
+                    {
+                        createTableCommand.CommandText = @"
+                            CREATE TABLE IF NOT EXISTS
+                            votes(
+                                vote_id SERIAL NOT NULL,
+                                time_cast timestamp NOT NULL,
+                                candidate VARCHAR(6) NOT NULL,
+                                PRIMARY KEY (vote_id)
+                            )";
+                        createTableCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            void SetDbConfigOptions(NpgsqlConnectionStringBuilder connectionString)
+            {
+                // [START cloud_sql_postgres_dotnet_ado_limit]
+                // MaxPoolSize sets maximum number of connections allowed in the pool.
+                connectionString.MaxPoolSize = 5;
+                // MinPoolSize sets the minimum number of connections in the pool.
+                connectionString.MinPoolSize = 0;
+                // [END cloud_sql_postgres_dotnet_ado_limit]
+                // [START cloud_sql_postgres_dotnet_ado_timeout]
+                // Timeout sets the time to wait (in seconds) while
+                // trying to establish a connection before terminating the attempt.
+                connectionString.Timeout = 15;
+                // [END cloud_sql_postgres_dotnet_ado_timeout]
+                // [START cloud_sql_postgres_dotnet_ado_lifetime]
+                // ConnectionIdleLifetime sets the time (in seconds) to wait before
+                // closing idle connections in the pool if the count of all
+                // connections exceeds MinPoolSize.
+                connectionString.ConnectionIdleLifetime = 300;
+                // [END cloud_sql_postgres_dotnet_ado_lifetime]
+            }
+
+            public NpgsqlConnectionStringBuilder NewPostgreSqlTCPConnectionString()
             {
                 // [START cloud_sql_postgres_dotnet_ado_connection_tcp]
                 // Equivalent connection string:
                 // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
+                var connectionString = new NpgsqlConnectionStringBuilder()
+                {
+                    // The Cloud SQL proxy provides encryption between the proxy and instance.
+                    SslMode = SslMode.Disable,
+
+                    // Remember - storing secrets in plaintext is potentially unsafe. Consider using
+                    // something like https://cloud.google.com/secret-manager/docs/overview to help keep
+                    // secrets secret.
+                    Host = Environment.GetEnvironmentVariable("DB_HOST"),     // e.g. '127.0.0.1'
+                    // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
+                    Username = Environment.GetEnvironmentVariable("DB_USER"), // e.g. 'my-db-user'
+                    Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
+                    Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
+                };
                 connectionString.Pooling = true;
                 // Specify additional properties here.
-                NpgsqlConnection connection =
-                    new NpgsqlConnection(connectionString.ConnectionString);
+                // [START_EXCLUDE]
+                SetDbConfigOptions(connectionString);
+                // [END_EXCLUDE]
+                return connectionString;
                 // [END cloud_sql_postgres_dotnet_ado_connection_tcp]
-                return connection;
             }
 
-            public DbConnection NewPostgreSqlUnixSocketConnection(
-                NpgsqlConnectionStringBuilder connectionString)
+            NpgsqlConnectionStringBuilder NewPostgreSqlUnixSocketConnectionString()
             {
                 // [START cloud_sql_postgres_dotnet_ado_connection_socket]
                 // Equivalent connection string:
                 // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>"
+                String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
+                String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
+                var connectionString = new NpgsqlConnectionStringBuilder()
+                {
+                    // The Cloud SQL proxy provides encryption between the proxy and instance.
+                    SslMode = SslMode.Disable,
+                    // Remember - storing secrets in plaintext is potentially unsafe. Consider using
+                    // something like https://cloud.google.com/secret-manager/docs/overview to help keep
+                    // secrets secret.
+                    Host = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
+                    Username = Environment.GetEnvironmentVariable("DB_USER"), // e.g. 'my-db-user
+                    Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
+                    Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
+                };
                 connectionString.Pooling = true;
                 // Specify additional properties here.
-                NpgsqlConnection connection =
-                    new NpgsqlConnection(connectionString.ConnectionString);
+                // [START_EXCLUDE]
+                SetDbConfigOptions(connectionString);
+                // [END_EXCLUDE]
+                return connectionString;
                 // [END cloud_sql_postgres_dotnet_ado_connection_socket]
-                return connection;
             }
-        }
 
-        void InitializeDatabase()
-        {
-            DbConnection connection;
-            var connectionString = GetPostgreSqlConnectionString();
-            using (connection =
-                new PostgreSqlConnection().GetPostgreSqlConnection(connectionString))
+            public NpgsqlConnectionStringBuilder GetPostgreSqlConnectionString()
             {
-                connection.Open();
-                using (var createTableCommand = connection.CreateCommand())
+                if (Environment.GetEnvironmentVariable("DB_HOST") != null)
                 {
-                    createTableCommand.CommandText = @"
-                        CREATE TABLE IF NOT EXISTS
-                        votes(
-                            vote_id SERIAL NOT NULL,
-                            time_cast timestamp NOT NULL,
-                            candidate VARCHAR(6) NOT NULL,
-                            PRIMARY KEY (vote_id)
-                        )";
-                    createTableCommand.ExecuteNonQuery();
+                    return NewPostgreSqlTCPConnectionString();
                 }
-            }
-        }
-
-        void SetDbConfigOptions(NpgsqlConnectionStringBuilder connectionString)
-        {
-            // [START cloud_sql_postgres_dotnet_ado_limit]
-            // MaxPoolSize sets maximum number of connections allowed in the pool.
-            connectionString.MaxPoolSize = 5;
-            // MinPoolSize sets the minimum number of connections in the pool.
-            connectionString.MinPoolSize = 0;
-            // [END cloud_sql_postgres_dotnet_ado_limit]
-            // [START cloud_sql_postgres_dotnet_ado_timeout]
-            // Timeout sets the time to wait (in seconds) while
-            // trying to establish a connection before terminating the attempt.
-            connectionString.Timeout = 15;
-            // [END cloud_sql_postgres_dotnet_ado_timeout]
-            // [START cloud_sql_postgres_dotnet_ado_lifetime]
-            // ConnectionIdleLifetime sets the time (in seconds) to wait before
-            // closing idle connections in the pool if the count of all
-            // connections exceeds MinPoolSize.
-            connectionString.ConnectionIdleLifetime = 300;
-            // [END cloud_sql_postgres_dotnet_ado_lifetime]
-        }
-
-        NpgsqlConnectionStringBuilder NewPostgreSqlTCPConnectionString()
-        {
-            // Equivalent connection string:
-            // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
-            var connectionString = new NpgsqlConnectionStringBuilder()
-            {
-                // The Cloud SQL proxy provides encryption between the proxy and instance.
-                SslMode = SslMode.Disable,
-
-                // Remember - storing secrets in plaintext is potentially unsafe. Consider using
-                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
-                // secrets secret.
-                Host = Environment.GetEnvironmentVariable("DB_HOST"),     // e.g. '127.0.0.1'
-                // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
-                Username = Environment.GetEnvironmentVariable("DB_USER"), // e.g. 'my-db-user'
-                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
-                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
-            };
-            connectionString.Pooling = true;
-            // Specify additional properties here.
-            SetDbConfigOptions(connectionString);
-            return connectionString;
-        }
-
-        NpgsqlConnectionStringBuilder NewPostgreSqlUnixSocketConnectionString()
-        {
-            // Equivalent connection string:
-            // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>"
-            String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
-            String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
-            var connectionString = new NpgsqlConnectionStringBuilder()
-            {
-                // The Cloud SQL proxy provides encryption between the proxy and instance.
-                SslMode = SslMode.Disable,
-                // Remember - storing secrets in plaintext is potentially unsafe. Consider using
-                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
-                // secrets secret.
-                Host = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
-                Username = Environment.GetEnvironmentVariable("DB_USER"), // e.g. 'my-db-user
-                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
-                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
-            };
-            connectionString.Pooling = true;
-            // Specify additional properties here.
-            SetDbConfigOptions(connectionString);
-            return connectionString;
-        }
-
-        NpgsqlConnectionStringBuilder GetPostgreSqlConnectionString()
-        {
-            if (Environment.GetEnvironmentVariable("DB_HOST") != null)
-            {
-                return NewPostgreSqlTCPConnectionString();
-            }
-            else
-            {
-                return NewPostgreSqlUnixSocketConnectionString();
+                else
+                {
+                    return NewPostgreSqlUnixSocketConnectionString();
+                }
             }
         }
 
@@ -248,8 +218,6 @@ namespace CloudSql
                 app.UseGoogleExceptionLogging();
                 app.UseExceptionHandler("/Home/Error");
             }
-            // Create Database table if it does not exist.
-            InitializeDatabase();
 
             app.UseMvc(routes =>
             {

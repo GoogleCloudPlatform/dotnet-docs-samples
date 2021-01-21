@@ -55,7 +55,7 @@ namespace CloudSql
                 });
             }
             services.AddScoped(typeof(MySqlConnectionStringBuilder),
-                (IServiceProvider) => GetMySqlConnectionString());
+                (IServiceProvider) => new MySqlConnect().GetMySqlConnectionString());
             services.AddScoped<MySqlConnect>();
             services.AddMvc(options =>
             {
@@ -84,155 +84,126 @@ namespace CloudSql
                     .Execute(() =>
                     {
                         // Return a new connection.
-                        // [START_EXCLUDE]
-                        if (Environment.GetEnvironmentVariable("DB_HOST") != null)
-                        {
-                            return NewMysqlTCPConnection(connectionString);
-                        }
-                        else
-                        {
-                            return NewMysqlUnixSocketConnection(connectionString);
-                        }
-                        // [END_EXCLUDE]
+                        return new MySqlConnection(connectionString.ConnectionString);
                     });
                 // [END cloud_sql_mysql_dotnet_ado_backoff]
                 return connection;
             }
 
-            DbConnection NewMysqlTCPConnection(
-                MySqlConnectionStringBuilder connectionString)
+            public void InitializeDatabase(MySqlConnectionStringBuilder connectionString)
+            {
+                DbConnection connection;
+                using (connection =
+                    new MySqlConnect().GetMySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var createTableCommand = connection.CreateCommand())
+                    {
+                        createTableCommand.CommandText = @"
+                            CREATE TABLE IF NOT EXISTS
+                            votes(
+                                vote_id SERIAL NOT NULL,
+                                time_cast timestamp NOT NULL,
+                                candidate CHAR(6) NOT NULL,
+                                PRIMARY KEY (vote_id)
+                            )";
+                        createTableCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            void SetDbConfigOptions(MySqlConnectionStringBuilder connectionString)
+            {
+                // [START cloud_sql_mysql_dotnet_ado_limit]
+                // MaximumPoolSize sets maximum number of connections allowed in the pool.
+                connectionString.MaximumPoolSize = 5;
+                // MinimumPoolSize sets the minimum number of connections in the pool.
+                connectionString.MinimumPoolSize = 0;
+                // [END cloud_sql_mysql_dotnet_ado_limit]
+                // [START cloud_sql_mysql_dotnet_ado_timeout]
+                // ConnectionTimeout sets the time to wait (in seconds) while
+                // trying to establish a connection before terminating the attempt.
+                connectionString.ConnectionTimeout = 15;
+                // [END cloud_sql_mysql_dotnet_ado_timeout]
+                // [START cloud_sql_mysql_dotnet_ado_lifetime]
+                // ConnectionLifeTime sets the lifetime of a pooled connection
+                // (in seconds) that a connection lives before it is destroyed
+                // and recreated. Connections that are returned to the pool are
+                // destroyed if it's been more than the number of seconds
+                // specified by ConnectionLifeTime since the connection was
+                // created. The default value is zero (0) which means the
+                // connection always returns to pool.
+                connectionString.ConnectionLifeTime = 1800; // 30 minutes
+                // [END cloud_sql_mysql_dotnet_ado_lifetime]
+            }
+
+            public MySqlConnectionStringBuilder NewMysqlTCPConnectionString()
             {
                 // [START cloud_sql_mysql_dotnet_ado_connection_tcp]
                 // Equivalent connection string:
                 // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
+                var connectionString = new MySqlConnectionStringBuilder()
+                {
+                    // The Cloud SQL proxy provides encryption between the proxy and instance.
+                    SslMode = MySqlSslMode.None,
+
+                    // Remember - storing secrets in plaintext is potentially unsafe. Consider using
+                    // something like https://cloud.google.com/secret-manager/docs/overview to help keep
+                    // secrets secret.
+                    Server = Environment.GetEnvironmentVariable("DB_HOST"),   // e.g. '127.0.0.1'
+                    // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
+                    UserID = Environment.GetEnvironmentVariable("DB_USER"),   // e.g. 'my-db-user'
+                    Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
+                    Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
+                };
                 connectionString.Pooling = true;
                 // Specify additional properties here.
-                DbConnection connection =
-                    new MySqlConnection(connectionString.ConnectionString);
+                // [START_EXCLUDE]
+                SetDbConfigOptions(connectionString);
+                // [END_EXCLUDE]
+                return connectionString;
                 // [END cloud_sql_mysql_dotnet_ado_connection_tcp]
-                return connection;
             }
 
-            DbConnection NewMysqlUnixSocketConnection(
-                MySqlConnectionStringBuilder connectionString)
+            public MySqlConnectionStringBuilder NewMysqlUnixSocketConnectionString()
             {
                 // [START cloud_sql_mysql_dotnet_ado_connection_socket]
                 // Equivalent connection string:
                 // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>;Protocol=unix"
+                String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
+                String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
+                var connectionString = new MySqlConnectionStringBuilder()
+                {
+                    // The Cloud SQL proxy provides encryption between the proxy and instance.
+                    SslMode = MySqlSslMode.None,
+                    // Remember - storing secrets in plaintext is potentially unsafe. Consider using
+                    // something like https://cloud.google.com/secret-manager/docs/overview to help keep
+                    // secrets secret.
+                    Server = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
+                    UserID = Environment.GetEnvironmentVariable("DB_USER"),   // e.g. 'my-db-user
+                    Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
+                    Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
+                    ConnectionProtocol = MySqlConnectionProtocol.UnixSocket
+                };
                 connectionString.Pooling = true;
                 // Specify additional properties here.
-                DbConnection connection =
-                    new MySqlConnection(connectionString.ConnectionString);
+                // [START_EXCLUDE]
+                SetDbConfigOptions(connectionString);
+                // [END_EXCLUDE]
+                return connectionString;
                 // [END cloud_sql_mysql_dotnet_ado_connection_socket]
-                return connection;
             }
-        }
-        void InitializeDatabase()
-        {
-            DbConnection connection;
-            var connectionString = GetMySqlConnectionString();
-            using (connection =
-                new MySqlConnect().GetMySqlConnection(connectionString))
+
+            public MySqlConnectionStringBuilder GetMySqlConnectionString()
             {
-                connection.Open();
-                using (var createTableCommand = connection.CreateCommand())
+                if (Environment.GetEnvironmentVariable("DB_HOST") != null)
                 {
-                    createTableCommand.CommandText = @"
-                        CREATE TABLE IF NOT EXISTS
-                        votes(
-                            vote_id SERIAL NOT NULL,
-                            time_cast timestamp NOT NULL,
-                            candidate CHAR(6) NOT NULL,
-                            PRIMARY KEY (vote_id)
-                        )";
-                    createTableCommand.ExecuteNonQuery();
+                    return NewMysqlTCPConnectionString();
                 }
-            }
-        }
-
-        void SetDbConfigOptions(MySqlConnectionStringBuilder connectionString)
-        {
-            // [START cloud_sql_mysql_dotnet_ado_limit]
-            // MaximumPoolSize sets maximum number of connections allowed in the pool.
-            connectionString.MaximumPoolSize = 5;
-            // MinimumPoolSize sets the minimum number of connections in the pool.
-            connectionString.MinimumPoolSize = 0;
-            // [END cloud_sql_mysql_dotnet_ado_limit]
-            // [START cloud_sql_mysql_dotnet_ado_timeout]
-            // ConnectionTimeout sets the time to wait (in seconds) while
-            // trying to establish a connection before terminating the attempt.
-            connectionString.ConnectionTimeout = 15;
-            // [END cloud_sql_mysql_dotnet_ado_timeout]
-            // [START cloud_sql_mysql_dotnet_ado_lifetime]
-            // ConnectionLifeTime sets the lifetime of a pooled connection
-            // (in seconds) that a connection lives before it is destroyed
-            // and recreated. Connections that are returned to the pool are
-            // destroyed if it's been more than the number of seconds
-            // specified by ConnectionLifeTime since the connection was
-            // created. The default value is zero (0) which means the
-            // connection always returns to pool.
-            connectionString.ConnectionLifeTime = 1800; // 30 minutes
-            // [END cloud_sql_mysql_dotnet_ado_lifetime]
-        }
-
-        MySqlConnectionStringBuilder NewMysqlTCPConnectionString()
-        {
-            // Equivalent connection string:
-            // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
-            var connectionString = new MySqlConnectionStringBuilder()
-            {
-                // The Cloud SQL proxy provides encryption between the proxy and instance.
-                SslMode = MySqlSslMode.None,
-
-                // Remember - storing secrets in plaintext is potentially unsafe. Consider using
-                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
-                // secrets secret.
-                Server = Environment.GetEnvironmentVariable("DB_HOST"),   // e.g. '127.0.0.1'
-                // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
-                UserID = Environment.GetEnvironmentVariable("DB_USER"),   // e.g. 'my-db-user'
-                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
-                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
-            };
-            connectionString.Pooling = true;
-            // Specify additional properties here.
-            SetDbConfigOptions(connectionString);
-            return connectionString;
-        }
-
-        MySqlConnectionStringBuilder NewMysqlUnixSocketConnectionString()
-        {
-            // Equivalent connection string:
-            // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>;Protocol=unix"
-            String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
-            String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
-            var connectionString = new MySqlConnectionStringBuilder()
-            {
-                // The Cloud SQL proxy provides encryption between the proxy and instance.
-                SslMode = MySqlSslMode.None,
-                // Remember - storing secrets in plaintext is potentially unsafe. Consider using
-                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
-                // secrets secret.
-                Server = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
-                UserID = Environment.GetEnvironmentVariable("DB_USER"),   // e.g. 'my-db-user
-                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
-                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
-                ConnectionProtocol = MySqlConnectionProtocol.UnixSocket
-            };
-            connectionString.Pooling = true;
-            // Specify additional properties here.
-            SetDbConfigOptions(connectionString);
-            return connectionString;
-        }
-
-        MySqlConnectionStringBuilder GetMySqlConnectionString()
-        {
-            if (Environment.GetEnvironmentVariable("DB_HOST") != null)
-            {
-                return NewMysqlTCPConnectionString();
-            }
-            else
-            {
-                return NewMysqlUnixSocketConnectionString();
+                else
+                {
+                    return NewMysqlUnixSocketConnectionString();
+                }
             }
         }
 
@@ -252,8 +223,6 @@ namespace CloudSql
                 app.UseGoogleExceptionLogging();
                 app.UseExceptionHandler("/Home/Error");
             }
-            // Create Database table if it does not exist.
-            InitializeDatabase();
 
             app.UseMvc(routes =>
             {
