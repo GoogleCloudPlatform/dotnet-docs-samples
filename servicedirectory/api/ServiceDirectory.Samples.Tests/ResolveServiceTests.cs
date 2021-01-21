@@ -40,8 +40,7 @@ public class ResolveServiceTest
         _fixture.CreateEndpoint(namespaceId, serviceId, endpointId);
         // Run the sample code.
         var resolveServiceSample = new ResolveServiceSample();
-        var service = resolveServiceSample.ResolveService(projectId: _fixture.ProjectId,
-            locationId: _fixture.LocationId, namespaceId: namespaceId, serviceId: serviceId);
+        var service = resolveServiceSample.ResolveService(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId);
 
         Assert.Contains(serviceId, service.Name);
         Assert.Contains(endpointId, service.Endpoints[0].Name);

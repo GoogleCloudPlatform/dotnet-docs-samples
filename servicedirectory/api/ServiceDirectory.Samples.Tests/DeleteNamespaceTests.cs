@@ -41,8 +41,7 @@ public class DeleteNamespaceTest
         
         // Try to get the namespace.
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        var namespaceName =
-            NamespaceName.FromProjectLocationNamespace(_fixture.ProjectId, _fixture.LocationId, namespaceId);
+        var namespaceName = NamespaceName.FromProjectLocationNamespace(_fixture.ProjectId, _fixture.LocationId, namespaceId);
         var exception = Assert.Throws<RpcException>(() => registrationServiceClient.GetNamespace(namespaceName));
         Assert.Equal(StatusCode.NotFound, exception.StatusCode);
     }

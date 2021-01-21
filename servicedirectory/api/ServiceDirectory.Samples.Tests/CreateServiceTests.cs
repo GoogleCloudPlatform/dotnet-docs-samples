@@ -38,12 +38,10 @@ public class CreateServiceTest
         var serviceId = _fixture.RandomResourceId;
         // Run the sample code.
         var createServiceSample = new CreateServiceSample();
-        var result = createServiceSample.CreateService(_fixture.ProjectId,
-            _fixture.LocationId, namespaceId, serviceId);
+        var result = createServiceSample.CreateService(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId);
 
         // Get the service.
-        var serviceName = ServiceName.FromProjectLocationNamespaceService(_fixture.ProjectId,
-            _fixture.LocationId, namespaceId, serviceId);
+        var serviceName = ServiceName.FromProjectLocationNamespaceService(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId);
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
         var service = registrationServiceClient.GetService(serviceName);
 

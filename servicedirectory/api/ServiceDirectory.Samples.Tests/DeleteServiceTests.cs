@@ -43,8 +43,7 @@ public class DeleteServiceTest
         
         // Try to get the service.
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
-        var serviceName = ServiceName.FromProjectLocationNamespaceService(_fixture.ProjectId, _fixture.LocationId, namespaceId,
-                serviceId);
+        var serviceName = ServiceName.FromProjectLocationNamespaceService(_fixture.ProjectId, _fixture.LocationId, namespaceId, serviceId);
         var exception = Assert.Throws<RpcException>(() => registrationServiceClient.GetService(serviceName));
         Assert.Equal(StatusCode.NotFound, exception.StatusCode);
     }

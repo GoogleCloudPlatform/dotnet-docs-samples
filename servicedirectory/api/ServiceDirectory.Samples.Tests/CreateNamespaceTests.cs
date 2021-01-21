@@ -37,8 +37,7 @@ public class CreateNamespaceTest
         var result = createNamespaceSample.CreateNamespace(_fixture.ProjectId, _fixture.LocationId, namespaceId);
 
         // Get the namespace.
-        var namespaceName =
-            NamespaceName.FromProjectLocationNamespace(_fixture.ProjectId, _fixture.LocationId, namespaceId);
+        var namespaceName = NamespaceName.FromProjectLocationNamespace(_fixture.ProjectId, _fixture.LocationId, namespaceId);
         RegistrationServiceClient registrationServiceClient = RegistrationServiceClient.Create();
         var namespaceVal = registrationServiceClient.GetNamespace(namespaceName);
 
