@@ -1,10 +1,10 @@
-using System;
-using Google.Cloud.Channel.V1;
 using Google.Apis.Auth.OAuth2;
+using Google.Api.Gax;
+using Google.Cloud.Channel.V1;
+using Google.Type;
+using System;
 using System.IO;
 using System.Linq;
-using Google.Api.Gax;
-using Google.Type;
 
 namespace CodeLab
 {
@@ -45,7 +45,11 @@ namespace CodeLab
             // plan. This is needed because offerIds vary from one account to another,
             // but this is not a recommended model for your production integration
             PagedEnumerable<ListOffersResponse, Offer> listOffersResponse =
-                client.ListOffers(new ListOffersRequest {Parent = accountParent});
+                client.ListOffers(new ListOffersRequest 
+                {
+                    Parent = accountParent
+                });
+            
             Offer selectedOffer = new Offer();
             String sampleOffer = "Google Workspace Business Standard";
             String samplePlan = "Commitment";
@@ -79,7 +83,9 @@ namespace CodeLab
 
             PostalAddress postalAddress = new PostalAddress
             {
-                AddressLines = {"123 Main St"},
+                AddressLines = {
+                    "123 Main St"
+                },
                 PostalCode = "97224", RegionCode = "US"
             };
 
@@ -89,7 +95,10 @@ namespace CodeLab
             };
 
             CreateCustomerRequest createCustomerRequest =
-                new CreateCustomerRequest {Parent = accountParent, Customer = customer};
+                new CreateCustomerRequest {
+                    Parent = accountParent, 
+                    Customer = customer
+                };
 
             Customer createCustomerResponse = client.CreateCustomer(createCustomerRequest);
 
@@ -130,12 +139,21 @@ namespace CodeLab
                 };
 
             CommitmentSettings commitmentSettings =
-                new CommitmentSettings {RenewalSettings = renewalSettings};
+                new CommitmentSettings {
+                    RenewalSettings = renewalSettings
+                };
 
             Entitlement entitlement = new Entitlement
             {
                 Offer = selectedOffer.Name,
-                Parameters = {new Parameter {Name = "num_units", Value = new Value {Int64Value = 5}}},
+                Parameters = {
+                    new Parameter {
+                        Name = "num_units", 
+                        Value = new Value {
+                            Int64Value = 5
+                        }
+                    }
+                },
                 CommitmentSettings = commitmentSettings,
             };
 
