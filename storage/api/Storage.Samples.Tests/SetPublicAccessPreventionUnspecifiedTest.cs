@@ -38,6 +38,6 @@ public class SetPublicAccessPreventionUnspecifiedTest
         var updatedBucket = setPublicAccessPreventionUnspecifiedSample.SetPublicAccessPreventionUnspecified(bucketName);
         _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
-        Assert.AreEqual(updatedBucket.IamConfiguration.PublicAccessPrevention, "unspecified");
+        Assert.Equal(updatedBucket.IamConfiguration.PublicAccessPrevention, "unspecified");
     }
 }
