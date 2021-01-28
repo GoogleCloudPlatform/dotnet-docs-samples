@@ -16,28 +16,28 @@ using System;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class SetPublicAccessPreventionUnspecifiedTest
+public class SetPublicAccessPreventionEnforcedTest
 {
     private readonly BucketFixture _bucketFixture;
 
-    public SetPublicAccessPreventionUnspecifiedTest(BucketFixture bucketFixture)
+    public SetPublicAccessPreventionEnforcedTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
     }
 
     [Fact]
-    public void TestSetPublicAccessPreventionUnspecified()
+    public void TestSetPublicAccessPreventionEnforced()
     {
-        SetPublicAccessPreventionUnspecifiedSample setPublicAccessPreventionUnspecifiedSample = new SetPublicAccessPreventionUnspecifiedSample();
+        SetPublicAccessPreventionEnforcedSample setPublicAccessPreventionEnforcedSample = new SetPublicAccessPreventionEnforcedSample();
 
         var bucketName = Guid.NewGuid().ToString();
         // Create bucket
         _bucketFixture.CreateBucket(bucketName);
 
-        // Set public access prevention to unspecified.
-        var updatedBucket = setPublicAccessPreventionUnspecifiedSample.SetPublicAccessPreventionUnspecified(bucketName);
+        // Set public access prevention to enforced.
+        var updatedBucket = setPublicAccessPreventionEnforcedSample.SetPublicAccessPreventionEnforced(bucketName);
         _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
-        Assert.Equal("unspecified", updatedBucket.IamConfiguration.PublicAccessPrevention);
+        Assert.Equal("enforced", updatedBucket.IamConfiguration.PublicAccessPrevention);
     }
 }

@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_set_public_access_prevention_unspecified]
+// [START storage_get_public_access_prevention]
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
-public class SetPublicAccessPreventionUnspecifiedSample
+public class GetPublicAccessPreventionSample
 {
-    public Bucket SetPublicAccessPreventionUnspecified(string bucketName = "your-unique-bucket-name")
+    public string GetPublicAccessPrevention(string bucketName = "your-unique-bucket-name")
     {
+        // Gets Bucket Metadata and prints publicAccessPrevention value (either "unspecified" or "enforced").
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
+        var publicAccessPrevention = bucket.IamConfiguration.PublicAccessPrevention;
 
-        // Sets public access prevention to "unspecified" for the bucket.
-        bucket.IamConfiguration.PublicAccessPrevention = "unspecified";
-        bucket = storage.UpdateBucket(bucket);
-
-        Console.WriteLine($"Public access prevention is 'unspecified' for {bucketName}.");
-        return bucket;
+        Console.WriteLine($"Public access prevention is {publicAccessPrevention} for {bucketName}.");
+        return publicAccessPrevention;
     }
 }
-// [END storage_set_public_access_prevention_unspecified]
+// [END storage_get_public_access_prevention]
