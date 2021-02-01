@@ -36,7 +36,7 @@ public class GetPublicAccessPreventionTest
 
         // Set public access prevention to enforced.
         SetPublicAccessPreventionEnforcedSample setPublicAccessPreventionEnforcedSample = new SetPublicAccessPreventionEnforcedSample();
-        var updatedBucket = setPublicAccessPreventionEnforcedSample.SetPublicAccessPreventionEnforced(bucketName);
+        setPublicAccessPreventionEnforcedSample.SetPublicAccessPreventionEnforced(bucketName);
         _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         var publicAccessPrevention = getPublicAccessPreventionSample.GetPublicAccessPrevention(bucketName);
