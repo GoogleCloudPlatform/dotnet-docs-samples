@@ -14,29 +14,25 @@
  * the License.
  */
 
+using CloudSql.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using CloudSql.ViewModels;
-using MySql.Data.MySqlClient;
 
 namespace CloudSql.Controllers
 {
     public class HomeController : Controller
     {
        private readonly MySqlConnectionStringBuilder _connectionString;
-        private readonly CloudSql.Startup.MySqlConnect _connection;
-
 
         public HomeController(
-            MySqlConnectionStringBuilder connectionString,
-            CloudSql.Startup.MySqlConnect connection)
+            MySqlConnectionStringBuilder connectionString)
         {
             this._connectionString = connectionString;
-            this._connection = connection;
         }
 
         [HttpGet]
@@ -47,9 +43,9 @@ namespace CloudSql.Controllers
             {
                 VoteEntry = new List<VoteEntry>()
             };
-            using (var connection = _connection.GetMySqlConnection(_connectionString))
-            {
-                connection.Open();
+            using(var connection = new MySqlConnection(_connectionString.ConnectionString))
+            { 
+                connection.OpenWithRetry();
                 // Look up the last 5 votes.
                 using (var lookupCommand = connection.CreateCommand())
                 {
@@ -123,9 +119,9 @@ namespace CloudSql.Controllers
                 insertTimestamp = DateTime.Now;
                 try
                 {
-                    using (var connection = _connection.GetMySqlConnection(_connectionString))
-                    {
-                        connection.Open();
+                    using(var connection = new MySqlConnection(_connectionString.ConnectionString))
+                    { 
+                        connection.OpenWithRetry();
                         using (var insertVoteCommand = connection.CreateCommand())
                         {
                             insertVoteCommand.CommandText =

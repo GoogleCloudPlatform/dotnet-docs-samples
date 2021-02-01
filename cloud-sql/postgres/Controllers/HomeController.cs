@@ -14,28 +14,25 @@
  * the License.
  */
 
+using CloudSql.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using CloudSql.ViewModels;
-using Npgsql;
 
 namespace CloudSql.Controllers
 {
     public class HomeController : Controller
     {
         private readonly NpgsqlConnectionStringBuilder _connectionString;
-        private readonly CloudSql.Startup.PostgreSqlConnection _connection;
 
         public HomeController(
-            NpgsqlConnectionStringBuilder connectionString,
-            CloudSql.Startup.PostgreSqlConnection connection)
+            NpgsqlConnectionStringBuilder connectionString)
         {
             this._connectionString = connectionString;
-            this._connection = connection;
         }
 
         [HttpGet]
@@ -46,9 +43,9 @@ namespace CloudSql.Controllers
             {
                 VoteEntry = new List<VoteEntry>()
             };
-            using (var connection = _connection.GetPostgreSqlConnection(_connectionString))
-            {
-                connection.Open();
+            using(var connection = new NpgsqlConnection(_connectionString.ConnectionString))
+            { 
+                connection.OpenWithRetry();
                 // Look up the last 5 votes.
                 using (var lookupCommand = connection.CreateCommand())
                 {
@@ -122,9 +119,9 @@ namespace CloudSql.Controllers
                 insertTimestamp = DateTime.Now;
                 try
                 {
-                    using (var connection = _connection.GetPostgreSqlConnection(_connectionString))
-                    {
-                        connection.Open();
+                    using(var connection = new NpgsqlConnection(_connectionString.ConnectionString))
+                    {    
+                        connection.OpenWithRetry();
                         using (var insertVoteCommand = connection.CreateCommand())
                         {
                             insertVoteCommand.CommandText =

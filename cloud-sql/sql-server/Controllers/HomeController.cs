@@ -14,28 +14,24 @@
  * the License.
  */
 
+using CloudSql.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using CloudSql.ViewModels;
 
 namespace CloudSql.Controllers
 {
     public class HomeController : Controller
     {
         private readonly SqlConnectionStringBuilder _connectionString;
-        private readonly CloudSql.Startup.SqlServerConnection _connection;
 
-        public HomeController(SqlConnectionStringBuilder connectionString,
-            CloudSql.Startup.SqlServerConnection connection)
+        public HomeController(SqlConnectionStringBuilder connectionString)
         {
             this._connectionString = connectionString;
-            this._connection = connection;
         }
 
         [HttpGet]
@@ -46,9 +42,9 @@ namespace CloudSql.Controllers
             {
                 VoteEntry = new List<VoteEntry>()
             };
-            using (var connection = _connection.GetSqlServerConnection(_connectionString))
-            {
-                connection.Open();            
+            using(var connection = new SqlConnection(_connectionString.ConnectionString))
+            { 
+                connection.OpenWithRetry();
                 // Look up the last 5 votes.
                 using (var lookupCommand = connection.CreateCommand())
                 {
@@ -123,9 +119,9 @@ namespace CloudSql.Controllers
                 insertTimestamp = DateTime.Now;
                 try
                 {
-                    using (var connection = _connection.GetSqlServerConnection(_connectionString))
-                    {
-                        connection.Open();
+                    using(var connection = new SqlConnection(_connectionString.ConnectionString))
+                    { 
+                        connection.OpenWithRetry();
                         // Insert a vote for SPACE or TAB with a timestamp.
                         using (var insertVoteCommand = connection.CreateCommand())
                         {
