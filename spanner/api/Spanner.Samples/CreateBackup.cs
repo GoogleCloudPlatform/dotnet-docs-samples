@@ -31,7 +31,8 @@ public class CreateBackupSample
         Backup backup = new Backup
         {
             DatabaseAsDatabaseName = DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId),
-            ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp()
+            ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp(),
+            VersionTime = DateTime.UtcNow.ToTimestamp(),
         };
         InstanceName instanceName = InstanceName.FromProjectInstance(projectId, instanceId);
 
@@ -56,7 +57,8 @@ public class CreateBackupSample
         backup = databaseAdminClient.GetBackup(backupName);
         Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes " +
                       $"was created at {backup.CreateTime} from {backup.Database} " +
-                      $"and is in state {backup.State}");
+                      $"and is in state {backup.State} " +
+                      $"and has version time {backup.VersionTime}");
         return backup;
     }
 }
