@@ -116,7 +116,7 @@ namespace CloudSql.Controllers
             if (validInput)
             {
                 // [START cloud_sql_mysql_dotnet_ado_create]
-                insertTimestamp = DateTime.Now;
+                insertTimestamp = DateTime.UtcNow;
                 try
                 {
                     using(var connection = new MySqlConnection(_connectionString.ConnectionString))
