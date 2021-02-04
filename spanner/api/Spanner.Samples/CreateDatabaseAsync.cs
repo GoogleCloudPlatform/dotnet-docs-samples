@@ -24,9 +24,9 @@ public class CreateDatabaseAsyncSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
 
         using var connection = new SpannerConnection(connectionString);
-        var createStatement = $"CREATE DATABASE `{databaseId}`";
+        var createDatabase = $"CREATE DATABASE `{databaseId}`";
         // Define create table statement for table #1.
-        var createTable1 =
+        var createSingersTable =
         @"CREATE TABLE Singers (
                      SingerId INT64 NOT NULL,
                      FirstName STRING(1024),
@@ -34,7 +34,7 @@ public class CreateDatabaseAsyncSample
                      ComposerInfo BYTES(MAX)
                  ) PRIMARY KEY (SingerId)";
         // Define create table statement for table #2.
-        var createTable2 =
+        var createAlbumsTable =
         @"CREATE TABLE Albums (
                      SingerId INT64 NOT NULL,
                      AlbumId INT64 NOT NULL,
