@@ -43,7 +43,7 @@ namespace CloudSql
         // http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(sp => new MySqlConnection().GetMySqlConnectionString());
+            services.AddSingleton(sp => StartupExtensions.GetMySqlConnectionString());
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(DbExceptionFilterAttribute));
@@ -63,7 +63,6 @@ namespace CloudSql
             else
             {
                 // Configure error reporting service.
-                app.UseGoogleExceptionLogging();
                 app.UseExceptionHandler("/Home/Error");
             }
 
@@ -78,42 +77,25 @@ namespace CloudSql
 
     static class StartupExtensions
     {
-        public static DbConnection OpenWithRetry(this DbConnection connection) =>
+        public static void OpenWithRetry(this DbConnection connection) =>
             // [START cloud_sql_mysql_dotnet_ado_backoff]
             Policy
-                .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
+                .Handle<MySqlException>()
                 .WaitAndRetry(new[]
                 {
                     TimeSpan.FromSeconds(1),
                     TimeSpan.FromSeconds(2),
                     TimeSpan.FromSeconds(5)
-                }, (result, timeSpan, retryCount, context) =>
-                {
-                    // Log any warnings here.
-                    if(result.Exception != null && retryCount == 3)
-                    {
-                        throw result.Exception;
-                    }
                 })
-                .Execute(() =>
-                {
-                    // Return a new connection.
-                    try {
-                        connection.Open();
-                    }
-                    catch (MySqlException e)
-                    {
-                         Console.WriteLine(
-                             $"Error connecting to database: {e.Message}");
-                    }
-                    return connection;
-                });
+                .Execute(() => connection.Open());
             // [END cloud_sql_mysql_dotnet_ado_backoff]
 
-        public static void InitializeDatabase(this DbConnection connection)
+        public static void InitializeDatabase()
         {
-            using(connection.OpenWithRetry())
+            var connectionString = GetMySqlConnectionString();
+            using(DbConnection connection = new MySqlConnection(connectionString.ConnectionString))
             {
+                connection.OpenWithRetry();
                 using (var createTableCommand = connection.CreateCommand())
                 {
                     createTableCommand.CommandText = @"
@@ -129,7 +111,7 @@ namespace CloudSql
             }
         }
 
-        public static MySqlConnectionStringBuilder GetMySqlConnectionString(this DbConnection connection)
+        public static MySqlConnectionStringBuilder GetMySqlConnectionString()
         {
             MySqlConnectionStringBuilder connectionString; 
             if (Environment.GetEnvironmentVariable("DB_HOST") != null)

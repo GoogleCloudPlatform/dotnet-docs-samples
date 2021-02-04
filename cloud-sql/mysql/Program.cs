@@ -35,9 +35,7 @@ namespace CloudSql
         {
             BuildWebHost(args).Build().Run();
             // Create Database table if it does not exist.
-            var connectionString = new MySqlConnection().GetMySqlConnectionString();
-            DbConnection connection = new MySqlConnection(connectionString.ConnectionString);
-            connection.InitializeDatabase();
+            StartupExtensions.InitializeDatabase();
         }
 
         public static IWebHostBuilder BuildWebHost(string[] args)

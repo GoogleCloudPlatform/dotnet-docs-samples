@@ -43,7 +43,7 @@ namespace CloudSql
         // http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(sp => new SqlConnection().GetSqlServerConnectionString());
+            services.AddSingleton(sp => StartupExtensions.GetSqlServerConnectionString());
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(DbExceptionFilterAttribute));
@@ -63,7 +63,6 @@ namespace CloudSql
             else
             {
                 // Configure error reporting service.
-                app.UseGoogleExceptionLogging();
                 app.UseExceptionHandler("/Home/Error");
             }
 
@@ -78,41 +77,25 @@ namespace CloudSql
 
     static class StartupExtensions
     {
-        public static DbConnection OpenWithRetry(this DbConnection connection) =>
+        public static void OpenWithRetry(this DbConnection connection) =>
             // [START cloud_sql_sqlserver_dotnet_ado_backoff]
             Policy
-                .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
+                .Handle<SqlException>()
                 .WaitAndRetry(new[]
                 {
                     TimeSpan.FromSeconds(1),
                     TimeSpan.FromSeconds(2),
                     TimeSpan.FromSeconds(5)
-                }, (result, timeSpan, retryCount, context) =>
-                {
-                    // Log any warnings here.
-                    if(result.Exception != null && retryCount == 3)
-                    {
-                        throw result.Exception;
-                    }
                 })
-                .Execute(() => 
-                {
-                    try {
-                        connection.Open();
-                    }
-                    catch (SqlException e) 
-                    {
-                        Console.WriteLine(
-                             $"Error connecting to database: {e.Message}");
-                    }
-                    return connection;
-                });
+                .Execute(() => connection.Open());
             // [END cloud_sql_sqlserver_dotnet_ado_backoff]
 
-        public static void InitializeDatabase(this DbConnection connection)
+        public static void InitializeDatabase()
         {
-            using(connection.OpenWithRetry())
+            var connectionString = GetSqlServerConnectionString();
+            using(DbConnection connection = new SqlConnection(connectionString.ConnectionString))
             {
+                connection.OpenWithRetry();
                 using (var createTableCommand = connection.CreateCommand())
                 {
                     // Create the 'votes' table if it does not already exist.
@@ -128,7 +111,7 @@ namespace CloudSql
                 }
             }
         }
-        public static SqlConnectionStringBuilder GetSqlServerConnectionString(this DbConnection connection)
+        public static SqlConnectionStringBuilder GetSqlServerConnectionString()
         {
             // [START cloud_sql_sqlserver_dotnet_ado_connection_tcp]
             // Equivalent connection string:

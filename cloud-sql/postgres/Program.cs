@@ -35,9 +35,7 @@ namespace CloudSql
         {
             BuildWebHost(args).Build().Run();
             // Create Database table if it does not exist.
-            var connectionString = new NpgsqlConnection().GetPostgreSqlConnectionString();
-            DbConnection connection = new NpgsqlConnection(connectionString.ConnectionString);
-            connection.InitializeDatabase();
+            StartupExtensions.InitializeDatabase();
         }
 
         public static IWebHostBuilder BuildWebHost(string[] args)

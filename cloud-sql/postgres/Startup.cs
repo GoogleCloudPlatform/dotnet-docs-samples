@@ -44,7 +44,7 @@ namespace CloudSql
         // http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(sp => new NpgsqlConnection().GetPostgreSqlConnectionString());
+            services.AddSingleton(sp => StartupExtensions.GetPostgreSqlConnectionString());
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(DbExceptionFilterAttribute));
@@ -64,7 +64,6 @@ namespace CloudSql
             else
             {
                 // Configure error reporting service.
-                app.UseGoogleExceptionLogging();
                 app.UseExceptionHandler("/Home/Error");
             }
 
@@ -79,42 +78,24 @@ namespace CloudSql
 
         static class StartupExtensions
     {
-        public static DbConnection OpenWithRetry(this DbConnection connection) =>
+        public static void OpenWithRetry(this DbConnection connection) =>
             // [START cloud_sql_postgres_dotnet_ado_backoff]
             Policy
-                .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
+                .Handle<NpgsqlException>()
                 .WaitAndRetry(new[]
                 {
                     TimeSpan.FromSeconds(1),
                     TimeSpan.FromSeconds(2),
                     TimeSpan.FromSeconds(5)
-                }, (result, timeSpan, retryCount, context) =>
-                {
-                    // Log any warnings here.
-                    if(result.Exception != null && retryCount == 3)
-                    {
-                        throw result.Exception;
-                    }
                 })
-                .Execute(() =>
-                {
-                    //Open connection.
-                    try {
-                        connection.Open();
-                    }
-                    catch (NpgsqlException e)
-                    {
-                         Console.WriteLine(
-                             $"Error connecting to database: {e.Message}");
-                    }
-                    return connection;
-                });
+                .Execute(() => connection.Open());
             // [END cloud_sql_postgres_dotnet_ado_backoff]
-
-        public static void InitializeDatabase(this DbConnection connection)
+        public static void InitializeDatabase()
         {
-            using(connection.OpenWithRetry())
+            var connectionString = GetPostgreSqlConnectionString();
+            using(DbConnection connection = new NpgsqlConnection(connectionString.ConnectionString))
             {
+                connection.OpenWithRetry();
                 using (var createTableCommand = connection.CreateCommand())
                 {
                     createTableCommand.CommandText = @"
@@ -122,15 +103,15 @@ namespace CloudSql
                         votes(
                             vote_id SERIAL NOT NULL,
                             time_cast timestamp NOT NULL,
-                            candidate VARCHAR(6) NOT NULL,
+                            candidate CHAR(6) NOT NULL,
                             PRIMARY KEY (vote_id)
                         )";
                     createTableCommand.ExecuteNonQuery();
                 }
-            }      
+            }
         }
 
-        public static NpgsqlConnectionStringBuilder GetPostgreSqlConnectionString(this DbConnection connection)
+        public static NpgsqlConnectionStringBuilder GetPostgreSqlConnectionString()
         {
             NpgsqlConnectionStringBuilder connectionString; 
             if (Environment.GetEnvironmentVariable("DB_HOST") != null)
