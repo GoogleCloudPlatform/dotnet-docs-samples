@@ -42,7 +42,7 @@ public class CreateDatabaseAsyncSample
                  ) PRIMARY KEY (SingerId, AlbumId),
                  INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
 
-        using var createDbCommand = connection.CreateDdlCommand(createStatement, createTable1, createTable2);
+        using var createDbCommand = connection.CreateDdlCommand(createDatabase, createSingersTable, createAlbumsTable);
         await createDbCommand.ExecuteNonQueryAsync();
     }
 }
