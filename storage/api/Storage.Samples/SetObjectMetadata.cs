@@ -23,8 +23,8 @@ public class SetObjectMetadataSample
     public Google.Apis.Storage.v1.Data.Object SetObjectMetadata(
         string bucketName = "your-bucket-name",
         string objectName = "your-object-name",
-        string key = "file-type",
-        string value = "profile-image")
+        string key = "key-to-add",
+        string value = "value-to-add")
     {
         var storage = StorageClient.Create();
         var file = storage.GetObject(bucketName, objectName);

@@ -32,23 +32,23 @@ public class ComposeObjectTest
         ComposeObjectSample composeObjectSample = new ComposeObjectSample();
         DownloadFileSample downloadFileSample = new DownloadFileSample();
 
-        var objectName1 = "HelloComposeObject.txt";
-        var objectName2 = "HelloComposeObjectAdditional.txt";
-        var objectName3 = "HelloComposedDownload.txt";
+        var firstObject = "HelloComposeObject.txt";
+        var secondObject = "HelloComposeObjectAdditional.txt";
+        var targetObject = "HelloComposedDownload.txt";
 
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/Hello.txt", _bucketFixture.Collect(objectName1));
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/Hello.txt", _bucketFixture.Collect(firstObject));
 
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", _bucketFixture.Collect(objectName2));
+        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", _bucketFixture.Collect(secondObject));
 
-        composeObjectSample.ComposeObject(_bucketFixture.BucketNameGeneric, _bucketFixture.Collect(objectName3), new string[] { objectName1, objectName2 });
+        composeObjectSample.ComposeObject(_bucketFixture.BucketNameGeneric, firstObject, secondObject, _bucketFixture.Collect(targetObject));
 
         // Download the composed file
-        downloadFileSample.DownloadFile(_bucketFixture.BucketNameGeneric, objectName3, objectName3);
+        downloadFileSample.DownloadFile(_bucketFixture.BucketNameGeneric, targetObject, targetObject);
 
         // Content from both file should exists in the downloaded file
-        Assert.Contains(File.ReadAllText("Resources/Hello.txt"), File.ReadAllText(objectName3));
-        Assert.Contains(File.ReadAllText("Resources/HelloDownloadCompleteByteRange.txt"), File.ReadAllText(objectName3));
+        Assert.Contains(File.ReadAllText("Resources/Hello.txt"), File.ReadAllText(targetObject));
+        Assert.Contains(File.ReadAllText("Resources/HelloDownloadCompleteByteRange.txt"), File.ReadAllText(targetObject));
 
-        File.Delete(objectName3);
+        File.Delete(targetObject);
     }
 }

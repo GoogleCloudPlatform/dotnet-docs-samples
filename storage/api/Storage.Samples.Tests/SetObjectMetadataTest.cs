@@ -31,8 +31,8 @@ public class SetObjectMetadataTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         SetObjectMetadataSample setObjectMetadataSample = new SetObjectMetadataSample();
 
-        var key = "file-type";
-        var value = "profile-image";
+        var key = "key-to-add";
+        var value = "value-to-add";
         var objectName = "HelloSetObjectMetadata.txt";
 
         uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect(objectName));
