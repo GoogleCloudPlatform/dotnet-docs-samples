@@ -41,19 +41,22 @@ public class CancelBackupOperationSample
         // Cancel the operation.
         operation.Cancel();
 
-        // Poll until the long-running operation is complete since the backup wasn't
-        // cancelled before it was created.
+        // Poll until the long-running operation is completed in case the backup was
+        // created before the operation was cancelled.
         Console.WriteLine("Waiting for the operation to finish.");
         Operation<Backup, CreateBackupMetadata> completedOperation = operation.PollUntilCompleted();
 
         if (!completedOperation.IsFaulted)
         {
-            Console.WriteLine("Delete backup because it completed before it could be cancelled.");
+            Console.WriteLine("The backup was created before the operation was cancelled. Please delete the backup.");
             BackupName backupAsBackupName = BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
             databaseAdminClient.DeleteBackup(backupAsBackupName);
         }
+        else
+        {
+            Console.WriteLine($"Create backup operation cancelled: {operation.Name}");
+        }
 
-        Console.WriteLine($"Create backup operation cancelled: {operation.Name}");
         return completedOperation.IsFaulted;
     }
 }

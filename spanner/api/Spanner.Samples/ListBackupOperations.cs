@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_list_database_operations]
+// [START spanner_list_backup_operations]
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
@@ -20,33 +20,30 @@ using Google.LongRunning;
 using System;
 using System.Collections.Generic;
 
-public class GetDatabaseOperationsSample
+public class ListBackupOperationsSample
 {
-    public IEnumerable<Operation> GetDatabaseOperations(string projectId, string instanceId)
+    public IEnumerable<Operation> ListBackupOperations(string projectId, string instanceId, string databaseId)
     {
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-        var filter = "(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.OptimizeRestoredDatabaseMetadata)";
-
-        ListDatabaseOperationsRequest request = new ListDatabaseOperationsRequest
+        var filter = $"(metadata.database:{databaseId}) AND (metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata)";
+        ListBackupOperationsRequest request = new ListBackupOperationsRequest
         {
             ParentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
             Filter = filter
         };
 
-        // List the optimize restored databases operations on the instance.
-        var operations = databaseAdminClient.ListDatabaseOperations(request);
+        // List the create backup operations on the database.
+        var backupOperations = databaseAdminClient.ListBackupOperations(request);
 
-        foreach (var operation in operations)
+        foreach (var operation in backupOperations)
         {
-            CreateDatabaseMetadata metadata =
-                operation.Metadata.Unpack<CreateDatabaseMetadata>();
-            Console.WriteLine(
-                $"Database {metadata.Database} created successfully.");
+            CreateBackupMetadata metadata = operation.Metadata.Unpack<CreateBackupMetadata>();
+            Console.WriteLine($"Backup {metadata.Name} on " + $"database {metadata.Database} is " + $"{metadata.Progress.ProgressPercent}% complete");
         }
 
-        return operations;
+        return backupOperations;
     }
 }
-// [END spanner_list_database_operations]
+// [END spanner_list_backup_operations]

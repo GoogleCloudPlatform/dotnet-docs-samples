@@ -31,6 +31,6 @@ public class BatchReadRecordsAsyncTest
     {
         BatchReadRecordsAsyncSample batchReadRecordsAsyncSample = new BatchReadRecordsAsyncSample();
         var partitionAndReadRow = await batchReadRecordsAsyncSample.BatchReadRecordsAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.True(partitionAndReadRow.First() >= 9 && partitionAndReadRow.Last() > 0);
+        Assert.True(partitionAndReadRow.RowsRead >= 9 && partitionAndReadRow.Partitions > 0);
     }
 }

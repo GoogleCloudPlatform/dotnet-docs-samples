@@ -39,26 +39,25 @@ public class DeleteDataAsyncSample
             new Album { SingerId = 2, AlbumId = 3, AlbumTitle = "Terrified" },
         };
 
-        int rowCount;
+        int rowCount = 0;
         using (var connection = new SpannerConnection(connectionString))
         {
             await connection.OpenAsync();
 
             // Delete individual rows from the Albums table.
-            var rowCountArray = await Task.WhenAll(albums.Select(album =>
+            await Task.WhenAll(albums.Select(async album =>
             {
                 var cmd = connection.CreateDeleteCommand("Albums", new SpannerParameterCollection
                 {
                     { "SingerId", SpannerDbType.Int64, album.SingerId },
                     { "AlbumId", SpannerDbType.Int64, album.AlbumId }
                 });
-                return cmd.ExecuteNonQueryAsync();
+                rowCount += await cmd.ExecuteNonQueryAsync();
             }));
             Console.WriteLine("Deleted individual rows in Albums.");
 
             // Delete a range of rows from the Singers table where the column key is >=3 and <5.
             var cmd = connection.CreateDmlCommand("DELETE FROM Singers WHERE SingerId >= 3 AND SingerId < 5");
-            rowCount = rowCountArray.Sum();
             rowCount += await cmd.ExecuteNonQueryAsync();
             Console.WriteLine($"{rowCount} row(s) deleted from Singers.");
 

@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class QuickStartAsyncTest
+public class ListDatabaseOperationsTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public QuickStartAsyncTest(SpannerFixture spannerFixture)
+    public ListDatabaseOperationsTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestQuickStartAsync()
+    public void TestListDatabaseOperations()
     {
-        QuickStartAsyncSample quickStartSample = new QuickStartAsyncSample();
-        var result = await quickStartSample.QuickStartAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal("Hello World", result);
+        ListDatabaseOperationsSample sample = new ListDatabaseOperationsSample();
+        var operations = sample.ListDatabaseOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId).ToList();
+        Assert.NotEmpty(operations);
     }
 }

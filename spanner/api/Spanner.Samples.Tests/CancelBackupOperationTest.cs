@@ -28,7 +28,9 @@ public class CancelBackupOperationTest
     public void TestCancelBackupOperation()
     {
         CancelBackupOperationSample cancelBackupOperationSample = new CancelBackupOperationSample();
-        var result = cancelBackupOperationSample.CancelBackupOperation(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId, _spannerFixture.ToBeCancelledBackupId);
-        Assert.True(result);
+        ListBackupsSample listBackupsSample = new ListBackupsSample();
+        cancelBackupOperationSample.CancelBackupOperation(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId, _spannerFixture.ToBeCancelledBackupId);
+        var backups = listBackupsSample.ListBackups(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId, _spannerFixture.ToBeCancelledBackupId);
+        Assert.DoesNotContain(backups, b => b.BackupName.BackupId == _spannerFixture.ToBeCancelledBackupId);
     }
 }

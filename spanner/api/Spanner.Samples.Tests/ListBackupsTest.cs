@@ -15,20 +15,20 @@
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class GetBackupOperationsTest
+public class ListBackupsTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public GetBackupOperationsTest(SpannerFixture spannerFixture)
+    public ListBackupsTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public void TestGetBackupOperations()
+    public void TestListBackups()
     {
-        GetBackupOperationsSample getBackupOperationsSample = new GetBackupOperationsSample();
-        var operations = getBackupOperationsSample.GetBackupOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId);
-        Assert.Contains(operations, o => o.Done == true);
+        ListBackupsSample getBackupsSample = new ListBackupsSample();
+        var backups = getBackupsSample.ListBackups(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId, _spannerFixture.BackupId);
+        Assert.Contains(backups, b => b.BackupName.BackupId == _spannerFixture.BackupId);
     }
 }

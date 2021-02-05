@@ -24,32 +24,31 @@ using System.Threading.Tasks;
 public class BatchReadRecordsAsyncSample
 {
     private int _rowsRead;
-    private int _partitionId;
-    public async Task<List<int>> BatchReadRecordsAsync(string projectId, string instanceId, string databaseId)
+    private int _partitionCount;
+    public async Task<(int RowsRead, int Partitions)> BatchReadRecordsAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
         using var transaction = await connection.BeginReadOnlyTransactionAsync();
-        using var cmd = connection.CreateSelectCommand("SELECT SingerId, FirstName, LastName FROM Singers");
         transaction.DisposeBehavior = DisposeBehavior.CloseResources;
+        using var cmd = connection.CreateSelectCommand("SELECT SingerId, FirstName, LastName FROM Singers");
         cmd.Transaction = transaction;
         var partitions = await cmd.GetReaderPartitionsAsync();
         var transactionId = transaction.TransactionId;
-        await Task.WhenAll(partitions.Select(x => DistributedReadWorkerAsync(x, transactionId)))
-            .ConfigureAwait(false);
-        Console.WriteLine($"Done reading!  Total rows read: {_rowsRead:N0} with {_partitionId} partition(s)");
-        return new List<int> { _rowsRead, _partitionId };
+        await Task.WhenAll(partitions.Select(x => DistributedReadWorkerAsync(x, transactionId)));
+        Console.WriteLine($"Done reading!  Total rows read: {_rowsRead:N0} with {_partitionCount} partition(s)");
+        return (RowsRead: _rowsRead, Partitions: _partitionCount);
     }
 
     private async Task DistributedReadWorkerAsync(CommandPartition readPartition, TransactionId id)
     {
-        var localId = Interlocked.Increment(ref _partitionId);
+        var localId = Interlocked.Increment(ref _partitionCount);
         using var connection = new SpannerConnection(id.ConnectionString);
         using var transaction = connection.BeginReadOnlyTransaction(id);
         using var cmd = connection.CreateCommandWithPartition(readPartition, transaction);
-        using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+        using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
             Interlocked.Increment(ref _rowsRead);

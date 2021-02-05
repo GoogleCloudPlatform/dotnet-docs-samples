@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class GetDatabaseOperationsTest
+public class ListBackupOperationsTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public GetDatabaseOperationsTest(SpannerFixture spannerFixture)
+    public ListBackupOperationsTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public void TestGetDatabaseOperations()
+    public void TestListBackupOperations()
     {
-        GetDatabaseOperationsSample sample = new GetDatabaseOperationsSample();
-        var operations = sample.GetDatabaseOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId).ToList();
-        Assert.Contains(operations, c => c.Name.Contains(_spannerFixture.DatabaseId));
+        ListBackupOperationsSample getBackupOperationsSample = new ListBackupOperationsSample();
+        var operations = getBackupOperationsSample.ListBackupOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId);
+        Assert.NotEmpty(operations);
     }
 }

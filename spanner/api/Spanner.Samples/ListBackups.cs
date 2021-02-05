@@ -20,9 +20,9 @@ using Google.Cloud.Spanner.Common.V1;
 using System;
 using System.Collections.Generic;
 
-public class GetBackupsSample
+public class ListBackupsSample
 {
-    public IEnumerable<Backup> GetBackups(string projectId, string instanceId, string databaseId, string backupId)
+    public IEnumerable<Backup> ListBackups(string projectId, string instanceId, string databaseId, string backupId)
     {
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
@@ -72,16 +72,10 @@ public class GetBackupsSample
         PrintBackups(recentReadyBackups);
 
         // List backups in pages.
-        Console.WriteLine("Backups in batches of 5:");
-        int pageSize = 5;
-        string nextPageToken = string.Empty;
-        do
+        foreach (var page in databaseAdminClient.ListBackups(parentAsInstanceName, pageSize: 5).AsRawResponses())
         {
-            var response = databaseAdminClient.ListBackups(parentAsInstanceName, nextPageToken);
-            Page<Backup> currentPage = response.ReadPage(pageSize);
-            PrintBackups(currentPage);
-            nextPageToken = currentPage.NextPageToken;
-        } while (!string.IsNullOrEmpty(nextPageToken));
+            PrintBackups(page);
+        }
 
         return allBackups;
     }
