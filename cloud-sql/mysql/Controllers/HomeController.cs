@@ -14,24 +14,25 @@
  * the License.
  */
 
+using CloudSql.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using CloudSql.ViewModels;
 
 namespace CloudSql.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly DbConnection _connection;
+       private readonly MySqlConnectionStringBuilder _connectionString;
 
-        public HomeController(DbConnection connection)
+        public HomeController(
+            MySqlConnectionStringBuilder connectionString)
         {
-            this._connection = connection;
+            this._connectionString = connectionString;
         }
 
         [HttpGet]
@@ -42,48 +43,52 @@ namespace CloudSql.Controllers
             {
                 VoteEntry = new List<VoteEntry>()
             };
-            // Look up the last 5 votes.
-            using (var lookupCommand = _connection.CreateCommand())
-            {
-                lookupCommand.CommandText = @"
-                    SELECT candidate, time_cast FROM votes ORDER BY time_cast DESC LIMIT 5";
-                using (var reader = await lookupCommand.ExecuteReaderAsync())
+            using(var connection = new MySqlConnection(_connectionString.ConnectionString))
+            { 
+                connection.OpenWithRetry();
+                // Look up the last 5 votes.
+                using (var lookupCommand = connection.CreateCommand())
                 {
-                    while (await reader.ReadAsync())
+                    lookupCommand.CommandText = @"
+                        SELECT candidate, time_cast FROM votes ORDER BY time_cast DESC LIMIT 5";
+                    using (var reader = await lookupCommand.ExecuteReaderAsync())
                     {
-                        model.VoteEntry.Add(new VoteEntry()
+                        while (await reader.ReadAsync())
                         {
-                            Candidate = reader.GetString(0),
-                            TimeCast = reader.GetDateTime(1)
-                        });
+                            model.VoteEntry.Add(new VoteEntry()
+                            {
+                                Candidate = reader.GetString(0),
+                                TimeCast = reader.GetDateTime(1)
+                            });
+                        }
                     }
                 }
-            }
-            using (var countsCommand = _connection.CreateCommand())
-            {
-                countsCommand.CommandText = @"
-                    SELECT COUNT(vote_id) FROM votes WHERE candidate= @candidate";
-                var candidate = countsCommand.CreateParameter();
-                candidate.ParameterName = "@candidate";
-                candidate.DbType = DbType.String;
+                using (var countsCommand = connection.CreateCommand())
+                {
+                    countsCommand.CommandText = @"
+                        SELECT COUNT(vote_id) FROM votes WHERE candidate= @candidate";
+                    var candidate = countsCommand.CreateParameter();
+                    candidate.ParameterName = "@candidate";
+                    candidate.DbType = DbType.String;
 
-                candidate.Value = "SPACES";
-                countsCommand.Parameters.Add(candidate);
-                using (var reader = await countsCommand.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
+                    candidate.Value = "SPACES";
+                    countsCommand.Parameters.Add(candidate);
+                    using (var reader = await countsCommand.ExecuteReaderAsync())
                     {
-                        model.SpaceCount = reader.GetInt32(0);
+                        while (await reader.ReadAsync())
+                        {
+                            model.SpaceCount = reader.GetInt32(0);
+                        }
                     }
-                }
-                countsCommand.Parameters.Clear();
-                candidate.Value = "TABS";
-                countsCommand.Parameters.Add(candidate);
-                using (var reader = await countsCommand.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
+                    countsCommand.Parameters.Clear();
+                    candidate.Value = "TABS";
+                    countsCommand.Parameters.Add(candidate);
+                    using (var reader = await countsCommand.ExecuteReaderAsync())
                     {
-                        model.TabCount = reader.GetInt32(0);
+                        while (await reader.ReadAsync())
+                        {
+                            model.TabCount = reader.GetInt32(0);
+                        }
                     }
                 }
             }
@@ -111,24 +116,28 @@ namespace CloudSql.Controllers
             if (validInput)
             {
                 // [START cloud_sql_mysql_dotnet_ado_create]
-                insertTimestamp = DateTime.Now;
+                insertTimestamp = DateTime.UtcNow;
                 try
                 {
-                    using (var insertVoteCommand = _connection.CreateCommand())
-                    {
-                        insertVoteCommand.CommandText =
-                            @"INSERT INTO votes (candidate, time_cast) VALUES (@candidate, @time_cast)";
-                        var candidate = insertVoteCommand.CreateParameter();
-                        candidate.ParameterName = "@candidate";
-                        candidate.DbType = DbType.String;
-                        candidate.Value = team;
-                        insertVoteCommand.Parameters.Add(candidate);
-                        var timeCast = insertVoteCommand.CreateParameter();
-                        timeCast.ParameterName = "@time_cast";
-                        timeCast.DbType = DbType.DateTime;
-                        timeCast.Value = insertTimestamp;
-                        insertVoteCommand.Parameters.Add(timeCast);
-                        await insertVoteCommand.ExecuteNonQueryAsync();
+                    using(var connection = new MySqlConnection(_connectionString.ConnectionString))
+                    { 
+                        connection.OpenWithRetry();
+                        using (var insertVoteCommand = connection.CreateCommand())
+                        {
+                            insertVoteCommand.CommandText =
+                                @"INSERT INTO votes (candidate, time_cast) VALUES (@candidate, @time_cast)";
+                            var candidate = insertVoteCommand.CreateParameter();
+                            candidate.ParameterName = "@candidate";
+                            candidate.DbType = DbType.String;
+                            candidate.Value = team;
+                            insertVoteCommand.Parameters.Add(candidate);
+                            var timeCast = insertVoteCommand.CreateParameter();
+                            timeCast.ParameterName = "@time_cast";
+                            timeCast.DbType = DbType.DateTime;
+                            timeCast.Value = insertTimestamp;
+                            insertVoteCommand.Parameters.Add(timeCast);
+                            await insertVoteCommand.ExecuteNonQueryAsync();
+                        }
                     }
                     return Content($"Vote successfully cast for '{team}' at time {insertTimestamp}!");
                 }
