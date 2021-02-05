@@ -23,7 +23,7 @@ public class DeleteBucketSample
     {
         var storage = StorageClient.Create();
         storage.DeleteBucket(bucketName);
-        Console.WriteLine($"Deleted {bucketName}.");
+        Console.WriteLine($"The bucket {bucketName} was deleted.");
     }
 }
 // [END storage_delete_bucket]

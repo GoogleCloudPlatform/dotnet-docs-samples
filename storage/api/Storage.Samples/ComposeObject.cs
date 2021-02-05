@@ -18,22 +18,28 @@ using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 public class ComposeObjectSample
 {
-    public void ComposeObject(string bucketName, string objectName, string[] files)
+    public void ComposeObject(
+        string bucketName = "your-bucket-name",
+        string firstObjectName = "your-first-object-name",
+        string secondObjectName = "your-second-object-name",
+        string targetObjectName = "new-composite-object-name")
     {
         var storage = StorageClient.Create();
 
         var sourceObjects = new List<ComposeRequest.SourceObjectsData>();
-        foreach (var fileName in files)
+
+        sourceObjects.Add(new ComposeRequest.SourceObjectsData
         {
-            sourceObjects.Add(new ComposeRequest.SourceObjectsData
-            {
-                Name = Path.GetFileName(fileName)
-            });
-        };
+            Name = firstObjectName
+        });
+        sourceObjects.Add(new ComposeRequest.SourceObjectsData
+        {
+            Name = secondObjectName
+        });
+        //You could add as many sourceObjects as you want here, up to the max of 32.
 
         storage.Service.Objects.Compose(new ComposeRequest
         {
@@ -42,9 +48,10 @@ public class ComposeObjectSample
             {
                 ContentType = "text/plain"
             }
-        }, bucketName, objectName).Execute();
+        }, bucketName, targetObjectName).Execute();
 
-        Console.WriteLine($"New composite files {objectName} was created by combining {string.Join(",", files)}.");
+        Console.WriteLine($"New composite file {targetObjectName} was created in bucket {bucketName}" +
+            $" by combining {firstObjectName} and {secondObjectName}.");
     }
 }
 // [END storage_compose_file]

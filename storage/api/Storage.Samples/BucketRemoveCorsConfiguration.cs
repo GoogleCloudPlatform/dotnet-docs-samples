@@ -27,7 +27,7 @@ public class BucketRemoveCorsConfigurationSample
 
         if (bucket.Cors == null)
         {
-            Console.WriteLine("No Cors to remove");
+            Console.WriteLine("No CORS to remove");
         }
         else
         {

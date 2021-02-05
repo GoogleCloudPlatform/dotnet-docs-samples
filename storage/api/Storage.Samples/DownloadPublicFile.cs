@@ -23,14 +23,14 @@ public class DownloadPublicFileSample
     public string DownloadPublicFile(
         string bucketName = "your-bucket-name",
         string objectName = "your-object-name",
-        string localPath = "my-local-path/my-file-name")
+        string localPath = "path/to/download/object/to")
     {
         var storage = StorageClient.CreateUnauthenticated();
 
         using var outputFile = File.OpenWrite(localPath);
         storage.DownloadObject(bucketName, objectName, outputFile);
 
-        Console.WriteLine($"Downloaded public file {objectName} from bucket name${bucketName} to {localPath}.");
+        Console.WriteLine($"Downloaded public file {objectName} from bucket {bucketName} to {localPath}.");
         return localPath;
     }
 }

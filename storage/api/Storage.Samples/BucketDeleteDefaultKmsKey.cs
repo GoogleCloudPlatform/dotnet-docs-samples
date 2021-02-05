@@ -33,7 +33,7 @@ public class BucketDeleteDefaultKmsKeySample
         {
             bucket.Encryption.DefaultKmsKeyName = string.Empty;
             bucket = storage.UpdateBucket(bucket);
-            Console.WriteLine($"Default KMS key was removed from { bucketName}. ");
+            Console.WriteLine($"Default KMS key was removed from {bucketName}. ");
         }
 
         return bucket;

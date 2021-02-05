@@ -35,8 +35,8 @@ public class CopyFileArchivedGenerationSample
         var copiedFile = storage.CopyObject(sourceBucketName, sourceObjectName,
             destBucketName, destObjectName, copyOptions);
 
-        Console.WriteLine($"Copied {sourceBucketName}/{sourceObjectName} gen {generation} to "
-            + $"{destBucketName}/{destObjectName}.");
+        Console.WriteLine($"Generation {generation} of the object {sourceBucketName}/{sourceObjectName} " +
+            $"was copied to to {destBucketName}/{destObjectName}.");
 
         return copiedFile;
     }

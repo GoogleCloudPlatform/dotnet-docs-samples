@@ -44,7 +44,7 @@ public class BucketAddCorsConfigurationSample
         bucket = storage.UpdateBucket(bucket);
         Console.WriteLine($"bucketName {bucketName} was updated with a CORS config to allow {string.Join(",", corsData.Method)} requests from" +
             $" {string.Join(",", corsData.Origin)} sharing {string.Join(",", corsData.ResponseHeader)} responseHeader" +
-            $"responses across origins.");
+            $" responses across origins.");
         return bucket;
     }
 }

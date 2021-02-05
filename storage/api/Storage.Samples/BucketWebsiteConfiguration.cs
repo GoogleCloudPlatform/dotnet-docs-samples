@@ -36,7 +36,7 @@ public class BucketWebsiteConfigurationSample
         bucket.Website.NotFoundPage = notFoundPage;
 
         bucket = storage.UpdateBucket(bucket);
-        Console.WriteLine($"Static website bucket {bucketName} is set up to use {mainPageSuffix} as the index page and notFoundPage {notFoundPage}.");
+        Console.WriteLine($"Static website bucket {bucketName} is set up to use {mainPageSuffix} as the index page and {notFoundPage} as the 404 not found page.");
         return bucket;
     }
 }

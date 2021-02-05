@@ -36,7 +36,7 @@ public class BucketAddLabelSample
         bucket.Labels.Add(labelKey, labelValue);
 
         bucket = storage.UpdateBucket(bucket);
-        Console.WriteLine($"Added label {labelKey}  with value {labelValue} on bucket { bucketName}.");
+        Console.WriteLine($"Added label {labelKey} with value {labelValue} to bucket {bucketName}.");
         return bucket;
     }
 }

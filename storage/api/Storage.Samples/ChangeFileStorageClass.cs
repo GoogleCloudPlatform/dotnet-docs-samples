@@ -22,21 +22,16 @@ public class ChangeFileStorageClassSample
     public Google.Apis.Storage.v1.Data.Object ChangeFileStorageClass(
         string bucketName = "your-bucket-name",
         string objectName = "your-object-name",
-        string storageClass = "STANDARD")
+        string storageClass = StorageClasses.Standard)
     {
-        if (string.IsNullOrEmpty(storageClass))
-        {
-            storageClass = StorageClasses.Standard;
-        }
-
         var storage = StorageClient.Create();
         var file = storage.GetObject(bucketName, objectName);
 
         file.StorageClass = storageClass;
 
-        // Update failing when changing StorageClass
         file = storage.UpdateObject(file);
-        Console.WriteLine($"File {objectName}'s storage class changed to {storageClass}.");
+        Console.WriteLine($"Object {objectName} in bucket {bucketName} had" +
+            $" its storage class set to {storageClass}.");
         return file;
     }
 }
