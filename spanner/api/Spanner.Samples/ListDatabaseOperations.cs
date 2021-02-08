@@ -40,10 +40,10 @@ public class ListDatabaseOperationsSample
 
         foreach (var operation in operations)
         {
-            CreateDatabaseMetadata metadata =
-                operation.Metadata.Unpack<CreateDatabaseMetadata>();
+            OptimizeRestoredDatabaseMetadata metadata =
+                operation.Metadata.Unpack<OptimizeRestoredDatabaseMetadata>();
             Console.WriteLine(
-                $"Database {metadata.Database} created successfully.");
+                $"Database {metadata.Name} restored from backup is {metadata.Progress.ProgressPercent}% optimized.");
         }
 
         return operations;

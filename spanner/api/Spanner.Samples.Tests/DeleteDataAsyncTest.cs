@@ -36,6 +36,6 @@ public class DeleteDataAsyncTest
         await insertDataAsyncSample.InsertDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
         DeleteDataAsyncSample deleteDataAsyncSample = new DeleteDataAsyncSample();
         var rowCount = await deleteDataAsyncSample.DeleteDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
-        Assert.Equal(7, rowCount);
+        Assert.Equal(6, rowCount);
     }
 }

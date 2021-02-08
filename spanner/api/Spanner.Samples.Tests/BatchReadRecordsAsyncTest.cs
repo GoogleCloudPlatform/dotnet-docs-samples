@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,7 +29,7 @@ public class BatchReadRecordsAsyncTest
     public async Task TestBatchReadRecordsAsync()
     {
         BatchReadRecordsAsyncSample batchReadRecordsAsyncSample = new BatchReadRecordsAsyncSample();
-        var partitionAndReadRow = await batchReadRecordsAsyncSample.BatchReadRecordsAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.True(partitionAndReadRow.RowsRead >= 9 && partitionAndReadRow.Partitions > 0);
+        (int rowsRead, int partitions) = await batchReadRecordsAsyncSample.BatchReadRecordsAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.True(rowsRead >= 9 && partitions > 0);
     }
 }
