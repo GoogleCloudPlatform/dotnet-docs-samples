@@ -20,7 +20,7 @@ namespace GoogleCloudSamples
 {
     public class DetectIntentStreamsTest : DialogflowTest
     {
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/947")]
+        [Fact]
         void TestDetectIntentFromStream()
         {
             var _audioWavPath = Path.Combine("resources", "book_a_room.wav");
