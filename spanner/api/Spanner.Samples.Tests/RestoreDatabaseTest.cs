@@ -40,8 +40,9 @@ public class RestoreDatabaseTest
         }
         finally
         {
+            var backupDatabaseId = $"projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{_spannerFixture.BackupDatabaseId}";
             var databases = _spannerFixture.GetDatabases().Where(c => c.RestoreInfo != null).ToList();
-            Assert.Contains(databases, d => d.RestoreInfo.BackupInfo.SourceDatabase == _spannerFixture.BackupDatabaseId);
+            Assert.Contains(databases, d => d.RestoreInfo.BackupInfo.SourceDatabase == backupDatabaseId);
         }
     }
 }
