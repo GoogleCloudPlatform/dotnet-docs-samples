@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Grpc.Core;
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
@@ -28,8 +30,18 @@ public class RestoreDatabaseTest
     public void TestRestoreDatabase()
     {
         RestoreDatabaseSample restoreDatabaseSample = new RestoreDatabaseSample();
-        restoreDatabaseSample.RestoreDatabase(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.RestoredDatabaseId, _spannerFixture.BackupId);
-        var databases = _spannerFixture.GetDatabases();
-        Assert.Contains(databases, d => d.DatabaseName.DatabaseId == _spannerFixture.RestoredDatabaseId);
+        try
+        {
+            restoreDatabaseSample.RestoreDatabase(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.RestoredDatabaseId, _spannerFixture.BackupId);
+        }
+        catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.FailedPrecondition)
+        {
+            // Handles maximum number of pending restores which is currently one for the instance. 
+        }
+        finally
+        {
+            var databases = _spannerFixture.GetDatabases().Where(c => c.RestoreInfo != null).ToList();
+            Assert.Contains(databases, d => d.RestoreInfo.BackupInfo.SourceDatabase == _spannerFixture.BackupDatabaseId);
+        }
     }
 }

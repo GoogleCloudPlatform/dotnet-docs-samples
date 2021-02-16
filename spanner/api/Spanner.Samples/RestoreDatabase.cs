@@ -46,7 +46,8 @@ public class RestoreDatabaseSample
         RestoreInfo restoreInfo = completedResponse.Result.RestoreInfo;
         Console.WriteLine(
             $"Database {restoreInfo.BackupInfo.SourceDatabase} was restored " +
-            $"to {databaseId} from backup {restoreInfo.BackupInfo.Backup}");
+            $"to {databaseId} from backup {restoreInfo.BackupInfo.Backup} " +
+            $"with version time {restoreInfo.BackupInfo.VersionTime.ToDateTime()}");
 
         return restoreInfo;
     }

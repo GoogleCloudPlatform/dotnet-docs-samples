@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
@@ -28,7 +29,7 @@ public class ListBackupOperationsTest
     public void TestListBackupOperations()
     {
         ListBackupOperationsSample getBackupOperationsSample = new ListBackupOperationsSample();
-        var operations = getBackupOperationsSample.ListBackupOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId);
-        Assert.NotEmpty(operations);
+        var operations = getBackupOperationsSample.ListBackupOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId).ToList();
+        Assert.True(operations.Count >= 0);
     }
 }
