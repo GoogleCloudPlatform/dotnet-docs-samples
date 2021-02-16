@@ -24,24 +24,15 @@ public class CreateDatabaseWithRetentionPeriodAsyncSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
 
         using var connection = new SpannerConnection(connectionString);
-        var createStatement = $"CREATE DATABASE `{databaseId}`";
         var versionRetentionPeriod = "7d";
+        var createStatement = $"CREATE DATABASE `{databaseId}`";
+        var alterStatement = @$"ALTER DATABASE `{databaseId}` SET OPTIONS
+                   (version_retention_period = '{versionRetentionPeriod}')";
+        // The retention period cannot be set as part of the CREATE DATABASE statement,
+        // but can be set using an ALTER DATABASE statement directly after database creation.
         using var createDbCommand = connection.CreateDdlCommand(
             createStatement,
-            @"CREATE TABLE Singers (
-                         SingerId INT64 NOT NULL,
-                         FirstName STRING(1024),
-                         LastName STRING(1024),
-                         ComposerInfo BYTES(MAX)
-                     ) PRIMARY KEY (SingerId)",
-            @"CREATE TABLE Albums (
-                         SingerId INT64 NOT NULL,
-                         AlbumId INT64 NOT NULL,
-                         AlbumTitle STRING(MAX)
-                     ) PRIMARY KEY (SingerId, AlbumId),
-                     INTERLEAVE IN PARENT Singers ON DELETE CASCADE",
-            @$"ALTER DATABASE `{databaseId}` SET OPTIONS
-                   (version_retention_period = '{versionRetentionPeriod}')"
+            alterStatement
         );
         await createDbCommand.ExecuteNonQueryAsync();
     }
