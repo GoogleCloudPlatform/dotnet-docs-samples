@@ -32,7 +32,7 @@ public class CreateBackupSample
         {
             DatabaseAsDatabaseName = DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId),
             ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp(),
-            VersionTime = DateTime.UtcNow.ToTimestamp()
+            VersionTime = DateTime.UtcNow.ToTimestamp(),
         };
         InstanceName instanceName = InstanceName.FromProjectInstance(projectId, instanceId);
 
