@@ -7,6 +7,6 @@
     <Content Include="audio.raw" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Speech.V1" Version="2.0.0" />
+    <PackageReference Include="Google.Cloud.Speech.V1" Version="2.1.0" />
   </ItemGroup>
 </Project>

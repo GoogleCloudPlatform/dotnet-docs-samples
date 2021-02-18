@@ -4,6 +4,6 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Datastore.V1" Version="3.0.0" />
+    <PackageReference Include="Google.Cloud.Datastore.V1" Version="3.1.0" />
   </ItemGroup>
 </Project>

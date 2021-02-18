@@ -5,8 +5,8 @@
     <StartupObject>GoogleCloudSamples.ProductSearchProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
-    <PackageReference Include="Google.Cloud.Storage.V1" Version="3.0.0-beta02" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.2.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="3.4.0" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="HelloWorld.exe" />
