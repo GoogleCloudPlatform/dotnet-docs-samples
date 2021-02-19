@@ -22,7 +22,7 @@ using System;
 
 public class CreateBackupSample
 {
-    public Backup CreateBackup(string projectId, string instanceId, string databaseId, string backupId)
+    public Backup CreateBackup(string projectId, string instanceId, string databaseId, string backupId, DateTime versionTime)
     {
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
@@ -32,7 +32,7 @@ public class CreateBackupSample
         {
             DatabaseAsDatabaseName = DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId),
             ExpireTime = DateTime.UtcNow.AddDays(14).ToTimestamp(),
-            VersionTime = DateTime.UtcNow.ToTimestamp(),
+            VersionTime = versionTime.ToTimestamp(),
         };
         InstanceName instanceName = InstanceName.FromProjectInstance(projectId, instanceId);
 
