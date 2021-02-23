@@ -60,7 +60,7 @@ spec:
     spec:
       containers:
       - name: clouddemo-netcore
-        image: gcr.io/ntdev-windows-containers/clouddemo-netcore:latest
+        image: CLOUDDEMO_IMAGE
         ports:
           - containerPort: 8080
         livenessProbe:      # Used by deployment controller
