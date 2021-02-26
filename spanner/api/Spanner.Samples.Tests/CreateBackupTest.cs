@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Admin.Database.V1;
-using Google.Cloud.Spanner.Common.V1;
 using Google.Cloud.Spanner.Data;
 using Grpc.Core;
 using System;
@@ -32,14 +30,15 @@ public class CreateBackupTest
     [Fact]
     public void TestCreateBackup()
     {
-        var databaseAdminClient = DatabaseAdminClient.Create();
-        var database = databaseAdminClient.GetDatabase(DatabaseName.FromProjectInstanceDatabase(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId));
-        var earliestVersionTime = database.EarliestVersionTime.ToDateTime();
+        string connectionString = $"Data Source=projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{_spannerFixture.BackupDatabaseId}";
+        using var connection = new SpannerConnection(connectionString);
+        connection.Open();
+        var versionTime = (DateTime) connection.CreateSelectCommand("SELECT CURRENT_TIMESTAMP").ExecuteScalar();
 
         CreateBackupSample createBackupSample = new CreateBackupSample();
         // Backup already exists since it was created in the test setup so it should throw an exception.
         var exception = Assert.Throws<RpcException>(()
-            => createBackupSample.CreateBackup(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId, _spannerFixture.BackupId, earliestVersionTime));
+            => createBackupSample.CreateBackup(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId, _spannerFixture.BackupId, versionTime));
         Assert.Equal(StatusCode.AlreadyExists, exception.StatusCode);
     }
 }
