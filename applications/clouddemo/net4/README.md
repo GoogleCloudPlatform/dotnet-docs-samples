@@ -4,6 +4,9 @@
 [ASP.NET MVC 5](https://docs.microsoft.com/en-us/aspnet/mvc/overview/getting-started/introduction/getting-started)
 on .NET Framework 4.x. 
 
+For further details on how you can deploy the sample application, see
+[Creating a CI/CD pipeline with Azure Pipelines and Google Kubernetes Engine](https://cloud.google.com/solutions/creating-cicd-pipeline-vsts-kubernetes-engine).
+
 ## Prerequisites
 
 To build the application, you'll need

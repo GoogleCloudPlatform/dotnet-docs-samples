@@ -141,10 +141,13 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             Console.WriteLine($"Database {BackupDatabaseId} already exists.");
         }
 
+        using var connection = new SpannerConnection(ConnectionString);
+        await connection.OpenAsync();
+        var currentTimestamp = (DateTime)connection.CreateSelectCommand("SELECT CURRENT_TIMESTAMP").ExecuteScalar();
         try
         {
             CreateBackupSample createBackupSample = new CreateBackupSample();
-            createBackupSample.CreateBackup(ProjectId, InstanceId, BackupDatabaseId, BackupId);
+            createBackupSample.CreateBackup(ProjectId, InstanceId, BackupDatabaseId, BackupId, currentTimestamp);
         }
         catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
         {

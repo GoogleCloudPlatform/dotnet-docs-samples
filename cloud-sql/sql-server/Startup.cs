@@ -20,10 +20,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Data.Common;
-using System.Data;
 using Polly;
+using System;
+using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace CloudSql
@@ -31,7 +31,6 @@ namespace CloudSql
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        IServiceCollection _services;
 
         public Startup(IConfiguration configuration)
         {
@@ -44,55 +43,82 @@ namespace CloudSql
         // http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            string projectId = Google.Api.Gax.Platform.Instance().ProjectId;
-            if (!string.IsNullOrEmpty(projectId))
-            {
-                services.AddGoogleExceptionLogging(options =>
-                {
-                    options.ProjectId = projectId;
-                    options.ServiceName = "CloudSqlSample";
-                    options.Version = "Test";
-                });
-            }
-            services.AddScoped(typeof(DbConnection), (IServiceProvider) =>
-                InitializeDatabase());
+            services.AddSingleton(sp => StartupExtensions.GetSqlServerConnectionString());
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(DbExceptionFilterAttribute));
             });
-            _services = services;
         }
 
-        DbConnection InitializeDatabase()
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+            ILoggerFactory loggerFactory)
         {
-            DbConnection connection;
-            string database = Configuration["CloudSQL:Database"];
-            connection = GetSqlServerConnection();
-            connection.Open();
-            using (var createTableCommand = connection.CreateCommand())
-            {
-                // Create the 'votes' table if it does not already exist.
-                createTableCommand.CommandText = @"
-                 IF OBJECT_ID(N'dbo.votes', N'U') IS NULL
-                   BEGIN
-                     CREATE TABLE dbo.votes(
-                       vote_id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
-                       time_cast datetime NOT NULL,
-                       candidate CHAR(6) NOT NULL)
-                   END";
-                createTableCommand.ExecuteNonQuery();
-            }
-            return connection;
-        }
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 
-        DbConnection NewSqlServerConnection()
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                // Configure error reporting service.
+                app.UseExceptionHandler("/Home/Error");
+            }
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
+    }
+
+    static class StartupExtensions
+    {
+        public static void OpenWithRetry(this DbConnection connection) =>
+            // [START cloud_sql_sqlserver_dotnet_ado_backoff]
+            Policy
+                .Handle<SqlException>()
+                .WaitAndRetry(new[]
+                {
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(2),
+                    TimeSpan.FromSeconds(5)
+                })
+                .Execute(() => connection.Open());
+            // [END cloud_sql_sqlserver_dotnet_ado_backoff]
+
+        public static void InitializeDatabase()
+        {
+            var connectionString = GetSqlServerConnectionString();
+            using(DbConnection connection = new SqlConnection(connectionString.ConnectionString))
+            {
+                connection.OpenWithRetry();
+                using (var createTableCommand = connection.CreateCommand())
+                {
+                    // Create the 'votes' table if it does not already exist.
+                    createTableCommand.CommandText = @"
+                    IF OBJECT_ID(N'dbo.votes', N'U') IS NULL
+                    BEGIN
+                        CREATE TABLE dbo.votes(
+                        vote_id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
+                        time_cast datetime NOT NULL,
+                        candidate CHAR(6) NOT NULL)
+                    END";
+                    createTableCommand.ExecuteNonQuery();
+                }
+            }
+        }
+        public static SqlConnectionStringBuilder GetSqlServerConnectionString()
         {
             // [START cloud_sql_sqlserver_dotnet_ado_connection_tcp]
             // Equivalent connection string:
             // "User Id=<DB_USER>;Password=<DB_PASS>;Server=<DB_HOST>;Database=<DB_NAME>;"
             var connectionString = new SqlConnectionStringBuilder()
             {
-                // Remember - storing secrets in plaintext is potentially unsafe. Consider using
+                // Remember - storing secrets in plain text is potentially unsafe. Consider using
                 // something like https://cloud.google.com/secret-manager/docs/overview to help keep
                 // secrets secret.
                 DataSource = Environment.GetEnvironmentVariable("DB_HOST"),     // e.g. '127.0.0.1'
@@ -106,6 +132,8 @@ namespace CloudSql
             };
             connectionString.Pooling = true;
             // [START_EXCLUDE]
+            // The values set here are for demonstration purposes only. You 
+            // should set these values to what works best for your application.
             // [START cloud_sql_sqlserver_dotnet_ado_limit]
             // MaximumPoolSize sets maximum number of connections allowed in the pool.
             connectionString.MaxPoolSize = 5;
@@ -124,54 +152,8 @@ namespace CloudSql
             // connection with the server no longer exists.
             // [END cloud_sql_sqlserver_dotnet_ado_lifetime]
             // [END_EXCLUDE]
-            DbConnection connection =
-                new SqlConnection(connectionString.ConnectionString);
+            return connectionString;
             // [END cloud_sql_sqlserver_dotnet_ado_connection_tcp]
-            return connection;
-        }
-
-        DbConnection GetSqlServerConnection()
-        {
-            // [START cloud_sql_sqlserver_dotnet_ado_backoff]
-            var connection = Policy
-                .HandleResult<DbConnection>(conn => conn.State != ConnectionState.Open)
-                .WaitAndRetry(new[]
-                {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(5)
-                }, (result, timeSpan, retryCount, context) =>
-                {
-                    // Log any warnings here.
-                })
-                .Execute(() => NewSqlServerConnection());
-            // [END cloud_sql_sqlserver_dotnet_ado_backoff]
-            return connection;
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
-            ILoggerFactory loggerFactory)
-        {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // Configure error reporting service.
-                app.UseGoogleExceptionLogging();
-                app.UseExceptionHandler("/Home/Error");
-            }
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
         }
     }
 }

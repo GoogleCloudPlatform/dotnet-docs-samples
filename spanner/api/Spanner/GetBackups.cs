@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_get_backups]
+// [START spanner_list_backups]
 
 using Google.Api.Gax;
 using Google.Cloud.Spanner.Admin.Database.V1;
@@ -98,4 +98,4 @@ namespace GoogleCloudSamples.Spanner
         }
     }
 }
-// [END spanner_get_backups]
+// [END spanner_list_backups]
