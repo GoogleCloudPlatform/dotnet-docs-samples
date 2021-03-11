@@ -63,9 +63,6 @@ namespace GoogleCloudSamples
     [Verb("web", HelpText = "Find web pages with matching images.")]
     class DetectWebOptions : ImageOptions { }
 
-    [Verb("doc-text", HelpText = "Detect text in a document image.")]
-    class DetectDocTextOptions : ImageOptions { }
-
     [Verb("ocr", HelpText = "Performs document text OCR.")]
     class DetectDocumentOptions
     {
@@ -451,7 +448,6 @@ namespace GoogleCloudSamples
                 DetectLandmarksOptions,
                 DetectCropHintOptions,
                 DetectWebOptions,
-                DetectDocTextOptions,
                 DetectDocumentOptions,
                 DetectObjectLocalizationOptions
                 >(args)
@@ -467,7 +463,6 @@ namespace GoogleCloudSamples
                 (DetectLogosOptions opts) => DetectLogos(ImageFromArg(opts.FilePath)),
                 (DetectCropHintOptions opts) => DetectCropHint(ImageFromArg(opts.FilePath)),
                 (DetectWebOptions opts) => DetectWeb(ImageFromArg(opts.FilePath)),
-                (DetectDocTextOptions opts) => DetectDocText(ImageFromArg(opts.FilePath)),
                 (DetectDocumentOptions opts) => DetectDocument(opts.SourceURI, opts.OutputBucket, opts.OutputPrefix),
                 (DetectObjectLocalizationOptions opts) => DetectObjectLocalization(ImageFromArg(opts.FilePath)),
                 errs => 1);
