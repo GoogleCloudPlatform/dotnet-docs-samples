@@ -335,24 +335,6 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestProductSearch()
-        {
-            CreateProductSet();
-            var output = Run("get_similar_products", ProjectId, RegionName, IndexedProductSet, ProductCategory, Path.Combine("data", ImageUri1), SearchFilter);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains(IndexedProduct1, output.Stdout);
-        }
-
-        [Fact]
-        public void TestProductSearchGcs()
-        {
-            CreateProductSet();
-            var output = Run("get_similar_products_gcs", ProjectId, RegionName, IndexedProductSet, ProductCategory, RefImageGcsUri, SearchFilter);
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains(IndexedProduct1, output.Stdout);
-        }
-
-        [Fact]
         public void TestImportProductSets()
         {
             var output = Run("import_product_set", ProjectId, RegionName, CsvGcsUri);
