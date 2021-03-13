@@ -16,7 +16,6 @@
     <ProjectReference Include="..\Detect\Detect.csproj" />
     <ProjectReference Include="..\QuickStart\QuickStart.csproj" />
     <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
-    <ProjectReference Include="..\ProductSearch\ProductSearch.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\bonito.gif">
