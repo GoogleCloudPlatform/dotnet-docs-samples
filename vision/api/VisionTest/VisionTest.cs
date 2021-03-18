@@ -122,14 +122,6 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void DetectText()
-        {
-            var output = Run("text", Path.Combine("data", "bonito.gif"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("fermented", output.Stdout);
-        }
-
-        [Fact]
         public void DetectTextWithMultiRegion()
         {
             var output = Run("text", Path.Combine("data", "bonito.gif"), "-m");
@@ -159,53 +151,6 @@ namespace GoogleCloudSamples
             var output = Run("text", Path.Combine("data", "cat.jpg"));
             Assert.Equal(0, output.ExitCode);
             Assert.Equal("", output.Stdout);
-        }
-
-        [Fact]
-        public void DetectProperties()
-        {
-            var output = Run("properties", Path.Combine("data", "logo.jpg"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Alpha", output.Stdout);
-        }
-
-        [Fact]
-        public void DetectSafeSearch()
-        {
-            var output = Run("safe-search", Path.Combine("data", "logo.jpg"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Spoof", output.Stdout);
-            Assert.Contains("Unlikely", output.Stdout);
-        }
-
-        [Fact]
-        public void DetectWeb()
-        {
-            var output = Run("web", Path.Combine("data", "tower.jpg"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("MatchingImage", output.Stdout);
-        }
-
-
-        [Fact]
-        public void DetectCropHint()
-        {
-            var output = Run("crop-hint", Path.Combine("data", "face.png"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("Confidence:", output.Stdout);
-            Assert.Contains("Bounding Polygon:", output.Stdout);
-            Assert.Contains("\tX:", output.Stdout);
-            Assert.Contains("\tY:", output.Stdout);
-        }
-
-        [Fact]
-        public void DetectObjectLocalization()
-        {
-            // TODO(erschmid): Replace with 'puppies.jpg' after merge.
-            var output = Run("object-localization",
-                             Path.Combine("data", "tower.jpg"));
-            Assert.Contains("Building", output.Stdout);
-            Assert.Equal(0, output.ExitCode);
         }
     }
 
@@ -319,26 +264,6 @@ namespace GoogleCloudSamples
                 uriPrefix + uriSampleFilePath + Path.GetFileName(args[1]);
             return _retryRobot.Eventually(
                 () => _detect.Run(args[0], filePublicUri));
-        }
-    }
-
-    /// <summary>
-    /// Runs tests on local file.
-    /// </summary>
-    public class QuickStartTests
-    {
-        readonly CommandLineRunner _quickStart = new CommandLineRunner()
-        {
-            VoidMain = QuickStart.Main,
-            Command = "QuickStart"
-        };
-
-        [Fact]
-        public void TestRun()
-        {
-            var output = _quickStart.Run();
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("cat", output.Stdout);
         }
     }
 }
