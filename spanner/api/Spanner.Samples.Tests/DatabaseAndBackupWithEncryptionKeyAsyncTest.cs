@@ -24,6 +24,7 @@ public class DatabaseAndBackupWithEncryptionKeyAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
+    private string _testKeyProjectId = Environment.GetEnvironmentVariable("spanner.test.key.project");
     private readonly string _testKeyLocationId = Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1";
     private readonly string _testKeyRingId = Environment.GetEnvironmentVariable("spanner.test.key.ring") ?? "spanner-test-keyring";
     private readonly string _testKeyId = Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key";
@@ -35,6 +36,10 @@ public class DatabaseAndBackupWithEncryptionKeyAsyncTest
     public DatabaseAndBackupWithEncryptionKeyAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
+        if (_testKeyProjectId == null)
+        {
+            _testKeyProjectId = _spannerFixture.ProjectId;
+        }
     }
 
     [Fact]
@@ -42,7 +47,7 @@ public class DatabaseAndBackupWithEncryptionKeyAsyncTest
     {
         // Create a database with a custom encryption key.
         var sample = new CreateDatabaseWithEncryptionKeyAsyncSample();
-        var kmsKeyName = new CryptoKeyName(_spannerFixture.ProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
+        var kmsKeyName = new CryptoKeyName(_testKeyProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
         await sample.CreateDatabaseWithEncryptionKeyAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _databaseId, kmsKeyName);
         var databases = _spannerFixture.GetDatabases();
         Assert.Contains(databases, d => d.DatabaseName.DatabaseId == _databaseId);
@@ -55,7 +60,7 @@ public class DatabaseAndBackupWithEncryptionKeyAsyncTest
     {
         // Backup a database with a custom encryption key.
         var sample = new CreateBackupWithEncryptionKeyAsyncSample();
-        var kmsKeyName = new CryptoKeyName(_spannerFixture.ProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
+        var kmsKeyName = new CryptoKeyName(_testKeyProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
         var backup = await sample.CreateBackupWithEncryptionKeyAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _databaseId, _backupId, kmsKeyName);
         Assert.Equal(kmsKeyName.CryptoKeyId, backup.EncryptionInfo.KmsKeyVersionAsCryptoKeyVersionName.CryptoKeyId);
     }
@@ -64,7 +69,7 @@ public class DatabaseAndBackupWithEncryptionKeyAsyncTest
     public async Task Test03_RestoreDatabaseWithEncryptionKeyAsync()
     {
         var sample = new RestoreDatabaseWithEncryptionAsyncSample();
-        var kmsKeyName = new CryptoKeyName(_spannerFixture.ProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
+        var kmsKeyName = new CryptoKeyName(_testKeyProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
         var database = await sample.RestoreDatabaseWithEncryptionAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _restoreDatabaseId, _backupId, kmsKeyName);
         Assert.Equal(kmsKeyName, CryptoKeyName.Parse(database.EncryptionConfig.KmsKeyName));
     }
