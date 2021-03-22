@@ -15,11 +15,7 @@
 using CommandLine;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.Vision.V1;
-using Google.Protobuf;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace GoogleCloudSamples
 {

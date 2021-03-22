@@ -104,54 +104,6 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             Assert.DoesNotContain("Joy", output.Stdout);
         }
-
-        [Fact]
-        public void DetectLabel()
-        {
-            var output = Run("labels", Path.Combine("data", "cat.jpg"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("cat", output.Stdout);
-        }
-
-        [Fact]
-        public void DetectLandmark()
-        {
-            var output = Run("landmarks", Path.Combine("data", "tower.jpg"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Matches(@".*(Eiffel|Mars).*", output.Stdout);
-        }
-
-        [Fact]
-        public void DetectTextWithMultiRegion()
-        {
-            var output = Run("text", Path.Combine("data", "bonito.gif"), "-m");
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("fermented", output.Stdout);
-        }
-
-        [Fact]
-        public void DetectNoText()
-        {
-            var output = Run("text", Path.Combine("data", "no-text.jpg"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Equal("", output.Stdout);
-        }
-
-        [Fact]
-        public void DetectLogos()
-        {
-            var output = Run("text", Path.Combine("data", "logo.jpg"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Contains("google", output.Stdout.ToLower());
-        }
-
-        [Fact]
-        public void DetectNoLogos()
-        {
-            var output = Run("text", Path.Combine("data", "cat.jpg"));
-            Assert.Equal(0, output.ExitCode);
-            Assert.Equal("", output.Stdout);
-        }
     }
 
     /// <summary>
