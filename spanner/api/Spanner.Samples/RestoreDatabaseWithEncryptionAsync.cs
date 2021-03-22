@@ -56,7 +56,7 @@ public class RestoreDatabaseWithEncryptionAsyncSample
         Console.WriteLine($"Database {restoreInfo.BackupInfo.SourceDatabase} " +
             $"restored to {database.Name} " +
             $"from backup {restoreInfo.BackupInfo.Backup} " +
-            $"using encryption key {kmsKeyName}");
+            $"using encryption key {database.EncryptionConfig.KmsKeyName}");
         return database;
     }
 }

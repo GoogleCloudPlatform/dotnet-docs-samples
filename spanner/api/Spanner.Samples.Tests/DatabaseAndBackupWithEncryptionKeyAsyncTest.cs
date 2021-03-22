@@ -12,34 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Admin.Database.V1;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Google.Cloud.Spanner.Admin.Database.V1;
 
-[TestCaseOrderer("AlphabeticalTestOrderer", "Spanner.Samples.Tests")]
-[Collection(nameof(SpannerFixture))]
-public class DatabaseAndBackupWithEncryptionKeyAsyncTest
+/// <summary>
+/// Tests creating, backing up and restoring databases using customer managed encryption.
+/// These tests are executed in alphabetical order to guarantee that the same database and
+/// backup can be used for testing both creating, backing up and restoring, as these
+/// operations can take a long time.
+/// </summary>
+[TestCaseOrderer("Spanner.Samples.Tests.AlphabeticalTestOrderer", "Spanner.Samples.Tests")]
+public class DatabaseAndBackupWithEncryptionKeyAsyncTest : IClassFixture<CmekFixture>
 {
-    private readonly SpannerFixture _spannerFixture;
+    private readonly CmekFixture _fixture;
 
-    private string _testKeyProjectId = Environment.GetEnvironmentVariable("spanner.test.key.project");
-    private readonly string _testKeyLocationId = Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1";
-    private readonly string _testKeyRingId = Environment.GetEnvironmentVariable("spanner.test.key.ring") ?? "spanner-test-keyring";
-    private readonly string _testKeyId = Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key";
-
-    private readonly string _databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    private readonly string _backupId = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    private readonly string _restoreDatabaseId = $"restored-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-
-    public DatabaseAndBackupWithEncryptionKeyAsyncTest(SpannerFixture spannerFixture)
+    public DatabaseAndBackupWithEncryptionKeyAsyncTest(CmekFixture fixture)
     {
-        _spannerFixture = spannerFixture;
-        if (_testKeyProjectId == null)
-        {
-            _testKeyProjectId = _spannerFixture.ProjectId;
-        }
+        _fixture = fixture;
     }
 
     [Fact]
@@ -47,12 +37,8 @@ public class DatabaseAndBackupWithEncryptionKeyAsyncTest
     {
         // Create a database with a custom encryption key.
         var sample = new CreateDatabaseWithEncryptionKeyAsyncSample();
-        var kmsKeyName = new CryptoKeyName(_testKeyProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
-        await sample.CreateDatabaseWithEncryptionKeyAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _databaseId, kmsKeyName);
-        var databases = _spannerFixture.GetDatabases();
-        Assert.Contains(databases, d => d.DatabaseName.DatabaseId == _databaseId);
-        var database = databases.Where(d => d.DatabaseName.DatabaseId == _databaseId).FirstOrDefault();
-        Assert.Equal(kmsKeyName, CryptoKeyName.Parse(database.EncryptionConfig.KmsKeyName));
+        var database = await sample.CreateDatabaseWithEncryptionKeyAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, _fixture.KmsKeyName);
+        Assert.Equal(_fixture.KmsKeyName, CryptoKeyName.Parse(database.EncryptionConfig.KmsKeyName));
     }
 
     [Fact]
@@ -60,17 +46,15 @@ public class DatabaseAndBackupWithEncryptionKeyAsyncTest
     {
         // Backup a database with a custom encryption key.
         var sample = new CreateBackupWithEncryptionKeyAsyncSample();
-        var kmsKeyName = new CryptoKeyName(_testKeyProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
-        var backup = await sample.CreateBackupWithEncryptionKeyAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _databaseId, _backupId, kmsKeyName);
-        Assert.Equal(kmsKeyName.CryptoKeyId, backup.EncryptionInfo.KmsKeyVersionAsCryptoKeyVersionName.CryptoKeyId);
+        var backup = await sample.CreateBackupWithEncryptionKeyAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.DatabaseId, _fixture.BackupId, _fixture.KmsKeyName);
+        Assert.Equal(_fixture.KmsKeyName.CryptoKeyId, backup.EncryptionInfo.KmsKeyVersionAsCryptoKeyVersionName.CryptoKeyId);
     }
 
     [Fact]
     public async Task Test03_RestoreDatabaseWithEncryptionKeyAsync()
     {
         var sample = new RestoreDatabaseWithEncryptionAsyncSample();
-        var kmsKeyName = new CryptoKeyName(_testKeyProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
-        var database = await sample.RestoreDatabaseWithEncryptionAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _restoreDatabaseId, _backupId, kmsKeyName);
-        Assert.Equal(kmsKeyName, CryptoKeyName.Parse(database.EncryptionConfig.KmsKeyName));
+        var database = await sample.RestoreDatabaseWithEncryptionAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.RestoreDatabaseId, _fixture.BackupId, _fixture.KmsKeyName);
+        Assert.Equal(_fixture.KmsKeyName, CryptoKeyName.Parse(database.EncryptionConfig.KmsKeyName));
     }
 }

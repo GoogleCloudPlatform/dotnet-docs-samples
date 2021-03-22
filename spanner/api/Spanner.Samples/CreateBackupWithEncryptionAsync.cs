@@ -59,7 +59,7 @@ public class CreateBackupWithEncryptionKeyAsyncSample
         var backup = completedResponse.Result;
         Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes " +
                       $"was created at {backup.CreateTime} " +
-                      $"using encryption key {kmsKeyName}");
+                      $"using encryption key {backup.EncryptionInfo.KmsKeyVersion}");
         return backup;
     }
 }
