@@ -10,8 +10,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickStart", "QuickStart\Qu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisionTest", "VisionTest\VisionTest.csproj", "{8E60BC7F-6166-4270-9C29-C50F47221965}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductSearch", "ProductSearch\ProductSearch.csproj", "{6AA8037C-0666-41AF-AB80-758B1ABEF9D5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineUtil", "..\..\commandlineutil\Lib\CommandLineUtil.csproj", "{068DC073-EB56-4C72-B271-C09CAA76E8E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "testutil", "..\..\testutil\testutil.csproj", "{D81A1684-14FA-4214-8A3F-4683EEEEE0FF}"
