@@ -611,7 +611,6 @@ namespace GoogleCloudSamples.VideoIntelligence
                 .Add((AnalyzeExplicitContentOptions opts) => AnalyzeExplicitContentGcs(opts.Uri))
                 .Add((AnalyzeLabelsOptions opts) => IsStorageUri(opts.Uri) ? AnalyzeLabelsGcs(opts.Uri) : AnalyzeLabels(opts.Uri))
                 .Add((TranscribeOptions opts) => TranscribeVideo(opts.Uri))
-                .Add((DetectTextOptions opts) => IsStorageUri(opts.Uri) ? DetectTextGcs(opts.Uri) : DetectText(opts.Uri))
                 .Add((TrackObjectOptions opts) => IsStorageUri(opts.Uri) ? TrackObjectGcs(opts.Uri) : TrackObject(opts.Uri))
                 .Add((DetectLogoOptions opts) => IsStorageUri(opts.Uri) ? DetectLogoGcs(opts.Uri) : DetectLogo(opts.Uri))
                 .SetNotParsedFunc((errs) => 1);
