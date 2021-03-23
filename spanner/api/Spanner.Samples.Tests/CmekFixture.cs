@@ -58,7 +58,7 @@ public class CmekFixture : IDisposable
             {
                 ParentAsLocationName = LocationName.FromProjectLocation(keyRingName.ProjectId, keyRingName.LocationId),
                 KeyRingId = KmsKeyName.KeyRingId,
-                KeyRing = new KeyRing { KeyRingName = keyRingName },
+                KeyRing = new KeyRing(),
             });
         }
 
@@ -75,7 +75,6 @@ public class CmekFixture : IDisposable
                 CryptoKeyId = keyName.CryptoKeyId,
                 CryptoKey = new CryptoKey
                 {
-                    CryptoKeyName = keyName,
                     Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
                 },
             });
