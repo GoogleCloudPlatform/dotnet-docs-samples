@@ -72,7 +72,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     }
 
     /// <summary>
-    /// Deletes 5 oldest databases if the number of databases is more than 94.
+    /// Deletes 10 oldest databases if the number of databases is more than 89.
     /// This is to avoid resource exhausted errors.
     /// </summary>
     private async Task DeleteStaleDatabasesAsync()
@@ -81,7 +81,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
         var databases = databaseAdminClient.ListDatabases(instanceName);
 
-        if (databases.Count() < 95)
+        if (databases.Count() < 90)
         {
             return;
         }
@@ -90,7 +90,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             .OrderBy(db => long.TryParse(
                 db.DatabaseName.DatabaseId.Replace("my-db-", "").Replace("my-restore-db-", ""),
                 out long creationDate) ? creationDate : long.MaxValue)
-            .Take(5);
+            .Take(10);
 
         // Delete the databases.
         foreach (var database in databasesToDelete)
@@ -287,5 +287,22 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         public int SingerId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+    }
+
+    public async Task CreatePerformancesTableWithTimestampColumnAsync()
+    {
+        using var connection = new SpannerConnection(ConnectionString);
+        // Define create table statement for table with commit timestamp column.
+        string createTableStatement =
+        @"CREATE TABLE Performances (
+                    SingerId       INT64 NOT NULL,
+                    VenueId        INT64 NOT NULL,
+                    EventDate      Date,
+                    Revenue        INT64,
+                    LastUpdateTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)
+                ) PRIMARY KEY (SingerId, VenueId, EventDate),
+                    INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+        var cmd = connection.CreateDdlCommand(createTableStatement);
+        await cmd.ExecuteNonQueryAsync();
     }
 }
