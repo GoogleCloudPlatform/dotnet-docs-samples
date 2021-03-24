@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START eventarc_gcs_handler]
+// [START eventarc_audit_storage_handler]
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -59,4 +59,4 @@ public class Startup
         });
     }
 }
-// [END eventarc_gcs_handler]
+// [END eventarc_audit_storage_handler]
