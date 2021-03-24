@@ -24,7 +24,7 @@ casper.test.begin('Fill form with cat image.', 4, function suite(test) {
     casper.thenOpen(host + '/Home/Naughty', function (response) {
         test.assertEquals(response.status, 200);
         this.fill('form', {
-            'files': ['../../../vision/api/VisionTest/data/cat.jpg']
+            'files': ['cat.jpg']
         }, false);
         console.log('Filled form.');
     });
