@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.Kms.V1;
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Admin.Instance.V1;
 using Google.Cloud.Spanner.Common.V1;
@@ -22,6 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using CryptoKeyName = Google.Cloud.Spanner.Admin.Database.V1.CryptoKeyName;
 
 [CollectionDefinition(nameof(SpannerFixture))]
 public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
@@ -34,6 +37,23 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string BackupId { get; } = "my-test-database-backup";
     public string ToBeCancelledBackupId { get; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string RestoredDatabaseId { get; } = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+
+    public string EncryptedDatabaseId { get; } = $"my-enc-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string EncryptedBackupId { get; } = $"my-enc-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string EncryptedRestoreDatabaseId { get; } = $"my-enc-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+
+    // These are intentionally kept on the instance to avoid the need to create a new encrypted database and backup for each run.
+    public string FixedEncryptedDatabaseId { get; } = "fixed-enc-backup-db";
+    public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
+
+    // Encryption key identifiers.
+    private static readonly string _testKeyProjectId = Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private static readonly string _testKeyLocationId = Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1";
+    private static readonly string _testKeyRingId = Environment.GetEnvironmentVariable("spanner.test.key.ring") ?? "spanner-test-keyring";
+    private static readonly string _testKeyId = Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key";
+
+    public CryptoKeyName KmsKeyName { get; } = new CryptoKeyName(_testKeyProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
+
     public string ConnectionString { get; set; }
 
     public async Task InitializeAsync()
@@ -44,9 +64,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         if (isExistingInstance)
         {
             await DeleteStaleDatabasesAsync();
+            await DeleteStaleBackupsAsync();
         }
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
+        await InitializeEncryptedBackupAsync();
     }
 
     public Task DisposeAsync()
@@ -88,7 +110,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
         var databasesToDelete = databases
             .OrderBy(db => long.TryParse(
-                db.DatabaseName.DatabaseId.Replace("my-db-", "").Replace("my-restore-db-", ""),
+                db.DatabaseName.DatabaseId
+                    .Replace("my-db-", "").Replace("my-restore-db-", "")
+                    .Replace("my-enc-db-", "").Replace("my-enc-restore-db-", ""),
                 out long creationDate) ? creationDate : long.MaxValue)
             .Take(10);
 
@@ -98,6 +122,38 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             try
             {
                 await DeleteDatabaseAsync(database.DatabaseName.DatabaseId);
+            }
+            catch (Exception) { }
+        }
+    }
+
+    /// <summary>
+    /// Deletes 10 oldest backups if the number of backups is more than 89.
+    /// This is to avoid resource exhausted errors.
+    /// </summary>
+    private async Task DeleteStaleBackupsAsync()
+    {
+        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+        var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
+        var backups = databaseAdminClient.ListBackups(instanceName);
+
+        if (backups.Count() < 90)
+        {
+            return;
+        }
+
+        var backupsToDelete = backups
+            .OrderBy(db => long.TryParse(
+                db.BackupName.BackupId.Replace("my-enc-backup-", ""),
+                out long creationDate) ? creationDate : long.MaxValue)
+            .Take(10);
+
+        // Delete the backups.
+        foreach (var backup in backupsToDelete)
+        {
+            try
+            {
+                await databaseAdminClient.DeleteBackupAsync(backup.BackupName);
             }
             catch (Exception) { }
         }
@@ -161,6 +217,75 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             // It's ok backup has been in progress in another test cycle.
             Console.WriteLine($"Backup {BackupId} already in progress.");
+        }
+    }
+
+    private async Task InitializeEncryptedBackupAsync()
+    {
+        // Sample backup for encrypted restore test.
+        try
+        {
+            CreateDatabaseWithEncryptionKeyAsyncSample createDatabaseAsyncSample = new CreateDatabaseWithEncryptionKeyAsyncSample();
+            InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+            await createDatabaseAsyncSample.CreateDatabaseWithEncryptionKeyAsync(ProjectId, InstanceId, FixedEncryptedDatabaseId, KmsKeyName);
+            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, FixedEncryptedDatabaseId);
+        }
+        catch (Exception e) when (e.ToString().Contains("Database already exists"))
+        {
+            // We intentionally keep an existing database around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Database {FixedEncryptedDatabaseId} already exists.");
+        }
+
+        try
+        {
+            CreateBackupWithEncryptionKeyAsyncSample createBackupSample = new CreateBackupWithEncryptionKeyAsyncSample();
+            await createBackupSample.CreateBackupWithEncryptionKeyAsync(ProjectId, InstanceId, FixedEncryptedDatabaseId, FixedEncryptedBackupId, KmsKeyName);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
+        {
+            // We intentionally keep an existing backup around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Backup {FixedEncryptedBackupId} already exists.");
+        }
+    }
+
+    private async Task InitializeEncryptionKeys()
+    {
+        var client = await KeyManagementServiceClient.CreateAsync();
+        var keyRingName = KeyRingName.FromProjectLocationKeyRing(KmsKeyName.ProjectId, KmsKeyName.LocationId, KmsKeyName.KeyRingId);
+        try
+        {
+            await client.GetKeyRingAsync(keyRingName);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.NotFound)
+        {
+            await client.CreateKeyRingAsync(new CreateKeyRingRequest
+            {
+                ParentAsLocationName = LocationName.FromProjectLocation(keyRingName.ProjectId, keyRingName.LocationId),
+                KeyRingId = KmsKeyName.KeyRingId,
+                KeyRing = new KeyRing(),
+            });
+        }
+
+        var keyName = Google.Cloud.Kms.V1.CryptoKeyName.FromProjectLocationKeyRingCryptoKey(KmsKeyName.ProjectId, KmsKeyName.LocationId, KmsKeyName.KeyRingId, KmsKeyName.CryptoKeyId);
+        try
+        {
+            await client.GetCryptoKeyAsync(keyName);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.NotFound)
+        {
+            await client.CreateCryptoKeyAsync(new CreateCryptoKeyRequest
+            {
+                ParentAsKeyRingName = keyRingName,
+                CryptoKeyId = keyName.CryptoKeyId,
+                CryptoKey = new CryptoKey
+                {
+                    Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
+                },
+            });
         }
     }
 
