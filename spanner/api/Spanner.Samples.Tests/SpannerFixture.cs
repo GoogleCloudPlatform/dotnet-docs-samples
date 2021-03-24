@@ -40,7 +40,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public string EncryptedDatabaseId { get; } = $"my-enc-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string EncryptedBackupId { get; } = $"my-enc-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    public string EncryptedRestoreDatabaseId { get; } = $"my-enc-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    // 'restore' is abbreviated to prevent the name from becoming longer than 30 characters.
+    public string EncryptedRestoreDatabaseId { get; } = $"my-enc-r-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
 
     // These are intentionally kept on the instance to avoid the need to create a new encrypted database and backup for each run.
     public string FixedEncryptedDatabaseId { get; } = "fixed-enc-backup-db";
