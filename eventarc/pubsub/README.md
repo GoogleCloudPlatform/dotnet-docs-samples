@@ -1,4 +1,4 @@
-# Cloud Eventarc – Pub/Sub Events tutorial
+# Eventarc – Pub/Sub
 
 This sample shows how to create a service that processes Pub/Sub events.
 
