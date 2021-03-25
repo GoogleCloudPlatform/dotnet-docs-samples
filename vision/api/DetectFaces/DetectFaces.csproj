@@ -6,6 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.2.0" />
   </ItemGroup>
 </Project>

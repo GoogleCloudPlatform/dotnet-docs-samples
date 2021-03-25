@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.DevTools.Common" Version="2.0.0" />
-    <PackageReference Include="Google.Cloud.Logging.V2" Version="3.0.0" />
+    <PackageReference Include="Google.Cloud.Logging.V2" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>

@@ -7,6 +7,6 @@
     <Content Include="wakeupcat.jpg" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.2.0" />
   </ItemGroup>
 </Project>

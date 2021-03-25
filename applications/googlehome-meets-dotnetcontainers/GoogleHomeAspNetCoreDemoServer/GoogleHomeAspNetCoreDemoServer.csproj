@@ -10,19 +10,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Auth" Version="1.45.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.51.0" />
   
-    <PackageReference Include="Google.Cloud.Dialogflow.V2" Version="2.0.0" />
+    <PackageReference Include="Google.Cloud.Dialogflow.V2" Version="3.1.0" />
   
     <PackageReference Include="Google.Cloud.Translation.V2" Version="2.0.0" />
     
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.1" />
     <PackageReference Include="Grpc.Auth" Version="2.27.0" />
-    <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.45.0.1369" />
-    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="1.4.1" />
-    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.0.0" />
+    <PackageReference Include="Google.Apis.Customsearch.v1" Version="1.49.0.2084" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="2.1.0" />
+    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>
