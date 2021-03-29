@@ -1,6 +1,6 @@
-# Cloud Eventarc – Cloud Storage Events tutorial
+# Eventarc – Cloud Storage Events via Audit Logs
 
-This sample shows how to create a service that processes GCS events.
+This sample shows how to create a service that processes Cloud Storage events.
 
 ## Setup
 
