@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Admin.Database.V1;
+using System;
 using System.Threading.Tasks;
 using Xunit;
-using Google.Cloud.Spanner.Admin.Database.V1;
 
 /// <summary>
 /// Tests restoring a databases using customer managed encryption.
@@ -22,16 +23,19 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 [Collection(nameof(SpannerFixture))]
 public class RestoreDatabaseWithEncryptionKeyAsyncTest
 {
+    private readonly bool _runCmekBackupSampleTests;
     private readonly SpannerFixture _fixture;
 
     public RestoreDatabaseWithEncryptionKeyAsyncTest(SpannerFixture fixture)
     {
         _fixture = fixture;
+        bool.TryParse(Environment.GetEnvironmentVariable("RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS"), out _runCmekBackupSampleTests);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task TestRestoreDatabaseWithEncryptionKeyAsync()
     {
+        Skip.If(!_runCmekBackupSampleTests, "Spanner CMEK backup sample tests are disabled by default for performance reasons. Set the environment variable RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS=true to enable the test.");
         var sample = new RestoreDatabaseWithEncryptionAsyncSample();
         var database = await sample.RestoreDatabaseWithEncryptionAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedRestoreDatabaseId, _fixture.FixedEncryptedBackupId, _fixture.KmsKeyName);
         Assert.Equal(_fixture.KmsKeyName, CryptoKeyName.Parse(database.EncryptionConfig.KmsKeyName));
