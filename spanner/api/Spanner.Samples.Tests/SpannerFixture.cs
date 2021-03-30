@@ -38,6 +38,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string ToBeCancelledBackupId { get; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string RestoredDatabaseId { get; } = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
 
+    public bool RunCmekBackupSampleTests { get; private set; }
     public string EncryptedDatabaseId { get; } = $"my-enc-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string EncryptedBackupId { get; } = $"my-enc-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     // 'restore' is abbreviated to prevent the name from becoming longer than 30 characters.
@@ -59,6 +60,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public async Task InitializeAsync()
     {
+        bool.TryParse(Environment.GetEnvironmentVariable("RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS"), out var runCmekBackupSampleTests);
+        RunCmekBackupSampleTests = runCmekBackupSampleTests;
+
         ConnectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
         // Don't need to cleanup stale Backups and Databases when instance is new.
         var isExistingInstance = InitializeInstance();
@@ -69,7 +73,13 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
-        await InitializeEncryptedBackupAsync();
+
+        // Create encryption key for creating an encrypted database and optionally backing up and restoring an encrypted database.
+        await InitializeEncryptionKeys();
+        if (RunCmekBackupSampleTests)
+        {
+            await InitializeEncryptedBackupAsync();
+        }
     }
 
     public Task DisposeAsync()

@@ -22,19 +22,17 @@ using Xunit;
 [Collection(nameof(SpannerFixture))]
 public class CreateBackupWithEncryptionKeyAsyncTest
 {
-    private readonly bool _runCmekBackupSampleTests;
     private readonly SpannerFixture _fixture;
 
     public CreateBackupWithEncryptionKeyAsyncTest(SpannerFixture fixture)
     {
         _fixture = fixture;
-        bool.TryParse(Environment.GetEnvironmentVariable("RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS"), out _runCmekBackupSampleTests);
     }
 
     [SkippableFact]
     public async Task TestCreatBackupWithEncryptionKeyAsync()
     {
-        Skip.If(!_runCmekBackupSampleTests, "Spanner CMEK backup sample tests are disabled by default for performance reasons. Set the environment variable RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS=true to enable the test.");
+        Skip.If(!_fixture.RunCmekBackupSampleTests, "Spanner CMEK backup sample tests are disabled by default for performance reasons. Set the environment variable RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS=true to enable the test.");
         // Create a backup with a custom encryption key.
         var sample = new CreateBackupWithEncryptionKeyAsyncSample();
         var backup = await sample.CreateBackupWithEncryptionKeyAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedEncryptedDatabaseId, _fixture.EncryptedBackupId, _fixture.KmsKeyName);
