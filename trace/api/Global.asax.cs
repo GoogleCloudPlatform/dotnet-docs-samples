@@ -40,7 +40,7 @@ namespace Trace
             }
             // [END_EXCLUDE]
             base.Init();
-            TraceConfiguration traceConfig = TraceConfiguration
+            TraceOptions traceConfig = TraceOptions
                 .Create(bufferOptions: BufferOptions.NoBuffer());
             CloudTrace.Initialize(this, projectId, traceConfig);
         }
