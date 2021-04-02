@@ -32,7 +32,7 @@ public class CreateBackupWithEncryptionKeyAsyncTest
     [SkippableFact]
     public async Task TestCreatBackupWithEncryptionKeyAsync()
     {
-        Skip.If(!_fixture.RunCmekBackupSampleTests, "Spanner CMEK backup sample tests are disabled by default for performance reasons. Set the environment variable RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS=true to enable the test.");
+        Skip.If(!_fixture.RunCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
         // Create a backup with a custom encryption key.
         var sample = new CreateBackupWithEncryptionKeyAsyncSample();
         var backup = await sample.CreateBackupWithEncryptionKeyAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedEncryptedDatabaseId, _fixture.EncryptedBackupId, _fixture.KmsKeyName);
