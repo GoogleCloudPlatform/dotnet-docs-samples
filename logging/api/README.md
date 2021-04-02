@@ -1,6 +1,6 @@
-# Stackdriver Logging Sample
+# Cloud Logging Sample
 
-A sample demonstrating how to invoke Google Cloud Stackdriver Logging from C# using ASP.NET Core.
+A sample demonstrating how to invoke Google Cloud Logging from C# using ASP.NET Core.
 
 This sample requires [.NET Core 2.0](
     https://www.microsoft.com/net/core) or later.  That means using
