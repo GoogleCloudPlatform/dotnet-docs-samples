@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class UpdateDataWithNumericAsyncSample
         public SpannerNumeric Revenue { get; set; }
     }
 
-    public async Task UpdateDataWithNumericAsync(string projectId, string instanceId, string databaseId)
+    public async Task<int> UpdateDataWithNumericAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         List<Venue> venues = new List<Venue>
@@ -42,18 +42,19 @@ public class UpdateDataWithNumericAsyncSample
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
-        await Task.WhenAll(venues.Select(venue =>
-        {
-            // Update rows in the Venues table.
-            using var cmd = connection.CreateUpdateCommand("Venues", new SpannerParameterCollection
-            {
+        var affectedRows = await Task.WhenAll(venues.Select(venue =>
+          {
+              // Update rows in the Venues table.
+              using var cmd = connection.CreateUpdateCommand("Venues", new SpannerParameterCollection
+              {
                     { "VenueId", SpannerDbType.Int64, venue.VenueId },
                     { "Revenue", SpannerDbType.Numeric, venue.Revenue }
-            });
-            return cmd.ExecuteNonQueryAsync();
-        }));
+              });
+              return cmd.ExecuteNonQueryAsync();
+          }));
 
         Console.WriteLine("Data updated.");
+        return affectedRows.Sum();
     }
 }
 // [END spanner_update_data_with_numeric_column]

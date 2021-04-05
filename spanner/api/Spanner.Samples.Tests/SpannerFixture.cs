@@ -176,19 +176,34 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         // If the database has not been initialized, retry.
         CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
         InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+        InsertStructSampleDataAsyncSample insertStructSampleDataAsyncSample = new InsertStructSampleDataAsyncSample();
         AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
+        AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
         AddIndexAsyncSample addIndexAsyncSample = new AddIndexAsyncSample();
         AddStoringIndexAsyncSample addStoringIndexAsyncSample = new AddStoringIndexAsyncSample();
+        CreateTableWithDatatypesAsyncSample createTableWithDatatypesAsyncSample = new CreateTableWithDatatypesAsyncSample();
+        AddNumericColumnAsyncSample addNumericColumnAsyncSample = new AddNumericColumnAsyncSample();
+        InsertDatatypesDataAsyncSample insertDatatypesDataAsyncSample = new InsertDatatypesDataAsyncSample();
+        CreateTableWithTimestampColumnAsyncSample createTableWithTimestampColumnAsyncSample =
+            new CreateTableWithTimestampColumnAsyncSample();
         await createDatabaseAsyncSample.CreateDatabaseAsync(ProjectId, InstanceId, DatabaseId);
         await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, DatabaseId);
-        await InsertStructDataAsync();
+        insertStructSampleDataAsyncSample.InsertStructSampleDataAsync(ProjectId, InstanceId, DatabaseId).Wait();
         await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, DatabaseId);
-        await AddCommitTimestampAsync();
+        await addCommitTimestampAsyncSample.AddCommitTimestampAsync(ProjectId, InstanceId, DatabaseId);
         await addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId);
+        // Create a new table that includes supported datatypes.
+        await createTableWithDatatypesAsyncSample.CreateTableWithDatatypesAsync(ProjectId, InstanceId, DatabaseId);
+        // Add Numeric column
+        await addNumericColumnAsyncSample.AddNumericColumnAsync(ProjectId, InstanceId, DatabaseId);
+        // Write data to the new table.
+        await insertDatatypesDataAsyncSample.InsertDatatypesDataAsync(ProjectId, InstanceId, DatabaseId);
         // Add storing Index on table.
         await addStoringIndexAsyncSample.AddStoringIndexAsync(ProjectId, InstanceId, DatabaseId);
         // Update the value of MarketingBudgets.
         await RefillMarketingBudgetsAsync(300000, 300000);
+        // Create table with Timestamp column
+        await createTableWithTimestampColumnAsyncSample.CreateTableWithTimestampColumnAsync(ProjectId, InstanceId, DatabaseId);
     }
 
     private async Task InitializeBackupAsync()
@@ -332,114 +347,5 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                 });
             await cmd.ExecuteNonQueryAsync();
         }
-    }
-
-    public async Task CreateVenuesTableAndInsertDataAsync()
-    {
-        // Create connection to Cloud Spanner.
-        using var connection = new SpannerConnection(ConnectionString);
-
-        // Define create table statement for Venues.
-        string createTableStatement =
-        @"CREATE TABLE Venues (
-                 VenueId INT64 NOT NULL,
-                 VenueName STRING(1024),
-             ) PRIMARY KEY (VenueId)";
-
-        using var cmd = connection.CreateDdlCommand(createTableStatement);
-        await cmd.ExecuteNonQueryAsync();
-
-        List<Venue> venues = new List<Venue>
-        {
-            new Venue { VenueId = 4, VenueName = "Venue 4" },
-            new Venue { VenueId = 19, VenueName = "Venue 19" },
-            new Venue { VenueId = 42, VenueName = "Venue 42" },
-        };
-
-        await Task.WhenAll(venues.Select(venue =>
-        {
-            // Insert rows into the Venues table.
-            using var cmd = connection.CreateInsertCommand("Venues", new SpannerParameterCollection
-            {
-                { "VenueId", SpannerDbType.Int64, venue.VenueId },
-                { "VenueName", SpannerDbType.String, venue.VenueName }
-            });
-            return cmd.ExecuteNonQueryAsync();
-        }));
-    }
-
-    public async Task DeleteVenuesTable()
-    {
-        // Create connection to Cloud Spanner.
-        using var connection = new SpannerConnection(ConnectionString);
-
-        // Drop the Venues table.
-        using var cmd = connection.CreateDdlCommand(@"DROP TABLE Venues");
-        await cmd.ExecuteNonQueryAsync();
-    }
-
-    private class Venue
-    {
-        public int VenueId { get; set; }
-        public string VenueName { get; set; }
-    }
-
-    private async Task InsertStructDataAsync()
-    {
-        List<Singer> singers = new List<Singer>
-        {
-            new Singer { SingerId = 6, FirstName = "Elena", LastName = "Campbell" },
-            new Singer { SingerId = 7, FirstName = "Gabriel", LastName = "Wright" },
-            new Singer { SingerId = 8, FirstName = "Benjamin", LastName = "Martinez" },
-            new Singer { SingerId = 9, FirstName = "Hannah", LastName = "Harris" }
-        };
-
-        using var connection = new SpannerConnection(ConnectionString);
-        await connection.OpenAsync();
-
-        var rows = await Task.WhenAll(singers.Select(singer =>
-        {
-            var cmd = connection.CreateInsertCommand("Singers",
-              new SpannerParameterCollection
-              {
-                  { "SingerId", SpannerDbType.Int64, singer.SingerId },
-                  { "FirstName", SpannerDbType.String, singer.FirstName },
-                  { "LastName", SpannerDbType.String, singer.LastName }
-              });
-
-            return cmd.ExecuteNonQueryAsync();
-        }));
-    }
-
-    private async Task AddCommitTimestampAsync()
-    {
-        string alterStatement = "ALTER TABLE Albums ADD COLUMN LastUpdateTime TIMESTAMP OPTIONS (allow_commit_timestamp=true)";
-        using var connection = new SpannerConnection(ConnectionString);
-        var updateCmd = connection.CreateDdlCommand(alterStatement);
-        await updateCmd.ExecuteNonQueryAsync();
-    }
-
-    private class Singer
-    {
-        public int SingerId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-    }
-
-    public async Task CreatePerformancesTableWithTimestampColumnAsync()
-    {
-        using var connection = new SpannerConnection(ConnectionString);
-        // Define create table statement for table with commit timestamp column.
-        string createTableStatement =
-        @"CREATE TABLE Performances (
-                    SingerId       INT64 NOT NULL,
-                    VenueId        INT64 NOT NULL,
-                    EventDate      Date,
-                    Revenue        INT64,
-                    LastUpdateTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)
-                ) PRIMARY KEY (SingerId, VenueId, EventDate),
-                    INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
-        var cmd = connection.CreateDdlCommand(createTableStatement);
-        await cmd.ExecuteNonQueryAsync();
     }
 }
