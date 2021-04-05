@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class QueryWithDateAsyncSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Create a Date object to use for querying.
         DateTime exampleDate = new DateTime(2019, 01, 01);
-        
+
         using var connection = new SpannerConnection(connectionString);
         var cmd = connection.CreateSelectCommand("SELECT VenueId, VenueName, LastContactDate FROM Venues WHERE LastContactDate < @ExampleDate");
         cmd.Parameters.Add("ExampleDate", SpannerDbType.Date, exampleDate);

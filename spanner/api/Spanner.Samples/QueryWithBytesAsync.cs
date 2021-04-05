@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class QueryWithBytesAsyncSample
         // Create a Bytes array to use for querying.
         string sampleText = "Hello World 1";
         byte[] exampleBytes = Encoding.UTF8.GetBytes(sampleText);
-        
+
         using var connection = new SpannerConnection(connectionString);
         var cmd = connection.CreateSelectCommand("SELECT VenueId, VenueName FROM Venues WHERE VenueInfo = @ExampleBytes");
         cmd.Parameters.Add("ExampleBytes", SpannerDbType.Bytes, exampleBytes);
