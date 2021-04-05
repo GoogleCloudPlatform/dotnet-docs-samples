@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START spanner_retry_strategy]
+
 using System;
 using System.Threading;
 
-// [START spanner_retry_strategy]
 public class RetryRobot
 {
     public TimeSpan FirstRetryDelay { get; set; } = TimeSpan.FromSeconds(1000);

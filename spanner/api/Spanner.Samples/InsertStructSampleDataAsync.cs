@@ -32,10 +32,10 @@ public class InsertStructSampleDataAsyncSample
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         List<Singer> singers = new List<Singer> {
-            new Singer {SingerId = 6, FirstName = "Elena", LastName = "Campbell"},
-            new Singer {SingerId = 7, FirstName = "Gabriel", LastName = "Wright"},
-            new Singer {SingerId = 8, FirstName = "Benjamin", LastName = "Martinez"},
-            new Singer {SingerId = 9, FirstName = "Hannah", LastName = "Harris"}
+            new Singer { SingerId = 6, FirstName = "Elena", LastName = "Campbell" },
+            new Singer { SingerId = 7, FirstName = "Gabriel", LastName = "Wright" },
+            new Singer { SingerId = 8, FirstName = "Benjamin", LastName = "Martinez" },
+            new Singer { SingerId = 9, FirstName = "Hannah", LastName = "Harris" }
         };
 
         using var connection = new SpannerConnection(connectionString);
@@ -45,14 +45,10 @@ public class InsertStructSampleDataAsyncSample
         {
             var cmd = connection.CreateInsertCommand("Singers",
                 new SpannerParameterCollection {
-                    {"SingerId", SpannerDbType.Int64},
-                    {"FirstName", SpannerDbType.String},
-                    {"LastName", SpannerDbType.String}
+                    { "SingerId", SpannerDbType.Int64, singer.SingerId },
+                    { "FirstName", SpannerDbType.String, singer.FirstName },
+                    { "LastName", SpannerDbType.String, singer.LastName }
                 });
-
-            cmd.Parameters["SingerId"].Value = singer.SingerId;
-            cmd.Parameters["FirstName"].Value = singer.FirstName;
-            cmd.Parameters["LastName"].Value = singer.LastName;
             return cmd.ExecuteNonQueryAsync();
         }));
         return rows.Sum();

@@ -60,19 +60,24 @@ public class InsertDatatypesDataAsyncSample
                 DateTime.Parse("2020-10-01"),
                 DateTime.Parse("2020-10-07")});
         List<Venue> venues = new List<Venue> {
-                new Venue {VenueId = 4, VenueName = "Venue 4", VenueInfo = exampleBytes1,
+                new Venue {
+                    VenueId = 4, VenueName = "Venue 4", VenueInfo = exampleBytes1,
                     Capacity = 1800, AvailableDates = availableDates1,
                     LastContactDate = DateTime.Parse("2018-09-02"),
-                    OutdoorVenue = false, PopularityScore = 0.85543f},
-                new Venue {VenueId = 19, VenueName = "Venue 19", VenueInfo = exampleBytes2,
+                    OutdoorVenue = false, PopularityScore = 0.85543f
+                },
+                new Venue {
+                    VenueId = 19, VenueName = "Venue 19", VenueInfo = exampleBytes2,
                     Capacity = 6300, AvailableDates = availableDates2,
                     LastContactDate = DateTime.Parse("2019-01-15"),
-                    OutdoorVenue = true, PopularityScore = 0.98716f},
-                new Venue {VenueId = 42, VenueName = "Venue 42", VenueInfo = exampleBytes3,
+                    OutdoorVenue = true, PopularityScore = 0.98716f
+                },
+                new Venue {
+                    VenueId = 42, VenueName = "Venue 42", VenueInfo = exampleBytes3,
                     Capacity = 3000, AvailableDates = availableDates3,
                     LastContactDate = DateTime.Parse("2018-10-01"),
-                    OutdoorVenue = false, PopularityScore = 0.72598f},
-            };
+                    OutdoorVenue = false, PopularityScore = 0.72598f
+                }};
 
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
@@ -81,26 +86,16 @@ public class InsertDatatypesDataAsyncSample
         {
             var cmd = connection.CreateInsertCommand("Venues",
             new SpannerParameterCollection {
-                {"VenueId", SpannerDbType.Int64},
-                {"VenueName", SpannerDbType.String},
-                {"VenueInfo", SpannerDbType.Bytes},
-                {"Capacity", SpannerDbType.Int64},
-                {"AvailableDates", SpannerDbType.ArrayOf(SpannerDbType.Date)},
-                {"LastContactDate", SpannerDbType.Date},
-                {"OutdoorVenue", SpannerDbType.Bool},
-                {"PopularityScore", SpannerDbType.Float64},
-                {"LastUpdateTime", SpannerDbType.Timestamp},
+                { "VenueId", SpannerDbType.Int64, venue.VenueId },
+                { "VenueName", SpannerDbType.String, venue.VenueName },
+                { "VenueInfo", SpannerDbType.Bytes, venue.VenueInfo },
+                { "Capacity", SpannerDbType.Int64, venue.Capacity },
+                { "AvailableDates", SpannerDbType.ArrayOf(SpannerDbType.Date), venue.AvailableDates },
+                { "LastContactDate", SpannerDbType.Date, venue.LastContactDate },
+                { "OutdoorVenue", SpannerDbType.Bool,  venue.OutdoorVenue },
+                { "PopularityScore", SpannerDbType.Float64, venue.PopularityScore },
+                { "LastUpdateTime", SpannerDbType.Timestamp, SpannerParameter.CommitTimestamp },
             });
-
-            cmd.Parameters["VenueId"].Value = venue.VenueId;
-            cmd.Parameters["VenueName"].Value = venue.VenueName;
-            cmd.Parameters["VenueInfo"].Value = venue.VenueInfo;
-            cmd.Parameters["Capacity"].Value = venue.Capacity;
-            cmd.Parameters["AvailableDates"].Value = venue.AvailableDates;
-            cmd.Parameters["LastContactDate"].Value = venue.LastContactDate;
-            cmd.Parameters["OutdoorVenue"].Value = venue.OutdoorVenue;
-            cmd.Parameters["PopularityScore"].Value = venue.PopularityScore;
-            cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
             return cmd.ExecuteNonQueryAsync();
         }));
     }
