@@ -188,7 +188,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             new CreateTableWithTimestampColumnAsyncSample();
         await createDatabaseAsyncSample.CreateDatabaseAsync(ProjectId, InstanceId, DatabaseId);
         await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, DatabaseId);
-        insertStructSampleDataAsyncSample.InsertStructSampleDataAsync(ProjectId, InstanceId, DatabaseId).Wait();
+        await insertStructSampleDataAsyncSample.InsertStructSampleDataAsync(ProjectId, InstanceId, DatabaseId);
         await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, DatabaseId);
         await addCommitTimestampAsyncSample.AddCommitTimestampAsync(ProjectId, InstanceId, DatabaseId);
         await addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId);
