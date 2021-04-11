@@ -1,0 +1,28 @@
+# Registering the Azure Active Directory applications and updating the configuration files for this sample using PowerShell scripts
+
+## Overview
+
+### Quick summary
+
+1. On Windows run PowerShell and navigate to the root of the cloned directory
+1. In PowerShell run: -T <test> -S <script> [<jobs>:<build>]
+   ```PowerShell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+   ```
+1. Run the script to create your Azure AD application and configure the code of the sample application accordinly. (Other ways of running the scripts are described below)
+   ```PowerShell
+   .\AppCreationScripts\Configure.ps1
+   ```
+1. Open the Visual Studio solution and click start
+
+### More details
+
+The following paragraphs:
+
+- [Present the scripts](#presentation-of-the-scripts) and explain their [usage patterns](#usage-pattern-for-tests-and-devops-scenarios) for test and DevOps scenarios.
+- Explain the [pre-requisites](#pre-requisites)
+- Explain [four ways of running the scripts](#four-ways-to-run-the-script):
+  - [Interactively](#option-1-interactive) to create the app in your home tenant
+  - [Passing credentials](#option-2-non-interactive) to create the app in your home tenant
+  - [Interactively in a specific tenant](#option-3-interactive-but-create-apps-in-a-specified-tenant)
+  - [Passing credentials in a specific tenant](#option-4-non-interactive-and-create-apps-in-a-specified-tenant)
