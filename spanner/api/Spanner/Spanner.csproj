@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Spanner.Data" Version="3.0.0" />
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Google.Cloud.Spanner.Data" Version="3.6.0" />
+    <PackageReference Include="log4net" Version="2.0.10" />
   </ItemGroup>
 
   <ItemGroup>

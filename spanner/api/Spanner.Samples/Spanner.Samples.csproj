@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Spanner.Data" Version="3.2.0" />
+    <PackageReference Include="Google.Cloud.Spanner.Data" Version="3.6.0" />
   </ItemGroup>
 
 </Project>

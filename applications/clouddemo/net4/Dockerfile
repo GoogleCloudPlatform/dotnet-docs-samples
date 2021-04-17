@@ -19,7 +19,7 @@
 # under the License.
 #
 
-FROM microsoft/iis
+FROM mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019
 EXPOSE 80
 SHELL ["powershell", "-command"]
 
