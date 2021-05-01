@@ -14,13 +14,12 @@
 
 // [START dlp_get_job]
 
-using System;
 using Google.Cloud.Dlp.V2;
+using System;
 
 public class JobsGet
 {
-    //string projectId, string jobId
-    public static DlpJob GetJob(string jobName)
+    public static DlpJob GetDlpJob(string jobName)
     {
         var dlp = DlpServiceClient.Create();
 

@@ -11,17 +11,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Google.Cloud.Dlp.V2;
-using System.IO;
 using Xunit;
 
 namespace GoogleCloudSamples
 {
     public class JobsGetTests : IClassFixture<DlpTestFixture>
     {
+        private RetryRobot TestRetryRobot { get; } = new RetryRobot();
         private DlpTestFixture Fixture { get; }
         public JobsGetTests(DlpTestFixture fixture)
         {
@@ -29,18 +26,16 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void TestGetJob()
+        public void TestGetDlpJob()
         {
-            using var randomBucketFixture = new RandomBucketFixture();
-            using var bucketCollector = new BucketCollector(randomBucketFixture.BucketName);
-            var bucketName = randomBucketFixture.BucketName;
-            var fileName = Guid.NewGuid().ToString();
-            var objectName = $"gs://{bucketName}/{fileName}";
-            bucketCollector.CopyToBucket(Path.Combine(Fixture.ResourcePath, "dates-input.csv"), fileName);
-            var job = JobsCreate.CreateJob(Fixture.ProjectId, objectName);
+            var dlp = DlpServiceClient.Create();
+            var dlpJob = dlp.CreateDlpJob(Fixture.GetTestRiskAnalysisJobRequest());
 
-            Assert.Equal(job, JobsGet.GetJob(job.Name)); 
-
+            TestRetryRobot.ShouldRetry = ex => true;
+            TestRetryRobot.Eventually(() =>
+            {
+                Assert.Equal(dlpJob, JobsGet.GetDlpJob(dlpJob.Name));
+            });
         }
     }
 }
