@@ -32,6 +32,7 @@ public class BucketDisableVersioningTest
 
         // Versioning is disabled by default, so Enable versioning
         bucketEnableVersioningSample.BucketEnableVersioning(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Disable versioning
         var bucket = bucketDisableVersioningSample.BucketDisableVersioning(_bucketFixture.BucketNameGeneric);

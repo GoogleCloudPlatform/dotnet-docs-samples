@@ -32,9 +32,11 @@ public class BucketEnableVersioningTest
 
         // Enable versioning
         var bucket = bucketEnableVersioningSample.BucketEnableVersioning(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
         Assert.True(bucket.Versioning.Enabled);
 
         // Then disable versioning
         bucketDisableVersioningSample.BucketDisableVersioning(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

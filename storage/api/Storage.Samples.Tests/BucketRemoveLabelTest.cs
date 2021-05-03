@@ -35,9 +35,11 @@ public class BucketRemoveLabelTest
 
         // Add Label
         bucketAddLabelSample.BucketAddLabel(_bucketFixture.BucketNameGeneric, labelKey, labelValue);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove Label
         var bucket = bucketRemoveLabelSample.BucketRemoveLabel(_bucketFixture.BucketNameGeneric, labelKey);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
         Assert.Null(bucket.Labels);
     }
 }

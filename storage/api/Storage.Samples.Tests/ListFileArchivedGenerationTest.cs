@@ -54,7 +54,6 @@ public class ListFileArchivedGenerationTest
 
             Assert.Equal(2, objects.Count(a => a.Name == objectName));
 
-            // For garbage collection in finally
             var testFiles = objects.Where(a => a.Name == objectName).ToList();
             _bucketFixture.CollectArchivedFiles(_bucketFixture.BucketNameGeneric, objectName, testFiles[0].Generation);
             _bucketFixture.CollectArchivedFiles(_bucketFixture.BucketNameGeneric, objectName, testFiles[1].Generation);

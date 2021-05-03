@@ -32,6 +32,7 @@ public class BucketAddCorsConfigurationTest
 
         // Add Cors Configuration
         var bucket = bucketAddCorsConfigurationSample.BucketAddCorsConfiguration(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         Assert.Equal("*", bucket.Cors[0].Origin[0]);
         Assert.Equal("PUT", bucket.Cors[0].Method[0]);

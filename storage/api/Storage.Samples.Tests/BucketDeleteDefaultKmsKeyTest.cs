@@ -38,9 +38,10 @@ public class BucketDeleteDefaultKmsKeyTest
 
         // Remove default key
         bucketDeleteDefaultKmsKeySample.BucketDeleteDefaultKmsKey(_bucketFixture.BucketNameRegional);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Verify removal
         var bucketMetadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketNameRegional);
-        Assert.NotEqual(_bucketFixture.KmsKeyName, bucketMetadata.Encryption.DefaultKmsKeyName);
+        Assert.Null(bucketMetadata.Encryption.DefaultKmsKeyName);
     }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
@@ -29,6 +30,7 @@ public class ObjectRotateEncryptionKeyTest
     {
         GenerateEncryptionKeySample generateEncryptionKeySample = new GenerateEncryptionKeySample();
         UploadEncryptedFileSample uploadEncryptedFileSample = new UploadEncryptedFileSample();
+        DownloadEncryptedFileSample downloadEncryptedFileSample = new DownloadEncryptedFileSample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
         ObjectRotateEncryptionKeySample objectRotateEncryptionKeySample = new ObjectRotateEncryptionKeySample();
 
@@ -39,11 +41,12 @@ public class ObjectRotateEncryptionKeyTest
 
         uploadEncryptedFileSample.UploadEncryptedFile(currentKey, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect(objectName));
 
-        // Change key type to Cmek
+        // Rotate key
         objectRotateEncryptionKeySample.ObjectRotateEncryptionKey(_bucketFixture.BucketNameGeneric, objectName, currentKey, newKey);
 
-        // Verify Kms key name
-        var obj = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, objectName);
-        Assert.Equal(_bucketFixture.KmsKeyName, obj.KmsKeyName);
+        // Download with new key to verify key has changed
+        downloadEncryptedFileSample.DownloadEncryptedFile(newKey, _bucketFixture.BucketNameGeneric, objectName, "Downloaded-encrypted-object.txt");
+        Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("Downloaded-encrypted-object.txt"));
+        File.Delete("Downloaded-encrypted-object.txt");
     }
 }

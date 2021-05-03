@@ -31,7 +31,7 @@ public class BucketDeleteDefaultKmsKeySample
         }
         else
         {
-            bucket.Encryption.DefaultKmsKeyName = string.Empty;
+            bucket.Encryption.DefaultKmsKeyName = null;
             bucket = storage.UpdateBucket(bucket);
             Console.WriteLine($"Default KMS key was removed from {bucketName}. ");
         }

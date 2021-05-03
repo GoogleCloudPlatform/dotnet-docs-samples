@@ -33,6 +33,7 @@ public class BucketWebsiteConfigurationTest
         var notFoundPage = "404.html";
 
         var bucket = bucketWebsiteConfigurationSample.BucketWebsiteConfiguration(_bucketFixture.BucketNameGeneric, mainPageSuffix, notFoundPage);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         Assert.Equal(mainPageSuffix, bucket.Website.MainPageSuffix);
         Assert.Equal(notFoundPage, bucket.Website.NotFoundPage);

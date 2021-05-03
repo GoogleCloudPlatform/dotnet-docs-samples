@@ -32,9 +32,11 @@ public class BucketRemoveCorsConfigurationTest
 
         // Add Cors Configuration
         bucketAddCorsConfigurationSample.BucketAddCorsConfiguration(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove Cors Configurations
         var bucket = bucketRemoveCorsConfigurationSample.BucketRemoveCorsConfiguration(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
         Assert.Null(bucket.Cors);
     }
 }

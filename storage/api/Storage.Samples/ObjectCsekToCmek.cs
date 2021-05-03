@@ -24,7 +24,7 @@ public class ObjectCsekToCmekSample
         string projectId = "your-project-id",
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name",
-        string currrentEncryKey = "TIbv/fjexq+VmtXzAlc63J4z5kFmWJ6NdAPQulQBT7g=",
+        string currrentEncryptionKey = "TIbv/fjexq+VmtXzAlc63J4z5kFmWJ6NdAPQulQBT7g=",
         string keyLocation = "us-west1",
         string kmsKeyRing = "kms-key-ring",
         string kmsKeyName = "key-name")
@@ -39,7 +39,7 @@ public class ObjectCsekToCmekSample
             new DownloadObjectOptions()
             {
                 EncryptionKey = EncryptionKey.Create(
-                    Convert.FromBase64String(currrentEncryKey))
+                    Convert.FromBase64String(currrentEncryptionKey))
             });
 
         outputStream.Position = 0;

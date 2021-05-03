@@ -23,25 +23,22 @@ public class ObjectRotateEncryptionKeySample
     public void ObjectRotateEncryptionKey(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name",
-        string currrentEncryKey = "TIbv/fjexq+VmtXzAlc63J4z5kFmWJ6NdAPQulQBT7g=",
-        string newEncrykey = "ARbt/judaq+VmtXzAsc83J4z5kFmWJ6NdAPQuleuB7g=")
+        string currrentEncryptionKey = "TIbv/fjexq+VmtXzAlc63J4z5kFmWJ6NdAPQulQBT7g=",
+        string newEncryptionKey = "ARbt/judaq+VmtXzAsc83J4z5kFmWJ6NdAPQuleuB7g=")
     {
         var storage = StorageClient.Create();
 
         using var outputStream = new MemoryStream();
-        storage.DownloadObject(bucketName, objectName, outputStream,
-            new DownloadObjectOptions()
+        storage.DownloadObject(bucketName, objectName, outputStream, new DownloadObjectOptions()
             {
-                EncryptionKey = EncryptionKey.Create(
-                    Convert.FromBase64String(currrentEncryKey))
+                EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(currrentEncryptionKey))
             });
 
         outputStream.Position = 0;
 
         storage.UploadObject(bucketName, objectName, null, outputStream, new UploadObjectOptions()
         {
-            EncryptionKey = EncryptionKey.Create(
-                    Convert.FromBase64String(newEncrykey))
+            EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(newEncryptionKey))
         });
 
         Console.WriteLine($"Rotated encryption key for object  {objectName} in bucket {bucketName}");
