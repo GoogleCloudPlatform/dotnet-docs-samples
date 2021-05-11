@@ -1,5 +1,5 @@
 # start with a powershell image.
-FROM microsoft/powershell
+FROM mcr.microsoft.com/powershell
 
 RUN apt-get update
 RUN apt-get install wget
