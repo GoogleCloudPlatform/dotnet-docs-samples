@@ -32,6 +32,7 @@ public class QueryDataWithJsonParameterAsyncSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
+        // If you are using .NET Core 3.1 or later, you can use System.Text.Json for serialization instead.
         var jsonValue = JsonConvert.SerializeObject(new
         {
             rating = 9,

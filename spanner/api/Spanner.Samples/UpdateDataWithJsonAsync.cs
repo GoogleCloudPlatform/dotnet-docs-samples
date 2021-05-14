@@ -34,6 +34,7 @@ public class UpdateDataWithJsonAsyncSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         List<Venue> venues = new List<Venue>
         {
+            // If you are using .NET Core 3.1 or later, you can use System.Text.Json for serialization instead.
             new Venue { VenueId = 19, VenueDetails = JsonConvert.SerializeObject(new
             {
                 rating = 9,
