@@ -15,6 +15,7 @@
 // [START spanner_query_with_json_parameter]
 
 using Google.Cloud.Spanner.Data;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -31,10 +32,11 @@ public class QueryDataWithJsonParameterAsyncSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
         using var connection = new SpannerConnection(connectionString);
-        var jsonValue = @"{
-                            ""rating"": ""9"",
-                            ""description"": ""This is a nice place.""
-                          }";
+        var jsonValue = JsonConvert.SerializeObject(new
+        {
+            rating = 9,
+            description = "This is a nice place.",
+        }, Formatting.None);
         // Get all venues with description 'This is a nice place'.
         using var cmd = connection.CreateSelectCommand(
             @"SELECT VenueId, VenueDetails
