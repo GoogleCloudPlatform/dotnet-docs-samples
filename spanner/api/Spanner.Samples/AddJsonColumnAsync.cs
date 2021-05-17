@@ -22,7 +22,7 @@ public class AddJsonColumnAsyncSample
 {
     public async Task AddJsonColumnAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId};Host=staging-wrenchworks.sandbox.googleapis.com";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         string alterStatement = "ALTER TABLE Venues ADD COLUMN VenueDetails JSON";
 
         using var connection = new SpannerConnection(connectionString);

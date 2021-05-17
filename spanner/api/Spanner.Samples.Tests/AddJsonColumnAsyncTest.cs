@@ -16,29 +16,22 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class QueryDataWithJsonParameterTest
+public class AddJsonColumnAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public QueryDataWithJsonParameterTest(SpannerFixture spannerFixture)
+    public AddJsonColumnAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestQueryDataWithJsonParameter()
+    public async Task TestAddJsonColumnAsync()
     {
         await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
 
-        var addColumnSample = new AddJsonColumnAsyncSample();
+        AddJsonColumnAsyncSample addColumnSample = new AddJsonColumnAsyncSample();
         await addColumnSample.AddJsonColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        var updateJsonSample = new UpdateDataWithJsonAsyncSample();
-        await updateJsonSample.UpdateDataWithJsonAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        var queryJsonSample = new QueryDataWithJsonParameterAsyncSample();
-        var venues = await queryJsonSample.QueryDataWithJsonParameterAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(venues, v => v.VenueId == 19);
 
         await _spannerFixture.DeleteVenuesTable();
     }

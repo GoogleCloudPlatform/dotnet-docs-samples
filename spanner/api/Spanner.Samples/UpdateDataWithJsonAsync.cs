@@ -31,97 +31,52 @@ public class UpdateDataWithJsonAsyncSample
 
     public async Task UpdateDataWithJsonAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         List<Venue> venues = new List<Venue>
         {
             // If you are using .NET Core 3.1 or later, you can use System.Text.Json for serialization instead.
-            new Venue { VenueId = 19, VenueDetails = JsonConvert.SerializeObject(new
+            new Venue
             {
-                rating = 9,
-                description = "This is a nice place.",
-            }, Formatting.None) },
-            new Venue { VenueId = 4, VenueDetails = JsonConvert.SerializeObject(new object[]
-            {
-                new
+                VenueId = 19,
+                VenueDetails = JsonConvert.SerializeObject(new
                 {
-                    wing1 = new
+                    rating = 9,
+                    open = true,
+                })
+            },
+            new Venue
+            {
+                VenueId = 4,
+                VenueDetails = JsonConvert.SerializeObject(new object[]
+                {
+                    new
                     {
-                        description = "the first wing",
-                        size = 5,
+                        name = (string) null,
+                        open = true,
                     },
-                },
-                new
-                {
-                    wing2 = new
+                    new
                     {
-                        description = "the second wing",
-                        size = 10,
-                    }
-                },
-                new
-                {
-                    main_hall = new
-                    {
-                        description = "this is the biggest space",
-                        size = 200,
-                    }
-                },
-            }, Formatting.None) },
-            new Venue { VenueId = 42, VenueDetails = JsonConvert.SerializeObject(new
-            {
-                id = "central123",
-                name = "Central Park",
-                description = "🏞∮πρότερονแผ่นดินฮั่นเสื่อมሰማይᚻᛖ",
-                location = new
-                {
-                    address = "59th St to 110th St",
-                    crossStreet = "5th Ave to Central Park West",
-                    lat = 40.78408342593807,
-                    lng = -73.96485328674316,
-                    postalCode = 10028,
-                    cc = "US",
-                    city = "New York",
-                    state = "NY",
-                    country = "United States",
-                    formattedAddress = new string[]
-                    {
-                        "59th St to 110th St(5th Ave to Central Park West)",
-                        "New York, NY 10028",
-                        "United States"
+                        name = "room 2",
+                        open = false,
                     },
-                },
-                hours = new
+                })
+            },
+            new Venue
+            {
+                VenueId = 42,
+                VenueDetails = JsonConvert.SerializeObject(new
                 {
-                    status = "Likely open",
-                    isOpen = true,
-                    isLocalHoliday = false,
-                    timeframes = new object []
+                    name = (string) null,
+                    open = new
                     {
-                        new
-                        {
-                            days = "Tue–Thu",
-                            open = new object[] { new { time = "Noon–8:00PM"} },
-                        },
-                        new
-                        {
-                            days = "Fri",
-                            open = new object[] { new { time = "11:00 AM–7:00 PM" } },
-                        },
-                        new
-                        {
-                            days = "Sat",
-                            open = new object[] { new { time = "8:00 AM–8:00PM" } },
-                        },
-                        new
-                        {
-                            days = "Sun",
-                            open = new object[] { new { time = "8:00 AM–7:00 PM" } },
-                        }
-                    }
-                }
-            }, Formatting.None) },
+                        Monday = true,
+                        Tuesday = false,
+                    },
+                    tags = new string[] {"large", "airy" },
+                }),
+            },
         };
         // Create connection to Cloud Spanner.
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 

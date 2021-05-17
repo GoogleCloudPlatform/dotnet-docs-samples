@@ -33,16 +33,12 @@ public class QueryDataWithJsonParameterAsyncSample
 
         using var connection = new SpannerConnection(connectionString);
         // If you are using .NET Core 3.1 or later, you can use System.Text.Json for serialization instead.
-        var jsonValue = JsonConvert.SerializeObject(new
-        {
-            rating = 9,
-            description = "This is a nice place.",
-        }, Formatting.None);
-        // Get all venues with description 'This is a nice place'.
+        var jsonValue = JsonConvert.SerializeObject(new { rating = 9 });
+        // Get all venues with rating 9.
         using var cmd = connection.CreateSelectCommand(
             @"SELECT VenueId, VenueDetails
               FROM Venues
-              WHERE JSON_VALUE(VenueDetails, '$.description') = JSON_VALUE(@details, '$.description')",
+              WHERE JSON_VALUE(VenueDetails, '$.rating') = JSON_VALUE(@details, '$.rating')",
             new SpannerParameterCollection
             {
                 { "details", SpannerDbType.Json, jsonValue }

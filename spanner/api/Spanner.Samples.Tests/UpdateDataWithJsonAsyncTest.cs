@@ -16,17 +16,17 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateDataWithJsonTest
+public class UpdateDataWithJsonAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateDataWithJsonTest(SpannerFixture spannerFixture)
+    public UpdateDataWithJsonAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateDataWithJson()
+    public async Task TestUpdateDataWithJsonAsync()
     {
         await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
 
