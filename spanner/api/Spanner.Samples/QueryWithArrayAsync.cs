@@ -31,16 +31,19 @@ public class QueryWithArrayAsyncSample
     public async Task<List<Venue>> QueryWithArrayAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        // Create a list array of dates to use for querying.
-        var exampleArray = new List<DateTime>();
-        exampleArray.InsertRange(0, new DateTime[] { DateTime.Parse("2020-10-01"), DateTime.Parse("2020-11-01") });
+        // Initialize a list of dates to use for querying.
+        var exampleList = new List<DateTime>
+        {
+            DateTime.Parse("2020-10-01"),
+            DateTime.Parse("2020-11-01")
+        };
 
         using var connection = new SpannerConnection(connectionString);
         var cmd = connection.CreateSelectCommand(
             "SELECT VenueId, VenueName, AvailableDate FROM Venues v, "
             + "UNNEST(v.AvailableDates) as AvailableDate "
             + "WHERE AvailableDate in UNNEST(@ExampleArray)");
-        cmd.Parameters.Add("ExampleArray", SpannerDbType.ArrayOf(SpannerDbType.Date), exampleArray);
+        cmd.Parameters.Add("ExampleArray", SpannerDbType.ArrayOf(SpannerDbType.Date), exampleList);
 
         var venues = new List<Venue>();
         using var reader = await cmd.ExecuteReaderAsync();

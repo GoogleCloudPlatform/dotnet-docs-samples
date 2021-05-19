@@ -31,7 +31,7 @@ public class QueryWithTimestampAsyncSample
     public async Task<List<Venue>> QueryWithTimestampAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        // Create a DateTime timestamp object to use for querying.
+        // Initialize a DateTime timestamp variable to use for querying.
         DateTime exampleTimestamp = DateTime.Now;
 
         using var connection = new SpannerConnection(connectionString);

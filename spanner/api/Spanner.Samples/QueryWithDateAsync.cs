@@ -31,7 +31,7 @@ public class QueryWithDateAsyncSample
     public async Task<List<Venue>> QueryWithDateAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        // Create a Date object to use for querying.
+        // Initialize a Date variable to use for querying.
         DateTime exampleDate = new DateTime(2019, 01, 01);
 
         using var connection = new SpannerConnection(connectionString);

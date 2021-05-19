@@ -30,7 +30,7 @@ public class QueryWithFloatAsyncSample
     public async Task<List<Venue>> QueryWithFloatAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        // Create a Float object to use for querying.
+        // Initialize a float variable to use for querying.
         float exampleFloat = 0.8f;
 
         using var connection = new SpannerConnection(connectionString);

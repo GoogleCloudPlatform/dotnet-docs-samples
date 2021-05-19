@@ -30,7 +30,7 @@ public class QueryWithBytesAsyncSample
     public async Task<List<Venue>> QueryWithBytesAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        // Create a Bytes array to use for querying.
+        // Initialize a Bytes array to use for querying.
         string sampleText = "Hello World 1";
         byte[] exampleBytes = Encoding.UTF8.GetBytes(sampleText);
 

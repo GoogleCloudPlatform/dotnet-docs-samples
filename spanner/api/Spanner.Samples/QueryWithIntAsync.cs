@@ -15,7 +15,6 @@
 // [START spanner_query_with_int_parameter]
 
 using Google.Cloud.Spanner.Data;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -31,12 +30,12 @@ public class QueryWithIntAsyncSample
     public async Task<List<Venue>> QueryWithIntAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        // Create a Int64 object to use for querying.
-        Int64 exampleInt = 3000;
+        // Initialize a long variable to use for querying.
+        long exampleValue = 3000;
 
         using var connection = new SpannerConnection(connectionString);
-        var cmd = connection.CreateSelectCommand("SELECT VenueId, VenueName, Capacity FROM Venues WHERE Capacity >= @ExampleInt");
-        cmd.Parameters.Add("ExampleInt", SpannerDbType.Int64, exampleInt);
+        var cmd = connection.CreateSelectCommand("SELECT VenueId, VenueName, Capacity FROM Venues WHERE Capacity >= @ExampleValue");
+        cmd.Parameters.Add("ExampleValue", SpannerDbType.Int64, exampleValue);
 
         var venues = new List<Venue>();
         using var reader = await cmd.ExecuteReaderAsync();

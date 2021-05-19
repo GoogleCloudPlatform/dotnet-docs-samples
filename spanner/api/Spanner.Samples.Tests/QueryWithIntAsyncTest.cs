@@ -29,7 +29,7 @@ public class QueryWithIntAsyncTest
     public async Task TestQueryWithIntAsync()
     {
         QueryWithIntAsyncSample queryWithIntAsyncSample = new QueryWithIntAsyncSample();
-        await queryWithIntAsyncSample.QueryWithIntAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.True(true);
+        var venues = await queryWithIntAsyncSample.QueryWithIntAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Contains(venues, v => v.Capacity >= 3000);
     }
 }

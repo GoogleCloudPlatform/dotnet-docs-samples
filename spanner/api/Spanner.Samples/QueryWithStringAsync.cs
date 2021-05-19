@@ -29,7 +29,7 @@ public class QueryWithStringAsyncSample
     public async Task<List<Venue>> QueryWithStringAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        // Create a String object to use for querying.
+        // Initialize a string variable to use for querying.
         string exampleString = "Venue 42";
 
         using var connection = new SpannerConnection(connectionString);

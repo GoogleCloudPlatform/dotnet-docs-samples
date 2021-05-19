@@ -43,41 +43,56 @@ public class InsertDatatypesDataAsyncSample
         byte[] exampleBytes2 = Encoding.UTF8.GetBytes("Hello World 2");
         byte[] exampleBytes3 = Encoding.UTF8.GetBytes("Hello World 3");
 
-        var availableDates1 = new List<DateTime>();
-        availableDates1.InsertRange(0, new DateTime[] {
-                DateTime.Parse("2020-12-01"),
-                DateTime.Parse("2020-12-02"),
-                DateTime.Parse("2020-12-03")});
+        var availableDates1 = new List<DateTime>
+        {
+            DateTime.Parse("2020-12-01"),
+            DateTime.Parse("2020-12-02"),
+            DateTime.Parse("2020-12-03")
+        };
 
-        var availableDates2 = new List<DateTime>();
-        availableDates2.InsertRange(0, new DateTime[] {
-                DateTime.Parse("2020-11-01"),
-                DateTime.Parse("2020-11-05"),
-                DateTime.Parse("2020-11-15")});
+        var availableDates2 = new List<DateTime>
+        {
+            DateTime.Parse("2020-11-01"),
+            DateTime.Parse("2020-11-05"),
+            DateTime.Parse("2020-11-15")
+        };
 
-        var availableDates3 = new List<DateTime>();
-        availableDates3.InsertRange(0, new DateTime[] {
-                DateTime.Parse("2020-10-01"),
-                DateTime.Parse("2020-10-07")});
+        var availableDates3 = new List<DateTime>
+        {
+            DateTime.Parse("2020-10-01"),
+            DateTime.Parse("2020-10-07")
+        };
         List<Venue> venues = new List<Venue> {
-                new Venue {
-                    VenueId = 4, VenueName = "Venue 4", VenueInfo = exampleBytes1,
-                    Capacity = 1800, AvailableDates = availableDates1,
-                    LastContactDate = DateTime.Parse("2018-09-02"),
-                    OutdoorVenue = false, PopularityScore = 0.85543f
-                },
-                new Venue {
-                    VenueId = 19, VenueName = "Venue 19", VenueInfo = exampleBytes2,
-                    Capacity = 6300, AvailableDates = availableDates2,
-                    LastContactDate = DateTime.Parse("2019-01-15"),
-                    OutdoorVenue = true, PopularityScore = 0.98716f
-                },
-                new Venue {
-                    VenueId = 42, VenueName = "Venue 42", VenueInfo = exampleBytes3,
-                    Capacity = 3000, AvailableDates = availableDates3,
-                    LastContactDate = DateTime.Parse("2018-10-01"),
-                    OutdoorVenue = false, PopularityScore = 0.72598f
-                }};
+            new Venue {
+                VenueId = 4,
+                VenueName = "Venue 4",
+                VenueInfo = exampleBytes1,
+                Capacity = 1800,
+                AvailableDates = availableDates1,
+                LastContactDate = DateTime.Parse("2018-09-02"),
+                OutdoorVenue = false,
+                PopularityScore = 0.85543f
+            },
+            new Venue {
+                VenueId = 19,
+                VenueName = "Venue 19",
+                VenueInfo = exampleBytes2,
+                Capacity = 6300,
+                AvailableDates = availableDates2,
+                LastContactDate = DateTime.Parse("2019-01-15"),
+                OutdoorVenue = true,
+                PopularityScore = 0.98716f
+            },
+            new Venue {
+                VenueId = 42,
+                VenueName = "Venue 42",
+                VenueInfo = exampleBytes3,
+                Capacity = 3000,
+                AvailableDates = availableDates3,
+                LastContactDate = DateTime.Parse("2018-10-01"),
+                OutdoorVenue = false,
+                PopularityScore = 0.72598f
+            }};
 
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();

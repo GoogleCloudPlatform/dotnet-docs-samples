@@ -37,8 +37,7 @@ public class RetryRobot
             {
                 return func();
             }
-            catch (Exception e)
-            when (ShouldCatch(e) && i < MaxTryCount)
+            catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
             {
                 Thread.Sleep(delay);
                 delay *= (int)DelayMultiplier;
@@ -46,9 +45,6 @@ public class RetryRobot
         }
     }
 
-    private bool ShouldCatch(Exception e)
-    {
-        return ShouldRetry != null && ShouldRetry(e);
-    }
+    private bool ShouldCatch(Exception e) => ShouldRetry?.Invoke(e) ?? false;
 }
 // [END spanner_retry_strategy]
