@@ -89,7 +89,8 @@ namespace GoogleCloudSamples
         public void TestDeleteSecret()
         {
             var name = secretsFixture.SecretToDelete.SecretName;
-            var output = Run("delete", name.ProjectId, name.SecretId);
+	    var etag = secretsFixture.SecretToDelete.Etag;
+            var output = Run("delete", name.ProjectId, name.SecretId, etag);
             Assert.Contains($"Deleted secret {name.SecretId}", output.Stdout);
 
             Assert.Throws<Grpc.Core.RpcException>(() =>
@@ -102,7 +103,8 @@ namespace GoogleCloudSamples
         public void TestDestroySecretVersion()
         {
             var name = secretsFixture.SecretVersionToDestroy.SecretVersionName;
-            var output = Run("destroy-version", name.ProjectId, name.SecretId, name.SecretVersionId);
+	    var etag = secretsFixture.SecretVersionToDestroy.Etag;
+            var output = Run("destroy-version", name.ProjectId, name.SecretId, name.SecretVersionId, etag);
             Assert.Contains($"Destroyed secret version {name}", output.Stdout);
 
             var version = s_client.GetSecretVersion(new GetSecretVersionRequest
@@ -116,7 +118,8 @@ namespace GoogleCloudSamples
         public void TestDisableSecretVersion()
         {
             var name = secretsFixture.SecretVersionToDisable.SecretVersionName;
-            var disableOut = Run("disable-version", name.ProjectId, name.SecretId, name.SecretVersionId);
+	    var etag = secretsFixture.SecretVersionToDisable.Etag;
+            var disableOut = Run("disable-version", name.ProjectId, name.SecretId, name.SecretVersionId, etag);
             Assert.Contains($"Disabled secret version {name}", disableOut.Stdout);
 
             var version = s_client.GetSecretVersion(new GetSecretVersionRequest
@@ -130,7 +133,8 @@ namespace GoogleCloudSamples
         public void TestEnableSecretVersion()
         {
             var name = secretsFixture.SecretVersionToEnable.SecretVersionName;
-            var enableOut = Run("enable-version", name.ProjectId, name.SecretId, name.SecretVersionId);
+	    var etag = secretsFixture.SecretVersionToEnable.Etag;
+            var enableOut = Run("enable-version", name.ProjectId, name.SecretId, name.SecretVersionId, etag);
             Assert.Contains($"Enabled secret version {name}", enableOut.Stdout);
 
             var version = s_client.GetSecretVersion(new GetSecretVersionRequest
@@ -194,7 +198,8 @@ namespace GoogleCloudSamples
         public void TestUpdateSecret()
         {
             var name = secretsFixture.Secret.SecretName;
-            var output = Run("update", name.ProjectId, name.SecretId);
+	    var etag = secretsFixture.Secret.Etag;
+            var output = Run("update", name.ProjectId, name.SecretId, etag);
             Assert.Contains($"Updated secret {name}", output.Stdout);
 
             var secret = s_client.GetSecret(new GetSecretRequest { SecretName = name });

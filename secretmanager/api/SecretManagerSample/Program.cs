@@ -42,6 +42,9 @@ namespace GoogleCloudSamples
 
         [Value(1, HelpText = "ID of the secret", Required = true)]
         public string SecretId { get; set; }
+
+	[Value(2, HelpText = "Etag of the secret", Required = false)]
+	public string Etag { get; set; }
     }
 
     class SecretIAMOptions
@@ -66,6 +69,9 @@ namespace GoogleCloudSamples
 
         [Value(2, HelpText = "Version of the secret", Required = true)]
         public string SecretVersion { get; set; }
+
+	[Value(3, HelpText = "Etag of the secret version", Required = false)]
+	public string Etag { get; set; }
     }
 
     [Verb("create", HelpText = "Create a secret")]
@@ -218,15 +224,16 @@ namespace GoogleCloudSamples
 
         // [START secretmanager_delete_secret]
         /// <summary>
-        /// Delete an existing secret with the given name.
+        /// Delete an existing secret with the given name and etag (optional).
         /// </summary>
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
+	/// <param name="etag">Current secret etag.</param>
         /// <example>
         /// Delete a secret.
-        /// <code>DeleteSecret("my-project", "my-secret")</code>
+        /// <code>DeleteSecret("my-project", "my-secret", "\"123\"")</code>
         /// </example>
-        public static void DeleteSecret(string projectId, string secretId)
+        public static void DeleteSecret(string projectId, string secretId, string etag = "")
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
@@ -234,6 +241,7 @@ namespace GoogleCloudSamples
             var request = new DeleteSecretRequest
             {
                 SecretName = new SecretName(projectId, secretId),
+	        Etag = etag,
             };
 
             // Delete the secret.
@@ -249,11 +257,12 @@ namespace GoogleCloudSamples
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
         /// <param name="secretVersion">Version of the secret.</param>
+	/// <param name="etag">Current etag of the secret version.</param>
         /// <example>
         /// Destroy a secret version.
-        /// <code>DestroySecretVersion("my-project", "my-secret", "5")</code>
+        /// <code>DestroySecretVersion("my-project", "my-secret", "5", "\"123\"")</code>
         /// </example>
-        public static void DestroySecretVersion(string projectId, string secretId, string secretVersion)
+        public static void DestroySecretVersion(string projectId, string secretId, string secretVersion, string etag = "")
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
@@ -261,6 +270,7 @@ namespace GoogleCloudSamples
             var request = new DestroySecretVersionRequest
             {
                 SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
+	        Etag = etag,
             };
 
             // Destroy the secret version.
@@ -276,11 +286,12 @@ namespace GoogleCloudSamples
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
         /// <param name="secretVersion">Version of the secret.</param>
+	/// <param name="etag">Current etag of the secret version.</param>
         /// <example>
         /// Disable an existing secret version.
-        /// <code>DisableSecretVersion("my-project", "my-secret", "5")</code>
+        /// <code>DisableSecretVersion("my-project", "my-secret", "5", "\"123\"")</code>
         /// </example>
-        public static void DisableSecretVersion(string projectId, string secretId, string secretVersion)
+        public static void DisableSecretVersion(string projectId, string secretId, string secretVersion, string etag = "")
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
@@ -288,6 +299,7 @@ namespace GoogleCloudSamples
             var request = new DisableSecretVersionRequest
             {
                 SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
+		Etag = etag,
             };
 
             // Disable the secret version.
@@ -303,11 +315,12 @@ namespace GoogleCloudSamples
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
         /// <param name="secretVersion">Version of the secret.</param>
+	/// <param name="etag">Current etag of the secret version.</param>
         /// <example>1
         /// Enable an existing secret version.
-        /// <code>EnableSecretVersion("my-project", "my-secret", "5")</code>
+        /// <code>EnableSecretVersion("my-project", "my-secret", "5", "\"123\"")</code>
         /// </example>
-        public static void EnableSecretVersion(string projectId, string secretId, string secretVersion)
+        public static void EnableSecretVersion(string projectId, string secretId, string secretVersion, string etag = "")
         {
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
@@ -315,6 +328,7 @@ namespace GoogleCloudSamples
             var request = new EnableSecretVersionRequest
             {
                 SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
+		Etag = etag,
             };
 
             // Enable the secret version.
@@ -523,9 +537,10 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
+	/// <param name="etag">Current etag of the secret.</param>
         /// <example>
         /// Update an existing secret.
-        /// <code>UpdateSecret("my-project", "my-secret")</code>
+        /// <code>UpdateSecret("my-project", "my-secret", "\"123\"")</code>
         /// </example>
         public static void UpdateSecret(string projectId, string secretId)
         {
@@ -535,6 +550,7 @@ namespace GoogleCloudSamples
             var secret = new Secret
             {
                 SecretName = new SecretName(projectId, secretId),
+		Etag = etag,
             };
             secret.Labels["secretmanager"] = "rocks";
 
@@ -572,17 +588,17 @@ namespace GoogleCloudSamples
                 .WithParsed<AccessSecretVersionOptions>(opts => AccessSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
                 .WithParsed<AddSecretVersionOptions>(opts => AddSecretVersion(opts.ProjectId, opts.SecretId))
                 .WithParsed<CreateSecretOptions>(opts => CreateSecret(opts.ProjectId, opts.SecretId))
-                .WithParsed<DeleteSecretOptions>(opts => DeleteSecret(opts.ProjectId, opts.SecretId))
-                .WithParsed<DestroySecretVersionOptions>(opts => DestroySecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
-                .WithParsed<DisableSecretVersionOptions>(opts => DisableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
-                .WithParsed<EnableSecretVersionOptions>(opts => EnableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
+                .WithParsed<DeleteSecretOptions>(opts => DeleteSecret(opts.ProjectId, opts.SecretId, opts.Etag))
+                .WithParsed<DestroySecretVersionOptions>(opts => DestroySecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion, opts.Etag))
+                .WithParsed<DisableSecretVersionOptions>(opts => DisableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion, opts.Etag))
+                .WithParsed<EnableSecretVersionOptions>(opts => EnableSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion, opts.Etag))
                 .WithParsed<GetSecretVersionOptions>(opts => GetSecretVersion(opts.ProjectId, opts.SecretId, opts.SecretVersion))
                 .WithParsed<GetSecretOptions>(opts => GetSecret(opts.ProjectId, opts.SecretId))
                 .WithParsed<IAMGrantAccessOptions>(opts => IAMGrantAccess(opts.ProjectId, opts.SecretId, opts.Member))
                 .WithParsed<IAMRevokeAccessOptions>(opts => IAMRevokeAccess(opts.ProjectId, opts.SecretId, opts.Member))
                 .WithParsed<ListSecretVersionsOptions>(opts => ListSecretVersions(opts.ProjectId, opts.SecretId))
                 .WithParsed<ListSecretsOptions>(opts => ListSecrets(opts.ProjectId))
-                .WithParsed<UpdateSecretOptions>(opts => UpdateSecret(opts.ProjectId, opts.SecretId));
+                .WithParsed<UpdateSecretOptions>(opts => UpdateSecret(opts.ProjectId, opts.SecretId, opts.Etag));
         }
     }
 }
