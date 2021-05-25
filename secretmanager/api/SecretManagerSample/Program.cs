@@ -43,8 +43,8 @@ namespace GoogleCloudSamples
         [Value(1, HelpText = "ID of the secret", Required = true)]
         public string SecretId { get; set; }
 
-	[Value(2, HelpText = "Etag of the secret", Required = false)]
-	public string Etag { get; set; }
+        [Value(2, HelpText = "Etag of the secret", Required = false)]
+        public string Etag { get; set; }
     }
 
     class SecretIAMOptions
@@ -70,8 +70,8 @@ namespace GoogleCloudSamples
         [Value(2, HelpText = "Version of the secret", Required = true)]
         public string SecretVersion { get; set; }
 
-	[Value(3, HelpText = "Etag of the secret version", Required = false)]
-	public string Etag { get; set; }
+        [Value(3, HelpText = "Etag of the secret version", Required = false)]
+        public string Etag { get; set; }
     }
 
     [Verb("create", HelpText = "Create a secret")]
@@ -228,7 +228,7 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
-	/// <param name="etag">Current secret etag.</param>
+        /// <param name="etag">Current secret etag.</param>
         /// <example>
         /// Delete a secret.
         /// <code>DeleteSecret("my-project", "my-secret", "\"123\"")</code>
@@ -241,7 +241,7 @@ namespace GoogleCloudSamples
             var request = new DeleteSecretRequest
             {
                 SecretName = new SecretName(projectId, secretId),
-	        Etag = etag,
+                Etag = etag,
             };
 
             // Delete the secret.
@@ -257,7 +257,7 @@ namespace GoogleCloudSamples
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
         /// <param name="secretVersion">Version of the secret.</param>
-	/// <param name="etag">Current etag of the secret version.</param>
+        /// <param name="etag">Current etag of the secret version.</param>
         /// <example>
         /// Destroy a secret version.
         /// <code>DestroySecretVersion("my-project", "my-secret", "5", "\"123\"")</code>
@@ -270,7 +270,7 @@ namespace GoogleCloudSamples
             var request = new DestroySecretVersionRequest
             {
                 SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
-	        Etag = etag,
+                Etag = etag,
             };
 
             // Destroy the secret version.
@@ -286,7 +286,7 @@ namespace GoogleCloudSamples
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
         /// <param name="secretVersion">Version of the secret.</param>
-	/// <param name="etag">Current etag of the secret version.</param>
+        /// <param name="etag">Current etag of the secret version.</param>
         /// <example>
         /// Disable an existing secret version.
         /// <code>DisableSecretVersion("my-project", "my-secret", "5", "\"123\"")</code>
@@ -299,7 +299,7 @@ namespace GoogleCloudSamples
             var request = new DisableSecretVersionRequest
             {
                 SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
-		Etag = etag,
+                Etag = etag,
             };
 
             // Disable the secret version.
@@ -315,7 +315,7 @@ namespace GoogleCloudSamples
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
         /// <param name="secretVersion">Version of the secret.</param>
-	/// <param name="etag">Current etag of the secret version.</param>
+        /// <param name="etag">Current etag of the secret version.</param>
         /// <example>1
         /// Enable an existing secret version.
         /// <code>EnableSecretVersion("my-project", "my-secret", "5", "\"123\"")</code>
@@ -328,7 +328,7 @@ namespace GoogleCloudSamples
             var request = new EnableSecretVersionRequest
             {
                 SecretVersionName = new SecretVersionName(projectId, secretId, secretVersion),
-		Etag = etag,
+                Etag = etag,
             };
 
             // Enable the secret version.
@@ -537,7 +537,7 @@ namespace GoogleCloudSamples
         /// </summary>
         /// <param name="projectId">ID of the project where the secret resides.</param>
         /// <param name="secretId">ID of the secret.</param>
-	/// <param name="etag">Current etag of the secret.</param>
+        /// <param name="etag">Current etag of the secret.</param>
         /// <example>
         /// Update an existing secret.
         /// <code>UpdateSecret("my-project", "my-secret", "\"123\"")</code>
@@ -550,7 +550,7 @@ namespace GoogleCloudSamples
             var secret = new Secret
             {
                 SecretName = new SecretName(projectId, secretId),
-		Etag = etag,
+                Etag = etag,
             };
             secret.Labels["secretmanager"] = "rocks";
 

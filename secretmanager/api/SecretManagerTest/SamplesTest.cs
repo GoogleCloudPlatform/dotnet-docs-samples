@@ -89,7 +89,7 @@ namespace GoogleCloudSamples
         public void TestDeleteSecret()
         {
             var name = secretsFixture.SecretToDelete.SecretName;
-	    var etag = secretsFixture.SecretToDelete.Etag;
+            var etag = secretsFixture.SecretToDelete.Etag;
             var output = Run("delete", name.ProjectId, name.SecretId, etag);
             Assert.Contains($"Deleted secret {name.SecretId}", output.Stdout);
 
@@ -103,7 +103,7 @@ namespace GoogleCloudSamples
         public void TestDestroySecretVersion()
         {
             var name = secretsFixture.SecretVersionToDestroy.SecretVersionName;
-	    var etag = secretsFixture.SecretVersionToDestroy.Etag;
+            var etag = secretsFixture.SecretVersionToDestroy.Etag;
             var output = Run("destroy-version", name.ProjectId, name.SecretId, name.SecretVersionId, etag);
             Assert.Contains($"Destroyed secret version {name}", output.Stdout);
 
@@ -118,7 +118,7 @@ namespace GoogleCloudSamples
         public void TestDisableSecretVersion()
         {
             var name = secretsFixture.SecretVersionToDisable.SecretVersionName;
-	    var etag = secretsFixture.SecretVersionToDisable.Etag;
+            var etag = secretsFixture.SecretVersionToDisable.Etag;
             var disableOut = Run("disable-version", name.ProjectId, name.SecretId, name.SecretVersionId, etag);
             Assert.Contains($"Disabled secret version {name}", disableOut.Stdout);
 
@@ -133,7 +133,7 @@ namespace GoogleCloudSamples
         public void TestEnableSecretVersion()
         {
             var name = secretsFixture.SecretVersionToEnable.SecretVersionName;
-	    var etag = secretsFixture.SecretVersionToEnable.Etag;
+            var etag = secretsFixture.SecretVersionToEnable.Etag;
             var enableOut = Run("enable-version", name.ProjectId, name.SecretId, name.SecretVersionId, etag);
             Assert.Contains($"Enabled secret version {name}", enableOut.Stdout);
 
@@ -198,7 +198,7 @@ namespace GoogleCloudSamples
         public void TestUpdateSecret()
         {
             var name = secretsFixture.Secret.SecretName;
-	    var etag = secretsFixture.Secret.Etag;
+            var etag = secretsFixture.Secret.Etag;
             var output = Run("update", name.ProjectId, name.SecretId, etag);
             Assert.Contains($"Updated secret {name}", output.Stdout);
 
