@@ -50,7 +50,7 @@ public class UpdateDataWithJsonAsyncSample
                 {
                     new
                     {
-                        name = (string) null,
+                        name = "room 1",
                         open = true,
                     },
                     new
@@ -65,7 +65,7 @@ public class UpdateDataWithJsonAsyncSample
                 VenueId = 42,
                 VenueDetails = JsonConvert.SerializeObject(new
                 {
-                    name = (string) null,
+                    name = "Central Park",
                     open = new
                     {
                         Monday = true,
