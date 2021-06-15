@@ -24,7 +24,10 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string ProjectId { get; }
     public List<string> TempTopicIds { get; } = new List<string>();
     public List<string> TempSubscriptionIds { get; } = new List<string>();
+    public List<string> TempSchemaIds { get; } = new List<string>();
     public string DeadLetterTopic { get; } = $"testDeadLetterTopic{Guid.NewGuid().ToString().Substring(0, 18)}";
+    public string AvroSchemaFile { get; } = $"Resources/us-states.avsc";
+    public string ProtoSchemaFile { get; } = $"Resources/us-states.proto";
 
     public PubsubFixture()
     {
@@ -68,12 +71,36 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         return topic;
     }
 
+    public Topic CreateTopicWithSchema(string topicId, string schemaId, Encoding encoding)
+    {
+        var createTopicWithSchemaSampleObject = new CreateTopicWithSchemaSample();
+        var topic = createTopicWithSchemaSampleObject.CreateTopicWithSchema(ProjectId, topicId, schemaId, encoding);
+        TempTopicIds.Add(topicId);
+        return topic;
+    }
+
     public Subscription CreateSubscription(string topicId, string subscriptionId)
     {
         var createSubscriptionSampleObject = new CreateSubscriptionSample();
         var subscription = createSubscriptionSampleObject.CreateSubscription(ProjectId, topicId, subscriptionId);
         TempSubscriptionIds.Add(subscriptionId);
         return subscription;
+    }
+
+    public Schema CreateProtoSchema(string schemaId)
+    {
+        var createProtoSchemaSampleObject = new CreateProtoSchemaSample();
+        var schema = createProtoSchemaSampleObject.CreateProtoSchema(ProjectId, schemaId, ProtoSchemaFile);
+        TempSchemaIds.Add(schemaId);
+        return schema;
+    }
+
+    public Schema CreateAvroSchema(string schemaId)
+    {
+        var createAvroSchemaSampleObject = new CreateAvroSchemaSample();
+        var schema = createAvroSchemaSampleObject.CreateAvroSchema(ProjectId, schemaId, AvroSchemaFile);
+        TempSchemaIds.Add(schemaId);
+        return schema;
     }
 
     public Topic GetTopic(string topicId)
@@ -89,6 +116,19 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(ProjectId, subscriptionId);
 
         return subscriber.GetSubscription(subscriptionName);
+    }
+
+    public Schema GetSchema(string schemaId)
+    {
+        SchemaServiceClient schemaService = SchemaServiceClient.Create();
+        SchemaName schemaName = SchemaName.FromProjectSchema(ProjectId, schemaId);
+        GetSchemaRequest request = new GetSchemaRequest
+        {
+            Name = schemaName.ToString(),
+            View = SchemaView.Full
+        };
+
+        return schemaService.GetSchema(request);
     }
 
     public string RandomName()
