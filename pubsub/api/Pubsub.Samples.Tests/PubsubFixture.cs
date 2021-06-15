@@ -31,13 +31,6 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string AvroSchemaFile { get; } = $"Resources/us-states.avsc";
     public string ProtoSchemaFile { get; } = $"Resources/us-states.proto";
 
-    public RetryRobot Pull { get; } = new RetryRobot
-    {
-        ShouldRetry = ex => ex is XunitException
-            || (ex is RpcException rpcEx 
-                && (rpcEx.StatusCode == StatusCode.DeadlineExceeded || rpcEx.StatusCode == StatusCode.Unavailable))
-    };
-
     public PubsubFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
