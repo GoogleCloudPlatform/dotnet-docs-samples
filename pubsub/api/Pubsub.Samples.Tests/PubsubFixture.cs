@@ -39,6 +39,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     {
         var deleteTopicSampleObject = new DeleteTopicSample();
         var deleteSubscriptionSampleObject = new DeleteSubscriptionSample();
+        var deleteSchemaSampleObject = new DeleteSchemaSample();
         foreach (string subscriptionId in TempSubscriptionIds)
         {
             try
@@ -55,6 +56,17 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
             try
             {
                 deleteTopicSampleObject.DeleteTopic(ProjectId, topicId);
+            }
+            catch (RpcException)
+            {
+                // Do nothing, we are deleting on a best effort basis.
+            }
+        }
+        foreach (string schemaId in TempSchemaIds)
+        {
+            try
+            {
+                deleteSchemaSampleObject.DeleteSchema(ProjectId, schemaId);
             }
             catch (RpcException)
             {

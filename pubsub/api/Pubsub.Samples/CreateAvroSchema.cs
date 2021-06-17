@@ -17,6 +17,7 @@
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
 using System;
+using System.IO;
 
 public class CreateAvroSchemaSample
 {
@@ -24,7 +25,7 @@ public class CreateAvroSchemaSample
     {
         SchemaServiceClient schemaService = SchemaServiceClient.Create();
         var schemaName = SchemaName.FromProjectSchema(projectId, schemaId);
-        string schemaDefinition = System.IO.File.ReadAllText(pathToDefinition);
+        string schemaDefinition = File.ReadAllText(pathToDefinition);
         Schema schema = new Schema
         {
             Name = schemaName.ToString(),
