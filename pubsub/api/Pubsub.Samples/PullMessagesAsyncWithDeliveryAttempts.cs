@@ -32,7 +32,7 @@ public class PullMessagesAsyncWithDeliveryAttemptsSample
         int deliveryAttempt = 0;
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
-            string text = Encoding.UTF8.GetString(message.Data.ToArray());
+            string text = System.Text.Encoding.UTF8.GetString(message.Data.ToArray());
             System.Console.WriteLine($"Delivery Attempt: {message.GetDeliveryAttempt()}");
             if (message.GetDeliveryAttempt() != null)
             {
