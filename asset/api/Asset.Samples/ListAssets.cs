@@ -12,7 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 //
-// [START asset_quickstart_batch_get_assets_history]
+// [START asset_quickstart_list_assets]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Asset.V1;
@@ -40,4 +40,4 @@ public class ListAssetsSample
         return response;
     }
 }
-// [END asset_quickstart_batch_get_assets_history]
+// [END asset_quickstart_list_assets]
