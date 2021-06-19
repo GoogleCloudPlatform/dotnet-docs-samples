@@ -28,7 +28,7 @@ namespace Compute.Samples.Tests
         public OperationPollerTest(ComputeFixture fixture) => _fixture = fixture;
 
         [Fact]
-        public async Task PollsUntilCompleted()
+        public async Task PollsZoneOperationUntilCompleted()
         {
             string machineName = _fixture.GenerateMachineName();
 
@@ -53,8 +53,27 @@ namespace Compute.Samples.Tests
                 NetworkInterfaces = { new NetworkInterface { Name = "default" } }
             };
 
-            Operation operation = await _fixture.Client.InsertAsync(_fixture.ProjectId, _fixture.Zone, instance);
+            Operation operation = await _fixture.InstancesClient.InsertAsync(_fixture.ProjectId, _fixture.Zone, instance);
             operation = await operation.PollUntilCompletedAsync(_fixture.ProjectId, _fixture.Zone);
+
+            Assert.Equal(Operation.Types.Status.Done, operation.Status);
+        }
+
+        [Fact]
+        public async Task PollsGlobalOperationUntilCompleted()
+        {
+            var project = await _fixture.ProjectsClient.GetAsync(_fixture.ProjectId);
+            var usageExportLocation = project.UsageExportLocation;
+
+            var noChangeRequest = new SetUsageExportBucketProjectRequest
+            {
+                Project = _fixture.ProjectId,
+                UsageExportLocationResource = usageExportLocation ?? new UsageExportLocation(),
+            };
+
+            var operation = await _fixture.ProjectsClient.SetUsageExportBucketAsync(noChangeRequest);
+
+            operation = await operation.PollUntilCompletedAsync(_fixture.ProjectId);
 
             Assert.Equal(Operation.Types.Status.Done, operation.Status);
         }

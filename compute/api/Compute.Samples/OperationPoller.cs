@@ -22,9 +22,23 @@ using System.Threading.Tasks;
 
 public static class OperationPoller
 {
+    public static async Task<Operation> PollUntilCompletedAsync(this Operation operation, string projectId)
+    {
+        GlobalOperationsClient operationsClient = await GlobalOperationsClient.CreateAsync();
+        GetGlobalOperationRequest pollRequest = new GetGlobalOperationRequest
+        {
+            Operation = operation.Name,
+            Project = projectId,
+        };
+
+        async Task<Operation> Poller() => await operationsClient.GetAsync(pollRequest);
+
+        return await operation.PollUntilCompletedAsync(Poller);
+    }
+
     public static async Task<Operation> PollUntilCompletedAsync(this Operation operation, string projectId, string zone)
     {
-        ZoneOperationsClient operationClient = await ZoneOperationsClient.CreateAsync();
+        ZoneOperationsClient operationsClient = await ZoneOperationsClient.CreateAsync();
         GetZoneOperationRequest pollRequest = new GetZoneOperationRequest
         {
             Operation = operation.Name,
@@ -32,13 +46,20 @@ public static class OperationPoller
             Project = projectId,
         };
 
+        async Task<Operation> Poller() => await operationsClient.GetAsync(pollRequest);
+
+        return await operation.PollUntilCompletedAsync(Poller);
+    }
+
+    private static async Task<Operation> PollUntilCompletedAsync(this Operation operation, Func<Task<Operation>> poller)
+    {
         TimeSpan timeOut = TimeSpan.FromMinutes(3);
         TimeSpan pollInterval = TimeSpan.FromSeconds(15);
 
         DateTime deadline = DateTime.UtcNow + timeOut;
         while (operation.Status != Operation.Types.Status.Done)
         {
-            operation = await operationClient.GetAsync(pollRequest);
+            operation = await poller();
 
             if (operation.Status == Operation.Types.Status.Done)
             {
