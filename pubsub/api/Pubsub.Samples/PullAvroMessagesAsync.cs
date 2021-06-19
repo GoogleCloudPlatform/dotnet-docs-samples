@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_subscriber_flow_settings]
+// [START pubsub_subscribe_avro_messages]
 
+using Avro.IO;
+using Avro.Specific;
 using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
+using Newtonsoft.Json;
 using System;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class PullMessagesWithFlowControlAsyncSample
+public class PullAvroMessagesAsyncSample
 {
-    public async Task<int> PullMessagesWithFlowControlAsync(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<int> PullAvroMessagesAsync(string projectId, string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         int messageCount = 0;
@@ -39,8 +41,26 @@ public class PullMessagesWithFlowControlAsyncSample
         // threads to maximize throughput.
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
-            string text = System.Text.Encoding.UTF8.GetString(message.Data.ToArray());
-            Console.WriteLine($"Message {message.MessageId}: {text}");
+            string encoding = message.Attributes["googclient_schemaencoding"];
+            AvroUtilities.State state = new AvroUtilities.State();
+            switch (encoding)
+            {
+                case "BINARY":
+                    using (var ms = new MemoryStream(message.Data.ToByteArray()))
+                    {
+                        var decoder = new BinaryDecoder(ms);
+                        var reader = new SpecificDefaultReader(state.Schema, state.Schema);
+                        reader.Read<AvroUtilities.State>(state, decoder);
+                    }
+                    break;
+                case "JSON":
+                    state = JsonConvert.DeserializeObject<AvroUtilities.State>(message.Data.ToStringUtf8());
+                    break;
+                default:
+                    Console.WriteLine($"Encoding not provided in message.");
+                    break;
+            }
+            Console.WriteLine($"Message {message.MessageId}: {state}");
             Interlocked.Increment(ref messageCount);
             return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);
         });
@@ -52,4 +72,4 @@ public class PullMessagesWithFlowControlAsyncSample
         return messageCount;
     }
 }
-// [END pubsub_subscriber_flow_settings]
+// [END pubsub_subscribe_avro_messages]
