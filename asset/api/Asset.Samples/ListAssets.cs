@@ -22,7 +22,7 @@ using System;
 
 public class ListAssetsSample
 {
-    public  PagedEnumerable<ListAssetsResponse, Asset> ListAssets(string projectId, string[] assetTypes)
+    public  PagedEnumerable<ListAssetsResponse, Asset> ListAssets(string projectId)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
@@ -32,7 +32,6 @@ public class ListAssetsSample
         {
             ParentAsResourceName = ProjectName.FromProject(projectId),
             ContentType = ContentType.Resource,
-            AssetTypes = assetTypes,
         };
 
         // Call the API.
