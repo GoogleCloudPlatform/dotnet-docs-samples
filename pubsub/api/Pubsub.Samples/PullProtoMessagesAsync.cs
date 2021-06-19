@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,29 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_subscriber_async_pull]
-// [START pubsub_quickstart_subscriber]
+// [START pubsub_subscribe_proto_messages]
 
+using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using System;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class PullMessagesAsyncSample
+public class PullProtoMessagesAsyncSample
 {
-    public async Task<int> PullMessagesAsync(string projectId, string subscriptionId, bool acknowledge)
+    public async Task<int> PullProtoMessagesAsync(string projectId, string subscriptionId, bool acknowledge)
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
-        SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
+        int messageCount = 0;
+        SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName,
+            settings: new SubscriberClient.Settings()
+            {
+                AckExtensionWindow = TimeSpan.FromSeconds(4),
+                AckDeadline = TimeSpan.FromSeconds(10),
+                FlowControlSettings = new FlowControlSettings(maxOutstandingElementCount: 100, maxOutstandingByteCount: 10240)
+            });
         // SubscriberClient runs your message handle function on multiple
         // threads to maximize throughput.
-        int messageCount = 0;
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
-            string text = System.Text.Encoding.UTF8.GetString(message.Data.ToArray());
-            Console.WriteLine($"Message {message.MessageId}: {text}");
+            string encoding = message.Attributes["googclient_schemaencoding"];
+            Utilities.State state = null;
+            switch (encoding)
+            {
+                case "BINARY":
+                    state = Utilities.State.Parser.ParseFrom(message.Data.ToByteArray());
+                    break;
+                case "JSON":
+                    state = Utilities.State.Parser.ParseJson(message.Data.ToStringUtf8());
+                    break;
+                default:
+                    Console.WriteLine($"Encoding not provided in message.");
+                    break;
+            }
+            Console.WriteLine($"Message {message.MessageId}: {state}");
             Interlocked.Increment(ref messageCount);
             return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);
         });
@@ -46,5 +63,4 @@ public class PullMessagesAsyncSample
         return messageCount;
     }
 }
-// [END pubsub_subscriber_async_pull]
-// [END pubsub_quickstart_subscriber]
+// [END pubsub_subscribe_proto_messages]
