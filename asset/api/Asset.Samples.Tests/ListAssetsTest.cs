@@ -36,6 +36,6 @@ public class ListAssetsTest
         var result = _sample.ListAssets(_fixture.ProjectId, assetTypes);
 
         string assetName = String.Format("//storage.googleapis.com/{0}", _fixture.BucketName);
-        Assert.Contains(assetName, result.ToString());
+        Assert.Contains(result, asset => asset.Name == assetName);
     }
 }
