@@ -21,7 +21,7 @@ using System;
 
 public class ListAssetsSample
 {
-    public ListAssetsResponse ListAssets(string projectId, string[] assetTypes)
+    public PagedEnumerable<ListAssetsResponse, Asset> ListAssets(string projectId, string[] assetTypes)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
