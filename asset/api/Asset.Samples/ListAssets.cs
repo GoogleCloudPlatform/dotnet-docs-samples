@@ -21,7 +21,7 @@ using System;
 
 public class ListAssetsSample
 {
-    public PagedEnumerable<ListAssetsResponse, Asset> ListAssets(string projectId, string[] assetTypes)
+    public ListAssetsResponse ListAssets(string projectId, string[] assetTypes)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
@@ -38,7 +38,7 @@ public class ListAssetsSample
         ListAssetsResponse response = client.ListAssets(request);
 
         // Return the result.
-        return response;
+        return response.AsRawResponse();
     }
 }
 // [END asset_quickstart_list_assets]
