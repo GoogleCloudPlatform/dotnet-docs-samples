@@ -29,7 +29,6 @@ public class ListAssetsTest
         _sample = new ListAssetsSample();
     }
 
-    [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1141")]
     public void TestListAssets()
     {
         // Run the sample code.
