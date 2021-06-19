@@ -21,7 +21,7 @@ using System;
 
 public class ListAssetsSample
 {
-    public ListAssetsResponse ListAssets(string projectId)
+    public ListAssetsResponse ListAssets(string projectId, string[] assetTypes)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
@@ -31,6 +31,7 @@ public class ListAssetsSample
         {
             ParentAsResourceName = ProjectName.FromProject(projectId),
             ContentType = ContentType.Resource,
+            AssetTypes = assetTypes,
         };
 
         // Call the API.
