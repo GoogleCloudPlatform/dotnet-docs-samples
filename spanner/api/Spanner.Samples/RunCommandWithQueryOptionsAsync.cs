@@ -33,7 +33,9 @@ public class RunCommandWithQueryOptionsAsyncSample
         using var connection = new SpannerConnection(connectionString);
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
 
-        cmd.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+        cmd.QueryOptions = QueryOptions.Empty
+            .WithOptimizerVersion("1")
+            .WithOptimizerStatisticsPackage("latest");
         var albums = new List<Album>();
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
