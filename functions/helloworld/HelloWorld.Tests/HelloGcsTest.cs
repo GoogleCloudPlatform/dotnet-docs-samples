@@ -34,7 +34,6 @@ namespace HelloWorld.Tests
 
             var created = DateTimeOffset.UtcNow.AddMinutes(-5);
             var updated = created.AddMinutes(2);
-            var cloudEvent = new CloudEvent(StorageObjectData.DeletedCloudEventType, new Uri("//storage.googleapis.com"), "1234");
             var data = new StorageObjectData
             {
                 Name = "new-file.txt",
@@ -43,7 +42,13 @@ namespace HelloWorld.Tests
                 TimeCreated = new DateTimeOffset(2020, 7, 9, 13, 0, 5, TimeSpan.Zero).ToTimestamp(),
                 Updated = new DateTimeOffset(2020, 7, 9, 13, 23, 25, TimeSpan.Zero).ToTimestamp()
             };
-            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
+            var cloudEvent = new CloudEvent
+            {
+                Type = StorageObjectData.DeletedCloudEventType,
+                Source = new Uri("//storage.googleapis.com", UriKind.RelativeOrAbsolute),
+                Id = "1234",
+                Data = data
+            };
 
             await ExecuteCloudEventRequestAsync(cloudEvent);
 
