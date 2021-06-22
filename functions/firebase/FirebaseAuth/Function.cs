@@ -34,7 +34,7 @@ namespace FirebaseAuth
             _logger.LogInformation("Function triggered by change to user: {uid}", data.Uid);
             if (data.Metadata is UserMetadata metadata)
             {
-                _logger.LogInformation("User created at: {created:s}", metadata.CreatedAt.ToDateTimeOffset());
+                _logger.LogInformation("User created at: {created:s}", metadata.CreateTime.ToDateTimeOffset());
             }
             if (!string.IsNullOrEmpty(data.Email))
             {
