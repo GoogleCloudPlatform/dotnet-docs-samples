@@ -181,9 +181,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
         AddIndexAsyncSample addIndexAsyncSample = new AddIndexAsyncSample();
         AddStoringIndexAsyncSample addStoringIndexAsyncSample = new AddStoringIndexAsyncSample();
-        CreateTableWithDatatypesAsyncSample createTableWithDatatypesAsyncSample = new CreateTableWithDatatypesAsyncSample();
-        AddNumericColumnAsyncSample addNumericColumnAsyncSample = new AddNumericColumnAsyncSample();
-        InsertDatatypesDataAsyncSample insertDatatypesDataAsyncSample = new InsertDatatypesDataAsyncSample();
+        CreateTableWithDataTypesAsyncSample createTableWithDataTypesAsyncSample = new CreateTableWithDataTypesAsyncSample();
+        InsertDataTypesDataAsyncSample insertDataTypesDataAsyncSample = new InsertDataTypesDataAsyncSample();
         CreateTableWithTimestampColumnAsyncSample createTableWithTimestampColumnAsyncSample =
             new CreateTableWithTimestampColumnAsyncSample();
         await createDatabaseAsyncSample.CreateDatabaseAsync(ProjectId, InstanceId, DatabaseId);
@@ -193,11 +192,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await addCommitTimestampAsyncSample.AddCommitTimestampAsync(ProjectId, InstanceId, DatabaseId);
         await addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId);
         // Create a new table that includes supported datatypes.
-        await createTableWithDatatypesAsyncSample.CreateTableWithDatatypesAsync(ProjectId, InstanceId, DatabaseId);
-        // Add Numeric column
-        await addNumericColumnAsyncSample.AddNumericColumnAsync(ProjectId, InstanceId, DatabaseId);
+        await createTableWithDataTypesAsyncSample.CreateTableWithDataTypesAsync(ProjectId, InstanceId, DatabaseId);
         // Write data to the new table.
-        await insertDatatypesDataAsyncSample.InsertDatatypesDataAsync(ProjectId, InstanceId, DatabaseId);
+        await insertDataTypesDataAsyncSample.InsertDataTypesDataAsync(ProjectId, InstanceId, DatabaseId);
         // Add storing Index on table.
         await addStoringIndexAsyncSample.AddStoringIndexAsync(ProjectId, InstanceId, DatabaseId);
         // Update the value of MarketingBudgets.
@@ -245,6 +242,47 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             // It's ok backup has been in progress in another test cycle.
             Console.WriteLine($"Backup {BackupId} already in progress.");
         }
+    }
+
+    public async Task CreateVenuesTableAndInsertDataAsync(string databaseId)
+    {
+        // Create connection to Cloud Spanner.
+        using var connection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
+
+        // Define create table statement for Venues.
+        string createTableStatement =
+        @"CREATE TABLE Venues (
+                 VenueId INT64 NOT NULL,
+                 VenueName STRING(1024),
+             ) PRIMARY KEY (VenueId)";
+
+        using var cmd = connection.CreateDdlCommand(createTableStatement);
+        await cmd.ExecuteNonQueryAsync();
+
+        List<Venue> venues = new List<Venue>
+        {
+            new Venue { VenueId = 4, VenueName = "Venue 4" },
+            new Venue { VenueId = 19, VenueName = "Venue 19" },
+            new Venue { VenueId = 42, VenueName = "Venue 42" },
+        };
+
+        await Task.WhenAll(venues.Select(venue =>
+        {
+            // Insert rows into the Venues table.
+
+            using var cmd = connection.CreateInsertCommand("Venues", new SpannerParameterCollection
+            {
+                { "VenueId", SpannerDbType.Int64, venue.VenueId },
+                { "VenueName", SpannerDbType.String, venue.VenueName }
+            });
+            return cmd.ExecuteNonQueryAsync();
+        }));
+    }
+
+    private class Venue
+    {
+        public int VenueId { get; set; }
+        public string VenueName { get; set; }
     }
 
     private async Task InitializeEncryptedBackupAsync()

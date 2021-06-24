@@ -32,7 +32,7 @@ public class QueryWithTimestampAsyncSample
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         // Initialize a DateTime timestamp variable to use for querying.
-        DateTime exampleTimestamp = DateTime.Now;
+        DateTime exampleTimestamp = DateTime.UtcNow;
 
         using var connection = new SpannerConnection(connectionString);
         var cmd = connection.CreateSelectCommand("SELECT VenueId, VenueName, LastUpdateTime FROM Venues WHERE LastUpdateTime < @ExampleTimestamp");

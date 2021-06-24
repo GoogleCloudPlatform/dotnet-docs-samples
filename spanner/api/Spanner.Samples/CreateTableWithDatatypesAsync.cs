@@ -17,9 +17,9 @@
 using Google.Cloud.Spanner.Data;
 using System.Threading.Tasks;
 
-public class CreateTableWithDatatypesAsyncSample
+public class CreateTableWithDataTypesAsyncSample
 {
-    public async Task CreateTableWithDatatypesAsync(string projectId, string instanceId, string databaseId)
+    public async Task CreateTableWithDataTypesAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using var connection = new SpannerConnection(connectionString);
@@ -35,6 +35,7 @@ public class CreateTableWithDatatypesAsyncSample
                     LastContactDate DATE,
                     OutdoorVenue BOOL,
                     PopularityScore FLOAT64,
+                    Revenue NUMERIC,
                     LastUpdateTime TIMESTAMP NOT NULL 
                         OPTIONS (allow_commit_timestamp=true)
                 ) PRIMARY KEY (VenueId)";

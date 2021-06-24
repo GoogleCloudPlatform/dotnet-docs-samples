@@ -43,15 +43,15 @@ public class UpdateDataWithNumericAsyncSample
         await connection.OpenAsync();
 
         var affectedRows = await Task.WhenAll(venues.Select(venue =>
-          {
-              // Update rows in the Venues table.
-              using var cmd = connection.CreateUpdateCommand("Venues", new SpannerParameterCollection
-              {
-                    { "VenueId", SpannerDbType.Int64, venue.VenueId },
-                    { "Revenue", SpannerDbType.Numeric, venue.Revenue }
-              });
-              return cmd.ExecuteNonQueryAsync();
-          }));
+        {
+            // Update rows in the Venues table.
+            using var cmd = connection.CreateUpdateCommand("Venues", new SpannerParameterCollection
+            {
+                { "VenueId", SpannerDbType.Int64, venue.VenueId },
+                { "Revenue", SpannerDbType.Numeric, venue.Revenue }
+            });
+            return cmd.ExecuteNonQueryAsync();
+        }));
 
         Console.WriteLine("Data updated.");
         return affectedRows.Sum();

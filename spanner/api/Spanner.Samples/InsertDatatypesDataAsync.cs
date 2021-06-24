@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class InsertDatatypesDataAsyncSample
+public class InsertDataTypesDataAsyncSample
 {
     public class Venue
     {
@@ -35,7 +35,7 @@ public class InsertDatatypesDataAsyncSample
         public float PopularityScore { get; set; }
     }
 
-    public async Task InsertDatatypesDataAsync(string projectId, string instanceId, string databaseId)
+    public async Task InsertDataTypesDataAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 
