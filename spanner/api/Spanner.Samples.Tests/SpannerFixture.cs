@@ -49,6 +49,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string FixedEncryptedDatabaseId { get; } = "fixed-enc-backup-db";
     public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
 
+    public string InstanceIdWithProcessingUnits { get; } = $"my-instance-processing-units-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+
+
     // Encryption key identifiers.
     private static readonly string _testKeyProjectId = Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     private static readonly string _testKeyLocationId = Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1";
@@ -85,6 +88,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public Task DisposeAsync()
     {
+        DeleteInstance(InstanceIdWithProcessingUnits);
+
         return Task.CompletedTask;
     }
 
@@ -102,6 +107,20 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             CreateInstanceSample createInstanceSample = new CreateInstanceSample();
             createInstanceSample.CreateInstance(ProjectId, InstanceId);
             return false;
+        }
+    }
+
+    private void DeleteInstance(string instanceId)
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, instanceId);
+        try
+        {
+            instanceAdminClient.DeleteInstance(instanceName);
+        }
+        catch (Exception)
+        {
+            // Silently ignore errors to prevent tests from failing.
         }
     }
 
