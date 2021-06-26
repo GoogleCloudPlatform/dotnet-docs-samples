@@ -30,15 +30,14 @@ namespace HelloWorld.Tests
         public async Task MessageWithTextData()
         {
             var data = new MessagePublishedData { Message = new PubsubMessage { TextData = "PubSub user" } };
-            var cloudEvent = new CloudEvent(
-                MessagePublishedData.MessagePublishedCloudEventType,
-                new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
-                Guid.NewGuid().ToString(),
-                DateTime.UtcNow);
-
-            // Our function doesn't actually use the CloudEvent data, because that's provided separately.
-            // If we wanted to make the CloudEvent look as realistic as possible, we could use
-            // CloudEventConverters.PopulateCloudEvent.
+            var cloudEvent = new CloudEvent
+            {
+                Type = MessagePublishedData.MessagePublishedCloudEventType,
+                Source = new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
+                Id = Guid.NewGuid().ToString(),
+                Time = DateTimeOffset.UtcNow,
+                Data = data
+            };
 
             var logger = new MemoryLogger<HelloPubSub.Function>();
             var function = new HelloPubSub.Function(logger);
@@ -56,11 +55,13 @@ namespace HelloWorld.Tests
             {
                 Message = new PubsubMessage { Attributes = { { "key", "value" } } }
             };
-            var cloudEvent = new CloudEvent(
-                MessagePublishedData.MessagePublishedCloudEventType,
-                new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
-                Guid.NewGuid().ToString(),
-                DateTime.UtcNow);
+            var cloudEvent = new CloudEvent
+            {
+                Type = MessagePublishedData.MessagePublishedCloudEventType,
+                Source = new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
+                Id = Guid.NewGuid().ToString(),
+                Time = DateTimeOffset.UtcNow
+            };
 
             var logger = new MemoryLogger<HelloPubSub.Function>();
             var function = new HelloPubSub.Function(logger);
