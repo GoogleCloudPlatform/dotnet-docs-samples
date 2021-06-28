@@ -14,6 +14,7 @@
 
 // [START spanner_retry_strategy]
 
+using Google.Cloud.Spanner.Data;
 using System;
 using System.Threading;
 
@@ -22,7 +23,7 @@ public class RetryRobot
     public TimeSpan FirstRetryDelay { get; set; } = TimeSpan.FromSeconds(1000);
     public float DelayMultiplier { get; set; } = 2;
     public int MaxTryCount { get; set; } = 7;
-    public Func<Exception, bool> ShouldRetry { get; set; }
+    public Func<SpannerException, bool> ShouldRetry { get; set; }
 
     /// <summary>
     /// Retry action when assertion fails.
@@ -37,7 +38,7 @@ public class RetryRobot
             {
                 return func();
             }
-            catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
+            catch (SpannerException e) when (e.ErrorCode == ErrorCode.Aborted && ShouldCatch(e) && i < MaxTryCount)
             {
                 Thread.Sleep(delay);
                 delay *= (int)DelayMultiplier;
@@ -45,6 +46,6 @@ public class RetryRobot
         }
     }
 
-    private bool ShouldCatch(Exception e) => ShouldRetry?.Invoke(e) ?? false;
+    private bool ShouldCatch(SpannerException e) => ShouldRetry?.Invoke(e) ?? false;
 }
 // [END spanner_retry_strategy]
