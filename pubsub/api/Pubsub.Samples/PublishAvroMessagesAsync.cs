@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_publish_avro_messages]
+// [START pubsub_publish_avro_records]
 
 using Avro.IO;
 using Avro.Specific;
@@ -70,4 +70,4 @@ public class PublishAvroMessagesAsyncSample
         return publishedMessageCount;
     }
 }
-// [END pubsub_publish_avro_messages]
+// [END pubsub_publish_avro_records]
