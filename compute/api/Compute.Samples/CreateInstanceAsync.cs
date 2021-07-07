@@ -17,7 +17,6 @@
 // [START compute_instances_create]
 
 using Google.Cloud.Compute.V1;
-using System;
 using System.Threading.Tasks;
 
 public class CreateInstanceAsyncSample
