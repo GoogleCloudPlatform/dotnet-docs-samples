@@ -12,24 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class WriteDataWithTimestampAsyncTest
+public class AddNumericColumnAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public WriteDataWithTimestampAsyncTest(SpannerFixture spannerFixture)
+    public AddNumericColumnAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestWriteDataWithTimestampAsync()
+    public async Task TestAddNumericColumnAsync()
     {
-        WriteDataWithTimestampAsyncSample sample = new WriteDataWithTimestampAsyncSample();
-        var rowCount = await sample.WriteDataWithTimestampAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        CreateDatabaseAsyncSample sample = new CreateDatabaseAsyncSample();
+        await sample.CreateDatabaseAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        await _spannerFixture.CreateVenuesTableAndInsertDataAsync(databaseId);
+        AddNumericColumnAsyncSample addNumericColumnAsyncSample = new AddNumericColumnAsyncSample();
+        await addNumericColumnAsyncSample.AddNumericColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
     }
 }
