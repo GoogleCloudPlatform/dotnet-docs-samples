@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 public class CreateInstanceAsyncSample
 {
     public async Task CreateInstanceAsync(
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
         string projectId = "your-project-id",
         string zone = "us-central1-a",
         string machineName = "test-machine",
@@ -55,11 +56,11 @@ public class CreateInstanceAsyncSample
             NetworkInterfaces = { new NetworkInterface { Name = "default" } }
         };
 
-        // Initialize the client that will be used to send instance-related requests.
-        // You should reuse the same client for multiple requests.
+        // Initialize client that will be used to send requests. This client only needs to be created
+        // once, and can be reused for multiple requests.
         InstancesClient client = await InstancesClient.CreateAsync();
 
-        // Make the request to create a VM instance.
+        // Insert the instance in the specified project and zone.
         Operation instanceCreation = await client.InsertAsync(projectId, zone, instance);
 
         // You may poll the operation until it completes or fails, or for a given amount of time.

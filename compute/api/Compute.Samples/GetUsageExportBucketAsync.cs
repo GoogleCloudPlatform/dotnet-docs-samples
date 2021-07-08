@@ -22,7 +22,9 @@ using System.Threading.Tasks;
 
 public class GetUsageExportBucketAsyncSample
 {
-    public async Task<Project> GetUsageExportBucketAsync(string projectId = "your-project-id")
+    public async Task<Project> GetUsageExportBucketAsync(
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
+        string projectId = "your-project-id")
     {
         // Initialize the client that will be used to send project-related requests.
         // You should reuse the same client for multiple requests.
@@ -37,8 +39,8 @@ public class GetUsageExportBucketAsyncSample
         else if (string.IsNullOrEmpty(project.UsageExportLocation.ReportNamePrefix))
         {
             Console.WriteLine(
-                $"A null or empty value for {nameof(UsageExportLocation.ReportNamePrefix)} " +
-                $"will result in reports being prefixed with `usage_gce`.");
+                $"Setting {nameof(UsageExportLocation.ReportNamePrefix)} " +
+                $"to null or empty values causes the report to have the default prefix of `usage_gce`.");
         }
 
         return project;

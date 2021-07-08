@@ -23,15 +23,17 @@ using System.Threading.Tasks;
 
 public class ListAllInstancesAsyncSample
 {
-    public async Task<IList<Instance>> ListAllInstancesAsync(string projectId = "your-project-id")
+    public async Task<IList<Instance>> ListAllInstancesAsync(
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
+        string projectId = "your-project-id") 
     {
-        // Initialize the client that will be used to send instance-related requests.
-        // You should reuse the same client for multiple requests.
+        // Initialize client that will be used to send requests. This client only needs to be created
+        // once, and can be reused for multiple requests.
         InstancesClient client = await InstancesClient.CreateAsync();
         InstanceAggregatedList instanceList;
         IList<Instance> allInstances = new List<Instance>();
 
-        // Make the requests to list all VM instances.
+        // Make the request to list all VM instances in a project.
         AggregatedListInstancesRequest request = new AggregatedListInstancesRequest { Project = projectId };
         do
         {

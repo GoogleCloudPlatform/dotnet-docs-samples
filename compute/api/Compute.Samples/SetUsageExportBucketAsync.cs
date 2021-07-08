@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 public class SetUsageExportBucketAsyncSample
 {
     public async Task SetUsageExportBucketAsync(
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
         string projectId = "your-project-id",
         string bucketName = "usage-export-bucket",
         string reportNamePrefix = "usage-report")
@@ -30,8 +31,8 @@ public class SetUsageExportBucketAsyncSample
         if (string.IsNullOrEmpty(reportNamePrefix))
         {
             Console.WriteLine(
-                $"A null or empty value for {nameof(UsageExportLocation.ReportNamePrefix)} " +
-                $"will result in reports being prefixed with `usage_gce`.");
+                $"Setting {nameof(UsageExportLocation.ReportNamePrefix)} " +
+                $"to null or empty values causes the report to have the default prefix of `usage_gce`.");
         }
 
         UsageExportLocation exportLocation = new UsageExportLocation
