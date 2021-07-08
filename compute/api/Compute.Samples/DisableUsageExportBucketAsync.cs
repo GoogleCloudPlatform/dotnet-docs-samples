@@ -21,7 +21,9 @@ using System.Threading.Tasks;
 
 public class DisableUsageExportBucketAsyncSample
 {
-    public async Task DisableUsageExportBucketAsync(string projectId = "your-project-id")
+    public async Task DisableUsageExportBucketAsync(
+        // TODO(developer): Replace these variables before running the sample.
+        string projectId = "your-project-id")
     {
         // Create a default instance of UsageExportLocation.
         // Do not set any properties.
