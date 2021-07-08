@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 public class GetUsageExportBucketAsyncSample
 {
     public async Task<Project> GetUsageExportBucketAsync(
-        // TODO(developer): Replace these variables before running the sample.
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
         string projectId = "your-project-id")
     {
         // Initialize the client that will be used to send project-related requests.

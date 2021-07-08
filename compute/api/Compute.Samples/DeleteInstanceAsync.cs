@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 public class DeleteInstanceAsyncSample
 {
     public async Task DeleteInstanceAsync(
-        // TODO(developer): Replace these variables before running the sample.
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
         string projectId = "your-project-id",
         string zone = "us-central1-a",
         string machineName = "test-machine")

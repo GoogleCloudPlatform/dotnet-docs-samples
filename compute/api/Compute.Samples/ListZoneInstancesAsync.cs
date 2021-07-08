@@ -24,14 +24,12 @@ using System.Threading.Tasks;
 public class ListZoneInstancesAsyncSample
 {
     public async Task<IList<Instance>> ListZoneInstancesAsync(
-        // TODO(developer): Replace these variables before running the sample.
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
         string projectId = "your-project-id", 
         string zone = "us-central1-a")
     {
         // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the `InstancesClient.close()` method on the client to safely
-        // clean up any remaining background resources.
+        // once, and can be reused for multiple requests.
         InstancesClient client = await InstancesClient.CreateAsync();
         InstanceList instanceList;
         IList<Instance> allInstances = new List<Instance>();

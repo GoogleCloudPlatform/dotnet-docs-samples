@@ -57,9 +57,7 @@ public class CreateInstanceAsyncSample
         };
 
         // Initialize client that will be used to send requests. This client only needs to be created
-        // once, and can be reused for multiple requests. After completing all of your requests, call
-        // the `InstancesClient.close()` method on the client to safely
-        // clean up any remaining background resources.
+        // once, and can be reused for multiple requests.
         InstancesClient client = await InstancesClient.CreateAsync();
 
         // Insert the instance in the specified project and zone.
