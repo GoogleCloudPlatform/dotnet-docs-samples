@@ -40,7 +40,7 @@ public class GetUsageExportBucketAsyncSample
         {
             Console.WriteLine(
                 $"Setting {nameof(UsageExportLocation.ReportNamePrefix)} " +
-                $"to empty value causes the report to have the default prefix of `usage_gce`.");
+                $"to null or empty values causes the report to have the default prefix of `usage_gce`.");
         }
 
         return project;
