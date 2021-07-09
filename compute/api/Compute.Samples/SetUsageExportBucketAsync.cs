@@ -46,6 +46,9 @@ public class SetUsageExportBucketAsyncSample
         ProjectsClient client = await ProjectsClient.CreateAsync();
 
         Operation operation = await client.SetUsageExportBucketAsync(projectId, exportLocation);
+        // Wait for the operation to complete using client-side polling.
+        // The server-side operation is not affected by polling,
+        // and might finish successfully even if polling times out.
         await operation.PollUntilCompletedAsync(projectId);
     }
 }

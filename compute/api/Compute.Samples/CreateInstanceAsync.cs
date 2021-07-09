@@ -63,8 +63,9 @@ public class CreateInstanceAsyncSample
         // Insert the instance in the specified project and zone.
         Operation instanceCreation = await client.InsertAsync(projectId, zone, instance);
 
-        // You may poll the operation until it completes or fails, or for a given amount of time.
-        // If polling times out, the operation may still finish successfully after.
+        // Wait for the operation to complete using client-side polling.
+        // The server-side operation is not affected by polling,
+        // and might finish successfully even if polling times out.
         await instanceCreation.PollUntilCompletedAsync(projectId, zone);
     }
 }
