@@ -35,6 +35,9 @@ public class DisableUsageExportBucketAsyncSample
 
         // Setting the default instance will disable the usage report export bucket setting.
         Operation operation = await client.SetUsageExportBucketAsync(projectId, exportLocation);
+        // Wait for the operation to complete using client-side polling.
+        // The server-side operation is not affected by polling,
+        // and might finish successfully even if polling times out.
         await operation.PollUntilCompletedAsync(projectId);
     }
 }

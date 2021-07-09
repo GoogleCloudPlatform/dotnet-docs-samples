@@ -36,8 +36,9 @@ public class DeleteInstanceAsyncSample
         // Make the request to delete a VM instance.
         Operation instanceDeletion = await client.DeleteAsync(projectId, zone, machineName);
 
-        // You may poll the operation until it completes or fails, or for a given amount of time.
-        // If polling times out, the operation may still finish successfully after.
+        // Wait for the operation to complete using client-side polling.
+        // The server-side operation is not affected by polling,
+        // and might finish successfully even if polling times out.
         await instanceDeletion.PollUntilCompletedAsync(projectId, zone);
     }
 }
