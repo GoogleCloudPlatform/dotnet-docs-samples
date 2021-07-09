@@ -34,7 +34,7 @@ public class AddBucketDefaultOwnerSample
             Role = "OWNER",
         });
         var updatedBucket = storage.UpdateBucket(bucket);
-        Console.WriteLine($"Added user { userEmail} as a default owner on bucket { bucketName}.");
+        Console.WriteLine($"Added user {userEmail} as a default owner on bucket {bucketName}.");
         return updatedBucket;
     }
 }

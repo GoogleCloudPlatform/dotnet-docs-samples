@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,18 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_delete_bucket]
+// [START storage_get_service_account]
 
 using Google.Cloud.Storage.V1;
 using System;
 
-public class DeleteBucketSample
+public class GetStorageServiceAccountSample
 {
-    public void DeleteBucket(string bucketName = "your-unique-bucket-name")
-    {
-        var storage = StorageClient.Create();
-        storage.DeleteBucket(bucketName);
-        Console.WriteLine($"The bucket {bucketName} was deleted.");
-    }
+	public string GetStorageServiceAccount(string projectId = "your-project-id")
+	{
+		var storage = StorageClient.Create();
+
+		var serviceAccountEmail = storage.GetStorageServiceAccountEmail(projectId);
+
+		Console.WriteLine($"The GCS service account for project {projectId} is: {serviceAccountEmail}.");
+		return serviceAccountEmail;
+	}
 }
-// [END storage_delete_bucket]
+// [END storage_get_service_account]

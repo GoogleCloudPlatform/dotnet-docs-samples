@@ -25,6 +25,8 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     public string ProjectId { get; }
     public IList<string> TempBucketNames { get; } = new List<string>();
     public Dictionary<string, List<string>> TempBucketFiles { get; } = new Dictionary<string, List<string>>();
+    public Dictionary<string, Dictionary<string, List<long>>> TempBucketArchivedFiles { get; }
+        = new Dictionary<string, Dictionary<string, List<long>>>();
     public string BucketNameGeneric { get; } = Guid.NewGuid().ToString();
     public string BucketNameRegional { get; } = Guid.NewGuid().ToString();
     public string TestLocation { get; } = "us-west1";
@@ -62,6 +64,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     {
         DeleteBucketSample deleteBucketSample = new DeleteBucketSample();
         DeleteFileSample deleteFileSample = new DeleteFileSample();
+        DeleteFileArchivedGenerationSample deleteFileArchivedGenerationSample = new DeleteFileArchivedGenerationSample();
         foreach (var bucket in TempBucketFiles)
         {
             foreach (var file in bucket.Value)
@@ -73,6 +76,24 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
                 catch (Exception)
                 {
                     // Do nothing, we delete on a best effort basis.
+                }
+            }
+        }
+
+        foreach (var bucket in TempBucketArchivedFiles)
+        {
+            foreach (var file in bucket.Value)
+            {
+                foreach (var version in file.Value)
+                {
+                    try
+                    {
+                        deleteFileArchivedGenerationSample.DeleteFileArchivedGeneration(bucket.Key, file.Key, version);
+                    }
+                    catch (Exception)
+                    {
+                        // Do nothing, we delete on a best effort basis.
+                    }
                 }
             }
         }
@@ -153,5 +174,19 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
             default:
                 throw new InvalidOperationException($"Unable to retrieve service account email address for credential type {cred.GetType()}");
         }
+    }
+
+    public void CollectArchivedFiles(string bucketName, string objectName, long? version)
+    {
+        if (!TempBucketArchivedFiles.TryGetValue(bucketName, out Dictionary<string, List<long>> objectNames))
+        {
+            objectNames = TempBucketArchivedFiles[bucketName] = new Dictionary<string, List<long>>();
+        }
+
+        if (!objectNames.TryGetValue(objectName, out List<long> versions))
+        {
+            versions = objectNames[objectName] = new List<long>();
+        }
+        versions.Add(version.Value);
     }
 }
