@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,20 +16,21 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateDataWithNumericTest
+public class QueryWithArrayAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateDataWithNumericTest(SpannerFixture spannerFixture)
+    public QueryWithArrayAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateDataWithNumeric()
+    public async Task TestQueryWithArrayAsync()
     {
-        UpdateDataWithNumericAsyncSample updateNumericSample = new UpdateDataWithNumericAsyncSample();
-        var rowCount = await updateNumericSample.UpdateDataWithNumericAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        QueryWithArrayAsyncSample sample = new QueryWithArrayAsyncSample();
+        var venues = await sample.QueryWithArrayAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Contains(venues, v => v.VenueId == 19 && v.VenueName == "Venue 19");
+        Assert.Contains(venues, v => v.VenueId == 42 && v.VenueName == "Venue 42");
     }
 }

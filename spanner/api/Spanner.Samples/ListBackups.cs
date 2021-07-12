@@ -14,7 +14,6 @@
 
 // [START spanner_list_backups]
 
-using Google.Api.Gax;
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using System;

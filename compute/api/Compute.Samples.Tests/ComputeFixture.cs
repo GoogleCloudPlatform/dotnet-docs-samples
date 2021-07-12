@@ -15,6 +15,7 @@
  */
 
 using Google.Cloud.Compute.V1;
+using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,9 +36,17 @@ namespace Compute.Samples.Tests
 
         public string DiskSizeGb { get => "10"; }
 
+        public string UsageReportBucketName { get; } = GenerateName("b");
+
+        public string UsageReportPrefix { get; } = "test-usage";
+
         private IList<string> MachinesToDelete { get; } = new List<string>();
 
-        public InstancesClient Client { get; } = InstancesClient.Create();
+        public InstancesClient InstancesClient { get; } = InstancesClient.Create();
+
+        public ProjectsClient ProjectsClient { get; } = ProjectsClient.Create();
+
+        private StorageClient StorageClient { get; } = StorageClient.Create();
 
         public ComputeFixture()
         {
@@ -47,15 +56,20 @@ namespace Compute.Samples.Tests
                 throw new Exception(
                     "Please set the environment variable GOOGLE_PROJECT_ID to the ID of the project you want to run these tests in.");
             }
+
+            StorageClient.CreateBucket(ProjectId, UsageReportBucketName);
         }
 
         public string GenerateMachineName()
         {
-            string name = $"i-{DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfff", CultureInfo.InvariantCulture)}";
+            string name = GenerateName("i");
             // We always add them to the deletion list. We delete on a best effort basis anyway.
             MachinesToDelete.Add(name);
             return name;
         }
+
+        private static string GenerateName(string prefix) =>
+            $"{prefix}-{DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfff", CultureInfo.InvariantCulture)}";
 
         private bool _disposed = false;
         public void Dispose()
@@ -65,19 +79,26 @@ namespace Compute.Samples.Tests
                 return;
             }
 
+            BestEffortCleanup(() => StorageClient.DeleteBucket(UsageReportBucketName, new DeleteBucketOptions { DeleteObjects = true }));
+
             foreach(var machineName in MachinesToDelete)
+            {
+                // We don't poll, we delete on a best effort basis.
+                BestEffortCleanup(() => InstancesClient.Delete(ProjectId, Zone, machineName));
+            }
+            _disposed = true;
+
+            static void BestEffortCleanup(Action cleanupAction)
             {
                 try
                 {
-                    // We don't poll, we delete on a best effort basis.
-                    Client.Delete(ProjectId, Zone, machineName);
+                    cleanupAction();
                 }
                 catch
-                { 
+                {
                     // Do nothing, we delete on a best effort basis.
                 }
             }
-            _disposed = true;
         }
     }
 }

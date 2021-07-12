@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,20 +16,20 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateDataWithNumericTest
+public class QueryWithIntAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateDataWithNumericTest(SpannerFixture spannerFixture)
+    public QueryWithIntAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateDataWithNumeric()
+    public async Task TestQueryWithIntAsync()
     {
-        UpdateDataWithNumericAsyncSample updateNumericSample = new UpdateDataWithNumericAsyncSample();
-        var rowCount = await updateNumericSample.UpdateDataWithNumericAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        QueryWithIntAsyncSample queryWithIntAsyncSample = new QueryWithIntAsyncSample();
+        var venues = await queryWithIntAsyncSample.QueryWithIntAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Contains(venues, v => v.Capacity >= 3000);
     }
 }

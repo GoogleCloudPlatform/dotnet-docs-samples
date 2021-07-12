@@ -20,21 +20,15 @@ using Xunit;
 namespace Compute.Samples.Tests
 {
     [Collection(nameof(ComputeFixture))]
-    public class CreateInstanceAsyncTest
+    public class GetUsageExportBucketAsyncTest
     {
         private readonly ComputeFixture _fixture;
-        private readonly CreateInstanceAsyncSample _sample = new CreateInstanceAsyncSample();
+        private readonly GetUsageExportBucketAsyncSample _sample = new GetUsageExportBucketAsyncSample();
 
-        public CreateInstanceAsyncTest(ComputeFixture fixture) => _fixture = fixture;
+        public GetUsageExportBucketAsyncTest(ComputeFixture fixture) => _fixture = fixture;
 
         [Fact]
-        public async Task CreatesInstance()
-        {
-            string machineName = _fixture.GenerateMachineName();
-
-            await _sample.CreateInstanceAsync(_fixture.ProjectId, _fixture.Zone, machineName, _fixture.MachineType, _fixture.DiskImage, _fixture.DiskSizeGb);
-
-            Assert.NotNull(await _fixture.InstancesClient.GetAsync(_fixture.ProjectId, _fixture.Zone, machineName));
-        }
+        public async Task GetsProject() =>
+            Assert.NotNull(await _sample.GetUsageExportBucketAsync(_fixture.ProjectId));
     }
 }
