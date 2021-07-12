@@ -33,7 +33,7 @@ public class CreateBackupTest
         string connectionString = $"Data Source=projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{_spannerFixture.BackupDatabaseId}";
         using var connection = new SpannerConnection(connectionString);
         connection.Open();
-        var versionTime = (DateTime) connection.CreateSelectCommand("SELECT CURRENT_TIMESTAMP").ExecuteScalar();
+        var versionTime = (DateTime)connection.CreateSelectCommand("SELECT CURRENT_TIMESTAMP").ExecuteScalar();
 
         CreateBackupSample createBackupSample = new CreateBackupSample();
         // Backup already exists since it was created in the test setup so it should throw an exception.
