@@ -152,6 +152,7 @@ namespace CloudSql
             // connection with the server no longer exists.
             // [END cloud_sql_sqlserver_dotnet_ado_lifetime]
             // [END_EXCLUDE]
+            connectionString.TrustServerCertificate = true;
             return connectionString;
             // [END cloud_sql_sqlserver_dotnet_ado_connection_tcp]
         }
