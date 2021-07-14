@@ -151,8 +151,8 @@ namespace CloudSql
             // 4-8 minutes, or if the pooler detects that the
             // connection with the server no longer exists.
             // [END cloud_sql_sqlserver_dotnet_ado_lifetime]
-            // [END_EXCLUDE]
             connectionString.TrustServerCertificate = true;
+            // [END_EXCLUDE]
             return connectionString;
             // [END cloud_sql_sqlserver_dotnet_ado_connection_tcp]
         }
