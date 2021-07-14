@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Rpc;
+using Grpc.Core;
 using System;
 using System.Linq;
-using Grpc.Core;
 using System.Threading;
-using Google.Rpc;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
