@@ -32,7 +32,8 @@ namespace Compute.Samples.Tests
         {
             string machineName = _fixture.GenerateMachineName();
 
-            await _sample.CreateInstanceAsync(_fixture.ProjectId, _fixture.Zone, machineName, _fixture.MachineType, _fixture.DiskImage, _fixture.DiskSizeGb);
+            await _sample.CreateInstanceAsync(
+                _fixture.ProjectId, _fixture.Zone, machineName, _fixture.MachineType, _fixture.DiskImage, _fixture.DiskSizeGb, _fixture.NetworkName);
 
             Assert.NotNull(await _fixture.InstancesClient.GetAsync(_fixture.ProjectId, _fixture.Zone, machineName));
         }

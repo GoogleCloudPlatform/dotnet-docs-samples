@@ -28,13 +28,15 @@ namespace Compute.Samples.Tests
     {
         public string ProjectId { get; }
 
-        public string Zone { get => "us-central1-a"; }
+        public string Zone => "us-central1-a";
 
-        public string MachineType { get => "n1-standard-1"; }
+        public string MachineType => "n1-standard-1";
 
-        public string DiskImage { get => "projects/debian-cloud/global/images/family/debian-10"; }
+        public string DiskImage => "projects/debian-cloud/global/images/family/debian-10";
 
-        public string DiskSizeGb { get => "10"; }
+        public string DiskSizeGb => "10";
+
+        public string NetworkName => "default";
 
         public string UsageReportBucketName { get; } = GenerateName("b");
 

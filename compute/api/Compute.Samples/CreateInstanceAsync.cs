@@ -28,7 +28,8 @@ public class CreateInstanceAsyncSample
         string machineName = "test-machine",
         string machineType = "n1-standard-1",
         string diskImage = "projects/debian-cloud/global/images/family/debian-10",
-        string diskSizeGb = "10")
+        string diskSizeGb = "10",
+        string networkName = "default")
     {
         Instance instance = new Instance
         {
@@ -51,9 +52,7 @@ public class CreateInstanceAsyncSample
                     }
                 }
             },
-            // Instance creation requires at least one network interface.
-            // The "default" network interface is created automatically for every project.
-            NetworkInterfaces = { new NetworkInterface { Name = "default" } }
+            NetworkInterfaces = { new NetworkInterface { Name = networkName } }
         };
 
         // Initialize client that will be used to send requests. This client only needs to be created
