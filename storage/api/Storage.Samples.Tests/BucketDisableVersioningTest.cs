@@ -36,6 +36,7 @@ public class BucketDisableVersioningTest
 
         // Disable versioning
         var bucket = bucketDisableVersioningSample.BucketDisableVersioning(_bucketFixture.BucketNameGeneric);
+        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
         Assert.False(bucket.Versioning.Enabled);
     }
 }

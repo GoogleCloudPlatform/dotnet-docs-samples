@@ -22,11 +22,6 @@ public class ChangeDefaultStorageClassSample
 {
 	public Bucket ChangeDefaultStorageClass(string bucketName = "your-bucket-name", string storageClass = StorageClasses.Standard)
 	{
-		if (string.IsNullOrEmpty(storageClass))
-		{
-			storageClass = StorageClasses.Standard;
-		}
-
 		var storage = StorageClient.Create();
 		var bucket = storage.GetBucket(bucketName);
 
