@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.AspNetCore.DataProtection.Kms" Version="1.0.0-alpha02" />
-    <PackageReference Include="Google.Cloud.AspNetCore.DataProtection.Storage" Version="1.0.0-alpha02" />
-    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="3.0.0" />
+    <PackageReference Include="Google.Cloud.AspNetCore.DataProtection.Kms" Version="1.0.0-alpha03" />
+    <PackageReference Include="Google.Cloud.AspNetCore.DataProtection.Storage" Version="1.0.0-alpha03" />
+    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

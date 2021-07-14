@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.0.0" />
+    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
