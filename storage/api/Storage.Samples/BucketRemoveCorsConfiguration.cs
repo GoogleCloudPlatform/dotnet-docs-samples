@@ -22,8 +22,8 @@ public class BucketRemoveCorsConfigurationSample
 {
 	public Bucket BucketRemoveCorsConfiguration(string bucketName = "your-bucket-name")
 	{
-		var storage = StorageClient.Create();
-		var bucket = storage.GetBucket(bucketName);
+        var storage = StorageClient.Create();
+        var bucket = storage.GetBucket(bucketName);
 
         if (bucket.Cors == null)
         {

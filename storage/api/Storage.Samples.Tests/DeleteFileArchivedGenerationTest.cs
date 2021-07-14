@@ -48,8 +48,6 @@ public class DeleteFileArchivedGenerationTest
         // Upload again to archive previous generation.
         uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", objectName);
 
-        var fileArchivedGeneration = (long?)0;
-        var fileCurrentGeneration = (long?)0;
 
         try
         {
@@ -59,8 +57,8 @@ public class DeleteFileArchivedGenerationTest
 
             // Get Generations
             var testFiles = objects.Where(a => a.Name == objectName).ToList();
-            fileArchivedGeneration = testFiles[0].Generation;
-            fileCurrentGeneration = testFiles[1].Generation;
+            long? fileArchivedGeneration = testFiles[0].Generation;
+            long? fileCurrentGeneration = testFiles[1].Generation;
 
             // Delete first generation of the file
             deleteFileArchivedGenerationSample.DeleteFileArchivedGeneration(_bucketFixture.BucketNameGeneric, objectName, fileArchivedGeneration);

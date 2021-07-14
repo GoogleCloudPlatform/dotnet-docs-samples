@@ -46,8 +46,9 @@ public class ComposeObjectTest
         downloadFileSample.DownloadFile(_bucketFixture.BucketNameGeneric, targetObject, targetObject);
 
         // Content from both file should exists in the downloaded file
-        Assert.Contains(File.ReadAllText("Resources/Hello.txt"), File.ReadAllText(targetObject));
-        Assert.Contains(File.ReadAllText("Resources/HelloDownloadCompleteByteRange.txt"), File.ReadAllText(targetObject));
+        var targetContent = File.ReadAllText(targetObject);
+        Assert.Contains(File.ReadAllText("Resources/Hello.txt"), targetContent);
+        Assert.Contains(File.ReadAllText("Resources/HelloDownloadCompleteByteRange.txt"), targetContent);
 
         File.Delete(targetObject);
     }

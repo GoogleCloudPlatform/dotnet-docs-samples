@@ -33,7 +33,7 @@ public class BucketDeleteDefaultKmsKeyTest
 
         // Set default key
         enableDefaultKMSKeySample.EnableDefaultKMSKey(_bucketFixture.ProjectId, _bucketFixture.BucketNameRegional,
-              _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName);
+            _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName);
         _bucketFixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove default key

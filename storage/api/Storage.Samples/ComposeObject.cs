@@ -29,25 +29,17 @@ public class ComposeObjectSample
     {
         var storage = StorageClient.Create();
 
-        var sourceObjects = new List<ComposeRequest.SourceObjectsData>();
-
-        sourceObjects.Add(new ComposeRequest.SourceObjectsData
+        var sourceObjects = new List<ComposeRequest.SourceObjectsData>
         {
-            Name = firstObjectName
-        });
-        sourceObjects.Add(new ComposeRequest.SourceObjectsData
-        {
-            Name = secondObjectName
-        });
+            new ComposeRequest.SourceObjectsData { Name = firstObjectName },
+            new ComposeRequest.SourceObjectsData { Name = secondObjectName }
+        };
         //You could add as many sourceObjects as you want here, up to the max of 32.
 
         storage.Service.Objects.Compose(new ComposeRequest
         {
             SourceObjects = sourceObjects,
-            Destination = new Google.Apis.Storage.v1.Data.Object
-            {
-                ContentType = "text/plain"
-            }
+            Destination = new Google.Apis.Storage.v1.Data.Object { ContentType = "text/plain" }
         }, bucketName, targetObjectName).Execute();
 
         Console.WriteLine($"New composite file {targetObjectName} was created in bucket {bucketName}" +
