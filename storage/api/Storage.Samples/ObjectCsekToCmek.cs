@@ -35,12 +35,10 @@ public class ObjectCsekToCmekSample
         var storage = StorageClient.Create();
 
         using var outputStream = new MemoryStream();
-        storage.DownloadObject(bucketName, objectName, outputStream,
-            new DownloadObjectOptions()
-            {
-                EncryptionKey = EncryptionKey.Create(
-                    Convert.FromBase64String(currrentEncryptionKey))
-            });
+        storage.DownloadObject(bucketName, objectName, outputStream, new DownloadObjectOptions()
+        {
+            EncryptionKey = EncryptionKey.Create(Convert.FromBase64String(currrentEncryptionKey))
+        });
 
         outputStream.Position = 0;
 
