@@ -52,9 +52,9 @@ public class ListFileArchivedGenerationTest
         {
             var objects = listFileArchivedGenerationSample.ListFileArchivedGeneration(_bucketFixture.BucketNameGeneric);
 
-            Assert.Equal(2, objects.Count(a => a.Name == objectName));
-
             var testFiles = objects.Where(a => a.Name == objectName).ToList();
+            
+            Assert.Equal(2, testFiles.Count);            
             _bucketFixture.CollectArchivedFiles(_bucketFixture.BucketNameGeneric, objectName, testFiles[0].Generation);
             _bucketFixture.CollectArchivedFiles(_bucketFixture.BucketNameGeneric, objectName, testFiles[1].Generation);
         }
