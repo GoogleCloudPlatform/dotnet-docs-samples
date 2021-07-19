@@ -12,16 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class ActivateHmacKeyTest
+public class ActivateHmacKeyTest : IDisposable
 {
     private readonly BucketFixture _bucketFixture;
+
+    private string _accessId;
+    private bool _isActive = true;
 
     public ActivateHmacKeyTest(BucketFixture bucketFixture)
     {
         _bucketFixture = bucketFixture;
+    }
+
+    public void Dispose()
+    {
+        if (_accessId is string)
+        {
+            _bucketFixture.DeleteHmacKey(_accessId, _isActive);
+            _accessId = null;
+        }
     }
 
     [Fact]
@@ -35,15 +48,15 @@ public class ActivateHmacKeyTest
 
         // Create key.
         var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
+        _accessId = key.Metadata.AccessId;
 
         // Deactivate key.
-        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, _accessId);
+        _isActive = false;
 
         // Activate key.
-        var keyMetadata = activateHmacKeySample.ActivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        var keyMetadata = activateHmacKeySample.ActivateHmacKey(_bucketFixture.ProjectId, _accessId);
         Assert.Equal("ACTIVE", keyMetadata.State);
-
-        // Delete key.
-        _bucketFixture.DeleteHmacKey(key.Metadata.AccessId);
+        _isActive = true;
     }
 }

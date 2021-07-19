@@ -118,15 +118,34 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     /// <returns>The regional objectName.</returns>
     public string CollectRegionalObject(string objectName) => Collect(BucketNameRegional, objectName);
 
-    public void DeleteHmacKey(string accessId)
+    public void DeleteHmacKey(string accessId, bool isActive)
     {
+        int retries = 10;
         DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
         DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
 
-        // Deactivate key.
-        deactivateHmacKeySample.DeactivateHmacKey(ProjectId, accessId);
-        // Delete key.
-        deleteHmacKeySample.DeleteHmacKey(ProjectId, accessId);
+        do
+        {
+            try
+            {
+                if (isActive)
+                {
+                    deactivateHmacKeySample.DeactivateHmacKey(ProjectId, accessId);
+                    isActive = false;
+                }
+                deleteHmacKeySample.DeleteHmacKey(ProjectId, accessId);
+                return;
+            }
+            catch when (--retries > 0)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(2));
+            }
+            catch
+            {
+                return;
+                // This is still cleanup, it's on a best effort basis.
+            }
+        } while (true);
     }
 
     public void CreateBucket(string bucketName)
