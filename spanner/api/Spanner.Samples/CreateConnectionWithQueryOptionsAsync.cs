@@ -36,7 +36,10 @@ public class CreateConnectionWithQueryOptionsAsyncSample
             // Set query options on the connection.
             QueryOptions = QueryOptions.Empty
                 .WithOptimizerVersion("1")
-                .WithOptimizerStatisticsPackage("auto_20191128_14_47_22UTC")
+                // The list of available statistics packages for the database can
+                // be found by querying the "INFORMATION_SCHEMA.SPANNER_STATISTICS"
+                // table.
+                .WithOptimizerStatisticsPackage("latest")
         };
 
         var albums = new List<Album>();

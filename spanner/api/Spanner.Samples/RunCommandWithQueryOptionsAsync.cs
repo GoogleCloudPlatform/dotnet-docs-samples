@@ -35,6 +35,9 @@ public class RunCommandWithQueryOptionsAsyncSample
 
         cmd.QueryOptions = QueryOptions.Empty
             .WithOptimizerVersion("1")
+            // The list of available statistics packages for the database can
+            // be found by querying the "INFORMATION_SCHEMA.SPANNER_STATISTICS"
+            // table.
             .WithOptimizerStatisticsPackage("latest");
         var albums = new List<Album>();
         using var reader = await cmd.ExecuteReaderAsync();
