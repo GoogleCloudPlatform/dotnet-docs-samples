@@ -12,30 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class DeactivateHmacKeyTest : IDisposable
+public class DeactivateHmacKeyTest : HmacKeyManager
 {
-    private readonly BucketFixture _bucketFixture;
-
-    private string _accessId;
-    private bool _isActive = true;
-
-    public DeactivateHmacKeyTest(BucketFixture bucketFixture)
-    {
-        _bucketFixture = bucketFixture;
-    }
-
-    public void Dispose()
-    {
-        if (_accessId is string)
-        {
-            _bucketFixture.DeleteHmacKey(_accessId, _isActive);
-            _accessId = null;
-        }
-    }
+    public DeactivateHmacKeyTest(BucketFixture bucketFixture) : base(bucketFixture)
+    { }
 
     [Fact]
     public void TestDeactivateHmacKey()
