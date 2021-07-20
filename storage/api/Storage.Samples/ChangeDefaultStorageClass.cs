@@ -22,14 +22,14 @@ public class ChangeDefaultStorageClassSample
 {
 	public Bucket ChangeDefaultStorageClass(string bucketName = "your-bucket-name", string storageClass = StorageClasses.Standard)
 	{
-		var storage = StorageClient.Create();
-		var bucket = storage.GetBucket(bucketName);
+	    var storage = StorageClient.Create();
+	    var bucket = storage.GetBucket(bucketName);
 
-		bucket.StorageClass = storageClass;
+	    bucket.StorageClass = storageClass;
 
-		bucket = storage.UpdateBucket(bucket);
-		Console.WriteLine($"Default storage class for bucket {bucketName} changed to {storageClass}.");
-		return bucket;
+	    bucket = storage.UpdateBucket(bucket);
+	    Console.WriteLine($"Default storage class for bucket {bucketName} changed to {storageClass}.");
+	    return bucket;
 	}
 }
 // [END storage_change_default_storage_class]
