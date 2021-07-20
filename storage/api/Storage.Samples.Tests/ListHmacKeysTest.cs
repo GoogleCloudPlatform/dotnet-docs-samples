@@ -15,14 +15,10 @@
 using Xunit;
 
 [Collection(nameof(BucketFixture))]
-public class ListHmacKeysTest
+public class ListHmacKeysTest : HmacKeyManager
 {
-    private readonly BucketFixture _bucketFixture;
-
-    public ListHmacKeysTest(BucketFixture bucketFixture)
-    {
-        _bucketFixture = bucketFixture;
-    }
+    public ListHmacKeysTest(BucketFixture bucketFixture) : base(bucketFixture)
+    { }
 
     [Fact]
     public void TestListHmacKeys()
@@ -34,12 +30,10 @@ public class ListHmacKeysTest
 
         // Create key.
         var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
+        _accessId = key.Metadata.AccessId;
 
         // List keys.
         var keys = listHmacKeysSample.ListHmacKeys(_bucketFixture.ProjectId);
         Assert.Contains(keys, key => key.AccessId == key.AccessId);
-
-        // Delete key.
-        _bucketFixture.DeleteHmacKey(key.Metadata.AccessId);
     }
 }
