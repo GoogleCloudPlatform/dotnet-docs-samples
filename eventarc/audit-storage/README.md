@@ -1,6 +1,6 @@
-# Cloud Eventarc – Cloud Storage Events tutorial
+# Eventarc – Cloud Storage Events via Audit Logs
 
-This sample shows how to create a service that processes GCS events.
+This sample shows how to create a service that processes Cloud Storage events.
 
 ## Setup
 
@@ -32,15 +32,26 @@ gsutil mb -p $(gcloud config get-value project) \
     gs://${MY_GCS_BUCKET}
 ```
 
+Grant the `eventarc.eventReceiver` role to the Compute Engine service account:
+
+```sh
+export PROJECT_NUMBER="$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')"
+
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+    --member=serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com \
+    --role='roles/eventarc.eventReceiver'
+```
+
 Create Cloud Storage trigger:
 
 ```sh
-gcloud beta events triggers create my-gcs-trigger \
+gcloud eventarc triggers create my-gcs-trigger \
   --destination-run-service ${MY_RUN_SERVICE} \
-  --matching-criteria type=google.cloud.audit.log.v1.written \
-  --matching-criteria methodName=storage.buckets.update \
-  --matching-criteria serviceName=storage.googleapis.com \
-  --matching-criteria resourceName=projects/_/buckets/"$MY_GCS_BUCKET"
+  --event-filters type=google.cloud.audit.log.v1.written \
+  --event-filters methodName=storage.buckets.update \
+  --event-filters serviceName=storage.googleapis.com \
+  --event-filters resourceName=projects/_/buckets/"$MY_GCS_BUCKET" \
+  --service-account=${PROJECT_NUMBER}-compute@developer.gserviceaccount.com
 ```
 
 ## Test

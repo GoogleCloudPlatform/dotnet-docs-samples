@@ -32,8 +32,7 @@ namespace IAP.Samples.Tests
         {
             // Let's use our IAPClient, so we make sure that we can actually verify a valid IAP token.
             IAPClient client = new IAPClient();
-            HttpResponseMessage response = await client.InvokeRequestAsync(
-                _fixture.IAPClientId, _fixture.CredentialsFilePath, _fixture.IAPUri);
+            HttpResponseMessage response = await client.InvokeRequestAsync(_fixture.IAPClientId, _fixture.IAPUri);
             // The application we are making a request to simply bounces the IAP token back to us.
             string bouncedToken = await response.Content.ReadAsStringAsync();
 

@@ -36,11 +36,11 @@ namespace TimeBoundedRetries
         {
             string textData = data.Message.TextData;
 
-            DateTime utcNow = DateTime.UtcNow;
+            DateTimeOffset utcNow = DateTimeOffset.UtcNow;
 
             // Every PubSub CloudEvent will contain a timestamp.
-            DateTime timestamp = cloudEvent.Time.Value.ToUniversalTime();
-            DateTime expiry = timestamp + MaxEventAge;
+            DateTimeOffset timestamp = cloudEvent.Time.Value;
+            DateTimeOffset expiry = timestamp + MaxEventAge;
 
             // Ignore events that are too old.
             if (utcNow > expiry)

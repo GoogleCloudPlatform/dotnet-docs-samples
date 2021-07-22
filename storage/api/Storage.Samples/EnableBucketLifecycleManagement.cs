@@ -49,14 +49,12 @@ public class EnableBucketLifecycleManagementSample
             Console.WriteLine($"Age: \t{rule.Condition.Age}");
             Console.WriteLine($"Created Before: \t{rule.Condition.CreatedBefore}");
             Console.WriteLine($"Time Before: \t{rule.Condition.CustomTimeBefore}");
-            Console.WriteLine($"Time Before Raw: \t{rule.Condition.CustomTimeBeforeRaw}");
             Console.WriteLine($"Days Since Custom Time: \t{rule.Condition.DaysSinceCustomTime}");
             Console.WriteLine($"Days Since Non-current Time: \t{rule.Condition.DaysSinceNoncurrentTime}");
             Console.WriteLine($"IsLive: \t{rule.Condition.IsLive}");
             Console.WriteLine($"Pattern: \t{rule.Condition.MatchesPattern}");
             Console.WriteLine($"Storage Class: \t{rule.Condition.MatchesStorageClass}");
             Console.WriteLine($"Noncurrent Time Before: \t{rule.Condition.NoncurrentTimeBefore}");
-            Console.WriteLine($"Noncurrent Time Before Raw: \t{rule.Condition.NoncurrentTimeBeforeRaw}");
             Console.WriteLine($"Newer Versions: \t{rule.Condition.NumNewerVersions}");
         }
         return bucket;

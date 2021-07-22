@@ -28,18 +28,11 @@ public class QueryDataWithNumericParameterTest
     [Fact]
     public async Task TestQueryDataWithNumericParameter()
     {
-        await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
-
-        AddNumericColumnAsyncSample addColumnSample = new AddNumericColumnAsyncSample();
-        await addColumnSample.AddNumericColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
         UpdateDataWithNumericAsyncSample updateNumericSample = new UpdateDataWithNumericAsyncSample();
         await updateNumericSample.UpdateDataWithNumericAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
 
         QueryDataWithNumericParameterAsyncSample queryNumericSample = new QueryDataWithNumericParameterAsyncSample();
         var venues = await queryNumericSample.QueryDataWithNumericParameterAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
         Assert.Contains(venues, v => v.VenueId == 4);
-
-        await _spannerFixture.DeleteVenuesTable();
     }
 }

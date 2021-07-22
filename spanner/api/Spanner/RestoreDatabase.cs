@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START spanner_restore_backup]
-// [START spanner_restore_database]
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
@@ -54,11 +53,11 @@ namespace GoogleCloudSamples.Spanner
             RestoreInfo restoreInfo = completedResponse.Result.RestoreInfo;
             Console.WriteLine(
                 $"Database {restoreInfo.BackupInfo.SourceDatabase} was restored " +
-                $"to {databaseId} from backup {restoreInfo.BackupInfo.Backup}");
+                $"to {databaseId} from backup {restoreInfo.BackupInfo.Backup} " +
+                $"with version time {restoreInfo.BackupInfo.VersionTime.ToDateTime()}");
 
             return 0;
         }
     }
 }
-// [END spanner_restore_database]
 // [END spanner_restore_backup]

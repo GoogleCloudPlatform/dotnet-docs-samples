@@ -30,8 +30,7 @@ namespace IAP.Samples.Tests
         public async Task IAPClient_InvokeAsync()
         {
             IAPClient client = new IAPClient();
-            HttpResponseMessage response = await client.InvokeRequestAsync(
-                _fixture.IAPClientId, _fixture.CredentialsFilePath, _fixture.IAPUri);
+            HttpResponseMessage response = await client.InvokeRequestAsync(_fixture.IAPClientId, _fixture.IAPUri);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
