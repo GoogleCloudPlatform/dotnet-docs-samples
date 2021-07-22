@@ -75,6 +75,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             await DeleteStaleDatabasesAsync();
             await DeleteStaleBackupsAsync();
         }
+        await DeleteStaleInstancesAsync();
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
 
@@ -185,6 +186,42 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             try
             {
                 await databaseAdminClient.DeleteBackupAsync(backup.BackupName);
+            }
+            catch (Exception) { }
+        }
+    }
+
+    /// <summary>
+    /// Deletes 10 oldest instances if the number of instances is more than 14.
+    /// This is to clean up the stale instances in case of instance cleanup code may not get triggered.
+    /// </summary>
+    private async Task DeleteStaleInstancesAsync()
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        var listInstancesRequest = new ListInstancesRequest
+        {
+            Filter = "name:my-instance-processing-units-",
+            ParentAsProjectName = ProjectName.FromProject(ProjectId)
+        };
+        var instances = instanceAdminClient.ListInstances(listInstancesRequest);
+
+        if (instances.Count() < 15)
+        {
+            return;
+        }
+
+        var instancesToDelete = instances
+            .OrderBy(db => long.TryParse(
+                db.InstanceName.InstanceId.Replace("my-instance-processing-units-", ""),
+                out long creationDate) ? creationDate : long.MaxValue)
+            .Take(10);
+
+        // Delete the instances.
+        foreach (var instance in instancesToDelete)
+        {
+            try
+            {
+                await instanceAdminClient.DeleteInstanceAsync(instance.InstanceName);
             }
             catch (Exception) { }
         }
