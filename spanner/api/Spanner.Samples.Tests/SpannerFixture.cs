@@ -72,8 +72,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         var isExistingInstance = InitializeInstance();
         if (isExistingInstance)
         {
-            await DeleteStaleDatabasesAsync();
             await DeleteStaleBackupsAsync();
+            await DeleteStaleDatabasesAsync();
         }
         await DeleteStaleInstancesAsync();
         await InitializeDatabaseAsync();
