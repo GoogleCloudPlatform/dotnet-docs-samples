@@ -27,7 +27,7 @@ public class BucketDisableVersioningSample
 
 		if (bucket.Versioning == null || !bucket.Versioning.Enabled)
 		{
-			Console.WriteLine($"Versioning already disabled for bucket {bucketName}.")
+			Console.WriteLine($"Versioning already disabled for bucket {bucketName}.");
 		}
 		else
 		{
