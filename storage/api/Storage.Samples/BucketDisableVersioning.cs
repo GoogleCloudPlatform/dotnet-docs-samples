@@ -25,7 +25,7 @@ public class BucketDisableVersioningSample
 		var storage = StorageClient.Create();
 		var bucket = storage.GetBucket(bucketName);
 
-		if (bucket.Versioning == null || !bucket.Versioning.Enabled)
+		if (bucket.Versioning?.Enabled != true)
 		{
 			Console.WriteLine($"Versioning already disabled for bucket {bucketName}.");
 		}
