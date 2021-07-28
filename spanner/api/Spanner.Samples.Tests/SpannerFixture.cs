@@ -125,20 +125,18 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    /// <summary>
-    /// Deletes 10 oldest databases if the number of databases is more than 89.
-    /// This is to avoid resource exhausted errors.
-    /// </summary>
     private async Task DeleteStaleDatabasesAsync()
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var databases = databaseAdminClient.ListDatabases(instanceName);
+        var databases = databaseAdminClient.ListDatabases(instanceName, pageSize: 200).ToList();
 
-        if (databases.Count() < 90)
+        if (databases.Count < 50)
         {
             return;
         }
+
+        var deleteCount = Math.Max(30, databases.Count - 50);
 
         var databasesToDelete = databases
             .OrderBy(db => long.TryParse(
@@ -146,7 +144,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                     .Replace("my-db-", "").Replace("my-restore-db-", "")
                     .Replace("my-enc-db-", "").Replace("my-enc-restore-db-", ""),
                 out long creationDate) ? creationDate : long.MaxValue)
-            .Take(10);
+            .Take(deleteCount);
 
         // Delete the databases.
         foreach (var database in databasesToDelete)
@@ -159,26 +157,24 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    /// <summary>
-    /// Deletes 10 oldest backups if the number of backups is more than 89.
-    /// This is to avoid resource exhausted errors.
-    /// </summary>
     private async Task DeleteStaleBackupsAsync()
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var backups = databaseAdminClient.ListBackups(instanceName);
+        var backups = databaseAdminClient.ListBackups(instanceName, pageSize: 200).ToList();
 
-        if (backups.Count() < 90)
+        if (backups.Count < 50)
         {
             return;
         }
+
+        var deleteCount = Math.Max(30, backups.Count - 50);
 
         var backupsToDelete = backups
             .OrderBy(db => long.TryParse(
                 db.BackupName.BackupId.Replace("my-enc-backup-", ""),
                 out long creationDate) ? creationDate : long.MaxValue)
-            .Take(10);
+            .Take(deleteCount);
 
         // Delete the backups.
         foreach (var backup in backupsToDelete)
