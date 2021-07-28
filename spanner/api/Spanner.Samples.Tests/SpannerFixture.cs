@@ -50,6 +50,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
 
     public string InstanceIdWithProcessingUnits { get; } = $"my-instance-processing-units-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string InstanceIdWithMultiRegion { get; } = $"my-instance-multi-region-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string InstanceConfigId { get; } = "nam6";
 
 
     // Encryption key identifiers.
@@ -75,6 +77,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             await DeleteStaleBackupsAsync();
             await DeleteStaleDatabasesAsync();
         }
+        CreateInstanceWithMultiRegion();
         await DeleteStaleInstancesAsync();
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
@@ -90,6 +93,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public Task DisposeAsync()
     {
         DeleteInstance(InstanceIdWithProcessingUnits);
+        DeleteInstance(InstanceIdWithMultiRegion);
 
         return Task.CompletedTask;
     }
@@ -109,6 +113,25 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             createInstanceSample.CreateInstance(ProjectId, InstanceId);
             return false;
         }
+    }
+
+    private void CreateInstanceWithMultiRegion()
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+
+        var projectName = ProjectName.FromProject(ProjectId);
+        Instance instance = new Instance
+        {
+            DisplayName = "This is a display name.",
+            ConfigAsInstanceConfigName = InstanceConfigName.FromProjectInstanceConfig(ProjectId, InstanceConfigId),
+            InstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceIdWithMultiRegion),
+            NodeCount = 1,
+        };
+
+        var response = instanceAdminClient.CreateInstance(projectName, InstanceIdWithMultiRegion, instance);
+
+        // Poll until the returned long-running operation is complete
+        response.PollUntilCompleted();
     }
 
     private void DeleteInstance(string instanceId)
@@ -200,7 +223,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
         var listInstancesRequest = new ListInstancesRequest
         {
-            Filter = "name:my-instance-processing-units-",
+            Filter = "name:my-instance-processing-units- OR name:my-instance-multi-region-",
             ParentAsProjectName = ProjectName.FromProject(ProjectId)
         };
         var instances = instanceAdminClient.ListInstances(listInstancesRequest);
@@ -212,7 +235,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
         var instancesToDelete = instances
             .OrderBy(db => long.TryParse(
-                db.InstanceName.InstanceId.Replace("my-instance-processing-units-", ""),
+                db.InstanceName.InstanceId.Replace("my-instance-processing-units-", "")
+                .Replace("my-instance-multi-region-", ""),
                 out long creationDate) ? creationDate : long.MaxValue)
             .Take(10);
 
