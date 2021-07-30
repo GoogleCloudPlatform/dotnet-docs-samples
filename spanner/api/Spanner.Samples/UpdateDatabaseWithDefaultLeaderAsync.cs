@@ -14,24 +14,37 @@
 
 // [START spanner_update_database_with_default_leader]
 
+using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Data;
 using System;
 using System.Threading.Tasks;
+using Google.Cloud.Spanner.Common.V1;
 
 public class UpdateDatabaseWithDefaultLeaderAsyncSample
 {
     public async Task UpdateDatabaseWithDefaultLeaderAsync(string projectId, string instanceId, string databaseId, string defaultLeader)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-
-        using var connection = new SpannerConnection(connectionString);
+        DatabaseAdminClient databaseAdminClient = await DatabaseAdminClient.CreateAsync();
+        
         var alterDatabaseStatement = @$"ALTER DATABASE `{databaseId}` SET OPTIONS
                    (default_leader = '{defaultLeader}')";
+        
+        // Create the UpdateDatabaseDdl request and execute it.
+        var request = new UpdateDatabaseDdlRequest
+        {
+            DatabaseAsDatabaseName = DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId),
+            Statements = { alterDatabaseStatement }
+        };
+        var operation = await databaseAdminClient.UpdateDatabaseDdlAsync(request);
 
-        using var alterDbCommand = connection.CreateDdlCommand(alterDatabaseStatement);
-
-        await alterDbCommand.ExecuteNonQueryAsync();
-
+        // Wait until the operation has finished.
+        Console.WriteLine("Waiting for the operation to finish.");
+        var completedResponse = await operation.PollUntilCompletedAsync();
+        if (completedResponse.IsFaulted)
+        {
+            Console.WriteLine($"Error while updating database: {completedResponse.Exception}");
+            throw completedResponse.Exception;
+        }
         Console.WriteLine("Updated default leader");
     }
 }

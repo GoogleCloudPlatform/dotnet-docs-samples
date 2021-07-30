@@ -29,8 +29,7 @@ public class ListDatabasesSample
 
         foreach (var database in databases)
         {
-            Console.WriteLine($"Available leader options for database {database.DatabaseName.DatabaseId}:");
-            Console.WriteLine(database.DefaultLeader);
+            Console.WriteLine($"Default leader for database {database.DatabaseName.DatabaseId}: {database.DefaultLeader}");
         }
 
         return databases;

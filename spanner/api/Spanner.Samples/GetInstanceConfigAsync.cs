@@ -22,7 +22,7 @@ public class GetInstanceConfigAsyncSample
 {
     public async Task<InstanceConfig> GetInstanceConfigAsync(string projectId, string instanceConfigId)
     {
-        var instanceAdminClient = InstanceAdminClient.Create();
+        var instanceAdminClient = await InstanceAdminClient.CreateAsync();
         var instanceConfigName = InstanceConfigName.FromProjectInstanceConfig(projectId, instanceConfigId);
         var instanceConfig = await instanceAdminClient.GetInstanceConfigAsync(instanceConfigName);
 

@@ -115,23 +115,23 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    private void CreateInstanceWithMultiRegion()
+    private async Task CreateInstanceWithMultiRegion()
     {
         InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
 
         var projectName = ProjectName.FromProject(ProjectId);
         Instance instance = new Instance
         {
-            DisplayName = "This is a display name.",
+            DisplayName = "Test instance for multi-region samples",
             ConfigAsInstanceConfigName = InstanceConfigName.FromProjectInstanceConfig(ProjectId, InstanceConfigId),
             InstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceIdWithMultiRegion),
             NodeCount = 1,
         };
 
-        var response = instanceAdminClient.CreateInstance(projectName, InstanceIdWithMultiRegion, instance);
+        var response = await instanceAdminClient.CreateInstanceAsync(projectName, InstanceIdWithMultiRegion, instance);
 
         // Poll until the returned long-running operation is complete
-        response.PollUntilCompleted();
+        await response.PollUntilCompletedAsync();
     }
 
     private void DeleteInstance(string instanceId)
@@ -176,10 +176,15 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             try
             {
+                Console.WriteLine($"Deleting stale test database {database.DatabaseName.DatabaseId}");
                 await DeleteDatabaseAsync(database.DatabaseName.DatabaseId);
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to delete stale test database {database.DatabaseName.DatabaseId}: {e.Message}");
+            }
         }
+        Console.WriteLine("Finished deleting stale test databases");
     }
 
     /// <summary>

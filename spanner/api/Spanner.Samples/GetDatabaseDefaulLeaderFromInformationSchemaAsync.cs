@@ -18,9 +18,9 @@ using Google.Cloud.Spanner.Data;
 using System;
 using System.Threading.Tasks;
 
-public class GetDatabaseDefaulLeaderFromInformationSchemaAsyncSample
+public class GetDatabaseDefaultLeaderFromInformationSchemaAsyncSample
 {
-    public async Task<string> GetDatabaseDefaulLeaderFromInformationSchemaAsync(string projectId, string instanceId, string databaseId)
+    public async Task<string> GetDatabaseDefaultLeaderFromInformationSchemaAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
 

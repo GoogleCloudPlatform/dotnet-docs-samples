@@ -24,7 +24,7 @@ public class GetDatabaseDdlAsyncSample
 {
     public async Task<List<string>> GetDatabaseDdlAsync(string projectId, string instanceId, string databaseId)
     {
-        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+        DatabaseAdminClient databaseAdminClient = await DatabaseAdminClient.CreateAsync();
         DatabaseName databaseName = DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId);
         var databaseDdl = await databaseAdminClient.GetDatabaseDdlAsync(databaseName);
 

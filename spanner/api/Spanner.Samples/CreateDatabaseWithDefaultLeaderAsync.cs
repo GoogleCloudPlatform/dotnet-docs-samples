@@ -23,7 +23,7 @@ public class CreateDatabaseWithDefaultLeaderAsyncSample
 {
     public async Task<Database> CreateDatabaseWithDefaultLeaderAsync(string projectId, string instanceId, string databaseId, string defaultLeader)
     {
-        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
+        DatabaseAdminClient databaseAdminClient = await DatabaseAdminClient.CreateAsync();
         // Define create table statement for table #1.
         var createSingersTable =
         @"CREATE TABLE Singers (
@@ -44,7 +44,7 @@ public class CreateDatabaseWithDefaultLeaderAsyncSample
         // Define alter database statement to set default leader.
         var alterDatabaseStatement = @$"ALTER DATABASE `{databaseId}` SET OPTIONS (default_leader = '{defaultLeader}')";
 
-        // Create the CreateDatabase request with encryption configuration and execute it.
+        // Create the CreateDatabase request with default leader and execute it.
         var request = new CreateDatabaseRequest
         {
             ParentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
