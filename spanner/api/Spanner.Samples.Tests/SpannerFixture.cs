@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf.Collections;
 using Xunit;
 using CryptoKeyName = Google.Cloud.Spanner.Admin.Database.V1.CryptoKeyName;
 
@@ -77,7 +78,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             await DeleteStaleBackupsAsync();
             await DeleteStaleDatabasesAsync();
         }
-        CreateInstanceWithMultiRegion();
+        await CreateInstanceWithMultiRegionAsync();
         await DeleteStaleInstancesAsync();
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
@@ -115,14 +116,14 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    private async Task CreateInstanceWithMultiRegion()
+    private async Task CreateInstanceWithMultiRegionAsync()
     {
         InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
 
         var projectName = ProjectName.FromProject(ProjectId);
         Instance instance = new Instance
         {
-            DisplayName = "Test instance for multi-region samples",
+            DisplayName = "Multi-region samples test",
             ConfigAsInstanceConfigName = InstanceConfigName.FromProjectInstanceConfig(ProjectId, InstanceConfigId),
             InstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceIdWithMultiRegion),
             NodeCount = 1,
@@ -176,7 +177,6 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             try
             {
-                Console.WriteLine($"Deleting stale test database {database.DatabaseName.DatabaseId}");
                 await DeleteDatabaseAsync(database.DatabaseName.DatabaseId);
             }
             catch (Exception e)
@@ -184,7 +184,6 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                 Console.WriteLine($"Failed to delete stale test database {database.DatabaseName.DatabaseId}: {e.Message}");
             }
         }
-        Console.WriteLine("Finished deleting stale test databases");
     }
 
     /// <summary>
@@ -469,6 +468,38 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                     { "MarketingBudget", SpannerDbType.Int64, i == 1 ? firstAlbumBudget : secondAlbumBudget },
                 });
             await cmd.ExecuteNonQueryAsync();
+        }
+    }
+
+    public async Task RunWithTemporaryDatabaseAsync(Func<string, Task> testFunction)
+    {
+        await RunWithTemporaryDatabaseAsync(InstanceId, testFunction);
+    }
+
+    public async Task RunWithTemporaryDatabaseAsync(string instanceId, Func<string, Task> testFunction, params string[] extraStatements)
+    {
+        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var databaseAdminClient = await DatabaseAdminClient.CreateAsync();
+        var operation = await databaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
+        {
+            ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
+            CreateStatement = $"CREATE DATABASE `{databaseId}`",
+            ExtraStatements = { extraStatements },
+        });
+        var completedResponse = await operation.PollUntilCompletedAsync();
+        if (completedResponse.IsFaulted)
+        {
+            throw completedResponse.Exception;
+        }
+
+        try
+        {
+            await testFunction(databaseId);
+        }
+        finally
+        {
+            // Cleanup the test database.
+            await databaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, instanceId, databaseId));
         }
     }
 }

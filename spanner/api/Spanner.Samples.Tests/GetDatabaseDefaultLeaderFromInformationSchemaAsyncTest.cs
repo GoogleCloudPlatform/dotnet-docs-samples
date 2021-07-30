@@ -17,28 +17,28 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class GetDatabaseDefaulLeaderFromInformationSchemaAsyncTest
+public class GetDatabaseDefaultLeaderFromInformationSchemaAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public GetDatabaseDefaulLeaderFromInformationSchemaAsyncTest(SpannerFixture spannerFixture)
+    public GetDatabaseDefaultLeaderFromInformationSchemaAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestGetDatabaseDefaulLeaderFromInformationSchemaAsync()
+    public async Task TestGetDatabaseDefaultLeaderFromInformationSchemaAsync()
     {
         var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
         var defaultLeader = "us-central1";
         var sample = new CreateDatabaseWithDefaultLeaderAsyncSample();
-        var getDatabaseDefaulLeaderFromInformationSchemaAsyncSample = new GetDatabaseDefaultLeaderFromInformationSchemaAsyncSample();
+        var getDatabaseDefaultLeaderFromInformationSchemaAsyncSample = new GetDatabaseDefaultLeaderFromInformationSchemaAsyncSample();
 
         // Create Database with default leader
         await sample.CreateDatabaseWithDefaultLeaderAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithMultiRegion, databaseId, defaultLeader);
 
         // Get Database default leader
-        var leader = await getDatabaseDefaulLeaderFromInformationSchemaAsyncSample
+        var leader = await getDatabaseDefaultLeaderFromInformationSchemaAsyncSample
             .GetDatabaseDefaultLeaderFromInformationSchemaAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithMultiRegion, databaseId);
 
         Assert.Equal(defaultLeader, leader);

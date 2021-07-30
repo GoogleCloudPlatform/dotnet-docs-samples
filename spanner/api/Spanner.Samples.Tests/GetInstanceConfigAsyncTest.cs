@@ -12,30 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
-using Google.Cloud.Spanner.Admin.Database.V1;
-using Google.Cloud.Spanner.Common.V1;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class ListDatabasesTest
+public class GetInstanceConfigAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public ListDatabasesTest(SpannerFixture spannerFixture)
+    public GetInstanceConfigAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestListDatabases()
+    public async Task TestGetInstanceConfigAsync()
     {
-        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
-        {
-            var listDatabasesSample = new ListDatabasesSample();
-            var databases = listDatabasesSample.ListDatabases(_spannerFixture.ProjectId, _spannerFixture.InstanceId);
-            Assert.Contains(databases, d => d.DatabaseName.DatabaseId == databaseId);
-        });
+        var configId = "nam6";
+        var sample = new GetInstanceConfigAsyncSample();
+        var config = await sample.GetInstanceConfigAsync(_spannerFixture.ProjectId, configId);
+        Assert.Equal(configId, config.InstanceConfigName.InstanceConfigId);
     }
 }
