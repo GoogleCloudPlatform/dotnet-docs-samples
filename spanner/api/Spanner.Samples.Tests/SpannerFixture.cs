@@ -23,7 +23,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Google.Protobuf.Collections;
 using Xunit;
 using CryptoKeyName = Google.Cloud.Spanner.Admin.Database.V1.CryptoKeyName;
 
