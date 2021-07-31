@@ -29,7 +29,7 @@ public class GetDatabaseDdlAsyncSample
         var databaseDdl = await databaseAdminClient.GetDatabaseDdlAsync(databaseName);
 
         var ddlStatements = new List<string>();
-        Console.WriteLine($"Database Ddl statement for {databaseId}:");
+        Console.WriteLine($"DDL statements for database {databaseId}:");
         foreach (var statement in databaseDdl.Statements)
         {
             Console.WriteLine(statement);

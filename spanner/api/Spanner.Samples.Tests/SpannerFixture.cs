@@ -239,7 +239,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         var instancesToDelete = instances
             .OrderBy(db => long.TryParse(
                 db.InstanceName.InstanceId.Replace("my-instance-processing-units-", "")
-                .Replace("my-instance-multi-region-", ""),
+                    .Replace("my-instance-multi-region-", ""),
                 out long creationDate) ? creationDate : long.MaxValue)
             .Take(10);
 
