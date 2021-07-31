@@ -9,7 +9,7 @@
     <PackageReference Include="M2Mqtt" Version="4.3.0" />
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
     <PackageReference Include="jose-jwt" Version="2.5.0" />
-    <PackageReference Include="BouncyCastle" Version="1.8.5" />
+    <PackageReference Include="BouncyCastle" Version="1.8.9" />
     <PackageReference Include="NodaTime" Version="2.4.7" />
   </ItemGroup>
   <ItemGroup>
