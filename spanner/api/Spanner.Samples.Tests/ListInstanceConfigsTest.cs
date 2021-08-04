@@ -30,6 +30,6 @@ public class ListInstanceConfigsTest
     {
         var sample = new ListInstanceConfigsSample();
         var configs = sample.ListInstanceConfigs(_spannerFixture.ProjectId);
-        Assert.True(configs.Any());
+        Assert.NotEmpty(configs);
     }
 }

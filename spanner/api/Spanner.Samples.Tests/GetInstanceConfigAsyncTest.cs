@@ -28,7 +28,7 @@ public class GetInstanceConfigAsyncTest
     [Fact]
     public async Task TestGetInstanceConfigAsync()
     {
-        var configId = "nam6";
+        var configId = _spannerFixture.InstanceConfigId;
         var sample = new GetInstanceConfigAsyncSample();
         var config = await sample.GetInstanceConfigAsync(_spannerFixture.ProjectId, configId);
         Assert.Equal(configId, config.InstanceConfigName.InstanceConfigId);
