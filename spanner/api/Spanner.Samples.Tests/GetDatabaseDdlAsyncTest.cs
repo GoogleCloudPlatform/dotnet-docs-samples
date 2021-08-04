@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,6 +29,8 @@ public class GetDatabaseDdlAsyncTest
     [Fact]
     public async Task TestGetDatabaseDdlAsync()
     {
+        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var alterDatabaseStatement = $"ALTER DATABASE `{databaseId}` SET OPTIONS (default_leader = 'us-central1')";
         var createSingersTable =
             @"CREATE TABLE Singers (
                      SingerId INT64 NOT NULL,
@@ -42,17 +45,18 @@ public class GetDatabaseDdlAsyncTest
                      AlbumTitle STRING(MAX),
                  ) PRIMARY KEY (SingerId, AlbumId),
                  INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
-        await _spannerFixture.RunWithTemporaryDatabaseAsync(_spannerFixture.InstanceId, async databaseId =>
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(_spannerFixture.InstanceIdWithMultiRegion, databaseId, async databaseId =>
         {
             var sample = new GetDatabaseDdlAsyncSample();
             var statements =
-                await sample.GetDatabaseDdlAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+                await sample.GetDatabaseDdlAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithMultiRegion, databaseId);
             Assert.Collection(statements,
                 // Only check the start of the statement, as there is no guarantee on exactly
                 // how Cloud Spanner will format the returned SQL string.
+                statement => Assert.StartsWith($"ALTER DATABASE `{databaseId}` SET OPTIONS (\n  default_leader = 'us-central1'", statement),
                 statement => Assert.StartsWith("CREATE TABLE Singers", statement),
                 statement => Assert.StartsWith("CREATE TABLE Albums", statement)
             );
-        }, createSingersTable, createAlbumsTable);
+        }, alterDatabaseStatement, createSingersTable, createAlbumsTable);
     }
 }

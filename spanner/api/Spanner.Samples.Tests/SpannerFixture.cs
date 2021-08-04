@@ -466,14 +466,18 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    public async Task RunWithTemporaryDatabaseAsync(Func<string, Task> testFunction)
-    {
-        await RunWithTemporaryDatabaseAsync(InstanceId, testFunction);
-    }
+    public async Task RunWithTemporaryDatabaseAsync(Func<string, Task> testFunction, params string[] extraStatements)
+        => await RunWithTemporaryDatabaseAsync(InstanceId, testFunction, extraStatements);
 
-    public async Task RunWithTemporaryDatabaseAsync(string instanceId, Func<string, Task> testFunction, params string[] extraStatements)
+    public async Task RunWithTemporaryDatabaseAsync(string instanceId, Func<string, Task> testFunction,
+        params string[] extraStatements)
     {
         var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, extraStatements);
+    }
+    
+    public async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, params string[] extraStatements)
+    {
         var databaseAdminClient = await DatabaseAdminClient.CreateAsync();
         var operation = await databaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
         {
