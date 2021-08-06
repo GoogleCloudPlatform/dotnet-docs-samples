@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
   </ItemGroup>
 
 </Project>
