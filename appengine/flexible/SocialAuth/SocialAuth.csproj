@@ -10,7 +10,7 @@
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.2.0" />
     <PackageReference Include="Google.Cloud.Kms.V1" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
