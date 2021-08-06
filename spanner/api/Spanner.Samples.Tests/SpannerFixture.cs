@@ -50,6 +50,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
 
     public string InstanceIdWithProcessingUnits { get; } = $"my-instance-processing-units-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string InstanceIdWithMultiRegion { get; } = $"my-instance-multi-region-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string InstanceConfigId { get; } = "nam6";
 
 
     // Encryption key identifiers.
@@ -75,6 +77,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             await DeleteStaleBackupsAsync();
             await DeleteStaleDatabasesAsync();
         }
+        await CreateInstanceWithMultiRegionAsync();
         await DeleteStaleInstancesAsync();
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
@@ -90,6 +93,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public Task DisposeAsync()
     {
         DeleteInstance(InstanceIdWithProcessingUnits);
+        DeleteInstance(InstanceIdWithMultiRegion);
 
         return Task.CompletedTask;
     }
@@ -109,6 +113,25 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             createInstanceSample.CreateInstance(ProjectId, InstanceId);
             return false;
         }
+    }
+
+    private async Task CreateInstanceWithMultiRegionAsync()
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+
+        var projectName = ProjectName.FromProject(ProjectId);
+        Instance instance = new Instance
+        {
+            DisplayName = "Multi-region samples test",
+            ConfigAsInstanceConfigName = InstanceConfigName.FromProjectInstanceConfig(ProjectId, InstanceConfigId),
+            InstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceIdWithMultiRegion),
+            NodeCount = 1,
+        };
+
+        var response = await instanceAdminClient.CreateInstanceAsync(projectName, InstanceIdWithMultiRegion, instance);
+
+        // Poll until the returned long-running operation is complete
+        await response.PollUntilCompletedAsync();
     }
 
     private void DeleteInstance(string instanceId)
@@ -153,7 +176,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             {
                 await DeleteDatabaseAsync(database.DatabaseName.DatabaseId);
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to delete stale test database {database.DatabaseName.DatabaseId}: {e.Message}");
+            }
         }
     }
 
@@ -196,7 +222,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
         var listInstancesRequest = new ListInstancesRequest
         {
-            Filter = "name:my-instance-processing-units-",
+            Filter = "name:my-instance-processing-units- OR name:my-instance-multi-region-",
             ParentAsProjectName = ProjectName.FromProject(ProjectId)
         };
         var instances = instanceAdminClient.ListInstances(listInstancesRequest);
@@ -208,7 +234,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
         var instancesToDelete = instances
             .OrderBy(db => long.TryParse(
-                db.InstanceName.InstanceId.Replace("my-instance-processing-units-", ""),
+                db.InstanceName.InstanceId.Replace("my-instance-processing-units-", "")
+                    .Replace("my-instance-multi-region-", ""),
                 out long creationDate) ? creationDate : long.MaxValue)
             .Take(10);
 
@@ -436,6 +463,42 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                     { "MarketingBudget", SpannerDbType.Int64, i == 1 ? firstAlbumBudget : secondAlbumBudget },
                 });
             await cmd.ExecuteNonQueryAsync();
+        }
+    }
+
+    public async Task RunWithTemporaryDatabaseAsync(Func<string, Task> testFunction, params string[] extraStatements)
+        => await RunWithTemporaryDatabaseAsync(InstanceId, testFunction, extraStatements);
+
+    public async Task RunWithTemporaryDatabaseAsync(string instanceId, Func<string, Task> testFunction,
+        params string[] extraStatements)
+    {
+        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, extraStatements);
+    }
+    
+    public async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, params string[] extraStatements)
+    {
+        var databaseAdminClient = await DatabaseAdminClient.CreateAsync();
+        var operation = await databaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
+        {
+            ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
+            CreateStatement = $"CREATE DATABASE `{databaseId}`",
+            ExtraStatements = { extraStatements },
+        });
+        var completedResponse = await operation.PollUntilCompletedAsync();
+        if (completedResponse.IsFaulted)
+        {
+            throw completedResponse.Exception;
+        }
+
+        try
+        {
+            await testFunction(databaseId);
+        }
+        finally
+        {
+            // Cleanup the test database.
+            await databaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, instanceId, databaseId));
         }
     }
 }
