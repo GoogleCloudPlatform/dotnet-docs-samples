@@ -15,7 +15,7 @@
 
 # Use Microsoft's official .NET image.
 # https://hub.docker.com/r/microsoft/dotnet
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 # FROM microsoft/dotnet:3.0-sdk
 
 # Install production dependencies.
