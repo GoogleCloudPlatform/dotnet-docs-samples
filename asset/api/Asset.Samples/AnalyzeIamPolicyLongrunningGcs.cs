@@ -14,14 +14,11 @@
 //
 // [START asset_quickstart_analyze_iam_policy_longrunning_gcs]
 
-using Google.Api.Gax;
 using Google.Cloud.Asset.V1;
-using System.Collections.Generic;
-using System.Linq;
 
 public class AnalyzeIamPolicyLongrunningGcsSample
 {
-    public AnalyzeIamPolicyLongrunningRequest AnalyzeIamPolicyLongrunning(
+    public AnalyzeIamPolicyLongrunningResponse AnalyzeIamPolicyLongrunning(
       string scope, string fullResourceName, string uri)
     {
         // Create the client.
@@ -56,8 +53,10 @@ public class AnalyzeIamPolicyLongrunningGcsSample
         var operation = client.AnalyzeIamPolicyLongrunning(request);
         // Wait for it to complete
         operation = operation.PollUntilCompleted();
-        // Return the metadata(request)
-        return operation.Metadata;
+
+        // Return the operation result. If the operation has failed
+        // calling Result will throw.
+        return operation.Result;
     }
 }
 // [END asset_quickstart_analyze_iam_policy_longrunning_gcs]
