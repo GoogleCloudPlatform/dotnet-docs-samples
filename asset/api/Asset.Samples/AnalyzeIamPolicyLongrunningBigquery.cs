@@ -57,7 +57,7 @@ public class AnalyzeIamPolicyLongrunningBigquerySample
         var operation = client.AnalyzeIamPolicyLongrunning(request);
         // Wait for it to complete
         operation = operation.PollUntilCompleted();
-        // Return if the operation status
+        // Return the operation status
         return operation.IsCompleted;
     }
 }
