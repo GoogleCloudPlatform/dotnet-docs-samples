@@ -34,7 +34,7 @@ namespace Compute.Samples.Tests
 
         public string DiskImage => "projects/debian-cloud/global/images/family/debian-10";
 
-        public string DiskSizeGb => "10";
+        public long DiskSizeGb => 10;
 
         public string NetworkName => "default";
 
