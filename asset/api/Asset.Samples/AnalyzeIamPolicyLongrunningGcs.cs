@@ -21,8 +21,7 @@ using System.Linq;
 
 public class AnalyzeIamPolicyLongrunningGcsSample
 {
-    public AnalyzeIamPolicyLongrunningRequest AnalyzeIamPolicyLongrunning(
-      string scope, string fullResourceName, string uri)
+    public bool AnalyzeIamPolicyLongrunning(string scope, string fullResourceName, string uri)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
@@ -55,9 +54,9 @@ public class AnalyzeIamPolicyLongrunningGcsSample
         // Start the analyze long-running operation
         var operation = client.AnalyzeIamPolicyLongrunning(request);
         // Wait for it to complete
-        operation = operation.PollUntilCompleted();
-        // Return the metadata(request)
-        return operation.Metadata;
+         operation = operation.PollUntilCompleted();
+        // Return if the operation status
+        return operation.IsCompleted;
     }
 }
 // [END asset_quickstart_analyze_iam_policy_longrunning_gcs]
