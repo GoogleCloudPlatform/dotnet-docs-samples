@@ -40,7 +40,9 @@ namespace Compute.Samples.Tests
 
         public string UsageReportBucketName { get; } = GenerateName("b");
 
-        public string UsageReportPrefix { get; } = "test-usage";
+        public string UsageReportPrefix => "test-usage";
+
+        public string PublicImagesProjectId => "windows-sql-cloud";
 
         private IList<string> MachinesToDelete { get; } = new List<string>();
 

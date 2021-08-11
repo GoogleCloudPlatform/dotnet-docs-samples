@@ -37,7 +37,7 @@ public class ListZoneInstancesAsyncSample
         await foreach(var instance in client.ListAsync(projectId, zone))
         {
             // The result is an Instance collection.
-            Console.WriteLine($"-- Name: {instance.Name}");
+            Console.WriteLine($"Instance: {instance.Name}");
             allInstances.Add(instance);
         }
 
