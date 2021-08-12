@@ -41,7 +41,7 @@ namespace Firebase.Tests
             var data = new AuthEventData
             {
                 Uid = "my-uid",
-                Metadata = new UserMetadata { CreatedAt = created.ToTimestamp() }
+                Metadata = new UserMetadata { CreateTime = created.ToTimestamp() }
             };
             await ExecuteCloudEventRequestAsync(AuthEventData.CreatedCloudEventType, data);
 

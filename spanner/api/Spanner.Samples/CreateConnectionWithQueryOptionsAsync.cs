@@ -34,7 +34,12 @@ public class CreateConnectionWithQueryOptionsAsyncSample
         using var connection = new SpannerConnection(connectionString)
         {
             // Set query options on the connection.
-            QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1")
+            QueryOptions = QueryOptions.Empty
+                .WithOptimizerVersion("1")
+                // The list of available statistics packages for the database can
+                // be found by querying the "INFORMATION_SCHEMA.SPANNER_STATISTICS"
+                // table.
+                .WithOptimizerStatisticsPackage("latest")
         };
 
         var albums = new List<Album>();

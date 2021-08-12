@@ -33,10 +33,14 @@ namespace Concepts.Tests
         [InlineData("Old message", 12, "Dropping PubSub message 'Old message'")]
         public async Task Processing(string textData, int ageInSeconds, string expectedLog)
         {
-            var cloudEvent = new CloudEvent(MessagePublishedData.MessagePublishedCloudEventType,
-                new Uri("//pubsub.googleapis.com"), "1234", DateTime.UtcNow.AddSeconds(-ageInSeconds));
-            var data = new MessagePublishedData { Message = new PubsubMessage { TextData = textData } };
-            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
+            var cloudEvent = new CloudEvent
+            {
+                Type = MessagePublishedData.MessagePublishedCloudEventType,
+                Source = new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
+                Id = "1234",
+                Time = DateTimeOffset.UtcNow.AddSeconds(-ageInSeconds),
+                Data = new MessagePublishedData { Message = new PubsubMessage { TextData = textData } }
+            };
 
             await ExecuteCloudEventRequestAsync(cloudEvent);
             var logEntry = Assert.Single(GetFunctionLogEntries());

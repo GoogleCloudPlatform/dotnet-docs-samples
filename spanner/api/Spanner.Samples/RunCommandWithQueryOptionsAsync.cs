@@ -33,7 +33,12 @@ public class RunCommandWithQueryOptionsAsyncSample
         using var connection = new SpannerConnection(connectionString);
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
 
-        cmd.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+        cmd.QueryOptions = QueryOptions.Empty
+            .WithOptimizerVersion("1")
+            // The list of available statistics packages for the database can
+            // be found by querying the "INFORMATION_SCHEMA.SPANNER_STATISTICS"
+            // table.
+            .WithOptimizerStatisticsPackage("latest");
         var albums = new List<Album>();
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())

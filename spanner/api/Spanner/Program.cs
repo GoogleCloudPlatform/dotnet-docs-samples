@@ -1864,37 +1864,42 @@ namespace GoogleCloudSamples.Spanner
             {
                 await connection.OpenAsync();
 
-                // Insert rows into the Singers table.
-                var cmd = connection.CreateInsertCommand("Singers",
-                    new SpannerParameterCollection
-                    {
-                        { "SingerId", SpannerDbType.Int64 },
-                        { "FirstName", SpannerDbType.String },
-                        { "LastName", SpannerDbType.String }
-                    });
-                await Task.WhenAll(singers.Select(singer =>
+                await connection.RunWithRetriableTransactionAsync(async transaction =>
                 {
-                    cmd.Parameters["SingerId"].Value = singer.SingerId;
-                    cmd.Parameters["FirstName"].Value = singer.FirstName;
-                    cmd.Parameters["LastName"].Value = singer.LastName;
-                    return cmd.ExecuteNonQueryAsync();
-                }));
+                    // Insert rows into the Singers table.
+                    var cmd = connection.CreateInsertCommand("Singers",
+                        new SpannerParameterCollection
+                        {
+                            { "SingerId", SpannerDbType.Int64 },
+                            { "FirstName", SpannerDbType.String },
+                            { "LastName", SpannerDbType.String }
+                        });
+                    cmd.Transaction = transaction;
+                    await Task.WhenAll(singers.Select(singer =>
+                    {
+                        cmd.Parameters["SingerId"].Value = singer.SingerId;
+                        cmd.Parameters["FirstName"].Value = singer.FirstName;
+                        cmd.Parameters["LastName"].Value = singer.LastName;
+                        return cmd.ExecuteNonQueryAsync();
+                    }));
 
-                // Insert rows into the Albums table.
-                cmd = connection.CreateInsertCommand("Albums",
-                    new SpannerParameterCollection
+                    // Insert rows into the Albums table.
+                    cmd = connection.CreateInsertCommand("Albums",
+                        new SpannerParameterCollection
+                        {
+                            { "SingerId", SpannerDbType.Int64 },
+                            { "AlbumId", SpannerDbType.Int64 },
+                            { "AlbumTitle", SpannerDbType.String }
+                        });
+                    cmd.Transaction = transaction;
+                    await Task.WhenAll(albums.Select(album =>
                     {
-                        { "SingerId", SpannerDbType.Int64 },
-                        { "AlbumId", SpannerDbType.Int64 },
-                        { "AlbumTitle", SpannerDbType.String }
-                    });
-                await Task.WhenAll(albums.Select(album =>
-                {
-                    cmd.Parameters["SingerId"].Value = album.SingerId;
-                    cmd.Parameters["AlbumId"].Value = album.AlbumId;
-                    cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;
-                    return cmd.ExecuteNonQueryAsync();
-                }));
+                        cmd.Parameters["SingerId"].Value = album.SingerId;
+                        cmd.Parameters["AlbumId"].Value = album.AlbumId;
+                        cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;
+                        return cmd.ExecuteNonQueryAsync();
+                    }));
+                });
                 Console.WriteLine("Inserted data.");
             }
         }
@@ -3806,7 +3811,9 @@ namespace GoogleCloudSamples.Spanner
             using (var connection = new SpannerConnection(builder))
             {
                 // Set query options on the connection.
-                connection.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+                connection.QueryOptions = QueryOptions.Empty
+                    .WithOptimizerVersion("1")
+                    .WithOptimizerStatisticsPackage("auto_20191128_14_47_22UTC");
                 var cmd = connection.CreateSelectCommand(
                     "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -3850,7 +3857,9 @@ namespace GoogleCloudSamples.Spanner
                 var cmd = connection.CreateSelectCommand(
                     "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
                 // Set query options just for this command.
-                cmd.QueryOptions = QueryOptions.Empty.WithOptimizerVersion("1");
+                cmd.QueryOptions = QueryOptions.Empty
+                    .WithOptimizerVersion("1")
+                    .WithOptimizerStatisticsPackage("latest");
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())

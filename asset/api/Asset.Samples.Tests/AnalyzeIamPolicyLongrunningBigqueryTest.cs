@@ -15,7 +15,6 @@
  */
 
 using Google.Cloud.Asset.V1;
-using System;
 using Xunit;
 
 [Collection(nameof(AssetFixture))]
@@ -40,10 +39,10 @@ public class AnalyzeIamPolicyLongrunningBigqueryTest
         string dataset =
             $"projects/{_fixture.ProjectId}/datasets/{_fixture.DatasetId}";
         string tablePrefix = "client_library_table";
-        AnalyzeIamPolicyLongrunningRequest returnedRequest =
+
+        AnalyzeIamPolicyLongrunningResponse result =
             _sample.AnalyzeIamPolicyLongrunning(scope, fullResourceName, dataset, tablePrefix);
 
-        Assert.Equal(dataset, returnedRequest.OutputConfig.BigqueryDestination.Dataset);
-        Assert.Equal(tablePrefix, returnedRequest.OutputConfig.BigqueryDestination.TablePrefix);
+        Assert.NotNull(result);
     }
 }

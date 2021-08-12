@@ -15,7 +15,7 @@
 // [START eventarc_pubsub_handler]
 
 using CloudNative.CloudEvents;
-using Google.Events;
+using CloudNative.CloudEvents.AspNetCore;
 using Google.Events.Protobuf.Cloud.PubSub.V1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -45,10 +45,11 @@ public class Startup
         {
             endpoints.MapPost("/", async context =>
             {
-                var cloudEvent = await context.Request.ReadCloudEventAsync();
+                var formatter = CloudEventFormatterAttribute.CreateFormatter(typeof(MessagePublishedData));
+                var cloudEvent = await context.Request.ToCloudEventAsync(formatter);
                 logger.LogInformation("Received CloudEvent\n" + GetEventLog(cloudEvent));
 
-                var messagePublishedData = CloudEventConverters.ConvertCloudEventData<MessagePublishedData>(cloudEvent);
+                var messagePublishedData = (MessagePublishedData) cloudEvent.Data;
                 var pubSubMessage = messagePublishedData.Message;
                 if (pubSubMessage == null)
                 {
@@ -77,7 +78,7 @@ public class Startup
             + $"Subject: {cloudEvent.Subject}\n"
             + $"DataSchema: {cloudEvent.DataSchema}\n"
             + $"DataContentType: {cloudEvent.DataContentType}\n"
-            + $"Time: {cloudEvent.Time?.ToUniversalTime():yyyy-MM-dd'T'HH:mm:ss.fff'Z'}\n"
+            + $"Time: {cloudEvent.Time?.UtcDateTime:yyyy-MM-dd'T'HH:mm:ss.fff'Z'}\n"
             + $"SpecVersion: {cloudEvent.SpecVersion}\n"
             + $"Data: {cloudEvent.Data}";
     }

@@ -39,7 +39,7 @@ public class PullMessagesWithFlowControlAsyncSample
         // threads to maximize throughput.
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
-            string text = Encoding.UTF8.GetString(message.Data.ToArray());
+            string text = System.Text.Encoding.UTF8.GetString(message.Data.ToArray());
             Console.WriteLine($"Message {message.MessageId}: {text}");
             Interlocked.Increment(ref messageCount);
             return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);

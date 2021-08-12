@@ -49,6 +49,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string FixedEncryptedDatabaseId { get; } = "fixed-enc-backup-db";
     public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
 
+    public string InstanceIdWithProcessingUnits { get; } = $"my-instance-processing-units-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string InstanceIdWithMultiRegion { get; } = $"my-instance-multi-region-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string InstanceConfigId { get; } = "nam6";
+
+
     // Encryption key identifiers.
     private static readonly string _testKeyProjectId = Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     private static readonly string _testKeyLocationId = Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1";
@@ -69,9 +74,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         var isExistingInstance = InitializeInstance();
         if (isExistingInstance)
         {
-            await DeleteStaleDatabasesAsync();
             await DeleteStaleBackupsAsync();
+            await DeleteStaleDatabasesAsync();
         }
+        await CreateInstanceWithMultiRegionAsync();
+        await DeleteStaleInstancesAsync();
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
 
@@ -85,6 +92,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public Task DisposeAsync()
     {
+        DeleteInstance(InstanceIdWithProcessingUnits);
+        DeleteInstance(InstanceIdWithMultiRegion);
+
         return Task.CompletedTask;
     }
 
@@ -105,20 +115,51 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    /// <summary>
-    /// Deletes 10 oldest databases if the number of databases is more than 89.
-    /// This is to avoid resource exhausted errors.
-    /// </summary>
+    private async Task CreateInstanceWithMultiRegionAsync()
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+
+        var projectName = ProjectName.FromProject(ProjectId);
+        Instance instance = new Instance
+        {
+            DisplayName = "Multi-region samples test",
+            ConfigAsInstanceConfigName = InstanceConfigName.FromProjectInstanceConfig(ProjectId, InstanceConfigId),
+            InstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceIdWithMultiRegion),
+            NodeCount = 1,
+        };
+
+        var response = await instanceAdminClient.CreateInstanceAsync(projectName, InstanceIdWithMultiRegion, instance);
+
+        // Poll until the returned long-running operation is complete
+        await response.PollUntilCompletedAsync();
+    }
+
+    private void DeleteInstance(string instanceId)
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, instanceId);
+        try
+        {
+            instanceAdminClient.DeleteInstance(instanceName);
+        }
+        catch (Exception)
+        {
+            // Silently ignore errors to prevent tests from failing.
+        }
+    }
+
     private async Task DeleteStaleDatabasesAsync()
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var databases = databaseAdminClient.ListDatabases(instanceName);
+        var databases = databaseAdminClient.ListDatabases(instanceName, pageSize: 200).ToList();
 
-        if (databases.Count() < 90)
+        if (databases.Count < 50)
         {
             return;
         }
+
+        var deleteCount = Math.Max(30, databases.Count - 50);
 
         var databasesToDelete = databases
             .OrderBy(db => long.TryParse(
@@ -126,7 +167,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                     .Replace("my-db-", "").Replace("my-restore-db-", "")
                     .Replace("my-enc-db-", "").Replace("my-enc-restore-db-", ""),
                 out long creationDate) ? creationDate : long.MaxValue)
-            .Take(10);
+            .Take(deleteCount);
 
         // Delete the databases.
         foreach (var database in databasesToDelete)
@@ -135,30 +176,31 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             {
                 await DeleteDatabaseAsync(database.DatabaseName.DatabaseId);
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to delete stale test database {database.DatabaseName.DatabaseId}: {e.Message}");
+            }
         }
     }
 
-    /// <summary>
-    /// Deletes 10 oldest backups if the number of backups is more than 89.
-    /// This is to avoid resource exhausted errors.
-    /// </summary>
     private async Task DeleteStaleBackupsAsync()
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var backups = databaseAdminClient.ListBackups(instanceName);
+        var backups = databaseAdminClient.ListBackups(instanceName, pageSize: 200).ToList();
 
-        if (backups.Count() < 90)
+        if (backups.Count < 50)
         {
             return;
         }
+
+        var deleteCount = Math.Max(30, backups.Count - 50);
 
         var backupsToDelete = backups
             .OrderBy(db => long.TryParse(
                 db.BackupName.BackupId.Replace("my-enc-backup-", ""),
                 out long creationDate) ? creationDate : long.MaxValue)
-            .Take(10);
+            .Take(deleteCount);
 
         // Delete the backups.
         foreach (var backup in backupsToDelete)
@@ -171,24 +213,73 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
+    /// <summary>
+    /// Deletes 10 oldest instances if the number of instances is more than 14.
+    /// This is to clean up the stale instances in case of instance cleanup code may not get triggered.
+    /// </summary>
+    private async Task DeleteStaleInstancesAsync()
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        var listInstancesRequest = new ListInstancesRequest
+        {
+            Filter = "name:my-instance-processing-units- OR name:my-instance-multi-region-",
+            ParentAsProjectName = ProjectName.FromProject(ProjectId)
+        };
+        var instances = instanceAdminClient.ListInstances(listInstancesRequest);
+
+        if (instances.Count() < 15)
+        {
+            return;
+        }
+
+        var instancesToDelete = instances
+            .OrderBy(db => long.TryParse(
+                db.InstanceName.InstanceId.Replace("my-instance-processing-units-", "")
+                    .Replace("my-instance-multi-region-", ""),
+                out long creationDate) ? creationDate : long.MaxValue)
+            .Take(10);
+
+        // Delete the instances.
+        foreach (var instance in instancesToDelete)
+        {
+            try
+            {
+                await instanceAdminClient.DeleteInstanceAsync(instance.InstanceName);
+            }
+            catch (Exception) { }
+        }
+    }
+
     private async Task InitializeDatabaseAsync()
     {
         // If the database has not been initialized, retry.
         CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
         InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+        InsertStructSampleDataAsyncSample insertStructSampleDataAsyncSample = new InsertStructSampleDataAsyncSample();
         AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
+        AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
         AddIndexAsyncSample addIndexAsyncSample = new AddIndexAsyncSample();
         AddStoringIndexAsyncSample addStoringIndexAsyncSample = new AddStoringIndexAsyncSample();
+        CreateTableWithDataTypesAsyncSample createTableWithDataTypesAsyncSample = new CreateTableWithDataTypesAsyncSample();
+        InsertDataTypesDataAsyncSample insertDataTypesDataAsyncSample = new InsertDataTypesDataAsyncSample();
+        CreateTableWithTimestampColumnAsyncSample createTableWithTimestampColumnAsyncSample =
+            new CreateTableWithTimestampColumnAsyncSample();
         await createDatabaseAsyncSample.CreateDatabaseAsync(ProjectId, InstanceId, DatabaseId);
         await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, DatabaseId);
-        await InsertStructDataAsync();
+        await insertStructSampleDataAsyncSample.InsertStructSampleDataAsync(ProjectId, InstanceId, DatabaseId);
         await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, DatabaseId);
-        await AddCommitTimestampAsync();
+        await addCommitTimestampAsyncSample.AddCommitTimestampAsync(ProjectId, InstanceId, DatabaseId);
         await addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId);
+        // Create a new table that includes supported datatypes.
+        await createTableWithDataTypesAsyncSample.CreateTableWithDataTypesAsync(ProjectId, InstanceId, DatabaseId);
+        // Write data to the new table.
+        await insertDataTypesDataAsyncSample.InsertDataTypesDataAsync(ProjectId, InstanceId, DatabaseId);
         // Add storing Index on table.
         await addStoringIndexAsyncSample.AddStoringIndexAsync(ProjectId, InstanceId, DatabaseId);
         // Update the value of MarketingBudgets.
         await RefillMarketingBudgetsAsync(300000, 300000);
+        // Create table with Timestamp column
+        await createTableWithTimestampColumnAsyncSample.CreateTableWithTimestampColumnAsync(ProjectId, InstanceId, DatabaseId);
     }
 
     private async Task InitializeBackupAsync()
@@ -230,6 +321,47 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             // It's ok backup has been in progress in another test cycle.
             Console.WriteLine($"Backup {BackupId} already in progress.");
         }
+    }
+
+    public async Task CreateVenuesTableAndInsertDataAsync(string databaseId)
+    {
+        // Create connection to Cloud Spanner.
+        using var connection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
+
+        // Define create table statement for Venues.
+        string createTableStatement =
+        @"CREATE TABLE Venues (
+                 VenueId INT64 NOT NULL,
+                 VenueName STRING(1024),
+             ) PRIMARY KEY (VenueId)";
+
+        using var cmd = connection.CreateDdlCommand(createTableStatement);
+        await cmd.ExecuteNonQueryAsync();
+
+        List<Venue> venues = new List<Venue>
+        {
+            new Venue { VenueId = 4, VenueName = "Venue 4" },
+            new Venue { VenueId = 19, VenueName = "Venue 19" },
+            new Venue { VenueId = 42, VenueName = "Venue 42" },
+        };
+
+        await Task.WhenAll(venues.Select(venue =>
+        {
+            // Insert rows into the Venues table.
+
+            using var cmd = connection.CreateInsertCommand("Venues", new SpannerParameterCollection
+            {
+                { "VenueId", SpannerDbType.Int64, venue.VenueId },
+                { "VenueName", SpannerDbType.String, venue.VenueName }
+            });
+            return cmd.ExecuteNonQueryAsync();
+        }));
+    }
+
+    private class Venue
+    {
+        public int VenueId { get; set; }
+        public string VenueName { get; set; }
     }
 
     private async Task InitializeEncryptedBackupAsync()
@@ -334,112 +466,39 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    public async Task CreateVenuesTableAndInsertDataAsync()
+    public async Task RunWithTemporaryDatabaseAsync(Func<string, Task> testFunction, params string[] extraStatements)
+        => await RunWithTemporaryDatabaseAsync(InstanceId, testFunction, extraStatements);
+
+    public async Task RunWithTemporaryDatabaseAsync(string instanceId, Func<string, Task> testFunction,
+        params string[] extraStatements)
     {
-        // Create connection to Cloud Spanner.
-        using var connection = new SpannerConnection(ConnectionString);
-
-        // Define create table statement for Venues.
-        string createTableStatement =
-        @"CREATE TABLE Venues (
-                 VenueId INT64 NOT NULL,
-                 VenueName STRING(1024),
-             ) PRIMARY KEY (VenueId)";
-
-        using var cmd = connection.CreateDdlCommand(createTableStatement);
-        await cmd.ExecuteNonQueryAsync();
-
-        List<Venue> venues = new List<Venue>
+        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, extraStatements);
+    }
+    
+    public async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, params string[] extraStatements)
+    {
+        var databaseAdminClient = await DatabaseAdminClient.CreateAsync();
+        var operation = await databaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
         {
-            new Venue { VenueId = 4, VenueName = "Venue 4" },
-            new Venue { VenueId = 19, VenueName = "Venue 19" },
-            new Venue { VenueId = 42, VenueName = "Venue 42" },
-        };
-
-        await Task.WhenAll(venues.Select(venue =>
+            ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
+            CreateStatement = $"CREATE DATABASE `{databaseId}`",
+            ExtraStatements = { extraStatements },
+        });
+        var completedResponse = await operation.PollUntilCompletedAsync();
+        if (completedResponse.IsFaulted)
         {
-            // Insert rows into the Venues table.
-            using var cmd = connection.CreateInsertCommand("Venues", new SpannerParameterCollection
-            {
-                { "VenueId", SpannerDbType.Int64, venue.VenueId },
-                { "VenueName", SpannerDbType.String, venue.VenueName }
-            });
-            return cmd.ExecuteNonQueryAsync();
-        }));
-    }
+            throw completedResponse.Exception;
+        }
 
-    public async Task DeleteVenuesTable()
-    {
-        // Create connection to Cloud Spanner.
-        using var connection = new SpannerConnection(ConnectionString);
-
-        // Drop the Venues table.
-        using var cmd = connection.CreateDdlCommand(@"DROP TABLE Venues");
-        await cmd.ExecuteNonQueryAsync();
-    }
-
-    private class Venue
-    {
-        public int VenueId { get; set; }
-        public string VenueName { get; set; }
-    }
-
-    private async Task InsertStructDataAsync()
-    {
-        List<Singer> singers = new List<Singer>
+        try
         {
-            new Singer { SingerId = 6, FirstName = "Elena", LastName = "Campbell" },
-            new Singer { SingerId = 7, FirstName = "Gabriel", LastName = "Wright" },
-            new Singer { SingerId = 8, FirstName = "Benjamin", LastName = "Martinez" },
-            new Singer { SingerId = 9, FirstName = "Hannah", LastName = "Harris" }
-        };
-
-        using var connection = new SpannerConnection(ConnectionString);
-        await connection.OpenAsync();
-
-        var rows = await Task.WhenAll(singers.Select(singer =>
+            await testFunction(databaseId);
+        }
+        finally
         {
-            var cmd = connection.CreateInsertCommand("Singers",
-              new SpannerParameterCollection
-              {
-                  { "SingerId", SpannerDbType.Int64, singer.SingerId },
-                  { "FirstName", SpannerDbType.String, singer.FirstName },
-                  { "LastName", SpannerDbType.String, singer.LastName }
-              });
-
-            return cmd.ExecuteNonQueryAsync();
-        }));
-    }
-
-    private async Task AddCommitTimestampAsync()
-    {
-        string alterStatement = "ALTER TABLE Albums ADD COLUMN LastUpdateTime TIMESTAMP OPTIONS (allow_commit_timestamp=true)";
-        using var connection = new SpannerConnection(ConnectionString);
-        var updateCmd = connection.CreateDdlCommand(alterStatement);
-        await updateCmd.ExecuteNonQueryAsync();
-    }
-
-    private class Singer
-    {
-        public int SingerId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-    }
-
-    public async Task CreatePerformancesTableWithTimestampColumnAsync()
-    {
-        using var connection = new SpannerConnection(ConnectionString);
-        // Define create table statement for table with commit timestamp column.
-        string createTableStatement =
-        @"CREATE TABLE Performances (
-                    SingerId       INT64 NOT NULL,
-                    VenueId        INT64 NOT NULL,
-                    EventDate      Date,
-                    Revenue        INT64,
-                    LastUpdateTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)
-                ) PRIMARY KEY (SingerId, VenueId, EventDate),
-                    INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
-        var cmd = connection.CreateDdlCommand(createTableStatement);
-        await cmd.ExecuteNonQueryAsync();
+            // Cleanup the test database.
+            await databaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, instanceId, databaseId));
+        }
     }
 }

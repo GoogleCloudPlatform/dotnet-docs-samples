@@ -31,9 +31,14 @@ namespace HelloWorld.Tests
         public async Task FileNameIsLogged()
         {
             // Prepare the inputs
-            var cloudEvent = new CloudEvent(StorageObjectData.FinalizedCloudEventType, new Uri("//storage.googleapis.com"));
             var data = new StorageObjectData { Name = "new-file.txt" };
-            CloudEventConverters.PopulateCloudEvent(cloudEvent, data);
+            var cloudEvent = new CloudEvent
+            {
+                Type = StorageObjectData.FinalizedCloudEventType,
+                Source = new Uri("//storage.googleapis.com", UriKind.RelativeOrAbsolute),
+                Id = "1234",
+                Data = data
+            };
             var logger = new MemoryLogger<HelloGcs.Function>();
 
             // Execute the function

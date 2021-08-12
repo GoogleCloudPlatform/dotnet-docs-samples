@@ -33,9 +33,9 @@ namespace CloudSql
 
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Build().Run();
             // Create Database table if it does not exist.
             StartupExtensions.InitializeDatabase();
+            BuildWebHost(args).Build().Run();
         }
 
         public static IWebHostBuilder BuildWebHost(string[] args) 

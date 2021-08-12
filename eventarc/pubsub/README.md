@@ -16,9 +16,9 @@ gcloud run deploy eventarc-pubsub \
 Create a Cloud Pub/Sub trigger:
 
 ```sh
-gcloud beta events triggers create pubsub-trigger \
+gcloud eventarc triggers create pubsub-trigger \
   --destination-run-service eventarc-pubsub \
-  --matching-criteria "type=google.cloud.pubsub.topic.v1.messagePublished"
+  --event-filters "type=google.cloud.pubsub.topic.v1.messagePublished"
 ```
 
 ## Test
@@ -26,7 +26,7 @@ gcloud beta events triggers create pubsub-trigger \
 Test your Cloud Run service by publishing a message to the topic:
 
 ```sh
-TOPIC=$(gcloud beta eventarc triggers describe pubsub-trigger \
+TOPIC=$(gcloud eventarc triggers describe pubsub-trigger \
 --format="value(transport.pubsub.topic)")
 
 echo "Listening to events on topic: $TOPIC"
