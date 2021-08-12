@@ -1,7 +1,15 @@
 {
-  "extends": [
-    "config:base"
-  ],
-  "schedule": ["before 8am"],
-  "timezone": "Europe/London"
+    "extends": [
+        "config:base"
+    ],
+    "ignorePaths": [
+        "bigtable/api/**",
+        "appengine/flexible/**",
+        "endpoints/getting-started/**",
+        "applications/googlehome-meets-dotnetcontainers/**"
+    ],
+    "schedule": [
+        "before 8am"
+    ],
+    "timezone": "Europe/London"
 }
