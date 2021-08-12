@@ -29,8 +29,8 @@ public class TransactionTagAsyncTest
     public async Task TestTransactionTagAsync()
     {
         var sample = new TransactionTagAsyncSample();
-        var venues = await sample.TransactionTagAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
+        var insertCount = await sample.TransactionTagAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
             _spannerFixture.DatabaseId);
-        Assert.NotEmpty(venues);
+        Assert.Equal(1, insertCount);
     }
 }
