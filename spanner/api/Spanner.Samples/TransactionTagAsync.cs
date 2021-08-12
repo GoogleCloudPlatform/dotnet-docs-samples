@@ -15,20 +15,11 @@
 // [START spanner_set_transaction_tag]
 
 using Google.Cloud.Spanner.Data;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class TransactionTagAsyncSample
 {
-    public class Venue
-    {
-        public long VenueId { get; set; }
-        public string VenueName { get; set; }
-        public long Capacity { get; set; }
-    }
-    
-    public async Task<List<Venue>> TransactionTagAsync(string projectId, string instanceId, string databaseId)
+    public async Task<int> TransactionTagAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using var connection = new SpannerConnection(connectionString);
@@ -36,50 +27,33 @@ public class TransactionTagAsyncSample
 
         return await connection.RunWithRetriableTransactionAsync(async transaction =>
         {
-            var venues = new List<Venue>();
             // Sets the transaction tag to "app=concert,env=dev".
             // This transaction tag will be applied to all the individual operations inside
             // the transaction.
             transaction.Tag = "app=concert,env=dev";
-            var selectCommand = connection.CreateSelectCommand(
-                @"SELECT VenueId, VenueName, Capacity
-                  FROM Venues
-                  WHERE OutdoorVenue = @outdoorVenue",
+            
+            // Sets the request tag to "app=concert,env=dev,action=update".
+            // This request tag will only be set on this request.
+            var updateCommand =
+                connection.CreateDmlCommand("UPDATE Venues SET Capacity = Capacity/4 WHERE OutdoorVenue = false");
+            updateCommand.Tag = "app=concert,env=dev,action=update";
+            await updateCommand.ExecuteNonQueryAsync();
+
+            var insertCommand = connection.CreateDmlCommand(
+                @"INSERT INTO Venues (VenueId, VenueName, Capacity, OutdoorVenue)
+                    VALUES (@venueId, @venueName, @capacity, @outdoorVenue)",
                 new SpannerParameterCollection
                 {
-                    new SpannerParameter("outdoorVenue", SpannerDbType.Bool, false)
-                });
-            selectCommand.Transaction = transaction;
-            // Sets the request tag to "app=concert,env=dev,action=select".
+                    {"venueId", SpannerDbType.Int64, 81},
+                    {"venueName", SpannerDbType.String, "Venue 81"},
+                    {"capacity", SpannerDbType.Int64, 1440},
+                    {"outdoorVenue", SpannerDbType.Bool, true}
+                }
+            );
+            // Sets the request tag to "app=concert,env=dev,action=insert".
             // This request tag will only be set on this request.
-            selectCommand.Tag = "app=concert,env=dev,action=select";
-            using var reader = await selectCommand.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                var venue = new Venue
-                {
-                    VenueId = reader.GetFieldValue<long>("VenueId"),
-                    VenueName = reader.GetFieldValue<string>("VenueName"),
-                    Capacity = reader.GetFieldValue<long>("Capacity")
-                };
-                venues.Add(venue);
-                // Update the capacity of the venue.
-                venue.Capacity /= 4;
-                var updateCommand = connection.CreateDmlCommand(
-                    "UPDATE Venues SET Capacity = @capacity WHERE VenueId = @venueId",
-                    new SpannerParameterCollection
-                    {
-                        {"capacity", SpannerDbType.Int64, venue.Capacity},
-                        {"venueId", SpannerDbType.Int64, venue.VenueId}
-                    });
-                updateCommand.Transaction = transaction;
-                // Sets the request tag to "app=concert,env=dev,action=update".
-                // This request tag will only be set on this request.
-                updateCommand.Tag = "app=concert,env=dev,action=update";
-                await updateCommand.ExecuteNonQueryAsync();
-                Console.WriteLine($"Capacity of {venue.VenueName} updated to {venue.Capacity}");
-            }
-            return venues;
+            insertCommand.Tag = "app=concert,env=dev,action=insert";
+            return await insertCommand.ExecuteNonQueryAsync();
         });
     }
 }
