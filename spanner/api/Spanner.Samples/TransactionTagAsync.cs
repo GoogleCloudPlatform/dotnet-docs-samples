@@ -35,7 +35,7 @@ public class TransactionTagAsyncSample
             // Sets the request tag to "app=concert,env=dev,action=update".
             // This request tag will only be set on this request.
             var updateCommand =
-                connection.CreateDmlCommand("UPDATE Venues SET Capacity = Capacity/4 WHERE OutdoorVenue = false");
+                connection.CreateDmlCommand("UPDATE Venues SET Capacity = DIV(Capacity, 4) WHERE OutdoorVenue = false");
             updateCommand.Tag = "app=concert,env=dev,action=update";
             await updateCommand.ExecuteNonQueryAsync();
 
