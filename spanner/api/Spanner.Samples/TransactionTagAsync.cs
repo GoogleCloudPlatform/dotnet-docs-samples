@@ -40,8 +40,8 @@ public class TransactionTagAsyncSample
             await updateCommand.ExecuteNonQueryAsync();
 
             var insertCommand = connection.CreateDmlCommand(
-                @"INSERT INTO Venues (VenueId, VenueName, Capacity, OutdoorVenue)
-                    VALUES (@venueId, @venueName, @capacity, @outdoorVenue)",
+                @"INSERT INTO Venues (VenueId, VenueName, Capacity, OutdoorVenue, LastUpdateTime)
+                    VALUES (@venueId, @venueName, @capacity, @outdoorVenue, PENDING_COMMIT_TIMESTAMP())",
                 new SpannerParameterCollection
                 {
                     {"venueId", SpannerDbType.Int64, 81},
