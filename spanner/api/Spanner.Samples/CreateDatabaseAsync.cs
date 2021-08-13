@@ -23,41 +23,27 @@ public class CreateDatabaseAsyncSample
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}";
 
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            string createStatement = $"CREATE DATABASE `{databaseId}`";
-            using var createDbCommand = connection.CreateDdlCommand(createStatement);
-            await createDbCommand.ExecuteNonQueryAsync();
-        }
-
-        // Update connection string with Database ID for table creation.
-        connectionString += $"/databases/{databaseId}";
-        using (var connection = new SpannerConnection(connectionString))
-        {
-            // Define create table statement for table #1.
-            string createTableStatement =
-            @"CREATE TABLE Singers (
+        using var connection = new SpannerConnection(connectionString);
+        var createDatabase = $"CREATE DATABASE `{databaseId}`";
+        // Define create table statement for table #1.
+        var createSingersTable =
+        @"CREATE TABLE Singers (
                      SingerId INT64 NOT NULL,
                      FirstName STRING(1024),
                      LastName STRING(1024),
                      ComposerInfo BYTES(MAX)
                  ) PRIMARY KEY (SingerId)";
-
-            using var createTableCommand = connection.CreateDdlCommand(createTableStatement);
-            await createTableCommand.ExecuteNonQueryAsync();
-
-            // Define create table statement for table #2.
-            createTableStatement =
-            @"CREATE TABLE Albums (
+        // Define create table statement for table #2.
+        var createAlbumsTable =
+        @"CREATE TABLE Albums (
                      SingerId INT64 NOT NULL,
                      AlbumId INT64 NOT NULL,
                      AlbumTitle STRING(MAX)
                  ) PRIMARY KEY (SingerId, AlbumId),
                  INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
 
-            using var createTableCommand1 = connection.CreateDdlCommand(createTableStatement);
-            await createTableCommand1.ExecuteNonQueryAsync();
-        }
+        using var createDbCommand = connection.CreateDdlCommand(createDatabase, createSingersTable, createAlbumsTable);
+        await createDbCommand.ExecuteNonQueryAsync();
     }
 }
 // [END spanner_create_database]

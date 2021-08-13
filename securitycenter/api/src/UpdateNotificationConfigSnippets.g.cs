@@ -15,7 +15,6 @@
  */
 
 // [START securitycenter_update_notification_config]
-// [START scc_update_notification_config]
 
 using Google.Cloud.SecurityCenter.V1;
 using static Google.Cloud.SecurityCenter.V1.NotificationConfig.Types;
@@ -47,5 +46,4 @@ public class UpdateNotificationConfigSnippets
         return updatedConfig;
     }
 }
-// [END scc_update_notification_config]
 // [END securitycenter_update_notification_config]

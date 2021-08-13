@@ -37,7 +37,7 @@ public class PullMessageWithLeaseManagementSample
             foreach (ReceivedMessage msg in response.ReceivedMessages)
             {
                 ackIds.Add(msg.AckId);
-                string text = Encoding.UTF8.GetString(msg.Message.Data.ToArray());
+                string text = System.Text.Encoding.UTF8.GetString(msg.Message.Data.ToArray());
                 Console.WriteLine($"Message {msg.Message.MessageId}: {text}");
 
                 // Modify the ack deadline of each received message from the default 10 seconds to 30.

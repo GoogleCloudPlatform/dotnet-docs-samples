@@ -20,7 +20,9 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using MySql.Data.MySqlClient;
 using System;
+using System.Data.Common;
 using System.IO;
 
 namespace CloudSql
@@ -31,6 +33,8 @@ namespace CloudSql
 
         public static void Main(string[] args)
         {
+            // Create Database table if it does not exist.
+            StartupExtensions.InitializeDatabase();
             BuildWebHost(args).Build().Run();
         }
 

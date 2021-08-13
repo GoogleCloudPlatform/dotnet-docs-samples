@@ -5,10 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="CloudNative.CloudEvents" Version="1.3.80" />
-    <PackageReference Include="CloudNative.CloudEvents.AspNetCore" Version="1.3.80" />
-    <PackageReference Include="Google.Events" Version="1.0.0-alpha04" />
-    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0-alpha04" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="CloudNative.CloudEvents.AspNetCore" Version="2.1.1" />
+    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0" />
   </ItemGroup>
 </Project>
