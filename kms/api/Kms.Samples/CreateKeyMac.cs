@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-// [START kms_create_key_hsm]
+// [START kms_create_key_mac]
 
 using Google.Cloud.Kms.V1;
 using Google.Protobuf.WellKnownTypes;
 
-public class CreateKeyHsmSample
+public class CreateKeyMacSample
 {
-    public CryptoKey CreateKeyHsm(
+    public CryptoKey CreateKeyMac(
       string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring",
-      string id = "my-hsm-encryption-key")
+      string id = "my-mac-key")
     {
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
@@ -34,11 +34,10 @@ public class CreateKeyHsmSample
         // Build the key.
         CryptoKey key = new CryptoKey
         {
-            Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
+            Purpose = CryptoKey.Types.CryptoKeyPurpose.Mac,
             VersionTemplate = new CryptoKeyVersionTemplate
             {
-                ProtectionLevel = ProtectionLevel.Hsm,
-                Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption,
+                Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.HmacSha256,
             },
 
             // Optional: customize how long key versions should be kept before destroying.
@@ -55,4 +54,4 @@ public class CreateKeyHsmSample
         return result;
     }
 }
-// [END kms_create_key_hsm]
+// [END kms_create_key_mac]
