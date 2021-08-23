@@ -17,6 +17,7 @@
 // [START kms_create_key_asymmetric_sign]
 
 using Google.Cloud.Kms.V1;
+using Google.Protobuf.WellKnownTypes;
 
 public class CreateKeyAsymmetricSignSample
 {
@@ -37,6 +38,12 @@ public class CreateKeyAsymmetricSignSample
             VersionTemplate = new CryptoKeyVersionTemplate
             {
                 Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.RsaSignPkcs12048Sha256,
+            },
+
+            // Optional: customize how long key versions should be kept before destroying.
+            DestroyScheduledDuration = new Duration
+            {
+                Seconds = 24 * 60 * 60,
             }
         };
 
