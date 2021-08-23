@@ -1,0 +1,84 @@
+/*
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+using System;
+using System.IO;
+using Xunit;
+using GoogleCloudSamples;
+
+[CollectionDefinition(nameof(TranscoderFixture))]
+public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixture>
+{
+    public string ProjectId { get; }
+    public string ProjectNumber { get; }
+    public string Location { get; }
+
+    private readonly RandomBucketFixture _bucketFixture;
+
+    public string BucketName { get; }
+    public string TestDataPath => Path.GetFullPath("../../../testdata/");
+    public string TestVideoFileName = "ChromeCast.mp4";
+    public string TestOverlayImageFileName = "overlay.jpg";
+    public string InputUri { get; }
+    public string OverlayImageUri { get; }
+    public string JobStateSucceeded = "Succeeded";
+
+
+    public TranscoderFixture()
+    {
+        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        if (string.IsNullOrEmpty(ProjectId))
+        {
+            throw new Exception("missing GOOGLE_PROJECT_ID");
+        }
+
+        ProjectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
+        if (string.IsNullOrEmpty(ProjectNumber))
+        {
+            throw new Exception("missing PROJECT_NUMBER");
+        }
+
+        Location = "us-central1";
+
+        _bucketFixture = new RandomBucketFixture();
+        BucketName = _bucketFixture.BucketName;
+
+        var bucketCollector = new BucketCollector(BucketName);
+        bucketCollector.CopyToBucket(Path.Combine(TestDataPath, TestVideoFileName), TestVideoFileName);
+        bucketCollector.CopyToBucket(Path.Combine(TestDataPath, TestOverlayImageFileName), TestOverlayImageFileName);
+
+        InputUri = "gs://" + BucketName + "/" + TestVideoFileName;
+        OverlayImageUri = "gs://" + BucketName + "/" + TestOverlayImageFileName;
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            _bucketFixture.Dispose();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Cleanup failed: " + e.ToString());
+        }
+    }
+
+    public string RandomId()
+    {
+        return $"csharp-{System.Guid.NewGuid()}";
+    }
+}
