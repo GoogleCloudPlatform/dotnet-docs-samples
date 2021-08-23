@@ -28,7 +28,7 @@ public class CreateInstanceAsyncSample
         string machineName = "test-machine",
         string machineType = "n1-standard-1",
         string diskImage = "projects/debian-cloud/global/images/family/debian-10",
-        string diskSizeGb = "10",
+        long diskSizeGb = 10,
         string networkName = "default")
     {
         Instance instance = new Instance
