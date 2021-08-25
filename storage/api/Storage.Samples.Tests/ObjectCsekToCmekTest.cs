@@ -36,14 +36,14 @@ public class ObjectCsekToCmekTest
         var objectName = "HelloObjectCsekToCmek.txt";
         string key = generateEncryptionKeySample.GenerateEncryptionKey();
 
-        uploadEncryptedFileSample.UploadEncryptedFile(key, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect(objectName));
+        uploadEncryptedFileSample.UploadEncryptedFile(key, _bucketFixture.BucketNameRegional, _bucketFixture.FilePath, _bucketFixture.Collect(objectName));
 
         // Change key type to Cmek
         objectCsekToCmekSample.ObjectCsekToCmek(_bucketFixture.ProjectId, _bucketFixture.BucketNameRegional, objectName,
             key, _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName);
 
         // Verify Kms key Name
-        var obj = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, objectName);
+        var obj = getMetadataSample.GetMetadata(_bucketFixture.BucketNameRegional, objectName);
         Assert.Equal(_bucketFixture.KmsKeyName, obj.KmsKeyName);
     }
 }
