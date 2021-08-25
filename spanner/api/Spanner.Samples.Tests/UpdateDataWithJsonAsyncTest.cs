@@ -28,14 +28,15 @@ public class UpdateDataWithJsonAsyncTest
     [Fact]
     public async Task TestUpdateDataWithJsonAsync()
     {
-        await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.CreateVenuesTableAndInsertDataAsync(databaseId);
 
-        var addColumnSample = new AddJsonColumnAsyncSample();
-        await addColumnSample.AddJsonColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+            AddJsonColumnAsyncSample addColumnSample = new AddJsonColumnAsyncSample();
+            await addColumnSample.AddJsonColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        var updateJsonSample = new UpdateDataWithJsonAsyncSample();
-        await updateJsonSample.UpdateDataWithJsonAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        await _spannerFixture.DeleteVenuesTable();
+            var updateJsonSample = new UpdateDataWithJsonAsyncSample();
+            await updateJsonSample.UpdateDataWithJsonAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        });
     }
 }

@@ -28,11 +28,12 @@ public class AddJsonColumnAsyncTest
     [Fact]
     public async Task TestAddJsonColumnAsync()
     {
-        await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.CreateVenuesTableAndInsertDataAsync(databaseId);
 
-        AddJsonColumnAsyncSample addColumnSample = new AddJsonColumnAsyncSample();
-        await addColumnSample.AddJsonColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        await _spannerFixture.DeleteVenuesTable();
+            AddJsonColumnAsyncSample addColumnSample = new AddJsonColumnAsyncSample();
+            await addColumnSample.AddJsonColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        });
     }
 }

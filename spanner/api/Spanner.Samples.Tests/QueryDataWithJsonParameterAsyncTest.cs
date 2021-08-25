@@ -28,18 +28,19 @@ public class QueryDataWithJsonParameterAsyncTest
     [Fact]
     public async Task TestQueryDataWithJsonParameterAsync()
     {
-        await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.CreateVenuesTableAndInsertDataAsync(databaseId);
 
-        var addColumnSample = new AddJsonColumnAsyncSample();
-        await addColumnSample.AddJsonColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+            AddJsonColumnAsyncSample addColumnSample = new AddJsonColumnAsyncSample();
+            await addColumnSample.AddJsonColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        var updateJsonSample = new UpdateDataWithJsonAsyncSample();
-        await updateJsonSample.UpdateDataWithJsonAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+            var updateJsonSample = new UpdateDataWithJsonAsyncSample();
+            await updateJsonSample.UpdateDataWithJsonAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        var queryJsonSample = new QueryDataWithJsonParameterAsyncSample();
-        var venues = await queryJsonSample.QueryDataWithJsonParameterAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(venues, v => v.VenueId == 19);
-
-        await _spannerFixture.DeleteVenuesTable();
+            var queryJsonSample = new QueryDataWithJsonParameterAsyncSample();
+            var venues = await queryJsonSample.QueryDataWithJsonParameterAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Contains(venues, v => v.VenueId == 19);
+        });
     }
 }
