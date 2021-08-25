@@ -44,6 +44,6 @@ public class ObjectCsekToCmekTest
 
         // Verify Kms key Name
         var obj = getMetadataSample.GetMetadata(_bucketFixture.BucketNameRegional, objectName);
-        Assert.Equal(_bucketFixture.KmsKeyName, obj.KmsKeyName);
+        Assert.Contains(_bucketFixture.KmsKeyName, obj.KmsKeyName);
     }
 }
