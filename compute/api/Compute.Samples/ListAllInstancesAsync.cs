@@ -30,31 +30,20 @@ public class ListAllInstancesAsyncSample
         // Initialize client that will be used to send requests. This client only needs to be created
         // once, and can be reused for multiple requests.
         InstancesClient client = await InstancesClient.CreateAsync();
-        InstanceAggregatedList instanceList;
         IList<Instance> allInstances = new List<Instance>();
 
         // Make the request to list all VM instances in a project.
-        AggregatedListInstancesRequest request = new AggregatedListInstancesRequest { Project = projectId };
-        do
+        await foreach (var instancesByZone in client.AggregatedListAsync(projectId))
         {
-            instanceList = await client.AggregatedListAsync(request);
             // The result contains a KeyValuePair collection, where the key is a zone and the value
             // is a collection of instances in that zone.
-            foreach (var instancesByZone in instanceList.Items)
+            Console.WriteLine($"Instances for zone: {instancesByZone.Key}");
+            foreach (var instance in instancesByZone.Value.Instances)
             {
-                Console.WriteLine($"Instances for zone: {instancesByZone.Key}");
-                foreach (var instance in instancesByZone.Value.Instances)
-                {
-                    Console.WriteLine($"-- Name: {instance.Name}");
-                    allInstances.Add(instance);
-                }
+                Console.WriteLine($"-- Name: {instance.Name}");
+                allInstances.Add(instance);
             }
-            // Use the NextPageToken value on the request result to make subsequent requests
-            // until all instances have been listed.
-            request.PageToken = instanceList.NextPageToken;
-
-        // When all instances are listed the last result NextPageToken is not set.
-        } while (instanceList.HasNextPageToken);
+        }
 
         return allInstances;
     }
