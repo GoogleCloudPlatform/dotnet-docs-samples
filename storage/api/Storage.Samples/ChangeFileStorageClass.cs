@@ -25,13 +25,16 @@ public class ChangeFileStorageClassSample
         string storageClass = StorageClasses.Standard)
     {
         var storage = StorageClient.Create();
+
+        // Changing storage class requires a rewrite operation, which can only be done
+        // by the underlying service
+        var obj = new Google.Apis.Storage.v1.Data.Object { StorageClass = storageClass };
+        storage.Service.Objects.Rewrite(obj, bucketName, objectName, bucketName, objectName).Execute();
+
         var file = storage.GetObject(bucketName, objectName);
-
-        file.StorageClass = storageClass;
-
-        file = storage.UpdateObject(file);
         Console.WriteLine($"Object {objectName} in bucket {bucketName} had" +
             $" its storage class set to {storageClass}.");
+
         return file;
     }
 }

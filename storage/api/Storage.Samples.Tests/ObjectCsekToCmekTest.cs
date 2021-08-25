@@ -39,7 +39,7 @@ public class ObjectCsekToCmekTest
         uploadEncryptedFileSample.UploadEncryptedFile(key, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect(objectName));
 
         // Change key type to Cmek
-        objectCsekToCmekSample.ObjectCsekToCmek(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric, objectName,
+        objectCsekToCmekSample.ObjectCsekToCmek(_bucketFixture.ProjectId, _bucketFixture.BucketNameRegional, objectName,
             key, _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName);
 
         // Verify Kms key Name
