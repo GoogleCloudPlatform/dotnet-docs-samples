@@ -46,10 +46,9 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 inputUri: _fixture.InputUri, outputUri: outputUri);
 
-            string jobName = string.Format("projects/{0}/locations/{1}/jobs/", _fixture.ProjectNumber, _fixture.Location);
-            Assert.Contains(jobName, result);
-            string[] arr = result.Split("/");
-            _jobId = arr[arr.Length - 1].Replace("\n", "");
+            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectId);
+            _jobId = result.JobName.JobId;
 
             string state = "";
 
