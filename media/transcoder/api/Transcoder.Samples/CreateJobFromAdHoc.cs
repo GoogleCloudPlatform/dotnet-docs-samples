@@ -31,12 +31,16 @@ public class CreateJobFromAdHocSample
         LocationName parent = new LocationName(projectId, location);
 
         // Build the job config.
-        VideoStream videoStream0 = new VideoStream();
-        videoStream0.H264 = new VideoStream.Types.H264CodecSettings();
-        videoStream0.H264.BitrateBps = 550000;
-        videoStream0.H264.FrameRate = 60;
-        videoStream0.H264.HeightPixels = 360;
-        videoStream0.H264.WidthPixels = 640;
+        VideoStream videoStream0 = new VideoStream
+        {
+            H264 = new VideoStream.Types.H264CodecSettings
+            {
+                BitrateBps = 550000,
+                FrameRate = 60,
+                HeightPixels = 360,
+                WidthPixels = 640,
+            }
+        };
 
         VideoStream videoStream1 = new VideoStream();
         videoStream1.H264 = new VideoStream.Types.H264CodecSettings();
