@@ -38,9 +38,11 @@ public class AnalyzeIamPolicyLongrunningGcsTest
             $"//cloudresourcemanager.googleapis.com/projects/{_fixture.ProjectId}";
         string uri = $"gs://{_fixture.BucketName}/my-analysis.json";
 
-        AnalyzeIamPolicyLongrunningResponse result =
-            _sample.AnalyzeIamPolicyLongrunning(scope, fullResourceName, uri);
-
-        Assert.NotNull(result);
+        _fixture.Retry.Eventually(() =>
+        {
+            AnalyzeIamPolicyLongrunningResponse result =
+                _sample.AnalyzeIamPolicyLongrunning(scope, fullResourceName, uri);
+            Assert.NotNull(result);
+        });
     }
 }

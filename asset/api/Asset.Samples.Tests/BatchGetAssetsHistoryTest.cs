@@ -29,13 +29,19 @@ public class BatchGetAssetsHistoryTest
         _sample = new BatchGetAssetsHistorySample();
     }
 
-    [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1141")]
+    [Fact]
     public void TestBatchGetAssetsHistory()
     {
         // Run the sample code.
-        string assetName = String.Format("//storage.googleapis.com/{0}", _fixture.BucketName);
-        var result = _sample.BatchGetAssetsHistory(new string[] { assetName }, _fixture.ProjectId);
+        string assetName = $"//storage.googleapis.com/{_fixture.BucketName}";
 
-        Assert.Contains(assetName, result.ToString());
+        _fixture.Retry.Eventually(() =>
+        {
+            // We substract 5 minutes from for the start time, because sometimes our clock and the server
+            // clock are not synced.
+            var result = _sample.BatchGetAssetsHistory(
+                new string[] { assetName }, DateTimeOffset.UtcNow - TimeSpan.FromMinutes(5), _fixture.ProjectId);
+            Assert.Contains(result.Assets, node => node.Asset.Name == assetName);
+        });
     }
 }
