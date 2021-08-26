@@ -30,8 +30,8 @@ public class QueryDataWithJsonParameterAsyncSample
     public async Task<List<Venue>> QueryDataWithJsonParameterAsync(string projectId, string instanceId, string databaseId)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-
         using var connection = new SpannerConnection(connectionString);
+        
         // If you are using .NET Core 3.1 or later, you can use System.Text.Json for serialization instead.
         var jsonValue = JsonConvert.SerializeObject(new { rating = 9 });
         // Get all venues with rating 9.
