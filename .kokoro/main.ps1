@@ -33,15 +33,15 @@ try {
     # Groups of subdirectories.
     $groups = @(
         $false,  # 0: Everything.
-        $false,  # 1: Everything starting from a to c.
-        $false,  # 2: Everything starting from d to l, except for iot when on Linux because of the BouncyCastle and other dependencies.
-        $false   # 3: Everything starting from m to z.
+        $false,  # 1: Everything starting from a to e.
+        $false,  # 2: Everything starting from f to r, except for iot when on Linux because of the BouncyCastle and other dependencies.
+        $false   # 3: Everything starting from s to z.
     )
 
     $groups[0] = $allDirs
-    $groups[1] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("j") -le 0) -and ($IsRunningOnWindows -or -not ($_.Equals("iot"))) }
-    $groups[2] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("k") -ge 0) -and ($_.Substring(0, 1).CompareTo("s") -le 0) }
-    $groups[3] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("t") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
+    $groups[1] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("e") -le 0) }
+    $groups[2] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("f") -ge 0) -and ($_.Substring(0, 1).CompareTo("r") -le 0) -and ($IsRunningOnWindows -or -not ($_.Equals("iot"))) }
+    $groups[3] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("s") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
     $dirs = $groups[$GroupNumber]
 
     # Find all the runTest scripts.
