@@ -14,7 +14,7 @@
  * the License.
  */
 
-using System;
+using GoogleCloudSamples;
 using Xunit;
 
 [Collection(nameof(AssetFixture))]
@@ -33,10 +33,13 @@ public class SearchAllResourcesTest
     public void TestSearchAllResources()
     {
         // Run the sample code.
-        string scope = String.Format("projects/{0}", _fixture.ProjectId);
-        string query = String.Format("name:{0}", _fixture.DatasetId);
-        var result = _sample.SearchAllResources(scope, query: query);
+        string scope = $"projects/{_fixture.ProjectId}";
+        string query = $"name:{_fixture.DatasetId}";
 
-        Assert.Contains(_fixture.DatasetId, result.ToString());
+        _fixture.Retry.Eventually(() =>
+        {
+            var firstPage = _sample.SearchAllResources(scope, query: query);
+            Assert.Contains(firstPage, resource => resource.DisplayName == _fixture.DatasetId);
+        });
     }
 }

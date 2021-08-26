@@ -29,12 +29,12 @@ public class ListAssetsTest
         _sample = new ListAssetsSample();
     }
 
+    [Fact]
     public void TestListAssets()
     {
         // Run the sample code.
         var result = _sample.ListAssets(_fixture.ProjectId);
 
-        string assetName = String.Format("//storage.googleapis.com/{0}", _fixture.BucketName);
-        Assert.Contains(result, asset => asset.Name == assetName);
+        Assert.NotEmpty(result);
     }
 }
