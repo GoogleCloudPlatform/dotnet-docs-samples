@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,18 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_delete_bucket]
+// [START storage_delete_file_archived_generation]
 
 using Google.Cloud.Storage.V1;
 using System;
 
-public class DeleteBucketSample
+public class DeleteFileArchivedGenerationSample
 {
-    public void DeleteBucket(string bucketName = "your-unique-bucket-name")
+    public void DeleteFileArchivedGeneration(
+        string bucketName = "your-bucket-name",
+        string objectName = "your-object-name",
+        long? generation = 1579287380533984)
     {
         var storage = StorageClient.Create();
-        storage.DeleteBucket(bucketName);
-        Console.WriteLine($"The bucket {bucketName} was deleted.");
+
+        storage.DeleteObject(bucketName, objectName, new DeleteObjectOptions
+        {
+            Generation = generation
+        });
+
+        Console.WriteLine($"Generation ${generation} of file {objectName} was deleted from bucket {bucketName}.");
     }
 }
-// [END storage_delete_bucket]
+// [END storage_delete_file_archived_generation]
