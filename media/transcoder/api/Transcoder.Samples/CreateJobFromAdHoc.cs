@@ -65,11 +65,12 @@ public class CreateJobFromAdHocSample
         elementaryStream2.Key = "audio_stream0";
         elementaryStream2.AudioStream = audioStream0;
 
-        MuxStream muxStream0 = new MuxStream();
-        muxStream0.Key = "sd";
-        muxStream0.Container = "mp4";
-        muxStream0.ElementaryStreams.Add("video_stream0");
-        muxStream0.ElementaryStreams.Add("audio_stream0");
+        MuxStream muxStream0 = new MuxStream
+        {
+            Key = "sd",
+            Container = "mp4",
+            ElementaryStreams = {"video_stream0", "audio_stream0"}
+        };
 
         MuxStream muxStream1 = new MuxStream();
         muxStream1.Key = "hd";
