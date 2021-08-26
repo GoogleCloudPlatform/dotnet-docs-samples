@@ -101,10 +101,10 @@ public class CreateJobFromAdHocSample
         job.OutputUri = outputUri;
 
         // Call the API.
-        Job response = client.CreateJob(parent, job);
+        Job job = client.CreateJob(parent, job);
 
         // Return the result.
-        return "Job: " + response.JobName;
+        return job;
     }
 }
 // [END transcoder_create_job_from_ad_hoc]
