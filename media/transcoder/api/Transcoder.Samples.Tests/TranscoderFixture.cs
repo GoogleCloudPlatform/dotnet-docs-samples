@@ -19,6 +19,8 @@ using System;
 using System.IO;
 using Xunit;
 using GoogleCloudSamples;
+using Google.Cloud.Video.Transcoder.V1;
+using System.Collections.Generic;
 
 [CollectionDefinition(nameof(TranscoderFixture))]
 public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixture>
@@ -35,7 +37,11 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
     public string TestOverlayImageFileName = "overlay.jpg";
     public string InputUri { get; }
     public string OverlayImageUri { get; }
-    public string JobStateSucceeded = "Succeeded";
+    public Job.Types.ProcessingState JobStateSucceeded = Job.Types.ProcessingState.Succeeded;
+    public List<string> jobIds { get; }
+    public List<string> jobTemplateIds { get; }
+    private readonly DeleteJobSample deleteJobSample;
+    private readonly DeleteJobTemplateSample deleteJobTemplateSample;
 
 
     public TranscoderFixture()
@@ -63,6 +69,11 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
 
         InputUri = "gs://" + BucketName + "/" + TestVideoFileName;
         OverlayImageUri = "gs://" + BucketName + "/" + TestOverlayImageFileName;
+        jobIds = new List<string>();
+        jobTemplateIds = new List<string>();
+
+        deleteJobSample = new DeleteJobSample();
+        deleteJobTemplateSample = new DeleteJobTemplateSample();
     }
 
     public void Dispose()
@@ -74,6 +85,38 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
         catch (Exception e)
         {
             Console.WriteLine("Cleanup failed: " + e.ToString());
+        }
+
+        foreach (string id in jobIds)
+        {
+            try
+            {
+                var result = deleteJobSample.DeleteJob(
+                projectId: ProjectId, location: Location,
+                jobId: id);
+
+                Assert.Contains("Deleted job", result);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Delete failed for job: " + id + " with error: " + e.ToString());
+            }
+        }
+
+        foreach (string id in jobTemplateIds)
+        {
+            try
+            {
+                var result = deleteJobTemplateSample.DeleteJobTemplate(
+                projectId: ProjectId, location: Location,
+                templateId: id);
+
+                Assert.Contains("Deleted job template", result);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Delete failed for job template: " + id + " with error: " + e.ToString());
+            }
         }
     }
 

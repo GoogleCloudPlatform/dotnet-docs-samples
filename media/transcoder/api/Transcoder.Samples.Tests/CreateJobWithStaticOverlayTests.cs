@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-using System;
 using System.Threading;
 using Xunit;
+using Google.Cloud.Video.Transcoder.V1;
 
 namespace Transcoder.Samples.Tests
 {
     [Collection(nameof(TranscoderFixture))]
-    public class CreateJobWithStaticOverlayTest : IDisposable
+    public class CreateJobWithStaticOverlayTest
     {
         private TranscoderFixture _fixture;
         private readonly CreateJobWithStaticOverlaySample _createSample;
@@ -46,12 +46,13 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 inputUri: _fixture.InputUri, overlayImageUri: _fixture.OverlayImageUri, outputUri: outputUri);
 
-            string jobName = string.Format("projects/{0}/locations/{1}/jobs/", _fixture.ProjectNumber, _fixture.Location);
-            Assert.Contains(jobName, result);
-            string[] arr = result.Split("/");
-            _jobId = arr[arr.Length - 1].Replace("\n", "");
+            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            // Job resource name uses project number for the identifier.
+            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectNumber);
+            _jobId = result.JobName.JobId;
+            _fixture.jobIds.Add(_jobId);
 
-            string state = "";
+            Job.Types.ProcessingState state = Job.Types.ProcessingState.Unspecified;
 
             for (int attempt = 0; attempt < 5; attempt++)
             {
@@ -65,17 +66,12 @@ namespace Transcoder.Samples.Tests
                 {
                     // Job does not exist yet.  No problem.
                 }
-                if (state.Contains(_fixture.JobStateSucceeded))
+                if (state.Equals(_fixture.JobStateSucceeded))
                 {
                     break;
                 }
             }
-            Assert.Contains(_fixture.JobStateSucceeded, state);
-        }
-
-        public void Dispose()
-        {
-            _deleteSample.DeleteJob(projectId: _fixture.ProjectId, location: _fixture.Location, _jobId);
+            Assert.Equal(state, _fixture.JobStateSucceeded);
         }
     }
 }

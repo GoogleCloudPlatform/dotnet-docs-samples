@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-using System;
 using Xunit;
 
 namespace Transcoder.Samples.Tests
 {
     [Collection(nameof(TranscoderFixture))]
-    public class GetJobTest : IDisposable
+    public class GetJobTest
     {
         private TranscoderFixture _fixture;
         private readonly CreateJobFromAdHocSample _createSample;
@@ -42,8 +41,10 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 inputUri: _fixture.InputUri, outputUri: outputUri);
 
-            string[] arr = result.Split("/");
-            _jobId = arr[arr.Length - 1].Replace("\n", "");
+            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            // Job resource name uses project number for the identifier.
+            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectNumber);
+            _jobId = result.JobName.JobId;
         }
 
         [Fact]
@@ -54,13 +55,11 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 jobId: _jobId);
 
-            string jobName = string.Format("projects/{0}/locations/{1}/jobs/{2}", _fixture.ProjectNumber, _fixture.Location, _jobId);
-            Assert.Contains(jobName, result);
-        }
-
-        public void Dispose()
-        {
-            _deleteSample.DeleteJob(_fixture.ProjectId, _fixture.Location, _jobId);
+            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            // Job resource name uses project number for the identifier.
+            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectNumber);
+            Assert.Equal(result.JobName.JobId, _jobId);
+            _fixture.jobIds.Add(_jobId);
         }
     }
 }

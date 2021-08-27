@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-using System;
 using System.Threading;
 using Xunit;
+using Google.Cloud.Video.Transcoder.V1;
 
 namespace Transcoder.Samples.Tests
 {
     [Collection(nameof(TranscoderFixture))]
-    public class CreateJobFromTemplateTest : IDisposable
+    public class CreateJobFromTemplateTest
     {
         private TranscoderFixture _fixture;
         private string _templateId;
@@ -56,12 +56,14 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 inputUri: _fixture.InputUri, outputUri: outputUri, templateId: _templateId);
 
-            string jobName = string.Format("projects/{0}/locations/{1}/jobs/", _fixture.ProjectNumber, _fixture.Location);
-            Assert.Contains(jobName, result);
-            string[] arr = result.Split("/");
-            _jobId = arr[arr.Length - 1].Replace("\n", "");
+            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            // Job resource name uses project number for the identifier.
+            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectNumber);
+            _jobId = result.JobName.JobId;
+            _fixture.jobIds.Add(_jobId);
+            _fixture.jobTemplateIds.Add(_templateId);
 
-            string state = "";
+            Job.Types.ProcessingState state = Job.Types.ProcessingState.Unspecified;
 
             for (int attempt = 0; attempt < 5; attempt++)
             {
@@ -75,18 +77,12 @@ namespace Transcoder.Samples.Tests
                 {
                     // Job does not exist yet.  No problem.
                 }
-                if (state.Contains(_fixture.JobStateSucceeded))
+                if (state.Equals(_fixture.JobStateSucceeded))
                 {
                     break;
                 }
             }
-            Assert.Contains(_fixture.JobStateSucceeded, state);
-        }
-
-        public void Dispose()
-        {
-            _deleteJobSample.DeleteJob(projectId: _fixture.ProjectId, location: _fixture.Location, _jobId);
-            _deleteTemplateSample.DeleteJobTemplate(_fixture.ProjectId, _fixture.Location, _templateId);
+            Assert.Equal(state, _fixture.JobStateSucceeded);
         }
     }
 }

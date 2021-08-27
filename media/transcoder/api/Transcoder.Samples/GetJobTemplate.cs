@@ -20,7 +20,7 @@ using Google.Cloud.Video.Transcoder.V1;
 
 public class GetJobTemplateSample
 {
-    public string GetJobTemplate(string projectId, string location, string templateId)
+    public JobTemplate GetJobTemplate(string projectId, string location, string templateId)
     {
         // Create the client.
         TranscoderServiceClient client = TranscoderServiceClient.Create();
@@ -29,10 +29,10 @@ public class GetJobTemplateSample
         JobTemplateName name = JobTemplateName.FromProjectLocationJobTemplate(projectId, location, templateId);
 
         // Call the API.
-        JobTemplate response = client.GetJobTemplate(name);
+        JobTemplate jobTemplate = client.GetJobTemplate(name);
 
         // Return the result.
-        return "Job template: " + response.Name;
+        return jobTemplate;
     }
 }
 // [END transcoder_get_job_template]

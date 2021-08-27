@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-using System;
 using Xunit;
 
 namespace Transcoder.Samples.Tests
 {
     [Collection(nameof(TranscoderFixture))]
-    public class ListJobTemplatesTest : IDisposable
+    public class ListJobTemplatesTest
     {
         private TranscoderFixture _fixture;
         private readonly CreateJobTemplateSample _createSample;
@@ -37,9 +36,15 @@ namespace Transcoder.Samples.Tests
             _deleteSample = new DeleteJobTemplateSample();
             _templateId = "my-job-template-" + _fixture.RandomId();
 
-            _createSample.CreateJobTemplate(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                templateId: _templateId);
+            var result = _createSample.CreateJobTemplate(
+                 projectId: _fixture.ProjectId, location: _fixture.Location,
+                 templateId: _templateId);
+
+            Assert.Equal(result.JobTemplateName.LocationId, _fixture.Location);
+            // Job template resource name uses project number for the identifier.
+            Assert.Equal(result.JobTemplateName.ProjectId, _fixture.ProjectNumber);
+            Assert.Equal(result.JobTemplateName.JobTemplateId, _templateId);
+            _fixture.jobTemplateIds.Add(_templateId);
         }
 
         [Fact]
@@ -51,11 +56,6 @@ namespace Transcoder.Samples.Tests
 
             string templateName = string.Format("projects/{0}/locations/{1}/jobTemplates/{2}", _fixture.ProjectNumber, _fixture.Location, _templateId);
             Assert.Contains(templateName, result);
-        }
-
-        public void Dispose()
-        {
-            _deleteSample.DeleteJobTemplate(_fixture.ProjectId, _fixture.Location, _templateId);
         }
     }
 }

@@ -20,7 +20,7 @@ using Google.Cloud.Video.Transcoder.V1;
 
 public class GetJobStateSample
 {
-    public string GetJobState(string projectId, string location, string jobId)
+    public Job.Types.ProcessingState GetJobState(string projectId, string location, string jobId)
     {
         // Create the client.
         TranscoderServiceClient client = TranscoderServiceClient.Create();
@@ -29,10 +29,10 @@ public class GetJobStateSample
         JobName jobName = JobName.FromProjectLocationJob(projectId, location, jobId);
 
         // Call the API.
-        Job response = client.GetJob(jobName);
+        Job job = client.GetJob(jobName);
 
         // Return the result.
-        return "Job state: " + response.State;
+        return job.State;
     }
 }
 // [END transcoder_get_job_state]

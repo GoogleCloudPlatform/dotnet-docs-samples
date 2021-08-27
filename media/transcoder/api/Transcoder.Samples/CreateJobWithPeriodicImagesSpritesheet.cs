@@ -24,7 +24,7 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
     public static string smallSpritesheetFilePrefix = "small-sprite-sheet";
     public static string largeSpritesheetFilePrefix = "large-sprite-sheet";
     public static string spritesheetFileSuffix = "0000000000.jpeg";
-    public string CreateJobWithPeriodicImagesSpritesheet(
+    public Job CreateJobWithPeriodicImagesSpritesheet(
         string projectId, string location, string inputUri, string outputUri)
     {
         // Create the client.
@@ -34,76 +34,101 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
         LocationName parent = new LocationName(projectId, location);
 
         // Build the job config.
-        VideoStream videoStream0 = new VideoStream();
-        videoStream0.H264 = new VideoStream.Types.H264CodecSettings();
-        videoStream0.H264.BitrateBps = 550000;
-        videoStream0.H264.FrameRate = 60;
-        videoStream0.H264.HeightPixels = 360;
-        videoStream0.H264.WidthPixels = 640;
+        VideoStream videoStream0 = new VideoStream
+        {
+            H264 = new VideoStream.Types.H264CodecSettings
+            {
+                BitrateBps = 550000,
+                FrameRate = 60,
+                HeightPixels = 360,
+                WidthPixels = 640
+            }
+        };
 
-        AudioStream audioStream0 = new AudioStream();
-        audioStream0.Codec = "aac";
-        audioStream0.BitrateBps = 64000;
+        AudioStream audioStream0 = new AudioStream
+        {
+            Codec = "aac",
+            BitrateBps = 64000
+        };
 
         // Generates a spritesheet of small images taken periodically from the input video. To
         // preserve the source aspect ratio, you should set the spriteWidthPixels field or the
         // spriteHeightPixels field, but not both.
-        SpriteSheet smallSpriteSheet = new SpriteSheet();
-        smallSpriteSheet.FilePrefix = smallSpritesheetFilePrefix;
-        smallSpriteSheet.SpriteHeightPixels = 32;
-        smallSpriteSheet.SpriteWidthPixels = 64;
-        smallSpriteSheet.Interval = new Google.Protobuf.WellKnownTypes.Duration();
-        smallSpriteSheet.Interval.Seconds = 7;
+        SpriteSheet smallSpriteSheet = new SpriteSheet
+        {
+            FilePrefix = smallSpritesheetFilePrefix,
+            SpriteHeightPixels = 32,
+            SpriteWidthPixels = 64,
+            Interval = new Google.Protobuf.WellKnownTypes.Duration
+            {
+                Seconds = 7
+            }
+        };
 
-        // Generates a spritesheet of larger images taken periodically from the input video. To
-        SpriteSheet largeSpriteSheet = new SpriteSheet();
-        largeSpriteSheet.FilePrefix = largeSpritesheetFilePrefix;
-        largeSpriteSheet.SpriteHeightPixels = 72;
-        largeSpriteSheet.SpriteWidthPixels = 128;
-        largeSpriteSheet.Interval = new Google.Protobuf.WellKnownTypes.Duration();
-        largeSpriteSheet.Interval.Seconds = 7;
+        // Generates a spritesheet of larger images taken periodically from the input video.
+        SpriteSheet largeSpriteSheet = new SpriteSheet
+        {
+            FilePrefix = largeSpritesheetFilePrefix,
+            SpriteHeightPixels = 72,
+            SpriteWidthPixels = 128,
+            Interval = new Google.Protobuf.WellKnownTypes.Duration
+            {
+                Seconds = 7
+            }
+        };
 
-        ElementaryStream elementaryStream0 = new ElementaryStream();
-        elementaryStream0.Key = "video_stream0";
-        elementaryStream0.VideoStream = videoStream0;
+        ElementaryStream elementaryStream0 = new ElementaryStream
+        {
+            Key = "video_stream0",
+            VideoStream = videoStream0
+        };
 
-        ElementaryStream elementaryStream1 = new ElementaryStream();
-        elementaryStream1.Key = "audio_stream0";
-        elementaryStream1.AudioStream = audioStream0;
+        ElementaryStream elementaryStream1 = new ElementaryStream
+        {
+            Key = "audio_stream0",
+            AudioStream = audioStream0
+        };
 
-        MuxStream muxStream0 = new MuxStream();
-        muxStream0.Key = "sd";
-        muxStream0.Container = "mp4";
-        muxStream0.ElementaryStreams.Add("video_stream0");
-        muxStream0.ElementaryStreams.Add("audio_stream0");
+        MuxStream muxStream0 = new MuxStream
+        {
+            Key = "sd",
+            Container = "mp4",
+            ElementaryStreams = { "video_stream0", "audio_stream0" }
+        };
 
-        Input input = new Input();
-        input.Key = "input0";
-        input.Uri = inputUri;
+        Input input = new Input
+        {
+            Key = "input0",
+            Uri = inputUri
+        };
 
-        Output output = new Output();
-        output.Uri = outputUri;
+        Output output = new Output
+        {
+            Uri = outputUri
+        };
 
-        JobConfig jobConfig = new JobConfig();
-        jobConfig.Inputs.Add(input);
-        jobConfig.Output = output;
-        jobConfig.ElementaryStreams.Add(elementaryStream0);
-        jobConfig.ElementaryStreams.Add(elementaryStream1);
-        jobConfig.MuxStreams.Add(muxStream0);
-        jobConfig.SpriteSheets.Add(smallSpriteSheet);
-        jobConfig.SpriteSheets.Add(largeSpriteSheet);
+        JobConfig jobConfig = new JobConfig
+        {
+            Inputs = { input },
+            Output = output,
+            ElementaryStreams = { elementaryStream0, elementaryStream1 },
+            MuxStreams = { muxStream0 },
+            SpriteSheets = { smallSpriteSheet, largeSpriteSheet }
+        };
 
         // Build the job.
-        Job job = new Job();
-        job.InputUri = inputUri;
-        job.OutputUri = outputUri;
-        job.Config = jobConfig;
+        Job newJob = new Job
+        {
+            InputUri = inputUri,
+            OutputUri = outputUri,
+            Config = jobConfig
+        };
 
         // Call the API.
-        Job response = client.CreateJob(parent, job);
+        Job job = client.CreateJob(parent, newJob);
 
         // Return the result.
-        return "Job: " + response.JobName;
+        return job;
     }
 }
 // [END transcoder_create_job_with_periodic_images_spritesheet]

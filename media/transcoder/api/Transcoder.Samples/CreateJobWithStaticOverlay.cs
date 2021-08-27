@@ -21,7 +21,7 @@ using Google.Cloud.Video.Transcoder.V1;
 
 public class CreateJobWithStaticOverlaySample
 {
-    public string CreateJobWithStaticOverlay(
+    public Job CreateJobWithStaticOverlay(
         string projectId, string location, string inputUri, string overlayImageUri, string outputUri)
     {
         // Create the client.
@@ -31,92 +31,129 @@ public class CreateJobWithStaticOverlaySample
         LocationName parent = new LocationName(projectId, location);
 
         // Build the job config.
-        VideoStream videoStream0 = new VideoStream();
-        videoStream0.H264 = new VideoStream.Types.H264CodecSettings();
-        videoStream0.H264.BitrateBps = 550000;
-        videoStream0.H264.FrameRate = 60;
-        videoStream0.H264.HeightPixels = 360;
-        videoStream0.H264.WidthPixels = 640;
+        VideoStream videoStream0 = new VideoStream
+        {
+            H264 = new VideoStream.Types.H264CodecSettings
+            {
+                BitrateBps = 550000,
+                FrameRate = 60,
+                HeightPixels = 360,
+                WidthPixels = 640
+            }
+        };
 
-        AudioStream audioStream0 = new AudioStream();
-        audioStream0.Codec = "aac";
-        audioStream0.BitrateBps = 64000;
+        AudioStream audioStream0 = new AudioStream
+        {
+            Codec = "aac",
+            BitrateBps = 64000
+        };
 
         // Create the overlay image. Only JPEG is supported. Image resolution is based on output
         // video resolution. To respect the original image aspect ratio, set either x or y to 0.0.
         // This example stretches the overlay image the full width and half of the height of the
         // output video.
-        Overlay.Types.NormalizedCoordinate normalizedCoordinate = new Overlay.Types.NormalizedCoordinate();
-        normalizedCoordinate.X = 1;
-        normalizedCoordinate.Y = 0.5;
-        Overlay.Types.Image overlayImage = new Overlay.Types.Image();
-        overlayImage.Uri = overlayImageUri;
-        overlayImage.Alpha = 1;
-        overlayImage.Resolution = normalizedCoordinate;
+        Overlay.Types.Image overlayImage = new Overlay.Types.Image
+        {
+            Uri = overlayImageUri,
+            Alpha = 1,
+            Resolution = new Overlay.Types.NormalizedCoordinate
+            {
+                X = 1,
+                Y = 0.5
+            }
+        };
 
         // Create the starting animation (when the overlay appears). Use the values x: 0 and y: 0 to
         // position the top-left corner of the overlay in the top-left corner of the output video.
-        Overlay.Types.Animation animationStart = new Overlay.Types.Animation();
-        animationStart.AnimationStatic = new Overlay.Types.AnimationStatic();
-        animationStart.AnimationStatic.Xy = new Overlay.Types.NormalizedCoordinate();
-        animationStart.AnimationStatic.Xy.X = 0;
-        animationStart.AnimationStatic.Xy.Y = 0;
-        animationStart.AnimationStatic.StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration();
-        animationStart.AnimationStatic.StartTimeOffset.Seconds = 0;
+        Overlay.Types.Animation animationStart = new Overlay.Types.Animation
+        {
+            AnimationStatic = new Overlay.Types.AnimationStatic
+            {
+                Xy = new Overlay.Types.NormalizedCoordinate
+                {
+                    X = 0,
+                    Y = 0
+                },
+                StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
+                {
+                    Seconds = 0
+                }
+            }
+        };
+
 
         // Create the ending animation (when the overlay disappears). In this example, the overlay
         // disappears at the 10-second mark in the output video.
-        Overlay.Types.Animation animationEnd = new Overlay.Types.Animation();
-        animationEnd.AnimationEnd = new Overlay.Types.AnimationEnd();
-        animationEnd.AnimationEnd.StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration();
-        animationEnd.AnimationEnd.StartTimeOffset.Seconds = 10;
+        Overlay.Types.Animation animationEnd = new Overlay.Types.Animation
+        {
+            AnimationEnd = new Overlay.Types.AnimationEnd
+            {
+                StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
+                {
+                    Seconds = 10
+                }
+            }
+        };
 
         // Create the overlay and add the image and animations to it.
-        Overlay overlay = new Overlay();
-        overlay.Image = overlayImage;
-        overlay.Animations.Add(animationStart);
-        overlay.Animations.Add(animationEnd);
+        Overlay overlay = new Overlay
+        {
+            Image = overlayImage,
+            Animations = { animationStart, animationEnd }
+        };
 
-        ElementaryStream elementaryStream0 = new ElementaryStream();
-        elementaryStream0.Key = "video_stream0";
-        elementaryStream0.VideoStream = videoStream0;
+        ElementaryStream elementaryStream0 = new ElementaryStream
+        {
+            Key = "video_stream0",
+            VideoStream = videoStream0
+        };
 
-        ElementaryStream elementaryStream1 = new ElementaryStream();
-        elementaryStream1.Key = "audio_stream0";
-        elementaryStream1.AudioStream = audioStream0;
+        ElementaryStream elementaryStream1 = new ElementaryStream
+        {
+            Key = "audio_stream0",
+            AudioStream = audioStream0
+        };
 
-        MuxStream muxStream0 = new MuxStream();
-        muxStream0.Key = "sd";
-        muxStream0.Container = "mp4";
-        muxStream0.ElementaryStreams.Add("video_stream0");
-        muxStream0.ElementaryStreams.Add("audio_stream0");
+        MuxStream muxStream0 = new MuxStream
+        {
+            Key = "sd",
+            Container = "mp4",
+            ElementaryStreams = { "video_stream0", "audio_stream0" }
+        };
 
-        Input input = new Input();
-        input.Key = "input0";
-        input.Uri = inputUri;
+        Input input = new Input
+        {
+            Key = "input0",
+            Uri = inputUri
+        };
 
-        Output output = new Output();
-        output.Uri = outputUri;
+        Output output = new Output
+        {
+            Uri = outputUri
+        };
 
-        JobConfig jobConfig = new JobConfig();
-        jobConfig.Inputs.Add(input);
-        jobConfig.Output = output;
-        jobConfig.ElementaryStreams.Add(elementaryStream0);
-        jobConfig.ElementaryStreams.Add(elementaryStream1);
-        jobConfig.MuxStreams.Add(muxStream0);
-        jobConfig.Overlays.Add(overlay);
+        JobConfig jobConfig = new JobConfig
+        {
+            Inputs = { input },
+            Output = output,
+            ElementaryStreams = { elementaryStream0, elementaryStream1 },
+            MuxStreams = { muxStream0 },
+            Overlays = { overlay }
+        };
 
         // Build the job.
-        Job job = new Job();
-        job.InputUri = inputUri;
-        job.OutputUri = outputUri;
-        job.Config = jobConfig;
+        Job newJob = new Job
+        {
+            InputUri = inputUri,
+            OutputUri = outputUri,
+            Config = jobConfig
+        };
 
         // Call the API.
-        Job response = client.CreateJob(parent, job);
+        Job job = client.CreateJob(parent, newJob);
 
         // Return the result.
-        return "Job: " + response.JobName;
+        return job;
     }
 }
 // [END transcoder_create_job_with_static_overlay]

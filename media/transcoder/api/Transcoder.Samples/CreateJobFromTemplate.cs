@@ -21,7 +21,7 @@ using Google.Cloud.Video.Transcoder.V1;
 
 public class CreateJobFromTemplateSample
 {
-    public string CreateJobFromTemplate(
+    public Job CreateJobFromTemplate(
         string projectId, string location, string inputUri, string outputUri, string templateId)
     {
         // Create the client.
@@ -30,17 +30,19 @@ public class CreateJobFromTemplateSample
         // Build the parent location name.
         LocationName parent = new LocationName(projectId, location);
 
-        // Build the job config.
-        Job job = new Job();
-        job.InputUri = inputUri;
-        job.OutputUri = outputUri;
-        job.TemplateId = templateId;
+        // Build the job.
+        Job newJob = new Job
+        {
+            InputUri = inputUri,
+            OutputUri = outputUri,
+            TemplateId = templateId
+        };
 
         // Call the API.
-        Job response = client.CreateJob(parent, job);
+        Job job = client.CreateJob(parent, newJob);
 
         // Return the result.
-        return "Job: " + response.JobName;
+        return job;
     }
 }
 // [END transcoder_create_job_from_template]

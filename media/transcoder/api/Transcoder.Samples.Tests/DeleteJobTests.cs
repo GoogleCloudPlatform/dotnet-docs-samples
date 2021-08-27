@@ -39,8 +39,10 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 inputUri: _fixture.InputUri, outputUri: outputUri);
 
-            string[] arr = result.Split("/");
-            _jobId = arr[arr.Length - 1].Replace("\n", "");
+            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            // Job resource name uses project number for the identifier.
+            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectNumber);
+            _jobId = result.JobName.JobId;
         }
 
         [Fact]
