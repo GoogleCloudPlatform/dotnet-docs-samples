@@ -26,4 +26,5 @@
 
 # Let's at least build.
 
-dotnet build 2>&1 | %{ "$_" }
+dotnet restore --force
+dotnet build --no-restore 2>&1 | %{ "$_" }

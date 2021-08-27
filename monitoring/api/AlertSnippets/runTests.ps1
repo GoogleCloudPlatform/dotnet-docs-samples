@@ -13,4 +13,5 @@
 # the License.
 
 # https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1068
-# dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
+# dotnet restore --force
+# dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
