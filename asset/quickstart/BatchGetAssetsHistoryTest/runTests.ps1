@@ -19,5 +19,6 @@ BackupAndEdit-TextFile @("..\BatchGetAssetsHistory/BatchGetAssetsHistory.cs") @{
     "YOUR-GOOGLE-PROJECT-ID" = $env:GOOGLE_PROJECT_ID;
     '"ASSET-NAME"' = $getBucketNameClause
 } {
-    dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
+    dotnet restore --force
+    dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
 }

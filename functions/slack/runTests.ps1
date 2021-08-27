@@ -15,4 +15,5 @@
 # There are no tests to run at the moment, but let's check
 # it builds. See README.md for more details.
 
-dotnet build 2>&1 | %{ "$_" }
+dotnet restore --force
+dotnet build --no-restore 2>&1 | %{ "$_" }

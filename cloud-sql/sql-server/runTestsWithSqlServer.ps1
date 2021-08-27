@@ -33,9 +33,9 @@ $env:DB_USER=$env:TEST_CLOUDSQL2_SQLSERVER_USER
 $env:DB_PASS=$env:TEST_CLOUDSQL2_SQLSERVER_PASS
 $env:DB_NAME=$env:TEST_CLOUDSQL2_VOTES_NAME
 try {
-	dotnet restore
+	dotnet restore --force
 	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
-	dotnet build
+	dotnet build --no-restore
 	Receive-Job $proxy -ErrorAction 'SilentlyContinue'
 	try {
 		Run-KestrelTest 5567 -CasperJs11

@@ -18,6 +18,7 @@ dotnet restore
 BackupAndEdit-TextFile "Startup.cs" `
     @{"YOUR-GOOGLE-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {
-	dotnet build
+	dotnet restore --force
+    dotnet build --no-restore
 	Run-KestrelTest 5582 -CasperJs11
 }

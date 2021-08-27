@@ -14,10 +14,10 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-dotnet restore
+dotnet restore --force
 BackupAndEdit-TextFile "appsettings.json" `
     @{"your-google-bucket-name" = $env:TEST_GOOGLE_BUCKET_NAME} `
 {
-	dotnet build
-	Run-KestrelTest 5570 -CasperJs11
+    dotnet build --no-restore
+    Run-KestrelTest 5570 -CasperJs11
 }

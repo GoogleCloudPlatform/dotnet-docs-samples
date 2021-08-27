@@ -12,4 +12,5 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-& dotnet publish -c Release -f netcoreapp3.1 2>&1 | %{ "$_" }
+dotnet restore --force
+dotnet publish --no-restore -c Release -f netcoreapp3.1 2>&1 | %{ "$_" }
