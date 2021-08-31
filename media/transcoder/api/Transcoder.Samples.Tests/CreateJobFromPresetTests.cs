@@ -43,9 +43,9 @@ namespace Transcoder.Samples.Tests
             string outputUri = "gs://" + _fixture.BucketName + "/test-output-preset/";
             string preset = "preset/web-hd";
             // Run the sample code.
-            var result = _createSample.CreateJobFromPreset(
+            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobFromPreset(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, outputUri: outputUri, preset: preset);
+                inputUri: _fixture.InputUri, outputUri: outputUri, preset: preset));
 
             Assert.Equal(result.JobName.LocationId, _fixture.Location);
             // Job resource name uses project number for the identifier.
@@ -58,15 +58,10 @@ namespace Transcoder.Samples.Tests
             for (int attempt = 0; attempt < 5; attempt++)
             {
                 Thread.Sleep(60000);
-                try
+                _fixture.TranscoderChangesPropagated.Eventually(() =>
                 {
                     state = _getSample.GetJobState(projectId: _fixture.ProjectId, location: _fixture.Location, _jobId);
-                }
-                catch (Google.GoogleApiException e)
-                when (e.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    // Job does not exist yet.  No problem.
-                }
+                });
                 if (state.Equals(_fixture.JobStateSucceeded))
                 {
                     break;

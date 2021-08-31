@@ -34,18 +34,18 @@ namespace Transcoder.Samples.Tests
             _deleteSample = new DeleteJobTemplateSample();
             _templateId = "my-job-template-" + _fixture.RandomId();
 
-            _createSample.CreateJobTemplate(
+            _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobTemplate(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                templateId: _templateId);
+                templateId: _templateId));
         }
 
         [Fact]
         public void DeletesJobTemplate()
         {
             // Run the sample code.
-            var result = _deleteSample.DeleteJobTemplate(
+            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _deleteSample.DeleteJobTemplate(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                templateId: _templateId);
+                templateId: _templateId));
 
             Assert.Contains("Deleted job template", result);
         }

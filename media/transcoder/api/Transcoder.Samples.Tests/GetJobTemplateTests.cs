@@ -36,18 +36,18 @@ namespace Transcoder.Samples.Tests
             _deleteSample = new DeleteJobTemplateSample();
             _templateId = "my-job-template-" + _fixture.RandomId();
 
-            _createSample.CreateJobTemplate(
+            _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobTemplate(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                templateId: _templateId);
+                templateId: _templateId));
         }
 
         [Fact]
         public void GetsJobTemplate()
         {
             // Run the sample code.
-            var result = _getSample.GetJobTemplate(
+            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _getSample.GetJobTemplate(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                templateId: _templateId);
+                templateId: _templateId));
 
             Assert.Equal(result.JobTemplateName.LocationId, _fixture.Location);
             // Job template resource name uses project number for the identifier.

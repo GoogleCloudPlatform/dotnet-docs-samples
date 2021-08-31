@@ -37,9 +37,9 @@ namespace Transcoder.Samples.Tests
 
             string outputUri = "gs://" + _fixture.BucketName + "/test-output-get-job/";
             // Run the sample code.
-            var result = _createSample.CreateJobFromAdHoc(
+            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobFromAdHoc(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, outputUri: outputUri);
+                inputUri: _fixture.InputUri, outputUri: outputUri));
 
             Assert.Equal(result.JobName.LocationId, _fixture.Location);
             // Job resource name uses project number for the identifier.
@@ -51,9 +51,9 @@ namespace Transcoder.Samples.Tests
         public void GetsJob()
         {
             // Run the sample code.
-            var result = _getSample.GetJob(
+            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _getSample.GetJob(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                jobId: _jobId);
+                jobId: _jobId));
 
             Assert.Equal(result.JobName.LocationId, _fixture.Location);
             // Job resource name uses project number for the identifier.

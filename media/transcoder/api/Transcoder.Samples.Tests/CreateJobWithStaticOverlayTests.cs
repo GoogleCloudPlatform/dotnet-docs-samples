@@ -42,9 +42,9 @@ namespace Transcoder.Samples.Tests
         {
             string outputUri = "gs://" + _fixture.BucketName + "/test-output-static-overlay/";
             // Run the sample code.
-            var result = _createSample.CreateJobWithStaticOverlay(
+            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobWithStaticOverlay(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, overlayImageUri: _fixture.OverlayImageUri, outputUri: outputUri);
+                inputUri: _fixture.InputUri, overlayImageUri: _fixture.OverlayImageUri, outputUri: outputUri));
 
             Assert.Equal(result.JobName.LocationId, _fixture.Location);
             // Job resource name uses project number for the identifier.
@@ -57,15 +57,10 @@ namespace Transcoder.Samples.Tests
             for (int attempt = 0; attempt < 5; attempt++)
             {
                 Thread.Sleep(60000);
-                try
+                _fixture.TranscoderChangesPropagated.Eventually(() =>
                 {
                     state = _getSample.GetJobState(projectId: _fixture.ProjectId, location: _fixture.Location, _jobId);
-                }
-                catch (Google.GoogleApiException e)
-                when (e.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    // Job does not exist yet.  No problem.
-                }
+                });
                 if (state.Equals(_fixture.JobStateSucceeded))
                 {
                     break;

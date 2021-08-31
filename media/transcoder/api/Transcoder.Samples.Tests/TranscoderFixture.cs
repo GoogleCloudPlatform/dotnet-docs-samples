@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-
+using Google;
 using System;
+using System.Net;
 using System.IO;
 using Xunit;
+using Xunit.Sdk;
 using GoogleCloudSamples;
 using Google.Cloud.Video.Transcoder.V1;
 using System.Collections.Generic;
@@ -43,6 +45,14 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
     private readonly DeleteJobSample deleteJobSample;
     private readonly DeleteJobTemplateSample deleteJobTemplateSample;
 
+    public RetryRobot TranscoderChangesPropagated { get; } = new RetryRobot
+    {
+        ShouldRetry = ex => ex is XunitException ||
+            (ex is GoogleApiException gex &&
+                (gex.HttpStatusCode == HttpStatusCode.NotFound ||
+                gex.HttpStatusCode == HttpStatusCode.BadRequest ||
+                gex.HttpStatusCode == HttpStatusCode.ServiceUnavailable))
+    };
 
     public TranscoderFixture()
     {

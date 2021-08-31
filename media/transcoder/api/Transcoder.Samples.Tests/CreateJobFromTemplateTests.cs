@@ -42,9 +42,9 @@ namespace Transcoder.Samples.Tests
             _deleteJobSample = new DeleteJobSample();
             _templateId = "my-job-template-" + _fixture.RandomId();
 
-            _createTemplateSample.CreateJobTemplate(
+            _fixture.TranscoderChangesPropagated.Eventually(() => _createTemplateSample.CreateJobTemplate(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                templateId: _templateId);
+                templateId: _templateId));
         }
 
         [Fact]
@@ -52,9 +52,9 @@ namespace Transcoder.Samples.Tests
         {
             string outputUri = "gs://" + _fixture.BucketName + "/test-output-template/";
             // Run the sample code.
-            var result = _createJobSample.CreateJobFromTemplate(
+            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createJobSample.CreateJobFromTemplate(
                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, outputUri: outputUri, templateId: _templateId);
+                inputUri: _fixture.InputUri, outputUri: outputUri, templateId: _templateId));
 
             Assert.Equal(result.JobName.LocationId, _fixture.Location);
             // Job resource name uses project number for the identifier.
@@ -68,15 +68,10 @@ namespace Transcoder.Samples.Tests
             for (int attempt = 0; attempt < 5; attempt++)
             {
                 Thread.Sleep(60000);
-                try
+                _fixture.TranscoderChangesPropagated.Eventually(() =>
                 {
                     state = _getJobSample.GetJobState(projectId: _fixture.ProjectId, location: _fixture.Location, _jobId);
-                }
-                catch (Google.GoogleApiException e)
-                when (e.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    // Job does not exist yet.  No problem.
-                }
+                });
                 if (state.Equals(_fixture.JobStateSucceeded))
                 {
                     break;
