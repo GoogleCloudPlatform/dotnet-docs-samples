@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using GoogleCloudSamples;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using Xunit;
+using Xunit.Sdk;
 
 [CollectionDefinition(nameof(StorageFixture))]
 public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
@@ -36,6 +40,15 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     public string KmsKeyName { get; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYNAME");
     public string KmsKeyLocation { get; } = "us-west1";
     public string ServiceAccountEmail { get; } = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
+
+    public RetryRobot HmacChangesPropagated { get; } = new RetryRobot
+    {
+        ShouldRetry = ex => ex is XunitException ||
+            (ex is GoogleApiException gex &&
+                (gex.HttpStatusCode == HttpStatusCode.NotFound ||
+                gex.HttpStatusCode == HttpStatusCode.BadRequest ||
+                gex.HttpStatusCode == HttpStatusCode.ServiceUnavailable))
+    };
 
     public StorageFixture()
     {

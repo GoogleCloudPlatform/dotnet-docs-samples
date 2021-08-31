@@ -33,7 +33,10 @@ public class ListHmacKeysTest : HmacKeyManager
         _accessId = key.Metadata.AccessId;
 
         // List keys.
-        var keys = listHmacKeysSample.ListHmacKeys(_fixture.ProjectId);
-        Assert.Contains(keys, key => key.AccessId == key.AccessId);
+        _fixture.HmacChangesPropagated.Eventually(() =>
+        {
+            var keys = listHmacKeysSample.ListHmacKeys(_fixture.ProjectId);
+            Assert.Contains(keys, key => key.AccessId == key.AccessId);
+        });
     }
 }
