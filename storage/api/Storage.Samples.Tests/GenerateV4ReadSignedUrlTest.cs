@@ -16,14 +16,14 @@ using System;
 using System.Net.Http;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class GenerateV4ReadSignedUrlTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public GenerateV4ReadSignedUrlTest(BucketFixture bucketFixture)
+    public GenerateV4ReadSignedUrlTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class GenerateV4ReadSignedUrlTest
     {
         GenerateV4SignedReadUrlSample generateV4SignedReadUrlSample = new GenerateV4SignedReadUrlSample();
         var credentialFilePath = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
-        var signedUrl = generateV4SignedReadUrlSample.GenerateV4SignedReadUrl(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, credentialFilePath);
+        var signedUrl = generateV4SignedReadUrlSample.GenerateV4SignedReadUrl(_fixture.BucketNameGeneric, _fixture.FileName, credentialFilePath);
 
         using var client = new HttpClient();
         var response = await client.GetAsync(signedUrl);

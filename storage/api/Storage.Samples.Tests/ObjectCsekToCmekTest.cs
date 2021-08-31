@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class ObjectCsekToCmekTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public ObjectCsekToCmekTest(BucketFixture bucketFixture)
+    public ObjectCsekToCmekTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -36,14 +36,14 @@ public class ObjectCsekToCmekTest
         var objectName = "HelloObjectCsekToCmek.txt";
         string key = generateEncryptionKeySample.GenerateEncryptionKey();
 
-        uploadEncryptedFileSample.UploadEncryptedFile(key, _bucketFixture.BucketNameRegional, _bucketFixture.FilePath, _bucketFixture.Collect(objectName));
+        uploadEncryptedFileSample.UploadEncryptedFile(key, _fixture.BucketNameRegional, _fixture.FilePath, _fixture.Collect(objectName));
 
         // Change key type to Cmek
-        objectCsekToCmekSample.ObjectCsekToCmek(_bucketFixture.ProjectId, _bucketFixture.BucketNameRegional, objectName,
-            key, _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName);
+        objectCsekToCmekSample.ObjectCsekToCmek(_fixture.ProjectId, _fixture.BucketNameRegional, objectName,
+            key, _fixture.KmsKeyLocation, _fixture.KmsKeyRing, _fixture.KmsKeyName);
 
         // Verify Kms key Name
-        var obj = getMetadataSample.GetMetadata(_bucketFixture.BucketNameRegional, objectName);
-        Assert.Contains(_bucketFixture.KmsKeyName, obj.KmsKeyName);
+        var obj = getMetadataSample.GetMetadata(_fixture.BucketNameRegional, objectName);
+        Assert.Contains(_fixture.KmsKeyName, obj.KmsKeyName);
     }
 }

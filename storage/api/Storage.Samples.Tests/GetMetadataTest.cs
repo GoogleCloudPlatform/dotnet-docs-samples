@@ -14,21 +14,21 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class GetMetadataTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public GetMetadataTest(BucketFixture bucketFixture)
+    public GetMetadataTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
     public void GetMetadata()
     {
         GetMetadataSample getMetadataSample = new GetMetadataSample();
-        var obj = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName);
+        var obj = getMetadataSample.GetMetadata(_fixture.BucketNameGeneric, _fixture.FileName);
         Assert.NotNull(obj);
     }
 }

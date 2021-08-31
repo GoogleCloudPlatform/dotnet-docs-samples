@@ -16,14 +16,14 @@ using System.IO;
 using System.Net;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class DownloadPublicFileTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public DownloadPublicFileTest(BucketFixture bucketFixture)
+    public DownloadPublicFileTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -33,16 +33,16 @@ public class DownloadPublicFileTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         DownloadPublicFileSample downloadPublicFileSample = new DownloadPublicFileSample();
 
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloDownloadPublic.txt"));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect("HelloDownloadPublic.txt"));
 
         // Make it public
-        makePublicSample.MakePublic(_bucketFixture.BucketNameGeneric, "HelloDownloadPublic.txt");
+        makePublicSample.MakePublic(_fixture.BucketNameGeneric, "HelloDownloadPublic.txt");
 
         // Try downloading without creds 
         try
         {
-            downloadPublicFileSample.DownloadPublicFile(_bucketFixture.BucketNameGeneric, "HelloDownloadPublic.txt", "HelloDownloadPublic.txt");
-            Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("HelloDownloadPublic.txt"));
+            downloadPublicFileSample.DownloadPublicFile(_fixture.BucketNameGeneric, "HelloDownloadPublic.txt", "HelloDownloadPublic.txt");
+            Assert.Equal(File.ReadAllText(_fixture.FilePath), File.ReadAllText("HelloDownloadPublic.txt"));
         }
         finally
         {

@@ -1,13 +1,13 @@
 ﻿using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class RemoveFileOwnerTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public RemoveFileOwnerTest(BucketFixture bucketFixture)
+    public RemoveFileOwnerTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -18,12 +18,12 @@ public class RemoveFileOwnerTest
         GetMetadataSample getMetadataSample = new GetMetadataSample();
 
         // Add file owner.
-        addFileOwnerSample.AddFileOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, _bucketFixture.ServiceAccountEmail);
+        addFileOwnerSample.AddFileOwner(_fixture.BucketNameGeneric, _fixture.FileName, _fixture.ServiceAccountEmail);
 
         // Remove file owner.
-        removeFileOwnerSample.RemoveFileOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, _bucketFixture.ServiceAccountEmail);
+        removeFileOwnerSample.RemoveFileOwner(_fixture.BucketNameGeneric, _fixture.FileName, _fixture.ServiceAccountEmail);
 
-        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName);
-        Assert.DoesNotContain(metadata.Acl, acl => acl.Email == _bucketFixture.ServiceAccountEmail && acl.Role == "OWNER");
+        var metadata = getMetadataSample.GetMetadata(_fixture.BucketNameGeneric, _fixture.FileName);
+        Assert.DoesNotContain(metadata.Acl, acl => acl.Email == _fixture.ServiceAccountEmail && acl.Role == "OWNER");
     }
 }

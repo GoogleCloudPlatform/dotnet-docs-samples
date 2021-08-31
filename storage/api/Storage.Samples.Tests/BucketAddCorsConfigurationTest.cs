@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class BucketAddCorsConfigurationTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public BucketAddCorsConfigurationTest(BucketFixture bucketFixture)
+    public BucketAddCorsConfigurationTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,15 +31,15 @@ public class BucketAddCorsConfigurationTest
         BucketRemoveCorsConfigurationSample bucketRemoveCorsConfigurationSample= new BucketRemoveCorsConfigurationSample();
 
         // Add Cors Configuration
-        var bucket = bucketAddCorsConfigurationSample.BucketAddCorsConfiguration(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var bucket = bucketAddCorsConfigurationSample.BucketAddCorsConfiguration(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         Assert.Equal("*", bucket.Cors[0].Origin[0]);
         Assert.Equal("PUT", bucket.Cors[0].Method[0]);
         Assert.Equal(3600, bucket.Cors[0].MaxAgeSeconds);
 
         // Remove Cors Configurations
-        bucketRemoveCorsConfigurationSample.BucketRemoveCorsConfiguration(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        bucketRemoveCorsConfigurationSample.BucketRemoveCorsConfiguration(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

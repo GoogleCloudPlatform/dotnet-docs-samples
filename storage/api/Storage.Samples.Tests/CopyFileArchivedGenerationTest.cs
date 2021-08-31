@@ -15,14 +15,14 @@
 using System.IO;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class CopyFileArchivedGenerationTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public CopyFileArchivedGenerationTest(BucketFixture bucketFixture)
+    public CopyFileArchivedGenerationTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -40,44 +40,44 @@ public class CopyFileArchivedGenerationTest
         var copiedObjectName = "ByeCopy.txt";
 
         // Enable bucket versioning
-        bucketEnableVersioningSample.BucketEnableVersioning(_bucketFixture.BucketNameGeneric);
+        bucketEnableVersioningSample.BucketEnableVersioning(_fixture.BucketNameGeneric);
 
         // Uploaded for the first time
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, objectName);
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, objectName);
 
         // Get generation of first version of the file
-        var obj = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, objectName);
+        var obj = getMetadataSample.GetMetadata(_fixture.BucketNameGeneric, objectName);
         var fileArchivedGeneration = obj.Generation;
 
         // Upload again to archive previous generation.
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", objectName);
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", objectName);
 
         // Get generation of second version of the file
-        obj = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, objectName);
+        obj = getMetadataSample.GetMetadata(_fixture.BucketNameGeneric, objectName);
         var fileCurrentGeneration = obj.Generation;
 
 
-        _bucketFixture.CollectArchivedFiles(_bucketFixture.BucketNameGeneric, objectName, fileArchivedGeneration);
-        _bucketFixture.CollectArchivedFiles(_bucketFixture.BucketNameGeneric, objectName, fileCurrentGeneration);
+        _fixture.CollectArchivedFiles(_fixture.BucketNameGeneric, objectName, fileArchivedGeneration);
+        _fixture.CollectArchivedFiles(_fixture.BucketNameGeneric, objectName, fileCurrentGeneration);
 
         try
         {
             // Copy first version of the file to new bucket.
-            copyFileArchivedGenerationSample.CopyFileArchivedGeneration(_bucketFixture.BucketNameGeneric, objectName,
-                _bucketFixture.BucketNameRegional, _bucketFixture.CollectRegionalObject(copiedObjectName), fileArchivedGeneration);
+            copyFileArchivedGenerationSample.CopyFileArchivedGeneration(_fixture.BucketNameGeneric, objectName,
+                _fixture.BucketNameRegional, _fixture.CollectRegionalObject(copiedObjectName), fileArchivedGeneration);
 
             // Download copied file
-            downloadFileSample.DownloadFile(_bucketFixture.BucketNameRegional, copiedObjectName, copiedObjectName);
+            downloadFileSample.DownloadFile(_fixture.BucketNameRegional, copiedObjectName, copiedObjectName);
 
             // Match file contents with first version of the file
-            Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText(copiedObjectName));
+            Assert.Equal(File.ReadAllText(_fixture.FilePath), File.ReadAllText(copiedObjectName));
         }
         finally
         {
             File.Delete(copiedObjectName);
 
             // Disable bucket versioning
-            bucketDisableVersioningSample.BucketDisableVersioning(_bucketFixture.BucketNameGeneric);
+            bucketDisableVersioningSample.BucketDisableVersioning(_fixture.BucketNameGeneric);
         }
     }
 }

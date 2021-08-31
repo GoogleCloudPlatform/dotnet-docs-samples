@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class PrintBucketDefaultAclTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public PrintBucketDefaultAclTest(BucketFixture bucketFixture)
+    public PrintBucketDefaultAclTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -30,18 +30,18 @@ public class PrintBucketDefaultAclTest
         PrintBucketDefaultAclSample printBucketDefaultAclSample = new PrintBucketDefaultAclSample();
         AddBucketDefaultOwnerSample addBucketDefaultOwnerSample = new AddBucketDefaultOwnerSample();
         RemoveBucketDefaultOwnerSample removeBucketDefaultOwnerSample = new RemoveBucketDefaultOwnerSample();
-        string userEmail = _bucketFixture.ServiceAccountEmail;
+        string userEmail = _fixture.ServiceAccountEmail;
 
         // add default owner
-        addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketNameGeneric, userEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        addBucketDefaultOwnerSample.AddBucketDefaultOwner(_fixture.BucketNameGeneric, userEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // print default owner
-        var defaultBucketAcl = printBucketDefaultAclSample.PrintBucketDefaultAcl(_bucketFixture.BucketNameGeneric);
+        var defaultBucketAcl = printBucketDefaultAclSample.PrintBucketDefaultAcl(_fixture.BucketNameGeneric);
         Assert.Contains(defaultBucketAcl, c => c.Role == "OWNER" && c.Email == userEmail);
 
         // remove default owner
-        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketNameGeneric, userEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_fixture.BucketNameGeneric, userEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

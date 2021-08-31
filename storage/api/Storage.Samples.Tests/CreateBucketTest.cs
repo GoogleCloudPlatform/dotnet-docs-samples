@@ -15,14 +15,14 @@
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class CreateBucketTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public CreateBucketTest(BucketFixture bucketFixture)
+    public CreateBucketTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,9 +31,9 @@ public class CreateBucketTest
         CreateBucketSample createBucketSample = new CreateBucketSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
         var bucketName = Guid.NewGuid().ToString();
-        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
-        _bucketFixture.TempBucketNames.Add(bucketName);
+        createBucketSample.CreateBucket(_fixture.ProjectId, bucketName);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.TempBucketNames.Add(bucketName);
 
         var metadata = getBucketMetadataSample.GetBucketMetadata(bucketName);
         Assert.NotNull(metadata);

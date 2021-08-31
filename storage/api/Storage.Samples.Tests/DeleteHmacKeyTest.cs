@@ -14,10 +14,10 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class DeleteHmacKeyTest : HmacKeyManager
 {
-    public DeleteHmacKeyTest(BucketFixture bucketFixture) : base(bucketFixture)
+    public DeleteHmacKeyTest(StorageFixture fixture) : base(fixture)
     { }
 
     [Fact]
@@ -28,21 +28,21 @@ public class DeleteHmacKeyTest : HmacKeyManager
         DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
         DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
 
-        string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
+        string serviceAccountEmail = _fixture.GetServiceAccountEmail();
 
         // Create key.
-        var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
+        var key = createHmacKeySample.CreateHmacKey(_fixture.ProjectId, serviceAccountEmail);
         _accessId = key.Metadata.AccessId;
 
         // Deactivate key.
-        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, _accessId);
+        deactivateHmacKeySample.DeactivateHmacKey(_fixture.ProjectId, _accessId);
         _isActive = false;
 
         // Delete key.
-        deleteHmacKeySample.DeleteHmacKey(_bucketFixture.ProjectId, _accessId);
+        deleteHmacKeySample.DeleteHmacKey(_fixture.ProjectId, _accessId);
 
         // Get key.
-        var keyMetadata = getHmacKeySample.GetHmacKey(_bucketFixture.ProjectId, _accessId);
+        var keyMetadata = getHmacKeySample.GetHmacKey(_fixture.ProjectId, _accessId);
         Assert.Equal("DELETED", keyMetadata.State);
         _accessId = null;
     }

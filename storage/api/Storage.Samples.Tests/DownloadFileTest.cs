@@ -15,22 +15,22 @@
 using System.IO;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class DownloadFileTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public DownloadFileTest(BucketFixture bucketFixture)
+    public DownloadFileTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
     public void DownloadFile()
     {
         DownloadFileSample downloadFileSample = new DownloadFileSample();
-        downloadFileSample.DownloadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, "Download-test.txt");
-        Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("Download-test.txt"));
+        downloadFileSample.DownloadFile(_fixture.BucketNameGeneric, _fixture.FileName, "Download-test.txt");
+        Assert.Equal(File.ReadAllText(_fixture.FilePath), File.ReadAllText("Download-test.txt"));
         File.Delete("Download-test.txt");
     }
 }

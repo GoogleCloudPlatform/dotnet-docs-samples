@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class AddBucketIamMemberTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public AddBucketIamMemberTest(BucketFixture bucketFixture)
+    public AddBucketIamMemberTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -33,12 +33,12 @@ public class AddBucketIamMemberTest
         RemoveBucketIamMemberSample removeBucketIamMemberSample = new RemoveBucketIamMemberSample();
 
         // Add bucket Iam member.
-        var result = addBucketIamMemberSample.AddBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
-        Assert.Contains(result.Bindings, b => b.Role == role && b.Members.Contains($"{memberType}:{_bucketFixture.ServiceAccountEmail}"));
+        var result = addBucketIamMemberSample.AddBucketIamMember(_fixture.BucketNameGeneric, role, $"{memberType}:{_fixture.ServiceAccountEmail}");
+        _fixture.SleepAfterBucketCreateUpdateDelete();
+        Assert.Contains(result.Bindings, b => b.Role == role && b.Members.Contains($"{memberType}:{_fixture.ServiceAccountEmail}"));
 
         // Remove bucket Iam member.
-        removeBucketIamMemberSample.RemoveBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        removeBucketIamMemberSample.RemoveBucketIamMember(_fixture.BucketNameGeneric, role, $"{memberType}:{_fixture.ServiceAccountEmail}");
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

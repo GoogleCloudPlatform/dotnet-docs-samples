@@ -17,14 +17,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class DownloadByteRangeAsyncTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public DownloadByteRangeAsyncTest(BucketFixture bucketFixture)
+    public DownloadByteRangeAsyncTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -33,11 +33,11 @@ public class DownloadByteRangeAsyncTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         DownloadByteRangeAsyncSample downloadByteRangeSample = new DownloadByteRangeAsyncSample();
         uploadFileSample.UploadFile(
-            _bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt",
-            _bucketFixture.Collect("HelloDownloadCompleteByteRange.txt"));
+            _fixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt",
+            _fixture.Collect("HelloDownloadCompleteByteRange.txt"));
 
         await downloadByteRangeSample.DownloadByteRangeAsync(
-            _bucketFixture.BucketNameGeneric, "HelloDownloadCompleteByteRange.txt", 0, 20,
+            _fixture.BucketNameGeneric, "HelloDownloadCompleteByteRange.txt", 0, 20,
             "HelloDownloadCompleteByteRange.txt_0-20");
 
         var downloadedString = Encoding.UTF8.GetString(File.ReadAllBytes("HelloDownloadCompleteByteRange.txt_0-20"));

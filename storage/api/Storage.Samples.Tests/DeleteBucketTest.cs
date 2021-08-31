@@ -16,14 +16,14 @@ using Google;
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class DeleteBucketTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public DeleteBucketTest(BucketFixture bucketFixture)
+    public DeleteBucketTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -33,11 +33,11 @@ public class DeleteBucketTest
         CreateBucketSample createBucketSample = new CreateBucketSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
         var bucketName = Guid.NewGuid().ToString();
-        createBucketSample.CreateBucket(_bucketFixture.ProjectId, bucketName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        createBucketSample.CreateBucket(_fixture.ProjectId, bucketName);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         deleteBucketSample.DeleteBucket(bucketName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         var exception = Assert.Throws<GoogleApiException>(() => getBucketMetadataSample.GetBucketMetadata(bucketName));
         Assert.Equal(System.Net.HttpStatusCode.NotFound, exception.HttpStatusCode);

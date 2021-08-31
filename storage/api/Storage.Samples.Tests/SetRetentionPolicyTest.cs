@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class SetRetentionPolicyTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public SetRetentionPolicyTest(BucketFixture bucketFixture)
+    public SetRetentionPolicyTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,12 +32,12 @@ public class SetRetentionPolicyTest
         var retentionPeriod = 5;
 
         // Set retention policy.
-        var retentionPolicy = setRetentionPolicySample.SetRetentionPolicy(_bucketFixture.BucketNameGeneric, retentionPeriod);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var retentionPolicy = setRetentionPolicySample.SetRetentionPolicy(_fixture.BucketNameGeneric, retentionPeriod);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
         Assert.Equal(retentionPolicy.RetentionPeriod, retentionPeriod);
 
         // Remove retention policy.
-        removeRetentionPolicySample.RemoveRetentionPolicy(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        removeRetentionPolicySample.RemoveRetentionPolicy(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

@@ -15,14 +15,14 @@
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class LockRetentionPolicyTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public LockRetentionPolicyTest(BucketFixture bucketFixture)
+    public LockRetentionPolicyTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class LockRetentionPolicyTest
         LockRetentionPolicySample lockRetentionPolicySample = new LockRetentionPolicySample();
 
         var bucketName = Guid.NewGuid().ToString();
-        _bucketFixture.CreateBucket(bucketName);
+        _fixture.CreateBucket(bucketName);
 
         setRetentionPolicySample.SetRetentionPolicy(bucketName, 10);
         var result = lockRetentionPolicySample.LockRetentionPolicy(bucketName);

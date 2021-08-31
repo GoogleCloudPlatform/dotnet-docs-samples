@@ -14,10 +14,10 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class DeactivateHmacKeyTest : HmacKeyManager
 {
-    public DeactivateHmacKeyTest(BucketFixture bucketFixture) : base(bucketFixture)
+    public DeactivateHmacKeyTest(StorageFixture fixture) : base(fixture)
     { }
 
     [Fact]
@@ -26,14 +26,14 @@ public class DeactivateHmacKeyTest : HmacKeyManager
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
         DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
 
-        string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
+        string serviceAccountEmail = _fixture.GetServiceAccountEmail();
 
         // Create key.
-        var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
+        var key = createHmacKeySample.CreateHmacKey(_fixture.ProjectId, serviceAccountEmail);
         _accessId = key.Metadata.AccessId;
 
         // Deactivate key.
-        var keyMetadata = deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, _accessId);
+        var keyMetadata = deactivateHmacKeySample.DeactivateHmacKey(_fixture.ProjectId, _accessId);
         Assert.Equal("INACTIVE", keyMetadata.State);
         _isActive = false;
     }

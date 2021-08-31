@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class PrintFileAclForUserTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public PrintFileAclForUserTest(BucketFixture bucketFixture)
+    public PrintFileAclForUserTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,14 +31,14 @@ public class PrintFileAclForUserTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         AddFileOwnerSample addFileOwnerSample = new AddFileOwnerSample();
 
-        string userEmail = _bucketFixture.ServiceAccountEmail;
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloAddObjectOwnerForUser.txt"));
+        string userEmail = _fixture.ServiceAccountEmail;
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect("HelloAddObjectOwnerForUser.txt"));
 
         // add file owner
-        addFileOwnerSample.AddFileOwner(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwnerForUser.txt", userEmail);
+        addFileOwnerSample.AddFileOwner(_fixture.BucketNameGeneric, "HelloAddObjectOwnerForUser.txt", userEmail);
 
         // Make sure we print-acl-for-user shows us the user, but not all the ACLs.
-        var fileAclForUser = printFileAclForUserSample.PrintFileAclForUser(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwnerForUser.txt", userEmail);
+        var fileAclForUser = printFileAclForUserSample.PrintFileAclForUser(_fixture.BucketNameGeneric, "HelloAddObjectOwnerForUser.txt", userEmail);
         Assert.All(fileAclForUser, c => Assert.Equal(c.Email, userEmail));
     }
 }
