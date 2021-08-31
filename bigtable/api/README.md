@@ -46,7 +46,7 @@ This sample requires [.NET Core 2.0](https://www.microsoft.com/net/core) or late
     from the underlying libraries:
     ```
     Create new table: Hello-Bigtable with column family: cf, Instance: dotnet-perf
-    Table Hello-Bigtable created succsessfully
+    Table Hello-Bigtable created successfully
 
     Write some greetings to the table Hello-Bigtable
         Greeting:   -- Hello World!      -- written successfully
