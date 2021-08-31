@@ -35,15 +35,18 @@ public class DeleteHmacKeyTest : HmacKeyManager
         _accessId = key.Metadata.AccessId;
 
         // Deactivate key.
-        deactivateHmacKeySample.DeactivateHmacKey(_fixture.ProjectId, _accessId);
+        _fixture.HmacChangesPropagated.Eventually(() => deactivateHmacKeySample.DeactivateHmacKey(_fixture.ProjectId, _accessId));
         _isActive = false;
 
         // Delete key.
-        deleteHmacKeySample.DeleteHmacKey(_fixture.ProjectId, _accessId);
+        _fixture.HmacChangesPropagated.Eventually(() => deleteHmacKeySample.DeleteHmacKey(_fixture.ProjectId, _accessId));
 
         // Get key.
-        var keyMetadata = getHmacKeySample.GetHmacKey(_fixture.ProjectId, _accessId);
-        Assert.Equal("DELETED", keyMetadata.State);
+        _fixture.HmacChangesPropagated.Eventually(() =>
+        {
+            var keyMetadata = getHmacKeySample.GetHmacKey(_fixture.ProjectId, _accessId);
+            Assert.Equal("DELETED", keyMetadata.State);
+        });
         _accessId = null;
     }
 }

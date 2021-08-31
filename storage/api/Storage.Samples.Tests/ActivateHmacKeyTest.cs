@@ -34,11 +34,11 @@ public class ActivateHmacKeyTest : HmacKeyManager
         _accessId = key.Metadata.AccessId;
 
         // Deactivate key.
-        deactivateHmacKeySample.DeactivateHmacKey(_fixture.ProjectId, _accessId);
+        _fixture.HmacChangesPropagated.Eventually(() => deactivateHmacKeySample.DeactivateHmacKey(_fixture.ProjectId, _accessId));
         _isActive = false;
 
         // Activate key.
-        var keyMetadata = activateHmacKeySample.ActivateHmacKey(_fixture.ProjectId, _accessId);
+        var keyMetadata = _fixture.HmacChangesPropagated.Eventually(() => activateHmacKeySample.ActivateHmacKey(_fixture.ProjectId, _accessId));
         Assert.Equal("ACTIVE", keyMetadata.State);
         _isActive = true;
     }

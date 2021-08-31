@@ -33,7 +33,7 @@ public class GetHmacKeyTest : HmacKeyManager
         _accessId = key.Metadata.AccessId;
 
         // Get key.
-        var keyMetadata = getHmacKeySample.GetHmacKey(_fixture.ProjectId, _accessId);
+        var keyMetadata = _fixture.HmacChangesPropagated.Eventually(() => getHmacKeySample.GetHmacKey(_fixture.ProjectId, _accessId));
         Assert.Equal(keyMetadata.ServiceAccountEmail, serviceAccountEmail);
     }
 }
