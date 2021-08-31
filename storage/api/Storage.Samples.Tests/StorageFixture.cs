@@ -19,8 +19,8 @@ using System.Collections.Generic;
 using System.Threading;
 using Xunit;
 
-[CollectionDefinition(nameof(BucketFixture))]
-public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
+[CollectionDefinition(nameof(StorageFixture))]
+public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
 {
     public string ProjectId { get; }
     public IList<string> TempBucketNames { get; } = new List<string>();
@@ -37,7 +37,7 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     public string KmsKeyLocation { get; } = "us-west1";
     public string ServiceAccountEmail { get; } = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
 
-    public BucketFixture()
+    public StorageFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (string.IsNullOrWhiteSpace(ProjectId))

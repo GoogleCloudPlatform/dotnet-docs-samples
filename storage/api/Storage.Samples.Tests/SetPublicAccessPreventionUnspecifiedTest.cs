@@ -15,14 +15,14 @@
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class SetPublicAccessPreventionUnspecifiedTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public SetPublicAccessPreventionUnspecifiedTest(BucketFixture bucketFixture)
+    public SetPublicAccessPreventionUnspecifiedTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,11 +32,11 @@ public class SetPublicAccessPreventionUnspecifiedTest
 
         var bucketName = Guid.NewGuid().ToString();
         // Create bucket
-        _bucketFixture.CreateBucket(bucketName);
+        _fixture.CreateBucket(bucketName);
 
         // Set public access prevention to unspecified.
         var updatedBucket = setPublicAccessPreventionUnspecifiedSample.SetPublicAccessPreventionUnspecified(bucketName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         Assert.Equal("unspecified", updatedBucket.IamConfiguration.PublicAccessPrevention);
     }

@@ -16,14 +16,14 @@ using Google.Cloud.Storage.V1;
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class CreateRegionalBucketTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public CreateRegionalBucketTest(BucketFixture bucketFixture)
+    public CreateRegionalBucketTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,12 +32,12 @@ public class CreateRegionalBucketTest
         CreateRegionalBucketSample createRegionalBucketSample = new CreateRegionalBucketSample();
         var bucketName = Guid.NewGuid().ToString();
         var buket = createRegionalBucketSample.CreateRegionalBucket(
-            _bucketFixture.ProjectId, bucketName, _bucketFixture.TestLocation, StorageClasses.Regional);
+            _fixture.ProjectId, bucketName, _fixture.TestLocation, StorageClasses.Regional);
 
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
-        _bucketFixture.TempBucketNames.Add(bucketName);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.TempBucketNames.Add(bucketName);
 
-        Assert.Equal(buket.Location.ToLower(), _bucketFixture.KmsKeyLocation.ToLower());
+        Assert.Equal(buket.Location.ToLower(), _fixture.KmsKeyLocation.ToLower());
         Assert.Equal("regional", buket.StorageClass.ToLower());
     }
 }

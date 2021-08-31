@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class BucketDisableVersioningTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public BucketDisableVersioningTest(BucketFixture bucketFixture)
+    public BucketDisableVersioningTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,12 +31,12 @@ public class BucketDisableVersioningTest
         BucketDisableVersioningSample bucketDisableVersioningSample = new BucketDisableVersioningSample();
 
         // Versioning is disabled by default, so Enable versioning
-        bucketEnableVersioningSample.BucketEnableVersioning(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        bucketEnableVersioningSample.BucketEnableVersioning(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Disable versioning
-        var bucket = bucketDisableVersioningSample.BucketDisableVersioning(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var bucket = bucketDisableVersioningSample.BucketDisableVersioning(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
         Assert.False(bucket.Versioning.Enabled);
     }
 }

@@ -15,14 +15,14 @@
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class EnableUniformBucketLevelAccessTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public EnableUniformBucketLevelAccessTest(BucketFixture bucketFixture)
+    public EnableUniformBucketLevelAccessTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,11 +32,11 @@ public class EnableUniformBucketLevelAccessTest
 
         var bucketName = Guid.NewGuid().ToString();
         // Create bucket
-        _bucketFixture.CreateBucket(bucketName);
+        _fixture.CreateBucket(bucketName);
 
         // Enable Uniform bucket level access.
         var updatedBucket = enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(bucketName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         Assert.True(updatedBucket.IamConfiguration.UniformBucketLevelAccess.Enabled);
     }

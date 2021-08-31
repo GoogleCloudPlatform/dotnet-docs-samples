@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class GetRequesterPaysStatusTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public GetRequesterPaysStatusTest(BucketFixture bucketFixture)
+    public GetRequesterPaysStatusTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,15 +32,15 @@ public class GetRequesterPaysStatusTest
         DisableRequesterPaysSample disableRequesterPaysSample = new DisableRequesterPaysSample();
 
         // Enable request pay.
-        enableRequesterPaysSample.EnableRequesterPays(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        enableRequesterPaysSample.EnableRequesterPays(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Get status.
-        var status = getRequesterPaysStatusSample.GetRequesterPaysStatus(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric);
+        var status = getRequesterPaysStatusSample.GetRequesterPaysStatus(_fixture.ProjectId, _fixture.BucketNameGeneric);
         Assert.True(status);
 
         // Disable request pay.
-        disableRequesterPaysSample.DisableRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        disableRequesterPaysSample.DisableRequesterPays(_fixture.ProjectId, _fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

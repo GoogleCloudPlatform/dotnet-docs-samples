@@ -15,14 +15,14 @@
 using System.Linq;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class ListFilesWithPrefixTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public ListFilesWithPrefixTest(BucketFixture bucketFixture)
+    public ListFilesWithPrefixTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,12 +32,12 @@ public class ListFilesWithPrefixTest
         UploadFileSample uploadFileSample = new UploadFileSample();
 
         // Upload 4 files.
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("a/1.txt"));
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("a/2.txt"));
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("b/2.txt"));
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("a/b/3.txt"));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect("a/1.txt"));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect("a/2.txt"));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect("b/2.txt"));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect("a/b/3.txt"));
 
-        var files = listFilesWithPrefixSample.ListFilesWithPrefix(_bucketFixture.BucketNameGeneric, "a/", null).ToList();
+        var files = listFilesWithPrefixSample.ListFilesWithPrefix(_fixture.BucketNameGeneric, "a/", null).ToList();
         Assert.Contains(files, c => c.Name == "a/1.txt");
         Assert.Contains(files, c => c.Name == "a/2.txt");
         Assert.Contains(files, c => c.Name == "a/b/3.txt");

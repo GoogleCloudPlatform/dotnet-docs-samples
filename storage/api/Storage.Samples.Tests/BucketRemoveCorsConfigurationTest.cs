@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class BucketRemoveCorsConfigurationTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public BucketRemoveCorsConfigurationTest(BucketFixture bucketFixture)
+    public BucketRemoveCorsConfigurationTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,12 +31,12 @@ public class BucketRemoveCorsConfigurationTest
         BucketRemoveCorsConfigurationSample bucketRemoveCorsConfigurationSample = new BucketRemoveCorsConfigurationSample();
 
         // Add Cors Configuration
-        bucketAddCorsConfigurationSample.BucketAddCorsConfiguration(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        bucketAddCorsConfigurationSample.BucketAddCorsConfiguration(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove Cors Configurations
-        var bucket = bucketRemoveCorsConfigurationSample.BucketRemoveCorsConfiguration(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var bucket = bucketRemoveCorsConfigurationSample.BucketRemoveCorsConfiguration(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
         Assert.Null(bucket.Cors);
     }
 }

@@ -15,14 +15,14 @@
 using System.IO;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class ObjectRotateEncryptionKeyTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public ObjectRotateEncryptionKeyTest(BucketFixture bucketFixture)
+    public ObjectRotateEncryptionKeyTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -39,14 +39,14 @@ public class ObjectRotateEncryptionKeyTest
         string currentKey = generateEncryptionKeySample.GenerateEncryptionKey();
         string newKey = generateEncryptionKeySample.GenerateEncryptionKey();
 
-        uploadEncryptedFileSample.UploadEncryptedFile(currentKey, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect(objectName));
+        uploadEncryptedFileSample.UploadEncryptedFile(currentKey, _fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect(objectName));
 
         // Rotate key
-        objectRotateEncryptionKeySample.ObjectRotateEncryptionKey(_bucketFixture.BucketNameGeneric, objectName, currentKey, newKey);
+        objectRotateEncryptionKeySample.ObjectRotateEncryptionKey(_fixture.BucketNameGeneric, objectName, currentKey, newKey);
 
         // Download with new key to verify key has changed
-        downloadEncryptedFileSample.DownloadEncryptedFile(newKey, _bucketFixture.BucketNameGeneric, objectName, "Downloaded-encrypted-object.txt");
-        Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("Downloaded-encrypted-object.txt"));
+        downloadEncryptedFileSample.DownloadEncryptedFile(newKey, _fixture.BucketNameGeneric, objectName, "Downloaded-encrypted-object.txt");
+        Assert.Equal(File.ReadAllText(_fixture.FilePath), File.ReadAllText("Downloaded-encrypted-object.txt"));
         File.Delete("Downloaded-encrypted-object.txt");
     }
 }

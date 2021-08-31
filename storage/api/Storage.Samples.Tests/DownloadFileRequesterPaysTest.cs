@@ -15,14 +15,14 @@
 using System.IO;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class DownloadFileRequesterPaysTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public DownloadFileRequesterPaysTest(BucketFixture bucketFixture)
+    public DownloadFileRequesterPaysTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public class DownloadFileRequesterPaysTest
 
         // download file request pays
         downloadFileRequesterPaysSample.DownloadFileRequesterPays(
-            _bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric, _bucketFixture.FileName, "HelloDownloadObjectRequesterPays2.txt");
-        Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("HelloDownloadObjectRequesterPays2.txt"));
+            _fixture.ProjectId, _fixture.BucketNameGeneric, _fixture.FileName, "HelloDownloadObjectRequesterPays2.txt");
+        Assert.Equal(File.ReadAllText(_fixture.FilePath), File.ReadAllText("HelloDownloadObjectRequesterPays2.txt"));
         File.Delete("HelloDownloadObjectRequesterPays2.txt");
     }
 }

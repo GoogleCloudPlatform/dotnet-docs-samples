@@ -15,14 +15,14 @@
 using System.Linq;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class ListFileArchivedGenerationTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public ListFileArchivedGenerationTest(BucketFixture bucketFixture)
+    public ListFileArchivedGenerationTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -40,28 +40,28 @@ public class ListFileArchivedGenerationTest
         var objectName = "HelloListFileArchivedGeneration.txt";
 
         // Enable bucket versioning
-        bucketEnableVersioningSample.BucketEnableVersioning(_bucketFixture.BucketNameGeneric);
+        bucketEnableVersioningSample.BucketEnableVersioning(_fixture.BucketNameGeneric);
 
         // Uploaded for the first time
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, objectName);
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, objectName);
 
         // Upload again to archive previous generation.
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", objectName);
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", objectName);
 
         try
         {
-            var objects = listFileArchivedGenerationSample.ListFileArchivedGeneration(_bucketFixture.BucketNameGeneric);
+            var objects = listFileArchivedGenerationSample.ListFileArchivedGeneration(_fixture.BucketNameGeneric);
 
             var testFiles = objects.Where(a => a.Name == objectName).ToList();
             
             Assert.Equal(2, testFiles.Count);            
-            _bucketFixture.CollectArchivedFiles(_bucketFixture.BucketNameGeneric, objectName, testFiles[0].Generation);
-            _bucketFixture.CollectArchivedFiles(_bucketFixture.BucketNameGeneric, objectName, testFiles[1].Generation);
+            _fixture.CollectArchivedFiles(_fixture.BucketNameGeneric, objectName, testFiles[0].Generation);
+            _fixture.CollectArchivedFiles(_fixture.BucketNameGeneric, objectName, testFiles[1].Generation);
         }
         finally
         {
             // Disable bucket versioning
-            bucketDisableVersioningSample.BucketDisableVersioning(_bucketFixture.BucketNameGeneric);
+            bucketDisableVersioningSample.BucketDisableVersioning(_fixture.BucketNameGeneric);
         }
     }
 }
