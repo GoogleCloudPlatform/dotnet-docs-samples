@@ -17,8 +17,6 @@
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Asset.V1;
-using Google.Protobuf.WellKnownTypes;
-using System;
 
 public class ListAssetsSample
 {

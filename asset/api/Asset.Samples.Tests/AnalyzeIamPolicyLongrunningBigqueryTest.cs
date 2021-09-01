@@ -40,9 +40,12 @@ public class AnalyzeIamPolicyLongrunningBigqueryTest
             $"projects/{_fixture.ProjectId}/datasets/{_fixture.DatasetId}";
         string tablePrefix = "client_library_table";
 
-        AnalyzeIamPolicyLongrunningResponse result =
-            _sample.AnalyzeIamPolicyLongrunning(scope, fullResourceName, dataset, tablePrefix);
+        _fixture.Retry.Eventually(() =>
+        {
+            AnalyzeIamPolicyLongrunningResponse result =
+                _sample.AnalyzeIamPolicyLongrunning(scope, fullResourceName, dataset, tablePrefix);
 
-        Assert.NotNull(result);
+            Assert.NotNull(result);
+        });
     }
 }

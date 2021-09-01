@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using GoogleCloudSamples;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using Xunit;
+using Xunit.Sdk;
 
-[CollectionDefinition(nameof(BucketFixture))]
-public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
+[CollectionDefinition(nameof(StorageFixture))]
+public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
 {
     public string ProjectId { get; }
     public IList<string> TempBucketNames { get; } = new List<string>();
@@ -37,7 +41,16 @@ public class BucketFixture : IDisposable, ICollectionFixture<BucketFixture>
     public string KmsKeyLocation { get; } = "us-west1";
     public string ServiceAccountEmail { get; } = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
 
-    public BucketFixture()
+    public RetryRobot HmacChangesPropagated { get; } = new RetryRobot
+    {
+        ShouldRetry = ex => ex is XunitException ||
+            (ex is GoogleApiException gex &&
+                (gex.HttpStatusCode == HttpStatusCode.NotFound ||
+                gex.HttpStatusCode == HttpStatusCode.BadRequest ||
+                gex.HttpStatusCode == HttpStatusCode.ServiceUnavailable))
+    };
+
+    public StorageFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (string.IsNullOrWhiteSpace(ProjectId))

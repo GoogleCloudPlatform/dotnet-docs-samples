@@ -15,14 +15,14 @@
 using System.Linq;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class ViewBucketIamMembersTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public ViewBucketIamMembersTest(BucketFixture bucketFixture)
+    public ViewBucketIamMembersTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -35,15 +35,15 @@ public class ViewBucketIamMembersTest
         ViewBucketIamMembersSample viewBucketIamMembersSample = new ViewBucketIamMembersSample();
 
         // Add bucket Iam members.
-        addBucketIamMemberSample.AddBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        addBucketIamMemberSample.AddBucketIamMember(_fixture.BucketNameGeneric, role, $"{memberType}:{_fixture.ServiceAccountEmail}");
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Get bucket Iam members.
-        var result = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketNameGeneric);
-        Assert.Contains(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        var result = viewBucketIamMembersSample.ViewBucketIamMembers(_fixture.BucketNameGeneric);
+        Assert.Contains(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_fixture.ServiceAccountEmail}");
 
         // Remove bucket Iam members.
-        removeBucketIamMemberSample.RemoveBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        removeBucketIamMemberSample.RemoveBucketIamMember(_fixture.BucketNameGeneric, role, $"{memberType}:{_fixture.ServiceAccountEmail}");
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

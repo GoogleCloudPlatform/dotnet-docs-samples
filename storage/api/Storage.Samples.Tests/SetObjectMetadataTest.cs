@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class SetObjectMetadataTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public SetObjectMetadataTest(BucketFixture bucketFixture)
+    public SetObjectMetadataTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -35,11 +35,11 @@ public class SetObjectMetadataTest
         var value = "value-to-add";
         var objectName = "HelloSetObjectMetadata.txt";
 
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect(objectName));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect(objectName));
 
-        setObjectMetadataSample.SetObjectMetadata(_bucketFixture.BucketNameGeneric, objectName, key, value);
+        setObjectMetadataSample.SetObjectMetadata(_fixture.BucketNameGeneric, objectName, key, value);
 
-        var file = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, objectName);
+        var file = getMetadataSample.GetMetadata(_fixture.BucketNameGeneric, objectName);
         Assert.Contains(file.Metadata, m => m.Key == key && m.Value == value);
     }
 }

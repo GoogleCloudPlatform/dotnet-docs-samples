@@ -15,14 +15,14 @@
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class AddBucketConditionalIamBindingTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public AddBucketConditionalIamBindingTest(BucketFixture bucketFixture)
+    public AddBucketConditionalIamBindingTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -35,18 +35,18 @@ public class AddBucketConditionalIamBindingTest
         string role = "roles/storage.objectViewer";
 
         // Create bucket
-        _bucketFixture.CreateBucket(bucketName);
+        _fixture.CreateBucket(bucketName);
 
         // Enable Uniform bucket level access.
         enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(bucketName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Add Conditional Binding.
         var policy = addBucketConditionalIamBindingSample.AddBucketConditionalIamBinding(bucketName,
-           role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}", "title", "description",
+           role, $"{memberType}:{_fixture.ServiceAccountEmail}", "title", "description",
            "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
-        Assert.Contains(policy.Bindings, c => c.Members.Contains($"{memberType}:{_bucketFixture.ServiceAccountEmail}"));
+        Assert.Contains(policy.Bindings, c => c.Members.Contains($"{memberType}:{_fixture.ServiceAccountEmail}"));
     }
 }

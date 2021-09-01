@@ -14,10 +14,10 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class GetHmacKeyTest : HmacKeyManager
 {
-    public GetHmacKeyTest(BucketFixture bucketFixture) : base(bucketFixture)
+    public GetHmacKeyTest(StorageFixture fixture) : base(fixture)
     { }
 
     [Fact]
@@ -26,14 +26,14 @@ public class GetHmacKeyTest : HmacKeyManager
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
         GetHmacKeySample getHmacKeySample = new GetHmacKeySample();
 
-        string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
+        string serviceAccountEmail = _fixture.GetServiceAccountEmail();
 
         // Create key.
-        var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
+        var key = createHmacKeySample.CreateHmacKey(_fixture.ProjectId, serviceAccountEmail);
         _accessId = key.Metadata.AccessId;
 
         // Get key.
-        var keyMetadata = getHmacKeySample.GetHmacKey(_bucketFixture.ProjectId, _accessId);
+        var keyMetadata = _fixture.HmacChangesPropagated.Eventually(() => getHmacKeySample.GetHmacKey(_fixture.ProjectId, _accessId));
         Assert.Equal(keyMetadata.ServiceAccountEmail, serviceAccountEmail);
     }
 }

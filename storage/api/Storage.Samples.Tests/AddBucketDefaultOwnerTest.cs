@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class AddBucketDefaultOwnerTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public AddBucketDefaultOwnerTest(BucketFixture bucketFixture)
+    public AddBucketDefaultOwnerTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,12 +31,12 @@ public class AddBucketDefaultOwnerTest
         RemoveBucketDefaultOwnerSample removeBucketDefaultOwnerSample = new RemoveBucketDefaultOwnerSample();
 
         // Add bucket default owner.
-        var updatedBucket = addBucketDefaultOwnerSample.AddBucketDefaultOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
-        Assert.Contains(updatedBucket.DefaultObjectAcl, acl => acl.Role == "OWNER" && acl.Email == _bucketFixture.ServiceAccountEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var updatedBucket = addBucketDefaultOwnerSample.AddBucketDefaultOwner(_fixture.BucketNameGeneric, _fixture.ServiceAccountEmail);
+        Assert.Contains(updatedBucket.DefaultObjectAcl, acl => acl.Role == "OWNER" && acl.Email == _fixture.ServiceAccountEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove bucket default owner.
-        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        removeBucketDefaultOwnerSample.RemoveBucketDefaultOwner(_fixture.BucketNameGeneric, _fixture.ServiceAccountEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

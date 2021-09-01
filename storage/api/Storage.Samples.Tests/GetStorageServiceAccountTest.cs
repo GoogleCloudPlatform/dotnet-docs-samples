@@ -14,21 +14,21 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class GetStorageServiceAccountTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public GetStorageServiceAccountTest(BucketFixture bucketFixture)
+    public GetStorageServiceAccountTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
     public void GetStorageServiceAccount()
     {
         GetStorageServiceAccountSample getStorageServiceAccountSample = new GetStorageServiceAccountSample();
-        var serviceAccountEmail = getStorageServiceAccountSample.GetStorageServiceAccount(_bucketFixture.ProjectId);
+        var serviceAccountEmail = getStorageServiceAccountSample.GetStorageServiceAccount(_fixture.ProjectId);
         Assert.NotNull(serviceAccountEmail);
     }
 }

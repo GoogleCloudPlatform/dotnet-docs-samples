@@ -15,14 +15,14 @@
 using System.IO;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class ComposeObjectTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public ComposeObjectTest(BucketFixture bucketFixture)
+    public ComposeObjectTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -36,14 +36,14 @@ public class ComposeObjectTest
         var secondObject = "HelloComposeObjectAdditional.txt";
         var targetObject = "HelloComposedDownload.txt";
 
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/Hello.txt", _bucketFixture.Collect(firstObject));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, "Resources/Hello.txt", _fixture.Collect(firstObject));
 
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", _bucketFixture.Collect(secondObject));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", _fixture.Collect(secondObject));
 
-        composeObjectSample.ComposeObject(_bucketFixture.BucketNameGeneric, firstObject, secondObject, _bucketFixture.Collect(targetObject));
+        composeObjectSample.ComposeObject(_fixture.BucketNameGeneric, firstObject, secondObject, _fixture.Collect(targetObject));
 
         // Download the composed file
-        downloadFileSample.DownloadFile(_bucketFixture.BucketNameGeneric, targetObject, targetObject);
+        downloadFileSample.DownloadFile(_fixture.BucketNameGeneric, targetObject, targetObject);
 
         // Content from both file should exists in the downloaded file
         var targetContent = File.ReadAllText(targetObject);

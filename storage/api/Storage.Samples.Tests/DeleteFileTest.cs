@@ -15,14 +15,14 @@
 using System.Linq;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class DeleteFileTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public DeleteFileTest(BucketFixture bucketFixture)
+    public DeleteFileTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,9 +31,9 @@ public class DeleteFileTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         DeleteFileSample deleteFileSample = new DeleteFileSample();
         ListFilesSample listFilesSample = new ListFilesSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, "DeleteTest.txt");
-        deleteFileSample.DeleteFile(_bucketFixture.BucketNameGeneric, "DeleteTest.txt");
-        var files = listFilesSample.ListFiles(_bucketFixture.BucketNameGeneric).ToList();
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, "DeleteTest.txt");
+        deleteFileSample.DeleteFile(_fixture.BucketNameGeneric, "DeleteTest.txt");
+        var files = listFilesSample.ListFiles(_fixture.BucketNameGeneric).ToList();
         Assert.DoesNotContain(files, c => c.Name == "DeleteTest.txt");
     }
 }

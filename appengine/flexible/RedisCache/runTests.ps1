@@ -14,10 +14,10 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-dotnet restore
+dotnet restore --force
 BackupAndEdit-TextFile "appsettings.json" `
     @{"your-redis-endpoint" = $env:TEST_REDIS_CONFIG} `
 {
-	dotnet build
-	Run-KestrelTest 5559 -CasperJs11
+    dotnet build --no-restore
+    Run-KestrelTest 5559 -CasperJs11
 }

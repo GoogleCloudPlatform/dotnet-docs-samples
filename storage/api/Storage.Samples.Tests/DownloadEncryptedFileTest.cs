@@ -15,14 +15,14 @@
 using System.IO;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class DownloadEncryptedFileTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public DownloadEncryptedFileTest(BucketFixture bucketFixture)
+    public DownloadEncryptedFileTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -35,12 +35,12 @@ public class DownloadEncryptedFileTest
 
         // upload with key
         uploadEncryptedFileSample.UploadEncryptedFile(
-            key, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
-            _bucketFixture.Collect("HelloEncryptDownload.txt"));
+            key, _fixture.BucketNameGeneric, _fixture.FilePath,
+            _fixture.Collect("HelloEncryptDownload.txt"));
 
         //download with key
-        downloadEncryptedFileSample.DownloadEncryptedFile(key, _bucketFixture.BucketNameGeneric, "HelloEncryptDownload.txt", "Hello-downloaded.txt");
-        Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("Hello-downloaded.txt"));
+        downloadEncryptedFileSample.DownloadEncryptedFile(key, _fixture.BucketNameGeneric, "HelloEncryptDownload.txt", "Hello-downloaded.txt");
+        Assert.Equal(File.ReadAllText(_fixture.FilePath), File.ReadAllText("Hello-downloaded.txt"));
         File.Delete("Hello-downloaded.txt");
     }
 }

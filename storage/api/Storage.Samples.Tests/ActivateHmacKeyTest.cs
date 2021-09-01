@@ -14,10 +14,10 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class ActivateHmacKeyTest : HmacKeyManager
 {
-    public ActivateHmacKeyTest(BucketFixture bucketFixture) : base(bucketFixture)
+    public ActivateHmacKeyTest(StorageFixture fixture) : base(fixture)
     { }
 
     [Fact]
@@ -27,18 +27,18 @@ public class ActivateHmacKeyTest : HmacKeyManager
         DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
         ActivateHmacKeySample activateHmacKeySample = new ActivateHmacKeySample();
 
-        string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
+        string serviceAccountEmail = _fixture.GetServiceAccountEmail();
 
         // Create key.
-        var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
+        var key = createHmacKeySample.CreateHmacKey(_fixture.ProjectId, serviceAccountEmail);
         _accessId = key.Metadata.AccessId;
 
         // Deactivate key.
-        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, _accessId);
+        _fixture.HmacChangesPropagated.Eventually(() => deactivateHmacKeySample.DeactivateHmacKey(_fixture.ProjectId, _accessId));
         _isActive = false;
 
         // Activate key.
-        var keyMetadata = activateHmacKeySample.ActivateHmacKey(_bucketFixture.ProjectId, _accessId);
+        var keyMetadata = _fixture.HmacChangesPropagated.Eventually(() => activateHmacKeySample.ActivateHmacKey(_fixture.ProjectId, _accessId));
         Assert.Equal("ACTIVE", keyMetadata.State);
         _isActive = true;
     }

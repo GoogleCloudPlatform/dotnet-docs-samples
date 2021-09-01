@@ -18,14 +18,18 @@ using Google.Apis.Bigquery.v2.Data;
 using Google.Cloud.BigQuery.V2;
 using GoogleCloudSamples;
 using System;
-using System.Threading;
 using Xunit;
+using Xunit.Sdk;
 
 [CollectionDefinition(nameof(AssetFixture))]
 public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
 {
     public string ProjectId { get; }
     public string BucketName { get; }
+    public RetryRobot Retry { get; } = new RetryRobot 
+    { 
+        RetryWhenExceptions = new Type[] { typeof(XunitException) } 
+    };
     public string DatasetId { get; }
     private readonly RandomBucketFixture _bucketFixture;
     private readonly BigQueryClient _bigQueryClient;
@@ -45,9 +49,6 @@ public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
         DatasetId = RandomDatasetId();
         var dataset = new Dataset { Location = "US" };
         _bigQueryClient.CreateDataset(datasetId: DatasetId, dataset);
-
-        // Wait 10 seconds to let resource creation events go to CAI.
-        Thread.Sleep(10000);
     }
 
     public void Dispose()
@@ -66,6 +67,6 @@ public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
 
     public string RandomDatasetId()
     {
-        return $"asset-csharp-{System.Guid.NewGuid()}".Replace('-', '_');
+        return $"asset-csharp-{Guid.NewGuid()}".Replace('-', '_');
     }
 }

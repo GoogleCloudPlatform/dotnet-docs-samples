@@ -16,18 +16,18 @@ using System;
 
 public class HmacKeyManager : IDisposable
 {
-    protected readonly BucketFixture _bucketFixture;
+    protected readonly StorageFixture _fixture;
 
     protected string _accessId;
     protected bool _isActive = true;
 
-    public HmacKeyManager(BucketFixture bucketFixture) => _bucketFixture = bucketFixture;
+    public HmacKeyManager(StorageFixture fixture) => _fixture = fixture;
 
     public void Dispose()
     {
         if (_accessId is string)
         {
-            _bucketFixture.DeleteHmacKey(_accessId, _isActive);
+            _fixture.DeleteHmacKey(_accessId, _isActive);
             _accessId = null;
         }
     }

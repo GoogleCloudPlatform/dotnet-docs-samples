@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class UploadFileTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public UploadFileTest(BucketFixture bucketFixture)
+    public UploadFileTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,9 +31,9 @@ public class UploadFileTest
         ListFilesSample listFilesSample = new ListFilesSample();
 
         // upload file
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("UploadTest.txt"));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect("UploadTest.txt"));
 
-        var files = listFilesSample.ListFiles(_bucketFixture.BucketNameGeneric);
+        var files = listFilesSample.ListFiles(_fixture.BucketNameGeneric);
         Assert.Contains(files, c => c.Name == "UploadTest.txt");
     }
 }

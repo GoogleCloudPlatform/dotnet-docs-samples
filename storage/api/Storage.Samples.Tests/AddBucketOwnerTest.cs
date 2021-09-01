@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class AddBucketOwnerTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public AddBucketOwnerTest(BucketFixture bucketFixture)
+    public AddBucketOwnerTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,12 +31,12 @@ public class AddBucketOwnerTest
         RemoveBucketOwnerSample removeBucketOwnerSample = new RemoveBucketOwnerSample();
 
         // Add bucket owner.
-        var result = addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
-        Assert.Contains(result.Acl, c => c.Role == "OWNER" && c.Email == _bucketFixture.ServiceAccountEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var result = addBucketOwnerSample.AddBucketOwner(_fixture.BucketNameGeneric, _fixture.ServiceAccountEmail);
+        Assert.Contains(result.Acl, c => c.Role == "OWNER" && c.Email == _fixture.ServiceAccountEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove bucket owner.
-        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.ServiceAccountEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        removeBucketOwnerSample.RemoveBucketOwner(_fixture.BucketNameGeneric, _fixture.ServiceAccountEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

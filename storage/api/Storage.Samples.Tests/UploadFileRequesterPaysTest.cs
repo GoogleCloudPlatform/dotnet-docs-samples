@@ -15,14 +15,14 @@
 using System.IO;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class UploadFileRequesterPaysTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public UploadFileRequesterPaysTest(BucketFixture bucketFixture)
+    public UploadFileRequesterPaysTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,12 +32,12 @@ public class UploadFileRequesterPaysTest
         UploadFileRequesterPaysSample uploadFileRequesterPaysSample = new UploadFileRequesterPaysSample();
 
         // Upload file request pays.
-        uploadFileRequesterPaysSample.UploadFileRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric, _bucketFixture.FilePath,
-            _bucketFixture.Collect("HelloUploadObjectRequesterPays.txt"));
+        uploadFileRequesterPaysSample.UploadFileRequesterPays(_fixture.ProjectId, _fixture.BucketNameGeneric, _fixture.FilePath,
+            _fixture.Collect("HelloUploadObjectRequesterPays.txt"));
 
         // Download file request pays.
-        downloadFileRequesterPaysSample.DownloadFileRequesterPays(_bucketFixture.ProjectId, _bucketFixture.BucketNameGeneric, "HelloUploadObjectRequesterPays.txt", "HelloUploadObjectRequesterPays2.txt");
-        Assert.Equal(File.ReadAllText(_bucketFixture.FilePath), File.ReadAllText("HelloUploadObjectRequesterPays2.txt"));
+        downloadFileRequesterPaysSample.DownloadFileRequesterPays(_fixture.ProjectId, _fixture.BucketNameGeneric, "HelloUploadObjectRequesterPays.txt", "HelloUploadObjectRequesterPays2.txt");
+        Assert.Equal(File.ReadAllText(_fixture.FilePath), File.ReadAllText("HelloUploadObjectRequesterPays2.txt"));
         File.Delete("HelloUploadObjectRequesterPays2.txt");
     }
 }

@@ -15,14 +15,14 @@
 using Google.Cloud.Storage.V1;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class ChangeFileStorageClassTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public ChangeFileStorageClassTest(BucketFixture bucketFixture)
+    public ChangeFileStorageClassTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,10 +31,10 @@ public class ChangeFileStorageClassTest
         ChangeFileStorageClassSample changeFileStorageClassSample = new ChangeFileStorageClassSample();
 
         // Change storage class to Coldline
-        var file = changeFileStorageClassSample.ChangeFileStorageClass(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, StorageClasses.Coldline);
+        var file = changeFileStorageClassSample.ChangeFileStorageClass(_fixture.BucketNameGeneric, _fixture.FileName, StorageClasses.Coldline);
         Assert.Equal(StorageClasses.Coldline, file.StorageClass);
 
         // Change it back to standard
-        changeFileStorageClassSample.ChangeFileStorageClass(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, StorageClasses.Standard);
+        changeFileStorageClassSample.ChangeFileStorageClass(_fixture.BucketNameGeneric, _fixture.FileName, StorageClasses.Standard);
     }
 }

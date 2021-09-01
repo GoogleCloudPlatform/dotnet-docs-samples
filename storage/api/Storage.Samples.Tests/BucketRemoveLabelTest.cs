@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class BucketRemoveLabelTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public BucketRemoveLabelTest(BucketFixture bucketFixture)
+    public BucketRemoveLabelTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -34,12 +34,12 @@ public class BucketRemoveLabelTest
         var labelValue = "chat-attachments";
 
         // Add Label
-        bucketAddLabelSample.BucketAddLabel(_bucketFixture.BucketNameGeneric, labelKey, labelValue);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        bucketAddLabelSample.BucketAddLabel(_fixture.BucketNameGeneric, labelKey, labelValue);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove Label
-        var bucket = bucketRemoveLabelSample.BucketRemoveLabel(_bucketFixture.BucketNameGeneric, labelKey);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var bucket = bucketRemoveLabelSample.BucketRemoveLabel(_fixture.BucketNameGeneric, labelKey);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
         Assert.Null(bucket.Labels);
     }
 }

@@ -21,7 +21,7 @@ using System;
 
 public class BatchGetAssetsHistorySample
 {
-    public BatchGetAssetsHistoryResponse BatchGetAssetsHistory(string[] assetNames, string projectId)
+    public BatchGetAssetsHistoryResponse BatchGetAssetsHistory(string[] assetNames, DateTimeOffset startTime, string projectId)
     {
         // Create the client.
         AssetServiceClient client = AssetServiceClient.Create();
@@ -33,7 +33,7 @@ public class BatchGetAssetsHistorySample
             ContentType = ContentType.Resource,
             ReadTimeWindow = new TimeWindow
             {
-                StartTime = Timestamp.FromDateTime(DateTime.UtcNow)
+                StartTime = Timestamp.FromDateTimeOffset(startTime)
             }
         };
         request.AssetNames.AddRange(assetNames);

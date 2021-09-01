@@ -28,11 +28,12 @@ public class ListDatabasesTest
     [Fact]
     public async Task TestListDatabases()
     {
-        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(databaseId =>
         {
             var listDatabasesSample = new ListDatabasesSample();
             var databases = listDatabasesSample.ListDatabases(_spannerFixture.ProjectId, _spannerFixture.InstanceId);
             Assert.Contains(databases, d => d.DatabaseName.DatabaseId == databaseId);
+            return Task.CompletedTask;
         });
     }
 }

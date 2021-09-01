@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class BucketDeleteDefaultKmsKeyTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public BucketDeleteDefaultKmsKeyTest(BucketFixture bucketFixture)
+    public BucketDeleteDefaultKmsKeyTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,16 +32,16 @@ public class BucketDeleteDefaultKmsKeyTest
         BucketDeleteDefaultKmsKeySample bucketDeleteDefaultKmsKeySample = new BucketDeleteDefaultKmsKeySample();
 
         // Set default key
-        enableDefaultKMSKeySample.EnableDefaultKMSKey(_bucketFixture.ProjectId, _bucketFixture.BucketNameRegional,
-            _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        enableDefaultKMSKeySample.EnableDefaultKMSKey(_fixture.ProjectId, _fixture.BucketNameRegional,
+            _fixture.KmsKeyLocation, _fixture.KmsKeyRing, _fixture.KmsKeyName);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove default key
-        bucketDeleteDefaultKmsKeySample.BucketDeleteDefaultKmsKey(_bucketFixture.BucketNameRegional);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        bucketDeleteDefaultKmsKeySample.BucketDeleteDefaultKmsKey(_fixture.BucketNameRegional);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Verify removal
-        var bucketMetadata = getBucketMetadataSample.GetBucketMetadata(_bucketFixture.BucketNameRegional);
+        var bucketMetadata = getBucketMetadataSample.GetBucketMetadata(_fixture.BucketNameRegional);
         Assert.Null(bucketMetadata.Encryption?.DefaultKmsKeyName);
     }
 }
