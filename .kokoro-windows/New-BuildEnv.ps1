@@ -34,7 +34,9 @@ dotnet --info
 
 if (-not $chocoPackages.Contains('nuget.commandline 4.5.')) {
     choco install -y nuget.commandline
-}   
+}
+
+dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org --configfile $env:APPDATA\NuGet\NuGet.Config
 
 if (-not $chocoPackages.Contains('microsoft-build-tools 14.')) {
     choco install -y --sxs microsoft-build-tools --version 14.0.23107.10
