@@ -25,16 +25,13 @@ namespace Transcoder.Samples.Tests
     {
         private TranscoderFixture _fixture;
         private readonly CreateJobWithSetNumberImagesSpritesheetSample _createSample;
-        private string _jobId;
         private readonly GetJobStateSample _getSample;
-        private readonly DeleteJobSample _deleteSample;
 
         public CreateJobWithSetNumberImagesSpritesheetTest(TranscoderFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateJobWithSetNumberImagesSpritesheetSample();
             _getSample = new GetJobStateSample();
-            _deleteSample = new DeleteJobSample();
         }
 
         [Fact]
@@ -46,27 +43,14 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 inputUri: _fixture.InputUri, outputUri: outputUri));
 
-            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
-            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectNumber);
-            _jobId = result.JobName.JobId;
-            _fixture.jobIds.Add(_jobId);
+            Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
+            _fixture.jobIds.Add(result.JobName.JobId);
 
-            Job.Types.ProcessingState state = Job.Types.ProcessingState.Unspecified;
-
-            for (int attempt = 0; attempt < 5; attempt++)
-            {
-                Thread.Sleep(60000);
-                _fixture.TranscoderChangesPropagated.Eventually(() =>
-                {
-                    state = _getSample.GetJobState(projectId: _fixture.ProjectId, location: _fixture.Location, _jobId);
-                });
-                if (state.Equals(_fixture.JobStateSucceeded))
-                {
-                    break;
-                }
-            }
-            Assert.Equal(state, _fixture.JobStateSucceeded);
+            _fixture.TranscoderChangesPropagated.Eventually(() =>
+                 Assert.Equal(_fixture.JobStateSucceeded, _getSample.GetJobState(_fixture.ProjectId, _fixture.Location, result.JobName.JobId)
+            ));
         }
     }
 }

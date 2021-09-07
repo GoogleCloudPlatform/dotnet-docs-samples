@@ -26,20 +26,15 @@ namespace Transcoder.Samples.Tests
         private TranscoderFixture _fixture;
         private string _templateId;
         private readonly CreateJobTemplateSample _createTemplateSample;
-        private readonly DeleteJobTemplateSample _deleteTemplateSample;
         private readonly CreateJobFromTemplateSample _createJobSample;
-        private string _jobId;
         private readonly GetJobStateSample _getJobSample;
-        private readonly DeleteJobSample _deleteJobSample;
 
         public CreateJobFromTemplateTest(TranscoderFixture fixture)
         {
             _fixture = fixture;
             _createTemplateSample = new CreateJobTemplateSample();
-            _deleteTemplateSample = new DeleteJobTemplateSample();
             _createJobSample = new CreateJobFromTemplateSample();
             _getJobSample = new GetJobStateSample();
-            _deleteJobSample = new DeleteJobSample();
             _templateId = "my-job-template-" + _fixture.RandomId();
 
             _fixture.TranscoderChangesPropagated.Eventually(() => _createTemplateSample.CreateJobTemplate(
@@ -56,28 +51,15 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 inputUri: _fixture.InputUri, outputUri: outputUri, templateId: _templateId));
 
-            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
-            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectNumber);
-            _jobId = result.JobName.JobId;
-            _fixture.jobIds.Add(_jobId);
+            Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
+            _fixture.jobIds.Add(result.JobName.JobId);
             _fixture.jobTemplateIds.Add(_templateId);
 
-            Job.Types.ProcessingState state = Job.Types.ProcessingState.Unspecified;
-
-            for (int attempt = 0; attempt < 5; attempt++)
-            {
-                Thread.Sleep(60000);
-                _fixture.TranscoderChangesPropagated.Eventually(() =>
-                {
-                    state = _getJobSample.GetJobState(projectId: _fixture.ProjectId, location: _fixture.Location, _jobId);
-                });
-                if (state.Equals(_fixture.JobStateSucceeded))
-                {
-                    break;
-                }
-            }
-            Assert.Equal(state, _fixture.JobStateSucceeded);
+            _fixture.TranscoderChangesPropagated.Eventually(() =>
+                 Assert.Equal(_fixture.JobStateSucceeded, _getJobSample.GetJobState(_fixture.ProjectId, _fixture.Location, result.JobName.JobId)
+            ));
         }
     }
 }

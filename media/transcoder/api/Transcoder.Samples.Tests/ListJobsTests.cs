@@ -24,7 +24,6 @@ namespace Transcoder.Samples.Tests
         private TranscoderFixture _fixture;
         private readonly CreateJobFromAdHocSample _createSample;
         private readonly ListJobsSample _listSample;
-        private readonly DeleteJobSample _deleteSample;
 
         private string _jobId;
 
@@ -33,7 +32,6 @@ namespace Transcoder.Samples.Tests
             _fixture = fixture;
             _createSample = new CreateJobFromAdHocSample();
             _listSample = new ListJobsSample();
-            _deleteSample = new DeleteJobSample();
 
             string outputUri = "gs://" + _fixture.BucketName + "/test-output-list-jobs/";
             // Run the sample code.
@@ -41,9 +39,9 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 inputUri: _fixture.InputUri, outputUri: outputUri));
 
-            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
-            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectNumber);
+            Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
             _jobId = result.JobName.JobId;
             _fixture.jobIds.Add(_jobId);
         }

@@ -35,7 +35,7 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
 
     public string BucketName { get; }
     public string TestDataPath { get; } = Path.GetFullPath("../../../testdata/");
-    public string TestVideoFileName { get ; } = "ChromeCast.mp4";
+    public string TestVideoFileName { get; } = "ChromeCast.mp4";
     public string TestOverlayImageFileName { get; } = "overlay.jpg";
     public string InputUri { get; }
     public string OverlayImageUri { get; }
@@ -47,6 +47,9 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
 
     public RetryRobot TranscoderChangesPropagated { get; } = new RetryRobot
     {
+        FirstRetryDelayMs = 15000,
+        DelayMultiplier = 1.5f,
+        MaxTryCount = 4,
         ShouldRetry = ex => ex is XunitException ||
             (ex is GoogleApiException gex &&
                 (gex.HttpStatusCode == HttpStatusCode.NotFound ||

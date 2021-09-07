@@ -39,9 +39,9 @@ namespace Transcoder.Samples.Tests
                 projectId: _fixture.ProjectId, location: _fixture.Location,
                 inputUri: _fixture.InputUri, outputUri: outputUri));
 
-            Assert.Equal(result.JobName.LocationId, _fixture.Location);
+            Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
-            Assert.Equal(result.JobName.ProjectId, _fixture.ProjectNumber);
+            Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
             _jobId = result.JobName.JobId;
         }
 
