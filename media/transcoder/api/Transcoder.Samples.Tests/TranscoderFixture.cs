@@ -34,7 +34,7 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
     private readonly RandomBucketFixture _bucketFixture;
 
     public string BucketName { get; }
-    public string TestDataPath => Path.GetFullPath("../../../testdata/");
+    public string TestDataPath { get; } = Path.GetFullPath("../../../testdata/");
     public string TestVideoFileName { get ; } = "ChromeCast.mp4";
     public string TestOverlayImageFileName { get; } = "overlay.jpg";
     public string InputUri { get; }
