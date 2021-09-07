@@ -39,7 +39,7 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
     public string TestOverlayImageFileName { get; } = "overlay.jpg";
     public string InputUri { get; }
     public string OverlayImageUri { get; }
-    public Job.Types.ProcessingState JobStateSucceeded = Job.Types.ProcessingState.Succeeded;
+    public Job.Types.ProcessingState JobStateSucceeded { get; } = Job.Types.ProcessingState.Succeeded;
     public List<string> jobIds { get; }
     public List<string> jobTemplateIds { get; }
     private readonly DeleteJobSample deleteJobSample;
