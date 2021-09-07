@@ -35,8 +35,8 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
 
     public string BucketName { get; }
     public string TestDataPath => Path.GetFullPath("../../../testdata/");
-    public string TestVideoFileName = "ChromeCast.mp4";
-    public string TestOverlayImageFileName = "overlay.jpg";
+    public string TestVideoFileName { get ; } = "ChromeCast.mp4";
+    public string TestOverlayImageFileName { get; } = "overlay.jpg";
     public string InputUri { get; }
     public string OverlayImageUri { get; }
     public Job.Types.ProcessingState JobStateSucceeded = Job.Types.ProcessingState.Succeeded;
