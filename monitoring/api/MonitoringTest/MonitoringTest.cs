@@ -17,6 +17,7 @@ using Xunit;
 using System;
 using System.Linq;
 using System.Net;
+using Grpc.Core;
 
 namespace GoogleCloudSamples
 {
@@ -204,7 +205,12 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestRun()
         {
-            var output = _quickStart.Run();
+            RetryRobot retry = new RetryRobot
+            {
+                ShouldRetry = ex => ex is RpcException rpcEx && rpcEx.StatusCode == StatusCode.InvalidArgument
+            };
+
+            var output = retry.Eventually(() => _quickStart.Run());
             Assert.Equal(0, output.ExitCode);
         }
     }
