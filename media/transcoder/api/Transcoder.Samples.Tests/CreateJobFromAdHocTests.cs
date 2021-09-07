@@ -25,7 +25,6 @@ namespace Transcoder.Samples.Tests
     {
         private TranscoderFixture _fixture;
         private readonly CreateJobFromAdHocSample _createSample;
-        private string _jobId;
         private readonly GetJobStateSample _getSample;
         private readonly DeleteJobSample _deleteSample;
 
