@@ -16,10 +16,12 @@
 
 using Google.Cloud.Compute.V1;
 using Google.Cloud.Storage.V1;
+using GoogleCloudSamples;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Compute.Samples.Tests
 {
@@ -51,6 +53,8 @@ namespace Compute.Samples.Tests
         public ProjectsClient ProjectsClient { get; } = ProjectsClient.Create();
 
         private StorageClient StorageClient { get; } = StorageClient.Create();
+
+        public RetryRobot Assert { get; } = new RetryRobot { RetryWhenExceptions = new Type[] { typeof(XunitException) } };
 
         public ComputeFixture()
         {
@@ -90,6 +94,19 @@ namespace Compute.Samples.Tests
                 // We don't poll, we delete on a best effort basis.
                 BestEffortCleanup(() => InstancesClient.Delete(ProjectId, Zone, machineName));
             }
+
+            BestEffortCleanup(() =>
+            {
+                // We reset the UsageExportBucket on cleanup, so we don't have to do it
+                // on each test. This is not infalible as someone may have a set export
+                // bucket and this will just remove the any bucket, but doing on each
+                // tests is also not infalible.
+                // We should have a separate dedicated project for these tests, and still
+                // some flakiness may occure because different runs of the tests may happen
+                // at the same time.
+                ProjectsClient.SetUsageExportBucket(ProjectId, new UsageExportLocation());
+            });
+
             _disposed = true;
 
             static void BestEffortCleanup(Action cleanupAction)

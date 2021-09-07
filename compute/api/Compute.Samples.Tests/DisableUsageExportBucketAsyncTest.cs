@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using Google.Cloud.Compute.V1;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,27 +30,13 @@ namespace Compute.Samples.Tests
         [Fact]
         public async Task DisablesUsageExportBucket()
         {
-            var project = await _fixture.ProjectsClient.GetAsync(_fixture.ProjectId);
-            var oldUsageExportLocation = project.UsageExportLocation;
-
-            await _sample.DisableUsageExportBucketAsync(_fixture.ProjectId);
-
-            project = await _fixture.ProjectsClient.GetAsync(_fixture.ProjectId);
-            var newUsageExportLocation = project.UsageExportLocation;
-
-            Assert.Null(newUsageExportLocation);
-
-            // As cleanup we just restore whatever config we had before.
-            // Strictly speaking we should use a separate project for this test, etc. But let's leave this
-            // as is for now, until we really run into issues.
-            var restoreRequest = new SetUsageExportBucketProjectRequest
+            await _fixture.Assert.Eventually(async () =>
             {
-                Project = _fixture.ProjectId,
-                UsageExportLocationResource = oldUsageExportLocation ?? new UsageExportLocation(),
-            };
+                await _sample.DisableUsageExportBucketAsync(_fixture.ProjectId);
 
-            // We don't poll, not much we can do if this fails.
-            await _fixture.ProjectsClient.SetUsageExportBucketAsync(restoreRequest);
+                var project = await _fixture.ProjectsClient.GetAsync(_fixture.ProjectId);
+                Assert.Null(project.UsageExportLocation);
+            });
         }
     }
 }

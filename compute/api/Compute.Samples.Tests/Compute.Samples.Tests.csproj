@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
     <ProjectReference Include="..\Compute.Samples\Compute.Samples.csproj" />
   </ItemGroup>
 
