@@ -33,11 +33,11 @@ namespace Transcoder.Samples.Tests
             _createSample = new CreateJobFromAdHocSample();
             _getSample = new GetJobSample();
 
-            string outputUri = "gs://" + _fixture.BucketName + "/test-output-get-job/";
+            string outputUri = $"gs://{_fixture.BucketName}/test-output-get-job/";
             // Run the sample code.
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobFromAdHoc(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, outputUri: outputUri));
+            var result = _createSample.CreateJobFromAdHoc(
+                _fixture.ProjectId, _fixture.Location,
+                _fixture.InputUri, outputUri);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
@@ -49,15 +49,15 @@ namespace Transcoder.Samples.Tests
         public void GetsJob()
         {
             // Run the sample code.
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _getSample.GetJob(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                jobId: _jobId));
+            var result = _getSample.GetJob(
+                _fixture.ProjectId, _fixture.Location,
+                _jobId);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
             Assert.Equal(_jobId, result.JobName.JobId);
-            _fixture.jobIds.Add(_jobId);
+            _fixture.JobIds.Add(_jobId);
         }
     }
 }

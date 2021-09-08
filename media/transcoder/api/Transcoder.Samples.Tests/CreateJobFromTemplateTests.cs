@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-using System.Threading;
 using Xunit;
-using Google.Cloud.Video.Transcoder.V1;
 
 namespace Transcoder.Samples.Tests
 {
@@ -35,29 +33,29 @@ namespace Transcoder.Samples.Tests
             _createTemplateSample = new CreateJobTemplateSample();
             _createJobSample = new CreateJobFromTemplateSample();
             _getJobSample = new GetJobStateSample();
-            _templateId = "my-job-template-" + _fixture.RandomId();
+            _templateId = $"my-job-template-{_fixture.RandomId()}";
 
-            _fixture.TranscoderChangesPropagated.Eventually(() => _createTemplateSample.CreateJobTemplate(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                templateId: _templateId));
+            _createTemplateSample.CreateJobTemplate(
+                _fixture.ProjectId, _fixture.Location,
+                _templateId);
         }
 
         [Fact]
         public void CreatesJobFromTemplate()
         {
-            string outputUri = "gs://" + _fixture.BucketName + "/test-output-template/";
+            string outputUri = $"gs://{_fixture.BucketName}/test-output-template/";
             // Run the sample code.
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createJobSample.CreateJobFromTemplate(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, outputUri: outputUri, templateId: _templateId));
+            var result = _createJobSample.CreateJobFromTemplate(
+                _fixture.ProjectId, _fixture.Location,
+                _fixture.InputUri, outputUri, _templateId);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
-            _fixture.jobIds.Add(result.JobName.JobId);
-            _fixture.jobTemplateIds.Add(_templateId);
+            _fixture.JobIds.Add(result.JobName.JobId);
+            _fixture.JobTemplateIds.Add(_templateId);
 
-            _fixture.TranscoderChangesPropagated.Eventually(() =>
+            _fixture.JobPoller.Eventually(() =>
                  Assert.Equal(_fixture.JobStateSucceeded, _getJobSample.GetJobState(_fixture.ProjectId, _fixture.Location, result.JobName.JobId)
             ));
         }

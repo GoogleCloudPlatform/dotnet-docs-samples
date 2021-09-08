@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-using System.Threading;
 using Xunit;
-using Google.Cloud.Video.Transcoder.V1;
 
 namespace Transcoder.Samples.Tests
 {
@@ -37,19 +35,19 @@ namespace Transcoder.Samples.Tests
         [Fact]
         public void CreatesJobFromPreset()
         {
-            string outputUri = "gs://" + _fixture.BucketName + "/test-output-preset/";
+            string outputUri = $"gs://{_fixture.BucketName}/test-output-preset/";
             string preset = "preset/web-hd";
             // Run the sample code.
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobFromPreset(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, outputUri: outputUri, preset: preset));
+            var result = _createSample.CreateJobFromPreset(
+                _fixture.ProjectId, _fixture.Location,
+                _fixture.InputUri, outputUri, preset);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
-            _fixture.jobIds.Add(result.JobName.JobId);
+            _fixture.JobIds.Add(result.JobName.JobId);
 
-            _fixture.TranscoderChangesPropagated.Eventually(() =>
+            _fixture.JobPoller.Eventually(() =>
                  Assert.Equal(_fixture.JobStateSucceeded, _getSample.GetJobState(_fixture.ProjectId, _fixture.Location, result.JobName.JobId)
             ));
         }

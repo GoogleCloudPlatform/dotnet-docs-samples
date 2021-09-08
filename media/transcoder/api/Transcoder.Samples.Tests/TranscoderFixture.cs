@@ -29,7 +29,7 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
 {
     public string ProjectId { get; }
     public string ProjectNumber { get; }
-    public string Location { get; }
+    public string Location { get; } = "us-central1";
 
     private readonly RandomBucketFixture _bucketFixture;
 
@@ -42,19 +42,17 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
     public Job.Types.ProcessingState JobStateSucceeded { get; } = Job.Types.ProcessingState.Succeeded;
     public List<string> JobIds { get; } = new List<string>();
     public List<string> JobTemplateIds { get; } = new List<string>();
-    private readonly DeleteJobSample deleteJobSample;
-    private readonly DeleteJobTemplateSample deleteJobTemplateSample;
+    private readonly DeleteJobSample _deleteJobSample = new DeleteJobSample();
+    private readonly DeleteJobTemplateSample _deleteJobTemplateSample = new DeleteJobTemplateSample();
 
-    public RetryRobot TranscoderChangesPropagated { get; } = new RetryRobot
+    public RetryRobot JobPoller { get; } = new RetryRobot
     {
         FirstRetryDelayMs = 15000,
         DelayMultiplier = 1.5f,
         MaxTryCount = 4,
         ShouldRetry = ex => ex is XunitException ||
             (ex is GoogleApiException gex &&
-                (gex.HttpStatusCode == HttpStatusCode.NotFound ||
-                gex.HttpStatusCode == HttpStatusCode.BadRequest ||
-                gex.HttpStatusCode == HttpStatusCode.ServiceUnavailable))
+                gex.HttpStatusCode == HttpStatusCode.ServiceUnavailable)
     };
 
     public TranscoderFixture()
@@ -71,8 +69,6 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
             throw new Exception("missing PROJECT_NUMBER");
         }
 
-        Location = "us-central1";
-
         _bucketFixture = new RandomBucketFixture();
         BucketName = _bucketFixture.BucketName;
 
@@ -80,13 +76,8 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
         bucketCollector.CopyToBucket(Path.Combine(TestDataPath, TestVideoFileName), TestVideoFileName);
         bucketCollector.CopyToBucket(Path.Combine(TestDataPath, TestOverlayImageFileName), TestOverlayImageFileName);
 
-        InputUri = "gs://" + BucketName + "/" + TestVideoFileName;
-        OverlayImageUri = "gs://" + BucketName + "/" + TestOverlayImageFileName;
-        jobIds = new List<string>();
-        jobTemplateIds = new List<string>();
-
-        deleteJobSample = new DeleteJobSample();
-        deleteJobTemplateSample = new DeleteJobTemplateSample();
+        InputUri = $"gs://{BucketName}/{TestVideoFileName}";
+        OverlayImageUri = $"gs://{BucketName}/{TestOverlayImageFileName}";
     }
 
     public void Dispose()
@@ -100,15 +91,11 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
             Console.WriteLine("Cleanup failed: " + e.ToString());
         }
 
-        foreach (string id in jobIds)
+        foreach (string id in JobIds)
         {
             try
             {
-                var result = deleteJobSample.DeleteJob(
-                projectId: ProjectId, location: Location,
-                jobId: id);
-
-                Assert.Contains("Deleted job", result);
+                _deleteJobSample.DeleteJob(ProjectId, Location, id);
             }
             catch (Exception e)
             {
@@ -116,15 +103,11 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
             }
         }
 
-        foreach (string id in jobTemplateIds)
+        foreach (string id in JobTemplateIds)
         {
             try
             {
-                var result = deleteJobTemplateSample.DeleteJobTemplate(
-                projectId: ProjectId, location: Location,
-                templateId: id);
-
-                Assert.Contains("Deleted job template", result);
+                _deleteJobTemplateSample.DeleteJobTemplate(ProjectId, Location, id);
             }
             catch (Exception e)
             {

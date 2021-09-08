@@ -33,28 +33,25 @@ namespace Transcoder.Samples.Tests
             _createSample = new CreateJobFromAdHocSample();
             _listSample = new ListJobsSample();
 
-            string outputUri = "gs://" + _fixture.BucketName + "/test-output-list-jobs/";
+            string outputUri = $"gs://{_fixture.BucketName}/test-output-list-jobs/";
             // Run the sample code.
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobFromAdHoc(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, outputUri: outputUri));
+            var result = _createSample.CreateJobFromAdHoc(
+                _fixture.ProjectId, _fixture.Location,
+                _fixture.InputUri, outputUri);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
             _jobId = result.JobName.JobId;
-            _fixture.jobIds.Add(_jobId);
+            _fixture.JobIds.Add(_jobId);
         }
 
         [Fact]
         public void ListsJobs()
         {
-            _fixture.TranscoderChangesPropagated.Eventually(() =>
-            {
-                var jobs = _listSample.ListJobs(_fixture.ProjectId, location: _fixture.Location);
-                string jobName = string.Format("projects/{0}/locations/{1}/jobs/{2}", _fixture.ProjectNumber, _fixture.Location, _jobId);
-                Assert.Contains(jobName, jobs);
-            });
+            var jobs = _listSample.ListJobs(_fixture.ProjectId, _fixture.Location);
+            string jobName = string.Format("projects/{0}/locations/{1}/jobs/{2}", _fixture.ProjectNumber, _fixture.Location, _jobId);
+            Assert.Contains(jobName, jobs);
         }
     }
 }

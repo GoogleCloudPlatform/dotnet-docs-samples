@@ -32,26 +32,26 @@ namespace Transcoder.Samples.Tests
             _fixture = fixture;
             _createSample = new CreateJobTemplateSample();
             _getSample = new GetJobTemplateSample();
-            _templateId = "my-job-template-" + _fixture.RandomId();
+            _templateId = $"my-job-template-{_fixture.RandomId()}";
 
-            _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobTemplate(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                templateId: _templateId));
+            _createSample.CreateJobTemplate(
+                _fixture.ProjectId, _fixture.Location,
+                _templateId);
         }
 
         [Fact]
         public void GetsJobTemplate()
         {
             // Run the sample code.
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _getSample.GetJobTemplate(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                templateId: _templateId));
+            var result = _getSample.GetJobTemplate(
+                _fixture.ProjectId, _fixture.Location,
+                _templateId);
 
             Assert.Equal(_fixture.Location, result.JobTemplateName.LocationId);
             // Job template resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobTemplateName.ProjectId);
             Assert.Equal(_templateId, result.JobTemplateName.JobTemplateId);
-            _fixture.jobTemplateIds.Add(_templateId);
+            _fixture.JobTemplateIds.Add(_templateId);
         }
     }
 }

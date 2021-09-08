@@ -33,11 +33,11 @@ namespace Transcoder.Samples.Tests
             _createSample = new CreateJobFromAdHocSample();
             _deleteSample = new DeleteJobSample();
 
-            string outputUri = "gs://" + _fixture.BucketName + "/test-output-delete-job/";
+            string outputUri = $"gs://{_fixture.BucketName}/test-output-delete-job/";
             // Run the sample code.
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobFromAdHoc(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, outputUri: outputUri));
+            var result = _createSample.CreateJobFromAdHoc(
+                _fixture.ProjectId, _fixture.Location,
+                _fixture.InputUri, outputUri);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
@@ -49,9 +49,9 @@ namespace Transcoder.Samples.Tests
         public void DeletesJob()
         {
             // Run the sample code.
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _deleteSample.DeleteJob(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                jobId: _jobId));
+            var result = _deleteSample.DeleteJob(
+                _fixture.ProjectId, _fixture.Location,
+                _jobId);
 
             Assert.Contains("Deleted job", result);
         }

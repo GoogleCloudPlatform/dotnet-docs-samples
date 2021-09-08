@@ -32,30 +32,27 @@ namespace Transcoder.Samples.Tests
             _fixture = fixture;
             _createSample = new CreateJobTemplateSample();
             _listSample = new ListJobTemplatesSample();
-            _templateId = "my-job-template-" + _fixture.RandomId();
+            _templateId = $"my-job-template-{_fixture.RandomId()}";
 
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobTemplate(
-                 projectId: _fixture.ProjectId, location: _fixture.Location,
-                 templateId: _templateId));
+            var result = _createSample.CreateJobTemplate(
+                 _fixture.ProjectId, _fixture.Location,
+                 _templateId);
 
             Assert.Equal(_fixture.Location, result.JobTemplateName.LocationId);
             // Job template resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobTemplateName.ProjectId);
             Assert.Equal(_templateId, result.JobTemplateName.JobTemplateId);
 
-            _fixture.jobTemplateIds.Add(_templateId);
+            _fixture.JobTemplateIds.Add(_templateId);
         }
 
         [Fact]
         public void ListsJobTemplates()
         {
             // Run the sample code.
-            _fixture.TranscoderChangesPropagated.Eventually(() =>
-            {
-                var jobTemplates = _listSample.ListJobTemplates(_fixture.ProjectId, location: _fixture.Location);
-                string templateName = string.Format("projects/{0}/locations/{1}/jobTemplates/{2}", _fixture.ProjectNumber, _fixture.Location, _templateId);
-                Assert.Contains(templateName, jobTemplates);
-            });
+            var jobTemplates = _listSample.ListJobTemplates(_fixture.ProjectId, _fixture.Location);
+            string templateName = string.Format("projects/{0}/locations/{1}/jobTemplates/{2}", _fixture.ProjectNumber, _fixture.Location, _templateId);
+            Assert.Contains(templateName, jobTemplates);
         }
     }
 }

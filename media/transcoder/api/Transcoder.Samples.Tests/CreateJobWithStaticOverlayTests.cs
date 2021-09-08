@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-using System.Threading;
 using Xunit;
-using Google.Cloud.Video.Transcoder.V1;
 
 namespace Transcoder.Samples.Tests
 {
@@ -37,18 +35,18 @@ namespace Transcoder.Samples.Tests
         [Fact]
         public void CreatesJobWithStaticOverlay()
         {
-            string outputUri = "gs://" + _fixture.BucketName + "/test-output-static-overlay/";
+            string outputUri = $"gs://{_fixture.BucketName}/test-output-static-overlay/";
             // Run the sample code.
-            var result = _fixture.TranscoderChangesPropagated.Eventually(() => _createSample.CreateJobWithStaticOverlay(
-                projectId: _fixture.ProjectId, location: _fixture.Location,
-                inputUri: _fixture.InputUri, overlayImageUri: _fixture.OverlayImageUri, outputUri: outputUri));
+            var result = _createSample.CreateJobWithStaticOverlay(
+                _fixture.ProjectId, _fixture.Location,
+                _fixture.InputUri, _fixture.OverlayImageUri, outputUri);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
-            _fixture.jobIds.Add(result.JobName.JobId);
+            _fixture.JobIds.Add(result.JobName.JobId);
 
-            _fixture.TranscoderChangesPropagated.Eventually(() =>
+            _fixture.JobPoller.Eventually(() =>
                  Assert.Equal(_fixture.JobStateSucceeded, _getSample.GetJobState(_fixture.ProjectId, _fixture.Location, result.JobName.JobId)
             ));
         }
