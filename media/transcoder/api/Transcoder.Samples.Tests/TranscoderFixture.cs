@@ -40,8 +40,8 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
     public string InputUri { get; }
     public string OverlayImageUri { get; }
     public Job.Types.ProcessingState JobStateSucceeded { get; } = Job.Types.ProcessingState.Succeeded;
-    public List<string> jobIds { get; }
-    public List<string> jobTemplateIds { get; }
+    public List<string> JobIds { get; } = new List<string>();
+    public List<string> JobTemplateIds { get; } = new List<string>();
     private readonly DeleteJobSample deleteJobSample;
     private readonly DeleteJobTemplateSample deleteJobTemplateSample;
 
