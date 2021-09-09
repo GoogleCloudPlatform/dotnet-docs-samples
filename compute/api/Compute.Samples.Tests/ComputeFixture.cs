@@ -54,7 +54,14 @@ namespace Compute.Samples.Tests
 
         private StorageClient StorageClient { get; } = StorageClient.Create();
 
-        public RetryRobot Assert { get; } = new RetryRobot { RetryWhenExceptions = new Type[] { typeof(XunitException) } };
+        public RetryRobot AssertConcurrently { get; } = new RetryRobot
+        { 
+            RetryWhenExceptions = new Type[] { typeof(XunitException) },
+            // We wait a little longer than default to let the concurrent test execution
+            // finish before reattempting.
+            FirstRetryDelayMs = 30_000,
+            MaxTryCount = 10
+        };
 
         public ComputeFixture()
         {

@@ -30,7 +30,7 @@ namespace Compute.Samples.Tests
         [Fact]
         public async Task SetsUsageExportBucket()
         {
-            await _fixture.Assert.Eventually(async () =>
+            await _fixture.AssertConcurrently.Eventually(async () =>
             {
                 await _sample.SetUsageExportBucketAsync(_fixture.ProjectId, _fixture.UsageReportBucketName, _fixture.UsageReportPrefix);
 
