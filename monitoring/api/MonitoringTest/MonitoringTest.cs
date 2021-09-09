@@ -12,22 +12,35 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using System.IO;
-using Xunit;
+using Grpc.Core;
 using System;
 using System.Linq;
-using System.Net;
-using Grpc.Core;
+using Xunit;
 
 namespace GoogleCloudSamples
 {
     public class TestFixture : IDisposable
     {
+        private const string TimeSeriesQuotaError = "One or more TimeSeries could not be written:" +
+            " One or more points were written more frequently than the maximum sampling period configured for the metric.";
+        private static bool IsTimeSeriesQuotaError(Exception ex) =>
+            ex is RpcException rpcEx
+            && rpcEx.StatusCode == StatusCode.InvalidArgument
+            && rpcEx.Status.Detail.Contains(TimeSeriesQuotaError);
+
+        public static RetryRobot TimeSeriesQuota { get; } = new RetryRobot
+        {
+            ShouldRetry = ex => IsTimeSeriesQuotaError(ex)
+                || (ex is AggregateException aggEx && aggEx.InnerExceptions.Any(innerEx => IsTimeSeriesQuotaError(innerEx))),
+            FirstRetryDelayMs = 10_000,
+            MaxTryCount = 10
+        };
+
         public string ProjectId { get; private set; }
             = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         public TestFixture()
         {
-            WriteOutput = CloudMonitoring.Run("write", ProjectId);
+            WriteOutput = TimeSeriesQuota.Eventually(() => CloudMonitoring.Run("write", ProjectId));
         }
 
         public CommandLineRunner CloudMonitoring { get; private set; }
@@ -63,23 +76,6 @@ namespace GoogleCloudSamples
         {
             return _cloudMonitoring.Run(args);
         }
-
-        private readonly RetryRobot _retryRobot = new RetryRobot()
-        {
-            RetryWhenExceptions = new[]
-            {
-                typeof(Xunit.Sdk.XunitException)
-            }
-        };
-
-
-        /// <summary>
-        /// Retry action.
-        /// For tests that create an entity and then query it afterward, 
-        /// but may not find it immediately.
-        /// </summary>
-        /// <param name="action"></param>
-        private void Eventually(Action action) => _retryRobot.Eventually(action);
 
         [Fact]
         public void TestListMetricDescriptors()
@@ -178,16 +174,10 @@ namespace GoogleCloudSamples
             // Create Metric Descriptor.
             var output = _cloudMonitoring.Run("create", _projectId, metricType);
             // Confirm Metric Descriptor is created.
-            Eventually(() =>
-            {
-                Assert.Equal(0, output.ExitCode);
-            });
+            Assert.Equal(0, output.ExitCode);
             // Get Metric Descriptor.
             var outputFromGet = _cloudMonitoring.Run("get", _projectId, metricType);
-            Eventually(() =>
-            {
-                Assert.Equal(0, output.ExitCode);
-            });
+            Assert.Equal(0, outputFromGet.ExitCode);
             // Delete Metric Descriptor.
             var outputFromDelete = _cloudMonitoring.Run("delete", _projectId, metricType);
             Assert.Equal(0, outputFromDelete.ExitCode);
@@ -204,13 +194,9 @@ namespace GoogleCloudSamples
 
         [Fact]
         public void TestRun()
-        {
-            RetryRobot retry = new RetryRobot
-            {
-                ShouldRetry = ex => ex is RpcException rpcEx && rpcEx.StatusCode == StatusCode.InvalidArgument
-            };
+        { 
 
-            var output = retry.Eventually(() => _quickStart.Run());
+            var output = TestFixture.TimeSeriesQuota.Eventually(() => _quickStart.Run());
             Assert.Equal(0, output.ExitCode);
         }
     }
