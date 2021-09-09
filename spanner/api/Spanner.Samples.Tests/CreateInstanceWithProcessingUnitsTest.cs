@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Grpc.Core;
+using Google.Cloud.Spanner.Admin.Instance.V1;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
@@ -26,10 +27,14 @@ public class CreateInstanceWithProcessingUnitsTest
     }
 
     [Fact]
-    public void TestCreateInstanceWithProcessingUnits()
+    public async Task TestCreateInstanceWithProcessingUnits()
     {
         var createInstanceWithProcessingUnitsSample = new CreateInstanceWithProcessingUnitsSample();
-        var instance = createInstanceWithProcessingUnitsSample.CreateInstanceWithProcessingUnits(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithProcessingUnits);
+
+        Instance instance = await _spannerFixture.SafeCreateInstanceAsync(() => Task.FromResult(
+            createInstanceWithProcessingUnitsSample.CreateInstanceWithProcessingUnits(
+                _spannerFixture.ProjectId, _spannerFixture.InstanceIdWithProcessingUnits)));
+
         Assert.Equal(500, instance.ProcessingUnits);
     }
 }
