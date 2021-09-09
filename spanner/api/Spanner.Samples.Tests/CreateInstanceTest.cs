@@ -12,18 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Rpc;
 using Grpc.Core;
-using System;
-using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
 public class CreateInstanceTest
 {
-    private const int MaxAttempts = 10;
-    private static readonly string s_retryInfoMetadataKey = RetryInfo.Descriptor.FullName + "-bin";
     private readonly SpannerFixture _spannerFixture;
 
     public CreateInstanceTest(SpannerFixture spannerFixture)
@@ -32,41 +27,13 @@ public class CreateInstanceTest
     }
 
     [Fact]
-    public void TestCreateInstance()
+    public async Task TestCreateInstance()
     {
         CreateInstanceSample createInstanceSample = new CreateInstanceSample();
-        RpcException exception;
-        int attempt = 0;
-        while (true)
-        {
-            // Instance already exists since it was created in the test setup so it should throw an exception.
-            exception = Assert.Throws<RpcException>(() => createInstanceSample.CreateInstance(_spannerFixture.ProjectId, _spannerFixture.InstanceId));
-            attempt++;
-            // Retry the test if we get a temporary Unavailable error.
-            if (StatusCode.Unavailable == exception.StatusCode && attempt < MaxAttempts)
-            {
-                var delay = ExtractRetryDelay(exception);
-                Thread.Sleep(delay.Milliseconds);
-                continue;
-            }
-            break;
-        }
-        Assert.Equal(StatusCode.AlreadyExists, exception.StatusCode);
-    }
 
-    private TimeSpan ExtractRetryDelay(RpcException exception)
-    {
-        var retryInfoEntry = exception.Trailers.FirstOrDefault(
-            entry => s_retryInfoMetadataKey.Equals(entry.Key, StringComparison.InvariantCultureIgnoreCase));
-        if (retryInfoEntry != null)
-        {
-            var retryInfo = RetryInfo.Parser.ParseFrom(retryInfoEntry.ValueBytes);
-            var recommended = retryInfo.RetryDelay.ToTimeSpan();
-            if (recommended != TimeSpan.Zero)
-            {
-                return recommended;
-            }
-        }
-        return TimeSpan.FromSeconds(5);
+        RpcException exception = await Assert.ThrowsAsync<RpcException>(() => _spannerFixture.SafeCreateInstanceAsync(() =>
+            Task.FromResult(createInstanceSample.CreateInstance(_spannerFixture.ProjectId, _spannerFixture.InstanceId))));
+
+        Assert.Equal(StatusCode.AlreadyExists, exception.StatusCode);
     }
 }

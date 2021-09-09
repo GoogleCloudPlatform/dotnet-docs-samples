@@ -18,6 +18,7 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Admin.Instance.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.Cloud.Spanner.Data;
+using Google.Rpc;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
@@ -71,7 +72,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
         ConnectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
         // Don't need to cleanup stale Backups and Databases when instance is new.
-        var isExistingInstance = InitializeInstance();
+        var isExistingInstance = await InitializeInstanceAsync();
         if (isExistingInstance)
         {
             await DeleteStaleBackupsAsync();
@@ -98,26 +99,73 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         return Task.CompletedTask;
     }
 
-    private bool InitializeInstance()
+    public async Task<T> SafeCreateInstanceAsync<T>(Func<Task<T>> createInstanceAsync)
     {
-        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        int attempt = 0;
+        do
+        {
+            try
+            {
+                attempt++;
+                return await createInstanceAsync();
+            }
+            catch(RpcException ex) when (attempt <= 10)
+            {
+                if (StatusCode.Unavailable == ex.StatusCode)
+                {
+                    await RecommendedDelayAsync(ex);
+                }
+                else if (StatusCode.ResourceExhausted == ex.StatusCode && ex.Status.Detail.Contains("requests per minute"))
+                {
+                    await RecommendedDelayAsync(ex, 60);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+        while (true);
+    }
+
+    private static readonly string s_retryInfoMetadataKey = RetryInfo.Descriptor.FullName + "-bin";
+    public static async Task RecommendedDelayAsync(RpcException exception, int fallbackSeconds = 5)
+    {
+        TimeSpan delay = TimeSpan.FromSeconds(fallbackSeconds);
+        var retryInfoEntry = exception.Trailers.FirstOrDefault(
+            entry => s_retryInfoMetadataKey.Equals(entry.Key, StringComparison.InvariantCultureIgnoreCase));
+        if (retryInfoEntry != null)
+        {
+            var retryInfo = RetryInfo.Parser.ParseFrom(retryInfoEntry.ValueBytes);
+            var recommended = retryInfo.RetryDelay.ToTimeSpan();
+            if (recommended != TimeSpan.Zero)
+            {
+                delay = recommended;
+            }
+        }
+        await Task.Delay(delay);
+    }
+
+    private async Task<bool> InitializeInstanceAsync()
+    {
+        InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
         InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
         try
         {
-            Instance response = instanceAdminClient.GetInstance(instanceName);
+            Instance response = await instanceAdminClient.GetInstanceAsync(instanceName);
             return true;
         }
         catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
         {
             CreateInstanceSample createInstanceSample = new CreateInstanceSample();
-            createInstanceSample.CreateInstance(ProjectId, InstanceId);
+            await SafeCreateInstanceAsync(() => Task.FromResult(createInstanceSample.CreateInstance(ProjectId, InstanceId)));
             return false;
         }
     }
 
     private async Task CreateInstanceWithMultiRegionAsync()
     {
-        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
 
         var projectName = ProjectName.FromProject(ProjectId);
         Instance instance = new Instance
@@ -128,10 +176,13 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             NodeCount = 1,
         };
 
-        var response = await instanceAdminClient.CreateInstanceAsync(projectName, InstanceIdWithMultiRegion, instance);
-
-        // Poll until the returned long-running operation is complete
-        await response.PollUntilCompletedAsync();
+        await SafeCreateInstanceAsync(async () =>
+        {
+            var response = await instanceAdminClient.CreateInstanceAsync(projectName, InstanceIdWithMultiRegion, instance);
+            // Poll until the returned long-running operation is complete
+            response = await response.PollUntilCompletedAsync();
+            return response.Result;
+        });
     }
 
     private void DeleteInstance(string instanceId)

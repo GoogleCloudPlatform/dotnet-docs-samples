@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -53,16 +55,23 @@ namespace GoogleCloudSamples
             CustomRoles.GetRole("roles/appengine.appViewer");
         }
 
-        [Fact]
+        [SkippableFact]
         public void TestCustomRole()
         {
-            var role = CustomRoles.CreateRole(_name, _project, _title,
-                _description, _permissions, _stage);
+            try
+            {
+                CustomRoles.CreateRole(_name, _project, _title, _description, _permissions, _stage);
+            }
+            catch (GoogleApiException ex) when (ex.HttpStatusCode == HttpStatusCode.TooManyRequests && ex.Error.Message.Contains("Maximum number of roles reached"))
+            {
+                Skip.If(true, "Maximum number of roles reached.");
+                throw; // We should never throw here (Skip throws), but we need to make the compiler happy.
+            }
+
             CustomRoles.ListRoles(_project);
-            role = CustomRoles.EditRole(_name, _project, _title,
-                "Updated C# description.", _permissions, _stage);
+            CustomRoles.EditRole(_name, _project, _title, "Updated C# description.", _permissions, _stage);
             CustomRoles.DeleteRole(_name, _project);
-            role = CustomRoles.UndeleteRole(_name, _project);
+            CustomRoles.UndeleteRole(_name, _project);
 
             CustomRoles.DeleteRole(_name, _project);
         }
