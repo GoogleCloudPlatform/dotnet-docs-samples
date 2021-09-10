@@ -41,11 +41,11 @@ namespace Transcoder.Samples.Tests
             var result = _createSample.CreateJobFromPreset(
                 _fixture.ProjectId, _fixture.Location,
                 _fixture.InputUri, outputUri, preset);
+            _fixture.JobIds.Add(result.JobName.JobId);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
-            _fixture.JobIds.Add(result.JobName.JobId);
 
             _fixture.JobPoller.Eventually(() =>
                  Assert.Equal(_fixture.JobStateSucceeded, _getSample.GetJobState(_fixture.ProjectId, _fixture.Location, result.JobName.JobId)

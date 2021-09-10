@@ -20,7 +20,7 @@ using Google.Cloud.Video.Transcoder.V1;
 
 public class DeleteJobSample
 {
-    public string DeleteJob(string projectId, string location, string jobId)
+    public void DeleteJob(string projectId, string location, string jobId)
     {
         // Create the client.
         TranscoderServiceClient client = TranscoderServiceClient.Create();
@@ -30,9 +30,6 @@ public class DeleteJobSample
 
         // Call the API.
         client.DeleteJob(jobName);
-
-        // Return the result.
-        return "Deleted job";
     }
 }
 // [END transcoder_delete_job]

@@ -38,22 +38,13 @@ namespace Transcoder.Samples.Tests
             var result = _createSample.CreateJobFromAdHoc(
                 _fixture.ProjectId, _fixture.Location,
                 _fixture.InputUri, outputUri);
-
-            Assert.Equal(_fixture.Location, result.JobName.LocationId);
-            // Job resource name uses project number for the identifier.
-            Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
             _jobId = result.JobName.JobId;
+            _fixture.JobIds.Add(_jobId);
         }
 
         [Fact]
-        public void DeletesJob()
-        {
+        public void DeletesJob() =>
             // Run the sample code.
-            var result = _deleteSample.DeleteJob(
-                _fixture.ProjectId, _fixture.Location,
-                _jobId);
-
-            Assert.Contains("Deleted job", result);
-        }
+            _deleteSample.DeleteJob(_fixture.ProjectId, _fixture.Location, _jobId);
     }
 }

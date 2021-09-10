@@ -38,11 +38,11 @@ namespace Transcoder.Samples.Tests
             string outputUri = $"gs://{_fixture.BucketName}/test-output-adhoc/";
             // Run the sample code.
             var result = _createSample.CreateJobFromAdHoc(_fixture.ProjectId, _fixture.Location, _fixture.InputUri, outputUri);
+            _fixture.JobIds.Add(result.JobName.JobId);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
-            _fixture.JobIds.Add(result.JobName.JobId);
 
             _fixture.JobPoller.Eventually(() =>
                  Assert.Equal(_fixture.JobStateSucceeded, _getSample.GetJobState(_fixture.ProjectId, _fixture.Location, result.JobName.JobId)

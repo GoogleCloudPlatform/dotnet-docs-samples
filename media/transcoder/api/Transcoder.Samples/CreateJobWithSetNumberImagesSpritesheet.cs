@@ -21,9 +21,8 @@ using Google.Cloud.Video.Transcoder.V1;
 
 public class CreateJobWithSetNumberImagesSpritesheetSample
 {
-    public static string smallSpritesheetFilePrefix = "small-sprite-sheet";
-    public static string largeSpritesheetFilePrefix = "large-sprite-sheet";
-    public static string spritesheetFileSuffix = "0000000000.jpeg";
+    public const string SmallSpritesheetFilePrefix = "small-sprite-sheet";
+    public const string LargeSpritesheetFilePrefix = "large-sprite-sheet";
     public Job CreateJobWithSetNumberImagesSpritesheet(
         string projectId, string location, string inputUri, string outputUri)
     {
@@ -51,12 +50,15 @@ public class CreateJobWithSetNumberImagesSpritesheetSample
             BitrateBps = 64000
         };
 
-        // Generates a 10x10 spritesheet of small images from the input video. To preserve the source
-        // aspect ratio, you should set the spriteWidthPixels field or the spriteHeightPixels
-        // field, but not both.
+        // Generates a 10x10 spritesheet of small images from the input video.
+        // To preserve the source aspect ratio, you should set the
+        // SpriteWidthPixels field or the SpriteHeightPixels field, but not
+        // both (the API will automatically calculate the missing field). For
+        // this sample, we don't care about the aspect ratio so we set both
+        // fields.
         SpriteSheet smallSpriteSheet = new SpriteSheet
         {
-            FilePrefix = smallSpritesheetFilePrefix,
+            FilePrefix = SmallSpritesheetFilePrefix,
             SpriteHeightPixels = 32,
             SpriteWidthPixels = 64,
             ColumnCount = 10,
@@ -64,10 +66,15 @@ public class CreateJobWithSetNumberImagesSpritesheetSample
             TotalCount = 100
         };
 
-        // Generates a spritesheet of larger images taken periodically from the input video.
+        // Generates a 10x10 spritesheet of larger images from the input video.
+        // input video. To preserve the source aspect ratio, you should set the
+        // SpriteWidthPixels field or the SpriteHeightPixels field, but not
+        // both (the API will automatically calculate the missing field). For
+        // this sample, we don't care about the aspect ratio so we set both
+        // fields.
         SpriteSheet largeSpriteSheet = new SpriteSheet
         {
-            FilePrefix = largeSpritesheetFilePrefix,
+            FilePrefix = LargeSpritesheetFilePrefix,
             SpriteHeightPixels = 72,
             SpriteWidthPixels = 128,
             ColumnCount = 10,

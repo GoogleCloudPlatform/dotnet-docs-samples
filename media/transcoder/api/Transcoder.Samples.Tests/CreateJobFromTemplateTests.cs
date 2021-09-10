@@ -38,6 +38,7 @@ namespace Transcoder.Samples.Tests
             _createTemplateSample.CreateJobTemplate(
                 _fixture.ProjectId, _fixture.Location,
                 _templateId);
+            _fixture.JobTemplateIds.Add(_templateId);
         }
 
         [Fact]
@@ -48,12 +49,11 @@ namespace Transcoder.Samples.Tests
             var result = _createJobSample.CreateJobFromTemplate(
                 _fixture.ProjectId, _fixture.Location,
                 _fixture.InputUri, outputUri, _templateId);
+            _fixture.JobIds.Add(result.JobName.JobId);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
             // Job resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobName.ProjectId);
-            _fixture.JobIds.Add(result.JobName.JobId);
-            _fixture.JobTemplateIds.Add(_templateId);
 
             _fixture.JobPoller.Eventually(() =>
                  Assert.Equal(_fixture.JobStateSucceeded, _getJobSample.GetJobState(_fixture.ProjectId, _fixture.Location, result.JobName.JobId)

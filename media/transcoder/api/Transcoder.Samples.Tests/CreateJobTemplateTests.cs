@@ -40,12 +40,12 @@ namespace Transcoder.Samples.Tests
             var result = _createSample.CreateJobTemplate(
                 _fixture.ProjectId, _fixture.Location,
                 _templateId);
+            _fixture.JobTemplateIds.Add(_templateId);
 
             Assert.Equal(_fixture.Location, result.JobTemplateName.LocationId);
             // Job template resource name uses project number for the identifier.
             Assert.Equal(_fixture.ProjectNumber, result.JobTemplateName.ProjectId);
             Assert.Equal(_templateId, result.JobTemplateName.JobTemplateId);
-            _fixture.JobTemplateIds.Add(_templateId);
         }
     }
 }

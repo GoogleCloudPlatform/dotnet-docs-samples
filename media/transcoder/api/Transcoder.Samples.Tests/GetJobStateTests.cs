@@ -15,25 +15,26 @@
  */
 
 using Xunit;
+using Google.Cloud.Video.Transcoder.V1;
 
 namespace Transcoder.Samples.Tests
 {
     [Collection(nameof(TranscoderFixture))]
-    public class ListJobsTest
+    public class GetJobStateTest
     {
         private TranscoderFixture _fixture;
         private readonly CreateJobFromAdHocSample _createSample;
-        private readonly ListJobsSample _listSample;
+        private readonly GetJobStateSample _getSample;
 
         private string _jobId;
 
-        public ListJobsTest(TranscoderFixture fixture)
+        public GetJobStateTest(TranscoderFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateJobFromAdHocSample();
-            _listSample = new ListJobsSample();
+            _getSample = new GetJobStateSample();
 
-            string outputUri = $"gs://{_fixture.BucketName}/test-output-list-jobs/";
+            string outputUri = $"gs://{_fixture.BucketName}/test-output-get-job/";
             // Run the sample code.
             var result = _createSample.CreateJobFromAdHoc(
                 _fixture.ProjectId, _fixture.Location,
@@ -43,11 +44,14 @@ namespace Transcoder.Samples.Tests
         }
 
         [Fact]
-        public void ListsJobs()
+        public void GetsJobState()
         {
-            var jobs = _listSample.ListJobs(_fixture.ProjectId, _fixture.Location);
-            string jobName = string.Format("projects/{0}/locations/{1}/jobs/{2}", _fixture.ProjectNumber, _fixture.Location, _jobId);
-            Assert.Contains(jobName, jobs);
+            // Run the sample code.
+            var result = _getSample.GetJobState(
+                _fixture.ProjectId, _fixture.Location,
+                _jobId);
+
+            Assert.IsType<Job.Types.ProcessingState>(result);
         }
     }
 }
