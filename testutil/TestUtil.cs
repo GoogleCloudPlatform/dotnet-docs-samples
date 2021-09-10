@@ -57,6 +57,9 @@ namespace GoogleCloudSamples
         public IEnumerable<Type> RetryWhenExceptions { get; set; } = new Type[0];
         public Func<Exception, bool> ShouldRetry { get; set; }
 
+        private static readonly Random _random = new Random();
+        private static readonly object _lock = new object();
+
         /// <summary>
         /// Retry action when assertion fails.
         /// </summary>
@@ -73,7 +76,12 @@ namespace GoogleCloudSamples
                 catch (Exception e)
                 when (ShouldCatch(e) && i < MaxTryCount)
                 {
-                    Thread.Sleep(delayMs);
+                    int jitteredDelayMs;
+                    lock(_lock)
+                    {
+                        jitteredDelayMs = delayMs/2 + (int)(_random.NextDouble() * delayMs);
+                    }
+                    Thread.Sleep(jitteredDelayMs);
                     delayMs *= (int)DelayMultiplier;
                 }
             }
