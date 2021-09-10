@@ -46,8 +46,7 @@ namespace Transcoder.Samples.Tests
         public void ListsJobs()
         {
             var jobs = _listSample.ListJobs(_fixture.ProjectId, _fixture.Location);
-            string jobName = string.Format("projects/{0}/locations/{1}/jobs/{2}", _fixture.ProjectNumber, _fixture.Location, _jobId);
-            Assert.Contains(jobName, jobs);
+            Assert.Contains(jobs, t => Assert.Equal(_jobId, t.JobName.JobId));
         }
     }
 }

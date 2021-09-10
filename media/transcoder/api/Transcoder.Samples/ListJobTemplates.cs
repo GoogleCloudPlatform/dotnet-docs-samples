@@ -19,10 +19,12 @@
 using Google.Cloud.Video.Transcoder.V1;
 using Google.Api.Gax.ResourceNames;
 using Google.Api.Gax;
+using System.Linq;
+using System.Collections.Generic;
 
 public class ListJobTemplatesSample
 {
-    public string ListJobTemplates(string projectId, string location)
+    public IList<JobTemplate> ListJobTemplates(string projectId, string location)
     {
         // Create the client.
         TranscoderServiceClient client = TranscoderServiceClient.Create();
@@ -33,17 +35,8 @@ public class ListJobTemplatesSample
         // Call the API.
         PagedEnumerable<ListJobTemplatesResponse, JobTemplate> response = client.ListJobTemplates(parentLocation);
 
-        var result = "Job templates:\n";
-
-        // Iterate over all response items, lazily performing RPCs as required.
-        foreach (JobTemplate item in response)
-        {
-            // Add each job template name to the result string.
-            result += $"{item.Name}\n";
-        }
-
-        // Return the result.
-        return result;
+        // The returned sequence will lazily perform RPCs as it's being iterated over.
+        return response.ToList();
     }
 }
 // [END transcoder_list_job_templates]
