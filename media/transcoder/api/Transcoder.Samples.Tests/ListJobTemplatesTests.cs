@@ -45,7 +45,7 @@ namespace Transcoder.Samples.Tests
         {
             // Run the sample code.
             var jobTemplates = _listSample.ListJobTemplates(_fixture.ProjectId, _fixture.Location);
-            Assert.Contains(jobTemplates, t => Assert.Equal(_templateId, t.JobTemplateName.JobTemplateId));
+            Assert.Contains(jobTemplates, j => _templateId == j.JobTemplateName.JobTemplateId);
         }
     }
 }
