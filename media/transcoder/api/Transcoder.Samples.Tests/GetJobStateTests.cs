@@ -35,7 +35,6 @@ namespace Transcoder.Samples.Tests
             _getSample = new GetJobStateSample();
 
             string outputUri = $"gs://{_fixture.BucketName}/test-output-get-job/";
-            // Run the sample code.
             var result = _createSample.CreateJobFromAdHoc(
                 _fixture.ProjectId, _fixture.Location,
                 _fixture.InputUri, outputUri);
@@ -47,10 +46,12 @@ namespace Transcoder.Samples.Tests
         public void GetsJobState()
         {
             // Run the sample code.
-            var result = _getSample.GetJobState(
+            Job.Types.ProcessingState result = _getSample.GetJobState(
                 _fixture.ProjectId, _fixture.Location,
                 _jobId);
 
+            // Just to make the intention of this sample very explicit, which is to
+            // return the job state.
             Assert.IsType<Job.Types.ProcessingState>(result);
         }
     }
