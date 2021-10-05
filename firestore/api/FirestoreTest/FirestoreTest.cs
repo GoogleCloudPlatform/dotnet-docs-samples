@@ -501,7 +501,7 @@ namespace GoogleCloudSamples
             Assert.Contains("Stopping the listener", listenMultipleOutput.Stdout);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1162")]
         public void ListenForChangesTest()
         {
             RunDeleteData("delete-collection", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
