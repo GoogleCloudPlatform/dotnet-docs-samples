@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-// [START compute_instances_delete]
+// [START compute_firewall_list]
 
 using Google.Cloud.Compute.V1;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class DeleteInstanceAsyncSample
+public class ListFirewallRulesAsyncSample
 {
-    public async Task DeleteInstanceAsync(
+    public async Task ListFirewallRulesAsync(
         // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
-        string projectId = "your-project-id",
-        string zone = "us-central1-a",
-        string machineName = "test-machine")
+        string projectId = "your-project-id")
     {
-
         // Initialize client that will be used to send requests. This client only needs to be created
         // once, and can be reused for multiple requests.
-        InstancesClient client = await InstancesClient.CreateAsync();
+        FirewallsClient client = await FirewallsClient.CreateAsync();
 
-        // Make the request to delete a VM instance.
-        var instanceDeletion = await client.DeleteAsync(projectId, zone, machineName);
-
-        // Wait for the operation to complete using client-side polling.
-        await instanceDeletion.PollUntilCompletedAsync();
+        // Make the request to list all firewall rules.
+        await foreach (var firewallRule in client.ListAsync(projectId))
+        {
+            // The result is a Firewall sequence that you can iterate over.
+            Console.WriteLine($"Firewal Rule: {firewallRule.Name}");
+        }
     }
 }
 
-// [END compute_instances_delete]
+// [END compute_firewall_list]
