@@ -25,7 +25,7 @@ public class SetPublicAccessPreventionUnspecifiedTest
         _fixture = fixture;
     }
 
-    [Fact]
+    [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1508")]
     public void TestSetPublicAccessPreventionUnspecified()
     {
         SetPublicAccessPreventionUnspecifiedSample setPublicAccessPreventionUnspecifiedSample = new SetPublicAccessPreventionUnspecifiedSample();
