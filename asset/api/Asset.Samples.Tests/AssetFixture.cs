@@ -28,7 +28,8 @@ public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
     public string BucketName { get; }
     public RetryRobot Retry { get; } = new RetryRobot 
     { 
-        RetryWhenExceptions = new Type[] { typeof(XunitException) } 
+        RetryWhenExceptions = new Type[] { typeof(XunitException) },
+        MaxTryCount = 15
     };
     public string DatasetId { get; }
     private readonly RandomBucketFixture _bucketFixture;
