@@ -43,12 +43,15 @@ public class PullProtoMessagesAsyncTest
 
         await _publishProtoMessagesAsyncSample.PublishProtoMessagesAsync(_pubsubFixture.ProjectId, topicId, new Utilities.State[] { new Utilities.State { Name = "New York", PostAbbr = "NY" } });
 
-        // Pull and acknowledge the messages
-        var result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(1, result);
+        await _pubsubFixture.Assert.Eventually(async () =>
+        {
+            // Pull and acknowledge the messages
+            var ackedCount = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, ackedCount);
+        });
 
         //Pull the Message to confirm it's gone after it's acknowledged
-        result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        var result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
         Assert.True(result == 0);
     }
 
@@ -66,12 +69,15 @@ public class PullProtoMessagesAsyncTest
 
         await _publishProtoMessagesAsyncSample.PublishProtoMessagesAsync(_pubsubFixture.ProjectId, topicId, new Utilities.State[] { new Utilities.State { Name = "New York", PostAbbr = "NY" } });
 
-        // Pull and acknowledge the messages
-        var result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(1, result);
+        await _pubsubFixture.Assert.Eventually(async () =>
+        {
+            // Pull and acknowledge the messages
+            var ackedCount = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, ackedCount);
+        });
 
         //Pull the Message to confirm it's gone after it's acknowledged
-        result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        var result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
         Assert.True(result == 0);
     }
 }
