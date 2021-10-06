@@ -26,7 +26,6 @@ namespace GameServers.Samples.Tests
         private readonly CreateClusterSample _createClusterSample;
         private readonly CreateRealmSample _createRealmSample;
         private readonly DeleteClusterSample _deleteSample;
-
         private string _clusterId;
         private string _realmId;
 
@@ -58,7 +57,7 @@ namespace GameServers.Samples.Tests
         }
 
         [Fact]
-        public void DeletesClusters()
+        public void DeletesCluster()
         {
             _deleteSample.DeleteCluster(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
         }

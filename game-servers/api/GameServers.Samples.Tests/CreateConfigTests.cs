@@ -20,27 +20,26 @@ using System.Threading.Tasks;
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class UpdateDeploymentTest : IAsyncLifetime
+    public class CreateConfigTest : IAsyncLifetime
     {
         private GameServersFixture _fixture;
-        private readonly CreateDeploymentSample _createSample;
-        private readonly GetDeploymentSample _getSample;
-        private readonly UpdateDeploymentSample _updateSample;
-
+        private readonly CreateConfigSample _createConfigSample;
+        private readonly CreateDeploymentSample _createDeploymentSample;
+        private string _configId;
         private string _deploymentId;
 
-        public UpdateDeploymentTest(GameServersFixture fixture)
+        public CreateConfigTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateDeploymentSample();
-            _getSample = new GetDeploymentSample();
-            _updateSample = new UpdateDeploymentSample();
+            _createConfigSample = new CreateConfigSample();
+            _createDeploymentSample = new CreateDeploymentSample();
+            _configId = $"test-config-{_fixture.RandomId()}";
             _deploymentId = $"test-deployment-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            await _createSample.CreateDeployment(
+            await _createDeploymentSample.CreateDeployment(
                     _fixture.ProjectId, _deploymentId);
             _fixture.DeploymentIds.Add(_deploymentId);
         }
@@ -50,17 +49,17 @@ namespace GameServers.Samples.Tests
         }
 
         [Fact]
-        public async void UpdatesDeployment()
+        public async void CreatesConfig()
         {
-            await _updateSample.UpdateDeployment(_fixture.ProjectId, _deploymentId);
+            var result = await _createConfigSample.CreateConfig(
+                _fixture.ProjectId, _fixture.RegionId, _deploymentId,
+                _configId);
+            _fixture.ConfigIdentifiers.Add(new ConfigIdentifierUtil(_deploymentId, _configId));
 
-            var deployment = _getSample.GetDeployment(_fixture.ProjectId, _deploymentId);
-            string value1;
-            string value2;
-            Assert.True(deployment.Labels.TryGetValue(_fixture.Label1Key, out value1));
-            Assert.True(deployment.Labels.TryGetValue(_fixture.Label2Key, out value2));
-            Assert.Equal(_fixture.Label1Value, value1);
-            Assert.Equal(_fixture.Label2Value, value2);
+            Assert.Equal(_fixture.ProjectId, result.GameServerConfigName.ProjectId);
+            Assert.Equal(_fixture.RegionId, result.GameServerConfigName.LocationId);
+            Assert.Equal(_deploymentId, result.GameServerConfigName.DeploymentId);
+            Assert.Equal(_configId, result.GameServerConfigName.ConfigId);
         }
     }
 }

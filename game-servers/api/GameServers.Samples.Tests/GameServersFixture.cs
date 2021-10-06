@@ -39,22 +39,14 @@ public class GameServersFixture : IDisposable, ICollectionFixture<GameServersFix
     public string GkeClusterName { get; }
 
     public List<ClusterIdentifierUtil> ClusterIdentifiers { get; } = new List<ClusterIdentifierUtil>();
+    public List<ConfigIdentifierUtil> ConfigIdentifiers { get; } = new List<ConfigIdentifierUtil>();
     public List<string> DeploymentIds { get; } = new List<string>();
     public List<string> RealmIds { get; } = new List<string>();
 
-    private readonly DeleteRealmSample _deleteRealmSample = new DeleteRealmSample();
     private readonly DeleteClusterSample _deleteClusterSample = new DeleteClusterSample();
+    private readonly DeleteConfigSample _deleteConfigSample = new DeleteConfigSample();
+    private readonly DeleteRealmSample _deleteRealmSample = new DeleteRealmSample();
     private readonly DeleteDeploymentSample _deleteDeploymentSample = new DeleteDeploymentSample();
-
-    public RetryRobot ResourcePoller { get; } = new RetryRobot
-    {
-        FirstRetryDelayMs = 5000,
-        DelayMultiplier = 1.5f,
-        MaxTryCount = 4,
-        ShouldRetry = ex => ex is XunitException ||
-            (ex is GoogleApiException gex &&
-                gex.HttpStatusCode == HttpStatusCode.ServiceUnavailable)
-    };
 
     public GameServersFixture()
     {
@@ -81,6 +73,17 @@ public class GameServersFixture : IDisposable, ICollectionFixture<GameServersFix
             catch (Exception e)
             {
                 Console.WriteLine("Delete failed for cluster: " + id.ClusterId + " with error: " + e.ToString());
+            }
+        }
+        foreach (ConfigIdentifierUtil id in ConfigIdentifiers)
+        {
+            try
+            {
+                _deleteConfigSample.DeleteConfig(ProjectId, RegionId, id.DeploymentId, id.ConfigId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Delete failed for config: " + id.ConfigId + " with error: " + e.ToString());
             }
         }
         foreach (string id in RealmIds)

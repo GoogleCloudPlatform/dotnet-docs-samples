@@ -64,16 +64,13 @@ namespace GameServers.Samples.Tests
         {
             await _updateSample.UpdateCluster(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
 
-            _fixture.ResourcePoller.Eventually(() =>
-            {
-                var cluster = _getSample.GetCluster(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
-                string value1;
-                string value2;
-                Assert.True(cluster.Labels.TryGetValue(_fixture.Label1Key, out value1));
-                Assert.True(cluster.Labels.TryGetValue(_fixture.Label2Key, out value2));
-                Assert.Equal(_fixture.Label1Value, value1);
-                Assert.Equal(_fixture.Label2Value, value2);
-            });
+            var cluster = _getSample.GetCluster(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
+            string value1;
+            string value2;
+            Assert.True(cluster.Labels.TryGetValue(_fixture.Label1Key, out value1));
+            Assert.True(cluster.Labels.TryGetValue(_fixture.Label2Key, out value2));
+            Assert.Equal(_fixture.Label1Value, value1);
+            Assert.Equal(_fixture.Label2Value, value2);
         }
     }
 }

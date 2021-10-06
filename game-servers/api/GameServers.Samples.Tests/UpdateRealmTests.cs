@@ -55,16 +55,13 @@ namespace GameServers.Samples.Tests
         {
             await _updateSample.UpdateRealm(_fixture.ProjectId, _fixture.RegionId, _realmId);
 
-            _fixture.ResourcePoller.Eventually(() =>
-            {
-                var realm = _getSample.GetRealm(_fixture.ProjectId, _fixture.RegionId, _realmId);
-                string value1;
-                string value2;
-                Assert.True(realm.Labels.TryGetValue(_fixture.Label1Key, out value1));
-                Assert.True(realm.Labels.TryGetValue(_fixture.Label2Key, out value2));
-                Assert.Equal(_fixture.Label1Value, value1);
-                Assert.Equal(_fixture.Label2Value, value2);
-            });
+            var realm = _getSample.GetRealm(_fixture.ProjectId, _fixture.RegionId, _realmId);
+            string value1;
+            string value2;
+            Assert.True(realm.Labels.TryGetValue(_fixture.Label1Key, out value1));
+            Assert.True(realm.Labels.TryGetValue(_fixture.Label2Key, out value2));
+            Assert.Equal(_fixture.Label1Value, value1);
+            Assert.Equal(_fixture.Label2Value, value2);
         }
     }
 }

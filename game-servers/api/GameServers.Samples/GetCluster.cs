@@ -35,6 +35,10 @@ public class GetClusterSample
 
         // Make the request.
         GameServerCluster response = client.GetGameServerCluster(request);
+
+        // You could write response.Name and response.ClusterState to the console
+        // to see the installed versions of Agones and Kubernetes on the cluster.
+
         return response;
     }
 }
