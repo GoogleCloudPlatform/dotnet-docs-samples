@@ -31,9 +31,11 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string AvroSchemaFile { get; } = $"Resources/us-states.avsc";
     public string ProtoSchemaFile { get; } = $"Resources/us-states.proto";
 
-    public RetryRobot Assert { get; } = new RetryRobot
+    public RetryRobot Pull { get; } = new RetryRobot
     {
-        RetryWhenExceptions = new Type[] { typeof(XunitException) }
+        ShouldRetry = ex => ex is XunitException
+            || (ex is RpcException rpcEx 
+                && (rpcEx.StatusCode == StatusCode.DeadlineExceeded || rpcEx.StatusCode == StatusCode.Unavailable))
     };
 
     public PubsubFixture()
