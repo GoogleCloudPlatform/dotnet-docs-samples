@@ -60,7 +60,7 @@ namespace Compute.Samples.Tests
             // We wait a little longer than default to let the concurrent test execution
             // finish before reattempting.
             FirstRetryDelayMs = 30_000,
-            MaxTryCount = 10
+            MaxTryCount = 15
         };
 
         public ComputeFixture()
