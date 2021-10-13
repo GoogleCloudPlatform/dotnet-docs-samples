@@ -41,7 +41,10 @@ public class PullMessagesWithCustomAttributesAsyncTest
 
         await _publishMessageWithCustomAttributesAsyncSample.PublishMessageWithCustomAttributesAsync(_pubsubFixture.ProjectId, topicId, message);
 
-        var messages = await _pullMessagesWithCustomAttributesAsyncSample.PullMessagesWithCustomAttributesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Contains(messages, m => m.Attributes.Keys.Contains("year") && m.Attributes.Values.Contains("2020"));
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var messages = await _pullMessagesWithCustomAttributesAsyncSample.PullMessagesWithCustomAttributesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Contains(messages, m => m.Attributes.Keys.Contains("year") && m.Attributes.Values.Contains("2020"));
+        });
     }
 }
