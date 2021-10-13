@@ -19,6 +19,7 @@ using Google.Cloud.Spanner.Admin.Instance.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.Cloud.Spanner.Data;
 using Google.Rpc;
+using GoogleCloudSamples;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,12 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string InstanceIdWithMultiRegion { get; } = $"my-instance-multi-region-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string InstanceConfigId { get; } = "nam6";
 
+    private DatabaseAdminClient DatabaseAdminClient { get; set; }
+
+    public RetryRobot Retryable { get; } = new RetryRobot
+    {
+        ShouldRetry = ex => ex.IsTransientSpannerFault()
+    };
 
     // Encryption key identifiers.
     private static readonly string _testKeyProjectId = Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -63,10 +70,12 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public CryptoKeyName KmsKeyName { get; } = new CryptoKeyName(_testKeyProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
 
-    public string ConnectionString { get; set; }
+    public string ConnectionString { get; private set; }
 
     public async Task InitializeAsync()
     {
+        DatabaseAdminClient = await DatabaseAdminClient.CreateAsync();
+
         bool.TryParse(Environment.GetEnvironmentVariable("RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS"), out var runCmekBackupSampleTests);
         RunCmekBackupSampleTests = runCmekBackupSampleTests;
 
@@ -201,9 +210,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task DeleteStaleDatabasesAsync()
     {
-        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var databases = databaseAdminClient.ListDatabases(instanceName, pageSize: 200).ToList();
+        var databases = DatabaseAdminClient.ListDatabases(instanceName, pageSize: 200).ToList();
 
         if (databases.Count < 50)
         {
@@ -236,9 +244,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task DeleteStaleBackupsAsync()
     {
-        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var backups = databaseAdminClient.ListBackups(instanceName, pageSize: 200).ToList();
+        var backups = DatabaseAdminClient.ListBackups(instanceName, pageSize: 200).ToList();
 
         if (backups.Count < 50)
         {
@@ -258,7 +265,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             try
             {
-                await databaseAdminClient.DeleteBackupAsync(backup.BackupName);
+                await DatabaseAdminClient.DeleteBackupAsync(backup.BackupName);
             }
             catch (Exception) { }
         }
@@ -494,9 +501,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public IEnumerable<Database> GetDatabases()
     {
-        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
         InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var databases = databaseAdminClient.ListDatabases(instanceName);
+        var databases = DatabaseAdminClient.ListDatabases(instanceName);
         return databases;
     }
 
@@ -529,8 +535,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     
     public async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, params string[] extraStatements)
     {
-        var databaseAdminClient = await DatabaseAdminClient.CreateAsync();
-        var operation = await databaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
+        var operation = await DatabaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
         {
             ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
             CreateStatement = $"CREATE DATABASE `{databaseId}`",
@@ -549,7 +554,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         finally
         {
             // Cleanup the test database.
-            await databaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, instanceId, databaseId));
+            await DatabaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, instanceId, databaseId));
         }
     }
 }
