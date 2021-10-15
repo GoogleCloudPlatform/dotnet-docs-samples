@@ -17,7 +17,6 @@
 // [START cloud_game_servers_cluster_list]
 
 using Google.Api.Gax;
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using System.Collections.Generic;
 using System.Linq;

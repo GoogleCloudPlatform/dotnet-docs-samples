@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class UpdateDeploymentTest : IAsyncLifetime
+    public class UpdateDeploymentAsyncTest : IAsyncLifetime
     {
         private GameServersFixture _fixture;
         private readonly CreateDeploymentSample _createSample;
@@ -29,18 +29,18 @@ namespace GameServers.Samples.Tests
 
         private string _deploymentId;
 
-        public UpdateDeploymentTest(GameServersFixture fixture)
+        public UpdateDeploymentAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateDeploymentSample();
             _getSample = new GetDeploymentSample();
             _updateSample = new UpdateDeploymentSample();
-            _deploymentId = $"test-deployment-{_fixture.RandomId()}";
+            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            await _createSample.CreateDeployment(
+            await _createSample.CreateDeploymentAsync(
                     _fixture.ProjectId, _deploymentId);
             _fixture.DeploymentIds.Add(_deploymentId);
         }
@@ -50,9 +50,9 @@ namespace GameServers.Samples.Tests
         }
 
         [Fact]
-        public async void UpdatesDeployment()
+        public async Task UpdatesDeploymentAsync()
         {
-            await _updateSample.UpdateDeployment(_fixture.ProjectId, _deploymentId);
+            await _updateSample.UpdateDeploymentAsync(_fixture.ProjectId, _deploymentId);
 
             var deployment = _getSample.GetDeployment(_fixture.ProjectId, _deploymentId);
             string value1;

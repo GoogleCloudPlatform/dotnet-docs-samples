@@ -16,15 +16,13 @@
 
 // [START cloud_game_servers_cluster_create]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
-using Google.Protobuf.WellKnownTypes;
 using System.Threading.Tasks;
 
 public class CreateClusterSample
 {
-    public async Task<GameServerCluster> CreateCluster(
+    public async Task<GameServerCluster> CreateClusterAsync(
         string projectId, string regionId, string realmId, string clusterId, string gkeName)
     {
         // Create the client.

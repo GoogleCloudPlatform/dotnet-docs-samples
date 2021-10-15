@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class UpdateClusterTest : IAsyncLifetime
+    public class UpdateClusterAsyncTest : IAsyncLifetime
     {
         private GameServersFixture _fixture;
         private readonly CreateClusterSample _createClusterSample;
@@ -31,28 +31,28 @@ namespace GameServers.Samples.Tests
         private string _clusterId;
         private string _realmId;
 
-        public UpdateClusterTest(GameServersFixture fixture)
+        public UpdateClusterAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
             _createClusterSample = new CreateClusterSample();
             _createRealmSample = new CreateRealmSample();
             _getSample = new GetClusterSample();
             _updateSample = new UpdateClusterSample();
-            _realmId = $"test-realm-{_fixture.RandomId()}";
-            _clusterId = $"test-cluster-{_fixture.RandomId()}";
+            _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
+            _clusterId = $"{_fixture.ClusterIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            await _createRealmSample.CreateRealm(
+            await _createRealmSample.CreateRealmAsync(
                     _fixture.ProjectId, _fixture.RegionId,
                     _realmId);
             _fixture.RealmIds.Add(_realmId);
 
-            await _createClusterSample.CreateCluster(
+            await _createClusterSample.CreateClusterAsync(
                 _fixture.ProjectId, _fixture.RegionId, _realmId,
                 _clusterId, _fixture.GkeClusterName);
-            _fixture.ClusterIdentifiers.Add(new ClusterIdentifierUtil(_realmId, _clusterId));
+            _fixture.ClusterIdentifiers.Add(new ClusterIdentifier(_realmId, _clusterId));
         }
 
         public async Task DisposeAsync()
@@ -60,9 +60,9 @@ namespace GameServers.Samples.Tests
         }
 
         [Fact]
-        public async void UpdatesCluster()
+        public async Task UpdatesClusterAsync()
         {
-            await _updateSample.UpdateCluster(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
+            await _updateSample.UpdateClusterAsync(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
 
             var cluster = _getSample.GetCluster(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
             string value1;

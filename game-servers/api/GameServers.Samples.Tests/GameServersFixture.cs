@@ -31,15 +31,18 @@ public class GameServersFixture : IDisposable, ICollectionFixture<GameServersFix
 {
     public string ProjectId { get; }
     public string RegionId { get; } = "global";
-    public string RealmId { get; } = "test-realm";
+    public string RealmIdPrefix { get; } = "test-realm";
+    public string ClusterIdPrefix { get; } = "test-cluster";
+    public string ConfigIdPrefix { get; } = "test-config";
+    public string DeploymentIdPrefix { get; } = "test-deployment";
     public string Label1Key { get; } = "label-key-1";
     public string Label1Value { get; } = "label-value-1";
     public string Label2Key { get; } = "label-key-2";
     public string Label2Value { get; } = "label-value-2";
     public string GkeClusterName { get; }
 
-    public List<ClusterIdentifierUtil> ClusterIdentifiers { get; } = new List<ClusterIdentifierUtil>();
-    public List<ConfigIdentifierUtil> ConfigIdentifiers { get; } = new List<ConfigIdentifierUtil>();
+    public List<ClusterIdentifier> ClusterIdentifiers { get; } = new List<ClusterIdentifier>();
+    public List<ConfigIdentifier> ConfigIdentifiers { get; } = new List<ConfigIdentifier>();
     public List<string> DeploymentIds { get; } = new List<string>();
     public List<string> RealmIds { get; } = new List<string>();
 
@@ -64,7 +67,7 @@ public class GameServersFixture : IDisposable, ICollectionFixture<GameServersFix
 
     public void Dispose()
     {
-        foreach (ClusterIdentifierUtil id in ClusterIdentifiers)
+        foreach (ClusterIdentifier id in ClusterIdentifiers)
         {
             try
             {
@@ -75,7 +78,7 @@ public class GameServersFixture : IDisposable, ICollectionFixture<GameServersFix
                 Console.WriteLine("Delete failed for cluster: " + id.ClusterId + " with error: " + e.ToString());
             }
         }
-        foreach (ConfigIdentifierUtil id in ConfigIdentifiers)
+        foreach (ConfigIdentifier id in ConfigIdentifiers)
         {
             try
             {

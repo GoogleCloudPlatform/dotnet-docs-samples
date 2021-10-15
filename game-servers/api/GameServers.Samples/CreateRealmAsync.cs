@@ -19,12 +19,11 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
-using Google.Protobuf.WellKnownTypes;
 using System.Threading.Tasks;
 
 public class CreateRealmSample
 {
-    public async Task<Realm> CreateRealm(
+    public async Task<Realm> CreateRealmAsync(
         string projectId, string regionId, string realmId)
     {
         // Create the client.

@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class UpdateRolloutDefaultConfigTest : IAsyncLifetime
+    public class UpdateRolloutRemoveDefaultConfigAsyncTest : IAsyncLifetime
     {
         private GameServersFixture _fixture;
         private readonly CreateDeploymentSample _createDeploymentSample;
@@ -31,7 +31,7 @@ namespace GameServers.Samples.Tests
         private string _configId;
         private string _deploymentId;
 
-        public UpdateRolloutDefaultConfigTest(GameServersFixture fixture)
+        public UpdateRolloutRemoveDefaultConfigAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
             _createDeploymentSample = new CreateDeploymentSample();
@@ -39,35 +39,35 @@ namespace GameServers.Samples.Tests
             _getSample = new GetRolloutSample();
             _updateSample = new UpdateRolloutDefaultConfigSample();
             _updateRemoveSample = new UpdateRolloutRemoveDefaultConfigSample();
-            _configId = $"test-config-{_fixture.RandomId()}";
-            _deploymentId = $"test-deployment-{_fixture.RandomId()}";
+            _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
+            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            await _createDeploymentSample.CreateDeployment(
+            await _createDeploymentSample.CreateDeploymentAsync(
                     _fixture.ProjectId, _deploymentId);
             _fixture.DeploymentIds.Add(_deploymentId);
 
-            await _createConfigSample.CreateConfig(
+            await _createConfigSample.CreateConfigAsync(
                 _fixture.ProjectId, _fixture.RegionId, _deploymentId,
                 _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifierUtil(_deploymentId, _configId));
+            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_deploymentId, _configId));
+
+            await _updateSample.UpdateRolloutDefaultConfigAsync(_fixture.ProjectId, _deploymentId, _configId);
         }
 
         public async Task DisposeAsync()
         {
-            await _updateRemoveSample.UpdateRolloutRemoveDefaultConfig(_fixture.ProjectId, _deploymentId);
         }
 
         [Fact]
-        public async void UpdatesRolloutDefault()
+        public async Task UpdatesRolloutRemoveDefaultConfigAsync()
         {
-            await _updateSample.UpdateRolloutDefaultConfig(_fixture.ProjectId, _deploymentId, _configId);
+            await _updateRemoveSample.UpdateRolloutRemoveDefaultConfigAsync(_fixture.ProjectId, _deploymentId);
 
             var rollout = _getSample.GetRollout(_fixture.ProjectId, _deploymentId);
-            var fullConfigId = $"projects/{_fixture.ProjectId}/locations/global/gameServerDeployments/{_deploymentId}/configs/{_configId}";
-            Assert.Equal(fullConfigId, rollout.DefaultGameServerConfig);
+            Assert.Equal("", rollout.DefaultGameServerConfig);
         }
     }
 }

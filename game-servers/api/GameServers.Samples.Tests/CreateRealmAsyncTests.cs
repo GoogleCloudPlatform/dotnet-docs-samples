@@ -15,28 +15,29 @@
  */
 
 using Xunit;
+using System.Threading.Tasks;
 
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class CreateRealmTest
+    public class CreateRealmAsyncTest
     {
         private GameServersFixture _fixture;
         private readonly CreateRealmSample _createSample;
 
         private string _realmId;
 
-        public CreateRealmTest(GameServersFixture fixture)
+        public CreateRealmAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateRealmSample();
-            _realmId = $"test-realm-{_fixture.RandomId()}";
+            _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
         }
 
         [Fact]
-        public async void CreatesRealm()
+        public async Task CreatesRealmAsync()
         {
-            var result = await _createSample.CreateRealm(
+            var result = await _createSample.CreateRealmAsync(
                 _fixture.ProjectId, _fixture.RegionId, _realmId);
             _fixture.RealmIds.Add(result.RealmName.RealmId);
 

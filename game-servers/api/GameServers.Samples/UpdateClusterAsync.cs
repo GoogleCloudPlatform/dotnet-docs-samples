@@ -16,7 +16,6 @@
 
 // [START cloud_game_servers_cluster_update]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
@@ -24,7 +23,7 @@ using System.Threading.Tasks;
 
 public class UpdateClusterSample
 {
-    public async Task<GameServerCluster> UpdateCluster(
+    public async Task<GameServerCluster> UpdateClusterAsync(
         string projectId, string regionId, string realmId, string clusterId)
     {
         // Create the client.

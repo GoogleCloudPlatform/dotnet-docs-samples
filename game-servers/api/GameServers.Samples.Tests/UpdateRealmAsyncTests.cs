@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class UpdateRealmTest : IAsyncLifetime
+    public class UpdateRealmAsyncTest : IAsyncLifetime
     {
         private GameServersFixture _fixture;
         private readonly CreateRealmSample _createSample;
@@ -29,18 +29,18 @@ namespace GameServers.Samples.Tests
 
         private string _realmId;
 
-        public UpdateRealmTest(GameServersFixture fixture)
+        public UpdateRealmAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateRealmSample();
             _getSample = new GetRealmSample();
             _updateSample = new UpdateRealmSample();
-            _realmId = $"test-realm-{_fixture.RandomId()}";
+            _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            await _createSample.CreateRealm(
+            await _createSample.CreateRealmAsync(
                     _fixture.ProjectId, _fixture.RegionId,
                     _realmId);
             _fixture.RealmIds.Add(_realmId);
@@ -51,9 +51,9 @@ namespace GameServers.Samples.Tests
         }
 
         [Fact]
-        public async void UpdatesRealm()
+        public async Task UpdatesRealmAsync()
         {
-            await _updateSample.UpdateRealm(_fixture.ProjectId, _fixture.RegionId, _realmId);
+            await _updateSample.UpdateRealmAsync(_fixture.ProjectId, _fixture.RegionId, _realmId);
 
             var realm = _getSample.GetRealm(_fixture.ProjectId, _fixture.RegionId, _realmId);
             string value1;

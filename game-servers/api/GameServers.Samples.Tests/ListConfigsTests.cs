@@ -35,20 +35,20 @@ namespace GameServers.Samples.Tests
             _createConfigSample = new CreateConfigSample();
             _createDeploymentSample = new CreateDeploymentSample();
             _listSample = new ListConfigsSample();
-            _configId = $"test-config-{_fixture.RandomId()}";
-            _deploymentId = $"test-deployment-{_fixture.RandomId()}";
+            _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
+            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            await _createDeploymentSample.CreateDeployment(
+            await _createDeploymentSample.CreateDeploymentAsync(
                     _fixture.ProjectId, _deploymentId);
             _fixture.DeploymentIds.Add(_deploymentId);
 
-            await _createConfigSample.CreateConfig(
+            await _createConfigSample.CreateConfigAsync(
                 _fixture.ProjectId, _fixture.RegionId, _deploymentId,
                 _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifierUtil(_deploymentId, _configId));
+            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_deploymentId, _configId));
         }
 
         public async Task DisposeAsync()

@@ -14,41 +14,39 @@
  * limitations under the License.
  */
 
-// [START cloud_game_servers_deployment_create]
+// [START cloud_game_servers_deployment_rollout_default]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System.Threading.Tasks;
 
-public class CreateDeploymentSample
+public class UpdateRolloutDefaultConfigSample
 {
-    public async Task<GameServerDeployment> CreateDeployment(
-        string projectId, string deploymentId)
+    public async Task<GameServerDeployment> UpdateRolloutDefaultConfigAsync(
+        string projectId, string deploymentId, string configId)
     {
         // Create the client.
         GameServerDeploymentsServiceClient client = await GameServerDeploymentsServiceClient.CreateAsync();
 
-        GameServerDeployment deployment = new GameServerDeployment()
+        GameServerDeploymentRollout rollout = new GameServerDeploymentRollout
         {
-            GameServerDeploymentName = GameServerDeploymentName.FromProjectLocationDeployment(projectId, "global", deploymentId)
+            Name = GameServerDeploymentName.FormatProjectLocationDeployment(projectId, "global", deploymentId),
+            DefaultGameServerConfig = configId
         };
-        CreateGameServerDeploymentRequest request = new CreateGameServerDeploymentRequest
+
+        UpdateGameServerDeploymentRolloutRequest request = new UpdateGameServerDeploymentRolloutRequest
         {
-            DeploymentId = deploymentId,
-            ParentAsLocationName = LocationName.FromProjectLocation(projectId, "global"),
-            GameServerDeployment = deployment
+            Rollout = rollout,
+            UpdateMask = new FieldMask { Paths = { "default_game_server_config" } }
         };
 
         // Make the request.
-        Operation<GameServerDeployment, OperationMetadata> response = await client.CreateGameServerDeploymentAsync(request);
-
-        // Poll until the returned long-running operation is complete.
+        Operation<GameServerDeployment, OperationMetadata> response = await client.UpdateGameServerDeploymentRolloutAsync(request);
         Operation<GameServerDeployment, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
 
         // Retrieve the operation result.
         return completedResponse.Result;
     }
 }
-// [END cloud_game_servers_deployment_create]
+// [END cloud_game_servers_deployment_rollout_default]

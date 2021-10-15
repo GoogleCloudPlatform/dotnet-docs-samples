@@ -16,7 +16,6 @@
 
 // [START cloud_game_servers_realm_update]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
@@ -24,7 +23,7 @@ using System.Threading.Tasks;
 
 public class UpdateRealmSample
 {
-    public async Task<Realm> UpdateRealm(
+    public async Task<Realm> UpdateRealmAsync(
         string projectId, string regionId, string realmId)
     {
         // Create the client.

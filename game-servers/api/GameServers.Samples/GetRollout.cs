@@ -16,7 +16,6 @@
 
 // [START cloud_game_servers_rollout_get]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 
 public class GetRolloutSample

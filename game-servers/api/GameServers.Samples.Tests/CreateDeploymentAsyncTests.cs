@@ -15,28 +15,29 @@
  */
 
 using Xunit;
+using System.Threading.Tasks;
 
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class CreateDeploymentTest
+    public class CreateDeploymentAsyncTest
     {
         private GameServersFixture _fixture;
         private readonly CreateDeploymentSample _createSample;
 
         private string _deploymentId;
 
-        public CreateDeploymentTest(GameServersFixture fixture)
+        public CreateDeploymentAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateDeploymentSample();
-            _deploymentId = $"test-deployment-{_fixture.RandomId()}";
+            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
         }
 
         [Fact]
-        public async void CreatesDeployment()
+        public async Task CreatesDeploymentAsync()
         {
-            var result = await _createSample.CreateDeployment(
+            var result = await _createSample.CreateDeploymentAsync(
                 _fixture.ProjectId, _deploymentId);
             _fixture.DeploymentIds.Add(result.GameServerDeploymentName.DeploymentId);
 

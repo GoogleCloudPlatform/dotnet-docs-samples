@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-public class ClusterIdentifierUtil
+public class ClusterIdentifier
 {
     public string RealmId { get; }
     public string ClusterId { get; }
-    public ClusterIdentifierUtil(string realm, string cluster)
+    public ClusterIdentifier(string realm, string cluster)
     {
         RealmId = realm;
         ClusterId = cluster;

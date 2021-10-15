@@ -20,64 +20,54 @@ using System.Threading.Tasks;
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class UpdateRolloutRemoveOverrideConfigTest : IAsyncLifetime
+    public class UpdateRolloutDefaultConfigAsyncTest : IAsyncLifetime
     {
         private GameServersFixture _fixture;
         private readonly CreateDeploymentSample _createDeploymentSample;
         private readonly CreateConfigSample _createConfigSample;
-        private readonly CreateRealmSample _createRealmSample;
         private readonly GetRolloutSample _getSample;
-        private readonly UpdateRolloutOverrideConfigSample _updateAddOverrideSample;
-        private readonly UpdateRolloutRemoveOverrideConfigSample _updateRemoveOverrideSample;
+        private readonly UpdateRolloutDefaultConfigSample _updateSample;
+        private readonly UpdateRolloutRemoveDefaultConfigSample _updateRemoveSample;
         private string _configId;
         private string _deploymentId;
-        private string _realmId;
 
-        public UpdateRolloutRemoveOverrideConfigTest(GameServersFixture fixture)
+        public UpdateRolloutDefaultConfigAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
             _createDeploymentSample = new CreateDeploymentSample();
             _createConfigSample = new CreateConfigSample();
-            _createRealmSample = new CreateRealmSample();
             _getSample = new GetRolloutSample();
-            _updateAddOverrideSample = new UpdateRolloutOverrideConfigSample();
-            _updateRemoveOverrideSample = new UpdateRolloutRemoveOverrideConfigSample();
-            _configId = $"test-config-{_fixture.RandomId()}";
-            _deploymentId = $"test-deployment-{_fixture.RandomId()}";
-            _realmId = $"test-realm-{_fixture.RandomId()}";
+            _updateSample = new UpdateRolloutDefaultConfigSample();
+            _updateRemoveSample = new UpdateRolloutRemoveDefaultConfigSample();
+            _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
+            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            // Tests a global realm.
-            await _createRealmSample.CreateRealm(
-                    _fixture.ProjectId, _fixture.RegionId,
-                    _realmId);
-            _fixture.RealmIds.Add(_realmId);
-
-            await _createDeploymentSample.CreateDeployment(
+            await _createDeploymentSample.CreateDeploymentAsync(
                     _fixture.ProjectId, _deploymentId);
             _fixture.DeploymentIds.Add(_deploymentId);
 
-            await _createConfigSample.CreateConfig(
+            await _createConfigSample.CreateConfigAsync(
                 _fixture.ProjectId, _fixture.RegionId, _deploymentId,
                 _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifierUtil(_deploymentId, _configId));
-
-            await _updateAddOverrideSample.UpdateRolloutOverrideConfig(_fixture.ProjectId, _deploymentId, _configId, _fixture.RegionId, _realmId);
+            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_deploymentId, _configId));
         }
 
         public async Task DisposeAsync()
         {
+            await _updateRemoveSample.UpdateRolloutRemoveDefaultConfigAsync(_fixture.ProjectId, _deploymentId);
         }
 
         [Fact]
-        public async void UpdatesRolloutRemoveOverrideConfig()
+        public async Task UpdatesRolloutDefaultConfigAsync()
         {
-            await _updateRemoveOverrideSample.UpdateRolloutRemoveOverrideConfig(_fixture.ProjectId, _deploymentId);
+            await _updateSample.UpdateRolloutDefaultConfigAsync(_fixture.ProjectId, _deploymentId, _configId);
 
             var rollout = _getSample.GetRollout(_fixture.ProjectId, _deploymentId);
-            Assert.Equal(0, rollout.GameServerConfigOverrides.Count);
+            var fullConfigId = $"projects/{_fixture.ProjectId}/locations/global/gameServerDeployments/{_deploymentId}/configs/{_configId}";
+            Assert.Equal(fullConfigId, rollout.DefaultGameServerConfig);
         }
     }
 }

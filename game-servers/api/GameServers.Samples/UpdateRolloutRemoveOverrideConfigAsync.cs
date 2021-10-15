@@ -14,34 +14,25 @@
  * limitations under the License.
  */
 
-// [START cloud_game_servers_deployment_rollout_override]
+// [START cloud_game_servers_deployment_rollout_remove_override]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System.Threading.Tasks;
 
-public class UpdateRolloutOverrideConfigSample
+public class UpdateRolloutRemoveOverrideConfigSample
 {
-    public async Task<GameServerDeployment> UpdateRolloutOverrideConfig(
-        string projectId, string deploymentId, string configId, string realmRegionId, string realmId)
+    public async Task<GameServerDeployment> UpdateRolloutRemoveOverrideConfigAsync(
+        string projectId, string deploymentId)
     {
         // Create the client.
         GameServerDeploymentsServiceClient client = await GameServerDeploymentsServiceClient.CreateAsync();
-
-        GameServerConfigOverride configOverride = new GameServerConfigOverride
-        {
-            ConfigVersion = configId,
-            RealmsSelector = new RealmSelector()
-        };
-        configOverride.RealmsSelector.Realms.Add(RealmName.FormatProjectLocationRealm(projectId, realmRegionId, realmId));
 
         GameServerDeploymentRollout rollout = new GameServerDeploymentRollout
         {
             Name = GameServerDeploymentName.FormatProjectLocationDeployment(projectId, "global", deploymentId)
         };
-        rollout.GameServerConfigOverrides.Add(configOverride);
 
         UpdateGameServerDeploymentRolloutRequest request = new UpdateGameServerDeploymentRolloutRequest
         {
@@ -57,4 +48,4 @@ public class UpdateRolloutOverrideConfigSample
         return completedResponse.Result;
     }
 }
-// [END cloud_game_servers_deployment_rollout_override]
+// [END cloud_game_servers_deployment_rollout_remove_override]

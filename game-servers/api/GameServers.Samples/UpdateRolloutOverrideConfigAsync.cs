@@ -14,32 +14,38 @@
  * limitations under the License.
  */
 
-// [START cloud_game_servers_deployment_rollout_default]
+// [START cloud_game_servers_deployment_rollout_override]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System.Threading.Tasks;
 
-public class UpdateRolloutDefaultConfigSample
+public class UpdateRolloutOverrideConfigSample
 {
-    public async Task<GameServerDeployment> UpdateRolloutDefaultConfig(
-        string projectId, string deploymentId, string configId)
+    public async Task<GameServerDeployment> UpdateRolloutOverrideConfigAsync(
+        string projectId, string deploymentId, string configId, string realmRegionId, string realmId)
     {
         // Create the client.
         GameServerDeploymentsServiceClient client = await GameServerDeploymentsServiceClient.CreateAsync();
 
+        GameServerConfigOverride configOverride = new GameServerConfigOverride
+        {
+            ConfigVersion = configId,
+            RealmsSelector = new RealmSelector()
+        };
+        configOverride.RealmsSelector.Realms.Add(RealmName.FormatProjectLocationRealm(projectId, realmRegionId, realmId));
+
         GameServerDeploymentRollout rollout = new GameServerDeploymentRollout
         {
-            Name = GameServerDeploymentName.FormatProjectLocationDeployment(projectId, "global", deploymentId),
-            DefaultGameServerConfig = configId
+            Name = GameServerDeploymentName.FormatProjectLocationDeployment(projectId, "global", deploymentId)
         };
+        rollout.GameServerConfigOverrides.Add(configOverride);
 
         UpdateGameServerDeploymentRolloutRequest request = new UpdateGameServerDeploymentRolloutRequest
         {
             Rollout = rollout,
-            UpdateMask = new FieldMask { Paths = { "default_game_server_config" } }
+            UpdateMask = new FieldMask { Paths = { "game_server_config_overrides" } }
         };
 
         // Make the request.
@@ -50,4 +56,4 @@ public class UpdateRolloutDefaultConfigSample
         return completedResponse.Result;
     }
 }
-// [END cloud_game_servers_deployment_rollout_default]
+// [END cloud_game_servers_deployment_rollout_override]

@@ -14,40 +14,40 @@
  * limitations under the License.
  */
 
-// [START cloud_game_servers_deployment_rollout_remove_default]
+// [START cloud_game_servers_deployment_update]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System.Threading.Tasks;
 
-public class UpdateRolloutRemoveDefaultConfigSample
+public class UpdateDeploymentSample
 {
-    public async Task<GameServerDeployment> UpdateRolloutRemoveDefaultConfig(
+    public async Task<GameServerDeployment> UpdateDeploymentAsync(
         string projectId, string deploymentId)
     {
         // Create the client.
         GameServerDeploymentsServiceClient client = await GameServerDeploymentsServiceClient.CreateAsync();
 
-        GameServerDeploymentRollout rollout = new GameServerDeploymentRollout
+        GameServerDeployment deployment = new GameServerDeployment
         {
-            Name = GameServerDeploymentName.FormatProjectLocationDeployment(projectId, "global", deploymentId),
-            DefaultGameServerConfig = ""
+            GameServerDeploymentName = GameServerDeploymentName.FromProjectLocationDeployment(projectId, "global", deploymentId)
         };
+        deployment.Labels.Add("label-key-1", "label-value-1");
+        deployment.Labels.Add("label-key-2", "label-value-2");
 
-        UpdateGameServerDeploymentRolloutRequest request = new UpdateGameServerDeploymentRolloutRequest
+        UpdateGameServerDeploymentRequest request = new UpdateGameServerDeploymentRequest
         {
-            Rollout = rollout,
-            UpdateMask = new FieldMask { Paths = { "default_game_server_config" } }
+            GameServerDeployment = deployment,
+            UpdateMask = new FieldMask { Paths = { "labels" } }
         };
 
         // Make the request.
-        Operation<GameServerDeployment, OperationMetadata> response = await client.UpdateGameServerDeploymentRolloutAsync(request);
+        Operation<GameServerDeployment, OperationMetadata> response = await client.UpdateGameServerDeploymentAsync(request);
         Operation<GameServerDeployment, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
 
-        // Retrieve the operation result.
+        // Retrieve the operation result. This result will NOT contain the updated labels.
         return completedResponse.Result;
     }
 }
-// [END cloud_game_servers_deployment_rollout_remove_default]
+// [END cloud_game_servers_deployment_update]

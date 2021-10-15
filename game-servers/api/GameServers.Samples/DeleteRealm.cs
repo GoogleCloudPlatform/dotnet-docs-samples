@@ -16,7 +16,6 @@
 
 // [START cloud_game_servers_realm_delete]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;

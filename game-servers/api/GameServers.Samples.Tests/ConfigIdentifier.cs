@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-public class ConfigIdentifierUtil
+public class ConfigIdentifier
 {
     public string ConfigId { get; }
     public string DeploymentId { get; }
-    public ConfigIdentifierUtil(string deploymentId, string configId)
+    public ConfigIdentifier(string deploymentId, string configId)
     {
         DeploymentId = deploymentId;
         ConfigId = configId;

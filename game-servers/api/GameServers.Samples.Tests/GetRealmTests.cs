@@ -33,12 +33,12 @@ namespace GameServers.Samples.Tests
             _fixture = fixture;
             _createSample = new CreateRealmSample();
             _getSample = new GetRealmSample();
-            _realmId = $"test-realm-{_fixture.RandomId()}";
+            _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            await _createSample.CreateRealm(
+            await _createSample.CreateRealmAsync(
                     _fixture.ProjectId, _fixture.RegionId,
                     _realmId);
             _fixture.RealmIds.Add(_realmId);

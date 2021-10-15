@@ -14,39 +14,40 @@
  * limitations under the License.
  */
 
-// [START cloud_game_servers_deployment_rollout_remove_override]
+// [START cloud_game_servers_deployment_create]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Gaming.V1;
 using Google.LongRunning;
-using Google.Protobuf.WellKnownTypes;
 using System.Threading.Tasks;
 
-public class UpdateRolloutRemoveOverrideConfigSample
+public class CreateDeploymentSample
 {
-    public async Task<GameServerDeployment> UpdateRolloutRemoveOverrideConfig(
+    public async Task<GameServerDeployment> CreateDeploymentAsync(
         string projectId, string deploymentId)
     {
         // Create the client.
         GameServerDeploymentsServiceClient client = await GameServerDeploymentsServiceClient.CreateAsync();
 
-        GameServerDeploymentRollout rollout = new GameServerDeploymentRollout
+        GameServerDeployment deployment = new GameServerDeployment()
         {
-            Name = GameServerDeploymentName.FormatProjectLocationDeployment(projectId, "global", deploymentId)
+            GameServerDeploymentName = GameServerDeploymentName.FromProjectLocationDeployment(projectId, "global", deploymentId)
         };
-
-        UpdateGameServerDeploymentRolloutRequest request = new UpdateGameServerDeploymentRolloutRequest
+        CreateGameServerDeploymentRequest request = new CreateGameServerDeploymentRequest
         {
-            Rollout = rollout,
-            UpdateMask = new FieldMask { Paths = { "game_server_config_overrides" } }
+            DeploymentId = deploymentId,
+            ParentAsLocationName = LocationName.FromProjectLocation(projectId, "global"),
+            GameServerDeployment = deployment
         };
 
         // Make the request.
-        Operation<GameServerDeployment, OperationMetadata> response = await client.UpdateGameServerDeploymentRolloutAsync(request);
+        Operation<GameServerDeployment, OperationMetadata> response = await client.CreateGameServerDeploymentAsync(request);
+
+        // Poll until the returned long-running operation is complete.
         Operation<GameServerDeployment, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
 
         // Retrieve the operation result.
         return completedResponse.Result;
     }
 }
-// [END cloud_game_servers_deployment_rollout_remove_override]
+// [END cloud_game_servers_deployment_create]
