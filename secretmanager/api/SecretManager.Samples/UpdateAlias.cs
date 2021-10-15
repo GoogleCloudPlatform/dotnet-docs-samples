@@ -26,12 +26,12 @@ public class UpdateAliasSample
         // Create the client.
         SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
-        // Build the secret with updated fields.
+        // map 'my-alias' to secret version 1
         Secret secret = new Secret
         {
             SecretName = new SecretName(projectId, secretId),
         };
-        secret.VersionAliases["alias"] = 1;
+        secret.VersionAliases["my-alias"] = 1;
 
         // Build the field mask.
         FieldMask fieldMask = FieldMask.FromString("version_aliases");
@@ -41,4 +41,4 @@ public class UpdateAliasSample
         return updatedSecret;
     }
 }
-// [END secretmanager_update_secret]
+// [END secretmanager_update_alias]
