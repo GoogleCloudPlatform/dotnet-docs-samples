@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Compute.V1" Version="1.0.0-beta02" />
+    <PackageReference Include="Google.Cloud.Compute.V1" Version="1.0.0-beta03" />
   </ItemGroup>
 
 </Project>

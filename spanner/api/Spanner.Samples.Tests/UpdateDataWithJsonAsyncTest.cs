@@ -36,7 +36,8 @@ public class UpdateDataWithJsonAsyncTest
             await addColumnSample.AddJsonColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
             var updateJsonSample = new UpdateDataWithJsonAsyncSample();
-            await updateJsonSample.UpdateDataWithJsonAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            await _spannerFixture.Retryable.Eventually(async () =>
+                await updateJsonSample.UpdateDataWithJsonAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId));
         });
     }
 }

@@ -16,28 +16,28 @@ using System;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class SetPublicAccessPreventionUnspecifiedTest
+public class SetPublicAccessPreventionInheritedTest
 {
     private readonly StorageFixture _fixture;
 
-    public SetPublicAccessPreventionUnspecifiedTest(StorageFixture fixture)
+    public SetPublicAccessPreventionInheritedTest(StorageFixture fixture)
     {
         _fixture = fixture;
     }
 
-    [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1508")]
-    public void TestSetPublicAccessPreventionUnspecified()
+    [Fact]
+    public void TestSetPublicAccessPreventionInherited()
     {
-        SetPublicAccessPreventionUnspecifiedSample setPublicAccessPreventionUnspecifiedSample = new SetPublicAccessPreventionUnspecifiedSample();
+        SetPublicAccessPreventionInheritedSample setPublicAccessPreventionInheritedSample = new SetPublicAccessPreventionInheritedSample();
 
         var bucketName = Guid.NewGuid().ToString();
         // Create bucket
         _fixture.CreateBucket(bucketName);
 
-        // Set public access prevention to unspecified.
-        var updatedBucket = setPublicAccessPreventionUnspecifiedSample.SetPublicAccessPreventionUnspecified(bucketName);
+        // Set public access prevention to inherited.
+        var updatedBucket = setPublicAccessPreventionInheritedSample.SetPublicAccessPreventionInherited(bucketName);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
-        Assert.Equal("unspecified", updatedBucket.IamConfiguration.PublicAccessPrevention);
+        Assert.Equal("inherited", updatedBucket.IamConfiguration.PublicAccessPrevention);
     }
 }
