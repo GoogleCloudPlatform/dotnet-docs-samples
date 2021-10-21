@@ -73,7 +73,8 @@ namespace Compute.Samples.Tests
         // Because of internal policies for firewall creation.
         public RetryRobot FirewallRuleCreated { get; } = new RetryRobot
         {
-            ShouldRetry = (ex) => ex is RpcException rpcEx && rpcEx.StatusCode == StatusCode.NotFound
+            ShouldRetry = (ex) => ex is RpcException rpcEx 
+                && (rpcEx.StatusCode == StatusCode.NotFound || rpcEx.Message.Contains("resourceNotReady"))
         };
 
         public ComputeFixture()
