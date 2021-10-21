@@ -14,6 +14,8 @@
 
 using Google.Cloud.Datastore.V1;
 using Google.Cloud.Storage.V1;
+using GoogleCloudSamples;
+using Grpc.Core;
 using System;
 using Xunit;
 
@@ -24,6 +26,11 @@ public class DatastoreAdminFixture : ICollectionFixture<DatastoreAdminFixture>, 
     public string BucketName { get; } = Guid.NewGuid().ToString();
     public string Namespace { get; } = Guid.NewGuid().ToString();
     public string Kind { get; } = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}-Task";
+
+    public RetryRobot BeforeRpcDeadline { get; } = new RetryRobot
+    {
+        ShouldRetry = ex => ex is RpcException rpcEx && rpcEx.StatusCode == StatusCode.DeadlineExceeded
+    };
 
     public DatastoreAdminFixture()
     {
