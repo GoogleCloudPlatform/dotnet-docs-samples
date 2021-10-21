@@ -45,7 +45,10 @@ public class PublishOrderedMessagesAsyncTest
         Assert.Equal(messages.Count, publishedMessages);
 
         // Pull the Message to confirm it is valid
-        var messagesPulled = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(messagesPulled > 0);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var messagesPulled = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
+            Assert.True(messagesPulled > 0);
+        });
     }
 }

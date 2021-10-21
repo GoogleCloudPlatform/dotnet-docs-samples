@@ -31,7 +31,7 @@ public class PullMessageWithLeaseManagementSample
         var ackIds = new List<string>();
         try
         {
-            PullResponse response = subscriberClient.Pull(subscriptionName, returnImmediately: false, maxMessages: 20);
+            PullResponse response = subscriberClient.Pull(subscriptionName, maxMessages: 20);
 
             // Print out each received message.
             foreach (ReceivedMessage msg in response.ReceivedMessages)

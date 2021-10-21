@@ -42,7 +42,10 @@ public class PublishMessageWithRetrySettingsAsyncTest
             .PublishMessageWithRetrySettingsAsync(_pubsubFixture.ProjectId, topicId, "Hello World!");
 
         // Pull the Message to confirm it is valid
-        var messageCount = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(1, messageCount);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var messageCount = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, messageCount);
+        });
     }
 }
