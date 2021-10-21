@@ -20,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 
@@ -73,8 +74,7 @@ namespace GoogleCloudSamples
                 {
                     return func();
                 }
-                catch (Exception e)
-                when (ShouldCatch(e) && i < MaxTryCount)
+                catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
                 {
                     int jitteredDelayMs;
                     lock(_lock)
@@ -87,6 +87,45 @@ namespace GoogleCloudSamples
             }
         }
 
+        public void Eventually(Action action) =>
+            Eventually(() =>
+            { 
+                action();
+                return 0; 
+            });
+
+
+        public async Task<T> Eventually<T>(Func<Task<T>> asyncFunc)
+        {
+            int delayMs = FirstRetryDelayMs;
+            for (int i = 0; ; ++i)
+            {
+                try
+                {
+                    return await asyncFunc();
+                }
+                catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
+                {
+                    int jitteredDelayMs;
+                    lock (_lock)
+                    {
+                        jitteredDelayMs = delayMs / 2 + (int)(_random.NextDouble() * delayMs);
+                    }
+                    await Task.Delay(jitteredDelayMs);
+                    delayMs *= (int)DelayMultiplier;
+                }
+            }
+        }
+
+        public async Task Eventually(Func<Task> action)
+        {
+            await Eventually(async () =>
+            { 
+                await action();
+                return 0; 
+            });
+        }
+
         private bool ShouldCatch(Exception e)
         {
             if (ShouldRetry != null)
@@ -97,11 +136,6 @@ namespace GoogleCloudSamples
                     return true;
             }
             return false;
-        }
-
-        public void Eventually(Action action)
-        {
-            Eventually(() => { action(); return 0; });
         }
     }
 
