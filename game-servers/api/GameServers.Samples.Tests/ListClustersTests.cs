@@ -15,53 +15,26 @@
  */
 
 using Xunit;
-using System.Threading.Tasks;
 
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class ListClustersTest : IAsyncLifetime
+    public class ListClustersTest
     {
         private GameServersFixture _fixture;
-        private readonly CreateClusterSample _createClusterSample;
-        private readonly CreateRealmSample _createRealmSample;
         private readonly ListClustersSample _listSample;
-
-        private string _clusterId;
-        private string _realmId;
 
         public ListClustersTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createClusterSample = new CreateClusterSample();
-            _createRealmSample = new CreateRealmSample();
             _listSample = new ListClustersSample();
-            _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
-            _clusterId = $"{_fixture.ClusterIdPrefix}-{_fixture.RandomId()}";
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _createRealmSample.CreateRealmAsync(
-                    _fixture.ProjectId, _fixture.RegionId,
-                    _realmId);
-            _fixture.RealmIds.Add(_realmId);
-
-            await _createClusterSample.CreateClusterAsync(
-                _fixture.ProjectId, _fixture.RegionId, _realmId,
-                _clusterId, _fixture.GkeClusterName);
-            _fixture.ClusterIdentifiers.Add(new ClusterIdentifier(_realmId, _clusterId));
-        }
-
-        public async Task DisposeAsync()
-        {
         }
 
         [Fact]
         public void ListsClusters()
         {
-            var clusters = _listSample.ListClusters(_fixture.ProjectId, _fixture.RegionId, _realmId);
-            Assert.Contains(clusters, c => _clusterId == c.GameServerClusterName.ClusterId);
+            var clusters = _listSample.ListClusters(_fixture.ProjectId, _fixture.RegionId, _fixture.TestRealmId);
+            Assert.Contains(clusters, c => _fixture.TestClusterId == c.GameServerClusterName.ClusterId);
         }
     }
 }

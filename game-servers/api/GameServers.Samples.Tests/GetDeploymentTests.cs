@@ -15,45 +15,28 @@
  */
 
 using Xunit;
-using System.Threading.Tasks;
 
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class GetDeploymentTest : IAsyncLifetime
+    public class GetDeploymentTest
     {
         private GameServersFixture _fixture;
-        private readonly CreateDeploymentSample _createSample;
         private readonly GetDeploymentSample _getSample;
-
-        private string _deploymentId;
 
         public GetDeploymentTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateDeploymentSample();
             _getSample = new GetDeploymentSample();
-            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _createSample.CreateDeploymentAsync(
-                    _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(_deploymentId);
-        }
-
-        public async Task DisposeAsync()
-        {
         }
 
         [Fact]
         public void GetsDeployment()
         {
-            var result = _getSample.GetDeployment(_fixture.ProjectId, _deploymentId);
+            var result = _getSample.GetDeployment(_fixture.ProjectId, _fixture.TestDeploymentId);
             Assert.Equal(_fixture.ProjectId, result.GameServerDeploymentName.ProjectId);
             Assert.Equal(_fixture.RegionId, result.GameServerDeploymentName.LocationId);
-            Assert.Equal(_deploymentId, result.GameServerDeploymentName.DeploymentId);
+            Assert.Equal(_fixture.TestDeploymentId, result.GameServerDeploymentName.DeploymentId);
         }
     }
 }

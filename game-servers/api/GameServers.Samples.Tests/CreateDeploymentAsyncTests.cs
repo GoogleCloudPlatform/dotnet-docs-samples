@@ -24,7 +24,6 @@ namespace GameServers.Samples.Tests
     {
         private GameServersFixture _fixture;
         private readonly CreateDeploymentSample _createSample;
-
         private string _deploymentId;
 
         public CreateDeploymentAsyncTest(GameServersFixture fixture)

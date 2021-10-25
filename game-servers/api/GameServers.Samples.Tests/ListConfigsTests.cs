@@ -15,51 +15,26 @@
  */
 
 using Xunit;
-using System.Threading.Tasks;
 
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class ListConfigsTest : IAsyncLifetime
+    public class ListConfigsTest
     {
         private GameServersFixture _fixture;
-        private readonly CreateConfigSample _createConfigSample;
-        private readonly CreateDeploymentSample _createDeploymentSample;
         private readonly ListConfigsSample _listSample;
-        private string _configId;
-        private string _deploymentId;
 
         public ListConfigsTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createConfigSample = new CreateConfigSample();
-            _createDeploymentSample = new CreateDeploymentSample();
             _listSample = new ListConfigsSample();
-            _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
-            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _createDeploymentSample.CreateDeploymentAsync(
-                    _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(_deploymentId);
-
-            await _createConfigSample.CreateConfigAsync(
-                _fixture.ProjectId, _fixture.RegionId, _deploymentId,
-                _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_deploymentId, _configId));
-        }
-
-        public async Task DisposeAsync()
-        {
         }
 
         [Fact]
         public void ListsConfigs()
         {
-            var configs = _listSample.ListConfigs(_fixture.ProjectId, _fixture.RegionId, _deploymentId);
-            Assert.Contains(configs, c => _configId == c.GameServerConfigName.ConfigId);
+            var configs = _listSample.ListConfigs(_fixture.ProjectId, _fixture.RegionId, _fixture.TestDeploymentId);
+            Assert.Contains(configs, c => _fixture.TestConfigId == c.GameServerConfigName.ConfigId);
         }
     }
 }

@@ -25,7 +25,6 @@ namespace GameServers.Samples.Tests
         private GameServersFixture _fixture;
         private readonly CreateDeploymentSample _createSample;
         private readonly DeleteDeploymentSample _deleteSample;
-
         private string _deploymentId;
 
         public DeleteDeploymentTest(GameServersFixture fixture)

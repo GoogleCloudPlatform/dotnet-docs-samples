@@ -20,41 +20,25 @@ using System.Threading.Tasks;
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class UpdateDeploymentAsyncTest : IAsyncLifetime
+    public class UpdateDeploymentAsyncTest
     {
         private GameServersFixture _fixture;
-        private readonly CreateDeploymentSample _createSample;
         private readonly GetDeploymentSample _getSample;
         private readonly UpdateDeploymentSample _updateSample;
-
-        private string _deploymentId;
 
         public UpdateDeploymentAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateDeploymentSample();
             _getSample = new GetDeploymentSample();
             _updateSample = new UpdateDeploymentSample();
-            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _createSample.CreateDeploymentAsync(
-                    _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(_deploymentId);
-        }
-
-        public async Task DisposeAsync()
-        {
         }
 
         [Fact]
         public async Task UpdatesDeploymentAsync()
         {
-            await _updateSample.UpdateDeploymentAsync(_fixture.ProjectId, _deploymentId);
+            await _updateSample.UpdateDeploymentAsync(_fixture.ProjectId, _fixture.TestDeploymentId);
 
-            var deployment = _getSample.GetDeployment(_fixture.ProjectId, _deploymentId);
+            var deployment = _getSample.GetDeployment(_fixture.ProjectId, _fixture.TestDeploymentId);
             string value1;
             string value2;
             Assert.True(deployment.Labels.TryGetValue(_fixture.Label1Key, out value1));

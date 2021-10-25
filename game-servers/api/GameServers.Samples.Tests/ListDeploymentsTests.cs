@@ -15,43 +15,26 @@
  */
 
 using Xunit;
-using System.Threading.Tasks;
 
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class ListDeploymentsTest : IAsyncLifetime
+    public class ListDeploymentsTest
     {
         private GameServersFixture _fixture;
-        private readonly CreateDeploymentSample _createSample;
         private readonly ListDeploymentsSample _listSample;
-
-        private string _deploymentId;
 
         public ListDeploymentsTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateDeploymentSample();
             _listSample = new ListDeploymentsSample();
-            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _createSample.CreateDeploymentAsync(
-                    _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(_deploymentId);
-        }
-
-        public async Task DisposeAsync()
-        {
         }
 
         [Fact]
         public void ListsDeployments()
         {
             var deployments = _listSample.ListDeployments(_fixture.ProjectId);
-            Assert.Contains(deployments, d => _deploymentId == d.GameServerDeploymentName.DeploymentId);
+            Assert.Contains(deployments, d => _fixture.TestDeploymentId == d.GameServerDeploymentName.DeploymentId);
         }
     }
 }

@@ -25,7 +25,6 @@ namespace GameServers.Samples.Tests
         private GameServersFixture _fixture;
         private readonly CreateRealmSample _createSample;
         private readonly DeleteRealmSample _deleteSample;
-
         private string _realmId;
 
         public DeleteRealmTest(GameServersFixture fixture)

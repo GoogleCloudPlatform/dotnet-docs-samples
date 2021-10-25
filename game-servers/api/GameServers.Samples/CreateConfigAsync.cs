@@ -29,12 +29,6 @@ public class CreateConfigSample
         // Create the client.
         GameServerConfigsServiceClient client = await GameServerConfigsServiceClient.CreateAsync();
 
-        FleetConfig fleetConfig = new FleetConfig
-        {
-            Name = "my-fleet-spec",
-            FleetSpec = "{\"replicas\":10,\"scheduling\":\"Packed\",\"strategy\":{\"type\":\"RollingUpdate\",\"rollingUpdate\":{\"maxSurge\":\"25%\",\"maxUnavailable\":\"25%\"}},\"template\":{\"metadata\":{\"labels\":{\"gameName\":\"udp-server\"}},\"spec\":{\"ports\":[{\"name\":\"default\",\"portPolicy\":\"Dynamic\",\"containerPort\":2156,\"protocol\":\"TCP\"}],\"health\":{\"initialDelaySeconds\":30,\"periodSeconds\":60},\"sdkServer\":{\"logLevel\":\"Info\",\"grpcPort\":9357,\"httpPort\":9358},\"template\":{\"spec\":{\"containers\":[{\"name\":\"dedicated\",\"image\":\"gcr.io/agones-images/udp-server:0.17\",\"imagePullPolicy\":\"Always\",\"resources\":{\"requests\":{\"memory\":\"200Mi\",\"cpu\":\"500m\"},\"limits\":{\"memory\":\"200Mi\",\"cpu\":\"500m\"}}}]}}}}}"
-        };
-
         GameServerConfig config = new GameServerConfig
         {
             GameServerConfigName = GameServerConfigName.FromProjectLocationDeploymentConfig(projectId, regionId, deploymentId, configId),

@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-using Google;
-using GoogleCloudSamples;
 using Google.Cloud.Gaming.V1;
-using Google.Protobuf.Collections;
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
+
 using Xunit;
-using Xunit.Sdk;
 
 [CollectionDefinition(nameof(GameServersFixture))]
-public class GameServersFixture : IDisposable, ICollectionFixture<GameServersFixture>
+public class GameServersFixture : IDisposable, IAsyncLifetime, ICollectionFixture<GameServersFixture>
 {
     public string ProjectId { get; }
     public string RegionId { get; } = "global";
@@ -46,6 +41,20 @@ public class GameServersFixture : IDisposable, ICollectionFixture<GameServersFix
     public List<string> DeploymentIds { get; } = new List<string>();
     public List<string> RealmIds { get; } = new List<string>();
 
+    public Realm TestRealm { get; set; }
+    public string TestRealmId { get; set; }
+    public GameServerDeployment TestDeployment { get; set; }
+    public string TestDeploymentId { get; set; }
+    public GameServerCluster TestCluster { get; set; }
+    public string TestClusterId { get; set; }
+    public GameServerConfig TestConfig { get; set; }
+    public string TestConfigId { get; set; }
+
+    private readonly CreateClusterSample _createClusterSample = new CreateClusterSample();
+    private readonly CreateConfigSample _createConfigSample = new CreateConfigSample();
+    private readonly CreateRealmSample _createRealmSample = new CreateRealmSample();
+    private readonly CreateDeploymentSample _createDeploymentSample = new CreateDeploymentSample();
+
     private readonly DeleteClusterSample _deleteClusterSample = new DeleteClusterSample();
     private readonly DeleteConfigSample _deleteConfigSample = new DeleteConfigSample();
     private readonly DeleteRealmSample _deleteRealmSample = new DeleteRealmSample();
@@ -63,6 +72,30 @@ public class GameServersFixture : IDisposable, ICollectionFixture<GameServersFix
         {
             GkeClusterName = $"projects/{ProjectId}/locations/us-central1-a/clusters/standard-cluster-1";
         }
+    }
+
+    public async Task InitializeAsync()
+    {
+        TestRealmId = $"{RealmIdPrefix}-{RandomId()}";
+        TestRealm = await _createRealmSample.CreateRealmAsync(ProjectId, RegionId, TestRealmId);
+        RealmIds.Add(TestRealmId);
+
+        TestDeploymentId = $"{DeploymentIdPrefix}-{RandomId()}";
+        TestDeployment = await _createDeploymentSample.CreateDeploymentAsync(ProjectId, TestDeploymentId);
+        DeploymentIds.Add(TestDeploymentId);
+
+        TestClusterId = $"{ClusterIdPrefix}-{RandomId()}";
+        TestCluster = await _createClusterSample.CreateClusterAsync(ProjectId, RegionId, TestRealmId,
+            TestClusterId, GkeClusterName);
+        ClusterIdentifiers.Add(new ClusterIdentifier(TestRealmId, TestClusterId));
+
+        TestConfigId = $"{ConfigIdPrefix}-{RandomId()}";
+        TestConfig = await _createConfigSample.CreateConfigAsync(ProjectId, RegionId, TestDeploymentId, TestConfigId);
+        ConfigIdentifiers.Add(new ConfigIdentifier(TestDeploymentId, TestConfigId));
+    }
+
+    public async Task DisposeAsync()
+    {
     }
 
     public void Dispose()

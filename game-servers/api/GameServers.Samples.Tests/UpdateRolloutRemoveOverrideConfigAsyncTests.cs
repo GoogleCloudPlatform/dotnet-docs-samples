@@ -23,48 +23,21 @@ namespace GameServers.Samples.Tests
     public class UpdateRolloutRemoveOverrideConfigAsyncTest : IAsyncLifetime
     {
         private GameServersFixture _fixture;
-        private readonly CreateDeploymentSample _createDeploymentSample;
-        private readonly CreateConfigSample _createConfigSample;
-        private readonly CreateRealmSample _createRealmSample;
         private readonly GetRolloutSample _getSample;
         private readonly UpdateRolloutOverrideConfigSample _updateAddOverrideSample;
         private readonly UpdateRolloutRemoveOverrideConfigSample _updateRemoveOverrideSample;
-        private string _configId;
-        private string _deploymentId;
-        private string _realmId;
 
         public UpdateRolloutRemoveOverrideConfigAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createDeploymentSample = new CreateDeploymentSample();
-            _createConfigSample = new CreateConfigSample();
-            _createRealmSample = new CreateRealmSample();
             _getSample = new GetRolloutSample();
             _updateAddOverrideSample = new UpdateRolloutOverrideConfigSample();
             _updateRemoveOverrideSample = new UpdateRolloutRemoveOverrideConfigSample();
-            _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
-            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
-            _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            // Tests a global realm.
-            await _createRealmSample.CreateRealmAsync(
-                    _fixture.ProjectId, _fixture.RegionId,
-                    _realmId);
-            _fixture.RealmIds.Add(_realmId);
-
-            await _createDeploymentSample.CreateDeploymentAsync(
-                    _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(_deploymentId);
-
-            await _createConfigSample.CreateConfigAsync(
-                _fixture.ProjectId, _fixture.RegionId, _deploymentId,
-                _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_deploymentId, _configId));
-
-            await _updateAddOverrideSample.UpdateRolloutOverrideConfigAsync(_fixture.ProjectId, _deploymentId, _configId, _fixture.RegionId, _realmId);
+            await _updateAddOverrideSample.UpdateRolloutOverrideConfigAsync(_fixture.ProjectId, _fixture.TestDeploymentId, _fixture.TestConfigId, _fixture.RegionId, _fixture.TestRealmId);
         }
 
         public async Task DisposeAsync()
@@ -74,9 +47,9 @@ namespace GameServers.Samples.Tests
         [Fact]
         public async Task UpdateRolloutRemoveOverrideConfigAsync()
         {
-            await _updateRemoveOverrideSample.UpdateRolloutRemoveOverrideConfigAsync(_fixture.ProjectId, _deploymentId);
+            await _updateRemoveOverrideSample.UpdateRolloutRemoveOverrideConfigAsync(_fixture.ProjectId, _fixture.TestDeploymentId);
 
-            var rollout = _getSample.GetRollout(_fixture.ProjectId, _deploymentId);
+            var rollout = _getSample.GetRollout(_fixture.ProjectId, _fixture.TestDeploymentId);
             Assert.Equal(0, rollout.GameServerConfigOverrides.Count);
         }
     }

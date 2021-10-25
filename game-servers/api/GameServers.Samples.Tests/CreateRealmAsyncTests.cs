@@ -24,7 +24,6 @@ namespace GameServers.Samples.Tests
     {
         private GameServersFixture _fixture;
         private readonly CreateRealmSample _createSample;
-
         private string _realmId;
 
         public CreateRealmAsyncTest(GameServersFixture fixture)

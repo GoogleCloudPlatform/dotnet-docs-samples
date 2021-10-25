@@ -20,51 +20,25 @@ using System.Threading.Tasks;
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class UpdateClusterAsyncTest : IAsyncLifetime
+    public class UpdateClusterAsyncTest
     {
         private GameServersFixture _fixture;
-        private readonly CreateClusterSample _createClusterSample;
-        private readonly CreateRealmSample _createRealmSample;
         private readonly GetClusterSample _getSample;
         private readonly UpdateClusterSample _updateSample;
-
-        private string _clusterId;
-        private string _realmId;
 
         public UpdateClusterAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createClusterSample = new CreateClusterSample();
-            _createRealmSample = new CreateRealmSample();
             _getSample = new GetClusterSample();
             _updateSample = new UpdateClusterSample();
-            _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
-            _clusterId = $"{_fixture.ClusterIdPrefix}-{_fixture.RandomId()}";
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _createRealmSample.CreateRealmAsync(
-                    _fixture.ProjectId, _fixture.RegionId,
-                    _realmId);
-            _fixture.RealmIds.Add(_realmId);
-
-            await _createClusterSample.CreateClusterAsync(
-                _fixture.ProjectId, _fixture.RegionId, _realmId,
-                _clusterId, _fixture.GkeClusterName);
-            _fixture.ClusterIdentifiers.Add(new ClusterIdentifier(_realmId, _clusterId));
-        }
-
-        public async Task DisposeAsync()
-        {
         }
 
         [Fact]
         public async Task UpdatesClusterAsync()
         {
-            await _updateSample.UpdateClusterAsync(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
+            await _updateSample.UpdateClusterAsync(_fixture.ProjectId, _fixture.RegionId, _fixture.TestRealmId, _fixture.TestClusterId);
 
-            var cluster = _getSample.GetCluster(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
+            var cluster = _getSample.GetCluster(_fixture.ProjectId, _fixture.RegionId, _fixture.TestRealmId, _fixture.TestClusterId);
             string value1;
             string value2;
             Assert.True(cluster.Labels.TryGetValue(_fixture.Label1Key, out value1));

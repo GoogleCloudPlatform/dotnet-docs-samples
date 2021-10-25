@@ -23,50 +23,34 @@ namespace GameServers.Samples.Tests
     public class UpdateRolloutDefaultConfigAsyncTest : IAsyncLifetime
     {
         private GameServersFixture _fixture;
-        private readonly CreateDeploymentSample _createDeploymentSample;
-        private readonly CreateConfigSample _createConfigSample;
         private readonly GetRolloutSample _getSample;
         private readonly UpdateRolloutDefaultConfigSample _updateSample;
         private readonly UpdateRolloutRemoveDefaultConfigSample _updateRemoveSample;
-        private string _configId;
-        private string _deploymentId;
 
         public UpdateRolloutDefaultConfigAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createDeploymentSample = new CreateDeploymentSample();
-            _createConfigSample = new CreateConfigSample();
             _getSample = new GetRolloutSample();
             _updateSample = new UpdateRolloutDefaultConfigSample();
             _updateRemoveSample = new UpdateRolloutRemoveDefaultConfigSample();
-            _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
-            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            await _createDeploymentSample.CreateDeploymentAsync(
-                    _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(_deploymentId);
-
-            await _createConfigSample.CreateConfigAsync(
-                _fixture.ProjectId, _fixture.RegionId, _deploymentId,
-                _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_deploymentId, _configId));
         }
 
         public async Task DisposeAsync()
         {
-            await _updateRemoveSample.UpdateRolloutRemoveDefaultConfigAsync(_fixture.ProjectId, _deploymentId);
+            await _updateRemoveSample.UpdateRolloutRemoveDefaultConfigAsync(_fixture.ProjectId, _fixture.TestDeploymentId);
         }
 
         [Fact]
         public async Task UpdatesRolloutDefaultConfigAsync()
         {
-            await _updateSample.UpdateRolloutDefaultConfigAsync(_fixture.ProjectId, _deploymentId, _configId);
+            await _updateSample.UpdateRolloutDefaultConfigAsync(_fixture.ProjectId, _fixture.TestDeploymentId, _fixture.TestConfigId);
 
-            var rollout = _getSample.GetRollout(_fixture.ProjectId, _deploymentId);
-            var fullConfigId = $"projects/{_fixture.ProjectId}/locations/global/gameServerDeployments/{_deploymentId}/configs/{_configId}";
+            var rollout = _getSample.GetRollout(_fixture.ProjectId, _fixture.TestDeploymentId);
+            var fullConfigId = $"projects/{_fixture.ProjectId}/locations/global/gameServerDeployments/{_fixture.TestDeploymentId}/configs/{_fixture.TestConfigId}";
             Assert.Equal(fullConfigId, rollout.DefaultGameServerConfig);
         }
     }

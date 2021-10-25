@@ -23,38 +23,21 @@ namespace GameServers.Samples.Tests
     public class UpdateRolloutRemoveDefaultConfigAsyncTest : IAsyncLifetime
     {
         private GameServersFixture _fixture;
-        private readonly CreateDeploymentSample _createDeploymentSample;
-        private readonly CreateConfigSample _createConfigSample;
         private readonly GetRolloutSample _getSample;
         private readonly UpdateRolloutDefaultConfigSample _updateSample;
         private readonly UpdateRolloutRemoveDefaultConfigSample _updateRemoveSample;
-        private string _configId;
-        private string _deploymentId;
 
         public UpdateRolloutRemoveDefaultConfigAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createDeploymentSample = new CreateDeploymentSample();
-            _createConfigSample = new CreateConfigSample();
             _getSample = new GetRolloutSample();
             _updateSample = new UpdateRolloutDefaultConfigSample();
             _updateRemoveSample = new UpdateRolloutRemoveDefaultConfigSample();
-            _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
-            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
         }
 
         public async Task InitializeAsync()
         {
-            await _createDeploymentSample.CreateDeploymentAsync(
-                    _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(_deploymentId);
-
-            await _createConfigSample.CreateConfigAsync(
-                _fixture.ProjectId, _fixture.RegionId, _deploymentId,
-                _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_deploymentId, _configId));
-
-            await _updateSample.UpdateRolloutDefaultConfigAsync(_fixture.ProjectId, _deploymentId, _configId);
+            await _updateSample.UpdateRolloutDefaultConfigAsync(_fixture.ProjectId, _fixture.TestDeploymentId, _fixture.TestConfigId);
         }
 
         public async Task DisposeAsync()
@@ -64,9 +47,9 @@ namespace GameServers.Samples.Tests
         [Fact]
         public async Task UpdatesRolloutRemoveDefaultConfigAsync()
         {
-            await _updateRemoveSample.UpdateRolloutRemoveDefaultConfigAsync(_fixture.ProjectId, _deploymentId);
+            await _updateRemoveSample.UpdateRolloutRemoveDefaultConfigAsync(_fixture.ProjectId, _fixture.TestDeploymentId);
 
-            var rollout = _getSample.GetRollout(_fixture.ProjectId, _deploymentId);
+            var rollout = _getSample.GetRollout(_fixture.ProjectId, _fixture.TestDeploymentId);
             Assert.Equal("", rollout.DefaultGameServerConfig);
         }
     }

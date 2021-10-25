@@ -20,45 +20,30 @@ using System.Threading.Tasks;
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class CreateConfigAsyncTest : IAsyncLifetime
+    public class CreateConfigAsyncTest
     {
         private GameServersFixture _fixture;
         private readonly CreateConfigSample _createConfigSample;
-        private readonly CreateDeploymentSample _createDeploymentSample;
         private string _configId;
-        private string _deploymentId;
 
         public CreateConfigAsyncTest(GameServersFixture fixture)
         {
             _fixture = fixture;
             _createConfigSample = new CreateConfigSample();
-            _createDeploymentSample = new CreateDeploymentSample();
             _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
-            _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _createDeploymentSample.CreateDeploymentAsync(
-                    _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(_deploymentId);
-        }
-
-        public async Task DisposeAsync()
-        {
         }
 
         [Fact]
         public async Task CreatesConfigAsync()
         {
             var result = await _createConfigSample.CreateConfigAsync(
-                _fixture.ProjectId, _fixture.RegionId, _deploymentId,
+                _fixture.ProjectId, _fixture.RegionId, _fixture.TestDeploymentId,
                 _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_deploymentId, _configId));
+            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_fixture.TestDeploymentId, _configId));
 
             Assert.Equal(_fixture.ProjectId, result.GameServerConfigName.ProjectId);
             Assert.Equal(_fixture.RegionId, result.GameServerConfigName.LocationId);
-            Assert.Equal(_deploymentId, result.GameServerConfigName.DeploymentId);
+            Assert.Equal(_fixture.TestDeploymentId, result.GameServerConfigName.DeploymentId);
             Assert.Equal(_configId, result.GameServerConfigName.ConfigId);
         }
     }

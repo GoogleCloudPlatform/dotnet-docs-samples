@@ -15,46 +15,28 @@
  */
 
 using Xunit;
-using System.Threading.Tasks;
 
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class GetRealmTest : IAsyncLifetime
+    public class GetRealmTest
     {
         private GameServersFixture _fixture;
-        private readonly CreateRealmSample _createSample;
         private readonly GetRealmSample _getSample;
-
-        private string _realmId;
 
         public GetRealmTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateRealmSample();
             _getSample = new GetRealmSample();
-            _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _createSample.CreateRealmAsync(
-                    _fixture.ProjectId, _fixture.RegionId,
-                    _realmId);
-            _fixture.RealmIds.Add(_realmId);
-        }
-
-        public async Task DisposeAsync()
-        {
         }
 
         [Fact]
         public void GetsRealm()
         {
-            var result = _getSample.GetRealm(_fixture.ProjectId, _fixture.RegionId, _realmId);
+            var result = _getSample.GetRealm(_fixture.ProjectId, _fixture.RegionId, _fixture.TestRealmId);
             Assert.Equal(_fixture.ProjectId, result.RealmName.ProjectId);
             Assert.Equal(_fixture.RegionId, result.RealmName.LocationId);
-            Assert.Equal(_realmId, result.RealmName.RealmId);
+            Assert.Equal(_fixture.TestRealmId, result.RealmName.RealmId);
         }
     }
 }

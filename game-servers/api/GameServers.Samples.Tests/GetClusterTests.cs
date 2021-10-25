@@ -15,55 +15,28 @@
  */
 
 using Xunit;
-using System.Threading.Tasks;
 
 namespace GameServers.Samples.Tests
 {
     [Collection(nameof(GameServersFixture))]
-    public class GetClusterTest : IAsyncLifetime
+    public class GetClusterTest
     {
         private GameServersFixture _fixture;
-        private readonly CreateClusterSample _createClusterSample;
-        private readonly CreateRealmSample _createRealmSample;
         private readonly GetClusterSample _getSample;
-
-        private string _clusterId;
-        private string _realmId;
 
         public GetClusterTest(GameServersFixture fixture)
         {
             _fixture = fixture;
-            _createClusterSample = new CreateClusterSample();
-            _createRealmSample = new CreateRealmSample();
             _getSample = new GetClusterSample();
-            _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
-            _clusterId = $"{_fixture.ClusterIdPrefix}-{_fixture.RandomId()}";
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _createRealmSample.CreateRealmAsync(
-                    _fixture.ProjectId, _fixture.RegionId,
-                    _realmId);
-            _fixture.RealmIds.Add(_realmId);
-
-            await _createClusterSample.CreateClusterAsync(
-                _fixture.ProjectId, _fixture.RegionId, _realmId,
-                _clusterId, _fixture.GkeClusterName);
-            _fixture.ClusterIdentifiers.Add(new ClusterIdentifier(_realmId, _clusterId));
-        }
-
-        public async Task DisposeAsync()
-        {
         }
 
         [Fact]
         public void GetsCluster()
         {
-            var result = _getSample.GetCluster(_fixture.ProjectId, _fixture.RegionId, _realmId, _clusterId);
+            var result = _getSample.GetCluster(_fixture.ProjectId, _fixture.RegionId, _fixture.TestRealmId, _fixture.TestClusterId);
             Assert.Equal(_fixture.ProjectId, result.GameServerClusterName.ProjectId);
             Assert.Equal(_fixture.RegionId, result.GameServerClusterName.LocationId);
-            Assert.Equal(_clusterId, result.GameServerClusterName.ClusterId);
+            Assert.Equal(_fixture.TestClusterId, result.GameServerClusterName.ClusterId);
         }
     }
 }
