@@ -20,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 
@@ -73,8 +74,7 @@ namespace GoogleCloudSamples
                 {
                     return func();
                 }
-                catch (Exception e)
-                when (ShouldCatch(e) && i < MaxTryCount)
+                catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
                 {
                     int jitteredDelayMs;
                     lock(_lock)
@@ -87,6 +87,45 @@ namespace GoogleCloudSamples
             }
         }
 
+        public void Eventually(Action action) =>
+            Eventually(() =>
+            { 
+                action();
+                return 0; 
+            });
+
+
+        public async Task<T> Eventually<T>(Func<Task<T>> asyncFunc)
+        {
+            int delayMs = FirstRetryDelayMs;
+            for (int i = 0; ; ++i)
+            {
+                try
+                {
+                    return await asyncFunc();
+                }
+                catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
+                {
+                    int jitteredDelayMs;
+                    lock (_lock)
+                    {
+                        jitteredDelayMs = delayMs / 2 + (int)(_random.NextDouble() * delayMs);
+                    }
+                    await Task.Delay(jitteredDelayMs);
+                    delayMs *= (int)DelayMultiplier;
+                }
+            }
+        }
+
+        public async Task Eventually(Func<Task> action)
+        {
+            await Eventually(async () =>
+            { 
+                await action();
+                return 0; 
+            });
+        }
+
         private bool ShouldCatch(Exception e)
         {
             if (ShouldRetry != null)
@@ -97,11 +136,6 @@ namespace GoogleCloudSamples
                     return true;
             }
             return false;
-        }
-
-        public void Eventually(Action action)
-        {
-            Eventually(() => { action(); return 0; });
         }
     }
 
@@ -135,7 +169,7 @@ namespace GoogleCloudSamples
                 Console.WriteLine(string.Join(" ", arguments));
 
                 TextWriter consoleOut = Console.Out;
-                SafeStringWriter stringOut = new SafeStringWriter();
+                ThreadSafeStringWriter stringOut = new ThreadSafeStringWriter();
                 Console.SetOut(stringOut);
                 try
                 {
@@ -168,7 +202,7 @@ namespace GoogleCloudSamples
 
                 TextWriter consoleOut = Console.Out;
                 TextReader consoleIn = Console.In;
-                SafeStringWriter stringOut = new SafeStringWriter();
+                ThreadSafeStringWriter stringOut = new ThreadSafeStringWriter();
                 Console.SetOut(stringOut);
                 Console.SetIn(new StringReader(stdIn));
                 try
@@ -194,7 +228,7 @@ namespace GoogleCloudSamples
             }
         }
 
-        internal class SafeStringWriter : StringWriter
+        internal class ThreadSafeStringWriter : StringWriter
         {
             private readonly object _lock = new object();
 

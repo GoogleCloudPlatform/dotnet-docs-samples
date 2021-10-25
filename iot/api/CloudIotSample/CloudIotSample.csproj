@@ -5,7 +5,7 @@
     <StartupObject>GoogleCloudSamples.CloudIotSample</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.55.0.2419" />
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.55.0.2468" />
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
   </ItemGroup>
 </Project>

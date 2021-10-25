@@ -30,7 +30,7 @@ namespace Compute.Samples.Tests
         public DeleteFirewallRuleAsyncTest(ComputeFixture fixture) => _fixture = fixture;
 
         [Fact]
-        public async Task DeletesInstance()
+        public async Task DeletesFirewallRule()
         {
             string firewallRuleName = _fixture.GenerateFirewallRuleName();
 
