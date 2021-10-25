@@ -14,30 +14,37 @@
  * limitations under the License.
  */
 
-// [START compute_instances_delete]
+// [START compute_firewall_patch]
 
 using Google.Cloud.Compute.V1;
 using System.Threading.Tasks;
 
-public class DeleteInstanceAsyncSample
+public class PatchFirewallRuleAsyncSample
 {
-    public async Task DeleteInstanceAsync(
+    public async Task PatchFirewallRuleAsync(
         // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
         string projectId = "your-project-id",
-        string zone = "us-central1-a",
-        string machineName = "test-machine")
+        string firewallRuleName = "my-test-firewall-rule",
+        int newPriority = 10)
     {
+        // The patch operation doesn't require the full definition of a Firewall object.
+        // It will only update the values that were set in it,
+        // in this case it will only change the priority.
+        Firewall firewallRule = new Firewall
+        {
+            Priority = newPriority
+        };
 
         // Initialize client that will be used to send requests. This client only needs to be created
         // once, and can be reused for multiple requests.
-        InstancesClient client = await InstancesClient.CreateAsync();
+        FirewallsClient client = await FirewallsClient.CreateAsync();
 
-        // Make the request to delete a VM instance.
-        var instanceDeletion = await client.DeleteAsync(projectId, zone, machineName);
+        // Patch the firewall rule in the specified project.
+        var firewallRulePatching = await client.PatchAsync(projectId, firewallRuleName, firewallRule);
 
         // Wait for the operation to complete using client-side polling.
-        await instanceDeletion.PollUntilCompletedAsync();
+        await firewallRulePatching.PollUntilCompletedAsync();
     }
 }
 
-// [END compute_instances_delete]
+// [END compute_firewall_patch]

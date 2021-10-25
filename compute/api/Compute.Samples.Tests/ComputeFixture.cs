@@ -17,6 +17,7 @@
 using Google.Cloud.Compute.V1;
 using Google.Cloud.Storage.V1;
 using GoogleCloudSamples;
+using Grpc.Core;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -40,6 +41,8 @@ namespace Compute.Samples.Tests
 
         public string NetworkName => "default";
 
+        public string NetworkResourceUri => $"global/networks/{NetworkName}";
+
         public string UsageReportBucketName { get; } = GenerateName("b");
 
         public string UsageReportPrefix => "test-usage";
@@ -48,7 +51,11 @@ namespace Compute.Samples.Tests
 
         private IList<string> MachinesToDelete { get; } = new List<string>();
 
+        private IList<string> FirewallRulesToDelete { get; } = new List<string>();
+
         public InstancesClient InstancesClient { get; } = InstancesClient.Create();
+
+        public FirewallsClient FirewallsClient { get; } = FirewallsClient.Create();
 
         public ProjectsClient ProjectsClient { get; } = ProjectsClient.Create();
 
@@ -60,7 +67,13 @@ namespace Compute.Samples.Tests
             // We wait a little longer than default to let the concurrent test execution
             // finish before reattempting.
             FirstRetryDelayMs = 30_000,
-            MaxTryCount = 10
+            MaxTryCount = 15
+        };
+
+        // Because of internal policies for firewall creation.
+        public RetryRobot FirewallRuleCreated { get; } = new RetryRobot
+        {
+            ShouldRetry = (ex) => ex is RpcException rpcEx && rpcEx.StatusCode == StatusCode.NotFound
         };
 
         public ComputeFixture()
@@ -83,6 +96,14 @@ namespace Compute.Samples.Tests
             return name;
         }
 
+        public string GenerateFirewallRuleName()
+        {
+            string name = GenerateName("fr");
+            // We always add them to the deletion list. We delete on a best effort basis anyway.
+            FirewallRulesToDelete.Add(name);
+            return name;
+        }
+
         private static string GenerateName(string prefix) =>
             $"{prefix}-{DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfff", CultureInfo.InvariantCulture)}";
 
@@ -100,6 +121,12 @@ namespace Compute.Samples.Tests
             {
                 // We don't poll, we delete on a best effort basis.
                 BestEffortCleanup(() => InstancesClient.Delete(ProjectId, Zone, machineName));
+            }
+
+            foreach(var firewallRule in FirewallRulesToDelete)
+            {
+                // We don't poll, we delete on a best effort basis.
+                BestEffortCleanup(() => FirewallsClient.Delete(ProjectId, firewallRule));
             }
 
             BestEffortCleanup(() =>

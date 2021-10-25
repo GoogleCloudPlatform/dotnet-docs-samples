@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-// [START compute_usage_report_disable]
+// [START compute_firewall_delete]
 
 using Google.Cloud.Compute.V1;
 using System.Threading.Tasks;
 
-public class DisableUsageExportBucketAsyncSample
+public class DeleteFirewallRuleAsyncSample
 {
-    public async Task DisableUsageExportBucketAsync(
+    public async Task DeleteFirewallRuleAsync(
         // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
-        string projectId = "your-project-id")
+        string projectId = "your-project-id",
+        string firewallRuleName = "my-test-firewall-rule")
     {
-        // Create a default instance of UsageExportLocation.
-        // Do not set any properties.
-        UsageExportLocation exportLocation = new UsageExportLocation();
 
-        // Initialize the client that will be used to send project-related requests.
-        // You should reuse the same client for multiple requests.
-        ProjectsClient client = await ProjectsClient.CreateAsync();
+        // Initialize client that will be used to send requests. This client only needs to be created
+        // once, and can be reused for multiple requests.
+        FirewallsClient client = await FirewallsClient.CreateAsync();
 
-        // Setting the default instance will disable the usage report export bucket setting.
-        var operation = await client.SetUsageExportBucketAsync(projectId, exportLocation);
+        // Make the request to delete the firewall rule.
+        var firewallRuleDeletion = await client.DeleteAsync(projectId, firewallRuleName);
+
         // Wait for the operation to complete using client-side polling.
-        await operation.PollUntilCompletedAsync();
+        await firewallRuleDeletion.PollUntilCompletedAsync();
     }
 }
 
-// [END compute_usage_report_disable]
+// [END compute_firewall_delete]

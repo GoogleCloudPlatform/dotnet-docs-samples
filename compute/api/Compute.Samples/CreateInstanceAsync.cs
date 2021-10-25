@@ -15,6 +15,7 @@
  */
 
 // [START compute_instances_create]
+// [START compute_instances_operation_check]
 
 using Google.Cloud.Compute.V1;
 using System.Threading.Tasks;
@@ -60,13 +61,14 @@ public class CreateInstanceAsyncSample
         InstancesClient client = await InstancesClient.CreateAsync();
 
         // Insert the instance in the specified project and zone.
-        Operation instanceCreation = await client.InsertAsync(projectId, zone, instance);
+        var instanceCreation = await client.InsertAsync(projectId, zone, instance);
 
         // Wait for the operation to complete using client-side polling.
         // The server-side operation is not affected by polling,
         // and might finish successfully even if polling times out.
-        await instanceCreation.PollUntilCompletedAsync(projectId, zone);
+        await instanceCreation.PollUntilCompletedAsync();
     }
 }
 
+// [END compute_instances_operation_check]
 // [END compute_instances_create]

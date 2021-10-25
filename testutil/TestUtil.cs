@@ -135,7 +135,7 @@ namespace GoogleCloudSamples
                 Console.WriteLine(string.Join(" ", arguments));
 
                 TextWriter consoleOut = Console.Out;
-                StringWriter stringOut = new StringWriter();
+                SafeStringWriter stringOut = new SafeStringWriter();
                 Console.SetOut(stringOut);
                 try
                 {
@@ -168,7 +168,7 @@ namespace GoogleCloudSamples
 
                 TextWriter consoleOut = Console.Out;
                 TextReader consoleIn = Console.In;
-                StringWriter stringOut = new StringWriter();
+                SafeStringWriter stringOut = new SafeStringWriter();
                 Console.SetOut(stringOut);
                 Console.SetIn(new StringReader(stdIn));
                 try
@@ -193,5 +193,43 @@ namespace GoogleCloudSamples
                 }
             }
         }
+
+        internal class SafeStringWriter : StringWriter
+        {
+            private readonly object _lock = new object();
+
+            public override void Write(char value)
+            {
+                lock (_lock)
+                {
+                    base.Write(value);
+                }
+            }
+
+            public override void Write(char[] buffer, int index, int count)
+            {
+                lock (_lock)
+                {
+                    base.Write(buffer, index, count);
+                }
+            }
+
+            public override void Write(string value)
+            {
+                lock (_lock)
+                {
+                    base.Write(value);
+                }
+            }
+
+            public override string ToString()
+            {
+                lock (_lock)
+                {
+                    return base.ToString();
+                }
+            }
+        }
+
     }
 }
