@@ -45,7 +45,10 @@ public class ResumePublishTest
         Assert.Equal(messages.Count, publishedMessages);
 
         // Pull the Message to confirm it is valid
-        var pulledMessages = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(pulledMessages > 0);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var pulledMessages = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
+            Assert.True(pulledMessages > 0);
+        });
     }
 }

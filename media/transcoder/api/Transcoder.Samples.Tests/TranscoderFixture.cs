@@ -49,7 +49,7 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
     {
         FirstRetryDelayMs = 15000,
         DelayMultiplier = 1.5f,
-        MaxTryCount = 4,
+        MaxTryCount = 20,
         ShouldRetry = ex => ex is XunitException ||
             (ex is GoogleApiException gex &&
                 gex.HttpStatusCode == HttpStatusCode.ServiceUnavailable)

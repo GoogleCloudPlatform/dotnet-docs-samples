@@ -45,7 +45,10 @@ public class PublishMessageTest
         Assert.Equal(messageTexts.Count, output);
 
         // Pull the Message to confirm it is valid
-        var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(result > 0);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
+            Assert.True(result > 0);
+        });
     }
 }

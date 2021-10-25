@@ -32,7 +32,7 @@ public class PullMessagesSyncSample
         {
             // Pull messages from server,
             // allowing an immediate response if there are no messages.
-            PullResponse response = subscriberClient.Pull(subscriptionName, returnImmediately: false, maxMessages: 20);
+            PullResponse response = subscriberClient.Pull(subscriptionName, maxMessages: 20);
             // Print out each received message.
             foreach (ReceivedMessage msg in response.ReceivedMessages)
             {
