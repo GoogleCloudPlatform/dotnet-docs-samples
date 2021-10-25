@@ -169,7 +169,7 @@ namespace GoogleCloudSamples
                 Console.WriteLine(string.Join(" ", arguments));
 
                 TextWriter consoleOut = Console.Out;
-                SafeStringWriter stringOut = new SafeStringWriter();
+                ThreadSafeStringWriter stringOut = new ThreadSafeStringWriter();
                 Console.SetOut(stringOut);
                 try
                 {
@@ -202,7 +202,7 @@ namespace GoogleCloudSamples
 
                 TextWriter consoleOut = Console.Out;
                 TextReader consoleIn = Console.In;
-                SafeStringWriter stringOut = new SafeStringWriter();
+                ThreadSafeStringWriter stringOut = new ThreadSafeStringWriter();
                 Console.SetOut(stringOut);
                 Console.SetIn(new StringReader(stdIn));
                 try
@@ -228,7 +228,7 @@ namespace GoogleCloudSamples
             }
         }
 
-        internal class SafeStringWriter : StringWriter
+        internal class ThreadSafeStringWriter : StringWriter
         {
             private readonly object _lock = new object();
 
