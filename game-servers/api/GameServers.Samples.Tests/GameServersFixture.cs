@@ -67,7 +67,8 @@ public class GameServersFixture : IDisposable, IAsyncLifetime, ICollectionFixtur
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
-        GkeClusterName = Environment.GetEnvironmentVariable("GKE_CLUSTER");
+        GkeClusterName = Environment.GetEnvironmentVariable("GAME_SERVER_GKE_CLUSTER");
+
         if (string.IsNullOrEmpty(GkeClusterName))
         {
             GkeClusterName = $"projects/{ProjectId}/locations/us-central1-a/clusters/standard-cluster-1";
