@@ -38,7 +38,8 @@ public class ListClustersSample
         // Make the request.
         PagedEnumerable<ListGameServerClustersResponse, GameServerCluster> response = client.ListGameServerClusters(request);
 
-        // You could iterate through response.ToList() and write the cluster.Name and
+        // You could iterate through response and write the cluster.Name and
+
         // cluster.ClusterState to the console to see the installed versions of Agones
         // and Kubernetes on each cluster.
 
