@@ -33,6 +33,7 @@ namespace GameServers.Samples.Tests
             _createClusterSample = new CreateClusterSample();
             _deleteSample = new DeleteClusterSample();
             _clusterId = $"{_fixture.ClusterIdPrefix}-{_fixture.RandomId()}";
+            _fixture.ClusterIdentifiers.Add(new ClusterIdentifier(_fixture.TestRealmId, _clusterId));
         }
 
         public async Task InitializeAsync()
@@ -40,7 +41,6 @@ namespace GameServers.Samples.Tests
             await _createClusterSample.CreateClusterAsync(
                 _fixture.ProjectId, _fixture.RegionId, _fixture.TestRealmId,
                 _clusterId, _fixture.GkeClusterName);
-            _fixture.ClusterIdentifiers.Add(new ClusterIdentifier(_fixture.TestRealmId, _clusterId));
         }
 
         public async Task DisposeAsync()

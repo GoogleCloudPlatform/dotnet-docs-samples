@@ -33,6 +33,7 @@ namespace GameServers.Samples.Tests
             _createConfigSample = new CreateConfigSample();
             _deleteSample = new DeleteConfigSample();
             _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
+            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_fixture.TestDeploymentId, _configId));
         }
 
         public async Task InitializeAsync()
@@ -40,7 +41,6 @@ namespace GameServers.Samples.Tests
             await _createConfigSample.CreateConfigAsync(
                 _fixture.ProjectId, _fixture.RegionId, _fixture.TestDeploymentId,
                 _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_fixture.TestDeploymentId, _configId));
         }
 
         public async Task DisposeAsync()

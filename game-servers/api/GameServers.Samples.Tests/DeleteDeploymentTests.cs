@@ -33,13 +33,13 @@ namespace GameServers.Samples.Tests
             _createSample = new CreateDeploymentSample();
             _deleteSample = new DeleteDeploymentSample();
             _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
+            _fixture.DeploymentIds.Add(_deploymentId);
         }
 
         public async Task InitializeAsync()
         {
             await _createSample.CreateDeploymentAsync(
                     _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(_deploymentId);
         }
 
         public async Task DisposeAsync()

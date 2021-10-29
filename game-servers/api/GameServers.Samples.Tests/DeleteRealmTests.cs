@@ -33,6 +33,7 @@ namespace GameServers.Samples.Tests
             _createSample = new CreateRealmSample();
             _deleteSample = new DeleteRealmSample();
             _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
+            _fixture.RealmIds.Add(_realmId);
         }
 
         public async Task InitializeAsync()
@@ -40,7 +41,6 @@ namespace GameServers.Samples.Tests
             await _createSample.CreateRealmAsync(
                     _fixture.ProjectId, _fixture.RegionId,
                     _realmId);
-            _fixture.RealmIds.Add(_realmId);
         }
 
         public async Task DisposeAsync()

@@ -31,6 +31,7 @@ namespace GameServers.Samples.Tests
             _fixture = fixture;
             _createConfigSample = new CreateConfigSample();
             _configId = $"{_fixture.ConfigIdPrefix}-{_fixture.RandomId()}";
+            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_fixture.TestDeploymentId, _configId));
         }
 
         [Fact]
@@ -39,7 +40,6 @@ namespace GameServers.Samples.Tests
             var result = await _createConfigSample.CreateConfigAsync(
                 _fixture.ProjectId, _fixture.RegionId, _fixture.TestDeploymentId,
                 _configId);
-            _fixture.ConfigIdentifiers.Add(new ConfigIdentifier(_fixture.TestDeploymentId, _configId));
 
             Assert.Equal(_fixture.ProjectId, result.GameServerConfigName.ProjectId);
             Assert.Equal(_fixture.RegionId, result.GameServerConfigName.LocationId);

@@ -47,6 +47,7 @@ public class UpdateDeploymentSample
         Operation<GameServerDeployment, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
 
         // Retrieve the operation result. This result will NOT contain the updated labels.
+        // If you want to get the updated resource, use a GET request on the resource.
         return completedResponse.Result;
     }
 }

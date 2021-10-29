@@ -31,6 +31,7 @@ namespace GameServers.Samples.Tests
             _fixture = fixture;
             _createSample = new CreateDeploymentSample();
             _deploymentId = $"{_fixture.DeploymentIdPrefix}-{_fixture.RandomId()}";
+            _fixture.DeploymentIds.Add(_deploymentId);
         }
 
         [Fact]
@@ -38,7 +39,6 @@ namespace GameServers.Samples.Tests
         {
             var result = await _createSample.CreateDeploymentAsync(
                 _fixture.ProjectId, _deploymentId);
-            _fixture.DeploymentIds.Add(result.GameServerDeploymentName.DeploymentId);
 
             Assert.Equal(_fixture.ProjectId, result.GameServerDeploymentName.ProjectId);
             Assert.Equal("global", result.GameServerDeploymentName.LocationId);

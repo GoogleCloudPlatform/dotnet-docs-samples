@@ -71,28 +71,28 @@ public class GameServersFixture : IDisposable, IAsyncLifetime, ICollectionFixtur
 
         if (string.IsNullOrEmpty(GkeClusterName))
         {
-            GkeClusterName = $"projects/{ProjectId}/locations/us-central1-a/clusters/standard-cluster-1";
+            throw new Exception("missing GAME_SERVER_GKE_CLUSTER");
         }
     }
 
     public async Task InitializeAsync()
     {
         TestRealmId = $"{RealmIdPrefix}-{RandomId()}";
-        TestRealm = await _createRealmSample.CreateRealmAsync(ProjectId, RegionId, TestRealmId);
         RealmIds.Add(TestRealmId);
+        TestRealm = await _createRealmSample.CreateRealmAsync(ProjectId, RegionId, TestRealmId);
 
         TestDeploymentId = $"{DeploymentIdPrefix}-{RandomId()}";
-        TestDeployment = await _createDeploymentSample.CreateDeploymentAsync(ProjectId, TestDeploymentId);
         DeploymentIds.Add(TestDeploymentId);
+        TestDeployment = await _createDeploymentSample.CreateDeploymentAsync(ProjectId, TestDeploymentId);
 
         TestClusterId = $"{ClusterIdPrefix}-{RandomId()}";
+        ClusterIdentifiers.Add(new ClusterIdentifier(TestRealmId, TestClusterId));
         TestCluster = await _createClusterSample.CreateClusterAsync(ProjectId, RegionId, TestRealmId,
             TestClusterId, GkeClusterName);
-        ClusterIdentifiers.Add(new ClusterIdentifier(TestRealmId, TestClusterId));
 
         TestConfigId = $"{ConfigIdPrefix}-{RandomId()}";
-        TestConfig = await _createConfigSample.CreateConfigAsync(ProjectId, RegionId, TestDeploymentId, TestConfigId);
         ConfigIdentifiers.Add(new ConfigIdentifier(TestDeploymentId, TestConfigId));
+        TestConfig = await _createConfigSample.CreateConfigAsync(ProjectId, RegionId, TestDeploymentId, TestConfigId);
     }
 
     public async Task DisposeAsync()

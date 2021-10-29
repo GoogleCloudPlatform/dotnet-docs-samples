@@ -31,6 +31,7 @@ namespace GameServers.Samples.Tests
             _fixture = fixture;
             _createSample = new CreateRealmSample();
             _realmId = $"{_fixture.RealmIdPrefix}-{_fixture.RandomId()}";
+            _fixture.RealmIds.Add(_realmId);
         }
 
         [Fact]
@@ -38,7 +39,6 @@ namespace GameServers.Samples.Tests
         {
             var result = await _createSample.CreateRealmAsync(
                 _fixture.ProjectId, _fixture.RegionId, _realmId);
-            _fixture.RealmIds.Add(result.RealmName.RealmId);
 
             Assert.Equal(_fixture.ProjectId, result.RealmName.ProjectId);
             Assert.Equal(_fixture.RegionId, result.RealmName.LocationId);
