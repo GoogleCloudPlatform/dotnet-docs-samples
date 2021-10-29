@@ -40,7 +40,7 @@ namespace GoogleCloudSamples
         {
             RetryWhenExceptions = new[] { typeof(Xunit.Sdk.XunitException) },
             // Eventually consistency can take a long time.
-            MaxTryCount = 8
+            MaxTryCount = 20
         };
 
         public DatastoreTest()
@@ -385,8 +385,6 @@ namespace GoogleCloudSamples
                 ["tag"] = new ArrayValue() { Values = { "fun", "l", "programming" } }
             };
             _db.Upsert(task);
-            // Datastore is, after all, eventually consistent.
-            System.Threading.Thread.Sleep(1000);
             return taskListKeyName;
         }
 
