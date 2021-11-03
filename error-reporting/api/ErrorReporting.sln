@@ -6,8 +6,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErrorReportingSample", "Err
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", "{D093E2FB-BE8B-489B-B1FB-F75942C854E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErrorReporting", "AspNetCore\ErrorReporting.csproj", "{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,18 +40,6 @@ Global
 		{D093E2FB-BE8B-489B-B1FB-F75942C854E8}.Release|x64.Build.0 = Release|Any CPU
 		{D093E2FB-BE8B-489B-B1FB-F75942C854E8}.Release|x86.ActiveCfg = Release|Any CPU
 		{D093E2FB-BE8B-489B-B1FB-F75942C854E8}.Release|x86.Build.0 = Release|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Debug|x64.Build.0 = Debug|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Debug|x86.Build.0 = Debug|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Release|x64.ActiveCfg = Release|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Release|x64.Build.0 = Release|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Release|x86.ActiveCfg = Release|Any CPU
-		{8D3980DE-1A4A-4B3D-8818-12C7FD5B37D5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
