@@ -48,7 +48,7 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
     public RetryRobot JobPoller { get; } = new RetryRobot
     {
         FirstRetryDelayMs = 15000,
-        DelayMultiplier = 1.5f,
+        DelayMultiplier = 2,
         MaxTryCount = 20,
         ShouldRetry = ex => ex is XunitException ||
             (ex is GoogleApiException gex &&
