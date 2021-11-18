@@ -14,6 +14,7 @@
 
 using Google.Cloud.PubSub.V1;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -31,7 +32,7 @@ public class PublishAvroMessagesAsyncTest
     }
 
     [Fact]
-    public async void PublishBinaryMessages()
+    public async Task PublishBinaryMessages()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicAvroBinaryMessageCreation{randomName}";
@@ -56,7 +57,7 @@ public class PublishAvroMessagesAsyncTest
     }
 
     [Fact]
-    public async void PublishJsonMessages()
+    public async Task PublishJsonMessages()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForAvroJsonMessageCreation{randomName}";

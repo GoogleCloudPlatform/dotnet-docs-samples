@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -32,7 +33,7 @@ public class PullMessagesAsyncWithDeliveryAttemptsTest
     }
 
     [Fact]
-    public async void PullMessagesAsyncWithDeliveryAttempts()
+    public async Task PullMessagesAsyncWithDeliveryAttempts()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForDeadLetterPolicyMessageSyncAck{randomName}";
