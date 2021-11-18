@@ -235,7 +235,7 @@ namespace GoogleCloudSamples
             }
             catch (Google.GoogleApiException e)
             {
-                Assert.True(e.Error.Code == 400);
+                Assert.Equal(400, e.Error.Code);
             }
             finally
             {
