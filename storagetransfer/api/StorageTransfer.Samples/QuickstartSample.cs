@@ -31,20 +31,20 @@ namespace StorageTransfer.Samples
             // The GCS bucket to transfer data to
             string sinkBucket = "my-sink-bucket")
         {
-            TransferJob transferJob = new TransferJob()
+            TransferJob transferJob = new TransferJob
             {
                 ProjectId = projectId,
-                TransferSpec = new TransferSpec()
+                TransferSpec = new TransferSpec
                 {
-                    GcsDataSink = new GcsData() { BucketName = sourceBucket },
-                    GcsDataSource = new GcsData() { BucketName = sinkBucket }
+                    GcsDataSink = new GcsData { BucketName = sourceBucket },
+                    GcsDataSource = new GcsData { BucketName = sinkBucket }
                 },
                 Status = TransferJob.Types.Status.Enabled
             };
 
             StorageTransferServiceClient client = StorageTransferServiceClient.Create();
-            TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest() { TransferJob = transferJob });
-            client.RunTransferJob(new RunTransferJobRequest()
+            TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
+            client.RunTransferJob(new RunTransferJobRequest
             {
                 JobName = response.Name,
                 ProjectId = projectId
