@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -29,7 +30,7 @@ public class PullMessagesWithFlowControlAsyncTest
     }
 
     [Fact]
-    public async void PullMessagesWithFlowControlAsync()
+    public async Task PullMessagesWithFlowControlAsync()
     {
         string topicId = $"testTopicForMessageWithFlowControlAck{_pubsubFixture.RandomName()}";
         _pubsubFixture.CreateTopic(topicId);

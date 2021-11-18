@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -29,7 +30,7 @@ public class PullMessagesWithCustomAttributesAsyncTest
     }
 
     [Fact]
-    public async void PullMessagesWithCustomAttributesAsync()
+    public async Task PullMessagesWithCustomAttributesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForMessagesWithPullCustomAttributesAsync{randomName}";

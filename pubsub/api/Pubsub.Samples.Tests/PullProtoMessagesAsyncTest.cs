@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.PubSub.V1;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -30,7 +31,7 @@ public class PullProtoMessagesAsyncTest
     }
 
     [Fact]
-    public async void PullProtoBinaryMessagesAsync()
+    public async Task PullProtoBinaryMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForProtoBinaryMessageAck{randomName}";
@@ -56,7 +57,7 @@ public class PullProtoMessagesAsyncTest
     }
 
     [Fact]
-    public async void PullProtoJsonMessagesAsync()
+    public async Task PullProtoJsonMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForProtoJsonMessageAck{randomName}";
