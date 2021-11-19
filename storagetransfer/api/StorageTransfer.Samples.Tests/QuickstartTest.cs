@@ -50,7 +50,7 @@ namespace StorageTransfer.Samples.Tests
                     JobName = _transferJobName,
                     TransferJob = new TransferJob()
                     {
-                        Name = transferJobName,
+                        Name = _transferJobName,
                         Status = TransferJob.Types.Status.Deleted
                     }
                 });
