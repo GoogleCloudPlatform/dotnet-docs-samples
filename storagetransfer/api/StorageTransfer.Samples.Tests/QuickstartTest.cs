@@ -24,7 +24,7 @@ namespace StorageTransfer.Samples.Tests
     public class QuickstartTest : IDisposable
     {
         private readonly StorageFixture _fixture;
-        private string transferJobName;
+        private string _transferJobName;
 
         public QuickstartTest(StorageFixture fixture)
         {
@@ -37,7 +37,7 @@ namespace StorageTransfer.Samples.Tests
             QuickstartSample quickstartSample = new QuickstartSample();
             var transferJob = quickstartSample.Quickstart(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink);
             Assert.Contains("transferJobs/", transferJob.Name);
-            transferJobName = transferJob.Name;
+            _transferJobName = transferJob.Name;
         }
 
         public void Dispose()
@@ -47,7 +47,7 @@ namespace StorageTransfer.Samples.Tests
                 _fixture.Sts.UpdateTransferJob(new UpdateTransferJobRequest()
                 {
                     ProjectId = _fixture.ProjectId,
-                    JobName = transferJobName,
+                    JobName = _transferJobName,
                     TransferJob = new TransferJob()
                     {
                         Name = transferJobName,
