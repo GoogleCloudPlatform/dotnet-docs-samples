@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -30,7 +31,7 @@ public class ResumePublishTest
     }
 
     [Fact]
-    public async void PublishMessage()
+    public async Task PublishMessage()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForResumePublish{randomName}";

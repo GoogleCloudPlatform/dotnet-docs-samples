@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -30,7 +31,7 @@ public class PublishOrderedMessagesAsyncTest
     }
 
     [Fact]
-    public async void PublishOrderedMessagesAsync()
+    public async Task PublishOrderedMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForOrderedPublish{randomName}";

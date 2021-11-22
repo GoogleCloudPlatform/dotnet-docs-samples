@@ -31,7 +31,7 @@ public class PublishBatchMessageTest
     }
 
     [Fact]
-    public async void PublishBatchMessagesAsync()
+    public async Task PublishBatchMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForBatchMessageCreation{randomName}";
