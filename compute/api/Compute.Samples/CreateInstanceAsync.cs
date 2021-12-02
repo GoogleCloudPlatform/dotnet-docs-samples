@@ -44,7 +44,7 @@ public class CreateInstanceAsyncSample
                 {
                     AutoDelete = true,
                     Boot = true,
-                    Type = AttachedDisk.Types.Type.Persistent,
+                    Type = ComputeEnumConstants.AttachedDisk.Type.Persistent,
                     InitializeParams = new AttachedDiskInitializeParams 
                     {
                         // See https://cloud.google.com/compute/docs/images for more information on available images.

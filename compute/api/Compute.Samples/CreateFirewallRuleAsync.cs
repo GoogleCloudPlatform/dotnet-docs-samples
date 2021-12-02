@@ -34,7 +34,7 @@ public class CreateFirewallRuleAsyncSample
         {
             Name = firewallRuleName,
             Network = networkName,
-            Direction = Firewall.Types.Direction.Ingress,
+            Direction = ComputeEnumConstants.Firewall.Direction.Ingress,
             Allowed =
             {
                 new Allowed
