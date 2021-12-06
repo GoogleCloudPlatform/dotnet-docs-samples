@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_set_bucket_public_iam]
+// [START storage_make_public]
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
@@ -34,4 +34,4 @@ public class MakePublicSample
         return storageObject.MediaLink;
     }
 }
-// [END storage_set_bucket_public_iam]
+// [END storage_make_public]
