@@ -536,7 +536,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public async Task RunWithTemporaryDatabaseAsync(string instanceId, Func<string, Task> testFunction,
         params string[] extraStatements)
     {
-        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        // For temporary DBs we don't need a time based ID, as we delete them inmediately.
+        var databaseId = $"temp-db-{Guid.NewGuid().ToString("N").Substring(0, 20)}";
         await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, extraStatements);
     }
     
