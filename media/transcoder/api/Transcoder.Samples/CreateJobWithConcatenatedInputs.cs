@@ -18,17 +18,14 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Transcoder.V1;
+using Google.Protobuf.WellKnownTypes;
+using System;
 
 public class CreateJobWithConcatenatedInputsSample
 {
     public Job CreateJobWithConcatenatedInputs(
-        string projectId, string location, string inputUri1, decimal startTimeOffset1, decimal endTimeOffset1, string inputUri2, decimal startTimeOffset2, decimal endTimeOffset2, string outputUri)
+        string projectId, string location, string inputUri1, TimeSpan startTimeInput1, TimeSpan endTimeInput1, string inputUri2, TimeSpan startTimeInput2, TimeSpan endTimeInput2, string outputUri)
     {
-
-        decimal startTimeOffset1NanoSec = 1000000000 * decimal.Subtract(startTimeOffset1, decimal.Truncate(startTimeOffset1));
-        decimal endTimeOffset1NanoSec = 1000000000 * decimal.Subtract(endTimeOffset1, decimal.Truncate(endTimeOffset1));
-        decimal startTimeOffset2NanoSec = 1000000000 * decimal.Subtract(startTimeOffset2, decimal.Truncate(startTimeOffset2));
-        decimal endTimeOffset2NanoSec = 1000000000 * decimal.Subtract(endTimeOffset2, decimal.Truncate(endTimeOffset2));
 
         // Create the client.
         TranscoderServiceClient client = TranscoderServiceClient.Create();
@@ -88,34 +85,18 @@ public class CreateJobWithConcatenatedInputsSample
         EditAtom atom1 = new EditAtom
         {
             Key = "atom1",
-            StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-            {
-                Seconds = decimal.ToInt32(decimal.Truncate(startTimeOffset1)),
-                Nanos = decimal.ToInt32(startTimeOffset1NanoSec)
-            },
-            EndTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-            {
-                Seconds = decimal.ToInt32(decimal.Truncate(endTimeOffset1)),
-                Nanos = decimal.ToInt32(endTimeOffset1NanoSec)
-            }
+            StartTimeOffset = Duration.FromTimeSpan(startTimeInput1),
+            EndTimeOffset = Duration.FromTimeSpan(endTimeInput1),
+            Inputs = { input1.Key }
         };
-        atom1.Inputs.Add("input1");
 
         EditAtom atom2 = new EditAtom
         {
             Key = "atom2",
-            StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-            {
-                Seconds = decimal.ToInt32(decimal.Truncate(startTimeOffset2)),
-                Nanos = decimal.ToInt32(startTimeOffset2NanoSec)
-            },
-            EndTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-            {
-                Seconds = decimal.ToInt32(decimal.Truncate(endTimeOffset2)),
-                Nanos = decimal.ToInt32(endTimeOffset2NanoSec)
-            }
+            StartTimeOffset = Duration.FromTimeSpan(startTimeInput2),
+            EndTimeOffset = Duration.FromTimeSpan(endTimeInput2),
+            Inputs = { input2.Key }
         };
-        atom2.Inputs.Add("input2");
 
         Output output = new Output
         {

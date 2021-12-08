@@ -18,6 +18,8 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Transcoder.V1;
+using Google.Protobuf.WellKnownTypes;
+using System;
 
 public class CreateJobWithAnimatedOverlaySample
 {
@@ -63,8 +65,8 @@ public class CreateJobWithAnimatedOverlaySample
         };
 
         // Create the starting animation (when the overlay starts to fade in). Use the values x: 0.5
-        // and y: 0.5 to position the top-left corner of the overlay in the top-left corner of the
-        // output video.
+        // and y: 0.5 to position the top-left corner of the overlay in the center of the output
+        // video.
         Overlay.Types.Animation animationFadeIn = new Overlay.Types.Animation
         {
             AnimationFade = new Overlay.Types.AnimationFade
@@ -75,14 +77,8 @@ public class CreateJobWithAnimatedOverlaySample
                     X = 0.5,
                     Y = 0.5
                 },
-                StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-                {
-                    Seconds = 5
-                },
-                EndTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-                {
-                    Seconds = 10
-                }
+                StartTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 5, 0)),
+                EndTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 10, 0))
             }
         };
 
@@ -98,14 +94,8 @@ public class CreateJobWithAnimatedOverlaySample
                     X = 0.5,
                     Y = 0.5
                 },
-                StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-                {
-                    Seconds = 12
-                },
-                EndTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-                {
-                    Seconds = 15
-                }
+                StartTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 12, 0)),
+                EndTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 15, 0))
             }
         };
 
