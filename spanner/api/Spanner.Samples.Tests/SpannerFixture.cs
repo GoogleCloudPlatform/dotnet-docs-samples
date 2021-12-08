@@ -290,12 +290,12 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             return;
         }
 
+        long fiveHoursAgo = DateTimeOffset.UtcNow.AddHours(-5).ToUnixTimeMilliseconds();
+
         var instancesToDelete = instances
-            .OrderBy(db => long.TryParse(
-                db.InstanceName.InstanceId.Replace("my-instance-processing-units-", "")
-                    .Replace("my-instance-multi-region-", ""),
-                out long creationDate) ? creationDate : long.MaxValue)
-            .Take(10);
+            .Select(db => (db, CreationUnixTimeMilliseconds(db)))
+            .Where(pair => pair.Item2 < fiveHoursAgo)
+            .Select(pair => pair.db);
 
         // Delete the instances.
         foreach (var instance in instancesToDelete)
@@ -306,6 +306,13 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             }
             catch (Exception) { }
         }
+
+        static long CreationUnixTimeMilliseconds(Instance db) =>
+            long.TryParse(
+                db.InstanceName.InstanceId
+                    .Replace("my-instance-processing-units-", "")
+                    .Replace("my-instance-multi-region-", ""),
+                out long creationDate) ? creationDate : long.MaxValue;
     }
 
     private async Task InitializeDatabaseAsync()
