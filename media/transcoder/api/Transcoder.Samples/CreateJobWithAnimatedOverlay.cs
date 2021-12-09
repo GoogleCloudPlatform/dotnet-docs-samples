@@ -77,8 +77,8 @@ public class CreateJobWithAnimatedOverlaySample
                     X = 0.5,
                     Y = 0.5
                 },
-                StartTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 5, 0)),
-                EndTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 10, 0))
+                StartTimeOffset = Duration.FromTimeSpan(TimeSpan.FromSeconds(5)),
+                EndTimeOffset = Duration.FromTimeSpan(TimeSpan.FromSeconds(10))
             }
         };
 
@@ -94,8 +94,8 @@ public class CreateJobWithAnimatedOverlaySample
                     X = 0.5,
                     Y = 0.5
                 },
-                StartTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 12, 0)),
-                EndTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 15, 0))
+                StartTimeOffset = Duration.FromTimeSpan(TimeSpan.FromSeconds(12)),
+                EndTimeOffset = Duration.FromTimeSpan(TimeSpan.FromSeconds(15))
             }
         };
 

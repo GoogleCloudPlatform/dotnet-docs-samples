@@ -76,7 +76,7 @@ public class CreateJobWithStaticOverlaySample
                     X = 0,
                     Y = 0
                 },
-                StartTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 0))
+                StartTimeOffset = Duration.FromTimeSpan(TimeSpan.FromSeconds(0))
             }
         };
 
@@ -87,7 +87,7 @@ public class CreateJobWithStaticOverlaySample
         {
             AnimationEnd = new Overlay.Types.AnimationEnd
             {
-                StartTimeOffset = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 10, 0))
+                StartTimeOffset = Duration.FromTimeSpan(TimeSpan.FromSeconds(10))
             }
         };
 

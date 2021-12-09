@@ -63,7 +63,7 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
             FilePrefix = SmallSpritesheetFilePrefix,
             SpriteHeightPixels = 32,
             SpriteWidthPixels = 64,
-            Interval = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 7, 0))
+            Interval = Duration.FromTimeSpan(TimeSpan.FromSeconds(7))
         };
 
         // Generates a spritesheet of larger images taken periodically from the
@@ -77,7 +77,7 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
             FilePrefix = LargeSpritesheetFilePrefix,
             SpriteHeightPixels = 72,
             SpriteWidthPixels = 128,
-            Interval = Duration.FromTimeSpan(new TimeSpan(0, 0, 0, 7, 0))
+            Interval = Duration.FromTimeSpan(TimeSpan.FromSeconds(7))
         };
 
         ElementaryStream elementaryStream0 = new ElementaryStream
