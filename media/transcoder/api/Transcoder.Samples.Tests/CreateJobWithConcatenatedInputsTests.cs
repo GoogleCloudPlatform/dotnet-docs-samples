@@ -40,7 +40,9 @@ namespace Transcoder.Samples.Tests
             // Run the sample code.
             var result = _createSample.CreateJobWithConcatenatedInputs(
                 _fixture.ProjectId, _fixture.Location,
-            _fixture.InputConcat1Uri, new TimeSpan(0, 0, 0, 0, 0), new TimeSpan(0, 0, 0, 8, 100), _fixture.InputConcat2Uri, new TimeSpan(0, 0, 0, 3, 500), new TimeSpan(0, 0, 0, 15, 0), outputUri);
+                _fixture.InputConcat1Uri, new TimeSpan(0, 0, 0, 0, 0), new TimeSpan(0, 0, 0, 8, 100),
+                _fixture.InputConcat2Uri, new TimeSpan(0, 0, 0, 3, 500), new TimeSpan(0, 0, 0, 15, 0),
+                outputUri);
             _fixture.JobIds.Add(result.JobName.JobId);
 
             Assert.Equal(_fixture.Location, result.JobName.LocationId);
