@@ -16,26 +16,24 @@ using System;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class CreateBucketTest
+public class CreatePubSubNotificationTest
 {
     private readonly StorageFixture _fixture;
 
-    public CreateBucketTest(StorageFixture fixture)
+    public CreatePubSubNotificationTest(StorageFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void CreateBucket()
+    public void CreatePubSubNotification()
     {
-        CreateBucketSample createBucketSample = new CreateBucketSample();
-        GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
-        var bucketName = Guid.NewGuid().ToString();
-        createBucketSample.CreateBucket(_fixture.ProjectId, bucketName);
-        _fixture.SleepAfterBucketCreateUpdateDelete();
-        _fixture.TempBucketNames.Add(bucketName);
 
-        var metadata = getBucketMetadataSample.GetBucketMetadata(bucketName);
-        Assert.NotNull(metadata);
+        CreatePubSubNotificationSample createPubSubNotificationSample = new CreatePubSubNotificationSample();
+        var confirmNotification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, "my-topic");
+
+        Assert.NotNull(confirmNotification);
+
     }
-}
+
+ }
