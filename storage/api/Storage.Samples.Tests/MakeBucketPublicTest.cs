@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ public class MakeBucketPublicTest
         var storage = StorageClient.Create();
 
         MakeBucketPublicSample makeBucketPublicSample = new MakeBucketPublicSample();
-        var bucket = makeBucketPublicSample.MakeBucketPublic(_fixture.BucketNameGeneric);
+        makeBucketPublicSample.MakeBucketPublic(_fixture.BucketNameGeneric);
        
-        var bind = storage.GetBucketIamPolicy(bucket).Bindings.Select(y => (y.Role == "roles/storage.legacyBucketReader") && y.Members.Contains("allUsers")).Any();
+        var bind = storage.GetBucketIamPolicy(_fixture.BucketNameGeneric).Bindings.Select(y => (y.Role == "roles/storage.objectViewer") && y.Members.Contains("allUsers")).Any();
         Assert.True(bind);
     }
 }
