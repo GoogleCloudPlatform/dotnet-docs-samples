@@ -13,29 +13,29 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class CreateBucketTest
+public class GetPubSubNotificationTest
 {
     private readonly StorageFixture _fixture;
 
-    public CreateBucketTest(StorageFixture fixture)
+    public GetPubSubNotificationTest(StorageFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void CreateBucket()
+    public void GetPubSubNotification()
     {
-        CreateBucketSample createBucketSample = new CreateBucketSample();
-        GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
-        var bucketName = Guid.NewGuid().ToString();
-        createBucketSample.CreateBucket(_fixture.ProjectId, bucketName);
-        _fixture.SleepAfterBucketCreateUpdateDelete();
-        _fixture.TempBucketNames.Add(bucketName);
+        GetPubSubNotificationSample getPubSubNotificationSample = new GetPubSubNotificationSample();
+        CreatePubSubNotificationSample createPubSubNotificationSample = new CreatePubSubNotificationSample();
 
-        var metadata = getBucketMetadataSample.GetBucketMetadata(bucketName);
-        Assert.NotNull(metadata);
+        var notification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, "my-topic");
+        var recievedNotification = getPubSubNotificationSample.GetPubSubNotification(_fixture.BucketNameGeneric, notification.Id);
+
+        Assert.NotNull(recievedNotification);
     }
 }

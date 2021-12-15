@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,30 +21,21 @@ using System.Collections.Generic;
 
 public class MakeBucketPublicSample
 {
-    public string MakeBucketPublic(
+    public void MakeBucketPublic(
         string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.GetBucket(bucketName); 
 
         Policy originalPolicy = storage.GetBucketIamPolicy(bucketName);
         var binding = originalPolicy.Bindings;
-
-        foreach(var bind in binding)
-        {
-            if (bind.Role == "roles/storage.legacyBucketReader")
-            {
-                bind.Members = new List<String>() { "allUsers" };
-                break;
-            }
-        }
         
-        originalPolicy.Bindings = binding;
+        var tupple = new Policy.BindingsData();
+        tupple.Role = "roles/storage.objectViewer";
+        tupple.Members = new List<string>() { "allUsers" };
+        binding.Add(tupple);
+        
         storage.SetBucketIamPolicy(bucketName, originalPolicy);
-
         Console.WriteLine(bucketName + " is now public ");
-
-        return bucket.Name;
     }
 }
 // [END  storage_set_bucket_public_iam]
