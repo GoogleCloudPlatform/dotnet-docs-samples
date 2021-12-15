@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+﻿// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START storage_make_public]
-// [START storage_set_bucket_public_iam]
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
@@ -35,6 +34,4 @@ public class MakePublicSample
         return storageObject.MediaLink;
     }
 }
-
-// [END  storage_set_bucket_public_iam]
 // [END storage_make_public]
