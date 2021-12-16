@@ -26,15 +26,15 @@ public class MakeBucketPublicSample
     {
         var storage = StorageClient.Create();
 
-        Policy originalPolicy = storage.GetBucketIamPolicy(bucketName);
-        var binding = originalPolicy.Bindings;
-        
-        var tupple = new Policy.BindingsData();
-        tupple.Role = "roles/storage.objectViewer";
-        tupple.Members = new List<string>() { "allUsers" };
-        binding.Add(tupple);
-        
-        storage.SetBucketIamPolicy(bucketName, originalPolicy);
+        Policy policy = storage.GetBucketIamPolicy(bucketName);
+
+        policy.Bindings.Add(new Policy.BindingsData
+        {
+            Role = "roles/storage.objectViewer",
+            Members = new List<string> { "allUsers" }
+        });
+
+        storage.SetBucketIamPolicy(bucketName, policy);
         Console.WriteLine(bucketName + " is now public ");
     }
 }
