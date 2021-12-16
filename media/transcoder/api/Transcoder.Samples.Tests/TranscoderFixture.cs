@@ -36,8 +36,12 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
     public string BucketName { get; }
     public string TestDataPath { get; } = Path.GetFullPath("../../../testdata/");
     public string TestVideoFileName { get; } = "ChromeCast.mp4";
+    public string TestConcatVideo1FileName { get; } = "ForBiggerEscapes.mp4";
+    public string TestConcatVideo2FileName { get; } = "ForBiggerJoyrides.mp4";
     public string TestOverlayImageFileName { get; } = "overlay.jpg";
     public string InputUri { get; }
+    public string InputConcat1Uri { get; }
+    public string InputConcat2Uri { get; }
     public string OverlayImageUri { get; }
     public Job.Types.ProcessingState JobStateSucceeded { get; } = Job.Types.ProcessingState.Succeeded;
     public List<string> JobIds { get; } = new List<string>();
@@ -74,9 +78,13 @@ public class TranscoderFixture : IDisposable, ICollectionFixture<TranscoderFixtu
 
         var bucketCollector = new BucketCollector(BucketName);
         bucketCollector.CopyToBucket(Path.Combine(TestDataPath, TestVideoFileName), TestVideoFileName);
+        bucketCollector.CopyToBucket(Path.Combine(TestDataPath, TestConcatVideo1FileName), TestConcatVideo1FileName);
+        bucketCollector.CopyToBucket(Path.Combine(TestDataPath, TestConcatVideo2FileName), TestConcatVideo2FileName);
         bucketCollector.CopyToBucket(Path.Combine(TestDataPath, TestOverlayImageFileName), TestOverlayImageFileName);
 
         InputUri = $"gs://{BucketName}/{TestVideoFileName}";
+        InputConcat1Uri = $"gs://{BucketName}/{TestConcatVideo1FileName}";
+        InputConcat2Uri = $"gs://{BucketName}/{TestConcatVideo2FileName}";
         OverlayImageUri = $"gs://{BucketName}/{TestOverlayImageFileName}";
     }
 
