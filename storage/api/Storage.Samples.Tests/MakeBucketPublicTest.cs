@@ -36,7 +36,6 @@ public class MakeBucketPublicTest
         MakeBucketPublicSample makeBucketPublicSample = new MakeBucketPublicSample();
         makeBucketPublicSample.MakeBucketPublic(_fixture.BucketNameGeneric);
        
-        var bind = storage.GetBucketIamPolicy(_fixture.BucketNameGeneric).Bindings.Select(y => (y.Role == "roles/storage.objectViewer") && y.Members.Contains("allUsers")).Any();
-        Assert.True(bind);
+        Assert.Contains(storage.GetBucketIamPolicy(_fixture.BucketNameGeneric).Bindings, binding => binding.Role == "roles/storage.objectViewer" && binding.Members.Contains("allUsers"));
     }
 }
