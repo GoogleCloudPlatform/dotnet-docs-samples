@@ -25,7 +25,9 @@ public class SetRPODefaultSample
         string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        storage.GetBucket(bucketName).Rpo = "DEFAULT";
+        var bucket = storage.GetBucket(bucketName);
+        bucket.Rpo = "DEFAULT";
+        storage.UpdateBucket(bucket);
 
         Console.WriteLine($"Turbo replication disabled for bucket {bucketName}");
     }

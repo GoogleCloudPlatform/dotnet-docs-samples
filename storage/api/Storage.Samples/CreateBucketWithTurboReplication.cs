@@ -29,6 +29,8 @@ public class CreateBucketWithTurboReplicationSample
         var bucket = storage.CreateBucket(projectId, bucketName);
         bucket.Location = location;
         bucket.Rpo = "ASYNC_TURBO";
+        storage.UpdateBucket(bucket);
+
         Console.WriteLine($"Created {bucketName} in {location} with RPO Setting {bucket.Rpo}.");
         return bucket;
     }

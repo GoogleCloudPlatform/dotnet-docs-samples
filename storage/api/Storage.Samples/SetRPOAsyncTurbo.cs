@@ -26,7 +26,6 @@ public class SetRPOAsyncTurboSample
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
-
         bucket.Rpo = "ASYNC_TURBO";
         storage.UpdateBucket(bucket);
 
