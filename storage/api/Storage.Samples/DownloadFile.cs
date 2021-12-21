@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // [START storage_download_file]
-// [START storage-stream-file-download]
+// [START storage_stream_file_download]
 
 using Google.Cloud.Storage.V1;
 using System;
@@ -33,5 +33,5 @@ public class DownloadFileSample
     }
 }
 
-// [END storage-stream-file-download]
+// [END storage_stream_file_download]
 // [END storage_download_file]
