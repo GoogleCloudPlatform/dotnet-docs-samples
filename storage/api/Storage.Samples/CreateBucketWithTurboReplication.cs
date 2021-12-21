@@ -17,7 +17,6 @@ using System;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 
-
 public class CreateBucketWithTurboReplicationSample
 {
     public Bucket CreateBucketWithTurboReplication(
@@ -36,6 +35,5 @@ public class CreateBucketWithTurboReplicationSample
     }
 
 }
-
 
 // [END storage_create_bucket_turbo_replication]
