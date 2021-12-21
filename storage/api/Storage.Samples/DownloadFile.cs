@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_download_file]
+// [START storage-stream-file-download]
 
 using Google.Cloud.Storage.V1;
 using System;
@@ -31,4 +32,6 @@ public class DownloadFileSample
         Console.WriteLine($"Downloaded {objectName} to {localPath}.");
     }
 }
+
+// [END storage-stream-file-download]
 // [END storage_download_file]
