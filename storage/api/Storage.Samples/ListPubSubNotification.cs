@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage-list-bucket-notifications]
+// [START storage_list_bucket_notifications]
 
 using System;
 using System.Collections.Generic;
@@ -20,19 +20,19 @@ using System.Text;
 using Google.Cloud.Storage.V1;
 using Google.Apis.Storage.v1.Data;
 
-    public class ListPubSubNotificationSample
+public class ListPubSubNotificationSample
+{
+    public IReadOnlyList<Notification> ListPubSubNotification(
+    string bucketName = "your-unique-bucket-name")
     {
-      public IReadOnlyList<Notification> ListPubSubNotification(
-       string bucketName = "your-unique-bucket-name")
-        {
-            var storage = StorageClient.Create();
-            var notifications = storage.ListNotifications(bucketName);
+        var storage = StorageClient.Create();
+        var notifications = storage.ListNotifications(bucketName);
 
-            foreach (var notification in notifications)
-                Console.WriteLine(notification.Id);
+        foreach (var notification in notifications)
+            Console.WriteLine(notification.Id);
 
-            return notifications;
-        }
+        return notifications;
     }
+}
 
-// [END storage-list-bucket-notifications]
+// [END storage_list_bucket_notifications]

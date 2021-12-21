@@ -21,8 +21,8 @@ using Google.Apis.Storage.v1.Data;
 public class GetPubSubNotificationSample
     {
         public Notification GetPubSubNotification(
-        string bucketName = "your-unique-bucket-name",
-        string notificationId = "notification-Id")
+         string bucketName = "your-unique-bucket-name",
+         string notificationId = "notification-Id")
         {
             var storage = StorageClient.Create();
             var notification = storage.GetNotification(bucketName, notificationId);

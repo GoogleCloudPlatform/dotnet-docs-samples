@@ -18,22 +18,22 @@ using System;
 using Google.Cloud.Storage.V1;
 using Google.Apis.Storage.v1.Data;
 
-    public class CreatePubSubNotificationSample
+public class CreatePubSubNotificationSample
+{
+    public Notification CreatePubSubNotification(
+    string bucketName = "your-unique-bucket-name",
+    string topic = "my-topic")
     {
-        public Notification CreatePubSubNotification(
-        string bucketName = "your-unique-bucket-name",
-        string topic = "my-topic")
-        {
-            var storage = StorageClient.Create();
-            Notification notification = new Notification();
-            notification.Topic = topic;
-            var confirmNotification = storage.CreateNotification(bucketName,notification);
+        var storage = StorageClient.Create();
+        Notification notification = new Notification();
+        notification.Topic = topic;
+        var confirmNotification = storage.CreateNotification(bucketName,notification);
 
-            Console.WriteLine("Notification subscription created with ID: " + confirmNotification.Id + " for bucket name "+ bucketName);
+        Console.WriteLine("Notification subscription created with ID: " + confirmNotification.Id + " for bucket name "+ bucketName);
 
-        return confirmNotification;
+    return confirmNotification;
 
-        }
     }
+}
 
 // [END storage_create_bucket_notifications]
