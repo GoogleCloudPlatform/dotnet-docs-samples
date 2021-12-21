@@ -30,10 +30,11 @@ public class SetRPODefaultTest
     {
         SetRPODefaultSample setRPODefaultSample = new SetRPODefaultSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
-        var obj = getBucketMetadataSample.GetBucketMetadata(_fixture.BucketNameGeneric);
+        
         setRPODefaultSample.SetRPODefault(_fixture.BucketNameGeneric);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
+        var obj = getBucketMetadataSample.GetBucketMetadata(_fixture.BucketNameGeneric);
         Assert.Equal("DEFAULT", obj.Rpo);
     }
 }

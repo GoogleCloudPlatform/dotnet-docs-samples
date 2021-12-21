@@ -30,10 +30,10 @@ public class SetRPOAsyncTurboTest
     {
         SetRPOAsyncTurboSample setRPOAsyncTurboSample = new SetRPOAsyncTurboSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
-        var obj = getBucketMetadataSample.GetBucketMetadata(_fixture.BucketNameGeneric);
         setRPOAsyncTurboSample.SetRPOAsyncTurbo(_fixture.BucketNameGeneric);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
+        var obj = getBucketMetadataSample.GetBucketMetadata(_fixture.BucketNameGeneric);
         Assert.Equal("ASYNC_TURBO", obj.Rpo);
     }
 }

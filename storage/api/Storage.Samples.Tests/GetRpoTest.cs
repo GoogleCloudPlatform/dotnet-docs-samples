@@ -28,8 +28,8 @@ public class GetRpoTest
     [Fact]
     public void GetRpo()
     {
-        var getBucketMetadataSample = new GetBucketMetadataSample();
-        var bucket = getBucketMetadataSample.GetBucketMetadata(_fixture.BucketNameGeneric);
-        Assert.NotNull(bucket.Rpo);
+        GetRpoSample getRpoSample = new GetRpoSample();
+        var rpo = getRpoSample.GetRpo(_fixture.BucketNameGeneric);
+        Assert.NotNull(rpo);
     }
 }
