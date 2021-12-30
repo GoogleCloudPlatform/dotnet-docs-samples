@@ -382,11 +382,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("writeAndReadUsingDml", HelpText = "Insert data using a DML statement and then read the inserted data.")]
-    class WriteAndReadUsingDmlOptions : DefaultOptions
-    {
-    }
-
     [Verb("updateUsingDmlWithStruct", HelpText = "Update data using a DML statement combined with a Spanner struct.")]
     class UpdateUsingDmlWithStructOptions : DefaultOptions
     {
@@ -1295,44 +1290,6 @@ namespace GoogleCloudSamples.Spanner
             }
         }
         // [END spanner_read_write_transaction]
-
-        // [START spanner_dml_write_then_read]
-        public static async Task WriteAndReadUsingDmlCoreAsync(
-            string projectId,
-            string instanceId,
-            string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-
-            // Create connection to Cloud Spanner.
-            using (var connection =
-                new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                SpannerCommand cmd = connection.CreateDmlCommand(
-                   @"INSERT Singers (SingerId, FirstName, LastName)
-                      VALUES (11, 'Timothy', 'Campbell')");
-                int rowCount = await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine($"{rowCount} row(s) inserted...");
-                // Read newly inserted record.
-                cmd = connection.CreateSelectCommand(
-                    @"SELECT FirstName, LastName FROM Singers
-                      WHERE SingerId = 11");
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine(
-                            reader.GetFieldValue<string>("FirstName") + " "
-                            + reader.GetFieldValue<string>("LastName"));
-                    }
-                }
-            }
-        }
-        // [END spanner_dml_write_then_read]
 
         // [START spanner_dml_structs]
         public static async Task UpdateUsingDmlWithStructCoreAsync(
@@ -3387,17 +3344,6 @@ namespace GoogleCloudSamples.Spanner
             Console.WriteLine($"Done deleting database: {databaseId}");
         }
 
-        public static object WriteAndReadUsingDml(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = WriteAndReadUsingDmlCoreAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
         public static object UpdateUsingDmlWithStruct(string projectId,
             string instanceId, string databaseId)
         {
@@ -3615,9 +3561,6 @@ namespace GoogleCloudSamples.Spanner
                 .Add((QueryAlbumsTableOptions opts) =>
                     QueryAlbumsTable(opts.projectId,
                         opts.instanceId, opts.databaseId))
-                .Add((WriteAndReadUsingDmlOptions opts) =>
-                    WriteAndReadUsingDml(opts.projectId, opts.instanceId,
-                    opts.databaseId))
                 .Add((UpdateUsingDmlWithStructOptions opts) =>
                     UpdateUsingDmlWithStruct(opts.projectId, opts.instanceId,
                     opts.databaseId))
