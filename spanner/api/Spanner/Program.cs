@@ -387,11 +387,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("updateUsingDml", HelpText = "Update data using a DML statement.")]
-    class UpdateUsingDmlOptions : DefaultOptions
-    {
-    }
-
     [Verb("writeAndReadUsingDml", HelpText = "Insert data using a DML statement and then read the inserted data.")]
     class WriteAndReadUsingDmlOptions : DefaultOptions
     {
@@ -1330,31 +1325,6 @@ namespace GoogleCloudSamples.Spanner
             }
         }
         // [END spanner_dml_standard_insert]
-
-        // [START spanner_dml_standard_update]
-        public static async Task UpdateUsingDmlCoreAsync(
-            string projectId,
-            string instanceId,
-            string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-
-            // Create connection to Cloud Spanner.
-            using (var connection =
-                new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                SpannerCommand cmd = connection.CreateDmlCommand(
-                   "UPDATE Albums SET MarketingBudget = MarketingBudget * 2 "
-                   + "WHERE SingerId = 1 and AlbumId = 1");
-                int rowCount = await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine($"{rowCount} row(s) updated...");
-            }
-        }
-        // [END spanner_dml_standard_update]
 
         // [START spanner_dml_write_then_read]
         public static async Task WriteAndReadUsingDmlCoreAsync(
@@ -3458,17 +3428,6 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object UpdateUsingDml(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = UpdateUsingDmlCoreAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
         public static object WriteAndReadUsingDml(string projectId,
             string instanceId, string databaseId)
         {
@@ -3699,9 +3658,6 @@ namespace GoogleCloudSamples.Spanner
                         opts.instanceId, opts.databaseId))
                 .Add((InsertUsingDmlOptions opts) =>
                     InsertUsingDml(opts.projectId, opts.instanceId,
-                    opts.databaseId))
-                .Add((UpdateUsingDmlOptions opts) =>
-                    UpdateUsingDml(opts.projectId, opts.instanceId,
                     opts.databaseId))
                 .Add((WriteAndReadUsingDmlOptions opts) =>
                     WriteAndReadUsingDml(opts.projectId, opts.instanceId,
