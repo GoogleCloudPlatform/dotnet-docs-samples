@@ -392,11 +392,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("deleteUsingDml", HelpText = "Delete data using a DML statement.")]
-    class DeleteUsingDmlOptions : DefaultOptions
-    {
-    }
-
     [Verb("updateUsingDmlWithTimestamp", HelpText = "Update the timestamp value of specifc records using a DML statement.")]
     class UpdateUsingDmlWithTimestampOptions : DefaultOptions
     {
@@ -1365,31 +1360,6 @@ namespace GoogleCloudSamples.Spanner
             }
         }
         // [END spanner_dml_standard_update]
-
-        // [START spanner_dml_standard_delete]
-        public static async Task DeleteUsingDmlCoreAsync(
-            string projectId,
-            string instanceId,
-            string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-
-            // Create connection to Cloud Spanner.
-            using (var connection =
-                new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                SpannerCommand cmd = connection.CreateDmlCommand(
-                   "DELETE FROM Singers WHERE FirstName = 'Alice'");
-                int rowCount = await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine($"{rowCount} row(s) deleted...");
-            }
-        }
-        // [END spanner_dml_standard_delete]
-
 
         // [START spanner_dml_standard_update_with_timestamp]
         public static async Task UpdateUsingDmlWithTimestampCoreAsync(
@@ -3530,17 +3500,6 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object DeleteUsingDml(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = DeleteUsingDmlCoreAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
         public static object UpdateUsingDmlWithTimestamp(string projectId,
             string instanceId, string databaseId)
         {
@@ -3785,9 +3744,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((UpdateUsingDmlOptions opts) =>
                     UpdateUsingDml(opts.projectId, opts.instanceId,
-                    opts.databaseId))
-                .Add((DeleteUsingDmlOptions opts) =>
-                    DeleteUsingDml(opts.projectId, opts.instanceId,
                     opts.databaseId))
                 .Add((UpdateUsingDmlWithTimestampOptions opts) =>
                     UpdateUsingDmlWithTimestamp(opts.projectId, opts.instanceId,
