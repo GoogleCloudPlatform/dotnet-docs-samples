@@ -427,11 +427,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("deleteUsingPartitionedDml", HelpText = "Delete multiple records using a partitioned DML statement.")]
-    class DeleteUsingPartitionedDmlOptions : DefaultOptions
-    {
-    }
-
     [Verb("updateUsingBatchDml", HelpText = "Updates sample data in the database using Batch DML.")]
     class UpdateUsingBatchDmlOptions : DefaultOptions
     {
@@ -1646,31 +1641,6 @@ namespace GoogleCloudSamples.Spanner
             }
         }
         // [END spanner_dml_getting_started_update]
-
-        // [START spanner_dml_partitioned_delete]
-        public static async Task DeleteUsingPartitionedDmlCoreAsync(
-            string projectId,
-            string instanceId,
-            string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-
-            // Create connection to Cloud Spanner.
-            using (var connection =
-                new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                SpannerCommand cmd = connection.CreateDmlCommand(
-                    "DELETE FROM Singers WHERE SingerId > 10"
-                );
-                long rowCount = await cmd.ExecutePartitionedUpdateAsync();
-                Console.WriteLine($"{rowCount} row(s) deleted...");
-            }
-        }
-        // [END spanner_dml_partitioned_delete]
 
         // [START spanner_dml_batch_update]
         public static async Task UpdateUsingBatchDmlCoreAsync(
@@ -3677,17 +3647,6 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object DeleteUsingPartitionedDml(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = DeleteUsingPartitionedDmlCoreAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
         public static object UpdateUsingBatchDml(string projectId,
             string instanceId, string databaseId)
         {
@@ -3898,9 +3857,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteWithTransactionUsingDmlOptions opts) =>
                     WriteWithTransactionUsingDml(opts.projectId, opts.instanceId,
-                    opts.databaseId))
-                .Add((DeleteUsingPartitionedDmlOptions opts) =>
-                    DeleteUsingPartitionedDml(opts.projectId, opts.instanceId,
                     opts.databaseId))
                 .Add((UpdateUsingBatchDmlOptions opts) =>
                     UpdateUsingBatchDml(opts.projectId, opts.instanceId,
