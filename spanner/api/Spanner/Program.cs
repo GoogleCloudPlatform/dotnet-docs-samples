@@ -317,17 +317,6 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("addCommitTimestamp", HelpText = "Add a commit timestamp column to the sample Cloud Spanner database table.")]
-    class AddCommitTimestampOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
     [Verb("updateDataWithTimestamp", HelpText = "Update data with a newly added commit timestamp column in the sample Cloud Spanner database table.")]
     class UpdateDataWithTimestampOptions
     {
@@ -2512,38 +2501,6 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END spanner_batch_client]
 
-        public static object AddCommitTimestamp(string projectId,
-              string instanceId, string databaseId)
-        {
-            var response = AddCommitTimestampAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task AddCommitTimestampAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_add_timestamp_column]
-            // Initialize request argument(s).
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/"
-                + $"{instanceId}/databases/{databaseId}";
-            string alterStatement =
-                "ALTER TABLE Albums ADD COLUMN LastUpdateTime TIMESTAMP "
-                + " OPTIONS (allow_commit_timestamp=true)";
-            // Make the request.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var updateCmd = connection.CreateDdlCommand(alterStatement);
-                await updateCmd.ExecuteNonQueryAsync();
-            }
-            Console.WriteLine("Added LastUpdateTime as a commit timestamp column in Albums table.");
-            // [END spanner_add_timestamp_column]
-        }
-
         public static object UpdateDataWithTimestampColumn(string projectId,
             string instanceId, string databaseId)
         {
@@ -3934,9 +3891,6 @@ namespace GoogleCloudSamples.Spanner
                         opts.databaseId))
                 .Add((BatchReadOptions opts) =>
                     BatchReadRecords(opts.projectId, opts.instanceId,
-                        opts.databaseId))
-                .Add((AddCommitTimestampOptions opts) =>
-                    AddCommitTimestamp(opts.projectId, opts.instanceId,
                         opts.databaseId))
                 .Add((UpdateDataWithTimestampOptions opts) =>
                     UpdateDataWithTimestampColumn(opts.projectId,
