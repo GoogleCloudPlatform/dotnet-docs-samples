@@ -427,11 +427,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("updateUsingPartitionedDml", HelpText = "Update multiple records using a partitioned DML statement.")]
-    class UpdateUsingPartitionedDmlOptions : DefaultOptions
-    {
-    }
-
     [Verb("deleteUsingPartitionedDml", HelpText = "Delete multiple records using a partitioned DML statement.")]
     class DeleteUsingPartitionedDmlOptions : DefaultOptions
     {
@@ -1651,31 +1646,6 @@ namespace GoogleCloudSamples.Spanner
             }
         }
         // [END spanner_dml_getting_started_update]
-
-        // [START spanner_dml_partitioned_update]
-        public static async Task UpdateUsingPartitionedDmlCoreAsync(
-            string projectId,
-            string instanceId,
-            string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-
-            // Create connection to Cloud Spanner.
-            using (var connection =
-                new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                SpannerCommand cmd = connection.CreateDmlCommand(
-                    "UPDATE Albums SET MarketingBudget = 100000 WHERE SingerId > 1"
-                );
-                long rowCount = await cmd.ExecutePartitionedUpdateAsync();
-                Console.WriteLine($"{rowCount} row(s) updated...");
-            }
-        }
-        // [END spanner_dml_partitioned_update]
 
         // [START spanner_dml_partitioned_delete]
         public static async Task DeleteUsingPartitionedDmlCoreAsync(
@@ -3707,17 +3677,6 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object UpdateUsingPartitionedDml(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = UpdateUsingPartitionedDmlCoreAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
         public static object DeleteUsingPartitionedDml(string projectId,
             string instanceId, string databaseId)
         {
@@ -3939,9 +3898,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteWithTransactionUsingDmlOptions opts) =>
                     WriteWithTransactionUsingDml(opts.projectId, opts.instanceId,
-                    opts.databaseId))
-                .Add((UpdateUsingPartitionedDmlOptions opts) =>
-                    UpdateUsingPartitionedDml(opts.projectId, opts.instanceId,
                     opts.databaseId))
                 .Add((DeleteUsingPartitionedDmlOptions opts) =>
                     DeleteUsingPartitionedDml(opts.projectId, opts.instanceId,
