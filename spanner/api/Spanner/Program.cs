@@ -427,11 +427,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("updateUsingBatchDml", HelpText = "Updates sample data in the database using Batch DML.")]
-    class UpdateUsingBatchDmlOptions : DefaultOptions
-    {
-    }
-
     [Verb("createTableWithDatatypes", HelpText = "Create 'Venues' table containing supported datatype columns.")]
     class CreateTableWithDatatypesOptions : DefaultOptions
     {
@@ -1641,41 +1636,6 @@ namespace GoogleCloudSamples.Spanner
             }
         }
         // [END spanner_dml_getting_started_update]
-
-        // [START spanner_dml_batch_update]
-        public static async Task UpdateUsingBatchDmlCoreAsync(
-            string projectId,
-            string instanceId,
-            string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-
-            // Create connection to Cloud Spanner.
-            using (var connection =
-                new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                SpannerBatchCommand cmd = connection.CreateBatchDmlCommand();
-                //var cmd = new SpannerBatchCommand(connection);
-
-                cmd.Add("INSERT INTO Albums "
-                    + "(SingerId, AlbumId, AlbumTitle, MarketingBudget) "
-                    + "VALUES (1, 3, 'Test Album Title', 10000)");
-
-                cmd.Add("UPDATE Albums "
-                    + "SET MarketingBudget = MarketingBudget * 2 "
-                    + "WHERE SingerId = 1 and AlbumId = 3");
-
-                IEnumerable<long> affectedRows = await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine(
-                    $"Executed {affectedRows.Count()} "
-                    + "SQL statements using Batch DML.");
-            }
-        }
-        // [END spanner_dml_batch_update]
 
         // [START spanner_delete_data]
         public static async Task DeleteIndividualRowsAsync(
@@ -3647,17 +3607,6 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object UpdateUsingBatchDml(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = UpdateUsingBatchDmlCoreAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
         public static object CreateConnectionWithQueryOptions(
             string projectId, string instanceId, string databaseId)
         {
@@ -3857,9 +3806,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteWithTransactionUsingDmlOptions opts) =>
                     WriteWithTransactionUsingDml(opts.projectId, opts.instanceId,
-                    opts.databaseId))
-                .Add((UpdateUsingBatchDmlOptions opts) =>
-                    UpdateUsingBatchDml(opts.projectId, opts.instanceId,
                     opts.databaseId))
                 .Add((CreateTableWithDatatypesOptions opts) =>
                     CreateTableWithDatatypes(opts.projectId,
