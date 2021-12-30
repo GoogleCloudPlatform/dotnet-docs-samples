@@ -392,11 +392,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("updateUsingDmlWithTimestamp", HelpText = "Update the timestamp value of specifc records using a DML statement.")]
-    class UpdateUsingDmlWithTimestampOptions : DefaultOptions
-    {
-    }
-
     [Verb("writeAndReadUsingDml", HelpText = "Insert data using a DML statement and then read the inserted data.")]
     class WriteAndReadUsingDmlOptions : DefaultOptions
     {
@@ -1360,32 +1355,6 @@ namespace GoogleCloudSamples.Spanner
             }
         }
         // [END spanner_dml_standard_update]
-
-        // [START spanner_dml_standard_update_with_timestamp]
-        public static async Task UpdateUsingDmlWithTimestampCoreAsync(
-            string projectId,
-            string instanceId,
-            string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-
-            // Create connection to Cloud Spanner.
-            using (var connection =
-                new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                SpannerCommand cmd = connection.CreateDmlCommand(
-                   "UPDATE Albums "
-                   + "SET LastUpdateTime = PENDING_COMMIT_TIMESTAMP() "
-                   + "WHERE SingerId = 1");
-                int rowCount = await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine($"{rowCount} row(s) updated...");
-            }
-        }
-        // [END spanner_dml_standard_update_with_timestamp]
 
         // [START spanner_dml_write_then_read]
         public static async Task WriteAndReadUsingDmlCoreAsync(
@@ -3500,17 +3469,6 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object UpdateUsingDmlWithTimestamp(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = UpdateUsingDmlWithTimestampCoreAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
         public static object WriteAndReadUsingDml(string projectId,
             string instanceId, string databaseId)
         {
@@ -3744,9 +3702,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((UpdateUsingDmlOptions opts) =>
                     UpdateUsingDml(opts.projectId, opts.instanceId,
-                    opts.databaseId))
-                .Add((UpdateUsingDmlWithTimestampOptions opts) =>
-                    UpdateUsingDmlWithTimestamp(opts.projectId, opts.instanceId,
                     opts.databaseId))
                 .Add((WriteAndReadUsingDmlOptions opts) =>
                     WriteAndReadUsingDml(opts.projectId, opts.instanceId,
