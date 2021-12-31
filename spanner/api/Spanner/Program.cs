@@ -127,21 +127,6 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("queryDataWithIndex", HelpText = "Query the sample Cloud Spanner database table using an index.")]
-    class QueryDataWithIndexOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample data resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample data resides.", Required = true)]
-        public string databaseId { get; set; }
-        [Value(3, HelpText = "The start of the title index.", Required = false)]
-        public string startTitle { get; set; }
-        [Value(4, HelpText = "The end of the title index.", Required = false)]
-        public string endTitle { get; set; }
-    }
-
     [Verb("queryDataWithStoringIndex", HelpText = "Query the sample Cloud Spanner database table using an storing index.")]
     class QueryDataWithStoringIndexOptions
     {
@@ -621,49 +606,6 @@ namespace GoogleCloudSamples.Spanner
                 }
             }
             // [END spanner_query_data]
-        }
-
-        public static async Task QueryDataWithIndexAsync(
-            string projectId, string instanceId, string databaseId,
-            string startTitle = "Aardvark", string endTitle = "Goo")
-        {
-            // [START spanner_query_data_with_index]
-            // [START spanner_read_data_with_index]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    "SELECT AlbumId, AlbumTitle, MarketingBudget FROM Albums@ "
-                    + "{FORCE_INDEX=AlbumsByAlbumTitle} "
-                    + $"WHERE AlbumTitle >= @startTitle "
-                    + $"AND AlbumTitle < @endTitle",
-                    new SpannerParameterCollection {
-                        {"startTitle", SpannerDbType.String},
-                        {"endTitle", SpannerDbType.String} });
-                cmd.Parameters["startTitle"].Value = startTitle;
-                cmd.Parameters["endTitle"].Value = endTitle;
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        var marketingBudget = reader.IsDBNull(
-                            reader.GetOrdinal("MarketingBudget")) ?
-                            "" :
-                            reader.GetFieldValue<string>("MarketingBudget");
-                        Console.WriteLine("AlbumId : "
-                        + reader.GetFieldValue<string>("AlbumId")
-                        + " AlbumTitle : "
-                        + reader.GetFieldValue<string>("AlbumTitle")
-                        + " MarketingBudget : "
-                        + marketingBudget);
-                    }
-                }
-            }
-            // [END spanner_read_data_with_index]
-            // [END spanner_query_data_with_index]
         }
 
         public static async Task QueryDataWithStoringIndexAsync(
@@ -1437,37 +1379,6 @@ namespace GoogleCloudSamples.Spanner
         {
             var response = QuerySampleDataAsync(
                 projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static object QueryDataWithIndex(string projectId,
-            string instanceId, string databaseId,
-            string startTitle, string endTitle)
-        {
-            if (string.IsNullOrEmpty(startTitle) ^ string.IsNullOrWhiteSpace(endTitle))
-            {
-                // Only one Title provided: show message that user must
-                // provide both startTitle and endTitle or exclude them
-                // from their command.
-                Console.WriteLine("Please provide values for both the start "
-                    + "of the title index and the end of the title index.");
-                Console.WriteLine("Or you can exclude both to run the "
-                    + "query with default values.");
-                return ExitCode.InvalidParameter;
-            }
-            // Call method QueryDataWithIndexAsync() based on whether
-            // user provided startTitle and endTitle values are empty or null.
-            Task response = string.IsNullOrEmpty(startTitle) ?
-                // startTitle not provided, exclude startTitle and endTitle from
-                // method call to use default values for both.
-                QueryDataWithIndexAsync(projectId, instanceId, databaseId) :
-                // Both startTitle and endTitle provided, include them both in
-                // the method call to QueryDataWithIndexAsync.
-                QueryDataWithIndexAsync(projectId, instanceId, databaseId,
-                        startTitle, endTitle);
             s_logger.Info("Waiting for operation to complete...");
             response.Wait();
             s_logger.Info($"Operation status: {response.Status}");
@@ -2753,9 +2664,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.projectId, opts.instanceId, opts.databaseId))
                 .Add((AddStoringIndexOptions opts) => AddStoringIndex(
                     opts.projectId, opts.instanceId, opts.databaseId))
-                .Add((QueryDataWithIndexOptions opts) => QueryDataWithIndex(
-                    opts.projectId, opts.instanceId, opts.databaseId,
-                    opts.startTitle, opts.endTitle))
                 .Add((QueryDataWithStoringIndexOptions opts) =>
                     QueryDataWithStoringIndex(
                         opts.projectId, opts.instanceId, opts.databaseId,
