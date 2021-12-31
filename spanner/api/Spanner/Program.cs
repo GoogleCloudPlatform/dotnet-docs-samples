@@ -314,17 +314,6 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("createTableWithTimestamp", HelpText = "Create a new table with a commit timestamp column in the sample Cloud Spanner database table.")]
-    class CreateTableWithTimestampOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
     [Verb("writeDataWithTimestamp", HelpText = "Write data into table with a commit timestamp column in the sample Cloud Spanner database table.")]
     class WriteDataWithTimestampOptions
     {
@@ -1910,45 +1899,6 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_query_data_with_timestamp_column]
         }
 
-        public static object CreateTableWithTimestampColumn(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = CreateTableWithTimestampColumnAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task CreateTableWithTimestampColumnAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_create_table_with_timestamp_column]
-            // Initialize request connection string for database creation.
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                // Define create table statement for table with
-                // commit timestamp column.
-                string createTableStatement =
-                @"CREATE TABLE Performances (
-                    SingerId       INT64 NOT NULL,
-                    VenueId        INT64 NOT NULL,
-                    EventDate      Date,
-                    Revenue        INT64,
-                    LastUpdateTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)
-                ) PRIMARY KEY (SingerId, VenueId, EventDate),
-                    INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
-                // Make the request.
-                var cmd = connection.CreateDdlCommand(createTableStatement);
-                await cmd.ExecuteNonQueryAsync();
-            }
-            // [END spanner_create_table_with_timestamp_column]
-        }
-
         public static object WriteDataWithTimestampColumn(string projectId,
             string instanceId, string databaseId)
         {
@@ -2965,9 +2915,6 @@ namespace GoogleCloudSamples.Spanner
                         opts.instanceId, opts.databaseId))
                 .Add((QueryDataWithTimestampOptions opts) =>
                     QueryDataWithTimestampColumn(opts.projectId,
-                        opts.instanceId, opts.databaseId))
-                .Add((CreateTableWithTimestampOptions opts) =>
-                    CreateTableWithTimestampColumn(opts.projectId,
                         opts.instanceId, opts.databaseId))
                 .Add((WriteDataWithTimestampOptions opts) =>
                     WriteDataWithTimestampColumn(opts.projectId,
