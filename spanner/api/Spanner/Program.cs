@@ -334,11 +334,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("queryWithString", HelpText = "Query STRING datatype from the 'Venues' table.")]
-    class QueryWithStringOptions : DefaultOptions
-    {
-    }
-
     [Verb("queryWithTimestamp", HelpText = "Query TIMESTAMP datatype from the 'Venues' table.")]
     class QueryWithTimestampOptions : DefaultOptions
     {
@@ -1920,47 +1915,6 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_insert_datatypes_data]
         }
 
-        public static object QueryWithString(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryWithStringAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryWithStringAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_query_with_string_parameter]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/"
-            + $"{instanceId}/databases/{databaseId}";
-            // Create a String object to use for querying.
-            String exampleString = "Venue 42";
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    "SELECT VenueId, VenueName FROM Venues "
-                    + "WHERE VenueName = @ExampleString");
-                cmd.Parameters.Add("ExampleString",
-                    SpannerDbType.String, exampleString);
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine(
-                            reader.GetFieldValue<string>("VenueId")
-                            + " " + reader.GetFieldValue<string>("VenueName"));
-                    }
-                }
-            }
-            // [END spanner_query_with_string_parameter]
-        }
-
         public static object QueryWithTimestamp(string projectId,
             string instanceId, string databaseId)
         {
@@ -2426,9 +2380,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteDatatypesDataOptions opts) =>
                     WriteDatatypesData(opts.projectId,
-                        opts.instanceId, opts.databaseId))
-                .Add((QueryWithStringOptions opts) =>
-                    QueryWithString(opts.projectId,
                         opts.instanceId, opts.databaseId))
                 .Add((QueryWithTimestampOptions opts) =>
                     QueryWithTimestamp(opts.projectId,
