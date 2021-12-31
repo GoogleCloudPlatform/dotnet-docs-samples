@@ -334,11 +334,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("queryWithArray", HelpText = "Query ARRAY datatype from the 'Venues' table.")]
-    class QueryWithArrayOptions : DefaultOptions
-    {
-    }
-
     [Verb("queryWithBool", HelpText = "Query BOOL datatype from the 'Venues' table.")]
     class QueryWithBoolOptions : DefaultOptions
     {
@@ -1950,55 +1945,6 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_insert_datatypes_data]
         }
 
-        public static object QueryWithArray(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryWithArrayAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryWithArrayAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_query_with_array_parameter]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/"
-            + $"{instanceId}/databases/{databaseId}";
-            // Create a list array of dates to use for querying.
-            var exampleArray = new List<DateTime>();
-            exampleArray.InsertRange(0, new DateTime[] {
-                DateTime.Parse("2020-10-01"),
-                DateTime.Parse("2020-11-01")
-                });
-
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    "SELECT VenueId, VenueName, AvailableDate FROM Venues v, "
-                    + "UNNEST(v.AvailableDates) as AvailableDate "
-                    + "WHERE AvailableDate in UNNEST(@ExampleArray)");
-                cmd.Parameters.Add("ExampleArray",
-                    SpannerDbType.ArrayOf(SpannerDbType.Date), exampleArray);
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine(
-                            reader.GetFieldValue<string>("VenueId")
-                            + " " + reader.GetFieldValue<string>("VenueName")
-                            + " " +
-                            reader.GetFieldValue<string>("AvailableDate"));
-                    }
-                }
-            }
-            // [END spanner_query_with_array_parameter]
-        }
-
         public static object QueryWithBool(string projectId,
             string instanceId, string databaseId)
         {
@@ -2718,9 +2664,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteDatatypesDataOptions opts) =>
                     WriteDatatypesData(opts.projectId,
-                        opts.instanceId, opts.databaseId))
-                .Add((QueryWithArrayOptions opts) =>
-                    QueryWithArray(opts.projectId,
                         opts.instanceId, opts.databaseId))
                 .Add((QueryWithBoolOptions opts) =>
                     QueryWithBool(opts.projectId,
