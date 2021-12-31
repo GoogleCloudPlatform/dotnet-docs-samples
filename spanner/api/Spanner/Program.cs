@@ -334,11 +334,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("queryWithBytes", HelpText = "Query BYTES datatype from the Venues' table.")]
-    class QueryWithBytesOptions : DefaultOptions
-    {
-    }
-
     [Verb("queryWithDate", HelpText = "Query DATE datatype from the 'Venues' table.")]
     class QueryWithDateOptions : DefaultOptions
     {
@@ -1940,48 +1935,6 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_insert_datatypes_data]
         }
 
-        public static object QueryWithBytes(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryWithBytesAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryWithBytesAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_query_with_bytes_parameter]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/"
-            + $"{instanceId}/databases/{databaseId}";
-            // Create a Bytes array to use for querying.
-            string sampleText = "Hello World 1";
-            byte[] exampleBytes = Encoding.UTF8.GetBytes(sampleText);
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    "SELECT VenueId, VenueName FROM Venues "
-                    + "WHERE VenueInfo = @ExampleBytes");
-                cmd.Parameters.Add("ExampleBytes",
-                    SpannerDbType.Bytes, exampleBytes);
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine(
-                            reader.GetFieldValue<string>("VenueId")
-                            + " " + reader.GetFieldValue<string>("VenueName"));
-                    }
-                }
-            }
-            // [END spanner_query_with_bytes_parameter]
-        }
-
         public static object QueryWithDate(string projectId,
             string instanceId, string databaseId)
         {
@@ -2616,9 +2569,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteDatatypesDataOptions opts) =>
                     WriteDatatypesData(opts.projectId,
-                        opts.instanceId, opts.databaseId))
-                .Add((QueryWithBytesOptions opts) =>
-                    QueryWithBytes(opts.projectId,
                         opts.instanceId, opts.databaseId))
                 .Add((QueryWithDateOptions opts) =>
                     QueryWithDate(opts.projectId,
