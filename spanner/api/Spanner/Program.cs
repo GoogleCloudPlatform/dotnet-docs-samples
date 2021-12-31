@@ -334,12 +334,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("queryWithTimestamp", HelpText = "Query TIMESTAMP datatype from the 'Venues' table.")]
-    class QueryWithTimestampOptions : DefaultOptions
-    {
-    }
-
-
     [Verb("listDatabaseTables", HelpText = "List all the user-defined tables in the database.")]
     class ListDatabaseTablesOptions : DefaultOptions
     {
@@ -1915,54 +1909,6 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_insert_datatypes_data]
         }
 
-        public static object QueryWithTimestamp(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryWithTimestampAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryWithTimestampAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_query_with_timestamp_parameter]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/"
-            + $"{instanceId}/databases/{databaseId}";
-            // Create a DateTime timestamp object to use for querying.
-            DateTime exampleTimestamp = DateTime.Now;
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    "SELECT VenueId, VenueName, LastUpdateTime FROM Venues "
-                    + "WHERE LastUpdateTime < @ExampleTimestamp");
-                cmd.Parameters.Add("ExampleTimestamp",
-                    SpannerDbType.Timestamp, exampleTimestamp);
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        string timestamp = string.Empty;
-                        if (reader["LastUpdateTime"] != DBNull.Value)
-                        {
-                            timestamp = reader.GetFieldValue<string>("LastUpdateTime");
-                        }
-                        Console.WriteLine("VenueId : "
-                        + reader.GetFieldValue<string>("VenueId")
-                        + " VenueName : "
-                        + reader.GetFieldValue<string>("VenueName")
-                        + $" LastUpdateTime : {timestamp}");
-                    }
-                }
-            }
-            // [END spanner_query_with_timestamp_parameter]
-        }
-
         public static object InsertStructSampleData(
             string projectId, string instanceId, string databaseId)
         {
@@ -2380,9 +2326,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteDatatypesDataOptions opts) =>
                     WriteDatatypesData(opts.projectId,
-                        opts.instanceId, opts.databaseId))
-                .Add((QueryWithTimestampOptions opts) =>
-                    QueryWithTimestamp(opts.projectId,
                         opts.instanceId, opts.databaseId))
                 .Add((ListDatabaseTablesOptions opts) =>
                     ListDatabaseTables(opts.projectId, opts.instanceId,
