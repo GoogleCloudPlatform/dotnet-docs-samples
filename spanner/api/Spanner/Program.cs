@@ -211,17 +211,6 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("batchReadRecords", HelpText = "Batch read sample records from the database.")]
-    class BatchReadOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
     [Verb("queryNewTableWithTimestamp", HelpText = "Query data from table with a commit timestamp column in the sample Cloud Spanner database table.")]
     class QueryNewTableWithTimestampOptions
     {
@@ -1450,78 +1439,6 @@ namespace GoogleCloudSamples.Spanner
             Console.WriteLine("Done inserting sample records...");
         }
 
-        // [START spanner_batch_client]
-        private static int s_partitionId;
-        private static int s_rowsRead;
-        public static object BatchReadRecords(string projectId,
-             string instanceId, string databaseId)
-        {
-            var responseTask =
-                DistributedReadAsync(projectId, instanceId, databaseId);
-            Console.WriteLine("Waiting for operation to complete...");
-            responseTask.Wait();
-            Console.WriteLine($"Operation status: {responseTask.Status}");
-            return ExitCode.Success;
-        }
-
-        private static async Task DistributedReadAsync(string projectId,
-            string instanceId, string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                using (var transaction =
-                    await connection.BeginReadOnlyTransactionAsync())
-                using (var cmd =
-                    connection.CreateSelectCommand(
-                        "SELECT SingerId, FirstName, LastName FROM Singers"))
-                {
-                    transaction.DisposeBehavior =
-                        DisposeBehavior.CloseResources;
-                    cmd.Transaction = transaction;
-                    var partitions = await cmd.GetReaderPartitionsAsync();
-                    var transactionId = transaction.TransactionId;
-                    await Task.WhenAll(partitions.Select(
-                            x => DistributedReadWorkerAsync(x, transactionId)))
-                                .ConfigureAwait(false);
-                }
-                Console.WriteLine($"Done reading!  Total rows read: "
-                    + $"{s_rowsRead:N0} with {s_partitionId} partition(s)");
-            }
-        }
-
-        private static async Task DistributedReadWorkerAsync(
-            CommandPartition readPartition, TransactionId id)
-        {
-            var localId = Interlocked.Increment(ref s_partitionId);
-            using (var connection = new SpannerConnection(id.ConnectionString))
-            using (var transaction = connection.BeginReadOnlyTransaction(id))
-            {
-                using (var cmd = connection.CreateCommandWithPartition(
-                    readPartition, transaction))
-                {
-                    using (var reader =
-                        await cmd.ExecuteReaderAsync().ConfigureAwait(false))
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            Interlocked.Increment(ref s_rowsRead);
-                            Console.WriteLine($"Partition ({localId}) "
-                                + $"{reader.GetFieldValue<string>("SingerId")}"
-                                + $" {reader.GetFieldValue<string>("FirstName")}"
-                                + $" {reader.GetFieldValue<string>("LastName")}");
-                        }
-                    }
-                }
-                Console.WriteLine($"Done with single reader {localId}.");
-            }
-        }
-        // [END spanner_batch_client]
-
         public static object QueryNewTableWithTimestampColumn(string projectId,
             string instanceId, string databaseId)
         {
@@ -1897,9 +1814,6 @@ namespace GoogleCloudSamples.Spanner
                         opts.instanceId, opts.databaseId))
                 .Add((BatchInsertOptions opts) =>
                     BatchInsertRecords(opts.projectId, opts.instanceId,
-                        opts.databaseId))
-                .Add((BatchReadOptions opts) =>
-                    BatchReadRecords(opts.projectId, opts.instanceId,
                         opts.databaseId))
                 .Add((QueryNewTableWithTimestampOptions opts) =>
                     QueryNewTableWithTimestampColumn(opts.projectId,
