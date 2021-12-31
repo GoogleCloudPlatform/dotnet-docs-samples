@@ -536,11 +536,6 @@ namespace GoogleCloudSamples.Spanner
     [Verb("cancelBackupOperation", HelpText = "Cancel a Spanner database backup creation operation.")]
     class CancelBackupOperationOptions : CreateBackupOptions { }
 
-    [Verb("createConnectionWithQueryOptions", HelpText = "Creates a connection with query options set and queries the 'Albums' table.")]
-    class CreateConnectionWithQueryOptionsOptions : DefaultOptions
-    {
-    }
-
     [Verb("runCommandWithQueryOptions", HelpText = "Query 'Albums' table with query options set.")]
     class RunCommandWithQueryOptionsOptions : DefaultOptions
     {
@@ -3388,50 +3383,6 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object CreateConnectionWithQueryOptions(
-            string projectId, string instanceId, string databaseId)
-        {
-            var response = CreateConnectionWithQueryOptionsAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        private static async Task CreateConnectionWithQueryOptionsAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_create_client_with_query_options]
-            var builder = new SpannerConnectionStringBuilder
-            {
-                DataSource = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}"
-            };
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(builder))
-            {
-                // Set query options on the connection.
-                connection.QueryOptions = QueryOptions.Empty
-                    .WithOptimizerVersion("1")
-                    .WithOptimizerStatisticsPackage("auto_20191128_14_47_22UTC");
-                var cmd = connection.CreateSelectCommand(
-                    "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine("SingerId : "
-                        + reader.GetFieldValue<string>("SingerId")
-                        + " AlbumId : "
-                        + reader.GetFieldValue<string>("AlbumId")
-                        + " AlbumTitle : "
-                        + reader.GetFieldValue<string>("AlbumTitle"));
-                    }
-                }
-            }
-            // [END spanner_create_client_with_query_options]
-        }
-
         public static object RunCommandWithQueryOptions(
             string projectId, string instanceId, string databaseId)
         {
@@ -3640,9 +3591,6 @@ namespace GoogleCloudSamples.Spanner
                 .Add((DeleteBackupOptions opts) =>
                     DeleteBackup.SpannerDeleteBackup(
                         opts.projectId, opts.instanceId, opts.backupId))
-                .Add((CreateConnectionWithQueryOptionsOptions opts) =>
-                    CreateConnectionWithQueryOptions(opts.projectId,
-                    opts.instanceId, opts.databaseId))
                 .Add((RunCommandWithQueryOptionsOptions opts) =>
                     RunCommandWithQueryOptions(opts.projectId,
                     opts.instanceId, opts.databaseId))
