@@ -303,17 +303,6 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("queryDataWithTimestamp", HelpText = "Query data with a newly added commit timestamp column in the sample Cloud Spanner database table.")]
-    class QueryDataWithTimestampOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
     [Verb("queryNewTableWithTimestamp", HelpText = "Query data from table with a commit timestamp column in the sample Cloud Spanner database table.")]
     class QueryNewTableWithTimestampOptions
     {
@@ -1837,57 +1826,6 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_update_data_with_timestamp_column]
         }
 
-        public static object QueryDataWithTimestampColumn(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryDataWithTimestampColumnAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryDataWithTimestampColumnAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_query_data_with_timestamp_column]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd =
-                    connection.CreateSelectCommand(
-                        "SELECT SingerId, AlbumId, "
-                        + "MarketingBudget, LastUpdateTime FROM Albums");
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        string budget = string.Empty;
-                        if (reader["MarketingBudget"] != DBNull.Value)
-                        {
-                            budget = reader.GetFieldValue<string>("MarketingBudget");
-                        }
-                        string timestamp = string.Empty;
-                        if (reader["LastUpdateTime"] != DBNull.Value)
-                        {
-                            timestamp = reader.GetFieldValue<string>("LastUpdateTime");
-                        }
-                        Console.WriteLine("SingerId : "
-                        + reader.GetFieldValue<string>("SingerId")
-                        + " AlbumId : "
-                        + reader.GetFieldValue<string>("AlbumId")
-                        + $" MarketingBudget : {budget}"
-                        + $" LastUpdateTime : {timestamp}");
-                    }
-                }
-            }
-            // [END spanner_query_data_with_timestamp_column]
-        }
-
         public static object QueryNewTableWithTimestampColumn(string projectId,
             string instanceId, string databaseId)
         {
@@ -2848,9 +2786,6 @@ namespace GoogleCloudSamples.Spanner
                         opts.databaseId))
                 .Add((UpdateDataWithTimestampOptions opts) =>
                     UpdateDataWithTimestampColumn(opts.projectId,
-                        opts.instanceId, opts.databaseId))
-                .Add((QueryDataWithTimestampOptions opts) =>
-                    QueryDataWithTimestampColumn(opts.projectId,
                         opts.instanceId, opts.databaseId))
                 .Add((QueryNewTableWithTimestampOptions opts) =>
                     QueryNewTableWithTimestampColumn(opts.projectId,
