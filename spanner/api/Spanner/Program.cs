@@ -94,17 +94,6 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("deleteSampleData", HelpText = "Delete sample data from sample Cloud Spanner database table.")]
-    class DeleteSampleDataOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample data will be removed.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample data will be removed.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
     [Verb("querySampleData", HelpText = "Query sample data from sample Cloud Spanner database table.")]
     class QuerySampleDataOptions
     {
@@ -1198,82 +1187,6 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END spanner_dml_getting_started_update]
 
-        // [START spanner_delete_data]
-        public static async Task DeleteIndividualRowsAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            const int singerId = 2;
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-            List<Album> albums = new List<Album>
-            {
-                new Album { SingerId = singerId, AlbumId = 1, AlbumTitle = "Green" },
-                new Album { SingerId = singerId, AlbumId = 3, AlbumTitle = "Terrified" },
-            };
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                // Delete individual rows from the UpcomingAlbums table.
-                await Task.WhenAll(albums.Select(album =>
-                {
-                    var cmd = connection.CreateDeleteCommand(
-                        "UpcomingAlbums",
-                        new SpannerParameterCollection
-                        {
-                            { "SingerId", SpannerDbType.Int64, album.SingerId },
-                            { "AlbumId", SpannerDbType.Int64, album.AlbumId }
-                        }
-                    );
-                    return cmd.ExecuteNonQueryAsync();
-                }));
-
-                Console.WriteLine("Deleted individual rows in UpcomingAlbums.");
-            }
-        }
-
-        public static async Task DeleteRangeOfRowsAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                // Delete a range of rows from the UpcomingSingers table where the column key is >=3 and <5.
-                var cmd = connection.CreateDmlCommand(
-                   "DELETE FROM UpcomingSingers WHERE SingerId >= 3 AND SingerId < 5");
-                int rowCount = await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine($"{rowCount} row(s) deleted from UpcomingSingers.");
-            }
-        }
-
-        public static async Task DeleteAllRowsAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                // Delete remaining UpcomingSingers rows, which will also delete the remaining
-                // UpcomingAlbums rows since it was defined with ON DELETE CASCADE.
-                var cmd = connection.CreateDmlCommand(
-                   "DELETE FROM UpcomingSingers WHERE true");
-                int rowCount = await cmd.ExecuteNonQueryAsync();
-                Console.WriteLine($"{rowCount} row(s) deleted from UpcomingSingers.");
-            }
-        }
-        // [END spanner_delete_data]
-
         // [START spanner_insert_data]
         public static async Task InsertSampleDataAsync(
             string projectId, string instanceId, string databaseId)
@@ -1554,42 +1467,6 @@ namespace GoogleCloudSamples.Spanner
             s_logger.Info("Waiting for operation to complete...");
             response.Wait();
             s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static object DeleteSampleData(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = CreateDeleteSampleTableAsync(projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-
-            response = InsertDeleteSampleDataAsync(projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-
-            response = DeleteIndividualRowsAsync(projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-
-            response = DeleteRangeOfRowsAsync(projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-
-            response = DeleteAllRowsAsync(projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-
-            response = DropDeleteSampleTables(projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-
             return ExitCode.Success;
         }
 
@@ -3083,8 +2960,6 @@ namespace GoogleCloudSamples.Spanner
                         opts.databaseId))
                 .Add((CreateDatabaseOptions opts) => CreateDatabase(
                     opts.projectId, opts.instanceId, opts.databaseId))
-                .Add((DeleteSampleDataOptions opts) => DeleteSampleData(
-                        opts.projectId, opts.instanceId, opts.databaseId))
                 .Add((InsertSampleDataOptions opts) => InsertSampleData(
                     opts.projectId, opts.instanceId, opts.databaseId))
                 .Add((QuerySampleDataOptions opts) => QuerySampleData(
