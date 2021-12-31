@@ -189,17 +189,6 @@ namespace GoogleCloudSamples.Spanner
         public string platform { get; set; } = "net45";
     }
 
-    [Verb("readStaleData", HelpText = "Read data that is ten seconds old.")]
-    class ReadStaleDataOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
     [Verb("insertStructSampleData", HelpText = "Insert sample data that can be queried using Spanner structs.")]
     class InsertStructSampleDataOptions
     {
@@ -605,50 +594,6 @@ namespace GoogleCloudSamples.Spanner
             Console.WriteLine("Transaction complete.");
             // [END spanner_read_only_transaction_core]
         }
-
-        public static async Task<object> ReadStaleDataAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            Console.WriteLine(".NetCore API sample.");
-
-            // [START spanner_read_stale_data]
-            string connectionString =
-                $"Data Source=projects/{projectId}/instances/{instanceId}"
-                + $"/databases/{databaseId}";
-
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                // Open a new read only transaction.
-                var staleness = TimestampBound.OfExactStaleness(
-                    TimeSpan.FromSeconds(15));
-                using (var transaction =
-                    await connection.BeginReadOnlyTransactionAsync(staleness))
-                {
-                    var cmd = connection.CreateSelectCommand(
-                        "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
-                    cmd.Transaction = transaction;
-
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            Console.WriteLine("SingerId : "
-                                + reader.GetFieldValue<string>("SingerId")
-                                + " AlbumId : "
-                                + reader.GetFieldValue<string>("AlbumId")
-                                + " AlbumTitle : "
-                                + reader.GetFieldValue<string>("AlbumTitle"));
-                        }
-                    }
-                }
-            }
-            // [END spanner_read_stale_data]
-            return 0;
-        }
-
 
         public static async Task QueryDataWithTransactionAsync(
             string projectId, string instanceId, string databaseId)
@@ -1947,9 +1892,6 @@ namespace GoogleCloudSamples.Spanner
                     QueryDataWithStoringIndex(
                         opts.projectId, opts.instanceId, opts.databaseId,
                         opts.startTitle, opts.endTitle))
-                .Add((ReadStaleDataOptions opts) =>
-                    ReadStaleDataAsync(opts.projectId, opts.instanceId,
-                        opts.databaseId).Result)
                 .Add((InsertStructSampleDataOptions opts) =>
                     InsertStructSampleData(opts.projectId,
                         opts.instanceId, opts.databaseId))
