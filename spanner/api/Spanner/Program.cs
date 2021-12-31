@@ -334,11 +334,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("queryWithDate", HelpText = "Query DATE datatype from the 'Venues' table.")]
-    class QueryWithDateOptions : DefaultOptions
-    {
-    }
-
     [Verb("queryWithFloat", HelpText = "Query FLOAT64 datatype from the 'Venues' table.")]
     class QueryWithFloatOptions : DefaultOptions
     {
@@ -1935,49 +1930,6 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_insert_datatypes_data]
         }
 
-        public static object QueryWithDate(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryWithDateAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryWithDateAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_query_with_date_parameter]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/"
-            + $"{instanceId}/databases/{databaseId}";
-            // Create a Date object to use for querying.
-            DateTime exampleDate = new DateTime(2019, 01, 01);
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    "SELECT VenueId, VenueName, LastContactDate FROM Venues "
-                    + "WHERE LastContactDate < @ExampleDate");
-                cmd.Parameters.Add("ExampleDate",
-                    SpannerDbType.Date, exampleDate);
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine(
-                            reader.GetFieldValue<string>("VenueId")
-                            + " " + reader.GetFieldValue<string>("VenueName")
-                            + " " + reader.
-                                GetFieldValue<string>("LastContactDate"));
-                    }
-                }
-            }
-            // [END spanner_query_with_date_parameter]
-        }
-
         public static object QueryWithFloat(string projectId,
             string instanceId, string databaseId)
         {
@@ -2569,9 +2521,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteDatatypesDataOptions opts) =>
                     WriteDatatypesData(opts.projectId,
-                        opts.instanceId, opts.databaseId))
-                .Add((QueryWithDateOptions opts) =>
-                    QueryWithDate(opts.projectId,
                         opts.instanceId, opts.databaseId))
                 .Add((QueryWithFloatOptions opts) =>
                     QueryWithFloat(opts.projectId,
