@@ -277,17 +277,6 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("updateDataWithTimestamp", HelpText = "Update data with a newly added commit timestamp column in the sample Cloud Spanner database table.")]
-    class UpdateDataWithTimestampOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
     [Verb("queryNewTableWithTimestamp", HelpText = "Query data from table with a commit timestamp column in the sample Cloud Spanner database table.")]
     class QueryNewTableWithTimestampOptions
     {
@@ -1632,70 +1621,6 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END spanner_batch_client]
 
-        public static object UpdateDataWithTimestampColumn(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = UpdateDataWithTimestampColumnAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task UpdateDataWithTimestampColumnAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_update_data_with_timestamp_column]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateUpdateCommand("Albums",
-                    new SpannerParameterCollection {
-                        {"SingerId", SpannerDbType.Int64},
-                        {"AlbumId", SpannerDbType.Int64},
-                        {"MarketingBudget", SpannerDbType.Int64},
-                        {"LastUpdateTime", SpannerDbType.Timestamp},
-                    });
-                var cmdLookup =
-                    connection.CreateSelectCommand("SELECT * FROM Albums");
-                using (var reader = await cmdLookup.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        if (reader.GetFieldValue<int>("SingerId") == 1
-                            && reader.GetFieldValue<int>("AlbumId") == 1)
-                        {
-                            cmd.Parameters["SingerId"].Value =
-                                reader.GetFieldValue<int>("SingerId");
-                            cmd.Parameters["AlbumId"].Value =
-                                reader.GetFieldValue<int>("AlbumId");
-                            cmd.Parameters["MarketingBudget"].Value = 1000000;
-                            cmd.Parameters["LastUpdateTime"].Value =
-                                SpannerParameter.CommitTimestamp;
-                            await cmd.ExecuteNonQueryAsync();
-                        }
-                        if (reader.GetInt64(0) == 2 && reader.GetInt64(1) == 2)
-                        {
-                            cmd.Parameters["SingerId"].Value =
-                                reader.GetFieldValue<int>("SingerId");
-                            cmd.Parameters["AlbumId"].Value =
-                                reader.GetFieldValue<int>("AlbumId");
-                            cmd.Parameters["MarketingBudget"].Value = 750000;
-                            cmd.Parameters["LastUpdateTime"].Value =
-                                SpannerParameter.CommitTimestamp;
-                            await cmd.ExecuteNonQueryAsync();
-                        }
-                    }
-                }
-            }
-            Console.WriteLine("Updated data.");
-            // [END spanner_update_data_with_timestamp_column]
-        }
-
         public static object QueryNewTableWithTimestampColumn(string projectId,
             string instanceId, string databaseId)
         {
@@ -2300,9 +2225,6 @@ namespace GoogleCloudSamples.Spanner
                 .Add((BatchReadOptions opts) =>
                     BatchReadRecords(opts.projectId, opts.instanceId,
                         opts.databaseId))
-                .Add((UpdateDataWithTimestampOptions opts) =>
-                    UpdateDataWithTimestampColumn(opts.projectId,
-                        opts.instanceId, opts.databaseId))
                 .Add((QueryNewTableWithTimestampOptions opts) =>
                     QueryNewTableWithTimestampColumn(opts.projectId,
                         opts.instanceId, opts.databaseId))
