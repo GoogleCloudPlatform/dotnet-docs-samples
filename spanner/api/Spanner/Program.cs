@@ -334,11 +334,6 @@ namespace GoogleCloudSamples.Spanner
     {
     }
 
-    [Verb("queryWithInt", HelpText = "Query INT64 datatype from the 'Venues' table.")]
-    class QueryWithIntOptions : DefaultOptions
-    {
-    }
-
     [Verb("queryWithString", HelpText = "Query STRING datatype from the 'Venues' table.")]
     class QueryWithStringOptions : DefaultOptions
     {
@@ -1925,48 +1920,6 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_insert_datatypes_data]
         }
 
-        public static object QueryWithInt(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = QueryWithIntAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task QueryWithIntAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_query_with_int_parameter]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/"
-            + $"{instanceId}/databases/{databaseId}";
-            // Create a Int64 object to use for querying.
-            Int64 exampleInt = 3000;
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    "SELECT VenueId, VenueName, Capacity FROM Venues "
-                    + "WHERE Capacity >= @ExampleInt");
-                cmd.Parameters.Add("ExampleInt",
-                    SpannerDbType.Int64, exampleInt);
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine(
-                            reader.GetFieldValue<string>("VenueId")
-                            + " " + reader.GetFieldValue<string>("VenueName")
-                            + " " + reader.GetFieldValue<string>("Capacity"));
-                    }
-                }
-            }
-            // [END spanner_query_with_int_parameter]
-        }
-
         public static object QueryWithString(string projectId,
             string instanceId, string databaseId)
         {
@@ -2473,9 +2426,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.databaseId))
                 .Add((WriteDatatypesDataOptions opts) =>
                     WriteDatatypesData(opts.projectId,
-                        opts.instanceId, opts.databaseId))
-                .Add((QueryWithIntOptions opts) =>
-                    QueryWithInt(opts.projectId,
                         opts.instanceId, opts.databaseId))
                 .Add((QueryWithStringOptions opts) =>
                     QueryWithString(opts.projectId,
