@@ -314,17 +314,6 @@ namespace GoogleCloudSamples.Spanner
         public string databaseId { get; set; }
     }
 
-    [Verb("writeDataWithTimestamp", HelpText = "Write data into table with a commit timestamp column in the sample Cloud Spanner database table.")]
-    class WriteDataWithTimestampOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
-        public string databaseId { get; set; }
-    }
-
     [Verb("queryNewTableWithTimestamp", HelpText = "Query data from table with a commit timestamp column in the sample Cloud Spanner database table.")]
     class QueryNewTableWithTimestampOptions
     {
@@ -1899,59 +1888,6 @@ namespace GoogleCloudSamples.Spanner
             // [END spanner_query_data_with_timestamp_column]
         }
 
-        public static object WriteDataWithTimestampColumn(string projectId,
-            string instanceId, string databaseId)
-        {
-            var response = WriteDataWithTimestampAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static async Task WriteDataWithTimestampAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_insert_data_with_timestamp_column]
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
-            List<Performance> performances = new List<Performance> {
-                new Performance {SingerId = 1, VenueId = 4, EventDate = DateTime.Parse("2017-10-05"),
-                    Revenue = 11000},
-                new Performance {SingerId = 1, VenueId = 19, EventDate = DateTime.Parse("2017-11-02"),
-                    Revenue = 15000},
-                new Performance {SingerId = 2, VenueId = 42, EventDate = DateTime.Parse("2017-12-23"),
-                    Revenue = 7000},
-            };
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(connectionString))
-            {
-                await connection.OpenAsync();
-                // Insert rows into the Performances table.
-                var cmd = connection.CreateInsertCommand("Performances",
-                    new SpannerParameterCollection {
-                        {"SingerId", SpannerDbType.Int64},
-                        {"VenueId", SpannerDbType.Int64},
-                        {"EventDate", SpannerDbType.Date},
-                        {"Revenue", SpannerDbType.Int64},
-                        {"LastUpdateTime", SpannerDbType.Timestamp},
-                });
-                await Task.WhenAll(performances.Select(performance =>
-                {
-                    cmd.Parameters["SingerId"].Value = performance.SingerId;
-                    cmd.Parameters["VenueId"].Value = performance.VenueId;
-                    cmd.Parameters["EventDate"].Value = performance.EventDate;
-                    cmd.Parameters["Revenue"].Value = performance.Revenue;
-                    cmd.Parameters["LastUpdateTime"].Value = SpannerParameter.CommitTimestamp;
-                    return cmd.ExecuteNonQueryAsync();
-                }));
-                Console.WriteLine("Inserted data.");
-            }
-            // [END spanner_insert_data_with_timestamp_column]
-        }
-
         public static object QueryNewTableWithTimestampColumn(string projectId,
             string instanceId, string databaseId)
         {
@@ -2915,9 +2851,6 @@ namespace GoogleCloudSamples.Spanner
                         opts.instanceId, opts.databaseId))
                 .Add((QueryDataWithTimestampOptions opts) =>
                     QueryDataWithTimestampColumn(opts.projectId,
-                        opts.instanceId, opts.databaseId))
-                .Add((WriteDataWithTimestampOptions opts) =>
-                    WriteDataWithTimestampColumn(opts.projectId,
                         opts.instanceId, opts.databaseId))
                 .Add((QueryNewTableWithTimestampOptions opts) =>
                     QueryNewTableWithTimestampColumn(opts.projectId,
