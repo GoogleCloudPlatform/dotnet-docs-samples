@@ -536,11 +536,6 @@ namespace GoogleCloudSamples.Spanner
     [Verb("cancelBackupOperation", HelpText = "Cancel a Spanner database backup creation operation.")]
     class CancelBackupOperationOptions : CreateBackupOptions { }
 
-    [Verb("runCommandWithQueryOptions", HelpText = "Query 'Albums' table with query options set.")]
-    class RunCommandWithQueryOptionsOptions : DefaultOptions
-    {
-    }
-
     // [START spanner_retry_strategy]
     public class RetryRobot
     {
@@ -3383,50 +3378,6 @@ namespace GoogleCloudSamples.Spanner
             return ExitCode.Success;
         }
 
-        public static object RunCommandWithQueryOptions(
-            string projectId, string instanceId, string databaseId)
-        {
-            var response = RunCommandWithQueryOptionsAsync(
-                projectId, instanceId, databaseId);
-            s_logger.Info("Waiting for operation to complete...");
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        private static async Task RunCommandWithQueryOptionsAsync(
-            string projectId, string instanceId, string databaseId)
-        {
-            // [START spanner_query_with_query_options]
-            var builder = new SpannerConnectionStringBuilder
-            {
-                DataSource = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}"
-            };
-            // Create connection to Cloud Spanner.
-            using (var connection = new SpannerConnection(builder))
-            {
-                var cmd = connection.CreateSelectCommand(
-                    "SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
-                // Set query options just for this command.
-                cmd.QueryOptions = QueryOptions.Empty
-                    .WithOptimizerVersion("1")
-                    .WithOptimizerStatisticsPackage("latest");
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        Console.WriteLine("SingerId : "
-                        + reader.GetFieldValue<string>("SingerId")
-                        + " AlbumId : "
-                        + reader.GetFieldValue<string>("AlbumId")
-                        + " AlbumTitle : "
-                        + reader.GetFieldValue<string>("AlbumTitle"));
-                    }
-                }
-            }
-            // [END spanner_query_with_query_options]
-        }
-
         public static int Main(string[] args)
         {
             var verbMap = new VerbMap<object>();
@@ -3591,9 +3542,6 @@ namespace GoogleCloudSamples.Spanner
                 .Add((DeleteBackupOptions opts) =>
                     DeleteBackup.SpannerDeleteBackup(
                         opts.projectId, opts.instanceId, opts.backupId))
-                .Add((RunCommandWithQueryOptionsOptions opts) =>
-                    RunCommandWithQueryOptions(opts.projectId,
-                    opts.instanceId, opts.databaseId))
                 .NotParsedFunc = (err) => 1;
             return (int)verbMap.Run(args);
         }
