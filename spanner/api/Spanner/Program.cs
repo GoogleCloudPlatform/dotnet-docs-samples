@@ -215,20 +215,6 @@ namespace GoogleCloudSamples.Spanner
         public string platform { get; set; } = "net45";
     }
 
-    [Verb("readWriteWithTransaction", HelpText = "Update data in the sample Cloud Spanner database table using a read-write transaction.")]
-    class ReadWriteWithTransactionOptions
-    {
-        [Value(0, HelpText = "The project ID of the project to use when managing Cloud Spanner resources.", Required = true)]
-        public string projectId { get; set; }
-        [Value(1, HelpText = "The ID of the instance where the sample database resides.", Required = true)]
-        public string instanceId { get; set; }
-        [Value(2, HelpText = "The ID of the database where the sample database resides.", Required = true)]
-        public string databaseId { get; set; }
-
-        [Value(3, HelpText = "The platform code to execute. This should be 'netcore' or 'net45' (the default).", Required = false)]
-        public string platform { get; set; } = "net45";
-    }
-
     [Verb("readStaleData", HelpText = "Read data that is ten seconds old.")]
     class ReadStaleDataOptions
     {
@@ -1194,93 +1180,6 @@ namespace GoogleCloudSamples.Spanner
         }
         // [END spanner_read_write_transaction_core]
 
-        // [START spanner_read_write_transaction]
-        public static async Task ReadWriteWithTransactionAsync(
-            string projectId,
-            string instanceId,
-            string databaseId)
-        {
-            // This sample transfers 200,000 from the MarketingBudget
-            // field of the second Album to the first Album. Make sure to run
-            // the addColumn and writeDataToNewColumn samples first,
-            // in that order.
-
-            string connectionString =
-            $"Data Source=projects/{projectId}/instances/{instanceId}"
-            + $"/databases/{databaseId}";
-
-            using (TransactionScope scope = new TransactionScope(
-                TransactionScopeAsyncFlowOption.Enabled))
-            {
-                decimal transferAmount = 200000;
-                decimal secondBudget = 0;
-                decimal firstBudget = 0;
-
-                // Create connection to Cloud Spanner.
-                using (var connection =
-                    new SpannerConnection(connectionString))
-                {
-                    // Create statement to select the second album's data.
-                    var cmdLookup = connection.CreateSelectCommand(
-                    "SELECT * FROM Albums WHERE SingerId = 2 AND AlbumId = 2");
-                    // Excecute the select query.
-                    using (var reader = await cmdLookup.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            // Read the second album's budget.
-                            secondBudget =
-                              reader.GetFieldValue<decimal>("MarketingBudget");
-                            // Confirm second Album's budget is sufficient and
-                            // if not raise an exception. Raising an exception
-                            // will automatically roll back the transaction.
-                            if (secondBudget < transferAmount)
-                            {
-                                throw new Exception("The second album's "
-                                    + $"budget {secondBudget} "
-                                    + "is less than the "
-                                    + "amount to transfer.");
-                            }
-                        }
-                    }
-                    // Read the first album's budget.
-                    cmdLookup = connection.CreateSelectCommand(
-                    "SELECT * FROM Albums WHERE SingerId = 1 and AlbumId = 1");
-                    using (var reader = await cmdLookup.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            firstBudget =
-                              reader.GetFieldValue<decimal>("MarketingBudget");
-                        }
-                    }
-
-                    // Specify update command parameters.
-                    var cmd = connection.CreateUpdateCommand("Albums",
-                        new SpannerParameterCollection {
-                        {"SingerId", SpannerDbType.Int64},
-                        {"AlbumId", SpannerDbType.Int64},
-                        {"MarketingBudget", SpannerDbType.Int64},
-                    });
-                    // Update second album to remove the transfer amount.
-                    secondBudget -= transferAmount;
-                    cmd.Parameters["SingerId"].Value = 2;
-                    cmd.Parameters["AlbumId"].Value = 2;
-                    cmd.Parameters["MarketingBudget"].Value = secondBudget;
-                    await cmd.ExecuteNonQueryAsync();
-                    // Update first album to add the transfer amount.
-                    firstBudget += transferAmount;
-                    cmd.Parameters["SingerId"].Value = 1;
-                    cmd.Parameters["AlbumId"].Value = 1;
-                    cmd.Parameters["MarketingBudget"].Value = firstBudget;
-                    await cmd.ExecuteNonQueryAsync();
-                    scope.Complete();
-                    Console.WriteLine("Transaction complete.");
-                }
-            }
-        }
-        // [END spanner_read_write_transaction]
-
         // [START spanner_dml_structs]
         public static async Task UpdateUsingDmlWithStructCoreAsync(
             string projectId,
@@ -2037,45 +1936,6 @@ namespace GoogleCloudSamples.Spanner
             s_logger.Info("Waiting for operation to complete...");
             response.Wait();
             s_logger.Info($"Operation status: {response.Status}");
-            return ExitCode.Success;
-        }
-
-        public static object ReadWriteWithTransaction(
-            string projectId, string instanceId,
-            string databaseId, string platform)
-        {
-            s_logger.Info("Waiting for operation to complete...");
-            var response = platform == s_netCorePlatform
-                ? Task.Run(async () =>
-                {
-                    var retryRobot = new RetryRobot
-                    {
-                        MaxTryCount = 3,
-                        DelayMultiplier = 2,
-                        ShouldRetry = (e) => e.IsTransientSpannerFault()
-                    };
-
-                    await retryRobot.Eventually(() =>
-                        ReadWriteWithTransactionCoreAsync(
-                            projectId, instanceId, databaseId));
-                })
-                : Task.Run(async () =>
-                {
-                    // [START spanner_read_write_retry]
-                    var retryRobot = new RetryRobot
-                    {
-                        MaxTryCount = 3,
-                        DelayMultiplier = 2,
-                        ShouldRetry = (e) => e.IsTransientSpannerFault()
-                    };
-
-                    await retryRobot.Eventually(() =>
-                        ReadWriteWithTransactionAsync(
-                            projectId, instanceId, databaseId));
-                    // [END spanner_read_write_retry]
-                });
-            response.Wait();
-            s_logger.Info($"Response status: {response.Status}");
             return ExitCode.Success;
         }
 
@@ -3401,10 +3261,6 @@ namespace GoogleCloudSamples.Spanner
                     opts.projectId, opts.instanceId, opts.databaseId))
                 .Add((QueryDataWithTransactionOptions opts) =>
                     QueryDataWithTransaction(
-                        opts.projectId, opts.instanceId, opts.databaseId,
-                        opts.platform))
-                .Add((ReadWriteWithTransactionOptions opts) =>
-                    ReadWriteWithTransaction(
                         opts.projectId, opts.instanceId, opts.databaseId,
                         opts.platform))
                 .Add((AddIndexOptions opts) => AddIndex(
