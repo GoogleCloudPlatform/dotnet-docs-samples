@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>grs_events</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Api.Gax" Version="3.5.0" />
+    <PackageReference Include="Google.Cloud.Retail.V2" Version="1.5.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="3.6.0" />
+  </ItemGroup>
+  
+</Project>
