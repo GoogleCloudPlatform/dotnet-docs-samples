@@ -29,11 +29,12 @@ public class SetRpoAsyncTurboTest
     public void SetRpoAsyncTurbo()
     {
         SetRpoAsyncTurboSample setRpoAsyncTurboSample = new SetRpoAsyncTurboSample();
-        GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
+        GetRpoSample getRpoSample = new GetRpoSample();
+
         setRpoAsyncTurboSample.SetRpoAsyncTurbo(_fixture.BucketNameGeneric);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
-        var obj = getBucketMetadataSample.GetBucketMetadata(_fixture.BucketNameGeneric);
-        Assert.Equal("ASYNC_TURBO", obj.Rpo);
+        var rpo = getRpoSample.GetRpo(_fixture.BucketNameGeneric);
+        Assert.Equal("ASYNC_TURBO", rpo);
     }
 }

@@ -15,7 +15,6 @@
 // [START storage_set_rpo_async_turbo]
 
 using System;
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 
 public class SetRpoAsyncTurboSample

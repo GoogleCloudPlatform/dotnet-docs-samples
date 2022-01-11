@@ -15,7 +15,6 @@
 // [START storage_get_rpo]
 
 using System;
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 
 public class GetRpoSample
