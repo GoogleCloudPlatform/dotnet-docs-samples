@@ -19,26 +19,26 @@ using Google.Cloud.Storage.V1;
 using Google.Apis.Storage.v1.Data;
 
 public class GetPubSubNotificationSample
+{
+    public Notification GetPubSubNotification(
+     string bucketName = "your-unique-bucket-name",
+     string notificationId = "notification-Id")
     {
-        public Notification GetPubSubNotification(
-         string bucketName = "your-unique-bucket-name",
-         string notificationId = "notification-Id")
-        {
-            var storage = StorageClient.Create();
-            var notification = storage.GetNotification(bucketName, notificationId);
-           
-            Console.WriteLine("ID: "+ notification.Id );
-            Console.WriteLine("Topic: " + notification.Topic);
-            Console.WriteLine("EventTypes: " + notification.EventTypes);
-            Console.WriteLine("CustomAttributes: " + notification.CustomAttributes);
-            Console.WriteLine("PayloadFormat: " + notification.PayloadFormat);
-            Console.WriteLine("ObjectNamePrefix: " + notification.ObjectNamePrefix);
-            Console.WriteLine("ETag: " + notification.ETag);
-            Console.WriteLine("SelfLink: " + notification.SelfLink);
-            Console.WriteLine("Kind: " + notification.Kind);
+        var storage = StorageClient.Create();
+        var notification = storage.GetNotification(bucketName, notificationId);
+
+        Console.WriteLine("ID: " + notification.Id);
+        Console.WriteLine("Topic: " + notification.Topic);
+        Console.WriteLine("EventTypes: " + notification.EventTypes);
+        Console.WriteLine("CustomAttributes: " + notification.CustomAttributes);
+        Console.WriteLine("PayloadFormat: " + notification.PayloadFormat);
+        Console.WriteLine("ObjectNamePrefix: " + notification.ObjectNamePrefix);
+        Console.WriteLine("ETag: " + notification.ETag);
+        Console.WriteLine("SelfLink: " + notification.SelfLink);
+        Console.WriteLine("Kind: " + notification.Kind);
 
         return notification;
-        }
     }
+}
 
 // [END storage_print_pubsub_bucket_notification]

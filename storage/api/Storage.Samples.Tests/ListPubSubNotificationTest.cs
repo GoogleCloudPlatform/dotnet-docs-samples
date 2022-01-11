@@ -33,12 +33,10 @@ public class ListPubSubNotificationTest
     {
         CreatePubSubNotificationSample createPubSubNotificationSample = new CreatePubSubNotificationSample();
         ListPubSubNotificationSample listPubSubNotificationSample = new ListPubSubNotificationSample();
+        _fixture.CreateBucket(_fixture.BucketNameGeneric);
 
-        var bucketName = Guid.NewGuid().ToString();
-        _fixture.CreateBucket(bucketName);
-
-        createPubSubNotificationSample.CreatePubSubNotification(bucketName, "my-topic");
-        var listOfPubSubNotifications = listPubSubNotificationSample.ListPubSubNotification(bucketName);
+        createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, "my-topic");
+        var listOfPubSubNotifications = listPubSubNotificationSample.ListPubSubNotification(_fixture.BucketNameGeneric);
 
         Assert.Contains(listOfPubSubNotifications, x => x.Topic == "my-topic");
     }

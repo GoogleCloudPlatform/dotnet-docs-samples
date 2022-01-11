@@ -27,11 +27,10 @@ public class CreatePubSubNotificationSample
         var storage = StorageClient.Create();
         Notification notification = new Notification();
         notification.Topic = topic;
-        var confirmNotification = storage.CreateNotification(bucketName,notification);
+        var createdNotification = storage.CreateNotification(bucketName, notification);
 
-        Console.WriteLine("Notification subscription created with ID: " + confirmNotification.Id + " for bucket name "+ bucketName);
-
-    return confirmNotification;
+        Console.WriteLine("Notification subscription created with ID: " + createdNotification.Id + " for bucket name " + bucketName);
+        return createdNotification;
 
     }
 }
