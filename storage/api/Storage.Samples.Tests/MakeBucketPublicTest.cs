@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IO;
-using System.Net;
-using Xunit;
 using Google.Cloud.Storage.V1;
-using System.Linq;
+using Xunit;
 
 [Collection(nameof(StorageFixture))]
 public class MakeBucketPublicTest
