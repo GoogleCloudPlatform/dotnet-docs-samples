@@ -20,8 +20,7 @@ using Google.Cloud.Storage.V1;
 
 public class GetRpoSample
 {
-    public string GetRpo(
-        string bucketName = "your-unique-bucket-name")
+    public string GetRpo(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var rpo = storage.GetBucket(bucketName).Rpo;

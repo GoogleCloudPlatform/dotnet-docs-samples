@@ -16,21 +16,21 @@
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class SetRPOAsyncTurboTest
+public class SetRpoAsyncTurboTest
 {
     private readonly StorageFixture _fixture;
 
-    public SetRPOAsyncTurboTest(StorageFixture fixture)
+    public SetRpoAsyncTurboTest(StorageFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void SetRPOAsyncTurbo()
+    public void SetRpoAsyncTurbo()
     {
-        SetRPOAsyncTurboSample setRPOAsyncTurboSample = new SetRPOAsyncTurboSample();
+        SetRpoAsyncTurboSample setRpoAsyncTurboSample = new SetRpoAsyncTurboSample();
         GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
-        setRPOAsyncTurboSample.SetRPOAsyncTurbo(_fixture.BucketNameGeneric);
+        setRpoAsyncTurboSample.SetRpoAsyncTurbo(_fixture.BucketNameGeneric);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
         var obj = getBucketMetadataSample.GetBucketMetadata(_fixture.BucketNameGeneric);

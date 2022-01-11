@@ -18,11 +18,9 @@ using System;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 
-
-public class SetRPOAsyncTurboSample
+public class SetRpoAsyncTurboSample
 {
-    public void SetRPOAsyncTurbo(
-        string bucketName = "your-unique-bucket-name")
+    public void SetRpoAsyncTurbo(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);

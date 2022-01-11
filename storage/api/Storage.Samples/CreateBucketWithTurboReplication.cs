@@ -22,16 +22,12 @@ public class CreateBucketWithTurboReplicationSample
 {
     public Bucket CreateBucketWithTurboReplication(
         string projectId = "your-project-id",
-        string bucketName = "your-unique-bucket-name",
         string location = "your-bucket-location")
     {
         var storage = StorageClient.Create();
-        var bucket = storage.CreateBucket(projectId, bucketName);
-        bucket.Location = location;
-        bucket.Rpo = "ASYNC_TURBO";
-        storage.UpdateBucket(bucket);
+        var bucket = storage.CreateBucket(projectId, new Bucket { Location = location, Rpo = "ASYNC_TURBO" });
 
-        Console.WriteLine($"Created {bucketName} in {bucket.Location} with RPO Setting {bucket.Rpo}.");
+        Console.WriteLine($"Created {bucket.Name} in {bucket.Location} with RPO Setting {bucket.Rpo}.");
         return bucket;
     }
 

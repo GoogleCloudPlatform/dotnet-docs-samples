@@ -32,8 +32,7 @@ public class CreateBucketWithTurboReplicationTest
     public void CreateBucketWithTurboReplication()
     {
         CreateBucketWithTurboReplicationSample createBucketWithTurboReplication = new CreateBucketWithTurboReplicationSample();
-        var bucketName = Guid.NewGuid().ToString();
-        var bucket = createBucketWithTurboReplication.CreateBucketWithTurboReplication(_fixture.ProjectId, bucketName,"nam4");
+        var bucket = createBucketWithTurboReplication.CreateBucketWithTurboReplication(_fixture.ProjectId, "nam4");
         _fixture.SleepAfterBucketCreateUpdateDelete();
         Assert.Equal("ASYNC_TURBO",bucket.Rpo);
     }

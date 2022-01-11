@@ -16,26 +16,26 @@
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class SetRPODefaultTest
+public class SetRpoDefaultTest
 {
     private readonly StorageFixture _fixture;
 
-    public SetRPODefaultTest(StorageFixture fixture)
+    public SetRpoDefaultTest(StorageFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void SetRPODefault()
+    public void SetRpoDefault()
     {
-        SetRPODefaultSample setRPODefaultSample = new SetRPODefaultSample();
-        GetBucketMetadataSample getBucketMetadataSample = new GetBucketMetadataSample();
+        SetRpoDefaultSample setRPODefaultSample = new SetRpoDefaultSample();
+        GetRpoSample getRpoSample = new GetRpoSample();
         
-        setRPODefaultSample.SetRPODefault(_fixture.BucketNameGeneric);
+        setRPODefaultSample.SetRpoDefault(_fixture.BucketNameGeneric);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
-        var obj = getBucketMetadataSample.GetBucketMetadata(_fixture.BucketNameGeneric);
-        Assert.Equal("DEFAULT", obj.Rpo);
+        var rpo = getRpoSample.GetRpo(_fixture.BucketNameGeneric);
+        Assert.Equal("DEFAULT", rpo);
     }
 }
 

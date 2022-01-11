@@ -18,10 +18,9 @@ using System;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 
-public class SetRPODefaultSample
+public class SetRpoDefaultSample
 {
-    public void SetRPODefault(
-        string bucketName = "your-unique-bucket-name")
+    public void SetRpoDefault(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
