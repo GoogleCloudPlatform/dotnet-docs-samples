@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//TODO: remove the storage_set_bucket_public_iam tag later as it is already declared in MakeBucketPublic.cs
+
 // [START storage_make_public]
 // [START storage_set_bucket_public_iam]
-
-//TODO: remove the storage_set_bucket_public_iam tag later as it is already declared in MakeBucketPublic.cs
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
