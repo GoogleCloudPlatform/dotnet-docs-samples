@@ -31,7 +31,7 @@ public class DownloadObjectIntoMemorySample
         Stream stream = new MemoryStream();
         storage.DownloadObject(bucketName, objectName, stream);
 
-        Console.WriteLine($"The contents of {objectName} from bucket {bucketName} are {stream}");
+        Console.WriteLine($"The contents of {objectName} from bucket {bucketName} are downloaded");
         return stream;
     }
 }

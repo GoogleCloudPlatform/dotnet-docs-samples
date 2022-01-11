@@ -23,10 +23,10 @@ using System.IO;
 
 public class UploadObjectFromMemorySample
 {
-    public string UploadObjectFromMemory(
+    public void UploadObjectFromMemory(
         string bucketName = "your-unique-bucket-name",
         string objectName = "my-file-name",
-        string contents = "contents-to-be-uploaded")
+        string contents = "Hello world!")
     {
         var storage = StorageClient.Create();
         byte[] byteArray = Encoding.UTF8.GetBytes(contents);
@@ -34,7 +34,6 @@ public class UploadObjectFromMemorySample
         storage.UploadObject(bucketName, objectName, "application/octet-stream" , stream);
 
         Console.WriteLine($" {objectName} uploaded to bucket {bucketName} with contents: {contents}");
-        return contents;
     }
 }
 
