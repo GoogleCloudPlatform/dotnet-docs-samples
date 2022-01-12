@@ -25,7 +25,7 @@ public class ListBackupOperationsTest
         _spannerFixture = spannerFixture;
     }
 
-    [Fact]
+    [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1583")]
     public void TestListBackupOperations()
     {
         ListBackupOperationsSample getBackupOperationsSample = new ListBackupOperationsSample();
