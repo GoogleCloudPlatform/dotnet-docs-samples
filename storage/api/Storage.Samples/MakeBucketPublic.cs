@@ -21,8 +21,7 @@ using System.Collections.Generic;
 
 public class MakeBucketPublicSample
 {
-    public void MakeBucketPublic(
-        string bucketName = "your-unique-bucket-name")
+    public void MakeBucketPublic(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
 
@@ -38,4 +37,4 @@ public class MakeBucketPublicSample
         Console.WriteLine(bucketName + " is now public ");
     }
 }
-// [END  storage_set_bucket_public_iam]
+// [END storage_set_bucket_public_iam]
