@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -29,11 +30,14 @@ public class SetRpoDefaultTest
     {
         SetRpoDefaultSample setRPODefaultSample = new SetRpoDefaultSample();
         GetRpoSample getRpoSample = new GetRpoSample();
-        
-        setRPODefaultSample.SetRpoDefault(_fixture.BucketNameGeneric);
+
+        var bucketName = Guid.NewGuid().ToString();
+        _fixture.CreateBucket(bucketName, "nam4");
+
+        setRPODefaultSample.SetRpoDefault(bucketName);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
-        var rpo = getRpoSample.GetRpo(_fixture.BucketNameGeneric);
+        var rpo = getRpoSample.GetRpo(bucketName);
         Assert.Equal("DEFAULT", rpo);
     }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -30,8 +31,11 @@ public class SetRpoAsyncTurboTest
         SetRpoAsyncTurboSample setRpoAsyncTurboSample = new SetRpoAsyncTurboSample();
         GetRpoSample getRpoSample = new GetRpoSample();
 
-        // It requires a bucket with dual-region configuration for turbo replication to be enabled
-        setRpoAsyncTurboSample.SetRpoAsyncTurbo(_fixture.BucketNameGeneric);
+        // Enabling turbo replication requires a bucket with dual-region configuration
+        var bucketName = Guid.NewGuid().ToString();
+        _fixture.CreateBucket(bucketName,"nam4");
+
+        setRpoAsyncTurboSample.SetRpoAsyncTurbo(bucketName);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
         var rpo = getRpoSample.GetRpo(_fixture.BucketNameGeneric);
