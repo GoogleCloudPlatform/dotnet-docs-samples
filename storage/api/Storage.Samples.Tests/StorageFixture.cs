@@ -14,6 +14,7 @@
 
 using Google;
 using Google.Apis.Auth.OAuth2;
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using GoogleCloudSamples;
 using System;
@@ -182,10 +183,10 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         } while (true);
     }
 
-    public void CreateBucket(string bucketName)
+    public void CreateBucket(string bucketName, string location = null)
     {
-        CreateBucketSample createBucketSample = new CreateBucketSample();
-        createBucketSample.CreateBucket(ProjectId, bucketName);
+        StorageClient storageClient = StorageClient.Create();
+        storageClient.CreateBucket(ProjectId, new Bucket { Name = bucketName, Location = location });
         SleepAfterBucketCreateUpdateDelete();
         TempBucketNames.Add(bucketName);
     }
