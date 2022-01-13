@@ -21,6 +21,7 @@ public class SetRpoAsyncTurboSample
 {
     public void SetRpoAsyncTurbo(string bucketName = "your-unique-bucket-name")
     {
+        // It requires a bucket with dual-region configuration for turbo replication to be enabled
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
         bucket.Rpo = "ASYNC_TURBO";

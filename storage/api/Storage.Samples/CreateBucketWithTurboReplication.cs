@@ -25,6 +25,7 @@ public class CreateBucketWithTurboReplicationSample
         string location = "your-bucket-location")
     {
         var storage = StorageClient.Create();
+        // The location needs to be of dual-region configuration for turbo replication to be enabled
         var bucket = storage.CreateBucket(projectId, new Bucket { Location = location, Rpo = "ASYNC_TURBO" });
 
         Console.WriteLine($"Created {bucket.Name} in {bucket.Location} with RPO Setting {bucket.Rpo}.");

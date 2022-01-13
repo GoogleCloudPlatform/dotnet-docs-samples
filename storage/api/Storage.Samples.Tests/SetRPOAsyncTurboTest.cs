@@ -1,5 +1,4 @@
-﻿
-// Copyright 2021 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +30,7 @@ public class SetRpoAsyncTurboTest
         SetRpoAsyncTurboSample setRpoAsyncTurboSample = new SetRpoAsyncTurboSample();
         GetRpoSample getRpoSample = new GetRpoSample();
 
+        // It requires a bucket with dual-region configuration for turbo replication to be enabled
         setRpoAsyncTurboSample.SetRpoAsyncTurbo(_fixture.BucketNameGeneric);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
