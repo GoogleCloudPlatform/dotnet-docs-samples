@@ -22,11 +22,12 @@ public class CreateBucketWithTurboReplicationSample
 {
     public Bucket CreateBucketWithTurboReplication(
         string projectId = "your-project-id",
-        string location = "your-bucket-location")
+        string location = "your-bucket-location",
+        string bucketName = "bucket-name")
     {
         var storage = StorageClient.Create();
         // Enabling turbo replication requires a bucket with dual-region configuration
-        var bucket = storage.CreateBucket(projectId, new Bucket { Location = location, Rpo = "ASYNC_TURBO" });
+        var bucket = storage.CreateBucket(projectId, new Bucket { Name = bucketName , Location = location, Rpo = "ASYNC_TURBO" });
 
         Console.WriteLine($"Created {bucket.Name} in {bucket.Location} with RPO Setting {bucket.Rpo}.");
         return bucket;

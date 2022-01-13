@@ -38,7 +38,7 @@ public class SetRpoAsyncTurboTest
         setRpoAsyncTurboSample.SetRpoAsyncTurbo(bucketName);
         _fixture.SleepAfterBucketCreateUpdateDelete();
 
-        var rpo = getRpoSample.GetRpo(_fixture.BucketNameGeneric);
+        var rpo = getRpoSample.GetRpo(bucketName);
         Assert.Equal("ASYNC_TURBO", rpo);
     }
 }

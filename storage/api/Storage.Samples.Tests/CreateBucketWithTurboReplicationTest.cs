@@ -13,6 +13,7 @@
 // limitations under the License.
 
 
+using System;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -30,7 +31,8 @@ public class CreateBucketWithTurboReplicationTest
     {
         CreateBucketWithTurboReplicationSample createBucketWithTurboReplication = new CreateBucketWithTurboReplicationSample();
         // Enabling turbo replication requires a bucket with dual-region configuration
-        var bucket = createBucketWithTurboReplication.CreateBucketWithTurboReplication(_fixture.ProjectId, "nam4");
+        var bucketName = Guid.NewGuid().ToString();
+        var bucket = createBucketWithTurboReplication.CreateBucketWithTurboReplication(_fixture.ProjectId, "nam4", bucketName);
         _fixture.SleepAfterBucketCreateUpdateDelete();
         _fixture.TempBucketNames.Add(bucket.Name);
 
