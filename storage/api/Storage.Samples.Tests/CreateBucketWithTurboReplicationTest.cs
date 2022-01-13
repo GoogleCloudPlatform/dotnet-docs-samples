@@ -29,6 +29,7 @@ public class CreateBucketWithTurboReplicationTest
     public void CreateBucketWithTurboReplication()
     {
         CreateBucketWithTurboReplicationSample createBucketWithTurboReplication = new CreateBucketWithTurboReplicationSample();
+        // Enabling turbo replication requires a bucket with dual-region configuration
         var bucket = createBucketWithTurboReplication.CreateBucketWithTurboReplication(_fixture.ProjectId, "nam4");
         _fixture.SleepAfterBucketCreateUpdateDelete();
         _fixture.TempBucketNames.Add(bucket.Name);
