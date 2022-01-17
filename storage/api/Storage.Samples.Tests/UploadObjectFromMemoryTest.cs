@@ -15,6 +15,7 @@
 
 using Xunit;
 using System.Linq;
+using System;
 
 [Collection(nameof(StorageFixture))]
 public class UploadObjectFromMemoryTest
@@ -32,8 +33,9 @@ public class UploadObjectFromMemoryTest
         UploadObjectFromMemorySample uploadObjectFromMemorySample = new UploadObjectFromMemorySample();
         ListFilesSample listFilesSample = new ListFilesSample();
 
-        uploadObjectFromMemorySample.UploadObjectFromMemory(_fixture.BucketNameGeneric, _fixture.FileName, "This is testing content");
+        var fileName = Guid.NewGuid().ToString();
+        uploadObjectFromMemorySample.UploadObjectFromMemory(_fixture.BucketNameGeneric, fileName, "This is testing content");
         var files = listFilesSample.ListFiles(_fixture.BucketNameGeneric);
-        Assert.Contains(files, c => c.Name == _fixture.FileName && c.Size > 0);
+        Assert.Contains(files, c => c.Name == fileName && c.Size > 0);
     }
 }

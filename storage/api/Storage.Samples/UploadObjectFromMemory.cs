@@ -14,12 +14,10 @@
 
 // [START storage_file_upload_from_memory]
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
+using System;
 using System.IO;
+using System.Text;
 
 public class UploadObjectFromMemorySample
 {
