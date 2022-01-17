@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.Storage.V1;
+using System;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -31,8 +32,15 @@ public class MakeBucketPublicTest
         var storage = StorageClient.Create();
 
         MakeBucketPublicSample makeBucketPublicSample = new MakeBucketPublicSample();
-        makeBucketPublicSample.MakeBucketPublic(_fixture.BucketNameGeneric);
+        CreateBucketSample createBucketSample = new CreateBucketSample();
+
+        var bucketName = Guid.NewGuid().ToString();
+        createBucketSample.CreateBucket(_fixture.ProjectId, bucketName);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.TempBucketNames.Add(bucketName);
+
+        makeBucketPublicSample.MakeBucketPublic(bucketName);
        
-        Assert.Contains(storage.GetBucketIamPolicy(_fixture.BucketNameGeneric).Bindings, binding => binding.Role == "roles/storage.objectViewer" && binding.Members.Contains("allUsers"));
+        Assert.Contains(storage.GetBucketIamPolicy(bucketName).Bindings, binding => binding.Role == "roles/storage.objectViewer" && binding.Members.Contains("allUsers"));
     }
 }
