@@ -35,6 +35,7 @@ public class UploadObjectFromMemoryTest
 
         var fileName = Guid.NewGuid().ToString();
         uploadObjectFromMemorySample.UploadObjectFromMemory(_fixture.BucketNameGeneric, fileName, "This is testing content");
+        _fixture.Collect(fileName);
         var files = listFilesSample.ListFiles(_fixture.BucketNameGeneric);
         Assert.Contains(files, c => c.Name == fileName && c.Size > 0);
     }

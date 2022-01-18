@@ -21,8 +21,8 @@ using System.IO;
 public class DownloadObjectIntoMemorySample
 {
     public Stream DownloadObjectIntoMemory(
-        string bucketName = "your-unique-bucket-name",
-        string objectName = "my-file-name")
+        string bucketName = "unique-bucket-name",
+        string objectName = "file-name")
     {
         var storage = StorageClient.Create();
         Stream stream = new MemoryStream();

@@ -22,8 +22,8 @@ using System.Text;
 public class UploadObjectFromMemorySample
 {
     public void UploadObjectFromMemory(
-        string bucketName = "your-unique-bucket-name",
-        string objectName = "my-file-name",
+        string bucketName = "unique-bucket-name",
+        string objectName = "file-name",
         string contents = "Hello world!")
     {
         var storage = StorageClient.Create();
