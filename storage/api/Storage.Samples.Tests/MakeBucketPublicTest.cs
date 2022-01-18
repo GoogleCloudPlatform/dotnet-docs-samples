@@ -29,15 +29,10 @@ public class MakeBucketPublicTest
     [Fact]
     public void MakeBucketPublic()
     {
-        var storage = StorageClient.Create();
-
         MakeBucketPublicSample makeBucketPublicSample = new MakeBucketPublicSample();
-        CreateBucketSample createBucketSample = new CreateBucketSample();
-
+        var storage = StorageClient.Create();        
         var bucketName = Guid.NewGuid().ToString();
-        createBucketSample.CreateBucket(_fixture.ProjectId, bucketName);
-        _fixture.SleepAfterBucketCreateUpdateDelete();
-        _fixture.TempBucketNames.Add(bucketName);
+        _fixture.CreateBucket(bucketName);
 
         makeBucketPublicSample.MakeBucketPublic(bucketName);
        
