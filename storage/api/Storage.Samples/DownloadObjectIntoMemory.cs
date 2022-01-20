@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_file_download_from_memory]
+// [START storage_file_download_into_memory]
 
 using Google.Cloud.Storage.V1;
 using System;
@@ -33,4 +33,4 @@ public class DownloadObjectIntoMemorySample
     }
 }
 
-// [END storage_file_download_from_memory]
+// [END storage_file_download_into_memory]
