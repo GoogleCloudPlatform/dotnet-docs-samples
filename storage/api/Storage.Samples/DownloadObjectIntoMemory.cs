@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,26 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_download_file]
-// [START storage_stream_file_download]
+// [START storage_file_download_from_memory]
 
 using Google.Cloud.Storage.V1;
 using System;
 using System.IO;
 
-public class DownloadFileSample
+public class DownloadObjectIntoMemorySample
 {
-    public void DownloadFile(
-        string bucketName = "your-unique-bucket-name",
-        string objectName = "my-file-name",
-        string localPath = "my-local-path/my-file-name")
+    public Stream DownloadObjectIntoMemory(
+        string bucketName = "unique-bucket-name",
+        string objectName = "file-name")
     {
         var storage = StorageClient.Create();
-        using var outputFile = File.OpenWrite(localPath);
-        storage.DownloadObject(bucketName, objectName, outputFile);
-        Console.WriteLine($"Downloaded {objectName} to {localPath}.");
+        Stream stream = new MemoryStream();
+        storage.DownloadObject(bucketName, objectName, stream);
+
+        Console.WriteLine($"The contents of {objectName} from bucket {bucketName} are downloaded");
+        return stream;
     }
 }
 
-// [END storage_stream_file_download]
-// [END storage_download_file]
+// [END storage_file_download_from_memory]
