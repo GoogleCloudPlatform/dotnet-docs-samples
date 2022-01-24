@@ -18,6 +18,8 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Transcoder.V1;
+using Google.Protobuf.WellKnownTypes;
+using System;
 
 public class CreateJobWithStaticOverlaySample
 {
@@ -74,10 +76,7 @@ public class CreateJobWithStaticOverlaySample
                     X = 0,
                     Y = 0
                 },
-                StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-                {
-                    Seconds = 0
-                }
+                StartTimeOffset = Duration.FromTimeSpan(TimeSpan.FromSeconds(0))
             }
         };
 
@@ -88,10 +87,7 @@ public class CreateJobWithStaticOverlaySample
         {
             AnimationEnd = new Overlay.Types.AnimationEnd
             {
-                StartTimeOffset = new Google.Protobuf.WellKnownTypes.Duration
-                {
-                    Seconds = 10
-                }
+                StartTimeOffset = Duration.FromTimeSpan(TimeSpan.FromSeconds(10))
             }
         };
 

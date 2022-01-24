@@ -17,6 +17,7 @@
 using Google.Apis.Bigquery.v2.Data;
 using Google.Cloud.BigQuery.V2;
 using GoogleCloudSamples;
+using Grpc.Core;
 using System;
 using Xunit;
 using Xunit.Sdk;
@@ -27,8 +28,8 @@ public class AssetFixture : IDisposable, ICollectionFixture<AssetFixture>
     public string ProjectId { get; }
     public string BucketName { get; }
     public RetryRobot Retry { get; } = new RetryRobot 
-    { 
-        RetryWhenExceptions = new Type[] { typeof(XunitException) },
+    {
+        ShouldRetry = ex => ex is XunitException || ex is RpcException { StatusCode: StatusCode.DeadlineExceeded },
         MaxTryCount = 15
     };
     public string DatasetId { get; }

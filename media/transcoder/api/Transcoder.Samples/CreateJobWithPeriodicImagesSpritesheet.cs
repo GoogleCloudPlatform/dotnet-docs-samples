@@ -18,6 +18,8 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Transcoder.V1;
+using Google.Protobuf.WellKnownTypes;
+using System;
 
 public class CreateJobWithPeriodicImagesSpritesheetSample
 {
@@ -61,10 +63,7 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
             FilePrefix = SmallSpritesheetFilePrefix,
             SpriteHeightPixels = 32,
             SpriteWidthPixels = 64,
-            Interval = new Google.Protobuf.WellKnownTypes.Duration
-            {
-                Seconds = 7
-            }
+            Interval = Duration.FromTimeSpan(TimeSpan.FromSeconds(7))
         };
 
         // Generates a spritesheet of larger images taken periodically from the
@@ -78,10 +77,7 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
             FilePrefix = LargeSpritesheetFilePrefix,
             SpriteHeightPixels = 72,
             SpriteWidthPixels = 128,
-            Interval = new Google.Protobuf.WellKnownTypes.Duration
-            {
-                Seconds = 7
-            }
+            Interval = Duration.FromTimeSpan(TimeSpan.FromSeconds(7))
         };
 
         ElementaryStream elementaryStream0 = new ElementaryStream
