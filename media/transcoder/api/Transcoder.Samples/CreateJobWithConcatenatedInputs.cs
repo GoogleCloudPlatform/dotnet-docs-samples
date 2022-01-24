@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-// [START transcoder_create_job_with_periodic_images_spritesheet]
+// [START transcoder_create_job_with_concatenated_inputs]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Transcoder.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-public class CreateJobWithPeriodicImagesSpritesheetSample
+public class CreateJobWithConcatenatedInputsSample
 {
-    public const string SmallSpritesheetFilePrefix = "small-sprite-sheet";
-    public const string LargeSpritesheetFilePrefix = "large-sprite-sheet";
-    public Job CreateJobWithPeriodicImagesSpritesheet(
-        string projectId, string location, string inputUri, string outputUri)
+    public Job CreateJobWithConcatenatedInputs(
+        string projectId, string location, string inputUri1, TimeSpan startTimeInput1, TimeSpan endTimeInput1, string inputUri2, TimeSpan startTimeInput2, TimeSpan endTimeInput2, string outputUri)
     {
+
         // Create the client.
         TranscoderServiceClient client = TranscoderServiceClient.Create();
 
@@ -52,34 +51,6 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
             BitrateBps = 64000
         };
 
-        // Generates a spritesheet of small images taken periodically from the
-        // input video. To preserve the source aspect ratio, you should set the
-        // SpriteWidthPixels field or the SpriteHeightPixels field, but not
-        // both (the API will automatically calculate the missing field). For
-        // this sample, we don't care about the aspect ratio so we set both
-        // fields.
-        SpriteSheet smallSpriteSheet = new SpriteSheet
-        {
-            FilePrefix = SmallSpritesheetFilePrefix,
-            SpriteHeightPixels = 32,
-            SpriteWidthPixels = 64,
-            Interval = Duration.FromTimeSpan(TimeSpan.FromSeconds(7))
-        };
-
-        // Generates a spritesheet of larger images taken periodically from the
-        // input video. To preserve the source aspect ratio, you should set the
-        // SpriteWidthPixels field or the SpriteHeightPixels field, but not
-        // both (the API will automatically calculate the missing field). For
-        // this sample, we don't care about the aspect ratio so we set both
-        // fields.
-        SpriteSheet largeSpriteSheet = new SpriteSheet
-        {
-            FilePrefix = LargeSpritesheetFilePrefix,
-            SpriteHeightPixels = 72,
-            SpriteWidthPixels = 128,
-            Interval = Duration.FromTimeSpan(TimeSpan.FromSeconds(7))
-        };
-
         ElementaryStream elementaryStream0 = new ElementaryStream
         {
             Key = "video_stream0",
@@ -99,10 +70,32 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
             ElementaryStreams = { "video_stream0", "audio_stream0" }
         };
 
-        Input input = new Input
+        Input input1 = new Input
         {
-            Key = "input0",
-            Uri = inputUri
+            Key = "input1",
+            Uri = inputUri1
+        };
+
+        Input input2 = new Input
+        {
+            Key = "input2",
+            Uri = inputUri2
+        };
+
+        EditAtom atom1 = new EditAtom
+        {
+            Key = "atom1",
+            StartTimeOffset = Duration.FromTimeSpan(startTimeInput1),
+            EndTimeOffset = Duration.FromTimeSpan(endTimeInput1),
+            Inputs = { input1.Key }
+        };
+
+        EditAtom atom2 = new EditAtom
+        {
+            Key = "atom2",
+            StartTimeOffset = Duration.FromTimeSpan(startTimeInput2),
+            EndTimeOffset = Duration.FromTimeSpan(endTimeInput2),
+            Inputs = { input2.Key }
         };
 
         Output output = new Output
@@ -112,17 +105,16 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
 
         JobConfig jobConfig = new JobConfig
         {
-            Inputs = { input },
+            Inputs = { input1, input2 },
+            EditList = { atom1, atom2 },
             Output = output,
             ElementaryStreams = { elementaryStream0, elementaryStream1 },
-            MuxStreams = { muxStream0 },
-            SpriteSheets = { smallSpriteSheet, largeSpriteSheet }
+            MuxStreams = { muxStream0 }
         };
 
         // Build the job.
         Job newJob = new Job
         {
-            InputUri = inputUri,
             OutputUri = outputUri,
             Config = jobConfig
         };
@@ -134,4 +126,4 @@ public class CreateJobWithPeriodicImagesSpritesheetSample
         return job;
     }
 }
-// [END transcoder_create_job_with_periodic_images_spritesheet]
+// [END transcoder_create_job_with_concatenated_inputs]

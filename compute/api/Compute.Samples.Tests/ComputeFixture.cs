@@ -106,7 +106,7 @@ namespace Compute.Samples.Tests
         }
 
         private static string GenerateName(string prefix) =>
-            $"{prefix}-{DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfff", CultureInfo.InvariantCulture)}";
+            $"{prefix}-{DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfffffff", CultureInfo.InvariantCulture)}";
 
         private bool _disposed = false;
         public void Dispose()
