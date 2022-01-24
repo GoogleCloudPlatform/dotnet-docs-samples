@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+﻿// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
 
 // [START storage_create_bucket_notifications]
 
-using System;
-using Google.Cloud.Storage.V1;
 using Google.Apis.Storage.v1.Data;
+using Google.Cloud.Storage.V1;
+using System;
 
 public class CreatePubSubNotificationSample
 {
@@ -27,6 +27,8 @@ public class CreatePubSubNotificationSample
         var storage = StorageClient.Create();
         Notification notification = new Notification();
         notification.Topic = topic;
+        notification.PayloadFormat = "JSON_API_V1";
+
         var createdNotification = storage.CreateNotification(bucketName, notification);
 
         Console.WriteLine("Notification subscription created with ID: " + createdNotification.Id + " for bucket name " + bucketName);

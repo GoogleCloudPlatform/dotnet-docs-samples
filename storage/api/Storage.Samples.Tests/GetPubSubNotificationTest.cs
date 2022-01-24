@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+﻿// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -33,7 +31,10 @@ public class GetPubSubNotificationTest
         GetPubSubNotificationSample getPubSubNotificationSample = new GetPubSubNotificationSample();
         CreatePubSubNotificationSample createPubSubNotificationSample = new CreatePubSubNotificationSample();
 
-        var notification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, "my-topic");
+        var topicId = "test" + Guid.NewGuid().ToString();
+        var topic = _fixture.createTopic(topicId);
+
+        var notification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, topic.Name);
         var recievedNotification = getPubSubNotificationSample.GetPubSubNotification(_fixture.BucketNameGeneric, notification.Id);
 
         Assert.NotNull(recievedNotification);

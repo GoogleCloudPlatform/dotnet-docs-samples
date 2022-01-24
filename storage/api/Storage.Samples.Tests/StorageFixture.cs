@@ -14,6 +14,7 @@
 
 using Google;
 using Google.Apis.Auth.OAuth2;
+using Google.Cloud.PubSub.V1;
 using Google.Cloud.Storage.V1;
 using GoogleCloudSamples;
 using System;
@@ -40,6 +41,7 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     public string KmsKeyName { get; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYNAME");
     public string KmsKeyLocation { get; } = "us-west1";
     public string ServiceAccountEmail { get; } = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
+    public List<TopicName> TempTopicNames { get; } = new List<TopicName>();
 
     public RetryRobot HmacChangesPropagated { get; } = new RetryRobot
     {
@@ -121,6 +123,18 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
             catch (Exception)
             {
                 // Do nothing, we delete on a best effort basis.
+            }
+        }
+        foreach (TopicName topicName in TempTopicNames)
+        {
+            try
+            {
+                PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
+                publisher.DeleteTopic(topicName);
+            }
+            catch (Exception)
+            {
+                // Do nothing, we are deleting on a best effort basis.
             }
         }
     }
@@ -220,5 +234,20 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
             versions = objectNames[objectName] = new List<long>();
         }
         versions.Add(version.Value);
+    }
+
+    public Topic createTopic(string topicId)
+    {
+        PublisherServiceApiClient publisherClient = PublisherServiceApiClient.Create();
+        TopicName topicName = new TopicName(ProjectId, topicId);
+        var topic = publisherClient.CreateTopic(topicName);
+
+        var policy = new Google.Cloud.Iam.V1.Policy();
+        policy.AddRoleMember("roles/pubsub.publisher", "allUsers");
+        publisherClient.SetIamPolicy(topicName, policy);
+
+        TempTopicNames.Add(topicName);
+        return topic;
+
     }
 }

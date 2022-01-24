@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+﻿// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 using System;
 using Google.Cloud.Storage.V1;
-using Google.Apis.Storage.v1.Data;
 
 public class DeletePubSubNotificationSample
 {
     public void DeletePubSubNotification(
     string bucketName = "your-unique-bucket-name",
-    string notificationId = "notification-Id")
+    string notificationId = "notificationId")
     {
         var storage = StorageClient.Create();
         storage.DeleteNotification(bucketName, notificationId);

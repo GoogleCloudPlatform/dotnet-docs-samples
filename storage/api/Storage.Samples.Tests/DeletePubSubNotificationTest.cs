@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+﻿// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,10 @@ public class DeletePubSubNotificationTest
         GetPubSubNotificationSample getPubSubNotificationSample = new GetPubSubNotificationSample();
         DeletePubSubNotificationSample deletePubSubNotificationSample = new DeletePubSubNotificationSample();
 
-        var notification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, "my-topic");
+        var topicId = "test" + Guid.NewGuid().ToString();
+        var topic = _fixture.createTopic(topicId);
+
+        var notification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, topic.Name);
         deletePubSubNotificationSample.DeletePubSubNotification(_fixture.BucketNameGeneric, notification.Id);
 
         var exception = Assert.Throws<GoogleApiException>(() => getPubSubNotificationSample.GetPubSubNotification(_fixture.BucketNameGeneric, notification.Id));

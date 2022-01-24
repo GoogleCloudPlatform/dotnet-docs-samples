@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+﻿// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,9 @@ public class CreatePubSubNotificationTest
     {
 
         CreatePubSubNotificationSample createPubSubNotificationSample = new CreatePubSubNotificationSample();
-        var confirmNotification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, "my-topic");
+        var topicId = "test"+ Guid.NewGuid().ToString().Substring(0, 18);
+        var topic = _fixture.createTopic(topicId);
+        var confirmNotification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, topic.Name);
 
         Assert.NotNull(confirmNotification);
 
