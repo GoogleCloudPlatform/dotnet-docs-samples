@@ -14,6 +14,7 @@
 
 using Google;
 using Google.Apis.Auth.OAuth2;
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.PubSub.V1;
 using Google.Cloud.Storage.V1;
 using GoogleCloudSamples;
@@ -236,18 +237,17 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         versions.Add(version.Value);
     }
 
-    public Topic createTopic(string topicId)
+    public Topic CreateTopic(string topicId)
     {
         PublisherServiceApiClient publisherClient = PublisherServiceApiClient.Create();
         TopicName topicName = new TopicName(ProjectId, topicId);
-        var topic = publisherClient.CreateTopic(topicName);
+        Topic topic = publisherClient.CreateTopic(topicName);
+        TempTopicNames.Add(topicName);
 
         var policy = new Google.Cloud.Iam.V1.Policy();
         policy.AddRoleMember("roles/pubsub.publisher", "allUsers");
         publisherClient.SetIamPolicy(topicName, policy);
-
-        TempTopicNames.Add(topicName);
+        
         return topic;
-
     }
 }

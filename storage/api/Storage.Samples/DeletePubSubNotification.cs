@@ -20,13 +20,13 @@ using Google.Cloud.Storage.V1;
 public class DeletePubSubNotificationSample
 {
     public void DeletePubSubNotification(
-    string bucketName = "your-unique-bucket-name",
-    string notificationId = "notificationId")
+        string bucketName = "your-unique-bucket-name",
+        string notificationId = "notificationId")
     {
-        var storage = StorageClient.Create();
+        StorageClient storage = StorageClient.Create();
         storage.DeleteNotification(bucketName, notificationId);
 
-        Console.WriteLine("Successfully deleted notification with ID " + notificationId +" for bucket "+ bucketName);
+        Console.WriteLine("Successfully deleted notification with ID " + notificationId + " for bucket " + bucketName);
     }
 }
 

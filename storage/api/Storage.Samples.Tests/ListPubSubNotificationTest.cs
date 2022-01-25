@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-using Xunit;
 using System;
+using Xunit;
 
 [Collection(nameof(StorageFixture))]
 public class ListPubSubNotificationTest
@@ -33,7 +32,7 @@ public class ListPubSubNotificationTest
         ListPubSubNotificationSample listPubSubNotificationSample = new ListPubSubNotificationSample();
 
         var topicId = "test" + Guid.NewGuid().ToString();
-        var topic = _fixture.createTopic(topicId);
+        var topic = _fixture.CreateTopic(topicId);
 
         var notification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, topic.Name);
         var listOfPubSubNotifications = listPubSubNotificationSample.ListPubSubNotification(_fixture.BucketNameGeneric);

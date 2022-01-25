@@ -32,11 +32,11 @@ public class GetPubSubNotificationTest
         CreatePubSubNotificationSample createPubSubNotificationSample = new CreatePubSubNotificationSample();
 
         var topicId = "test" + Guid.NewGuid().ToString();
-        var topic = _fixture.createTopic(topicId);
+        var topic = _fixture.CreateTopic(topicId);
 
         var notification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, topic.Name);
         var recievedNotification = getPubSubNotificationSample.GetPubSubNotification(_fixture.BucketNameGeneric, notification.Id);
 
-        Assert.NotNull(recievedNotification);
+        Assert.Equal(notification.Topic,recievedNotification.Topic);
     }
 }

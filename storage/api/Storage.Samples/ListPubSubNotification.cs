@@ -21,15 +21,15 @@ using System.Collections.Generic;
 
 public class ListPubSubNotificationSample
 {
-    public IReadOnlyList<Notification> ListPubSubNotification(
-    string bucketName = "your-unique-bucket-name")
+    public IReadOnlyList<Notification> ListPubSubNotification(string bucketName = "your-unique-bucket-name")
     {
-        var storage = StorageClient.Create();
-        var notifications = storage.ListNotifications(bucketName);
+        StorageClient storage = StorageClient.Create();
+        IReadOnlyList<Notification> notifications = storage.ListNotifications(bucketName);
 
-        foreach (var notification in notifications)
+        foreach (Notification notification in notifications)
+        {
             Console.WriteLine(notification.Id);
-
+        }
         return notifications;
     }
 }

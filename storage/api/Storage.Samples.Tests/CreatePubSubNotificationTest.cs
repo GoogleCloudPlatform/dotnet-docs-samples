@@ -28,14 +28,11 @@ public class CreatePubSubNotificationTest
     [Fact]
     public void CreatePubSubNotification()
     {
-
         CreatePubSubNotificationSample createPubSubNotificationSample = new CreatePubSubNotificationSample();
-        var topicId = "test"+ Guid.NewGuid().ToString().Substring(0, 18);
-        var topic = _fixture.createTopic(topicId);
+        var topicId = "test"+ Guid.NewGuid().ToString();
+        var topic= _fixture.CreateTopic(topicId);
         var confirmNotification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, topic.Name);
 
-        Assert.NotNull(confirmNotification);
-
+        Assert.Contains(topic.Name, confirmNotification.Topic);
     }
-
  }

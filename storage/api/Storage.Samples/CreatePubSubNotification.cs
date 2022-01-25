@@ -21,19 +21,19 @@ using System;
 public class CreatePubSubNotificationSample
 {
     public Notification CreatePubSubNotification(
-    string bucketName = "your-unique-bucket-name",
-    string topic = "my-topic")
+        string bucketName = "your-unique-bucket-name",
+        string topic = "my-topic")
     {
-        var storage = StorageClient.Create();
-        Notification notification = new Notification();
-        notification.Topic = topic;
-        notification.PayloadFormat = "JSON_API_V1";
+        StorageClient storage = StorageClient.Create();
+        Notification notification = new Notification
+        {
+            Topic = topic,
+            PayloadFormat = "JSON_API_V1"
+        };
 
-        var createdNotification = storage.CreateNotification(bucketName, notification);
-
+        Notification createdNotification = storage.CreateNotification(bucketName, notification);
         Console.WriteLine("Notification subscription created with ID: " + createdNotification.Id + " for bucket name " + bucketName);
         return createdNotification;
-
     }
 }
 

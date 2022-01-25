@@ -34,14 +34,12 @@ public class DeletePubSubNotificationTest
         DeletePubSubNotificationSample deletePubSubNotificationSample = new DeletePubSubNotificationSample();
 
         var topicId = "test" + Guid.NewGuid().ToString();
-        var topic = _fixture.createTopic(topicId);
+        var topic = _fixture.CreateTopic(topicId);
 
         var notification = createPubSubNotificationSample.CreatePubSubNotification(_fixture.BucketNameGeneric, topic.Name);
         deletePubSubNotificationSample.DeletePubSubNotification(_fixture.BucketNameGeneric, notification.Id);
 
         var exception = Assert.Throws<GoogleApiException>(() => getPubSubNotificationSample.GetPubSubNotification(_fixture.BucketNameGeneric, notification.Id));
         Assert.Equal(System.Net.HttpStatusCode.NotFound, exception.HttpStatusCode);
-
     }
 }
-
