@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+﻿// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,26 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_download_file]
-// [START storage_stream_file_download]
+// [START storage_set_rpo_default]
 
-using Google.Cloud.Storage.V1;
 using System;
-using System.IO;
+using Google.Cloud.Storage.V1;
 
-public class DownloadFileSample
+public class SetRpoDefaultSample
 {
-    public void DownloadFile(
-        string bucketName = "your-unique-bucket-name",
-        string objectName = "my-file-name",
-        string localPath = "my-local-path/my-file-name")
+    public void SetRpoDefault(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        using var outputFile = File.OpenWrite(localPath);
-        storage.DownloadObject(bucketName, objectName, outputFile);
-        Console.WriteLine($"Downloaded {objectName} to {localPath}.");
+        var bucket = storage.GetBucket(bucketName);
+        bucket.Rpo = "DEFAULT";
+        storage.UpdateBucket(bucket);
+
+        Console.WriteLine($"Turbo replication disabled for bucket {bucketName}");
     }
 }
 
-// [END storage_stream_file_download]
-// [END storage_download_file]
+// [END storage_set_rpo_default]

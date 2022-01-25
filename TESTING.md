@@ -41,7 +41,6 @@
 
 7.  Add the following tools to your path:
  - MSBuild
- - MSTest
  - Nuget
 
 

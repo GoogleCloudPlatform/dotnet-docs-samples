@@ -51,6 +51,7 @@ public class GetBucketMetadataSample
         Console.WriteLine($"Updated:\t{bucket.Updated}");
         Console.WriteLine($"Versioning:\t{bucket.Versioning}");
         Console.WriteLine($"Website:\t{bucket.Website}");
+        Console.WriteLine($"TurboReplication:\t{bucket.Rpo}");
         if (bucket.Labels != null)
         {
             Console.WriteLine("Labels:");
