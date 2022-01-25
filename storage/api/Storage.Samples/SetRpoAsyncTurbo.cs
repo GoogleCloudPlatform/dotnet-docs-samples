@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_set_public_access_prevention_unspecified]
+// [START storage_set_rpo_async_turbo]
 
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.V1;
 using System;
+using Google.Cloud.Storage.V1;
 
-public class SetPublicAccessPreventionUnspecifiedSample
+public class SetRpoAsyncTurboSample
 {
-    public Bucket SetPublicAccessPreventionUnspecified(string bucketName = "your-unique-bucket-name")
+    public void SetRpoAsyncTurbo(string bucketName = "your-unique-bucket-name")
     {
+        // Enabling turbo replication requires a bucket with dual-region configuration
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
+        bucket.Rpo = "ASYNC_TURBO";
+        storage.UpdateBucket(bucket);
 
-        // Sets public access prevention to "unspecified" for the bucket.
-        bucket.IamConfiguration.PublicAccessPrevention = "unspecified";
-        bucket = storage.UpdateBucket(bucket);
-
-        Console.WriteLine($"Public access prevention is 'unspecified' for {bucketName}.");
-        return bucket;
+        Console.WriteLine($"Turbo replication enabled for bucket {bucketName}");
     }
 }
-// [END storage_set_public_access_prevention_unspecified]
+
+// [END storage_set_rpo_async_turbo]
