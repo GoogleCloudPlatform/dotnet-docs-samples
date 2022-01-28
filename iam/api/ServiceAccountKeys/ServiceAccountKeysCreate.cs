@@ -39,8 +39,8 @@ public partial class ServiceAccountKeys
         // in JSON format.
         // TODO(Developer): Save the below key (jsonKeyFile) to a secure location.
         //  You cannot download it later.
-        var valueBytes = System.Convert.FromBase64String(key.PrivateKeyData);
-        jsonKeyFile = Encoding.UTF8.GetString(valueBytes);
+        byte[] valueBytes = System.Convert.FromBase64String(key.PrivateKeyData);
+        string jsonKeyContent = Encoding.UTF8.GetString(valueBytes);
 
         Console.WriteLine("Key created successfully");
         return key;
