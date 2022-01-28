@@ -14,15 +14,11 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
-public class DeleteHmacKeyTest
+[Collection(nameof(StorageFixture))]
+public class DeleteHmacKeyTest : HmacKeyManager
 {
-    private readonly BucketFixture _bucketFixture;
-
-    public DeleteHmacKeyTest(BucketFixture bucketFixture)
-    {
-        _bucketFixture = bucketFixture;
-    }
+    public DeleteHmacKeyTest(StorageFixture fixture) : base(fixture)
+    { }
 
     [Fact]
     public void TestDeleteHmacKey()
@@ -32,19 +28,25 @@ public class DeleteHmacKeyTest
         DeactivateHmacKeySample deactivateHmacKeySample = new DeactivateHmacKeySample();
         DeleteHmacKeySample deleteHmacKeySample = new DeleteHmacKeySample();
 
-        string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
+        string serviceAccountEmail = _fixture.GetServiceAccountEmail();
 
         // Create key.
-        var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
+        var key = createHmacKeySample.CreateHmacKey(_fixture.ProjectId, serviceAccountEmail);
+        _accessId = key.Metadata.AccessId;
 
         // Deactivate key.
-        deactivateHmacKeySample.DeactivateHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        _fixture.HmacChangesPropagated.Eventually(() => deactivateHmacKeySample.DeactivateHmacKey(_fixture.ProjectId, _accessId));
+        _isActive = false;
 
         // Delete key.
-        deleteHmacKeySample.DeleteHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
+        _fixture.HmacChangesPropagated.Eventually(() => deleteHmacKeySample.DeleteHmacKey(_fixture.ProjectId, _accessId));
 
         // Get key.
-        var keyMetadata = getHmacKeySample.GetHmacKey(_bucketFixture.ProjectId, key.Metadata.AccessId);
-        Assert.Equal("DELETED", keyMetadata.State);
+        _fixture.HmacChangesPropagated.Eventually(() =>
+        {
+            var keyMetadata = getHmacKeySample.GetHmacKey(_fixture.ProjectId, _accessId);
+            Assert.Equal("DELETED", keyMetadata.State);
+        });
+        _accessId = null;
     }
 }

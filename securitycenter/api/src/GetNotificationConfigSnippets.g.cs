@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START securitycenter_get_notification_config]
-// [START scc_get_notification_config]
 
 using Google.Cloud.SecurityCenter.V1;
 using System;
@@ -31,5 +30,4 @@ public class GetNotificationConfigSnippets
         return response;
     }
 }
-// [END scc_get_notification_config]
 // [END securitycenter_get_notification_config]

@@ -15,14 +15,14 @@
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class ListBucketsTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public ListBucketsTest(BucketFixture bucketFixture)
+    public ListBucketsTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,9 +31,9 @@ public class ListBucketsTest
         CreateBucketSample createBucketSample = new CreateBucketSample();
         ListBucketsSample listBucketsSample = new ListBucketsSample();
         var bucketName = Guid.NewGuid().ToString();
-        _bucketFixture.CreateBucket(bucketName);
+        _fixture.CreateBucket(bucketName);
 
-        var buckets = listBucketsSample.ListBuckets(_bucketFixture.ProjectId);
+        var buckets = listBucketsSample.ListBuckets(_fixture.ProjectId);
         Assert.Contains(buckets, c => c.Name == bucketName);
     }
 }

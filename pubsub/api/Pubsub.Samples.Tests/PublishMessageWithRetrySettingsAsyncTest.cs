@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -29,7 +30,7 @@ public class PublishMessageWithRetrySettingsAsyncTest
     }
 
     [Fact]
-    public async void PublishMessageWithRetrySettingsAsync()
+    public async Task PublishMessageWithRetrySettingsAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForMessageWithRetrySettingsAsync{randomName}";
@@ -42,7 +43,10 @@ public class PublishMessageWithRetrySettingsAsyncTest
             .PublishMessageWithRetrySettingsAsync(_pubsubFixture.ProjectId, topicId, "Hello World!");
 
         // Pull the Message to confirm it is valid
-        var messageCount = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(1, messageCount);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var messageCount = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, messageCount);
+        });
     }
 }

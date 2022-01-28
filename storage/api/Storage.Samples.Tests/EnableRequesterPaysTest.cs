@@ -15,14 +15,14 @@
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class EnableRequesterPaysTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public EnableRequesterPaysTest(BucketFixture bucketFixture)
+    public EnableRequesterPaysTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,15 +32,15 @@ public class EnableRequesterPaysTest
         DisableRequesterPaysSample disableRequesterPaysSample = new DisableRequesterPaysSample();
         var bucketName = Guid.NewGuid().ToString();
         // Create bucket
-        _bucketFixture.CreateBucket(bucketName);
+        _fixture.CreateBucket(bucketName);
 
         // Enable request pay.
         var bucket = enableRequesterPaysSample.EnableRequesterPays(bucketName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.SleepAfterBucketCreateUpdateDelete();
         Assert.True(bucket.Billing?.RequesterPays);
 
         // Disable request pay.
-        disableRequesterPaysSample.DisableRequesterPays(_bucketFixture.ProjectId, bucketName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        disableRequesterPaysSample.DisableRequesterPays(_fixture.ProjectId, bucketName);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

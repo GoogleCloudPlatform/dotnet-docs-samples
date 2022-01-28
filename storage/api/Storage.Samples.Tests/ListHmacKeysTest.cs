@@ -14,15 +14,11 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
-public class ListHmacKeysTest
+[Collection(nameof(StorageFixture))]
+public class ListHmacKeysTest : HmacKeyManager
 {
-    private readonly BucketFixture _bucketFixture;
-
-    public ListHmacKeysTest(BucketFixture bucketFixture)
-    {
-        _bucketFixture = bucketFixture;
-    }
+    public ListHmacKeysTest(StorageFixture fixture) : base(fixture)
+    { }
 
     [Fact]
     public void TestListHmacKeys()
@@ -30,16 +26,17 @@ public class ListHmacKeysTest
         CreateHmacKeySample createHmacKeySample = new CreateHmacKeySample();
         ListHmacKeysSample listHmacKeysSample = new ListHmacKeysSample();
 
-        string serviceAccountEmail = _bucketFixture.GetServiceAccountEmail();
+        string serviceAccountEmail = _fixture.GetServiceAccountEmail();
 
         // Create key.
-        var key = createHmacKeySample.CreateHmacKey(_bucketFixture.ProjectId, serviceAccountEmail);
+        var key = createHmacKeySample.CreateHmacKey(_fixture.ProjectId, serviceAccountEmail);
+        _accessId = key.Metadata.AccessId;
 
         // List keys.
-        var keys = listHmacKeysSample.ListHmacKeys(_bucketFixture.ProjectId);
-        Assert.Contains(keys, key => key.AccessId == key.AccessId);
-
-        // Delete key.
-        _bucketFixture.DeleteHmacKey(key.Metadata.AccessId);
+        _fixture.HmacChangesPropagated.Eventually(() =>
+        {
+            var keys = listHmacKeysSample.ListHmacKeys(_fixture.ProjectId);
+            Assert.Contains(keys, key => key.AccessId == key.AccessId);
+        });
     }
 }

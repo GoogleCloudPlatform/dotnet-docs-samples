@@ -1,0 +1,35 @@
+assign_issues_by:
+- labels:
+  - 'api: cloudiot'
+  to:
+  - simoncsaba-g
+- labels:
+  - 'api: bigtable'
+  - 'api: datastore'
+  - 'api: firestore'
+  to:
+  - GoogleCloudPlatform/cloud-native-db-dpes
+- labels:
+  - 'api: cloudsql'
+  to:
+  - GoogleCloudPlatform/infra-db-dpes
+- labels:
+  - 'api: spanner'
+  to:
+  - shivgautam
+
+assign_prs_by:
+- labels:
+  - 'api: cloudiot'
+  to:
+  - simoncsaba-g
+- labels:
+  - 'api: bigtable'
+  - 'api: datastore'
+  - 'api: firestore'
+  to:
+  - GoogleCloudPlatform/cloud-native-db-dpes
+- labels:
+  - 'api: cloudsql'
+  to:
+  - GoogleCloudPlatform/infra-db-dpes

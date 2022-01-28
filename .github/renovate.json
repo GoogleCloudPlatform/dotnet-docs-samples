@@ -1,0 +1,16 @@
+{
+    "extends": [
+        "config:base",
+        ":disableDependencyDashboard"
+    ],
+    "ignorePaths": [
+        "bigtable/api/**",
+        "appengine/flexible/**",
+        "endpoints/getting-started/**",
+        "applications/googlehome-meets-dotnetcontainers/**"
+    ],
+    "schedule": [
+        "before 8am"
+    ],
+    "timezone": "Europe/London"
+}

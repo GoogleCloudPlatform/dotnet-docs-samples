@@ -18,7 +18,6 @@
 using Google.Cloud.PubSub.V1;
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +32,7 @@ public class PullMessagesAsyncSample
         int messageCount = 0;
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
-            string text = Encoding.UTF8.GetString(message.Data.ToArray());
+            string text = System.Text.Encoding.UTF8.GetString(message.Data.ToArray());
             Console.WriteLine($"Message {message.MessageId}: {text}");
             Interlocked.Increment(ref messageCount);
             return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);

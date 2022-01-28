@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
@@ -25,7 +26,7 @@ public class UpdateUsingPartitionedDmlCoreAsyncTest
     }
 
     [Fact]
-    public async void TestUpdateUsingPartitionedDmlCoreAsync()
+    public async Task TestUpdateUsingPartitionedDmlCoreAsync()
     {
         UpdateUsingPartitionedDmlCoreAsyncSample sample = new UpdateUsingPartitionedDmlCoreAsyncSample();
         var rowCount = await sample.UpdateUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);

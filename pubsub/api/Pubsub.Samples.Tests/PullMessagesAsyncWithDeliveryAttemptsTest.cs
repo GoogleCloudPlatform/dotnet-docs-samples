@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -32,7 +33,7 @@ public class PullMessagesAsyncWithDeliveryAttemptsTest
     }
 
     [Fact]
-    public async void PullMessagesAsyncWithDeliveryAttempts()
+    public async Task PullMessagesAsyncWithDeliveryAttempts()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForDeadLetterPolicyMessageSyncAck{randomName}";
@@ -47,8 +48,11 @@ public class PullMessagesAsyncWithDeliveryAttemptsTest
 
         await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new List<string> { message });
 
-        // Pull and acknowledge the messages
-        var deliveryAttempt = await _pullMessagesAsyncWithDeliveryAttemptsSample.PullMessagesAsyncWithDeliveryAttempts(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(deliveryAttempt > 0);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            // Pull and acknowledge the messages
+            var deliveryAttempt = await _pullMessagesAsyncWithDeliveryAttemptsSample.PullMessagesAsyncWithDeliveryAttempts(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.True(deliveryAttempt > 0);
+        });
     }
 }

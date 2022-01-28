@@ -32,5 +32,7 @@ Backup-File appsettings.json {
     } else {
         Update-Appsettings $keyName $bucketName
     }
+    dotnet restore --force
+    dotnet build --no-restore
     Run-KestrelTest 5512 -CasperJs11
 }

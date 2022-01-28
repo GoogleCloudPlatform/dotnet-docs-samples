@@ -14,7 +14,6 @@
  * the License.
  */
 
-using System;
 using Xunit;
 
 [Collection(nameof(AssetFixture))]

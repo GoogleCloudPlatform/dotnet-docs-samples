@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START run_events_pubsub_dockerfile]
+# [START eventarc_pubsub_dockerfile]
 
 # Use Microsoft's official build .NET image.
 # https://hub.docker.com/_/microsoft-dotnet-core-sdk/
@@ -40,4 +40,4 @@ COPY --from=build /app/out ./
 
 # Run the web service on container startup.
 ENTRYPOINT ["dotnet", "PubSub.dll"]
-# [END run_events_pubsub_dockerfile]
+# [END eventarc_pubsub_dockerfile]

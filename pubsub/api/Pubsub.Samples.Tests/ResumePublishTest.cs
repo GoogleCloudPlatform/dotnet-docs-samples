@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -30,7 +31,7 @@ public class ResumePublishTest
     }
 
     [Fact]
-    public async void PublishMessage()
+    public async Task PublishMessage()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForResumePublish{randomName}";
@@ -45,7 +46,10 @@ public class ResumePublishTest
         Assert.Equal(messages.Count, publishedMessages);
 
         // Pull the Message to confirm it is valid
-        var pulledMessages = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(pulledMessages > 0);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var pulledMessages = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
+            Assert.True(pulledMessages > 0);
+        });
     }
 }

@@ -13,10 +13,12 @@
 // limitations under the License.
 
 using Google.Cloud.PubSub.V1;
+using GoogleCloudSamples;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Xunit.Sdk;
 
 [CollectionDefinition(nameof(PubsubFixture))]
 public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
@@ -24,7 +26,17 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string ProjectId { get; }
     public List<string> TempTopicIds { get; } = new List<string>();
     public List<string> TempSubscriptionIds { get; } = new List<string>();
+    public List<string> TempSchemaIds { get; } = new List<string>();
     public string DeadLetterTopic { get; } = $"testDeadLetterTopic{Guid.NewGuid().ToString().Substring(0, 18)}";
+    public string AvroSchemaFile { get; } = $"Resources/us-states.avsc";
+    public string ProtoSchemaFile { get; } = $"Resources/us-states.proto";
+
+    public RetryRobot Pull { get; } = new RetryRobot
+    {
+        ShouldRetry = ex => ex is XunitException
+            || (ex is RpcException rpcEx 
+                && (rpcEx.StatusCode == StatusCode.DeadlineExceeded || rpcEx.StatusCode == StatusCode.Unavailable))
+    };
 
     public PubsubFixture()
     {
@@ -36,6 +48,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     {
         var deleteTopicSampleObject = new DeleteTopicSample();
         var deleteSubscriptionSampleObject = new DeleteSubscriptionSample();
+        var deleteSchemaSampleObject = new DeleteSchemaSample();
         foreach (string subscriptionId in TempSubscriptionIds)
         {
             try
@@ -58,6 +71,17 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
                 // Do nothing, we are deleting on a best effort basis.
             }
         }
+        foreach (string schemaId in TempSchemaIds)
+        {
+            try
+            {
+                deleteSchemaSampleObject.DeleteSchema(ProjectId, schemaId);
+            }
+            catch (RpcException)
+            {
+                // Do nothing, we are deleting on a best effort basis.
+            }
+        }
     }
 
     public Topic CreateTopic(string topicId)
@@ -68,12 +92,36 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         return topic;
     }
 
+    public Topic CreateTopicWithSchema(string topicId, string schemaId, Encoding encoding)
+    {
+        var createTopicWithSchemaSampleObject = new CreateTopicWithSchemaSample();
+        var topic = createTopicWithSchemaSampleObject.CreateTopicWithSchema(ProjectId, topicId, schemaId, encoding);
+        TempTopicIds.Add(topicId);
+        return topic;
+    }
+
     public Subscription CreateSubscription(string topicId, string subscriptionId)
     {
         var createSubscriptionSampleObject = new CreateSubscriptionSample();
         var subscription = createSubscriptionSampleObject.CreateSubscription(ProjectId, topicId, subscriptionId);
         TempSubscriptionIds.Add(subscriptionId);
         return subscription;
+    }
+
+    public Schema CreateProtoSchema(string schemaId)
+    {
+        var createProtoSchemaSampleObject = new CreateProtoSchemaSample();
+        var schema = createProtoSchemaSampleObject.CreateProtoSchema(ProjectId, schemaId, ProtoSchemaFile);
+        TempSchemaIds.Add(schemaId);
+        return schema;
+    }
+
+    public Schema CreateAvroSchema(string schemaId)
+    {
+        var createAvroSchemaSampleObject = new CreateAvroSchemaSample();
+        var schema = createAvroSchemaSampleObject.CreateAvroSchema(ProjectId, schemaId, AvroSchemaFile);
+        TempSchemaIds.Add(schemaId);
+        return schema;
     }
 
     public Topic GetTopic(string topicId)
@@ -89,6 +137,19 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(ProjectId, subscriptionId);
 
         return subscriber.GetSubscription(subscriptionName);
+    }
+
+    public Schema GetSchema(string schemaId)
+    {
+        SchemaServiceClient schemaService = SchemaServiceClient.Create();
+        SchemaName schemaName = SchemaName.FromProjectSchema(ProjectId, schemaId);
+        GetSchemaRequest request = new GetSchemaRequest
+        {
+            Name = schemaName.ToString(),
+            View = SchemaView.Full
+        };
+
+        return schemaService.GetSchema(request);
     }
 
     public string RandomName()

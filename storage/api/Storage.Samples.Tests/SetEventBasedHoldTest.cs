@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class SetEventBasedHoldTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public SetEventBasedHoldTest(BucketFixture bucketFixture)
+    public SetEventBasedHoldTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,14 +31,14 @@ public class SetEventBasedHoldTest
         SetEventBasedHoldSample setEventBasedHoldSample = new SetEventBasedHoldSample();
         UploadFileSample uploadFileSample = new UploadFileSample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("SetEventBasedHold.txt"));
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect("SetEventBasedHold.txt"));
 
         // Set event based hold.
-        setEventBasedHoldSample.SetEventBasedHold(_bucketFixture.BucketNameGeneric, "SetEventBasedHold.txt");
-        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "SetEventBasedHold.txt");
+        setEventBasedHoldSample.SetEventBasedHold(_fixture.BucketNameGeneric, "SetEventBasedHold.txt");
+        var metadata = getMetadataSample.GetMetadata(_fixture.BucketNameGeneric, "SetEventBasedHold.txt");
         Assert.True(metadata.EventBasedHold);
 
         // Release event based hold.
-        releaseEventBasedHoldSample.ReleaseEventBasedHold(_bucketFixture.BucketNameGeneric, "SetEventBasedHold.txt");
+        releaseEventBasedHoldSample.ReleaseEventBasedHold(_fixture.BucketNameGeneric, "SetEventBasedHold.txt");
     }
 }

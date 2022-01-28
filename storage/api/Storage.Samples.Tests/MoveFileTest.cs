@@ -15,14 +15,14 @@
 using Google;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class MoveFileTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public MoveFileTest(BucketFixture bucketFixture)
+    public MoveFileTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,13 +32,13 @@ public class MoveFileTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
 
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, "HelloMove.txt");
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, "HelloMove.txt");
         // Make sure the file doesn't exist until we move it there.
-        Assert.Throws<GoogleApiException>(() => getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "ByeMove.txt"));
+        Assert.Throws<GoogleApiException>(() => getMetadataSample.GetMetadata(_fixture.BucketNameGeneric, "ByeMove.txt"));
 
-        moveFileSample.MoveFile(_bucketFixture.BucketNameGeneric, "HelloMove.txt", _bucketFixture.BucketNameGeneric, _bucketFixture.Collect("ByeMove.txt"));
+        moveFileSample.MoveFile(_fixture.BucketNameGeneric, "HelloMove.txt", _fixture.BucketNameGeneric, _fixture.Collect("ByeMove.txt"));
 
-        var exception = Assert.Throws<GoogleApiException>(() => getMetadataSample.GetMetadata(_bucketFixture.BucketNameGeneric, "HelloMove.txt"));
+        var exception = Assert.Throws<GoogleApiException>(() => getMetadataSample.GetMetadata(_fixture.BucketNameGeneric, "HelloMove.txt"));
         Assert.Equal(System.Net.HttpStatusCode.NotFound, exception.HttpStatusCode);
     }
 }

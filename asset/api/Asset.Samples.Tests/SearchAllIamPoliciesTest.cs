@@ -33,7 +33,7 @@ public class SearchAllIamPoliciesTest
     public void TestSearchAllIamPolicies()
     {
         // Run the sample code.
-        string scope = String.Format("projects/{0}", _fixture.ProjectId);
+        string scope = $"projects/{_fixture.ProjectId}";
         var result = _sample.SearchAllIamPolicies(scope, query: "policy:roles/owner");
 
         Assert.NotEmpty(result.Results);

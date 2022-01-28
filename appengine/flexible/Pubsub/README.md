@@ -1,7 +1,7 @@
 # Google Pubsub and Google App Engine Flexible Environment
 
 This sample application demonstrates how to publish and receive
-messages via Google Pusub when running in Google App Engine Flexible Environment.
+messages via Google Pubsub when running in Google App Engine Flexible Environment.
 
 ## Prerequisites
 
