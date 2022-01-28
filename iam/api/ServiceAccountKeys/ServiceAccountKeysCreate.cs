@@ -34,7 +34,15 @@ public partial class ServiceAccountKeys
             new CreateServiceAccountKeyRequest(),
             "projects/-/serviceAccounts/" + serviceAccountEmail)
             .Execute();
-        Console.WriteLine("Created key: " + key.Name);
+
+        // The PrivateKeyData field contains the base64-encoded service account key
+        // in JSON format.
+        // TODO(Developer): Save the below key (jsonKeyFile) to a secure location.
+        //  You cannot download it later.
+
+        jsonKeyFile = key.PrivateKeyData.DecodeBase64();
+
+        Console.WriteLine("Key created successfully");
         return key;
     }
 }
