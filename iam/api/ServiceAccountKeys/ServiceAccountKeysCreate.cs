@@ -15,6 +15,7 @@
 // [START iam_create_key]
 
 using System;
+using System.Text;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Iam.v1;
 using Google.Apis.Iam.v1.Data;
@@ -34,7 +35,15 @@ public partial class ServiceAccountKeys
             new CreateServiceAccountKeyRequest(),
             "projects/-/serviceAccounts/" + serviceAccountEmail)
             .Execute();
-        Console.WriteLine("Created key: " + key.Name);
+
+        // The PrivateKeyData field contains the base64-encoded service account key
+        // in JSON format.
+        // TODO(Developer): Save the below key (jsonKeyFile) to a secure location.
+        //  You cannot download it later.
+        byte[] valueBytes = System.Convert.FromBase64String(key.PrivateKeyData);
+        string jsonKeyContent = Encoding.UTF8.GetString(valueBytes);
+
+        Console.WriteLine("Key created successfully");
         return key;
     }
 }
