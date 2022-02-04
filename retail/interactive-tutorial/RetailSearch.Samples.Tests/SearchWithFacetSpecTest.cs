@@ -57,7 +57,7 @@ namespace RetailSearch.Samples.Tests
             Assert.Contains(ExpectedProductTitle, actualProductTitle);
             Assert.Equal(ExpectedFacetKey, actualFacetKey);
         }
-
+         
         [Fact]
         public void TestOutputSearchWithFacetSpec()
         {

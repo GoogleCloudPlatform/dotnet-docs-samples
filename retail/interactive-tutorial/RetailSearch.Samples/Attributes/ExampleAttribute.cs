@@ -20,7 +20,7 @@ namespace RetailSearch.Samples.Attributes
 
         public string Name
         {
-            get; init;
+            get;
         }
     }
 }

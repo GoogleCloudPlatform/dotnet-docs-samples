@@ -14,6 +14,7 @@
 
 // [START retail_search_product_with_facet_spec]
 
+using Google.Api.Gax;
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
@@ -29,8 +30,7 @@ public class SearchWithFacetSpecSample
     {
         string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
 
-        // Put the intervals here:
-        var searchRequest = new SearchRequest()
+        var searchRequest = new SearchRequest
         {
             Placement = defaultSearchPlacement, // Placement is used to identify the Serving Config name
             Query = query,
@@ -48,7 +48,7 @@ public class SearchWithFacetSpecSample
             }
         };
 
-        Console.WriteLine("\nSearch. request:\n");
+        Console.WriteLine("Search. request:");
         Console.WriteLine($"Placement: {searchRequest.Placement}");
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
@@ -58,21 +58,19 @@ public class SearchWithFacetSpecSample
         return searchRequest;
     }
 
-    /// <summary>Call the Retail Search.</summary>
-    [RetailSearch.Samples.Attributes.Example]
     public IEnumerable<SearchResponse> Search(string projectNumber)
     {
         // Try different facets here:
         string facetKey = "colorFamilies";
         string query = "Tee";
 
-        var client = SearchServiceClient.Create();
-        var searchRequest = GetSearchRequest(query, facetKey, projectNumber);
+        SearchServiceClient client = SearchServiceClient.Create();
+        SearchRequest searchRequest = GetSearchRequest(query, facetKey, projectNumber);
         var searchResponses = client.Search(searchRequest).AsRawResponses();
 
         var firstSearchResponse = searchResponses.FirstOrDefault();
 
-        Console.WriteLine("\nSearch. response: \n");
+        Console.WriteLine("Search. response:");
 
         if (firstSearchResponse != null)
         {
@@ -80,7 +78,7 @@ public class SearchWithFacetSpecSample
             Console.WriteLine($"TotalSize: {firstSearchResponse.TotalSize},");
             Console.WriteLine($"AttributionToken: {firstSearchResponse.AttributionToken},");
             Console.WriteLine($"NextPageToken: {firstSearchResponse.NextPageToken},");
-            Console.WriteLine($"Facets: {firstSearchResponse.Facets},");
+            Console.WriteLine($"Facets: {firstSearchResponse.Facets}");
         }
 
         return searchResponses;

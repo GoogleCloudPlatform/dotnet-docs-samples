@@ -31,7 +31,7 @@ public class SearchWithBoostSpecSample
     {
         string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
 
-        var conditionBoostSpec = new SearchRequest.Types.BoostSpec.Types.ConditionBoostSpec()
+        var conditionBoostSpec = new SearchRequest.Types.BoostSpec.Types.ConditionBoostSpec
         {
             Condition = condition,
             Boost = boostStrength
@@ -40,7 +40,7 @@ public class SearchWithBoostSpecSample
         var bootSpec = new SearchRequest.Types.BoostSpec();
         bootSpec.ConditionBoostSpecs.Add(conditionBoostSpec);
 
-        var searchRequest = new SearchRequest()
+        var searchRequest = new SearchRequest
         {
             Placement = defaultSearchPlacement, // Placement is used to identify the Serving Config name
             Query = query,
@@ -49,7 +49,7 @@ public class SearchWithBoostSpecSample
             PageSize = 10
         };
 
-        Console.WriteLine("\nSearch. request:\n");
+        Console.WriteLine("Search. request:");
         Console.WriteLine($"Placement: {searchRequest.Placement}");
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
@@ -59,8 +59,6 @@ public class SearchWithBoostSpecSample
         return searchRequest;
     }
 
-    /// <summary>Call the Retail Search.</summary>
-    [RetailSearch.Samples.Attributes.Example]
     public IEnumerable<SearchResponse> Search(string projectNumber)
     {
         // Try different conditions here:
@@ -68,13 +66,13 @@ public class SearchWithBoostSpecSample
         float boost = 0.0f;
         string query = "Tee";
 
-        var client = SearchServiceClient.Create();
-        var searchRequest = GetSearchRequest(query, condition, boost, projectNumber);
+        SearchServiceClient client = SearchServiceClient.Create();
+        SearchRequest searchRequest = GetSearchRequest(query, condition, boost, projectNumber);
         var searchResponses = client.Search(searchRequest).AsRawResponses();
 
         var firstSearchResponse = searchResponses.FirstOrDefault();
 
-        Console.WriteLine("\nSearch. response: \n");
+        Console.WriteLine("Search. response:");
 
         if (firstSearchResponse != null)
         {

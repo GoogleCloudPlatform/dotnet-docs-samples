@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax;
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ public class SearchSimpleQuerySample
     {
         string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
 
-        var searchRequest = new SearchRequest()
+        var searchRequest = new SearchRequest
         {
             Placement = defaultSearchPlacement, // Placement is used to identify the Serving Config name
             Query = query,
@@ -38,7 +39,7 @@ public class SearchSimpleQuerySample
             PageSize = 10
         };
 
-        Console.WriteLine("\nSearch. request:\n");
+        Console.WriteLine("Search. request:");
         Console.WriteLine($"Placement: {searchRequest.Placement}");
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
@@ -52,13 +53,13 @@ public class SearchSimpleQuerySample
         // Try different query phrases here:
         var query = "Hoodie";
 
-        var client = SearchServiceClient.Create();
-        var searchRequest = GetSearchRequest(query, projectNumber);
+        SearchServiceClient client = SearchServiceClient.Create();
+        SearchRequest searchRequest = GetSearchRequest(query, projectNumber);
         var searchResponses = client.Search(searchRequest).AsRawResponses();
 
         var firstSearchResponse = searchResponses.FirstOrDefault();
 
-        Console.WriteLine("\nSearch. response: \n");
+        Console.WriteLine("Search. response:");
 
         if (firstSearchResponse != null)
         {
