@@ -15,7 +15,7 @@
 using System;
 using System.Linq;
 
-namespace Snippets 
+namespace TestResourcesSetupCleanup 
 {
 	class Program
 	{

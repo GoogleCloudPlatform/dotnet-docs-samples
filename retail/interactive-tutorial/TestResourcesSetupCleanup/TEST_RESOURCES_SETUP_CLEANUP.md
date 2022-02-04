@@ -13,8 +13,8 @@ The Secret Manager name is set in .kokoro/presubmit/common.cfg file, SECRET_MANA
 
 ## Import catalog data
 
-There is a JSON file with valid products prepared in the `Snippets` directory:
-`Snippets/resources/products.json`.
+There is a JSON file with valid products prepared in the `TestResourcesSetupCleanup` directory:
+`TestResourcesSetupCleanup/resources/products.json`.
 
 Run the `CreateTestResources.cs` to perform the following actions:
    - create the GCS bucket <BUCKET_NAME>, 

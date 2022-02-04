@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Snippets.Attributes
+namespace TestResourcesSetupCleanup.Attributes
 {
 	public static class ExampleAttributeHelper
 	{

@@ -32,7 +32,6 @@ public static class CreateTestResources
     private const string EventsFileName = "user_events.json";
 
     private const string DataSetId = "products";
-    private const string TableId = "products";
 
     private const string WindowsTerminalName = "cmd.exe";
     private const string UnixTerminalName = "/bin/bash";
@@ -53,8 +52,8 @@ public static class CreateTestResources
     private static readonly string CurrentTerminalFile = CurrentOSIsWindows ? WindowsTerminalName : UnixTerminalName;
     private static readonly string CurrentTerminalQuotes = CurrentOSIsWindows ? WindowsTerminalQuotes : UnixTerminalQuotes;
 
-    private static readonly string productFilePath = Path.Combine(Path.GetDirectoryName(Environment.CurrentDirectory), $"Snippets/resources/{ProductFileName}");
-    private static readonly string eventsFilePath = Path.Combine(Path.GetDirectoryName(Environment.CurrentDirectory), $"Snippets/resources/{ProductFileName}");
+    private static readonly string productFilePath = Path.Combine(Path.GetDirectoryName(Environment.CurrentDirectory), $"TestResourcesSetupCleanup/resources/{ProductFileName}");
+    private static readonly string eventsFilePath = Path.Combine(Path.GetDirectoryName(Environment.CurrentDirectory), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
     private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
     private static readonly string projectNumber = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_NUMBER");
     private static readonly string bucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
@@ -262,7 +261,7 @@ public static class CreateTestResources
         var listBQTables = ListBQTables(dataSet);
         Console.WriteLine($"Creating BigQuery table {tableName}");
 
-        if (!listBQTables.Contains(dataSet))
+        if (!listBQTables.Contains(tableName))
         {
             string consoleOutput = string.Empty;
 
@@ -344,17 +343,17 @@ public static class CreateTestResources
     /// <summary>
     /// Create test resources.
     /// </summary>
-    [Snippets.Attributes.Example]
+    [TestResourcesSetupCleanup.Attributes.Example]
     public static void PerformCreationOfTestResources()
     {
         // Create a GCS bucket with products.json file.
         var createdProductsBucket = CreateBucket(bucketName);
         UploadBlob(createdProductsBucket.Name, productFilePath, ProductFileName);
-
+        
         // Create a GCS bucket with user_events.json file.
         var createdEventsBucket = CreateBucket(bucketName);
         UploadBlob(createdEventsBucket.Name, eventsFilePath, EventsFileName);
-
+        
         // Import products from the GCS bucket to the Retail catalog.
         ImportProductsFromGcs();
 
@@ -366,6 +365,6 @@ public static class CreateTestResources
         // Create a BigQuery table with user events.
         CreateBQDataSet(EventsDataSet);
         CreateBQTable(EventsDataSet, EventsTable, EventsSchema);
-        UploadDataToBQTable(DataSetId, TableId, eventsFilePath, EventsSchema);
+        UploadDataToBQTable(EventsDataSet, EventsTable, eventsFilePath, EventsSchema);
     }
 }

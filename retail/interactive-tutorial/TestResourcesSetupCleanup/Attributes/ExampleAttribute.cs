@@ -1,6 +1,6 @@
 using System;
 
-namespace Snippets.Attributes
+namespace TestResourcesSetupCleanup.Attributes
 {
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 	public sealed class ExampleAttribute : Attribute

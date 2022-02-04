@@ -141,7 +141,7 @@ public static class RemoveTestResources
     /// <summary>
     /// Delete test resources.
     /// </summary>
-    [Snippets.Attributes.Example]
+    [TestResourcesSetupCleanup.Attributes.Example]
     public static void PerformDeletionOfTestResources()
     {
         DeleteBucket(productBucketName);
