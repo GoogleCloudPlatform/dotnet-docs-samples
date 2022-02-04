@@ -51,11 +51,9 @@ namespace RetailSearch.Samples.Tests
 
             var response = SearchWithFacetSpecTutorial.Search();
 
-            var actualProductTitle = response.ToArray()[0].Results[0].Product.Title;
-            var actualFacetKey = response.ToArray()[0].Facets[0].Key;
-
-            Assert.Contains(ExpectedProductTitle, actualProductTitle);
-            Assert.Equal(ExpectedFacetKey, actualFacetKey);
+            var firstPage = response.AsRawResponses().First();
+            Assert.Contains(firstPage.Facets, facet => facet.Key == ExpectedProductTitle);
+            Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
         }
          
         [Fact]
