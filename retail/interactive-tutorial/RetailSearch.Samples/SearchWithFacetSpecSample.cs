@@ -30,6 +30,13 @@ public class SearchWithFacetSpecSample
     {
         string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
 
+        var facetKey = new SearchRequest.Types.FacetSpec.Types.FacetKey
+        {
+            Key = facetKeyParam
+        };
+
+        // Put the intervals here:
+        
         var searchRequest = new SearchRequest
         {
             Placement = defaultSearchPlacement, // Placement is used to identify the Serving Config name
@@ -40,10 +47,7 @@ public class SearchWithFacetSpecSample
             {
                 new SearchRequest.Types.FacetSpec
                 {
-                    FacetKey = new SearchRequest.Types.FacetSpec.Types.FacetKey
-                    {
-                         Key = facetKeyParam
-                    }
+                    FacetKey = facetKey
                 }
             }
         };
