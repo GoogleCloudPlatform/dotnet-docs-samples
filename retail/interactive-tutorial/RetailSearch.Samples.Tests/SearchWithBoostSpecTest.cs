@@ -24,11 +24,9 @@ namespace RetailSearch.Samples.Tests
         {
             const string ExpectedProductTitle = "Tee";
 
-            var response = SearchWithBoostSpecTutorial.Search();
+            var firstPage = SearchWithBoostSpecTutorial.Search().First();
 
-            var actualProductTitle = response.ToArray()[0].Results[0].Product.Title;
-
-            Assert.Contains(ExpectedProductTitle, actualProductTitle);
+            Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
         }
     }
 }

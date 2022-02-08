@@ -25,13 +25,10 @@ namespace RetailSearch.Samples.Tests
             const string ExpectedProductTitle = "Tee";
             const string ExpectedFacetKey = "colorFamilies";
 
-            var response = SearchWithFacetSpecTutorial.Search();
+            var firstPage = SearchWithFacetSpecTutorial.Search().First();
 
-            var actualProductTitle = response.ToArray()[0].Results[0].Product.Title;
-            var actualFacetKey = response.ToArray()[0].Facets[0].Key;
-
-            Assert.Contains(ExpectedProductTitle, actualProductTitle);
-            Assert.Equal(ExpectedFacetKey, actualFacetKey);
+            Assert.Contains(firstPage.Facets, facet => facet.Key == ExpectedFacetKey);
+            Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
         }
     }
 }

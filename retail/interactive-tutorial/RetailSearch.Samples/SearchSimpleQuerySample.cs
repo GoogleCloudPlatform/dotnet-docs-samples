@@ -55,21 +55,27 @@ public class SearchSimpleQuerySample
 
         SearchServiceClient client = SearchServiceClient.Create();
         SearchRequest searchRequest = GetSearchRequest(query, projectNumber);
-        var searchResponses = client.Search(searchRequest).AsRawResponses();
-
-        var firstSearchResponse = searchResponses.FirstOrDefault();
-
-        Console.WriteLine("Search. response:");
-
-        if (firstSearchResponse != null)
+        IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
+        SearchResponse firstPage = searchResultPages.FirstOrDefault();
+        
+        if (firstPage is null)
         {
-            Console.WriteLine($"Results: {firstSearchResponse.Results}");
-            Console.WriteLine($"TotalSize: {firstSearchResponse.TotalSize},");
-            Console.WriteLine($"AttributionToken: {firstSearchResponse.AttributionToken},");
-            Console.WriteLine($"NextPageToken: {firstSearchResponse.NextPageToken},");
+            Console.WriteLine("The search operation returned no matching results.");
+        }
+        else
+        {
+            Console.WriteLine("Search results:");
+            Console.WriteLine($"AttributionToken: {firstPage.AttributionToken},");
+            Console.WriteLine($"NextPageToken: {firstPage.NextPageToken},");
+            Console.WriteLine($"TotalSize: {firstPage.TotalSize},");
+            Console.WriteLine("Items found in first page:");
+            foreach (SearchResponse.Types.SearchResult item in firstPage)
+            {
+                Console.WriteLine(item);
+            }
         }
 
-        return searchResponses;
+        return searchResultPages;
     }
 }
 // [END retail_search_for_products_with_query_parameter]

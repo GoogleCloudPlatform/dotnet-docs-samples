@@ -13,8 +13,8 @@
 // limitations under the License.
 
 // [START retail_search_product_with_boost_spec]
-// Call Retail API to search for a products in a catalog, rerank the
-// results boosting or burying the products that match defined condition.
+// Calls the Retail API to search for products in a catalog and reranks the
+// results boosting or burying the products that matched a given condition.
 
 using Google.Cloud.Retail.V2;
 using System;
@@ -31,22 +31,23 @@ public class SearchWithBoostSpecSample
     {
         string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
 
-        var conditionBoostSpec = new SearchRequest.Types.BoostSpec.Types.ConditionBoostSpec
-        {
-            Condition = condition,
-            Boost = boostStrength
-        };
-
-        var bootSpec = new SearchRequest.Types.BoostSpec();
-        bootSpec.ConditionBoostSpecs.Add(conditionBoostSpec);
-
         var searchRequest = new SearchRequest
         {
             Placement = defaultSearchPlacement, // Placement is used to identify the Serving Config name
             Query = query,
-            BoostSpec = bootSpec,
             VisitorId = "123456", // A unique identifier to track visitors
-            PageSize = 10
+            PageSize = 10,
+            BoostSpec = new SearchRequest.Types.BoostSpec
+            {
+                ConditionBoostSpecs =
+                {
+                    new SearchRequest.Types.BoostSpec.Types.ConditionBoostSpec
+                    {
+                        Condition = condition,
+                        Boost = boostStrength
+                    }
+                }
+            }
         };
 
         Console.WriteLine("Search. request:");
@@ -68,21 +69,27 @@ public class SearchWithBoostSpecSample
 
         SearchServiceClient client = SearchServiceClient.Create();
         SearchRequest searchRequest = GetSearchRequest(query, condition, boost, projectNumber);
-        var searchResponses = client.Search(searchRequest).AsRawResponses();
+        IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
+        SearchResponse firstPage = searchResultPages.FirstOrDefault();
 
-        var firstSearchResponse = searchResponses.FirstOrDefault();
-
-        Console.WriteLine("Search. response:");
-
-        if (firstSearchResponse != null)
+        if (firstPage is null)
         {
-            Console.WriteLine($"Results: {firstSearchResponse.Results}");
-            Console.WriteLine($"TotalSize: {firstSearchResponse.TotalSize},");
-            Console.WriteLine($"AttributionToken: {firstSearchResponse.AttributionToken},");
-            Console.WriteLine($"NextPageToken: {firstSearchResponse.NextPageToken},");
+            Console.WriteLine("The search operation returned no matching results.");
+        }
+        else
+        {
+            Console.WriteLine("Search results:");
+            Console.WriteLine($"AttributionToken: {firstPage.AttributionToken},");
+            Console.WriteLine($"NextPageToken: {firstPage.NextPageToken},");
+            Console.WriteLine($"TotalSize: {firstPage.TotalSize},");
+            Console.WriteLine("Items found in first page:");
+            foreach (SearchResponse.Types.SearchResult item in firstPage)
+            {
+                Console.WriteLine(item);
+            }
         }
 
-        return searchResponses;
+        return searchResultPages;
     }
 }
 // [END retail_search_product_with_boost_spec]
