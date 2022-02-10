@@ -58,6 +58,7 @@ public class SearchWithFacetSpecSample
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
         Console.WriteLine($"PageSize: {searchRequest.PageSize}");
         Console.WriteLine($"FacetSpecs: {searchRequest.FacetSpecs}");
+        Console.WriteLine();
 
         return searchRequest;
     }
@@ -101,7 +102,7 @@ public class SearchWithFacetSpecSample
 /// </summary>
 public static class SearchWithFacetSpecTutorial
 {
-    [RetailSearch.Samples.Attributes.Example]
+    [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
         var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");

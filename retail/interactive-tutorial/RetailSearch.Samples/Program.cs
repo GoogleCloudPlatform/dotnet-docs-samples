@@ -12,31 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-
 namespace RetailSearch.Samples
 {
     class Program
     {
         static void Main(string[] args)
         {
-            if (args.Length == 0)
-            {
-                throw new ArgumentException("Please run the application again and pass one of the file names to run.");
-            }
-
-            string exampleName = args[0];
-            var examples = Attributes.ExampleAttributeHelper.GetExamples(exampleName);
-            if (!examples.Any())
-            {
-                throw new ArgumentException($"Cannot find Example with name '{exampleName}'");
-            }
-
-            foreach (var example in examples)
-            {
-                Attributes.ExampleAttributeHelper.ExecuteExampleMethod(example);
-            }
+            Runner.Program.RunScript(args);
         }
     }
 }

@@ -56,6 +56,7 @@ public class SearchWithBoostSpecSample
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
         Console.WriteLine($"PageSize: {searchRequest.PageSize}");
         Console.WriteLine($"BoostSpec: {searchRequest.BoostSpec}");
+        Console.WriteLine();
 
         return searchRequest;
     }
@@ -99,7 +100,7 @@ public class SearchWithBoostSpecSample
 /// </summary>
 public static class SearchWithBoostSpecTutorial
 {
-    [RetailSearch.Samples.Attributes.Example]
+    [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
         var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");

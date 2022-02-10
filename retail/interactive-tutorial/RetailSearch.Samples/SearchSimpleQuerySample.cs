@@ -44,6 +44,7 @@ public class SearchSimpleQuerySample
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
         Console.WriteLine($"PageSize: {searchRequest.PageSize}");
+        Console.WriteLine();
 
         return searchRequest;
     }
@@ -85,7 +86,7 @@ public class SearchSimpleQuerySample
 /// </summary>
 public static class SearchSimpleQueryTutorial
 {
-    [RetailSearch.Samples.Attributes.Example]
+    [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
         var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");

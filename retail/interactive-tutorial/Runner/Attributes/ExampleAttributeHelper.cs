@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace RetailSearch.Samples.Attributes
+namespace Runner.Attributes
 {
 	/// <summary>
 	/// Helper for identifying sample methods from the sample classes by name.
@@ -15,7 +15,7 @@ namespace RetailSearch.Samples.Attributes
 		/// </summary>
 		public static IEnumerable<MethodInfo> GetExamples(string exampleName)
 		{
-			return Assembly.GetExecutingAssembly().GetTypes()
+			return Assembly.GetCallingAssembly().GetTypes()
 				.SelectMany(t => t.GetMethods())
 				.Where(m => m.GetCustomAttributes(typeof(ExampleAttribute), false).Length > 0)
 				.Where(m => m.IsStatic && m.GetParameters().Length == 0)

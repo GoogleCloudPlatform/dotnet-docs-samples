@@ -1,6 +1,6 @@
 using System;
 
-namespace RetailSearch.Samples.Attributes
+namespace Runner.Attributes
 {
     /// <summary>
     /// The example attribute for sample methods.
