@@ -35,7 +35,8 @@ public class SearchWithFacetSpecSample
         };
 
         // Put the intervals here:
-        
+        // Set only if values should be bucketized into intervals. Must be set for facets with numerical values.
+
         var searchRequest = new SearchRequest
         {
             Placement = defaultSearchPlacement, // Placement is used to identify the Serving Config name

@@ -22,11 +22,12 @@ namespace RetailSearch.Samples.Tests
         [Fact]
         public void TestSearchWithOrdering()
         {
-            const int ExpectedProductPrice = 39;
-
             var firstPage = SearchWithOrderingTutorial.Search().First();
 
-            Assert.Equal(ExpectedProductPrice, firstPage.Results[0].Product.PriceInfo.Price);
+            var firstProduct = firstPage.Results[0].Product;
+            var secondProduct = firstPage.Results[1].Product;
+
+            Assert.True(firstProduct.PriceInfo.Price >= secondProduct.PriceInfo.Price);
         }
     }
 }

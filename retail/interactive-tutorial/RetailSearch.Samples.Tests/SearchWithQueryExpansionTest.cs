@@ -26,8 +26,9 @@ namespace RetailSearch.Samples.Tests
 
             var searchResultPages = SearchWithQueryExpansionTutorial.Search();
 
-            var firstPage = searchResultPages.ToArray()[0];
-            var thirdPage = searchResultPages.ToArray()[2];
+            var topPages = searchResultPages.Take(3).ToList();
+            var firstPage = topPages[0];
+            var thirdPage = topPages[2];
 
             Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
             Assert.Contains(thirdPage, result => !result.Product.Title.Contains(ExpectedProductTitle));
