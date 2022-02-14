@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_product_with_boost_spec]
-// Calls the Retail API to search for products in a catalog and reranks the
-// results boosting or burying the products that matched a given condition.
+// [START retail_search_for_products_with_ordering]
+// Call Retail API to search for a products in a catalog, order the results by different product fields.
 
 using Google.Cloud.Retail.V2;
 using System;
@@ -22,32 +21,22 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Search with boot spec sample class.
+/// Search with ordering sample class.
 /// </summary>
-public class SearchWithBoostSpecSample
+public class SearchWithOrderingSample
 {
     /// <summary>Get search request.</summary>
-    private SearchRequest GetSearchRequest(string query, string condition, float boostStrength, string projectNumber)
+    private static SearchRequest GetSearchRequest(string query, string order, string projectNumber)
     {
         string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
 
-        var searchRequest = new SearchRequest
+        var searchRequest = new SearchRequest()
         {
             Placement = defaultSearchPlacement, // Placement is used to identify the Serving Config name
             Query = query,
+            OrderBy = order,
             VisitorId = "123456", // A unique identifier to track visitors
-            PageSize = 10,
-            BoostSpec = new SearchRequest.Types.BoostSpec
-            {
-                ConditionBoostSpecs =
-                {
-                    new SearchRequest.Types.BoostSpec.Types.ConditionBoostSpec
-                    {
-                        Condition = condition,
-                        Boost = boostStrength
-                    }
-                }
-            }
+            PageSize = 10
         };
 
         Console.WriteLine("Search. request:");
@@ -55,7 +44,6 @@ public class SearchWithBoostSpecSample
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
         Console.WriteLine($"PageSize: {searchRequest.PageSize}");
-        Console.WriteLine($"BoostSpec: {searchRequest.BoostSpec}");
         Console.WriteLine();
 
         return searchRequest;
@@ -68,13 +56,12 @@ public class SearchWithBoostSpecSample
     /// <returns></returns>
     public IEnumerable<SearchResponse> Search(string projectNumber)
     {
-        // Try different conditions here:
-        string condition = "colorFamilies: ANY(\"Blue\")";
-        float boost = 0.0f;
-        string query = "Tee";
+        // Try different ordering expressions here:
+        string order = "price desc";
+        string query = "Hoodie";
 
         SearchServiceClient client = SearchServiceClient.Create();
-        SearchRequest searchRequest = GetSearchRequest(query, condition, boost, projectNumber);
+        SearchRequest searchRequest = GetSearchRequest(query, order, projectNumber);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
         SearchResponse firstPage = searchResultPages.FirstOrDefault();
 
@@ -99,18 +86,18 @@ public class SearchWithBoostSpecSample
         return searchResultPages;
     }
 }
-// [END retail_search_product_with_boost_spec]
+// [END retail_search_for_products_with_ordering]
 
 /// <summary>
-/// Search with boost spec tutorial.
+/// Search with ordering tutorial.
 /// </summary>
-public static class SearchWithBoostSpecTutorial
+public static class SearchWithOrderingTutorial
 {
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
         var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
-        var sample = new SearchWithBoostSpecSample();
+        var sample = new SearchWithOrderingSample();
         return sample.Search(projectNumber);
     }
 }

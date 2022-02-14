@@ -14,7 +14,6 @@
 
 // [START retail_search_product_with_facet_spec]
 
-using Google.Api.Gax;
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
@@ -63,6 +62,11 @@ public class SearchWithFacetSpecSample
         return searchRequest;
     }
 
+    /// <summary>
+    /// Call the retail search.
+    /// </summary>
+    /// <param name="projectNumber">Current project number.</param>
+    /// <returns></returns>
     public IEnumerable<SearchResponse> Search(string projectNumber)
     {
         // Try different facets here:
@@ -86,6 +90,7 @@ public class SearchWithFacetSpecSample
             Console.WriteLine($"Facets: {firstPage.Facets}");
             Console.WriteLine($"TotalSize: {firstPage.TotalSize},");
             Console.WriteLine("Items found in first page:");
+
             foreach (SearchResponse.Types.SearchResult item in firstPage)
             {
                 Console.WriteLine(item);

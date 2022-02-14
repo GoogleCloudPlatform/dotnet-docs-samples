@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Api.Gax;
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
@@ -49,6 +48,11 @@ public class SearchSimpleQuerySample
         return searchRequest;
     }
 
+    /// <summary>
+    /// Call the retail search.
+    /// </summary>
+    /// <param name="projectNumber">Current project number.</param>
+    /// <returns></returns>
     public IEnumerable<SearchResponse> Search(string projectNumber)
     {
         // Try different query phrases here:
@@ -70,6 +74,7 @@ public class SearchSimpleQuerySample
             Console.WriteLine($"NextPageToken: {firstPage.NextPageToken},");
             Console.WriteLine($"TotalSize: {firstPage.TotalSize},");
             Console.WriteLine("Items found in first page:");
+
             foreach (SearchResponse.Types.SearchResult item in firstPage)
             {
                 Console.WriteLine(item);

@@ -29,7 +29,7 @@ namespace Runner.Attributes
 		/// </summary>
 		public static IEnumerable<MethodInfo> GetExamples(string exampleName)
 		{
-			return Assembly.GetCallingAssembly().GetTypes()
+			return Assembly.GetEntryAssembly().GetTypes()
 				.SelectMany(t => t.GetMethods())
 				.Where(m => m.GetCustomAttributes(typeof(ExampleAttribute), false).Length > 0)
 				.Where(m => m.IsStatic && m.GetParameters().Length == 0)

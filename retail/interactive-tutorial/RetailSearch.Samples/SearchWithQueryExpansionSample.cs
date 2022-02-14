@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_product_with_boost_spec]
-// Calls the Retail API to search for products in a catalog and reranks the
-// results boosting or burying the products that matched a given condition.
+// [START retail_search_for_products_with_query_expansion_specification]
+// Call Retail API to search for a products in a catalog,
+// enabling the query expansion feature to let the Google Retail Search build an automatic query expansion.
 
 using Google.Cloud.Retail.V2;
 using System;
@@ -22,32 +22,22 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Search with boot spec sample class.
+/// Search with query expansion sample class.
 /// </summary>
-public class SearchWithBoostSpecSample
+public class SearchWithQueryExpansionSample 
 {
     /// <summary>Get search request.</summary>
-    private SearchRequest GetSearchRequest(string query, string condition, float boostStrength, string projectNumber)
-    {
+    private static SearchRequest GetSearchRequest(string query, SearchRequest.Types.QueryExpansionSpec.Types.Condition condition, string projectNumber)
+    { 
         string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
 
-        var searchRequest = new SearchRequest
+        var searchRequest = new SearchRequest()
         {
             Placement = defaultSearchPlacement, // Placement is used to identify the Serving Config name
             Query = query,
+            QueryExpansionSpec = new SearchRequest.Types.QueryExpansionSpec { Condition = condition },
             VisitorId = "123456", // A unique identifier to track visitors
-            PageSize = 10,
-            BoostSpec = new SearchRequest.Types.BoostSpec
-            {
-                ConditionBoostSpecs =
-                {
-                    new SearchRequest.Types.BoostSpec.Types.ConditionBoostSpec
-                    {
-                        Condition = condition,
-                        Boost = boostStrength
-                    }
-                }
-            }
+            PageSize = 10
         };
 
         Console.WriteLine("Search. request:");
@@ -55,7 +45,6 @@ public class SearchWithBoostSpecSample
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
         Console.WriteLine($"PageSize: {searchRequest.PageSize}");
-        Console.WriteLine($"BoostSpec: {searchRequest.BoostSpec}");
         Console.WriteLine();
 
         return searchRequest;
@@ -68,13 +57,12 @@ public class SearchWithBoostSpecSample
     /// <returns></returns>
     public IEnumerable<SearchResponse> Search(string projectNumber)
     {
-        // Try different conditions here:
-        string condition = "colorFamilies: ANY(\"Blue\")";
-        float boost = 0.0f;
-        string query = "Tee";
+        // Try different query expansion condition here:
+        var condition = SearchRequest.Types.QueryExpansionSpec.Types.Condition.Auto;
+        string query = "Google Youth Hero Tee Grey";
 
         SearchServiceClient client = SearchServiceClient.Create();
-        SearchRequest searchRequest = GetSearchRequest(query, condition, boost, projectNumber);
+        SearchRequest searchRequest = GetSearchRequest(query, condition, projectNumber);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
         SearchResponse firstPage = searchResultPages.FirstOrDefault();
 
@@ -99,18 +87,18 @@ public class SearchWithBoostSpecSample
         return searchResultPages;
     }
 }
-// [END retail_search_product_with_boost_spec]
+// [END retail_search_for_products_with_query_expansion_specification]
 
 /// <summary>
-/// Search with boost spec tutorial.
+/// Search with query expansion tutorial.
 /// </summary>
-public static class SearchWithBoostSpecTutorial
+public static class SearchWithQueryExpansionTutorial
 {
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
         var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
-        var sample = new SearchWithBoostSpecSample();
+        var sample = new SearchWithQueryExpansionSample();
         return sample.Search(projectNumber);
     }
 }
