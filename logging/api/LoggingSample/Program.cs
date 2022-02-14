@@ -109,7 +109,6 @@ namespace GoogleCloudSamples
         private void CreateSink(string sinkId, string logId)
         {
             var sinkClient = ConfigServiceV2Client.Create();
-            CreateSinkRequest sinkRequest = new CreateSinkRequest();
             LogSink myLogSink = new LogSink();
             myLogSink.Name = sinkId;
 
@@ -125,7 +124,6 @@ namespace GoogleCloudSamples
             LogName logName = new LogName(s_projectId, logId);
             myLogSink.Filter = $"logName={logName.ToString()}AND severity<=ERROR";
             ProjectName projectName = new ProjectName(s_projectId);
-            sinkRequest.Sink = myLogSink;
             sinkClient.CreateSink(projectName, myLogSink, _retryAWhile);
             Console.WriteLine($"Created sink: {sinkId}.");
         }
