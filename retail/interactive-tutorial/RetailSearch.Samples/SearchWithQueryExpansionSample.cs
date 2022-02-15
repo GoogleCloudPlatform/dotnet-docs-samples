@@ -27,9 +27,9 @@ using System.Linq;
 public class SearchWithQueryExpansionSample 
 {
     /// <summary>Get search request.</summary>
-    private static SearchRequest GetSearchRequest(string query, SearchRequest.Types.QueryExpansionSpec.Types.Condition condition, string projectNumber)
+    private static SearchRequest GetSearchRequest(string query, SearchRequest.Types.QueryExpansionSpec.Types.Condition condition, string projectId)
     { 
-        string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
+        string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
         var searchRequest = new SearchRequest()
         {
@@ -53,16 +53,16 @@ public class SearchWithQueryExpansionSample
     /// <summary>
     /// Call the retail search.
     /// </summary>
-    /// <param name="projectNumber">Current project number.</param>
+    /// <param name="projectId">Current project id.</param>
     /// <returns></returns>
-    public IEnumerable<SearchResponse> Search(string projectNumber)
+    public IEnumerable<SearchResponse> Search(string projectId)
     {
         // Try different query expansion condition here:
         var condition = SearchRequest.Types.QueryExpansionSpec.Types.Condition.Auto;
         string query = "Google Youth Hero Tee Grey";
 
         SearchServiceClient client = SearchServiceClient.Create();
-        SearchRequest searchRequest = GetSearchRequest(query, condition, projectNumber);
+        SearchRequest searchRequest = GetSearchRequest(query, condition, projectId);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
         SearchResponse firstPage = searchResultPages.FirstOrDefault();
 
@@ -97,8 +97,8 @@ public static class SearchWithQueryExpansionTutorial
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
-        var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
+        var projectId = Environment.GetEnvironmentVariable("PROJECT_ID");
         var sample = new SearchWithQueryExpansionSample();
-        return sample.Search(projectNumber);
+        return sample.Search(projectId);
     }
 }

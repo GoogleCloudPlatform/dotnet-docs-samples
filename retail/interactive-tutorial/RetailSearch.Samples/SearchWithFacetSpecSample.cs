@@ -25,9 +25,9 @@ using System.Linq;
 public class SearchWithFacetSpecSample
 {
     /// <summary>Get search request.</summary>
-    private SearchRequest GetSearchRequest(string query, string facetKeyParam, string projectNumber)
+    private SearchRequest GetSearchRequest(string query, string facetKeyParam, string projectId)
     {
-        string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
+        string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
         var facetKey = new SearchRequest.Types.FacetSpec.Types.FacetKey
         {
@@ -66,16 +66,16 @@ public class SearchWithFacetSpecSample
     /// <summary>
     /// Call the retail search.
     /// </summary>
-    /// <param name="projectNumber">Current project number.</param>
+    /// <param name="projectId">Current project id.</param>
     /// <returns></returns>
-    public IEnumerable<SearchResponse> Search(string projectNumber)
+    public IEnumerable<SearchResponse> Search(string projectId)
     {
         // Try different facets here:
         string facetKey = "colorFamilies";
         string query = "Tee";
 
         SearchServiceClient client = SearchServiceClient.Create();
-        SearchRequest searchRequest = GetSearchRequest(query, facetKey, projectNumber);
+        SearchRequest searchRequest = GetSearchRequest(query, facetKey, projectId);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
         SearchResponse firstPage = searchResultPages.FirstOrDefault();
 
@@ -111,8 +111,8 @@ public static class SearchWithFacetSpecTutorial
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
-        var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
+        var projectId = Environment.GetEnvironmentVariable("PROJECT_ID");
         var sample = new SearchWithFacetSpecSample();
-        return sample.Search(projectNumber);
+        return sample.Search(projectId);
     }
 }

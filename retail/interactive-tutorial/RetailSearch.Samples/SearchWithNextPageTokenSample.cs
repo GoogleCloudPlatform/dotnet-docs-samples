@@ -29,9 +29,9 @@ using System.Linq;
 public class SearchWithNextPageTokenSample
 {
     /// <summary>Get search request.</summary>
-    private static SearchRequest GetSearchRequest(string query, string nextPageToken, string projectNumber)
+    private static SearchRequest GetSearchRequest(string query, string nextPageToken, string projectId)
     {
-        string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
+        string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
         var searchRequest = new SearchRequest()
         {
@@ -54,16 +54,33 @@ public class SearchWithNextPageTokenSample
     /// <summary>
     /// Call the retail search.
     /// </summary>
-    /// <param name="projectNumber">Current project number.</param>
+    /// <param name="projectNumber">Current project id.</param>
     /// <returns></returns>
-    public IEnumerable<SearchResponse> Search(string projectNumber)
+    public IEnumerable<SearchResponse> Search(string projectId)
     {
         // Call with empty next page token:
         string nextPageToken = "";
+        IEnumerable<SearchResponse> firstSearchResultPages = SearchWithNextPageToken(nextPageToken, projectId);
+
+        // Call with valid next page token:
+        nextPageToken = firstSearchResultPages.First().NextPageToken;
+        SearchWithNextPageToken(nextPageToken, projectId);
+
+        return firstSearchResultPages;
+    }
+
+    /// <summary>
+    /// Call the retail search with nextPageToken.
+    /// </summary>
+    /// <param name="nextPageToken">The next page token.</param>
+    /// <param name="projectId">The current project id.</param>
+    /// <returns></returns>
+    private IEnumerable<SearchResponse> SearchWithNextPageToken(string nextPageToken, string projectId)
+    {
         string query = "Hoodie";
 
         SearchServiceClient client = SearchServiceClient.Create();
-        SearchRequest searchRequest = GetSearchRequest(query, nextPageToken, projectNumber);
+        SearchRequest searchRequest = GetSearchRequest(query, nextPageToken, projectId);
         IEnumerable<SearchResponse> firstSearchResultPages = client.Search(searchRequest).AsRawResponses();
         SearchResponse firstPage = firstSearchResultPages.FirstOrDefault();
 
@@ -85,30 +102,6 @@ public class SearchWithNextPageTokenSample
             }
         }
 
-        // Call with valid next page token:
-        nextPageToken = firstPage.NextPageToken;
-        searchRequest = GetSearchRequest(query, nextPageToken, projectNumber);
-        IEnumerable<SearchResponse>  secondSearchResultPages = client.Search(searchRequest).AsRawResponses();
-        SearchResponse secondPage = secondSearchResultPages.FirstOrDefault();
-
-        if (secondPage is null)
-        {
-            Console.WriteLine("The search operation returned no matching results.");
-        }
-        else
-        {
-            Console.WriteLine("Second page search results:");
-            Console.WriteLine($"AttributionToken: {secondPage.AttributionToken},");
-            Console.WriteLine($"NextPageToken: {secondPage.NextPageToken},");
-            Console.WriteLine($"TotalSize: {secondPage.TotalSize},");
-            Console.WriteLine("Items found in first page:");
-
-            foreach (SearchResponse.Types.SearchResult item in secondPage)
-            {
-                Console.WriteLine(item);
-            }
-        }
-
         return firstSearchResultPages;
     }
 }
@@ -122,8 +115,8 @@ public static class SearchWithNextPageTokenTutorial
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
-        var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
+        var projectId = Environment.GetEnvironmentVariable("PROJECT_ID");
         var sample = new SearchWithNextPageTokenSample();
-        return sample.Search(projectNumber);
+        return sample.Search(projectId);
     }
 }

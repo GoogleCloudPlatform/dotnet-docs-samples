@@ -29,9 +29,9 @@ using System.Linq;
 public class SearchWithPageSizeSample
 {
     /// <summary>Get search request.</summary>
-    private static SearchRequest GetSearchRequest(string query, int pageSize, string projectNumber)
+    private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId)
     {
-        string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
+        string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
         var searchRequest = new SearchRequest()
         {
@@ -54,16 +54,16 @@ public class SearchWithPageSizeSample
     /// <summary>
     /// Call the retail search.
     /// </summary>
-    /// <param name="projectNumber">Current project number.</param>
+    /// <param name="projectId">Current project id.</param>
     /// <returns></returns>
-    public IEnumerable<SearchResponse> Search(string projectNumber)
+    public IEnumerable<SearchResponse> Search(string projectId)
     {
         // Try different page size here:
         int pageSize = 6;
         string query = "Hoodie";
 
         SearchServiceClient client = SearchServiceClient.Create();
-        SearchRequest searchRequest = GetSearchRequest(query, pageSize, projectNumber);
+        SearchRequest searchRequest = GetSearchRequest(query, pageSize, projectId);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
         SearchResponse firstPage = searchResultPages.FirstOrDefault();
 
@@ -98,8 +98,8 @@ public static class SearchWithPageSizeTutorial
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
-        var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
+        var projectId = Environment.GetEnvironmentVariable("PROJECT_ID");
         var sample = new SearchWithPageSizeSample();
-        return sample.Search(projectNumber);
+        return sample.Search(projectId);
     }
 }
