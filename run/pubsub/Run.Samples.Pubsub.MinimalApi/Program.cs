@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START cloudrun_pubsub_server]
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -20,7 +21,9 @@ if (port != null)
 {
     app.Urls.Add($"http://0.0.0.0:{port}");
 }
+// [END cloudrun_pubsub_server]
 
+// [START cloudrun_pubsub_handler]
 app.MapPost("/", (Envelope envelope) =>
 {
     if (envelope?.Message?.Data == null)
@@ -36,6 +39,7 @@ app.MapPost("/", (Envelope envelope) =>
 
     return Results.NoContent();
 });
+// [END cloudrun_pubsub_handler]
 
 app.Run();
 
