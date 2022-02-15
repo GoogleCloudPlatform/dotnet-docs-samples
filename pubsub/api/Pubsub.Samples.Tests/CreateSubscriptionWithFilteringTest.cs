@@ -32,12 +32,10 @@ public class CreateSubscriptionWithFilteringTest
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForCreateSubscriptionWithFiltering{randomName}";
         string subscriptionId = $"testSubscriptionForCreateSubscriptionWithFiltering{randomName}";
-        // string filter = "attributes.domain = 'com'";
-        // attributes:domain
         string filter = "attributes:domain";
 
         _pubsubFixture.CreateTopic(topicId);
-        _createSubscriptionWithFilteringSample.CreateSubscriptionWithFiltering(_pubsubFixture.ProjectId, subscriptionId, topicId, filter);
+        _createSubscriptionWithFilteringSample.CreateSubscriptionWithFiltering(_pubsubFixture.ProjectId, topicId, subscriptionId, filter);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
         var subscription = _pubsubFixture.GetSubscription(subscriptionId);
 

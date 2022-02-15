@@ -23,7 +23,6 @@ public class CreateSubscriptionWithFilteringSample
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
-
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         Subscription subscription = null;
 
