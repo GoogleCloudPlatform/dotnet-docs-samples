@@ -109,7 +109,7 @@ public static class SearchWithBoostSpecTutorial
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
-        var projectId = Environment.GetEnvironmentVariable("PROJECT_ID");
+        var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new SearchWithBoostSpecSample();
         return sample.Search(projectId);
     }
