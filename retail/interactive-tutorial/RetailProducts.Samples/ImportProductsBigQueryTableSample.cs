@@ -71,7 +71,7 @@ public class ImportProductsBigQueryTableSample
     /// Call the Retail API to import products from a Big Query.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
-    public void ImportProductsFromBigQuery(string projectId)
+    public Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromBigQuery(string projectId)
     {
         // Try the full reconciliation mode here:
         var recoinciliationMode = ImportProductsRequest.Types.ReconciliationMode.Incremental;
@@ -97,6 +97,8 @@ public class ImportProductsBigQueryTableSample
         Console.WriteLine("Operation result:");
         Console.WriteLine(importResult.Result);
         Console.WriteLine();
+
+        return importResult;
     }
 }
 // [END retail_import_products_from_big_query]
@@ -107,10 +109,10 @@ public class ImportProductsBigQueryTableSample
 public static class ImportProductsBigQueryTableTutorial
 {
     [Runner.Attributes.Example]
-    public static void ImportProductsFromBigQuery()
+    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromBigQuery()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new ImportProductsBigQueryTableSample();
-        sample.ImportProductsFromBigQuery(projectId);
+        return sample.ImportProductsFromBigQuery(projectId);
     }
 }

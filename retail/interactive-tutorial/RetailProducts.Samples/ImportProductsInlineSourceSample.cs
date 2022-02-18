@@ -34,7 +34,7 @@ public class ImportProductsInlineSourceSample
     /// </summary>
     /// <param name="length">The required length of alphanumeric string.</param>
     /// <returns>Generated alphanumeric string.</returns>
-    public static string RandomAlphanumericString(int length)
+    private static string RandomAlphanumericString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         return new string(Enumerable.Repeat(chars, length)
@@ -169,7 +169,7 @@ public class ImportProductsInlineSourceSample
     /// <summary>
     /// Call the Retail API to import products.
     /// </summary>
-    public void ImportProductsFromInlineSource(string projectId)
+    public Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromInlineSource(string projectId)
     {
         List<Product> products = GetProducts();
         ImportProductsRequest importRequest = GetImportProductsInlineRequest(products, projectId);
@@ -183,7 +183,7 @@ public class ImportProductsInlineSourceSample
         Console.WriteLine("Please wait till opeartion is done");
         Console.WriteLine();
 
-        var importResult = importResponse.PollUntilCompleted();
+        Operation<ImportProductsResponse, ImportMetadata> importResult = importResponse.PollUntilCompleted();
 
         Console.WriteLine("Import products operation is done");
         Console.WriteLine();
@@ -194,6 +194,8 @@ public class ImportProductsInlineSourceSample
         Console.WriteLine("Operation result:");
         Console.WriteLine(importResult.Result);
         Console.WriteLine();
+
+        return importResult;
     }
 }
 // [END retail_import_products_from_inline_source]
@@ -204,10 +206,10 @@ public class ImportProductsInlineSourceSample
 public static class ImportProductsInlineSourceTutorial
 {
     [Runner.Attributes.Example]
-    public static void ImportProductsFromInlineSource()
+    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromInlineSource()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new ImportProductsInlineSourceSample();
-        sample.ImportProductsFromInlineSource(projectId);
+        return sample.ImportProductsFromInlineSource(projectId);
     }
 }

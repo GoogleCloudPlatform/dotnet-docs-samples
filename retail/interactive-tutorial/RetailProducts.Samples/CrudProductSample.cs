@@ -16,8 +16,6 @@
 // Create product in a catalog using Retail API
 
 using Google.Cloud.Retail.V2;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 
 /// <summary>

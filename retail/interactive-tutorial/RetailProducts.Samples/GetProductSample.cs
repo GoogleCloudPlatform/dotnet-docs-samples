@@ -32,7 +32,7 @@ public class GetProductSample
     /// </summary>
     /// <param name="length">The required length of alphanumeric string.</param>
     /// <returns>Generated alphanumeric string.</returns>
-    public static string RandomAlphanumericString(int length)
+    private static string RandomAlphanumericString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         return new string(Enumerable.Repeat(chars, length)
@@ -80,17 +80,19 @@ public class GetProductSample
     /// <summary>
     /// Perform the product retrieval operation.
     /// </summary>
-    /// <param name="prodectId">The current project id.</param>
-    public void PerformGetProductOperation(string prodectId)
+    /// <param name="projectId">The current project id.</param>
+    public Product PerformGetProductOperation(string projectId)
     {
         // Create product.
-        var createdProduct = CreateProductSample.CreateRetailProduct(GeneratedProductId, prodectId);
+        var createdProduct = CreateProductSample.CreateRetailProduct(GeneratedProductId, projectId);
 
         // Get created product.
         var retrievedProduct = GetRetailProduct(createdProduct.Name);
 
         // Delete created product.
         DeleteProductSample.DeleteRetailProduct(retrievedProduct.Name);
+
+        return retrievedProduct;
     }
 }
 // [END retail_get_product]
@@ -101,10 +103,10 @@ public class GetProductSample
 public static class GetProductTutorial
 {
     [Runner.Attributes.Example]
-    public static void PerformGetProductOperation()
+    public static Product PerformGetProductOperation()
     {
         var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new GetProductSample();
-        sample.PerformGetProductOperation(projectId);
+        return sample.PerformGetProductOperation(projectId);
     }
 }

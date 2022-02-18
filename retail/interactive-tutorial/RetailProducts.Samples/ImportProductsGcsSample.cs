@@ -80,7 +80,7 @@ public class ImportProductsGcsSample
     /// Call the Retail API to import products.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
-    public void ImportProductsFromGcs(string projectId)
+    public Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromGcs(string projectId)
     {
         ImportProductsRequest importGcsRequest = GetImportProductsGcsRequest(gcsProductsObject, projectId);
 
@@ -108,6 +108,8 @@ public class ImportProductsGcsSample
 
         // The imported products needs to be indexed in the catalog before they become available for search.
         Console.WriteLine("Wait 2 - 5 minutes till products become indexed in the catalog, after that they will be available for search");
+
+        return importResult;
     }
 }
 // [END retail_import_products_from_gcs]
@@ -118,10 +120,10 @@ public class ImportProductsGcsSample
 public static class ImportProductsGcsTutorial
 {
     [Runner.Attributes.Example]
-    public static void ImportProductsFromGcs()
+    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromGcs()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new ImportProductsGcsSample();
-        sample.ImportProductsFromGcs(projectId);
+        return sample.ImportProductsFromGcs(projectId);
     }
 }

@@ -32,7 +32,7 @@ public class UpdateProductSample
     /// </summary>
     /// <param name="length">The required length of alphanumeric string.</param>
     /// <returns>Generated alphanumeric string.</returns>
-    public static string RandomAlphanumericString(int length)
+    private static string RandomAlphanumericString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         return new string(Enumerable.Repeat(chars, length)
