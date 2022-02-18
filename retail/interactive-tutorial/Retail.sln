@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailSearch.Samples.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Runner", "Runner\Runner.csproj", "{9446A7B9-379D-4912-9285-6E3DF5BD887F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetailProducts.Samples", "RetailProducts.Samples\RetailProducts.Samples.csproj", "{A7B33AC5-4A87-4EEA-B2DF-1EA4A2D7EE0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailProducts.Samples", "RetailProducts.Samples\RetailProducts.Samples.csproj", "{A7B33AC5-4A87-4EEA-B2DF-1EA4A2D7EE0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetailProducts.Samples.Tests", "RetailProducts.Samples.Tests\RetailProducts.Samples.Tests.csproj", "{DBC17C72-DDD8-4084-B43B-120C88DB37AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailProducts.Samples.Tests", "RetailProducts.Samples.Tests\RetailProducts.Samples.Tests.csproj", "{DBC17C72-DDD8-4084-B43B-120C88DB37AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snippets", "Snippets\Snippets.csproj", "{C33F0B99-7893-43CD-83AE-7C18CE3FDC2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{DBC17C72-DDD8-4084-B43B-120C88DB37AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBC17C72-DDD8-4084-B43B-120C88DB37AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBC17C72-DDD8-4084-B43B-120C88DB37AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C33F0B99-7893-43CD-83AE-7C18CE3FDC2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C33F0B99-7893-43CD-83AE-7C18CE3FDC2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C33F0B99-7893-43CD-83AE-7C18CE3FDC2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C33F0B99-7893-43CD-83AE-7C18CE3FDC2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RetailProducts.Samples\RetailProducts.Samples.csproj" />
+    <ProjectReference Include="..\Snippets\Snippets.csproj" />
   </ItemGroup>
 
 </Project>
