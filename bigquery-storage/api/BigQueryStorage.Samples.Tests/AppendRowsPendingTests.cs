@@ -41,7 +41,7 @@ public class AppendRowsPendingTests
     public async Task TestAppendRows()
     {
         // Arrange: Ensure dataset and table exists.
-        string datasetId = $"dataset{Guid.NewGuid().ToString().Substring(0, 18).Replace('-', '_')}"; // - is not allowed in name
+        string datasetId = $"dataset{Guid.NewGuid().ToString("N").Substring(0, 18)}"; // - is not allowed in name
         string tableName = "append_row_pending";
         TableSchema tableSchema = new TableSchemaBuilder
         {
