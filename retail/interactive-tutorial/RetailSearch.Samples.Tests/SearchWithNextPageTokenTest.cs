@@ -24,7 +24,7 @@ namespace RetailSearch.Samples.Tests
         {
             const string ExpectedProductTitle = "Hoodie";
 
-            var firstPage = SearchWithNextPageTokenTutorial.Search().First();
+            var firstPage = SearchWithNextPageTokenTutorial.Search();
 
             Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
         }

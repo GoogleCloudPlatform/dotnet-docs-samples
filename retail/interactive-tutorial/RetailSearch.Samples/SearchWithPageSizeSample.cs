@@ -22,13 +22,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-
 /// <summary>
 /// Search with page size sample class.
 /// </summary>
 public class SearchWithPageSizeSample
 {
-    /// <summary>Get search request.</summary>
+    /// <summary>
+    /// Get search request.
+    /// </summary>
+    /// <param name="query">The query.</param>
+    /// <param name="pageSize">The size of the page.</param>
+    /// <param name="projectId">The current project id.</param>
+    /// <returns>The search request.</returns>
     private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId)
     {
         string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
@@ -55,7 +60,7 @@ public class SearchWithPageSizeSample
     /// Call the retail search.
     /// </summary>
     /// <param name="projectId">Current project id.</param>
-    /// <returns></returns>
+    /// <returns>Search result pages.</returns>
     public IEnumerable<SearchResponse> Search(string projectId)
     {
         // Try different page size here:

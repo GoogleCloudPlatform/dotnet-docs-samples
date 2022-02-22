@@ -20,16 +20,20 @@
 using Google.Api.Gax;
 using Google.Cloud.Retail.V2;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
 
 /// <summary>
 /// Search with next page token sample class.
 /// </summary>
 public class SearchWithNextPageTokenSample
 {
-    /// <summary>Get search request.</summary>
+    /// <summary>
+    /// Get search request.
+    /// </summary>
+    /// <param name="query">The query.</param>
+    /// <param name="nextPageToken">The next page token.</param>
+    /// <param name="pageSize">The size of the page.</param>
+    /// <param name="projectId">The current project id.</param>
+    /// <returns>The search request.</returns>
     private static SearchRequest GetSearchRequest(string query, string nextPageToken, int pageSize, string projectId)
     {
         string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
@@ -56,19 +60,19 @@ public class SearchWithNextPageTokenSample
     /// <summary>
     /// Call the retail search.
     /// </summary>
-    /// <param name="projectNumber">Current project id.</param>
-    /// <returns></returns>
-    public IEnumerable<SearchResponse> Search(string projectId)
+    /// <param name="projectId">Current project id.</param>
+    /// <returns>First page with results.</returns>
+    public Page<SearchResponse.Types.SearchResult> Search(string projectId)
     {
         // Call with empty next page token the first time:
         string nextPageToken = "";
-        IEnumerable<SearchResponse> firstSearchResultPages = SearchWithNextPageToken(nextPageToken, projectId);
+        Page<SearchResponse.Types.SearchResult> firstPage = SearchWithNextPageToken(nextPageToken, projectId);
 
         // Call with valid next page token:
-        nextPageToken = firstSearchResultPages.First().NextPageToken;
-        SearchWithNextPageToken(nextPageToken, projectId);
+        nextPageToken = firstPage.NextPageToken;
+        Page<SearchResponse.Types.SearchResult> secondPage = SearchWithNextPageToken(nextPageToken, projectId);
 
-        return firstSearchResultPages;
+        return firstPage;
     }
 
     /// <summary>
@@ -76,8 +80,8 @@ public class SearchWithNextPageTokenSample
     /// </summary>
     /// <param name="nextPageToken">The next page token.</param>
     /// <param name="projectId">The current project id.</param>
-    /// <returns></returns>
-    private IEnumerable<SearchResponse> SearchWithNextPageToken(string nextPageToken, string projectId)
+    /// <returns>First page with results.</returns>
+    private Page<SearchResponse.Types.SearchResult> SearchWithNextPageToken(string nextPageToken, string projectId)
     {
         int pageSize = 10;
         string query = "Hoodie";
@@ -94,7 +98,7 @@ public class SearchWithNextPageTokenSample
         else
         {
             Console.WriteLine($"NextPageToken: {singlePage.NextPageToken}");
-            Console.WriteLine("Items found in first page:");
+            Console.WriteLine("Items found in page:");
 
             foreach (SearchResponse.Types.SearchResult item in singlePage)
             {
@@ -102,7 +106,7 @@ public class SearchWithNextPageTokenSample
             }
         }
 
-        return searchResultPages.AsRawResponses();
+        return singlePage;
     }
 }
 // [END retail_search_for_products_with_next_page_token]
@@ -113,7 +117,7 @@ public class SearchWithNextPageTokenSample
 public static class SearchWithNextPageTokenTutorial
 {
     [Runner.Attributes.Example]
-    public static IEnumerable<SearchResponse> Search()
+    public static Page<SearchResponse.Types.SearchResult> Search()
     {
         var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new SearchWithNextPageTokenSample();

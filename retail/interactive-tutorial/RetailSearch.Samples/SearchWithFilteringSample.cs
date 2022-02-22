@@ -25,7 +25,13 @@ using System.Linq;
 /// </summary>
 public class SearchWithFilteringSample
 {
-    /// <summary>Get search request.</summary>
+    /// <summary>
+    /// Get search request.
+    /// </summary>
+    /// <param name="query">The query.</param>
+    /// <param name="filter">The facet key parameter.</param>
+    /// <param name="projectId">The current project id.</param>
+    /// <returns>The search request.</returns>
     private static SearchRequest GetSearchRequest(string query, string filter, string projectId)
     {
         string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
@@ -54,7 +60,7 @@ public class SearchWithFilteringSample
     /// Call the retail search.
     /// </summary>
     /// <param name="projectId">Current project id.</param>
-    /// <returns></returns>
+    /// <returns>Search result pages.</returns>
     public IEnumerable<SearchResponse> Search(string projectId)
     {
         // Try different filter expressions here:
