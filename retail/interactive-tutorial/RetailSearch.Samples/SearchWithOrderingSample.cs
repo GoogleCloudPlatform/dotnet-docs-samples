@@ -25,10 +25,16 @@ using System.Linq;
 /// </summary>
 public class SearchWithOrderingSample
 {
-    /// <summary>Get search request.</summary>
-    private static SearchRequest GetSearchRequest(string query, string order, string projectNumber)
+    /// <summary>
+    /// Get search request.
+    /// </summary>
+    /// <param name="query">The query.</param>
+    /// <param name="order">The order expression.</param>
+    /// <param name="projectId">The current project id.</param>
+    /// <returns>The search request.</returns>
+    private static SearchRequest GetSearchRequest(string query, string order, string projectId)
     {
-        string defaultSearchPlacement = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/placements/default_search";
+        string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
         var searchRequest = new SearchRequest()
         {
@@ -52,16 +58,16 @@ public class SearchWithOrderingSample
     /// <summary>
     /// Call the retail search.
     /// </summary>
-    /// <param name="projectNumber">Current project number.</param>
-    /// <returns></returns>
-    public IEnumerable<SearchResponse> Search(string projectNumber)
+    /// <param name="projectId">Current project id.</param>
+    /// <returns>Search result pages.</returns>
+    public IEnumerable<SearchResponse> Search(string projectId)
     {
         // Try different ordering expressions here:
         string order = "price desc";
         string query = "Hoodie";
 
         SearchServiceClient client = SearchServiceClient.Create();
-        SearchRequest searchRequest = GetSearchRequest(query, order, projectNumber);
+        SearchRequest searchRequest = GetSearchRequest(query, order, projectId);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
         SearchResponse firstPage = searchResultPages.FirstOrDefault();
 
@@ -96,8 +102,8 @@ public static class SearchWithOrderingTutorial
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
-        var projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
+        var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new SearchWithOrderingSample();
-        return sample.Search(projectNumber);
+        return sample.Search(projectId);
     }
 }
