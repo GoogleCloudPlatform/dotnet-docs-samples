@@ -23,29 +23,23 @@ namespace RetailProducts.Samples.Tests
         [Fact]
         public void TestUpdateProduct()
         {
-            var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
             // Create product.
             Product originalProduct = CreateProductSample.CreateRetailProduct(projectId);
 
             try
             {
-                const string ExpectedProductTitle = "Updated Nest Mini";
-                const string ExpectedCurrencyCode = "EUR";
-                const float ExpectedProductPrice = 20.0f;
-                const float ExpectedProductOriginalPrice = 25.5f;
-                const Product.Types.Availability ExpectedProductAvailability = Product.Types.Availability.OutOfStock;
-
                 var sample = new UpdateProductSample();
 
                 // Update original product.
                 Product updatedProduct = sample.PerformUpdateProductOperation(originalProduct);
 
-                Assert.Equal(ExpectedProductTitle, updatedProduct.Title);
-                Assert.Equal(ExpectedCurrencyCode, updatedProduct.PriceInfo.CurrencyCode);
-                Assert.Equal(ExpectedProductPrice, updatedProduct.PriceInfo.Price);
-                Assert.Equal(ExpectedProductOriginalPrice, updatedProduct.PriceInfo.OriginalPrice);
-                Assert.Equal(ExpectedProductAvailability, updatedProduct.Availability);
+                Assert.Equal("Updated Nest Mini", updatedProduct.Title);
+                Assert.Equal("EUR", updatedProduct.PriceInfo.CurrencyCode);
+                Assert.Equal(20.0f, updatedProduct.PriceInfo.Price);
+                Assert.Equal(25.5f, updatedProduct.PriceInfo.OriginalPrice);
+                Assert.Equal(Product.Types.Availability.OutOfStock, updatedProduct.Availability);
             }
             finally
             {

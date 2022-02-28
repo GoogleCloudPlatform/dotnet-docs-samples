@@ -30,11 +30,6 @@ namespace RetailProducts.Samples.Tests
 
             try
             {
-                const string expectedProductType = "pickup-in-store";
-                const string expectedPlaceId1 = "store1";
-                const string expectedPlaceId2 = "store2";
-                const Product.Types.Availability expectedAvailability = Product.Types.Availability.InStock;
-
                 var sample = new SetInventorySample();
 
                 // Set inventory for product.
@@ -43,10 +38,10 @@ namespace RetailProducts.Samples.Tests
                 // Get product.
                 Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
 
-                Assert.Contains(expectedPlaceId1, inventoryProduct.FulfillmentInfo[0].PlaceIds);
-                Assert.Contains(expectedPlaceId2, inventoryProduct.FulfillmentInfo[0].PlaceIds);
-                Assert.Equal(expectedProductType, inventoryProduct.FulfillmentInfo[0].Type);
-                Assert.Equal(expectedAvailability, inventoryProduct.Availability);
+                Assert.Contains("store1", inventoryProduct.FulfillmentInfo[0].PlaceIds);
+                Assert.Contains("store2", inventoryProduct.FulfillmentInfo[0].PlaceIds);
+                Assert.Equal("pickup-in-store", inventoryProduct.FulfillmentInfo[0].Type);
+                Assert.Equal(Product.Types.Availability.InStock, inventoryProduct.Availability);
             }
             finally
             {

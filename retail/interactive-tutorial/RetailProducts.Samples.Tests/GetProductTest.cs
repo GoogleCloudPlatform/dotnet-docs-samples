@@ -30,22 +30,16 @@ namespace RetailProducts.Samples.Tests
 
             try
             {
-                const string ExpectedProductTitle = "Nest Mini";
-                const string ExpectedCurrencyCode = "USD";
-                const float ExpectedProductPrice = 30.0f;
-                const float ExpectedProductOriginalPrice = 35.5f;
-                const Product.Types.Availability ExpectedProductAvailability = Product.Types.Availability.InStock;
-
                 var sample = new GetProductSample();
 
                 // Get created product.
                 Product retrievedProduct = sample.PerformGetProductOperation(createdProduct.Name);
 
-                Assert.Equal(ExpectedProductTitle, retrievedProduct.Title);
-                Assert.Equal(ExpectedCurrencyCode, retrievedProduct.PriceInfo.CurrencyCode);
-                Assert.Equal(ExpectedProductPrice, retrievedProduct.PriceInfo.Price);
-                Assert.Equal(ExpectedProductOriginalPrice, retrievedProduct.PriceInfo.OriginalPrice);
-                Assert.Equal(ExpectedProductAvailability, retrievedProduct.Availability);
+                Assert.Equal("Nest Mini", retrievedProduct.Title);
+                Assert.Equal("USD", retrievedProduct.PriceInfo.CurrencyCode);
+                Assert.Equal(30.0f, retrievedProduct.PriceInfo.Price);
+                Assert.Equal(35.5f, retrievedProduct.PriceInfo.OriginalPrice);
+                Assert.Equal(Product.Types.Availability.InStock, retrievedProduct.Availability);
             }
             finally
             {

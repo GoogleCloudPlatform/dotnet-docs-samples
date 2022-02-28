@@ -184,38 +184,6 @@ public class CrudProductSample
         Console.WriteLine($"Product {productName} was deleted");
         Console.WriteLine();
     }
-
-    /// <summary>
-    /// Call the Retail API to delete a product if it exists.
-    /// </summary>
-    /// /// <param name="productName">The actual name of the retail product.</param>
-    public static void TryToDeleteRetailProductIfExists(string productName)
-    {
-        GetProductRequest getProductRequest = new GetProductRequest
-        {
-            Name = productName
-        };
-
-        DeleteProductRequest deleteProductRequest = new DeleteProductRequest
-        {
-            Name = productName
-        };
-
-        try
-        {
-            Console.WriteLine("Delete product from the catalog, if the product already exists");
-            Console.WriteLine();
-
-            ProductServiceClient client = ProductServiceClient.Create();
-            Product product = client.GetProduct(getProductRequest);
-            client.DeleteProduct(deleteProductRequest);
-        }
-        catch (Exception)
-        {
-            Console.WriteLine($"Product with name {productName} does not exist.");
-            Console.WriteLine();
-        }
-    }
 }
 // [END retail_crud_product]
 
@@ -230,7 +198,7 @@ public static class CrudProductTutorial
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         string defaultBranchName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch";
 
-        var createdProduct = CrudProductSample.CreateRetailProduct(defaultBranchName);
+        Product createdProduct = CrudProductSample.CreateRetailProduct(defaultBranchName);
         CrudProductSample.GetRetailProduct(createdProduct.Name);
         CrudProductSample.UpdateRetailProduct(createdProduct.Name);
         CrudProductSample.DeleteRetailProduct(createdProduct.Name);

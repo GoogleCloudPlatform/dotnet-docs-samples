@@ -24,24 +24,18 @@ namespace RetailProducts.Samples.Tests
         [Fact]
         public void TestCreateProduct()
         {
-            var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
-            const string ExpectedProductTitle = "Nest Mini";
-            const string ExpectedCurrencyCode = "USD";
-            const float ExpectedProductPrice = 30.0f;
-            const float ExpectedProductOriginalPrice = 35.5f;
-            const Product.Types.Availability ExpectedProductAvailability = Product.Types.Availability.InStock;
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
             var sample = new CreateProductSample();
 
             // Create product.
             Product createdProduct = sample.CreateProduct(projectId);
 
-            Assert.Equal(ExpectedProductTitle, createdProduct.Title);
-            Assert.Equal(ExpectedCurrencyCode, createdProduct.PriceInfo.CurrencyCode);
-            Assert.Equal(ExpectedProductPrice, createdProduct.PriceInfo.Price);
-            Assert.Equal(ExpectedProductOriginalPrice, createdProduct.PriceInfo.OriginalPrice);
-            Assert.Equal(ExpectedProductAvailability, createdProduct.Availability);
+            Assert.Equal("Nest Mini", createdProduct.Title);
+            Assert.Equal("USD", createdProduct.PriceInfo.CurrencyCode);
+            Assert.Equal(30.0f, createdProduct.PriceInfo.Price);
+            Assert.Equal(35.5f, createdProduct.PriceInfo.OriginalPrice);
+            Assert.Equal(Product.Types.Availability.InStock, createdProduct.Availability);
 
             // Delete created product.
             DeleteProductSample.DeleteRetailProduct(createdProduct.Name);

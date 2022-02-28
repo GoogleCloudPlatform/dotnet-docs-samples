@@ -30,9 +30,6 @@ namespace RetailProducts.Samples.Tests
 
             try 
             {
-                const string expectedPlaceId1 = "store2";
-                const string expectedPlaceId2 = "store3";
-
                 var sample = new AddFulfillmentPlacesSample();
 
                 // Add fulfillment places to product.
@@ -41,8 +38,8 @@ namespace RetailProducts.Samples.Tests
                 // Get created product.
                 Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
 
-                Assert.Contains(expectedPlaceId1, inventoryProduct.FulfillmentInfo[0].PlaceIds);
-                Assert.Contains(expectedPlaceId2, inventoryProduct.FulfillmentInfo[0].PlaceIds);
+                Assert.Contains("store2", inventoryProduct.FulfillmentInfo[0].PlaceIds);
+                Assert.Contains("store3", inventoryProduct.FulfillmentInfo[0].PlaceIds);
             }
             finally
             {
