@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.IO;
 using Xunit;
 
@@ -33,11 +34,10 @@ public class CopyFileArchivedGenerationTest
         GetMetadataSample getMetadataSample = new GetMetadataSample();
         DownloadFileSample downloadFileSample = new DownloadFileSample();
         CopyFileArchivedGenerationSample copyFileArchivedGenerationSample = new CopyFileArchivedGenerationSample();
-        DeleteFileArchivedGenerationSample deleteFileArchivedGenerationSample = new DeleteFileArchivedGenerationSample();
         BucketDisableVersioningSample bucketDisableVersioningSample = new BucketDisableVersioningSample();
 
-        var objectName = "HelloCopyArchive.txt";
-        var copiedObjectName = "ByeCopy.txt";
+        var objectName = Guid.NewGuid().ToString() +".txt";
+        var copiedObjectName = Guid.NewGuid().ToString() + ".txt";
 
         // Enable bucket versioning
         bucketEnableVersioningSample.BucketEnableVersioning(_fixture.BucketNameGeneric);
