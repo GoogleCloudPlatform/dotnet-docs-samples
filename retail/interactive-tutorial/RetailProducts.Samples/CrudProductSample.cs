@@ -23,97 +23,82 @@ using System;
 /// </summary>
 public class CrudProductSample
 {
-    private const string ProductId = "crud_product_id";
-
-    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private static readonly string defaultBranchName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch";
-    private static readonly string productName = $"{defaultBranchName}/products/{ProductId}";
-
     /// <summary>
     /// Generate the product.
     /// </summary>
     /// <returns>Generated product.</returns>
     private static Product GenerateProduct()
     {
-        var priceInfo = new PriceInfo
+        return new Product
         {
-            Price = 30.0f,
-            OriginalPrice = 35.5f,
-            CurrencyCode = "USD"
-        };
-
-        string[] brands = { "Google" };
-        string[] categories = { "Speakers and displays" };
-
-        var generatedProduct = new Product
-        {
+            Id = Guid.NewGuid().ToString("N").Substring(0, 14),
             Title = "Nest Mini",
             Type = Product.Types.Type.Primary,
-            PriceInfo = priceInfo,
-            Availability = Product.Types.Availability.InStock
+            PriceInfo = new PriceInfo
+            {
+                Price = 30.0f,
+                OriginalPrice = 35.5f,
+                CurrencyCode = "USD"
+            },
+            Availability = Product.Types.Availability.InStock,
+            Categories = { "Speakers and displays" },
+            Brands = { "Google" }
         };
-
-        generatedProduct.Categories.Add(categories);
-        generatedProduct.Brands.Add(brands);
-
-        return generatedProduct;
     }
 
     /// <summary>
     /// Get the product for update.
     /// </summary>
-    /// <returns></returns>
-    private static Product GenerateProductForUpdate()
+    /// <param name="productName">The actual name of the retail product.</param>
+    /// <returns>Generated product for update.</returns>
+    private static Product GenerateProductForUpdate(string productName)
     {
-        var updatedPriceInfo = new PriceInfo
+        return new Product
         {
-            Price = 20.0f,
-            OriginalPrice = 25.5f,
-            CurrencyCode = "EUR"
-        };
-
-        string[] categories = { "Updated Speakers and displays" };
-        string[] brands = { "Updated Google" };
-
-        var generatedProduct = new Product
-        {
-            Id = ProductId,
+            Id = Guid.NewGuid().ToString("N").Substring(0, 14),
             Name = productName,
             Title = "Updated Nest Mini",
             Type = Product.Types.Type.Primary,
-            PriceInfo = updatedPriceInfo,
-            Availability = Product.Types.Availability.OutOfStock
+            PriceInfo = new PriceInfo
+            {
+                Price = 20.0f,
+                OriginalPrice = 25.5f,
+                CurrencyCode = "EUR"
+            },
+            Availability = Product.Types.Availability.OutOfStock,
+            Categories = { "Updated Speakers and displays" },
+            Brands = { "Updated Google" }
         };
-
-        generatedProduct.Categories.Add(categories);
-        generatedProduct.Brands.Add(brands);
-
-        return generatedProduct;
     }
 
     /// <summary>
     /// Call the Retail API to create a product.
     /// </summary>
+    /// <param name="defaultBranchName">The default branch name.</param>
     /// <returns>Created retail product.</returns>
-    private static Product CreateRetailProduct()
+    public static Product CreateRetailProduct(string defaultBranchName)
     {
-        var generatedProduct = GenerateProduct();
-        var createProductRequest = new CreateProductRequest
+        Product generatedProduct = GenerateProduct();
+        CreateProductRequest createProductRequest = new CreateProductRequest
         {
             Product = generatedProduct,
-            ProductId = ProductId,
+            ProductId = generatedProduct.Id,
             Parent = defaultBranchName
         };
 
         Console.WriteLine("Create product. request:");
-        Console.WriteLine(createProductRequest);
+        Console.WriteLine($"Product: {createProductRequest.Product}");
+        Console.WriteLine($"ProductId: {createProductRequest.ProductId}");
+        Console.WriteLine($"Parent: {createProductRequest.Parent}");
         Console.WriteLine();
 
         ProductServiceClient client = ProductServiceClient.Create();
         Product createdProduct = client.CreateProduct(createProductRequest);
 
         Console.WriteLine("Created product:");
-        Console.WriteLine(createdProduct);
+        Console.WriteLine($"Product title: {createdProduct.Title}");
+        Console.WriteLine($"ProductId: {createProductRequest.ProductId}");
+        Console.WriteLine($"Parent: {createProductRequest.Parent}");
         Console.WriteLine();
 
         return createdProduct;
@@ -122,23 +107,28 @@ public class CrudProductSample
     /// <summary>
     /// Call the Retail API to get a product
     /// </summary>
+    /// <param name="productName">The actual name of the retail product.</param>
     /// <returns>Retail product.</returns>
-    private static Product GetRetailProduct()
+    public static Product GetRetailProduct(string productName)
     {
-        var getProductRequest = new GetProductRequest
+        GetProductRequest getProductRequest = new GetProductRequest
         {
             Name = productName
         };
 
         Console.WriteLine("Get product. request:");
-        Console.WriteLine(getProductRequest);
+        Console.WriteLine($"Product name: {getProductRequest.Name}");
         Console.WriteLine();
 
         ProductServiceClient client = ProductServiceClient.Create();
         Product product = client.GetProduct(getProductRequest);
 
         Console.WriteLine("Get product. response:");
-        Console.WriteLine(product);
+        Console.WriteLine($"Product Name: {product.Name}");
+        Console.WriteLine($"Product Title: {product.Title}");
+        Console.WriteLine($"Product Brands: {product.Brands}");
+        Console.WriteLine($"Product Categories: {product.Categories}");
+        Console.WriteLine($"Product Fulfillment Info: {product.FulfillmentInfo}");
         Console.WriteLine();
 
         return product;
@@ -147,26 +137,27 @@ public class CrudProductSample
     /// <summary>
     /// Call the Retail API to update a product.
     /// </summary>
+    /// <param name="productName">The actual name of the retail product.</param>
     /// <returns>Updated retail product.</returns>
-    private static Product UpdateRetailProduct()
+    public static Product UpdateRetailProduct(string productName)
     {
-        var generatedProductForUpdate = GenerateProductForUpdate();
+        Product generatedProductForUpdate = GenerateProductForUpdate(productName);
 
-        var updateProductRequest = new UpdateProductRequest
+        UpdateProductRequest updateProductRequest = new UpdateProductRequest
         {
             Product = generatedProductForUpdate,
             AllowMissing = true
         };
 
         Console.WriteLine("Update product. request:");
-        Console.WriteLine(updateProductRequest);
+        Console.WriteLine($"Product Name: {updateProductRequest.Product.Name}");
+        Console.WriteLine($"Product title: {updateProductRequest.Product.Title}");
         Console.WriteLine();
 
         ProductServiceClient client = ProductServiceClient.Create();
         Product updatedProduct = client.UpdateProduct(updateProductRequest);
 
-        Console.WriteLine("Updated product:");
-        Console.WriteLine(updatedProduct);
+        Console.WriteLine($"Update title: {updatedProduct.Title}");
         Console.WriteLine();
         return updatedProduct;
     }
@@ -174,15 +165,16 @@ public class CrudProductSample
     /// <summary>
     /// Call the Retail API to delete a product
     /// </summary>
-    private static void DeleteRetailProduct()
+    /// <param name="productName">The actual name of the retail product.</param>
+    public static void DeleteRetailProduct(string productName)
     {
-        var deleteProductRequest = new DeleteProductRequest
+        DeleteProductRequest deleteProductRequest = new DeleteProductRequest
         {
             Name = productName
         };
 
         Console.WriteLine("Delete product. request:");
-        Console.WriteLine(deleteProductRequest);
+        Console.WriteLine($"Product Name: {deleteProductRequest.Name}");
         Console.WriteLine();
 
         ProductServiceClient client = ProductServiceClient.Create();
@@ -196,15 +188,15 @@ public class CrudProductSample
     /// <summary>
     /// Call the Retail API to delete a product if it exists.
     /// </summary>
-    /// <param name="productName">The name of the product to delete.</param>
-    private static void TryToDeleteRetailProductIfExists(string productName)
+    /// /// <param name="productName">The actual name of the retail product.</param>
+    public static void TryToDeleteRetailProductIfExists(string productName)
     {
-        var getProductRequest = new GetProductRequest
+        GetProductRequest getProductRequest = new GetProductRequest
         {
             Name = productName
         };
 
-        var deleteProductRequest = new DeleteProductRequest
+        DeleteProductRequest deleteProductRequest = new DeleteProductRequest
         {
             Name = productName
         };
@@ -224,19 +216,6 @@ public class CrudProductSample
             Console.WriteLine();
         }
     }
-
-    /// <summary>
-    /// Perform CRUD Product Operations.
-    /// </summary>
-    public void PerformCRUDProductOperations()
-    {
-        // Call the methods
-        TryToDeleteRetailProductIfExists(productName);
-        CreateRetailProduct();
-        GetRetailProduct();
-        UpdateRetailProduct();
-        DeleteRetailProduct();
-    }
 }
 // [END retail_crud_product]
 
@@ -248,7 +227,12 @@ public static class CrudProductTutorial
     [Runner.Attributes.Example]
     public static void PerformCRUDProductOperations()
     {
-        var sample = new CrudProductSample();
-        sample.PerformCRUDProductOperations();
+        string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        string defaultBranchName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch";
+
+        var createdProduct = CrudProductSample.CreateRetailProduct(defaultBranchName);
+        CrudProductSample.GetRetailProduct(createdProduct.Name);
+        CrudProductSample.UpdateRetailProduct(createdProduct.Name);
+        CrudProductSample.DeleteRetailProduct(createdProduct.Name);
     }
 }

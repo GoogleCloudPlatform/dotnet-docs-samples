@@ -12,25 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Retail.V2;
+using System;
 using Xunit;
 
 namespace RetailProducts.Samples.Tests
 {
-    public class ImportProductsInlineSourceTest
+    public class DeleteProductTest
     {
         [Fact]
-        public void TestImportProductsInlineSource()
+        public void TestDeleteProduct()
         {
-            RemoveTestResources.PerformDeletionOfTestResources();
-            CreateTestResources.PerformCreationOfTestResources();
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-            int expectedSuccessfullyImportedProducts = 2;
-            int expectedFailures = 0;
+            // Create product.
+            Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
-            var result = ImportProductsInlineSourceTutorial.ImportProductsFromInlineSource();
+            var sample = new DeleteProductSample();
 
-            Assert.Equal(expectedSuccessfullyImportedProducts, result.Metadata.SuccessCount);
-            Assert.Equal(expectedFailures, result.Metadata.FailureCount);
+            // Delete created product.
+            sample.DeleteProduct(createdProduct.Name);
+
+            // Check that the exception is thrown, because the product no longer exists.
+            Assert.Throws<Grpc.Core.RpcException>(() => GetProductSample.GetRetailProduct(createdProduct.Name));
         }
     }
 }

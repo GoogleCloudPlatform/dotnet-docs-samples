@@ -17,28 +17,12 @@
 
 using Google.Cloud.Retail.V2;
 using System;
-using System.Linq;
 
 /// <summary>
 /// The get product sample class.
 /// </summary>
 public class GetProductSample
 {
-    private static readonly Random Random = new Random();
-    private static readonly string GeneratedProductId = RandomAlphanumericString(14);
-
-    /// <summary>
-    /// Generate the random alphanumeric string.
-    /// </summary>
-    /// <param name="length">The required length of alphanumeric string.</param>
-    /// <returns>Generated alphanumeric string.</returns>
-    private static string RandomAlphanumericString(int length)
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[Random.Next(s.Length)]).ToArray());
-    }
-
     /// <summary>
     /// Get the create product request.
     /// </summary>
@@ -46,13 +30,13 @@ public class GetProductSample
     /// <returns>Get product request.</returns>
     private static GetProductRequest GetProductRequest(string productName)
     {
-        var getProductRequest = new GetProductRequest
+        GetProductRequest getProductRequest = new GetProductRequest
         {
             Name = productName
         };
 
         Console.WriteLine("Get product. request:");
-        Console.WriteLine(getProductRequest);
+        Console.WriteLine($"Product name: {getProductRequest.Name}");
         Console.WriteLine();
 
         return getProductRequest;
@@ -65,13 +49,17 @@ public class GetProductSample
     /// <returns>Retrieved product.</returns>
     public static Product GetRetailProduct(string productName)
     {
-        var getProductRequest = GetProductRequest(productName);
+        GetProductRequest getProductRequest = GetProductRequest(productName);
 
         ProductServiceClient client = ProductServiceClient.Create();
         Product product = client.GetProduct(getProductRequest);
 
         Console.WriteLine("Get product. response:");
-        Console.WriteLine(product);
+        Console.WriteLine($"Product Name: {product.Name}");
+        Console.WriteLine($"Product Title: {product.Title}");
+        Console.WriteLine($"Product Brands: {product.Brands}");
+        Console.WriteLine($"Product Categories: {product.Categories}");
+        Console.WriteLine($"Product Fulfillment Info: {product.FulfillmentInfo}");
         Console.WriteLine();
 
         return product;
@@ -80,19 +68,10 @@ public class GetProductSample
     /// <summary>
     /// Perform the product retrieval operation.
     /// </summary>
-    /// <param name="projectId">The current project id.</param>
-    public Product PerformGetProductOperation(string projectId)
+    /// <param name="productName">The name of the product.</param>
+    public Product PerformGetProductOperation(string productName)
     {
-        // Create product.
-        var createdProduct = CreateProductSample.CreateRetailProduct(GeneratedProductId, projectId);
-
-        // Get created product.
-        var retrievedProduct = GetRetailProduct(createdProduct.Name);
-
-        // Delete created product.
-        DeleteProductSample.DeleteRetailProduct(retrievedProduct.Name);
-
-        return retrievedProduct;
+        return GetRetailProduct(productName);
     }
 }
 // [END retail_get_product]
@@ -103,10 +82,18 @@ public class GetProductSample
 public static class GetProductTutorial
 {
     [Runner.Attributes.Example]
-    public static Product PerformGetProductOperation()
+    public static void PerformGetProductOperation()
     {
-        var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new GetProductSample();
-        return sample.PerformGetProductOperation(projectId);
+
+        // Create product.
+        Product createdProduct = CreateProductSample.CreateRetailProduct(projectId);
+
+        // Get created product.
+        Product retrievedProduct = sample.PerformGetProductOperation(createdProduct.Name);
+
+        // Delete created product.
+        DeleteProductSample.DeleteRetailProduct(retrievedProduct.Name);
     }
 }

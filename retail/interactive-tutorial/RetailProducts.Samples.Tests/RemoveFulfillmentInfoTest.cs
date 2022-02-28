@@ -18,10 +18,10 @@ using Xunit;
 
 namespace RetailProducts.Samples.Tests
 {
-    public class GetProductTest
+    public class RemoveFulfillmentInfoTest
     {
         [Fact]
-        public void TestGetProduct()
+        public void TestRemoveFulfillmentPlaces()
         {
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
@@ -30,28 +30,25 @@ namespace RetailProducts.Samples.Tests
 
             try
             {
-                const string ExpectedProductTitle = "Nest Mini";
-                const string ExpectedCurrencyCode = "USD";
-                const float ExpectedProductPrice = 30.0f;
-                const float ExpectedProductOriginalPrice = 35.5f;
-                const Product.Types.Availability ExpectedProductAvailability = Product.Types.Availability.InStock;
+                const string expectedPlaceId = "store0";
 
-                var sample = new GetProductSample();
+                Assert.Contains(expectedPlaceId, createdProduct.FulfillmentInfo[0].PlaceIds);
 
-                // Get created product.
-                Product retrievedProduct = sample.PerformGetProductOperation(createdProduct.Name);
+                var sample = new RemoveFulfillmentPlacesSample();
 
-                Assert.Equal(ExpectedProductTitle, retrievedProduct.Title);
-                Assert.Equal(ExpectedCurrencyCode, retrievedProduct.PriceInfo.CurrencyCode);
-                Assert.Equal(ExpectedProductPrice, retrievedProduct.PriceInfo.Price);
-                Assert.Equal(ExpectedProductOriginalPrice, retrievedProduct.PriceInfo.OriginalPrice);
-                Assert.Equal(ExpectedProductAvailability, retrievedProduct.Availability);
+                // Remove fulfillment from product.
+                sample.PerformRemoveFulfillment(createdProduct.Name);
+
+                // Get product.
+                Product productWithUpdatedFulfillment = GetProductSample.GetRetailProduct(createdProduct.Name);
+
+                Assert.DoesNotContain(expectedPlaceId, productWithUpdatedFulfillment.FulfillmentInfo[0].PlaceIds);
             }
             finally
             {
                 // Delete product.
                 DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
-            }     
+            }
         }
     }
 }

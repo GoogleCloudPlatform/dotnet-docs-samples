@@ -17,56 +17,33 @@
 
 using Google.Cloud.Retail.V2;
 using System;
-using System.Linq;
 
 /// <summary>
 /// The create product sample class.
 /// </summary>
 public class CreateProductSample
 {
-    private static readonly Random Random = new Random();
-    private static readonly string GeneratedProductId = RandomAlphanumericString(14);
-
-    /// <summary>
-    /// Generate the random alphanumeric string.
-    /// </summary>
-    /// <param name="length">The required length of alphanumeric string.</param>
-    /// <returns>Generated alphanumeric string.</returns>
-    private static string RandomAlphanumericString(int length)
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[Random.Next(s.Length)]).ToArray());
-    }
-
     /// <summary>
     /// Generate product.
     /// </summary>
     /// <returns>Generated product.</returns>
     private static Product GenerateProduct()
     {
-        var priceInfo = new PriceInfo
+        return new Product
         {
-            Price = 30.0f,
-            OriginalPrice = 35.5f,
-            CurrencyCode = "USD"
-        };
-
-        string[] brands = { "Google" };
-        string[] categories = { "Speakers and displays" };
-
-        var generatedProduct = new Product
-        {
+            Id = Guid.NewGuid().ToString("N").Substring(0, 14),
             Title = "Nest Mini",
             Type = Product.Types.Type.Primary,
-            PriceInfo = priceInfo,
-            Availability = Product.Types.Availability.InStock
+            PriceInfo = new PriceInfo
+            {
+                Price = 30.0f,
+                OriginalPrice = 35.5f,
+                CurrencyCode = "USD"
+            },
+            Availability = Product.Types.Availability.InStock,
+            Categories = { "Speakers and displays" },
+            Brands = { "Google" }
         };
-
-        generatedProduct.Categories.Add(categories);
-        generatedProduct.Brands.Add(brands);
-
-        return generatedProduct;
     }
 
     /// <summary>
@@ -75,11 +52,11 @@ public class CreateProductSample
     /// <returns>Generated product.</returns>
     private static Product GenerateProductWithFulfillment()
     {
-        var generatedProduct = GenerateProduct();
+        Product generatedProduct = GenerateProduct();
 
         string[] placeIds = { "store0", "store1" };
 
-        var fulfillmentInfo = new FulfillmentInfo
+        FulfillmentInfo fulfillmentInfo = new FulfillmentInfo
         {
             Type = "pickup-in-store"
         };
@@ -95,17 +72,16 @@ public class CreateProductSample
     /// Get create product request.
     /// </summary>
     /// <param name="productToCreate">The actual product object to create.</param>
-    /// <param name="productId">The product id.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>Create product request.</returns>
-    private static CreateProductRequest GetCreateProductRequest(Product productToCreate, string productId, string projectId)
+    private static CreateProductRequest GetCreateProductRequest(Product productToCreate, string projectId)
     {
         string defaultBranchName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch";
 
-        var createProductRequest = new CreateProductRequest
+        CreateProductRequest createProductRequest = new CreateProductRequest
         {
             Product = productToCreate,
-            ProductId = productId,
+            ProductId = productToCreate.Id,
             Parent = defaultBranchName
         };
 
@@ -121,19 +97,20 @@ public class CreateProductSample
     /// <summary>
     /// Call the Retail API to create a product.
     /// </summary>
-    /// <param name="productId">The product id.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>Created product.</returns>
-    public static Product CreateRetailProduct(string productId, string projectId)
+    public static Product CreateRetailProduct(string projectId)
     {
-        var generatedProduct = GenerateProduct();
-        var createProductRequest = GetCreateProductRequest(generatedProduct, productId, projectId);
+        Product generatedProduct = GenerateProduct();
+        CreateProductRequest createProductRequest = GetCreateProductRequest(generatedProduct, projectId);
 
-        var client = ProductServiceClient.Create();
-        var createdProduct = client.CreateProduct(createProductRequest);
+        ProductServiceClient client = ProductServiceClient.Create();
+        Product createdProduct = client.CreateProduct(createProductRequest);
 
         Console.WriteLine("Created product:");
-        Console.WriteLine(createdProduct);
+        Console.WriteLine($"Product title: {createdProduct.Title}");
+        Console.WriteLine($"ProductId: {createProductRequest.ProductId}");
+        Console.WriteLine($"Parent: {createProductRequest.Parent}");
         Console.WriteLine();
 
         return createdProduct;
@@ -142,19 +119,21 @@ public class CreateProductSample
     /// <summary>
     /// Call the Retail API to create a product with fulfillment.
     /// </summary>
-    /// <param name="productId">The product id.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>Created product.</returns>
-    public static Product CreateRetailProductWithFulfillment(string productId, string projectId)
+    public static Product CreateRetailProductWithFulfillment(string projectId)
     {
-        var generatedProduct = GenerateProductWithFulfillment();
-        var createProductRequest = GetCreateProductRequest(generatedProduct, productId, projectId);
+        Product generatedProduct = GenerateProductWithFulfillment();
+        CreateProductRequest createProductRequest = GetCreateProductRequest(generatedProduct, projectId);
 
-        var client = ProductServiceClient.Create();
-        var createdProduct = client.CreateProduct(createProductRequest);
+        ProductServiceClient client = ProductServiceClient.Create();
+        Product createdProduct = client.CreateProduct(createProductRequest);
 
-        Console.WriteLine("Created product:");
-        Console.WriteLine(createdProduct);
+        Console.WriteLine("Created product with fulfillment:");
+        Console.WriteLine($"Product title: {createdProduct.Title}");
+        Console.WriteLine($"Product name: {createdProduct.Name}");
+        Console.WriteLine($"Product id: {createdProduct.Id}");
+        Console.WriteLine($"Product fulfillment info: {createdProduct.FulfillmentInfo}");
         Console.WriteLine();
 
         return createdProduct;
@@ -165,16 +144,9 @@ public class CreateProductSample
     /// </summary>
     /// <param name="projectId">The current project id.</param>
     /// <returns>Created product.</returns>
-
     public Product CreateProduct(string projectId)
     {
-        // Create product
-        var createdProduct = CreateRetailProduct(GeneratedProductId, projectId);
-
-        // Delete created product
-        DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
-
-        return createdProduct; 
+        return CreateRetailProduct(projectId);
     }
 }
 // [END retail_create_product]
@@ -185,10 +157,16 @@ public class CreateProductSample
 public static class CreateProductTutorial
 {
     [Runner.Attributes.Example]
-    public static Product PerformCreateProductOperation()
+    public static void PerformCreateProductOperation()
     {
-        var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
         var sample = new CreateProductSample();
-        return sample.CreateProduct(projectId);
+
+        // Create product.
+        Product createdProduct = sample.CreateProduct(projectId);
+
+        // Delete created product.
+        DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
     }
 }

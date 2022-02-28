@@ -24,8 +24,6 @@ using System.Threading;
 /// </summary>
 public class RemoveFulfillmentPlacesSample
 {
-    private const string ProductId = "remove_fulfillment_test_product_id";
-
     // The request timestamp
     private static readonly DateTime RequestTimeStamp = DateTime.Now.ToUniversalTime();
 
@@ -39,20 +37,20 @@ public class RemoveFulfillmentPlacesSample
     /// <returns>The remove fulfillment places request.</returns>
     private static RemoveFulfillmentPlacesRequest GetRemoveFulfillmentRequest(string productName)
     {
-        var removeFulfillmentRequest = new RemoveFulfillmentPlacesRequest
+        RemoveFulfillmentPlacesRequest removeFulfillmentRequest = new RemoveFulfillmentPlacesRequest
         {
             Product = productName,
             Type = "pickup-in-store",
             RemoveTime = Timestamp.FromDateTime(RequestTimeStamp),
-            AllowMissing = true
+            AllowMissing = true,
+            PlaceIds = { "store0" }
         };
 
-        string[] placeIds = { "store0" };
-
-        removeFulfillmentRequest.PlaceIds.Add(placeIds);
-
         Console.WriteLine("Remove fulfillment places. request:");
-        Console.WriteLine(removeFulfillmentRequest);
+        Console.WriteLine($"Product Name: {removeFulfillmentRequest.Product}");
+        Console.WriteLine($"Type: {removeFulfillmentRequest.Type}");
+        Console.WriteLine($"Place Ids: {removeFulfillmentRequest.PlaceIds}");
+        Console.WriteLine($"Remove Time: {removeFulfillmentRequest.RemoveTime}");
         Console.WriteLine();
 
         return removeFulfillmentRequest;
@@ -80,18 +78,11 @@ public class RemoveFulfillmentPlacesSample
     /// <summary>
     /// Perform the remove fulfillment operations.
     /// </summary>
-    /// <param name="projectId">The current project id.</param>
+    /// <param name="productName">The name of the product.</param>
     /// <returns>Retail product with removed fulfillment places.</returns>
-    public Product PerformRemoveFulfillment(string projectId)
+    public void PerformRemoveFulfillment(string productName)
     {
-        string productName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch/products/{ProductId}";
-
-        CreateProductSample.CreateRetailProductWithFulfillment(ProductId, projectId);
         RemoveFulfillment(productName);
-        var inventoryProduct = GetProductSample.GetRetailProduct(productName);
-        DeleteProductSample.DeleteRetailProduct(productName);
-
-        return inventoryProduct;
     }
 }
 // [END remove_fulfillment_places]
@@ -102,10 +93,24 @@ public class RemoveFulfillmentPlacesSample
 public static class RemoveFulfillmentPlacesTutorial
 {
     [Runner.Attributes.Example]
-    public static Product PerformRemoveFulfillment()
+    public static void PerformRemoveFulfillment()
     {
-        var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
         var sample = new RemoveFulfillmentPlacesSample();
-        return sample.PerformRemoveFulfillment(projectId);
+
+        // Create product.
+        Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
+
+        string productName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch/products/{createdProduct.Id}";
+
+        // Remove fulfillment from product.
+        sample.PerformRemoveFulfillment(productName);
+
+        // Get product.
+        Product productWithUpdatedFulfillment = GetProductSample.GetRetailProduct(productName);
+
+        // Delete product.
+        DeleteProductSample.DeleteRetailProduct(productWithUpdatedFulfillment.Name);
     }
 }

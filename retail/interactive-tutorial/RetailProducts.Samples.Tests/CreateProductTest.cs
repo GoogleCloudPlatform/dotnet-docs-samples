@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.Retail.V2;
+using System;
 using Xunit; 
 
 namespace RetailProducts.Samples.Tests
@@ -23,19 +24,27 @@ namespace RetailProducts.Samples.Tests
         [Fact]
         public void TestCreateProduct()
         {
+            var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
             const string ExpectedProductTitle = "Nest Mini";
             const string ExpectedCurrencyCode = "USD";
             const float ExpectedProductPrice = 30.0f;
             const float ExpectedProductOriginalPrice = 35.5f;
             const Product.Types.Availability ExpectedProductAvailability = Product.Types.Availability.InStock;
 
-            var createdProduct = CreateProductTutorial.PerformCreateProductOperation();
+            var sample = new CreateProductSample();
+
+            // Create product.
+            Product createdProduct = sample.CreateProduct(projectId);
 
             Assert.Equal(ExpectedProductTitle, createdProduct.Title);
             Assert.Equal(ExpectedCurrencyCode, createdProduct.PriceInfo.CurrencyCode);
             Assert.Equal(ExpectedProductPrice, createdProduct.PriceInfo.Price);
             Assert.Equal(ExpectedProductOriginalPrice, createdProduct.PriceInfo.OriginalPrice);
             Assert.Equal(ExpectedProductAvailability, createdProduct.Availability);
+
+            // Delete created product.
+            DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
         }
     }
 }

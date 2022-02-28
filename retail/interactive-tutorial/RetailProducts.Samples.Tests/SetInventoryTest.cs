@@ -18,10 +18,10 @@ using Xunit;
 
 namespace RetailProducts.Samples.Tests
 {
-    public class GetProductTest
+    public class SetInventoryTest
     {
         [Fact]
-        public void TestGetProduct()
+        public void TestSetInventory()
         {
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
@@ -30,28 +30,29 @@ namespace RetailProducts.Samples.Tests
 
             try
             {
-                const string ExpectedProductTitle = "Nest Mini";
-                const string ExpectedCurrencyCode = "USD";
-                const float ExpectedProductPrice = 30.0f;
-                const float ExpectedProductOriginalPrice = 35.5f;
-                const Product.Types.Availability ExpectedProductAvailability = Product.Types.Availability.InStock;
+                const string expectedProductType = "pickup-in-store";
+                const string expectedPlaceId1 = "store1";
+                const string expectedPlaceId2 = "store2";
+                const Product.Types.Availability expectedAvailability = Product.Types.Availability.InStock;
 
-                var sample = new GetProductSample();
+                var sample = new SetInventorySample();
 
-                // Get created product.
-                Product retrievedProduct = sample.PerformGetProductOperation(createdProduct.Name);
+                // Set inventory for product.
+                sample.PerformSetInventoryOperation(createdProduct);
 
-                Assert.Equal(ExpectedProductTitle, retrievedProduct.Title);
-                Assert.Equal(ExpectedCurrencyCode, retrievedProduct.PriceInfo.CurrencyCode);
-                Assert.Equal(ExpectedProductPrice, retrievedProduct.PriceInfo.Price);
-                Assert.Equal(ExpectedProductOriginalPrice, retrievedProduct.PriceInfo.OriginalPrice);
-                Assert.Equal(ExpectedProductAvailability, retrievedProduct.Availability);
+                // Get product.
+                Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
+
+                Assert.Contains(expectedPlaceId1, inventoryProduct.FulfillmentInfo[0].PlaceIds);
+                Assert.Contains(expectedPlaceId2, inventoryProduct.FulfillmentInfo[0].PlaceIds);
+                Assert.Equal(expectedProductType, inventoryProduct.FulfillmentInfo[0].Type);
+                Assert.Equal(expectedAvailability, inventoryProduct.Availability);
             }
             finally
             {
-                // Delete product.
+                // Delete product.  
                 DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
-            }     
+            }
         }
     }
 }

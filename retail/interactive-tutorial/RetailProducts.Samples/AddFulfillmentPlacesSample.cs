@@ -24,8 +24,6 @@ using System.Threading;
 /// </summary>
 public class AddFulfillmentPlacesSample
 {
-    private const string ProductId = "add_fulfillment_test_product_id";
-
     // The request timestamp
     private static readonly DateTime RequestTimeStamp = DateTime.Now.ToUniversalTime();
 
@@ -39,7 +37,7 @@ public class AddFulfillmentPlacesSample
     /// <returns>Add fulfillment places request.</returns>
     private static AddFulfillmentPlacesRequest GetAddFulfillmentRequest(string productName)
     {
-        var addFulfillmentRequest = new AddFulfillmentPlacesRequest
+        AddFulfillmentPlacesRequest addFulfillmentRequest = new AddFulfillmentPlacesRequest
         {
             Product = productName,
             Type = "pickup-in-store",
@@ -52,7 +50,9 @@ public class AddFulfillmentPlacesSample
         addFulfillmentRequest.PlaceIds.AddRange(placeIds);
 
         Console.WriteLine("Add fulfillment places. request:");
-        Console.WriteLine(addFulfillmentRequest);
+        Console.WriteLine($"Product Name: {addFulfillmentRequest.Product}");
+        Console.WriteLine($"Type: {addFulfillmentRequest.Type}");
+        Console.WriteLine($"Add Time: {addFulfillmentRequest.AddTime}");
         Console.WriteLine();
 
         return addFulfillmentRequest;
@@ -79,18 +79,11 @@ public class AddFulfillmentPlacesSample
     /// <summary>
     /// Perform all add fulfillment operations.
     /// </summary>
-    /// <param name="projectId">The current project id.</param>
+    /// <param name="productName">The current product name.</param>
     /// <returns>Created and deleted retail product.</returns>
-    public Product PerformAddFulfillment(string projectId)
+    public void PerformAddFulfillment(string productName)
     {
-        string productName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch/products/{ProductId}";
-
-        CreateProductSample.CreateRetailProductWithFulfillment(ProductId, projectId);
         AddFulfillment(productName);
-        var inventoryProduct = GetProductSample.GetRetailProduct(productName);
-        DeleteProductSample.DeleteRetailProduct(productName);
-
-        return inventoryProduct;
     }
 }
 // [END add_fulfillment_places]
@@ -101,10 +94,22 @@ public class AddFulfillmentPlacesSample
 public static class AddFulfillmentPlacesTutorial
 {
     [Runner.Attributes.Example]
-    public static Product PerformAddFulfillment()
+    public static void PerformAddFulfillment()
     {
-        var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        
         var sample = new AddFulfillmentPlacesSample();
-        return sample.PerformAddFulfillment(projectId);
+
+        // Create product.
+        Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
+
+        // Add fulfillment info to created product.
+        sample.PerformAddFulfillment(createdProduct.Name);
+
+        // Get product.
+        Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
+
+        // Delete product.
+        DeleteProductSample.DeleteRetailProduct(inventoryProduct.Name);
     }
 }

@@ -17,57 +17,28 @@
 
 using Google.Cloud.Retail.V2;
 using System;
-using System.Linq;
 
 /// <summary>
 /// The update product sample class.
 /// </summary>
 public class UpdateProductSample
 {
-    private static readonly Random Random = new Random();
-    private static readonly string GeneratedProductId = RandomAlphanumericString(14);
-
-    /// <summary>
-    /// Generate the random alphanumeric string.
-    /// </summary>
-    /// <param name="length">The required length of alphanumeric string.</param>
-    /// <returns>Generated alphanumeric string.</returns>
-    private static string RandomAlphanumericString(int length)
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[Random.Next(s.Length)]).ToArray());
-    }
-
     /// <summary>
     /// Generate product for update.
     /// </summary>
-    /// <param name="productId">The actual product id.</param>
-    /// <param name="projectId">The current project id.</param>
+    /// <param name="originalProduct">The existing product to update.</param>
     /// <returns>Generated retail product.</returns>
-    private static Product GenerateProductForUpdate(string productId, string projectId)
+    private static Product ModifyOriginalProduct(Product originalProduct)
     {
-        var updatedPriceInfo = new PriceInfo
-        {
-            Price = 20.0f,
-            OriginalPrice = 25.5f,
-            CurrencyCode = "EUR"
-        };
+        originalProduct.Title = "Updated Nest Mini";
+        originalProduct.Categories[0] = "Updated Speakers and displays";
+        originalProduct.Brands[0] = "Updated Google";
+        originalProduct.Availability = Product.Types.Availability.OutOfStock;
+        originalProduct.PriceInfo.Price = 20.0f;
+        originalProduct.PriceInfo.OriginalPrice = 25.5f;
+        originalProduct.PriceInfo.CurrencyCode = "EUR";
 
-        var generatedProduct = new Product
-        {
-            Id = productId,
-            Name = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch/products/{productId}",
-            Title = "Updated Nest Mini",
-            Type = Product.Types.Type.Primary,
-            PriceInfo = updatedPriceInfo,
-            Availability = Product.Types.Availability.OutOfStock
-        };
-
-        generatedProduct.Categories.Add("Updated Speakers and displays");
-        generatedProduct.Brands.Add("Updated Google");
-
-        return generatedProduct;
+        return originalProduct;
     }
 
     /// <summary>
@@ -77,14 +48,17 @@ public class UpdateProductSample
     /// <returns>Update product request.</returns>
     private static UpdateProductRequest GetUpdateProductRequest(Product productToUpdate)
     {
-        var updateProductRequest = new UpdateProductRequest
+        UpdateProductRequest updateProductRequest = new UpdateProductRequest
         {
             Product = productToUpdate,
             AllowMissing = true
         };
 
         Console.WriteLine("Update product. request:");
-        Console.WriteLine(updateProductRequest);
+        Console.WriteLine($"Product Name: {productToUpdate.Name}");
+        Console.WriteLine($"Product Title: {productToUpdate.Title}");
+        Console.WriteLine($"Product Categories: {productToUpdate.Categories}");
+        Console.WriteLine($"Product Brands: {productToUpdate.Brands}");
         Console.WriteLine();
 
         return updateProductRequest;
@@ -94,17 +68,15 @@ public class UpdateProductSample
     /// Call the Retail API to update a product.
     /// </summary>
     /// <param name="originalProduct">The original product object.</param>
-    /// <param name="projectId">The current project id.</param>
     /// <returns>Updated retail product.</returns>
-    public static Product UpdateRetailProduct(Product originalProduct, string projectId)
+    public static Product UpdateRetailProduct(Product originalProduct)
     {
-        var productForUpdate = GenerateProductForUpdate(originalProduct.Id, projectId);
-        var updateProductRequest = GetUpdateProductRequest(productForUpdate);
+        Product modifiedProduct = ModifyOriginalProduct(originalProduct);
+        UpdateProductRequest updateProductRequest = GetUpdateProductRequest(modifiedProduct);
         ProductServiceClient client = ProductServiceClient.Create();
         Product updatedProduct = client.UpdateProduct(updateProductRequest);
 
-        Console.WriteLine("Updated product:");
-        Console.WriteLine(updatedProduct);
+        Console.WriteLine($"Update title: {updatedProduct.Title}");
         Console.WriteLine();
 
         return updatedProduct;
@@ -113,20 +85,11 @@ public class UpdateProductSample
     /// <summary>
     /// Perform the update product operations.
     /// </summary>
-    /// <param name="projectId">The current project id.</param>
+    /// <param name="originalProduct">The original product object.</param>
     /// <returns>Updated retail product.</returns>
-    public Product PerformUpdateProductOperation(string projectId)
+    public Product PerformUpdateProductOperation(Product originalProduct)
     {
-        // Create product.
-        var originalProduct = CreateProductSample.CreateRetailProduct(GeneratedProductId, projectId);
-
-        // Update created product.
-        var updatedProduct = UpdateRetailProduct(originalProduct, projectId);
-
-        // Delete updated product.
-        DeleteProductSample.DeleteRetailProduct(updatedProduct.Name);
-
-        return updatedProduct;
+        return UpdateRetailProduct(originalProduct);
     }
 }
 // [END retail_update_product]
@@ -137,10 +100,18 @@ public class UpdateProductSample
 public static class UpdateProductTutorial
 {
     [Runner.Attributes.Example]
-    public static Product PerformUpdateProductOperation()
+    public static void PerformUpdateProductOperation()
     {
         var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new UpdateProductSample();
-        return sample.PerformUpdateProductOperation(projectId);
+
+        // Create product.
+        Product originalProduct = CreateProductSample.CreateRetailProduct(projectId);
+
+        // Update product.
+        Product updatedProduct = sample.PerformUpdateProductOperation(originalProduct);
+
+        // Delete updated product.
+        DeleteProductSample.DeleteRetailProduct(updatedProduct.Name);
     }
 }

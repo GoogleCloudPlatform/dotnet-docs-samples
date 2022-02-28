@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.Retail.V2;
+using System;
 using Xunit;
 
 namespace RetailProducts.Samples.Tests
@@ -22,19 +23,35 @@ namespace RetailProducts.Samples.Tests
         [Fact]
         public void TestUpdateProduct()
         {
-            const string ExpectedProductTitle = "Updated Nest Mini";
-            const string ExpectedCurrencyCode = "EUR";
-            const float ExpectedProductPrice = 20.0f;
-            const float ExpectedProductOriginalPrice = 25.5f;
-            const Product.Types.Availability ExpectedProductAvailability = Product.Types.Availability.OutOfStock;
+            var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-            var updatedProduct = UpdateProductTutorial.PerformUpdateProductOperation();
+            // Create product.
+            Product originalProduct = CreateProductSample.CreateRetailProduct(projectId);
 
-            Assert.Equal(ExpectedProductTitle, updatedProduct.Title);
-            Assert.Equal(ExpectedCurrencyCode, updatedProduct.PriceInfo.CurrencyCode);
-            Assert.Equal(ExpectedProductPrice, updatedProduct.PriceInfo.Price);
-            Assert.Equal(ExpectedProductOriginalPrice, updatedProduct.PriceInfo.OriginalPrice);
-            Assert.Equal(ExpectedProductAvailability, updatedProduct.Availability);
+            try
+            {
+                const string ExpectedProductTitle = "Updated Nest Mini";
+                const string ExpectedCurrencyCode = "EUR";
+                const float ExpectedProductPrice = 20.0f;
+                const float ExpectedProductOriginalPrice = 25.5f;
+                const Product.Types.Availability ExpectedProductAvailability = Product.Types.Availability.OutOfStock;
+
+                var sample = new UpdateProductSample();
+
+                // Update original product.
+                Product updatedProduct = sample.PerformUpdateProductOperation(originalProduct);
+
+                Assert.Equal(ExpectedProductTitle, updatedProduct.Title);
+                Assert.Equal(ExpectedCurrencyCode, updatedProduct.PriceInfo.CurrencyCode);
+                Assert.Equal(ExpectedProductPrice, updatedProduct.PriceInfo.Price);
+                Assert.Equal(ExpectedProductOriginalPrice, updatedProduct.PriceInfo.OriginalPrice);
+                Assert.Equal(ExpectedProductAvailability, updatedProduct.Availability);
+            }
+            finally
+            {
+                // Delete updated product.
+                DeleteProductSample.DeleteRetailProduct(originalProduct.Name);
+            }
         }
     }
 }

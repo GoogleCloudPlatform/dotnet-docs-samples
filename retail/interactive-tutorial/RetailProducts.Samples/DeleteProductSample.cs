@@ -17,28 +17,12 @@
 
 using Google.Cloud.Retail.V2;
 using System;
-using System.Linq;
 
 /// <summary>
 /// The delete product sample class.
 /// </summary>
 public class DeleteProductSample
 {
-    private static readonly Random Random = new Random();
-    private static readonly string GeneratedProductId = RandomAlphanumericString(14);
-
-    /// <summary>
-    /// Generate the random alphanumeric string.
-    /// </summary>
-    /// <param name="length">The required length of alphanumeric string.</param>
-    /// <returns>Generated alphanumeric string.</returns>
-    private static string RandomAlphanumericString(int length)
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[Random.Next(s.Length)]).ToArray());
-    }
-
     /// <summary>
     /// Get delete product request.
     /// </summary>
@@ -46,13 +30,13 @@ public class DeleteProductSample
     /// <returns>Delete product request.</returns>
     private static DeleteProductRequest GetDeleteProductRequest(string productName)
     {
-        var deleteProductRequest = new DeleteProductRequest
+        DeleteProductRequest deleteProductRequest = new DeleteProductRequest
         {
             Name = productName
         };
 
         Console.WriteLine("Delete product. request:");
-        Console.WriteLine(deleteProductRequest);
+        Console.WriteLine($"Product Name: {deleteProductRequest.Name}");
         Console.WriteLine();
 
         return deleteProductRequest;
@@ -65,9 +49,9 @@ public class DeleteProductSample
     /// <returns>Created product.</returns>
     public static void DeleteRetailProduct(string productName)
     {
-        var deleteProductRequest = GetDeleteProductRequest(productName);
+        DeleteProductRequest deleteProductRequest = GetDeleteProductRequest(productName);
 
-        var client = ProductServiceClient.Create();
+        ProductServiceClient client = ProductServiceClient.Create();
         client.DeleteProduct(deleteProductRequest);
 
         Console.WriteLine($"Deleting product:");
@@ -78,15 +62,11 @@ public class DeleteProductSample
     /// <summary>
     /// Perform product deletion.
     /// </summary>
-    /// <param name="projectId">The current project id.</param>
+    /// <param name="productName">The name of the product.</param>
     /// <returns>Created product.</returns>
-    public void DeleteProduct(string projectId)
+    public void DeleteProduct(string productName)
     {
-        // Create product
-        var createdProduct = CreateProductSample.CreateRetailProduct(GeneratedProductId, projectId);
-
-        // Delete created product
-        DeleteRetailProduct(createdProduct.Name);
+        DeleteRetailProduct(productName);
     }
 }
 // [END retail_delete_product]
@@ -99,8 +79,14 @@ public static class DeleteProductTutorial
     [Runner.Attributes.Example]
     public static void PerformDeleteProductOperation()
     {
-        var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
         var sample = new DeleteProductSample();
-        sample.DeleteProduct(projectId);
+
+        // Create product.
+        Product createdProduct = CreateProductSample.CreateRetailProduct(projectId);
+
+        // Delete created product.
+        sample.DeleteProduct(createdProduct.Name);
     }
 }

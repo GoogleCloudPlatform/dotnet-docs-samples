@@ -18,40 +18,37 @@ using Xunit;
 
 namespace RetailProducts.Samples.Tests
 {
-    public class GetProductTest
+    public class AddFulfillmentPlacesTest
     {
         [Fact]
-        public void TestGetProduct()
+        public void TestAddFulfillmentPlaces()
         {
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
             // Create product.
             Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
-            try
+            try 
             {
-                const string ExpectedProductTitle = "Nest Mini";
-                const string ExpectedCurrencyCode = "USD";
-                const float ExpectedProductPrice = 30.0f;
-                const float ExpectedProductOriginalPrice = 35.5f;
-                const Product.Types.Availability ExpectedProductAvailability = Product.Types.Availability.InStock;
+                const string expectedPlaceId1 = "store2";
+                const string expectedPlaceId2 = "store3";
 
-                var sample = new GetProductSample();
+                var sample = new AddFulfillmentPlacesSample();
+
+                // Add fulfillment places to product.
+                sample.PerformAddFulfillment(createdProduct.Name);
 
                 // Get created product.
-                Product retrievedProduct = sample.PerformGetProductOperation(createdProduct.Name);
+                Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
 
-                Assert.Equal(ExpectedProductTitle, retrievedProduct.Title);
-                Assert.Equal(ExpectedCurrencyCode, retrievedProduct.PriceInfo.CurrencyCode);
-                Assert.Equal(ExpectedProductPrice, retrievedProduct.PriceInfo.Price);
-                Assert.Equal(ExpectedProductOriginalPrice, retrievedProduct.PriceInfo.OriginalPrice);
-                Assert.Equal(ExpectedProductAvailability, retrievedProduct.Availability);
+                Assert.Contains(expectedPlaceId1, inventoryProduct.FulfillmentInfo[0].PlaceIds);
+                Assert.Contains(expectedPlaceId2, inventoryProduct.FulfillmentInfo[0].PlaceIds);
             }
             finally
             {
                 // Delete product.
                 DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
-            }     
+            }
         }
     }
 }

@@ -24,40 +24,22 @@ using System.Threading;
 /// </summary>
 public class SetInventorySample
 {
-    private const string ProductId = "inventory_test_product_id";
-
     /// <summary>
     /// Get the retail product with inventory info.
     /// </summary>
-    /// <param name="productName">The actual name of the retail product.</param>
-    /// <returns>Generated retail product with inventory info.</returns>
-    private static Product GetProductWithInventoryInfo(string productName)
+    /// <param name="product">The actual product.</param>
+    /// <returns>Retail product with updated inventory info.</returns>
+    private static Product SetInventoryForProduct(Product product)
     {
-        var priceInfo = new PriceInfo
-        {
-            Price = 15.0f,
-            OriginalPrice = 20.0f,
-            Cost = 8.0f,
-            CurrencyCode = "USD"
-        };
-
-        var fulfillmentInfo = new FulfillmentInfo
-        {
-            Type = "pickup-in-store"
-        };
-
         string[] placeIds = { "store1", "store2" };
 
-        fulfillmentInfo.PlaceIds.Add(placeIds);
-
-        var product = new Product
-        {
-            Name = productName,
-            PriceInfo = priceInfo,
-            Availability = Product.Types.Availability.InStock
-        };
-
-        product.FulfillmentInfo.Add(fulfillmentInfo);
+        product.FulfillmentInfo[0].Type = "pickup-in-store";
+        product.FulfillmentInfo[0].PlaceIds.Clear();
+        product.FulfillmentInfo[0].PlaceIds.AddRange(placeIds);
+        product.PriceInfo.Price = 15.0f;
+        product.PriceInfo.OriginalPrice = 20.0f;
+        product.PriceInfo.Cost = 8.0f;
+        product.PriceInfo.CurrencyCode = "USD";
 
         return product;
     }
@@ -65,9 +47,9 @@ public class SetInventorySample
     /// <summary>
     /// Get the set inventory request.
     /// </summary>
-    /// <param name="productName">The actual name of the retail product.</param>
+    /// <param name="product">The actual product.</param>
     /// <returns>Set inventory request.</returns>
-    private static SetInventoryRequest GetSetInventoryRequest(string productName)
+    private static SetInventoryRequest GetSetInventoryRequest(Product product)
     {
         // The request timestamp.
         DateTime requestTimeStamp = DateTime.Now.ToUniversalTime();
@@ -75,20 +57,20 @@ public class SetInventorySample
         // The out-of-order request timestamp:
         // requestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
 
-        string[] paths = { "price_info", "availability", "fulfillment_info", "available_quantity" };
-        var setMask = new FieldMask();
-        setMask.Paths.AddRange(paths);
-
-        var setInventoryRequest = new SetInventoryRequest
+        SetInventoryRequest setInventoryRequest = new SetInventoryRequest
         {
-            Inventory = GetProductWithInventoryInfo(productName),
+            Inventory = SetInventoryForProduct(product),
             SetTime = Timestamp.FromDateTime(requestTimeStamp),
             AllowMissing = true,
-            SetMask = setMask
+            SetMask = new FieldMask
+            {
+                Paths = { "price_info", "availability", "fulfillment_info", "available_quantity" }
+            }
         };
 
         Console.WriteLine("Set inventory. request:");
-        Console.WriteLine(setInventoryRequest);
+        Console.WriteLine($"Product name: {setInventoryRequest.Inventory.Name }");
+        Console.WriteLine($"Product fultillment info: {setInventoryRequest.Inventory.FulfillmentInfo}");
         Console.WriteLine();
 
         return setInventoryRequest;
@@ -97,10 +79,10 @@ public class SetInventorySample
     /// <summary>
     /// Call the Retail API to set product inventory
     /// </summary>
-    /// <param name="productName">The actual name of the retail product.</param>
-    private static void SetProductInventory(string productName)
+    /// <param name="product">The actual product.</param>
+    private static void SetProductInventory(Product product)
     {
-        var setInventoryRequest = GetSetInventoryRequest(productName);
+        SetInventoryRequest setInventoryRequest = GetSetInventoryRequest(product);
 
         ProductServiceClient client = ProductServiceClient.Create();
         client.SetInventory(setInventoryRequest);
@@ -116,18 +98,10 @@ public class SetInventorySample
     /// <summary>
     /// Perform inventory setting
     /// </summary>
-    /// <param name="projectId">The current project id</param>
-    /// <returns>Created and deleted retail product object.</returns>
-    public Product PerformSetInventoryOperation(string projectId)
+    /// <param name="product">The actual product.</param>
+    public void PerformSetInventoryOperation(Product product)
     {
-        string productName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch/products/{ProductId}";
-
-        CreateProductSample.CreateRetailProductWithFulfillment(ProductId, projectId);
-        SetProductInventory(productName);
-        var inventoryProduct = GetProductSample.GetRetailProduct(productName);
-        DeleteProductSample.DeleteRetailProduct(productName);
-
-        return inventoryProduct;
+        SetProductInventory(product);
     }
 }
 // [END set_inventory]
@@ -138,10 +112,22 @@ public class SetInventorySample
 public static class SetInventoryTutorial
 {
     [Runner.Attributes.Example]
-    public static Product PerformSetInventoryOperation()
+    public static void PerformSetInventoryOperation()
     {
-        var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
         var sample = new SetInventorySample();
-        return sample.PerformSetInventoryOperation(projectId);
+
+        // Create product.
+        Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
+
+        // Set inventory for product.
+        sample.PerformSetInventoryOperation(createdProduct);
+
+        // Get product.
+        Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
+
+        // Delete product.
+        DeleteProductSample.DeleteRetailProduct(inventoryProduct.Name);
     }
 }
