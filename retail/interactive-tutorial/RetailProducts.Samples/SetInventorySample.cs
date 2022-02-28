@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START set_inventory]
+// [START retail_set_inventory]
 
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
@@ -104,7 +104,7 @@ public class SetInventorySample
         SetProductInventory(product);
     }
 }
-// [END set_inventory]
+// [END retail_set_inventory]
 
 /// <summary>
 /// THe set inventory tutorial class.

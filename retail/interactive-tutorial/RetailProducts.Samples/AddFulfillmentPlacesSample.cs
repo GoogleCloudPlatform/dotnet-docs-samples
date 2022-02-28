@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START add_fulfillment_places]
+// [START retail_add_fulfillment_places]
 
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
@@ -86,7 +86,7 @@ public class AddFulfillmentPlacesSample
         AddFulfillment(productName);
     }
 }
-// [END add_fulfillment_places]
+// [END retail_add_fulfillment_places]
 
 /// <summary>
 /// The add fulfillment places tutorial class.
