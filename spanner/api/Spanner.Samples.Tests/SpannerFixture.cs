@@ -35,6 +35,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     // Allow environment variables to override the default instance and database names.
     public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
     public string DatabaseId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string PostgreSqlDatabaseId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_POSTGRESQL_DATABASE") ?? $"my-db-postgre-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string BackupDatabaseId { get; } = "my-test-database";
     public string BackupId { get; } = "my-test-database-backup";
     public string ToBeCancelledBackupId { get; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
@@ -91,6 +92,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await DeleteStaleInstancesAsync();
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
+        await InitializePostgreSqlDatabaseAsync();
 
         // Create encryption key for creating an encrypted database and optionally backing up and restoring an encrypted database.
         await InitializeEncryptionKeys();
@@ -383,6 +385,18 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             // It's ok backup has been in progress in another test cycle.
             Console.WriteLine($"Backup {BackupId} already in progress.");
         }
+    }
+
+    private async Task InitializePostgreSqlDatabaseAsync()
+    {
+        await CreatePostgreSqlDatabaseAsync(PostgreSqlDatabaseId);
+    }
+
+    public async Task CreatePostgreSqlDatabaseAsync(string databaseId)
+    {
+        // Create PostgreSQL database.
+        CreateDatabaseAsyncPostgreSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgreSample();
+        await createDatabaseAsyncSample.CreateDatabaseAsyncPostgre(ProjectId, InstanceId, databaseId);
     }
 
     public async Task CreateVenuesTableAndInsertDataAsync(string databaseId)
