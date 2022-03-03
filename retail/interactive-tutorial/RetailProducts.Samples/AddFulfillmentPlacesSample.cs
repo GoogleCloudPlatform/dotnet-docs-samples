@@ -24,12 +24,6 @@ using System.Threading;
 /// </summary>
 public class AddFulfillmentPlacesSample
 {
-    // The request timestamp
-    private static readonly DateTime RequestTimeStamp = DateTime.Now.ToUniversalTime();
-
-    // The outdated request timestamp:
-    // RequestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
-
     /// <summary>
     /// Get the add fulfillment palces request.
     /// </summary>
@@ -41,7 +35,6 @@ public class AddFulfillmentPlacesSample
         {
             Product = productName,
             Type = "pickup-in-store",
-            AddTime = Timestamp.FromDateTime(RequestTimeStamp.AddMinutes(-1)),
             AllowMissing = true
         };
 
@@ -97,7 +90,7 @@ public static class AddFulfillmentPlacesTutorial
     public static void PerformAddFulfillment()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        
+
         var sample = new AddFulfillmentPlacesSample();
 
         // Create product.
