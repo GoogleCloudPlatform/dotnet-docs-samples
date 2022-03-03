@@ -51,16 +51,9 @@ public class SetInventorySample
     /// <returns>Set inventory request.</returns>
     private static SetInventoryRequest GetSetInventoryRequest(Product product)
     {
-        // The request timestamp.
-        DateTime requestTimeStamp = DateTime.Now.ToUniversalTime();
-
-        // The out-of-order request timestamp:
-        // requestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
-
         SetInventoryRequest setInventoryRequest = new SetInventoryRequest
         {
             Inventory = SetInventoryForProduct(product),
-            SetTime = Timestamp.FromDateTime(requestTimeStamp),
             AllowMissing = true,
             SetMask = new FieldMask
             {
