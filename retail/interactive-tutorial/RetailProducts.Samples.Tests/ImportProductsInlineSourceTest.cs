@@ -21,9 +21,6 @@ namespace RetailProducts.Samples.Tests
         [Fact]
         public void TestImportProductsInlineSource()
         {
-            RemoveTestResources.PerformDeletionOfTestResources();
-            CreateTestResources.PerformCreationOfTestResources();
-
             int expectedSuccessfullyImportedProducts = 2;
             int expectedFailures = 0;
 

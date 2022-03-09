@@ -29,19 +29,18 @@ public class ImportProductsGcsSample
     // To check error handling use the json with invalid product:
     // gcsProductsObject = "products_some_invalid.json";
 
-    private static readonly string BucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
-
-    private static readonly string gcsBucket = $"gs://{BucketName}";
-    private static readonly string gcsErrorsBucket = $"{gcsBucket}/error";
-
     /// <summary>
     /// Get import products gcs request.
     /// </summary>
     /// <param name="gcsObjectName">The name of the gcs object.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>The import products request.</returns>
-    private static ImportProductsRequest GetImportProductsGcsRequest(string gcsObjectName, string projectId)
-    {  
+    private static ImportProductsRequest GetImportProductsGcsRequest(string gcsObjectName, string projectId, string bucketName)
+    {
+        string productsBucketName = bucketName ?? Environment.GetEnvironmentVariable("PRODUCTS_BUCKET_NAME");
+        string gcsBucket = $"gs://{productsBucketName}";
+        string gcsErrorsBucket = $"{gcsBucket}/error";
+
         string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch";
 
         // To check error handling paste the invalid catalog name here:
@@ -79,9 +78,9 @@ public class ImportProductsGcsSample
     /// Call the Retail API to import products.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
-    public Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromGcs(string projectId)
+    public Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromGcs(string projectId, string bucketName = null)
     {
-        ImportProductsRequest importGcsRequest = GetImportProductsGcsRequest(gcsProductsObject, projectId);
+        ImportProductsRequest importGcsRequest = GetImportProductsGcsRequest(gcsProductsObject, projectId, bucketName);
 
         ProductServiceClient client = ProductServiceClient.Create();
         Operation<ImportProductsResponse, ImportMetadata> importResponse = client.ImportProducts(importGcsRequest);

@@ -12,23 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Retail.V2;
-using Google.Cloud.Storage.V1;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-/// <summary>
-/// Class that performs creeation of all necessary test resources.
-/// </summary>
-public static class CreateTestResources
+
+public static class ProductsCreateBigQueryTable
 {
     private const string ProductFileName = "products.json";
-
-    private const string EventsFileName = "user_events.json";
 
     private const string WindowsTerminalName = "cmd.exe";
     private const string UnixTerminalName = "/bin/bash";
@@ -40,26 +32,15 @@ public static class CreateTestResources
     private const string ProductDataSet = "products";
     private const string ProductTable = "products";
     private const string ProductSchema = "resources/product_schema.json";
-    private const string EventsDataSet = "user_events";
-    private const string EventsTable = "events";
-    private const string EventsSchema = "resources/events_schema.json";
+    private const string InvalidProductTable = "products_some_invalid";
 
     private static readonly bool CurrentOSIsWindows = Environment.OSVersion.VersionString.Contains("Windows");
     private static readonly string CurrentTerminalPrefix = CurrentOSIsWindows ? WindowsTerminalPrefix : UnixTerminalPrefix;
     private static readonly string CurrentTerminalFile = CurrentOSIsWindows ? WindowsTerminalName : UnixTerminalName;
     private static readonly string CurrentTerminalQuotes = CurrentOSIsWindows ? WindowsTerminalQuotes : UnixTerminalQuotes;
 
-    private static readonly string productFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductFileName}");
-    private static readonly string eventsFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
+    private static readonly string productFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"RetailProducts.Samples/resources/{ProductFileName}");
     private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
-    private static readonly string projectNumber = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_NUMBER");
-    private static readonly string bucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
-
-    private static readonly string defaultCatalog = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/branches/default_branch";
-    private static readonly string gcsBucket = $"gs://{bucketName}";
-    private static readonly string gcsErrorsBucket = $"{gcsBucket}/error";
-
-    private static readonly StorageClient storageClient = StorageClient.Create();
 
     /// <summary>
     /// Get the current solution directory full name.
@@ -76,138 +57,6 @@ public static class CreateTestResources
         }
 
         return directory.FullName;
-    }
-
-    /// <summary>Create GCS bucket.</summary>
-    private static Bucket CreateBucket(string bucketName)
-    {
-        var newBucket = new Bucket();
-        Console.WriteLine($"\nBucket name: {bucketName}\n");
-
-        var bucketExists = CheckIfBucketExists(bucketName);
-
-        if (bucketExists)
-        {
-            Console.WriteLine($"\nBucket {bucketName} already exists.\n");
-            return storageClient.GetBucket(bucketName);
-        }
-        else
-        {
-            var bucket = new Bucket
-            {
-                Name = bucketName,
-                StorageClass = "STANDARD",
-                Location = "us"
-            };
-
-            newBucket = storageClient.CreateBucket(projectId, bucket);
-
-            Console.WriteLine($"\nCreated bucket {newBucket.Name} in {newBucket.Location} with storage class {newBucket.StorageClass}\n");
-        };
-
-        return newBucket;
-    }
-
-    private static bool CheckIfBucketExists(string newBucketName)
-    {
-        var bucketExists = false;
-        var bucketsInYourProject = ListBuckets();
-        var bucketNamesInYourProject = bucketsInYourProject.Select(x => x.Name).ToArray();
-
-        foreach (var existingBucketName in bucketNamesInYourProject)
-        {
-            if (existingBucketName == newBucketName)
-            {
-                bucketExists = true;
-                break;
-            }
-        }
-
-        return bucketExists;
-    }
-
-    /// <summary>List all existing buckets.</summary>
-    private static List<Bucket> ListBuckets()
-    {
-        var bucketsList = new List<Bucket>();
-        var buckets = storageClient.ListBuckets(projectId);
-
-        foreach (var bucket in buckets)
-        {
-            bucketsList.Add(bucket);
-            Console.WriteLine(bucket.Name);
-        }
-
-        return bucketsList;
-    }
-
-    /// <summary>Upload blob.</summary>
-    private static void UploadBlob(string bucketName, string localPath, string objectName)
-    {
-        var bucket = storageClient.GetBucket(bucketName);
-
-        using var fileStream = File.OpenRead(localPath);
-        storageClient.UploadObject(bucketName, objectName, null, fileStream);
-        Console.WriteLine($"Uploaded {objectName}.");
-    }
-
-    /// <summary>Get import products gcs request.</summary>
-    private static ImportProductsRequest GetImportProductsGcsRequest(string gcsObjectName)
-    {
-        var gcsSource = new GcsSource();
-        gcsSource.InputUris.Add($"{gcsBucket}/{gcsObjectName}");
-
-        var inputConfig = new ProductInputConfig
-        {
-            GcsSource = gcsSource
-        };
-
-        Console.WriteLine("\nGCS source: \n" + gcsSource.InputUris);
-
-        var errorsConfig = new ImportErrorsConfig
-        {
-            GcsPrefix = gcsErrorsBucket
-        };
-
-        // To check error handling paste the invalid catalog name here:
-        // defaultCatalog = "invalid_catalog_name"
-        var importRequest = new ImportProductsRequest
-        {
-            Parent = defaultCatalog,
-            ReconciliationMode = ImportProductsRequest.Types.ReconciliationMode.Incremental,
-            InputConfig = inputConfig,
-            ErrorsConfig = errorsConfig
-        };
-
-        Console.WriteLine("\nImport products from google cloud source. request: \n");
-        Console.WriteLine($"Parent: {importRequest.Parent}");
-        Console.WriteLine($"ReconciliationMode: {importRequest.ReconciliationMode}");
-        Console.WriteLine($"InputConfig: {importRequest.InputConfig}");
-        Console.WriteLine($"ErrorsConfig: {importRequest.ErrorsConfig}");
-
-        return importRequest;
-    }
-
-    /// <summary>Call the Retail API to import products.</summary>
-    private static void ImportProductsFromGcs()
-    {
-        var importGcsRequest = GetImportProductsGcsRequest(ProductFileName);
-
-        var client = ProductServiceClient.Create();
-        var importResponse = client.ImportProducts(importGcsRequest);
-
-        Console.WriteLine("\nThe operation was started: \n" + importResponse.Name);
-        Console.WriteLine("\nPlease wait till opeartion is done");
-
-        var importResult = importResponse.PollUntilCompleted();
-
-        Console.WriteLine("Import products operation is done\n");
-        Console.WriteLine("Number of successfully imported products: " + importResult.Metadata.SuccessCount);
-        Console.WriteLine("Number of failures during the importing: " + importResult.Metadata.FailureCount);
-        Console.WriteLine("\nOperation result: \n" + importResult.Result);
-
-        // The imported products needs to be indexed in the catalog before they become available for search.
-        Console.WriteLine("Wait 2 - 5 minutes till products become indexed in the catalog, after that they will be available for search");
     }
 
     /// <summary>Create a Big Query Dataset.</summary>
@@ -354,30 +203,12 @@ public static class CreateTestResources
         }
     }
 
-    /// <summary>
-    /// Create test resources.
-    /// </summary>
-    public static void PerformCreationOfTestResources()
+    public static void PerformCreationOfBigQueryTable()
     {
-        // Create a GCS bucket with products.json file.
-        var createdProductsBucket = CreateBucket(bucketName);
-        UploadBlob(createdProductsBucket.Name, productFilePath, ProductFileName);
-
-        // Create a GCS bucket with user_events.json file.
-        var createdEventsBucket = CreateBucket(bucketName);
-        UploadBlob(createdEventsBucket.Name, eventsFilePath, EventsFileName);
-
-        // Import products from the GCS bucket to the Retail catalog.
-        ImportProductsFromGcs();
-
-        // Create a BigQuery table with products.
         CreateBQDataSet(ProductDataSet);
         CreateBQTable(ProductDataSet, ProductTable, ProductSchema);
         UploadDataToBQTable(ProductDataSet, ProductTable, productFilePath, ProductSchema);
-
-        // Create a BigQuery table with user events.
-        CreateBQDataSet(EventsDataSet);
-        CreateBQTable(EventsDataSet, EventsTable, EventsSchema);
-        UploadDataToBQTable(EventsDataSet, EventsTable, eventsFilePath, EventsSchema);
+        // CreateBQTable(ProductDataSet, InvalidProductTable, ProductSchema);
+        // UploadDataToBQTable(ProductDataSet, InvalidProductTable, productFilePath, ProductSchema);
     }
 }

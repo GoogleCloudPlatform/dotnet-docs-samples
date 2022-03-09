@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Xunit;
 
 namespace RetailEvents.Samples.Tests
@@ -21,22 +22,26 @@ namespace RetailEvents.Samples.Tests
         [Fact]
         public void TestImportUserEventsGcs()
         {
+            string createdBucketName = null;
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+
             try
             {
-                RemoveTestResources.PerformDeletionOfTestResources();
-                CreateTestResources.PerformCreationOfTestResources();
+                EventsDeleteGcsBucket.PerformDeletionOfEventsBucketName(createdBucketName);
+                createdBucketName = EventsCreateGcsBucket.PerformCreationOfEventsGcsBucket();
 
-                int expectedSuccessfullyImportedProducts = 4;
+                int expectedSuccessfullyImportedEvents = 4;
                 int expectedFailures = 0;
 
-                var result = ImportUserEventsGcsTutorial.ImportUserEventsFromGcs();
+                var sample = new ImportUserEventsGcsSample();
+                var result = sample.ImportUserEventsFromGcs(projectId, createdBucketName);
 
-                Assert.Equal(expectedSuccessfullyImportedProducts, result.Metadata.SuccessCount);
+                Assert.Equal(expectedSuccessfullyImportedEvents, result.Metadata.SuccessCount);
                 Assert.Equal(expectedFailures, result.Metadata.FailureCount);
             }
             finally
             {
-                RemoveTestResources.PerformDeletionOfTestResources();
+                EventsDeleteGcsBucket.PerformDeletionOfEventsBucketName(createdBucketName);
             }
         }
     }

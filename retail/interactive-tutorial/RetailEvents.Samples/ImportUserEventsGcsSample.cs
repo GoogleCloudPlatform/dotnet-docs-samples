@@ -29,26 +29,25 @@ public class ImportUserEventsGcsSample
     // To check error handling use the json with invalid user event:
     // private const string GcsEventsObject = "user_events_some_invalid.json";
 
-    // Read the bucket name from the environment variable
-    private static readonly string BucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
-    private static readonly string GcsBucket = $"gs://{BucketName}";
-    private static readonly string GcsErrorsBucket = $"{GcsBucket}/error";
-
     /// <summary>
     /// Get import user events from gcs request.
     /// </summary>
     /// <param name="gcsObjectName">The name of the Gcs object.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>The import user events request.</returns>
-    private static ImportUserEventsRequest GetImportUserEventsGcsRequest(string gcsObjectName, string projectId)
+    private static ImportUserEventsRequest GetImportUserEventsGcsRequest(string gcsObjectName, string projectId, string bucketName)
     {
+        string eventsBucketName = bucketName ?? Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
+        string gcsBucket = $"gs://{eventsBucketName}";
+        string gcsErrorsBucket = $"{gcsBucket}/error";
+
         string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
 
         // To check error handling paste the invalid catalog name here:
         // defaultCatalog = "invalid_catalog_name";
 
         GcsSource gcsSource = new GcsSource();
-        gcsSource.InputUris.Add($"{GcsBucket}/{gcsObjectName}");
+        gcsSource.InputUris.Add($"{gcsBucket}/{gcsObjectName}");
 
         Console.WriteLine("GCS source:");
         Console.WriteLine(gcsSource.InputUris);
@@ -63,7 +62,7 @@ public class ImportUserEventsGcsSample
             },
             ErrorsConfig = new ImportErrorsConfig
             {
-                GcsPrefix = GcsErrorsBucket
+                GcsPrefix = gcsErrorsBucket
             }
         };
 
@@ -78,9 +77,9 @@ public class ImportUserEventsGcsSample
     /// Call the Retail API to import user events.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
-    public Operation<ImportUserEventsResponse, ImportMetadata> ImportUserEventsFromGcs(string projectId)
+    public Operation<ImportUserEventsResponse, ImportMetadata> ImportUserEventsFromGcs(string projectId, string bucketName = null)
     {
-        ImportUserEventsRequest importGcsRequest = GetImportUserEventsGcsRequest(GcsEventsObject, projectId);
+        ImportUserEventsRequest importGcsRequest = GetImportUserEventsGcsRequest(GcsEventsObject, projectId, bucketName);
         UserEventServiceClient client = UserEventServiceClient.Create();
         Operation<ImportUserEventsResponse, ImportMetadata> importResponse = client.ImportUserEvents(importGcsRequest);
 

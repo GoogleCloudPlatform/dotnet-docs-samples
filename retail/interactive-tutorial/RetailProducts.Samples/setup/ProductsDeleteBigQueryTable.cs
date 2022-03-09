@@ -12,16 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Retail.V2;
-using Google.Cloud.Storage.V1;
 using System;
 using System.Diagnostics;
 
-/// <summary>
-/// Class that performs creeation of all necessary test resources.
-/// </summary>
-public static class RemoveTestResources
+public static class ProductsDeleteBigQueryTable
 {
     private const string WindowsTerminalName = "cmd.exe";
     private const string UnixTerminalName = "/bin/bash";
@@ -31,7 +26,6 @@ public static class RemoveTestResources
     private const string UnixTerminalQuotes = "\"";
 
     private const string ProductDataSet = "products";
-    private const string EventsDataSet = "user_events";
 
     private static readonly bool CurrentOSIsWindows = Environment.OSVersion.VersionString.Contains("Windows");
     private static readonly string CurrentTerminalPrefix = CurrentOSIsWindows ? WindowsTerminalPrefix : UnixTerminalPrefix;
@@ -39,45 +33,9 @@ public static class RemoveTestResources
     private static readonly string CurrentTerminalQuotes = CurrentOSIsWindows ? WindowsTerminalQuotes : UnixTerminalQuotes;
 
     private static readonly string projectNumber = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_NUMBER");
-    private static readonly string productBucketName = Environment.GetEnvironmentVariable("PRODUCTS_BUCKET_NAME");
-    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
 
     private static readonly string defaultCatalog = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/branches/default_branch";
-
-    private static readonly StorageClient storageClient = StorageClient.Create();
-
-    /// <summary>Delete bucket.</summary>
-    private static void DeleteBucket(string bucketName)
-    {
-        Console.WriteLine($"Deleting Bucket {bucketName}");
-
-        try 
-        {
-            var bucketToDelete = storageClient.GetBucket(bucketName);
-            DeleteObjectsFromBucket(bucketToDelete);
-            storageClient.DeleteBucket(bucketToDelete.Name);
-            Console.WriteLine($"Bucket {bucketToDelete.Name} is deleted.");
-        }
-        catch (Exception) 
-        {
-            Console.WriteLine($"Bucket {bucketName} does not exist.");
-        }
-    }
-
-    /// <summary>Delete all objects from bucket.</summary>
-    private static void DeleteObjectsFromBucket(Bucket bucket)
-    {
-        Console.WriteLine($"Deleting object from bucket {bucket.Name}");
-
-        var blobs = storageClient.ListObjects(bucket.Name);
-        foreach (var blob in blobs)
-        {
-            storageClient.DeleteObject(bucket.Name, blob.Name);
-        }
-
-        Console.WriteLine($"All objects are deleted from a GCS bucket {bucket.Name}.");
-    }
-
+        
     /// <summary>Delete all products.</summary>
     private static void DeleteAllProducts()
     {
@@ -110,7 +68,7 @@ public static class RemoveTestResources
             }
         }
 
-         Console.WriteLine($"{deleteCount} products were deleted from {defaultCatalog}");
+        Console.WriteLine($"{deleteCount} products were deleted from {defaultCatalog}");
     }
 
     /// <summary>Delete Big Query dataset with tables.</summary>
@@ -141,12 +99,9 @@ public static class RemoveTestResources
     /// <summary>
     /// Delete test resources.
     /// </summary>
-    public static void PerformDeletionOfTestResources()
+    public static void PerformDeletionOfProductsBigQueryTable()
     {
-        DeleteBucket(productBucketName);
-        //DeleteBucket(eventsBucketName);
         DeleteAllProducts();
         DeleteBQDatasetWithTables(ProductDataSet);
-        DeleteBQDatasetWithTables(EventsDataSet);
     }
 }

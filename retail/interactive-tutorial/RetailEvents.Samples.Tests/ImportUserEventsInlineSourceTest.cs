@@ -21,9 +21,6 @@ namespace RetailEvents.Samples.Tests
         [Fact]
         public void TestImportUserEventsInlineSource()
         {
-            RemoveTestResources.PerformDeletionOfTestResources();
-            CreateTestResources.PerformCreationOfTestResources();
-
             int expectedSuccessfullyImportedProducts = 3;
             int expectedFailures = 0;
 

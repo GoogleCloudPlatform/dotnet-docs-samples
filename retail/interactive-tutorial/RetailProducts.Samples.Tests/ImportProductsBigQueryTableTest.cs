@@ -23,8 +23,8 @@ namespace RetailProducts.Samples.Tests
         {
             try
             {
-                RemoveTestResources.PerformDeletionOfTestResources();
-                CreateTestResources.PerformCreationOfTestResources();
+                ProductsDeleteBigQueryTable.PerformDeletionOfProductsBigQueryTable();
+                ProductsCreateBigQueryTable.PerformCreationOfBigQueryTable();
 
                 int expectedSuccessfullyImportedProducts = 316;
                 int expectedFailures = 0;
@@ -36,7 +36,7 @@ namespace RetailProducts.Samples.Tests
             }
             finally
             {
-                RemoveTestResources.PerformDeletionOfTestResources();
+                ProductsDeleteBigQueryTable.PerformDeletionOfProductsBigQueryTable();
             }
         }
     }
