@@ -12,13 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace TestResourcesSetupCleanup
 {
     class Program
     {
         static void Main(string[] args)
         {
+            try
+            {
+                RemoveTestResources.PerformDeletionOfTestResources();
+                CreateTestResources.PerformCreationOfTestResources();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
+            Console.ReadKey();
         }
     }
 }
