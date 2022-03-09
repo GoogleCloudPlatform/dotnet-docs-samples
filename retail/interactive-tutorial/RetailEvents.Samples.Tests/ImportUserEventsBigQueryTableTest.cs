@@ -23,6 +23,7 @@ namespace RetailEvents.Samples.Tests
         {
             try
             {
+                UpdateUserEventsJson.PerformUpdateEventsTimeStamp();
                 EventsDeleteBigQueryTable.PerformDeletionOfEventsBigQueryTable();
                 EventsCreateBigQueryTable.PerformCreationOfBigQueryTable();
 

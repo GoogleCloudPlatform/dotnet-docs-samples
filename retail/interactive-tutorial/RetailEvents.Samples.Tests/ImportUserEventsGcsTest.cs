@@ -27,6 +27,7 @@ namespace RetailEvents.Samples.Tests
 
             try
             {
+                UpdateUserEventsJson.PerformUpdateEventsTimeStamp();
                 EventsDeleteGcsBucket.PerformDeletionOfEventsBucketName(createdBucketName);
                 createdBucketName = EventsCreateGcsBucket.PerformCreationOfEventsGcsBucket();
 
