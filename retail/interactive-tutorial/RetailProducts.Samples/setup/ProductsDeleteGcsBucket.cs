@@ -57,7 +57,7 @@ public static class ProductsDeleteGcsBucket
     /// </summary>
     public static void PerformDeletionOfProductsGcsBucket(string bucketName)
     {
-        string productsBucketName = bucketName ?? Environment.GetEnvironmentVariable("PRODUCTS_BUCKET_NAME");
+        string productsBucketName = bucketName ?? Environment.GetEnvironmentVariable("BUCKET_NAME");
 
         DeleteBucket(productsBucketName);
     }

@@ -39,7 +39,7 @@ public static class RemoveTestResources
     private static readonly string CurrentTerminalQuotes = CurrentOSIsWindows ? WindowsTerminalQuotes : UnixTerminalQuotes;
 
     private static readonly string projectNumber = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_NUMBER");
-    private static readonly string productBucketName = Environment.GetEnvironmentVariable("PRODUCTS_BUCKET_NAME");
+    private static readonly string productBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
     private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
 
     private static readonly string defaultCatalog = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/branches/default_branch";
@@ -144,7 +144,7 @@ public static class RemoveTestResources
     public static void PerformDeletionOfTestResources()
     {
         DeleteBucket(productBucketName);
-        //DeleteBucket(eventsBucketName);
+        DeleteBucket(eventsBucketName);
         DeleteAllProducts();
         DeleteBQDatasetWithTables(ProductDataSet);
         DeleteBQDatasetWithTables(EventsDataSet);

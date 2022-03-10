@@ -37,7 +37,7 @@ public class ImportProductsGcsSample
     /// <returns>The import products request.</returns>
     private static ImportProductsRequest GetImportProductsGcsRequest(string gcsObjectName, string projectId, string bucketName)
     {
-        string productsBucketName = bucketName ?? Environment.GetEnvironmentVariable("PRODUCTS_BUCKET_NAME");
+        string productsBucketName = bucketName ?? Environment.GetEnvironmentVariable("BUCKET_NAME");
         string gcsBucket = $"gs://{productsBucketName}";
         string gcsErrorsBucket = $"{gcsBucket}/error";
 
