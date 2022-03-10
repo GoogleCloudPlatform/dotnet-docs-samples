@@ -28,10 +28,8 @@ namespace RetailProducts.Samples.Tests
             // Create product.
             Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
-            var sample = new DeleteProductSample();
-
             // Delete created product.
-            sample.DeleteProduct(createdProduct.Name);
+            DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
 
             // Check that the exception is thrown, because the product no longer exists.
             Assert.Throws<Grpc.Core.RpcException>(() => GetProductSample.GetRetailProduct(createdProduct.Name));

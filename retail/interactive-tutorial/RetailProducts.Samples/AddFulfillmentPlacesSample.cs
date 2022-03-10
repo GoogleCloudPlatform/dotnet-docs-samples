@@ -15,15 +15,21 @@
 // [START retail_add_fulfillment_places]
 
 using Google.Cloud.Retail.V2;
+using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System;
-using System.Threading;
 
 /// <summary>
 /// The add fulfillment places sample class.
 /// </summary>
 public class AddFulfillmentPlacesSample
 {
+    // The request timestamp
+    private static readonly DateTime RequestTimeStamp = DateTime.Now.ToUniversalTime();
+
+    // The outdated request timestamp:
+    // RequestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
+
     /// <summary>
     /// Get the add fulfillment palces request.
     /// </summary>
@@ -35,6 +41,7 @@ public class AddFulfillmentPlacesSample
         {
             Product = productName,
             Type = "pickup-in-store",
+            AddTime = Timestamp.FromDateTime(RequestTimeStamp.AddMinutes(-1)),
             AllowMissing = true
         };
 
@@ -42,7 +49,7 @@ public class AddFulfillmentPlacesSample
 
         addFulfillmentRequest.PlaceIds.AddRange(placeIds);
 
-        Console.WriteLine("Add fulfillment places. request:");
+        Console.WriteLine("Add fulfillment places request:");
         Console.WriteLine($"Product Name: {addFulfillmentRequest.Product}");
         Console.WriteLine($"Type: {addFulfillmentRequest.Type}");
         Console.WriteLine($"Add Time: {addFulfillmentRequest.AddTime}");
@@ -55,28 +62,30 @@ public class AddFulfillmentPlacesSample
     /// Call the Retail API to add fulfillment places.
     /// </summary>
     /// <param name="productName">The actual name of the retail product.</param>
-    private static void AddFulfillment(string productName)
+    public static void AddFulfillment(string productName)
     {
         AddFulfillmentPlacesRequest addFulfillmentRequest = GetAddFulfillmentRequest(productName);
         ProductServiceClient client = ProductServiceClient.Create();
-        client.AddFulfillmentPlaces(addFulfillmentRequest);
 
-        // This is a long running operation and its result is not immediately present with get operations,
-        // thus we simulate wait with sleep method.
-        Console.WriteLine("Add fulfillment places. Wait 2 minutes:");
+        // Make the request.
+        Operation<AddFulfillmentPlacesResponse, AddFulfillmentPlacesMetadata> response = client.AddFulfillmentPlaces(addFulfillmentRequest);
+
+        Console.WriteLine("The operation was started:");
+        Console.WriteLine(response.Name);
         Console.WriteLine();
 
-        Thread.Sleep(120000);
-    }
+        Console.WriteLine("Please wait till opeartion is done");
+        Console.WriteLine();
 
-    /// <summary>
-    /// Perform all add fulfillment operations.
-    /// </summary>
-    /// <param name="productName">The current product name.</param>
-    /// <returns>Created and deleted retail product.</returns>
-    public void PerformAddFulfillment(string productName)
-    {
-        AddFulfillment(productName);
+        // Poll until the returned long-running operation is complete.
+        Operation<AddFulfillmentPlacesResponse, AddFulfillmentPlacesMetadata> addFulfillmentResult = response.PollUntilCompleted();
+
+        Console.WriteLine("Add fulfillment places operation is done");
+        Console.WriteLine();
+
+        Console.WriteLine("Operation result:");
+        Console.WriteLine(addFulfillmentResult.Result);
+        Console.WriteLine();
     }
 }
 // [END retail_add_fulfillment_places]
@@ -91,13 +100,11 @@ public static class AddFulfillmentPlacesTutorial
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        var sample = new AddFulfillmentPlacesSample();
-
         // Create product.
         Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
         // Add fulfillment info to created product.
-        sample.PerformAddFulfillment(createdProduct.Name);
+        AddFulfillmentPlacesSample.AddFulfillment(createdProduct.Name);
 
         // Get product.
         Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);

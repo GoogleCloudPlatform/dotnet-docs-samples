@@ -30,10 +30,8 @@ namespace RetailProducts.Samples.Tests
 
             try
             {
-                var sample = new SetInventorySample();
-
                 // Set inventory for product.
-                sample.PerformSetInventoryOperation(createdProduct);
+                SetInventorySample.SetProductInventory(createdProduct);
 
                 // Get product.
                 Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);

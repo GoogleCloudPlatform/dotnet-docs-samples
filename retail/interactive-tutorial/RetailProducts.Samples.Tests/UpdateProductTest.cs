@@ -30,10 +30,8 @@ namespace RetailProducts.Samples.Tests
 
             try
             {
-                var sample = new UpdateProductSample();
-
                 // Update original product.
-                Product updatedProduct = sample.PerformUpdateProductOperation(originalProduct);
+                Product updatedProduct = UpdateProductSample.UpdateRetailProduct(originalProduct);
 
                 Assert.Equal("Updated Nest Mini", updatedProduct.Title);
                 Assert.Equal("EUR", updatedProduct.PriceInfo.CurrencyCode);

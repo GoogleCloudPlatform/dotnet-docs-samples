@@ -35,7 +35,7 @@ public class GetProductSample
             Name = productName
         };
 
-        Console.WriteLine("Get product. request:");
+        Console.WriteLine("Get product request:");
         Console.WriteLine($"Product name: {getProductRequest.Name}");
         Console.WriteLine();
 
@@ -54,7 +54,7 @@ public class GetProductSample
         ProductServiceClient client = ProductServiceClient.Create();
         Product product = client.GetProduct(getProductRequest);
 
-        Console.WriteLine("Get product. response:");
+        Console.WriteLine("Get product response:");
         Console.WriteLine($"Product Name: {product.Name}");
         Console.WriteLine($"Product Title: {product.Title}");
         Console.WriteLine($"Product Brands: {product.Brands}");
@@ -63,15 +63,6 @@ public class GetProductSample
         Console.WriteLine();
 
         return product;
-    }
-
-    /// <summary>
-    /// Perform the product retrieval operation.
-    /// </summary>
-    /// <param name="productName">The name of the product.</param>
-    public Product PerformGetProductOperation(string productName)
-    {
-        return GetRetailProduct(productName);
     }
 }
 // [END retail_get_product]
@@ -85,13 +76,12 @@ public static class GetProductTutorial
     public static void PerformGetProductOperation()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new GetProductSample();
 
         // Create product.
         Product createdProduct = CreateProductSample.CreateRetailProduct(projectId);
 
         // Get created product.
-        Product retrievedProduct = sample.PerformGetProductOperation(createdProduct.Name);
+        Product retrievedProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
 
         // Delete created product.
         DeleteProductSample.DeleteRetailProduct(retrievedProduct.Name);

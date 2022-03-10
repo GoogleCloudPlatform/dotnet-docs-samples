@@ -86,7 +86,7 @@ public class CrudProductSample
             Parent = defaultBranchName
         };
 
-        Console.WriteLine("Create product. request:");
+        Console.WriteLine("Create product request:");
         Console.WriteLine($"Product: {createProductRequest.Product}");
         Console.WriteLine($"ProductId: {createProductRequest.ProductId}");
         Console.WriteLine($"Parent: {createProductRequest.Parent}");
@@ -116,14 +116,14 @@ public class CrudProductSample
             Name = productName
         };
 
-        Console.WriteLine("Get product. request:");
+        Console.WriteLine("Get product request:");
         Console.WriteLine($"Product name: {getProductRequest.Name}");
         Console.WriteLine();
 
         ProductServiceClient client = ProductServiceClient.Create();
         Product product = client.GetProduct(getProductRequest);
 
-        Console.WriteLine("Get product. response:");
+        Console.WriteLine("Get product response:");
         Console.WriteLine($"Product Name: {product.Name}");
         Console.WriteLine($"Product Title: {product.Title}");
         Console.WriteLine($"Product Brands: {product.Brands}");
@@ -149,7 +149,7 @@ public class CrudProductSample
             AllowMissing = true
         };
 
-        Console.WriteLine("Update product. request:");
+        Console.WriteLine("Update product request:");
         Console.WriteLine($"Product Name: {updateProductRequest.Product.Name}");
         Console.WriteLine($"Product title: {updateProductRequest.Product.Title}");
         Console.WriteLine();
@@ -173,7 +173,7 @@ public class CrudProductSample
             Name = productName
         };
 
-        Console.WriteLine("Delete product. request:");
+        Console.WriteLine("Delete product request:");
         Console.WriteLine($"Product Name: {deleteProductRequest.Name}");
         Console.WriteLine();
 

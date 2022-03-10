@@ -30,10 +30,8 @@ namespace RetailProducts.Samples.Tests
 
             try
             {
-                var sample = new GetProductSample();
-
                 // Get created product.
-                Product retrievedProduct = sample.PerformGetProductOperation(createdProduct.Name);
+                Product retrievedProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
 
                 Assert.Equal("Nest Mini", retrievedProduct.Title);
                 Assert.Equal("USD", retrievedProduct.PriceInfo.CurrencyCode);

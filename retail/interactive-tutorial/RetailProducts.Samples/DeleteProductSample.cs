@@ -35,7 +35,7 @@ public class DeleteProductSample
             Name = productName
         };
 
-        Console.WriteLine("Delete product. request:");
+        Console.WriteLine("Delete product request:");
         Console.WriteLine($"Product Name: {deleteProductRequest.Name}");
         Console.WriteLine();
 
@@ -58,16 +58,6 @@ public class DeleteProductSample
         Console.WriteLine($"Product {productName} was deleted");
         Console.WriteLine();
     }
-
-    /// <summary>
-    /// Perform product deletion.
-    /// </summary>
-    /// <param name="productName">The name of the product.</param>
-    /// <returns>Created product.</returns>
-    public void DeleteProduct(string productName)
-    {
-        DeleteRetailProduct(productName);
-    }
 }
 // [END retail_delete_product]
 
@@ -81,12 +71,10 @@ public static class DeleteProductTutorial
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        var sample = new DeleteProductSample();
-
         // Create product.
         Product createdProduct = CreateProductSample.CreateRetailProduct(projectId);
 
         // Delete created product.
-        sample.DeleteProduct(createdProduct.Name);
+        DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
     }
 }

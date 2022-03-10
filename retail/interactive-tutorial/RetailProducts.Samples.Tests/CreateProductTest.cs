@@ -26,10 +26,8 @@ namespace RetailProducts.Samples.Tests
         {
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-            var sample = new CreateProductSample();
-
             // Create product.
-            Product createdProduct = sample.CreateProduct(projectId);
+            Product createdProduct = CreateProductSample.CreateRetailProduct(projectId);
 
             Assert.Equal("Nest Mini", createdProduct.Title);
             Assert.Equal("USD", createdProduct.PriceInfo.CurrencyCode);

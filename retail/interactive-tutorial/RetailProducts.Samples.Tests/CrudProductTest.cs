@@ -50,7 +50,7 @@ namespace RetailProducts.Samples.Tests
                 Assert.Equal(ExpectedProductAvailability, createdProduct.Availability);
 
                 // Get product.
-                var retrievedProduct = CrudProductSample.GetRetailProduct(createdProduct.Name);
+                Product retrievedProduct = CrudProductSample.GetRetailProduct(createdProduct.Name);
 
                 Assert.Equal(ExpectedProductTitle, retrievedProduct.Title);
                 Assert.Equal(ExpectedCurrencyCode, retrievedProduct.PriceInfo.CurrencyCode);
@@ -59,7 +59,7 @@ namespace RetailProducts.Samples.Tests
                 Assert.Equal(ExpectedProductAvailability, retrievedProduct.Availability);
 
                 // Update product.
-                var updatedProduct = CrudProductSample.UpdateRetailProduct(retrievedProduct.Name);
+                Product updatedProduct = CrudProductSample.UpdateRetailProduct(retrievedProduct.Name);
 
                 Assert.Equal(ExpectedUpdatedProductTitle, updatedProduct.Title);
                 Assert.Equal(ExpectedUpdatedCurrencyCode, updatedProduct.PriceInfo.CurrencyCode);

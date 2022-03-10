@@ -30,10 +30,8 @@ namespace RetailProducts.Samples.Tests
 
             try 
             {
-                var sample = new AddFulfillmentPlacesSample();
-
                 // Add fulfillment places to product.
-                sample.PerformAddFulfillment(createdProduct.Name);
+                AddFulfillmentPlacesSample.AddFulfillment(createdProduct.Name);
 
                 // Get created product.
                 Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);

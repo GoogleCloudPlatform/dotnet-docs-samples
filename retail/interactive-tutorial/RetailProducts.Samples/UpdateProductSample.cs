@@ -54,7 +54,7 @@ public class UpdateProductSample
             AllowMissing = true
         };
 
-        Console.WriteLine("Update product. request:");
+        Console.WriteLine("Update product request:");
         Console.WriteLine($"Product Name: {productToUpdate.Name}");
         Console.WriteLine($"Product Title: {productToUpdate.Title}");
         Console.WriteLine($"Product Categories: {productToUpdate.Categories}");
@@ -76,20 +76,10 @@ public class UpdateProductSample
         ProductServiceClient client = ProductServiceClient.Create();
         Product updatedProduct = client.UpdateProduct(updateProductRequest);
 
-        Console.WriteLine($"Update title: {updatedProduct.Title}");
+        Console.WriteLine($"Updated title: {updatedProduct.Title}");
         Console.WriteLine();
 
         return updatedProduct;
-    }
-
-    /// <summary>
-    /// Perform the update product operations.
-    /// </summary>
-    /// <param name="originalProduct">The original product object.</param>
-    /// <returns>Updated retail product.</returns>
-    public Product PerformUpdateProductOperation(Product originalProduct)
-    {
-        return UpdateRetailProduct(originalProduct);
     }
 }
 // [END retail_update_product]
@@ -103,13 +93,12 @@ public static class UpdateProductTutorial
     public static void PerformUpdateProductOperation()
     {
         var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new UpdateProductSample();
 
         // Create product.
         Product originalProduct = CreateProductSample.CreateRetailProduct(projectId);
 
         // Update product.
-        Product updatedProduct = sample.PerformUpdateProductOperation(originalProduct);
+        Product updatedProduct = UpdateProductSample.UpdateRetailProduct(originalProduct);
 
         // Delete updated product.
         DeleteProductSample.DeleteRetailProduct(updatedProduct.Name);

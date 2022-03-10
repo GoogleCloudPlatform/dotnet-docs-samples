@@ -15,15 +15,21 @@
 // [START retail_remove_fulfillment_places]
 
 using Google.Cloud.Retail.V2;
+using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System;
-using System.Threading;
 
 /// <summary>
 /// The remove fulfillment places sample class.
 /// </summary>
 public class RemoveFulfillmentPlacesSample
 {
+    // The request timestamp
+    private static readonly DateTime RequestTimeStamp = DateTime.Now.ToUniversalTime();
+
+    // The outdated request timestamp:
+    // RequestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
+
     /// <summary>
     /// Get the remove fulfillment places request.
     /// </summary>
@@ -35,11 +41,12 @@ public class RemoveFulfillmentPlacesSample
         {
             Product = productName,
             Type = "pickup-in-store",
+            RemoveTime = Timestamp.FromDateTime(RequestTimeStamp),
             AllowMissing = true,
             PlaceIds = { "store0" }
         };
 
-        Console.WriteLine("Remove fulfillment places. request:");
+        Console.WriteLine("Remove fulfillment places request:");
         Console.WriteLine($"Product Name: {removeFulfillmentRequest.Product}");
         Console.WriteLine($"Type: {removeFulfillmentRequest.Type}");
         Console.WriteLine($"Place Ids: {removeFulfillmentRequest.PlaceIds}");
@@ -53,29 +60,31 @@ public class RemoveFulfillmentPlacesSample
     /// Call the Retail API to remove fulfillment places.
     /// </summary>
     /// <param name="productName">The actual name of the retail product.</param>
-    private static void RemoveFulfillment(string productName)
+    public static void RemoveFulfillment(string productName)
     {
         RemoveFulfillmentPlacesRequest removeFulfillmentRequest = GetRemoveFulfillmentRequest(productName);
 
         ProductServiceClient client = ProductServiceClient.Create();
-        client.RemoveFulfillmentPlaces(removeFulfillmentRequest);
 
-        //This is a long running operation and its result is not immediately present with get operations,
-        // thus we simulate wait with sleep method.
-        Console.WriteLine("Remove fulfillment places. Wait 2 minutes:");
+        // Make the request.
+        Operation<RemoveFulfillmentPlacesResponse, RemoveFulfillmentPlacesMetadata> response = client.RemoveFulfillmentPlaces(removeFulfillmentRequest);
+
+        Console.WriteLine("The operation was started:");
+        Console.WriteLine(response.Name);
         Console.WriteLine();
 
-        Thread.Sleep(120000);
-    }
+        Console.WriteLine("Please wait till opeartion is done");
+        Console.WriteLine();
 
-    /// <summary>
-    /// Perform the remove fulfillment operations.
-    /// </summary>
-    /// <param name="productName">The name of the product.</param>
-    /// <returns>Retail product with removed fulfillment places.</returns>
-    public void PerformRemoveFulfillment(string productName)
-    {
-        RemoveFulfillment(productName);
+        // Poll until the returned long-running operation is complete.
+        Operation<RemoveFulfillmentPlacesResponse, RemoveFulfillmentPlacesMetadata> removeFulfillmentResult = response.PollUntilCompleted();
+
+        Console.WriteLine("Remove fulfillment places operation is done");
+        Console.WriteLine();
+
+        Console.WriteLine("Operation result:");
+        Console.WriteLine(removeFulfillmentResult.Result);
+        Console.WriteLine();
     }
 }
 // [END retail_remove_fulfillment_places]
@@ -90,15 +99,13 @@ public static class RemoveFulfillmentPlacesTutorial
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        var sample = new RemoveFulfillmentPlacesSample();
-
         // Create product.
         Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
         string productName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch/products/{createdProduct.Id}";
 
         // Remove fulfillment from product.
-        sample.PerformRemoveFulfillment(productName);
+        RemoveFulfillmentPlacesSample.RemoveFulfillment(productName);
 
         // Get product.
         Product productWithUpdatedFulfillment = GetProductSample.GetRetailProduct(productName);

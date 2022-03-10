@@ -85,7 +85,7 @@ public class CreateProductSample
             Parent = defaultBranchName
         };
 
-        Console.WriteLine("Create product. request:");
+        Console.WriteLine("Create product request:");
         Console.WriteLine($"Product: {createProductRequest.Product}");
         Console.WriteLine($"ProductId: {createProductRequest.ProductId}");
         Console.WriteLine($"Parent: {createProductRequest.Parent}");
@@ -138,16 +138,6 @@ public class CreateProductSample
 
         return createdProduct;
     }
-
-    /// <summary>
-    /// Perform product creation.
-    /// </summary>
-    /// <param name="projectId">The current project id.</param>
-    /// <returns>Created product.</returns>
-    public Product CreateProduct(string projectId)
-    {
-        return CreateRetailProduct(projectId);
-    }
 }
 // [END retail_create_product]
 
@@ -161,10 +151,8 @@ public static class CreateProductTutorial
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        var sample = new CreateProductSample();
-
         // Create product.
-        Product createdProduct = sample.CreateProduct(projectId);
+        Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
         // Delete created product.
         DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
