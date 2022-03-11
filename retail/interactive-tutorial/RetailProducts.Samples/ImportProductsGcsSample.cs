@@ -122,6 +122,16 @@ public static class ImportProductsGcsTutorial
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new ImportProductsGcsSample();
-        return sample.ImportProductsFromGcs(projectId);
+
+        string createdBucketName = null;
+
+        ProductsDeleteGcsBucket.PerformDeletionOfProductsGcsBucket(createdBucketName);
+        createdBucketName = ProductsCreateGcsBucket.PerformCreationOfGcsBucket();
+
+        Operation<ImportProductsResponse, ImportMetadata> importResponse = sample.ImportProductsFromGcs(projectId, createdBucketName);
+
+        ProductsDeleteGcsBucket.PerformDeletionOfProductsGcsBucket(createdBucketName);
+
+        return importResponse;
     }
 }

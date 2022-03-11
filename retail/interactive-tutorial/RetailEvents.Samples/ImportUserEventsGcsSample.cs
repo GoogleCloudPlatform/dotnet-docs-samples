@@ -117,6 +117,16 @@ public static class ImportUserEventsGcsTutorial
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         var sample = new ImportUserEventsGcsSample();
-        return sample.ImportUserEventsFromGcs(projectId);
+
+        string createdBucketName = null;
+
+        EventsDeleteGcsBucket.PerformDeletionOfEventsBucketName(createdBucketName);
+        createdBucketName = EventsCreateGcsBucket.PerformCreationOfEventsGcsBucket();
+
+        Operation<ImportUserEventsResponse, ImportMetadata> importResponse = sample.ImportUserEventsFromGcs(projectId, createdBucketName);
+
+        EventsDeleteGcsBucket.PerformDeletionOfEventsBucketName(createdBucketName);
+
+        return importResponse;
     }
 }
