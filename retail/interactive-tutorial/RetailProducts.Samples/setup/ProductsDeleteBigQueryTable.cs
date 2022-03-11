@@ -99,6 +99,7 @@ public static class ProductsDeleteBigQueryTable
     /// <summary>
     /// Delete test resources.
     /// </summary>
+    [Runner.Attributes.Example]
     public static void PerformDeletionOfProductsBigQueryTable()
     {
         DeleteAllProducts();

@@ -55,6 +55,7 @@ public static class ProductsDeleteGcsBucket
     /// <summary>
     /// Delete test resources.
     /// </summary>
+    [Runner.Attributes.Example]
     public static void PerformDeletionOfProductsGcsBucket(string bucketName)
     {
         string productsBucketName = bucketName ?? Environment.GetEnvironmentVariable("BUCKET_NAME");

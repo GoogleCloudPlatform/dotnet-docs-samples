@@ -55,6 +55,7 @@ public static class EventsDeleteGcsBucket
     /// <summary>
     /// Delete test resources.
     /// </summary>
+    [Runner.Attributes.Example]
     public static void PerformDeletionOfEventsBucketName(string bucketName)
     {
         string eventsBucketName = bucketName ?? Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");

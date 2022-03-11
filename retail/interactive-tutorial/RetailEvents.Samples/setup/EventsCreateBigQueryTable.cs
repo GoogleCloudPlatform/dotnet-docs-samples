@@ -202,6 +202,10 @@ public static class EventsCreateBigQueryTable
         }
     }
 
+    /// <summary>
+    /// Create big query table.
+    /// </summary>
+    [Runner.Attributes.Example]
     public static void PerformCreationOfBigQueryTable()
     {
         CreateBQDataSet(EventsDataSet);

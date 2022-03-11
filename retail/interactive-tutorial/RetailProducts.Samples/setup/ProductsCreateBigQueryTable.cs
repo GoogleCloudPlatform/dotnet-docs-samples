@@ -203,6 +203,10 @@ public static class ProductsCreateBigQueryTable
         }
     }
 
+    /// <summary>
+    /// Create big query table.
+    /// </summary>
+    [Runner.Attributes.Example]
     public static void PerformCreationOfBigQueryTable()
     {
         CreateBQDataSet(ProductDataSet);

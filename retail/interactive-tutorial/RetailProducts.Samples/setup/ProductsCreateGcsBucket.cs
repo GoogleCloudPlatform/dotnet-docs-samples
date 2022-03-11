@@ -127,6 +127,7 @@ public static class ProductsCreateGcsBucket
     /// Create test resources.
     /// </summary>
     /// <returns>The name of created bucket.</returns>
+    [Runner.Attributes.Example]
     public static string PerformCreationOfGcsBucket()
     {
         // Create a GCS bucket.

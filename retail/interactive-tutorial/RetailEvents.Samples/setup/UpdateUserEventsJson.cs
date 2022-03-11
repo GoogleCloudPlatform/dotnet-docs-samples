@@ -65,6 +65,7 @@ public static class UpdateUserEventsJson
     /// <summary>
     /// Perform update events timestamp.
     /// </summary>
+    [Runner.Attributes.Example]
     public static void PerformUpdateEventsTimeStamp()
     {
         UpdateEventsTimeStamp(FilePath);

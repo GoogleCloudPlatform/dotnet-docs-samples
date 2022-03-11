@@ -127,6 +127,7 @@ public static class EventsCreateGcsBucket
     /// Create test resources.
     /// </summary>
     /// <returns>The name of created bucket.</returns>
+    [Runner.Attributes.Example]
     public static string PerformCreationOfEventsGcsBucket()
     {
         // Create a GCS bucket.
