@@ -1,26 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="runTests.ps1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Google.Cloud.Kms.V1" Version="2.9.0" />
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
-    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
-    <ProjectReference Include="..\Spanner.Samples\Spanner.Samples.csproj" />
+    <ProjectReference Include="..\BigQueryStorage.Samples\BigQueryStorage.Samples.csproj" />
   </ItemGroup>
-
 </Project>
