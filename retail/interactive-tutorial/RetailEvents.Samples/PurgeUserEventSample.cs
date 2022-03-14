@@ -34,7 +34,7 @@ public class PurgeUserEventSample
     /// <returns>The usert event.</returns>defaultCatalog
     private static UserEvent GetUserEvent(string visitorId)
     {
-        var productDetail = new ProductDetail
+        ProductDetail productDetail = new ProductDetail
         {
             Product = new Product
             {
@@ -43,7 +43,7 @@ public class PurgeUserEventSample
             Quantity = 3
         };
 
-        var userEvent = new UserEvent
+        UserEvent userEvent = new UserEvent
         {
             EventType = "detail-page-view",
             VisitorId = visitorId,
@@ -56,7 +56,10 @@ public class PurgeUserEventSample
         userEvent.ProductDetails.Add(productDetail);
 
         Console.WriteLine("User Event:");
-        Console.WriteLine(userEvent);
+        Console.WriteLine($"Product detail: {userEvent.ProductDetails}");
+        Console.WriteLine($"Event type: {userEvent.EventType}");
+        Console.WriteLine($"Visitor id: {userEvent.VisitorId}");
+        Console.WriteLine($"Event time: {userEvent.EventTime}");
         Console.WriteLine();
 
         return userEvent;
@@ -69,7 +72,7 @@ public class PurgeUserEventSample
     /// <returns>The purge user event request.</returns>
     private static PurgeUserEventsRequest GetPurgeUserEventsRequest(string defaultCatalog)
     {
-        var purgeRequest = new PurgeUserEventsRequest
+        PurgeUserEventsRequest purgeRequest = new PurgeUserEventsRequest
         {
             Parent = defaultCatalog,
             Filter = $"visitorId=\"{VisitorId}\"", // To check error handling set invalid filter here.
@@ -77,7 +80,9 @@ public class PurgeUserEventSample
         };
 
         Console.WriteLine("Purge user event. request:");
-        Console.WriteLine(purgeRequest);
+        Console.WriteLine($"Parent: {purgeRequest.Parent}");
+        Console.WriteLine($"Filter: {purgeRequest.Filter}");
+        Console.WriteLine($"Force: {purgeRequest.Force}");
         Console.WriteLine();
 
         return purgeRequest;
@@ -105,9 +110,9 @@ public class PurgeUserEventSample
     /// <param name="defaultCatalog">The default catalog.</param>
     private static void WriteUserEvent(string visitorId, string defaultCatalog)
     {
-        var userEventToWrite = GetUserEvent(visitorId);
+        UserEvent userEventToWrite = GetUserEvent(visitorId);
 
-        var writeUserEventRequest = new WriteUserEventRequest
+        WriteUserEventRequest writeUserEventRequest = new WriteUserEventRequest
         {
             Parent = defaultCatalog,
             UserEvent = userEventToWrite

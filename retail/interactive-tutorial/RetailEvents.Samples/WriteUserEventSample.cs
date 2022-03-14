@@ -33,21 +33,20 @@ public class WriteUserEventSample
     /// <returns>User event.</returns>
     private static UserEvent GetUserEvent()
     {
-        var timeStamp = new Timestamp
-        {
-            Seconds = DateTime.Now.ToUniversalTime().ToTimestamp().Seconds
-        };
-
-        var userEvent = new UserEvent
+        UserEvent userEvent = new UserEvent
         {
             EventType = "home-page-view",
             VisitorId = VisitorId,
-            EventTime = timeStamp
+            EventTime = new Timestamp
+            {
+                Seconds = DateTime.Now.ToUniversalTime().ToTimestamp().Seconds
+            }
         };
 
         Console.WriteLine($"User Event:");
-        Console.WriteLine(userEvent);
-        Console.WriteLine();
+        Console.WriteLine($"Event type: {userEvent.EventType}");
+        Console.WriteLine($"Visitor id: {userEvent.VisitorId}");
+        Console.WriteLine($"Event time: {userEvent.EventTime}");
 
         return userEvent;
     }
@@ -60,14 +59,18 @@ public class WriteUserEventSample
     /// <returns>Write user event request.</returns>
     private static WriteUserEventRequest GetWriteUserEventRequest(UserEvent userEventToWrite, string defaultCatalog)
     {
-        var writeUserEventRequest = new WriteUserEventRequest
+        WriteUserEventRequest writeUserEventRequest = new WriteUserEventRequest
         {
             Parent = defaultCatalog,
             UserEvent = userEventToWrite
         };
 
         Console.WriteLine($"Write user event. request:");
-        Console.WriteLine(writeUserEventRequest);
+        Console.WriteLine($"Parent: {writeUserEventRequest.Parent}");
+        Console.WriteLine($"User event to write:");
+        Console.WriteLine($"User event type: {userEventToWrite.EventType}");
+        Console.WriteLine($"User event visitor id: {userEventToWrite.VisitorId}");
+        Console.WriteLine($"User event time: {userEventToWrite.EventTime}");
         Console.WriteLine();
 
         return writeUserEventRequest;
@@ -80,7 +83,7 @@ public class WriteUserEventSample
     /// <param name="defaultCatalog">The default catalog.</param>
     private static void PurgeUserEvent(string visitorId, string defaultCatalog)
     {
-        var purgeUserEventRequest = new PurgeUserEventsRequest
+        PurgeUserEventsRequest purgeUserEventRequest = new PurgeUserEventsRequest
         {
             Parent = defaultCatalog,
             Filter = $"visitorId=\"{visitorId}\"",

@@ -34,7 +34,7 @@ public class RejoinUserEventSample
     /// <returns>User event object.</returns>
     private static UserEvent GetUserEvent(string visitorId)
     {
-        var productDetail = new ProductDetail
+        ProductDetail productDetail = new ProductDetail
         {
             Product = new Product
             {
@@ -43,7 +43,7 @@ public class RejoinUserEventSample
             Quantity = 3
         };
 
-        var userEvent = new UserEvent
+        UserEvent userEvent = new UserEvent
         {
             EventType = "detail-page-view",
             VisitorId = visitorId,
@@ -56,7 +56,10 @@ public class RejoinUserEventSample
         userEvent.ProductDetails.Add(productDetail);
 
         Console.WriteLine($"User Event:");
-        Console.WriteLine(userEvent);
+        Console.WriteLine($"Product detail: {userEvent.ProductDetails}");
+        Console.WriteLine($"Event type: {userEvent.EventType}");
+        Console.WriteLine($"Visitor id: {userEvent.VisitorId}");
+        Console.WriteLine($"Event time: {userEvent.EventTime}");
         Console.WriteLine();
 
         return userEvent;
@@ -69,14 +72,15 @@ public class RejoinUserEventSample
     /// <returns>The rejoin user events request.</returns>
     private static RejoinUserEventsRequest GetRejoinUserEventRequest(string defaultCatalog)
     {
-        var rejoinUserEventRequest = new RejoinUserEventsRequest
+        RejoinUserEventsRequest rejoinUserEventRequest = new RejoinUserEventsRequest
         {
             Parent = defaultCatalog,
             UserEventRejoinScope = RejoinUserEventsRequest.Types.UserEventRejoinScope.UnjoinedEvents
         };
 
         Console.WriteLine($"Rejoin user events. request:");
-        Console.WriteLine(rejoinUserEventRequest);
+        Console.WriteLine($"Parent: {rejoinUserEventRequest.Parent}");
+        Console.WriteLine($"Rejoin scope: {rejoinUserEventRequest.UserEventRejoinScope}");
         Console.WriteLine();
 
         return rejoinUserEventRequest;
@@ -89,9 +93,9 @@ public class RejoinUserEventSample
     /// <param name="defaultCatalog">The default catalog.</param>
     private static void WriteUserEvent(string visitorId, string defaultCatalog)
     {
-        var userEventToWrite = GetUserEvent(visitorId);
+        UserEvent userEventToWrite = GetUserEvent(visitorId);
 
-        var writeUserEventRequest = new WriteUserEventRequest
+        WriteUserEventRequest writeUserEventRequest = new WriteUserEventRequest
         {
             Parent = defaultCatalog,
             UserEvent = userEventToWrite
@@ -112,7 +116,7 @@ public class RejoinUserEventSample
     /// <param name="defaultCatalog">The default catalog.</param>
     private static void PurgeUserEvent(string visitorId, string defaultCatalog)
     {
-        var purgeUserEventRequest = new PurgeUserEventsRequest
+        PurgeUserEventsRequest purgeUserEventRequest = new PurgeUserEventsRequest
         {
             Parent = defaultCatalog,
             Filter = $"visitorId=\"{visitorId}\"",
