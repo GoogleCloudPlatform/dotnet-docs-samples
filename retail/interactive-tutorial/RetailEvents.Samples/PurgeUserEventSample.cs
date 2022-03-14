@@ -25,14 +25,11 @@ using System;
 /// </summary>
 public class PurgeUserEventSample
 {
-    private const string VisitorId = "test_visitor_id";
-
     /// <summary>
     /// The the user event.
     /// </summary>
-    /// <param name="visitorId">The actual visitor id.</param>
     /// <returns>The usert event.</returns>defaultCatalog
-    private static UserEvent GetUserEvent(string visitorId)
+    public static UserEvent GetUserEvent()
     {
         ProductDetail productDetail = new ProductDetail
         {
@@ -46,7 +43,7 @@ public class PurgeUserEventSample
         UserEvent userEvent = new UserEvent
         {
             EventType = "detail-page-view",
-            VisitorId = visitorId,
+            VisitorId = "test_visitor_id",
             EventTime = new Timestamp
             {
                 Seconds = DateTime.Now.ToUniversalTime().ToTimestamp().Seconds
@@ -75,7 +72,7 @@ public class PurgeUserEventSample
         PurgeUserEventsRequest purgeRequest = new PurgeUserEventsRequest
         {
             Parent = defaultCatalog,
-            Filter = $"visitorId=\"{VisitorId}\"", // To check error handling set invalid filter here.
+            Filter = $"visitorId=\"test_visitor_id\"", // To check error handling set invalid filter here.
             Force = true
         };
 
@@ -92,7 +89,7 @@ public class PurgeUserEventSample
     ///  Call the Retail API to purge user events.
     /// </summary>
     /// <param name="defaultCatalog">The default catalog.</param>
-    private static void CallPurgeUserEvents(string defaultCatalog)
+    public static Operation<PurgeUserEventsResponse, PurgeMetadata> CallPurgeUserEvents(string defaultCatalog)
     {
         PurgeUserEventsRequest purgeRequest = GetPurgeUserEventsRequest(defaultCatalog);
         UserEventServiceClient client = UserEventServiceClient.Create();
@@ -101,41 +98,8 @@ public class PurgeUserEventSample
         Console.WriteLine("The purge operation was started:");
         Console.WriteLine(purgeResponse.Name);
         Console.WriteLine();
-    }
 
-    /// <summary>
-    /// Call the retail API to write the user event.
-    /// </summary>
-    /// <param name="visitorId">The actual visitor id.</param>
-    /// <param name="defaultCatalog">The default catalog.</param>
-    private static void WriteUserEvent(string visitorId, string defaultCatalog)
-    {
-        UserEvent userEventToWrite = GetUserEvent(visitorId);
-
-        WriteUserEventRequest writeUserEventRequest = new WriteUserEventRequest
-        {
-            Parent = defaultCatalog,
-            UserEvent = userEventToWrite
-        };
-
-        UserEventServiceClient client = UserEventServiceClient.Create();
-        UserEvent userEvent = client.WriteUserEvent(writeUserEventRequest);
-
-        Console.WriteLine("The user event is written:");
-        Console.WriteLine(userEvent);
-        Console.WriteLine();
-    }
-
-    /// <summary>
-    /// Perform purge user events.
-    /// </summary>
-    /// <param name="projectId">The  current project id.</param>
-    public void PerformPurgeUserEventOperation(string projectId)
-    {
-        string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
-
-        WriteUserEvent(VisitorId, defaultCatalog);
-        CallPurgeUserEvents(defaultCatalog);
+        return purgeResponse;
     }
 }
 // [END retail_purge_user_event]
@@ -149,7 +113,15 @@ public static class PurgeUserEventTutorial
     public static void PerformPurgeUserEventOperation()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new PurgeUserEventSample();
-        sample.PerformPurgeUserEventOperation(projectId);
+        string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
+
+        // To check the error handling try to pass invalid catalog:
+        // defaultCatalog = "projects/{projectId}/locations/global/catalogs/invalid_catalog";
+
+        UserEvent userEventToWrite = PurgeUserEventSample.GetUserEvent();
+
+        WriteUserEventSample.CallWriteUserEvent(defaultCatalog, userEventToWrite);
+
+        PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
     }
 }

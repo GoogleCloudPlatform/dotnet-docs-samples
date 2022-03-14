@@ -16,7 +16,6 @@
 // Import user events into a catalog from inline source using Retail API
 
 using Google.Cloud.Retail.V2;
-using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
@@ -25,8 +24,6 @@ using System;
 /// </summary>
 public class WriteUserEventSample
 {
-    private const string VisitorId = "test_visitor_id";
-
     /// <summary>
     /// Get user event.
     /// </summary>
@@ -36,7 +33,7 @@ public class WriteUserEventSample
         UserEvent userEvent = new UserEvent
         {
             EventType = "home-page-view",
-            VisitorId = VisitorId,
+            VisitorId = "test_visitor_id",
             EventTime = new Timestamp
             {
                 Seconds = DateTime.Now.ToUniversalTime().ToTimestamp().Seconds
@@ -77,34 +74,13 @@ public class WriteUserEventSample
     }
 
     /// <summary>
-    /// Call the retail API to purge the user event.
-    /// </summary>
-    /// <param name="visitorId">The avtual visitor id.</param>
-    /// <param name="defaultCatalog">The default catalog.</param>
-    private static void PurgeUserEvent(string visitorId, string defaultCatalog)
-    {
-        PurgeUserEventsRequest purgeUserEventRequest = new PurgeUserEventsRequest
-        {
-            Parent = defaultCatalog,
-            Filter = $"visitorId=\"{visitorId}\"",
-            Force = true
-        };
-
-        UserEventServiceClient client = UserEventServiceClient.Create();
-        Operation<PurgeUserEventsResponse, PurgeMetadata> purgeResponse = client.PurgeUserEvents(purgeUserEventRequest);
-
-        Console.WriteLine("The purge operation was started:");
-        Console.WriteLine(purgeResponse.Name);
-        Console.WriteLine();
-    }
-
-    /// <summary>
     /// Call the Retail API to write user event.
     /// </summary>
     /// <param name="defaultCatalog">The default catalog.</param>
-    private static void CallWriteUserEvent(string defaultCatalog)
+    /// <returns>Written user event.</returns>
+    public static UserEvent CallWriteUserEvent(string defaultCatalog, UserEvent userEventToWrite = null)
     {
-        UserEvent userEventToWrite = GetUserEvent();
+        userEventToWrite = userEventToWrite ?? GetUserEvent();
         WriteUserEventRequest writeRequest = GetWriteUserEventRequest(userEventToWrite, defaultCatalog);
         UserEventServiceClient client = UserEventServiceClient.Create();
         UserEvent userEvent = client.WriteUserEvent(writeRequest);
@@ -112,21 +88,8 @@ public class WriteUserEventSample
         Console.WriteLine("Written user event:" );
         Console.WriteLine(userEvent);
         Console.WriteLine();
-    }
 
-    /// <summary>
-    /// Perform write user event operation.
-    /// </summary>
-    /// <param name="projectId">The current project id.</param>
-    public void PerformWriteUserEventsOperation(string projectId)
-    {
-        string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
-
-        // To check the error handling try to pass invalid catalog:
-        // defaultCatalog = "projects/{projectId}/locations/global/catalogs/invalid_catalog";
-
-        CallWriteUserEvent(defaultCatalog);
-        PurgeUserEvent(VisitorId, defaultCatalog);
+        return userEvent;
     }
 }
 // [END retail_write_user_event]
@@ -140,7 +103,13 @@ public static class WriteUserEventTutorial
     public static void PerformWriteUserEventsOperation()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new WriteUserEventSample();
-        sample.PerformWriteUserEventsOperation(projectId);
+        string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
+
+        // To check the error handling try to pass invalid catalog:
+        // defaultCatalog = "projects/{projectId}/locations/global/catalogs/invalid_catalog";
+
+        WriteUserEventSample.CallWriteUserEvent(defaultCatalog);
+
+        PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
     }
 }
