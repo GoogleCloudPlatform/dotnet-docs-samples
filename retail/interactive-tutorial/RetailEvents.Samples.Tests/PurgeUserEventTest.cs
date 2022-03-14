@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Retail.V2;
+using System;
 using Xunit;
 
 namespace RetailEvents.Samples.Tests
@@ -21,7 +23,16 @@ namespace RetailEvents.Samples.Tests
         [Fact]
         public void TestPurgeUserEvent()
         {
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
 
+            UserEvent userEventToWrite = PurgeUserEventSample.GetUserEvent();
+
+            WriteUserEventSample.CallWriteUserEvent(defaultCatalog, userEventToWrite);
+
+            var purgeResponse = PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
+
+            Assert.Equal(1, purgeResponse.Result.PurgedEventsCount);
         }
     }
 }
