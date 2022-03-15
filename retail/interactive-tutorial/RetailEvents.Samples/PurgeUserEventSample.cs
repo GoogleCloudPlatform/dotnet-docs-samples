@@ -86,9 +86,10 @@ public class PurgeUserEventSample
     }
 
     /// <summary>
-    ///  Call the Retail API to purge user events.
+    /// Call the Retail API to purge user events.
     /// </summary>
     /// <param name="defaultCatalog">The default catalog.</param>
+    /// <returns>The completed purge response.</returns>
     public static Operation<PurgeUserEventsResponse, PurgeMetadata> CallPurgeUserEvents(string defaultCatalog)
     {
         PurgeUserEventsRequest purgeRequest = GetPurgeUserEventsRequest(defaultCatalog);

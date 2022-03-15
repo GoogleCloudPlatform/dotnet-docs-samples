@@ -24,7 +24,10 @@ namespace RetailEvents.Samples.Tests
         public void TestRejoinUserEvent()
         {
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            string projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
+
             string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
+            string expectedRejoinResponseName = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/operations/rejoin-user-events";
 
             UserEvent userEventToWrite = RejoinUserEventSample.GetUserEvent();
 
@@ -32,7 +35,7 @@ namespace RetailEvents.Samples.Tests
 
             var rejoinResponse = RejoinUserEventSample.CallRejoinUserEvents(defaultCatalog);
 
-            Assert.Equal(1, rejoinResponse.Result.RejoinedUserEventsCount);
+            Assert.StartsWith(expectedRejoinResponseName, rejoinResponse.Name);
         }
     }
 }

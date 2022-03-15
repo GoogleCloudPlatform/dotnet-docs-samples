@@ -87,7 +87,7 @@ public class RejoinUserEventSample
     /// Call the Retail API to rejoin user event.
     /// </summary>
     /// <param name="defaultCatalog">The default catalog.</param>
-    /// <returns>Rejoin respinse.</returns>
+    /// <returns>The completed rejoin response.</returns>
     public static Operation<RejoinUserEventsResponse, RejoinUserEventsMetadata> CallRejoinUserEvents(string defaultCatalog)
     {
         RejoinUserEventsRequest rejoinRequest = GetRejoinUserEventRequest(defaultCatalog);

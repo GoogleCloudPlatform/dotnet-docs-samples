@@ -24,7 +24,10 @@ namespace RetailEvents.Samples.Tests
         public void TestPurgeUserEvent()
         {
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            string projectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
+
             string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
+            string expectedPurgeResponseName = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/operations/purge-user-events";
 
             UserEvent userEventToWrite = PurgeUserEventSample.GetUserEvent();
 
@@ -32,7 +35,7 @@ namespace RetailEvents.Samples.Tests
 
             var purgeResponse = PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
 
-            Assert.Equal(1, purgeResponse.Result.PurgedEventsCount);
+            Assert.StartsWith(expectedPurgeResponseName, purgeResponse.Name);
         }
     }
 }
