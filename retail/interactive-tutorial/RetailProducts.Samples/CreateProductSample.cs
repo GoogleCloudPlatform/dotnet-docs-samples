@@ -24,12 +24,12 @@ using System;
 public class CreateProductSample
 {
     /// <summary>
-    /// Generate product.
+    /// Generate product with fulfillment info.
     /// </summary>
     /// <returns>Generated product.</returns>
-    private static Product GenerateProduct()
+    private static Product GenerateProductWithFulfillment()
     {
-        return new Product
+        Product generatedProduct = new Product
         {
             Id = Guid.NewGuid().ToString("N").Substring(0, 14),
             Title = "Nest Mini",
@@ -44,15 +44,6 @@ public class CreateProductSample
             Categories = { "Speakers and displays" },
             Brands = { "Google" }
         };
-    }
-
-    /// <summary>
-    /// Generate product with fulfillment info.
-    /// </summary>
-    /// <returns>Generated product.</returns>
-    private static Product GenerateProductWithFulfillment()
-    {
-        Product generatedProduct = GenerateProduct();
 
         string[] placeIds = { "store0", "store1" };
 
@@ -99,28 +90,6 @@ public class CreateProductSample
     /// </summary>
     /// <param name="projectId">The current project id.</param>
     /// <returns>Created product.</returns>
-    public static Product CreateRetailProduct(string projectId)
-    {
-        Product generatedProduct = GenerateProduct();
-        CreateProductRequest createProductRequest = GetCreateProductRequest(generatedProduct, projectId);
-
-        ProductServiceClient client = ProductServiceClient.Create();
-        Product createdProduct = client.CreateProduct(createProductRequest);
-
-        Console.WriteLine("Created product:");
-        Console.WriteLine($"Product title: {createdProduct.Title}");
-        Console.WriteLine($"ProductId: {createProductRequest.ProductId}");
-        Console.WriteLine($"Parent: {createProductRequest.Parent}");
-        Console.WriteLine();
-
-        return createdProduct;
-    }
-
-    /// <summary>
-    /// Call the Retail API to create a product with fulfillment.
-    /// </summary>
-    /// <param name="projectId">The current project id.</param>
-    /// <returns>Created product.</returns>
     public static Product CreateRetailProductWithFulfillment(string projectId)
     {
         Product generatedProduct = GenerateProductWithFulfillment();
@@ -129,10 +98,10 @@ public class CreateProductSample
         ProductServiceClient client = ProductServiceClient.Create();
         Product createdProduct = client.CreateProduct(createProductRequest);
 
-        Console.WriteLine("Created product with fulfillment:");
+        Console.WriteLine("Created product:");
         Console.WriteLine($"Product title: {createdProduct.Title}");
         Console.WriteLine($"Product name: {createdProduct.Name}");
-        Console.WriteLine($"Product id: {createdProduct.Id}");
+        Console.WriteLine($"Product id: {createProductRequest.ProductId}");
         Console.WriteLine($"Product fulfillment info: {createdProduct.FulfillmentInfo}");
         Console.WriteLine();
 

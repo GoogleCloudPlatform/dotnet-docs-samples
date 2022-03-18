@@ -95,7 +95,7 @@ public static class UpdateProductTutorial
         var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         // Create product.
-        Product originalProduct = CreateProductSample.CreateRetailProduct(projectId);
+        Product originalProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
         // Update product.
         Product updatedProduct = UpdateProductSample.UpdateRetailProduct(originalProduct);

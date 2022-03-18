@@ -16,7 +16,6 @@
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
-using Google.Protobuf.WellKnownTypes;
 using System;
 
 /// <summary>
@@ -24,12 +23,6 @@ using System;
 /// </summary>
 public class AddFulfillmentPlacesSample
 {
-    // The request timestamp
-    private static readonly DateTime RequestTimeStamp = DateTime.Now.ToUniversalTime();
-
-    // The outdated request timestamp:
-    // RequestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
-
     /// <summary>
     /// Get the add fulfillment palces request.
     /// </summary>
@@ -41,7 +34,6 @@ public class AddFulfillmentPlacesSample
         {
             Product = productName,
             Type = "pickup-in-store",
-            AddTime = Timestamp.FromDateTime(RequestTimeStamp.AddMinutes(-1)),
             AllowMissing = true
         };
 

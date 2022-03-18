@@ -26,7 +26,7 @@ namespace RetailProducts.Samples.Tests
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
             // Create product.
-            Product originalProduct = CreateProductSample.CreateRetailProduct(projectId);
+            Product originalProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
             try
             {

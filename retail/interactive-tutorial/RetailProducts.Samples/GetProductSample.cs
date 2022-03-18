@@ -78,7 +78,7 @@ public static class GetProductTutorial
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         // Create product.
-        Product createdProduct = CreateProductSample.CreateRetailProduct(projectId);
+        Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
         // Get created product.
         Product retrievedProduct = GetProductSample.GetRetailProduct(createdProduct.Name);

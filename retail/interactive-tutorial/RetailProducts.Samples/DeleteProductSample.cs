@@ -72,7 +72,7 @@ public static class DeleteProductTutorial
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
         // Create product.
-        Product createdProduct = CreateProductSample.CreateRetailProduct(projectId);
+        Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
         // Delete created product.
         DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
