@@ -50,7 +50,7 @@ public class SetInventorySample
     /// <summary>
     /// Get the set inventory request.
     /// </summary>
-    /// <param name="product">The actual product.</param>
+    /// <param name="productWithInventory">The actual product with inventory info.</param>
     /// <returns>Set inventory request.</returns>
     private static SetInventoryRequest GetSetInventoryRequest(Product productWithInventory)
     {
