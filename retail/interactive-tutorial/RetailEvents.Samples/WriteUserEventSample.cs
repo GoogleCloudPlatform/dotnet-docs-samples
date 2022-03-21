@@ -34,10 +34,7 @@ public class WriteUserEventSample
         {
             EventType = "home-page-view",
             VisitorId = "test_visitor_id",
-            EventTime = new Timestamp
-            {
-                Seconds = DateTime.Now.ToUniversalTime().ToTimestamp().Seconds
-            }
+            EventTime = DateTime.UtcNow.ToTimestamp()
         };
 
         Console.WriteLine($"User Event:");

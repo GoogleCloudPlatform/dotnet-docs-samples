@@ -44,10 +44,7 @@ public class RejoinUserEventSample
         {
             EventType = "detail-page-view",
             VisitorId = "test_visitor_id",
-            EventTime = new Timestamp
-            {
-                Seconds = DateTime.Now.ToUniversalTime().ToTimestamp().Seconds
-            }
+            EventTime = DateTime.UtcNow.ToTimestamp()
         };
 
         userEvent.ProductDetails.Add(productDetail);
