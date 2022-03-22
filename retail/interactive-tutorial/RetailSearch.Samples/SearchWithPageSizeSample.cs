@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC. All Rights Reserved.
+﻿// Copyright 2022 Google LLC. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_for_products_with_filter]
-// Call Retail API to search for a products in a catalog, filter the results by different product fields.
+// [START retail_search_for_products_with_page_size]
+// Call Retail API to search for a products in a catalog,
+// limit the number of the products per page and go to the next page using "next_page_token"
+// or jump to chosen page using "offset".
 
 using Google.Cloud.Retail.V2;
 using System;
@@ -21,29 +23,27 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Search with filtering sample class.
+/// Search with page size sample class.
 /// </summary>
-public class SearchWithFilteringSample
+public class SearchWithPageSizeSample
 {
     /// <summary>
     /// Get search request.
     /// </summary>
     /// <param name="query">The query.</param>
-    /// <param name="filter">The facet key parameter.</param>
+    /// <param name="pageSize">The size of the page.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>The search request.</returns>
-    private static SearchRequest GetSearchRequest(string query, string filter, string projectId)
+    private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId)
     {
         string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
         var searchRequest = new SearchRequest()
         {
             Placement = defaultSearchPlacement, // Placement is used to identify the Serving Config name
-            Query = query,
-            Filter = filter,
             VisitorId = "123456", // A unique identifier to track visitors
-            PageSize = 10,
-            CanonicalFilter = "queryExpansion"
+            Query = query,
+            PageSize = pageSize,
         };
 
         Console.WriteLine("Search. request:");
@@ -63,12 +63,12 @@ public class SearchWithFilteringSample
     /// <returns>Search result pages.</returns>
     public IEnumerable<SearchResponse> Search(string projectId)
     {
-        // Try different filter expressions here:
-        string filter = "(colorFamily: ANY(\"Black\"))";
-        string query = "Tee";
+        // Try different page size here:
+        int pageSize = 6;
+        string query = "Hoodie";
 
         SearchServiceClient client = SearchServiceClient.Create();
-        SearchRequest searchRequest = GetSearchRequest(query, filter, projectId);
+        SearchRequest searchRequest = GetSearchRequest(query, pageSize, projectId);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
         SearchResponse firstPage = searchResultPages.FirstOrDefault();
 
@@ -93,18 +93,18 @@ public class SearchWithFilteringSample
         return searchResultPages;
     }
 }
-// [END retail_search_for_products_with_filter]
+// [END retail_search_for_products_with_page_size]
 
 /// <summary>
-/// Search with filtering tutorial.
+/// Search with page size tutorial.
 /// </summary>
-public static class SearchWithFilteringTutorial
+public static class SearchWithPageSizeTutorial
 {
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
         var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new SearchWithFilteringSample();
+        var sample = new SearchWithPageSizeSample();
         return sample.Search(projectId);
     }
 }
