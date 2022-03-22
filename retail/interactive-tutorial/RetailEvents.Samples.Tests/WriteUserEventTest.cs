@@ -26,12 +26,17 @@ namespace RetailEvents.Samples.Tests
             string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
 
-            UserEvent writtentUserEvent = WriteUserEventSample.CallWriteUserEvent(defaultCatalog);
+            try
+            {
+                UserEvent writtentUserEvent = WriteUserEventSample.CallWriteUserEvent(defaultCatalog);
 
-            PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
-
-            Assert.Equal("home-page-view", writtentUserEvent.EventType);
-            Assert.Equal("test_visitor_id", writtentUserEvent.VisitorId);
+                Assert.Equal("home-page-view", writtentUserEvent.EventType);
+                Assert.Equal("test_visitor_id", writtentUserEvent.VisitorId);
+            }
+            finally
+            {
+                PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
+            }
         }
     }
 }
