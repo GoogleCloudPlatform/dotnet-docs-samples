@@ -119,7 +119,5 @@ public static class RejoinUserEventTutorial
         WriteUserEventSample.CallWriteUserEvent(defaultCatalog, userEventToWrite);
 
         RejoinUserEventSample.CallRejoinUserEvents(defaultCatalog);
-
-        PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
     }
 }
