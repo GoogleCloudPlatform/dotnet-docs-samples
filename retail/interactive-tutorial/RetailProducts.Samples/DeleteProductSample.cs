@@ -52,9 +52,11 @@ public class DeleteProductSample
         DeleteProductRequest deleteProductRequest = GetDeleteProductRequest(productName);
 
         ProductServiceClient client = ProductServiceClient.Create();
-        client.DeleteProduct(deleteProductRequest);
 
         Console.WriteLine($"Deleting product:");
+
+        client.DeleteProduct(deleteProductRequest);
+        
         Console.WriteLine($"Product {productName} was deleted");
         Console.WriteLine();
     }
