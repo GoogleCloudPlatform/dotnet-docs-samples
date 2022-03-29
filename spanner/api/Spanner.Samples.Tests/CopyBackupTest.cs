@@ -30,23 +30,22 @@ public class CopyBackupTest
     [Fact]
     public void CopyBackup()
     {
-        DatabaseAdminClient databaseAdminClient = new DatabaseAdminClientBuilder { Endpoint = "staging-wrenchworks.sandbox.googleapis.com" }.Build();
+        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
         CopyBackupSample copyBackupSample = new CopyBackupSample();
         string source_Project_id = _spannerFixture.ProjectId;
         string source_Instance_id = _spannerFixture.InstanceId;
         string source_backupId = _spannerFixture.BackupId;
-        string target_Project_id = "test1";
-        string target_Instance_id = "testinst1";
-        string target_backupId = "backup_target6";
+        string target_Project_id = _spannerFixture.ProjectId;
+        string target_Instance_id = _spannerFixture.InstanceId;
+        string target_backupId = Guid.NewGuid().ToString();
 
         DateTimeOffset expireTime = DateTimeOffset.UtcNow.AddDays(7);
         DateTimeOffset maxExpireTime = DateTimeOffset.Now.AddDays(10);
 
-        copyBackupSample.CopyBackup(source_Instance_id, source_Project_id, source_backupId, target_Instance_id, target_Project_id, target_backupId, expireTime, maxExpireTime);
-
-        BackupName backupName = BackupName.FromProjectInstanceBackup(target_Project_id, target_Instance_id, target_backupId);
-        Backup backup = databaseAdminClient.GetBackup(backupName);
+        Backup backup = copyBackupSample.CopyBackup(source_Instance_id, source_Project_id, source_backupId, 
+            target_Instance_id, target_Project_id, target_backupId, expireTime, maxExpireTime);
+ 
         Assert.NotNull(backup);
     }
 }

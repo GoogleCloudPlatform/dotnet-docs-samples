@@ -16,20 +16,23 @@
 
 using Google.Api.Gax;
 using Google.Cloud.Spanner.Admin.Database.V1;
+using Google.Cloud.Spanner.Common.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
 public class CopyBackupSample
 {
-    public void CopyBackup(string sourceInstanceId, string sourceProjectId, string sourceBackupId, string targetInstanceId, string targetProjectId, string targetBackupId, DateTimeOffset expireTime, DateTimeOffset maxExpireTime)
+    public Backup CopyBackup(string sourceInstanceId, string sourceProjectId, string sourceBackupId, 
+        string targetInstanceId, string targetProjectId, string targetBackupId, 
+        DateTimeOffset expireTime, DateTimeOffset maxExpireTime)
     {
-        DatabaseAdminClient databaseAdminClient = new DatabaseAdminClientBuilder { Endpoint = "staging-wrenchworks.sandbox.googleapis.com" }.Build();
+        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
         var request = new CopyBackupRequest
         {
-            SourceBackupAsBackupName = new BackupName(sourceProjectId, sourceInstanceId, sourceBackupId),
+            SourceBackupAsBackupName = new BackupName(sourceProjectId, sourceInstanceId, sourceBackupId), 
+            ParentAsInstanceName = new InstanceName(targetProjectId, targetInstanceId),
             BackupId = targetBackupId,
-            Parent = "projects/" + targetProjectId + "/instances/" + targetInstanceId,
             ExpireTime = (expireTime <= maxExpireTime) ? Timestamp.FromDateTimeOffset(expireTime) : Timestamp.FromDateTimeOffset(maxExpireTime)
         };
 
@@ -43,12 +46,13 @@ public class CopyBackupSample
             throw completedResponse.Exception;
         }
 
-        BackupName backupName = BackupName.FromProjectInstanceBackup(targetProjectId, targetInstanceId, targetBackupId);
-        Backup backup = databaseAdminClient.GetBackup(backupName);
+        Backup backup = completedResponse.Result;
 
         Console.WriteLine($"Backup created successfully.");
         Console.WriteLine($"Backup with Id {sourceBackupId} has been copied from {sourceProjectId}/{sourceInstanceId} to {targetProjectId}/{targetInstanceId} Backup {targetBackupId}");
         Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes was created at {backup.CreateTime} from {backup.Database} and is in state {backup.State} and has version time {backup.VersionTime.ToDateTime()}");
+
+        return backup;
     }
 }
 
