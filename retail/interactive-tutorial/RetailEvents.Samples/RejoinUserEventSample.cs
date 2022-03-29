@@ -91,9 +91,24 @@ public class RejoinUserEventSample
         UserEventServiceClient client = UserEventServiceClient.Create();
         Operation<RejoinUserEventsResponse, RejoinUserEventsMetadata> rejoinResponse = client.RejoinUserEvents(rejoinRequest);
 
-        Console.WriteLine("The rejoin operation was started:");
-        Console.WriteLine(rejoinResponse.Name);
-        Console.WriteLine();
+        Console.WriteLine("The rejoin operation was started.");
+
+        // The purge operation takes several hours or even days to complete.
+        // You may get the name of the operation
+        string operationName = rejoinResponse.Name;
+
+        // This name can be stored, then the long-running operation retrieved later by name
+        Operation<RejoinUserEventsResponse, RejoinUserEventsMetadata> retrievedResponse = client.PollOnceRejoinUserEvents(operationName);
+
+        // Check if the retrieved long-running operation has completed
+        if (retrievedResponse.IsCompleted)
+        {
+            // If it has completed, then access the result
+            RejoinUserEventsResponse retrievedResult = retrievedResponse.Result;
+
+            Console.WriteLine("Rejoined user events count:");
+            Console.WriteLine(retrievedResult.RejoinedUserEventsCount);
+        }
 
         return rejoinResponse;
     }
@@ -114,9 +129,7 @@ public static class RejoinUserEventTutorial
         // To check the error handling try to pass invalid catalog:
         // defaultCatalog = "projects/{projectId}/locations/global/catalogs/invalid_catalog";
 
-        UserEvent userEventToWrite = RejoinUserEventSample.GetUserEvent();
-
-        WriteUserEventSample.CallWriteUserEvent(defaultCatalog, userEventToWrite);
+        WriteUserEventSample.CallWriteUserEvent(defaultCatalog);
 
         RejoinUserEventSample.CallRejoinUserEvents(defaultCatalog);
     }

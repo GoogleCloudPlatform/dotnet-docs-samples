@@ -30,17 +30,30 @@ public class WriteUserEventSample
     /// <returns>User event.</returns>
     private static UserEvent GetUserEvent()
     {
+        ProductDetail productDetail = new ProductDetail
+        {
+            Product = new Product
+            {
+                Id = "test_id"
+            },
+            Quantity = 3
+        };
+
         UserEvent userEvent = new UserEvent
         {
-            EventType = "home-page-view",
+            EventType = "detail-page-view",
             VisitorId = "test_visitor_id",
             EventTime = DateTime.UtcNow.ToTimestamp()
         };
 
+        userEvent.ProductDetails.Add(productDetail);
+
         Console.WriteLine($"User Event:");
+        Console.WriteLine($"Product detail: {userEvent.ProductDetails}");
         Console.WriteLine($"Event type: {userEvent.EventType}");
         Console.WriteLine($"Visitor id: {userEvent.VisitorId}");
         Console.WriteLine($"Event time: {userEvent.EventTime}");
+        Console.WriteLine();
 
         return userEvent;
     }
@@ -75,9 +88,9 @@ public class WriteUserEventSample
     /// </summary>
     /// <param name="defaultCatalog">The default catalog.</param>
     /// <returns>Written user event.</returns>
-    public static UserEvent CallWriteUserEvent(string defaultCatalog, UserEvent userEventToWrite = null)
+    public static UserEvent CallWriteUserEvent(string defaultCatalog)
     {
-        userEventToWrite = userEventToWrite ?? GetUserEvent();
+        UserEvent userEventToWrite = GetUserEvent();
         WriteUserEventRequest writeRequest = GetWriteUserEventRequest(userEventToWrite, defaultCatalog);
         UserEventServiceClient client = UserEventServiceClient.Create();
         UserEvent userEvent = client.WriteUserEvent(writeRequest);

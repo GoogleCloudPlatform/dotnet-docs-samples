@@ -17,7 +17,6 @@
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
-using Google.Protobuf.WellKnownTypes;
 using System;
 
 /// <summary>
@@ -25,40 +24,6 @@ using System;
 /// </summary>
 public class PurgeUserEventSample
 {
-    /// <summary>
-    /// The the user event.
-    /// </summary>
-    /// <returns>The usert event.</returns>defaultCatalog
-    public static UserEvent GetUserEvent()
-    {
-        ProductDetail productDetail = new ProductDetail
-        {
-            Product = new Product
-            {
-                Id = "test_id"
-            },
-            Quantity = 3
-        };
-
-        UserEvent userEvent = new UserEvent
-        {
-            EventType = "detail-page-view",
-            VisitorId = "test_visitor_id",
-            EventTime = DateTime.UtcNow.ToTimestamp()
-        };
-
-        userEvent.ProductDetails.Add(productDetail);
-
-        Console.WriteLine("User Event:");
-        Console.WriteLine($"Product detail: {userEvent.ProductDetails}");
-        Console.WriteLine($"Event type: {userEvent.EventType}");
-        Console.WriteLine($"Visitor id: {userEvent.VisitorId}");
-        Console.WriteLine($"Event time: {userEvent.EventTime}");
-        Console.WriteLine();
-
-        return userEvent;
-    }
-
     /// <summary>
     /// Get the purge user event request.
     /// </summary>
@@ -93,11 +58,26 @@ public class PurgeUserEventSample
         UserEventServiceClient client = UserEventServiceClient.Create();
         Operation<PurgeUserEventsResponse, PurgeMetadata> purgeResponse = client.PurgeUserEvents(purgeRequest);
 
-        Console.WriteLine("The purge operation was started:");
-        Console.WriteLine(purgeResponse.Name);
-        Console.WriteLine();
+        Console.WriteLine("The purge operation was started.");
 
-        return purgeResponse;
+        // The purge operation takes several hours or even days to complete.
+        // You may get the name of the operation
+        string operationName = purgeResponse.Name;
+
+        // This name can be stored, then the long-running operation retrieved later by name
+        Operation<PurgeUserEventsResponse, PurgeMetadata> retrievedResponse = client.PollOncePurgeUserEvents(operationName);
+
+        // Check if the retrieved long-running operation has completed
+        if (retrievedResponse.IsCompleted)
+        {
+            // If it has completed, then access the result
+            PurgeUserEventsResponse retrievedResult = retrievedResponse.Result;
+
+            Console.WriteLine("Purged user events count:");
+            Console.WriteLine(retrievedResult.PurgedEventsCount);
+        }
+
+        return retrievedResponse;
     }
 }
 // [END retail_purge_user_event]
@@ -116,9 +96,7 @@ public static class PurgeUserEventTutorial
         // To check the error handling try to pass invalid catalog:
         // defaultCatalog = "projects/{projectId}/locations/global/catalogs/invalid_catalog";
 
-        UserEvent userEventToWrite = PurgeUserEventSample.GetUserEvent();
-
-        WriteUserEventSample.CallWriteUserEvent(defaultCatalog, userEventToWrite);
+        WriteUserEventSample.CallWriteUserEvent(defaultCatalog);
 
         PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
     }

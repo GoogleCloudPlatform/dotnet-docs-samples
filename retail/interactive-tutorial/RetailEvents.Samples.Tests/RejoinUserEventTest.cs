@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Retail.V2;
 using System;
 using Xunit;
 
@@ -29,9 +28,7 @@ namespace RetailEvents.Samples.Tests
             string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
             string expectedRejoinResponseName = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/operations/rejoin-user-events";
 
-            UserEvent userEventToWrite = RejoinUserEventSample.GetUserEvent();
-
-            WriteUserEventSample.CallWriteUserEvent(defaultCatalog, userEventToWrite);
+            WriteUserEventSample.CallWriteUserEvent(defaultCatalog);
 
             var rejoinResponse = RejoinUserEventSample.CallRejoinUserEvents(defaultCatalog);
 

@@ -30,7 +30,7 @@ namespace RetailEvents.Samples.Tests
             {
                 UserEvent writtentUserEvent = WriteUserEventSample.CallWriteUserEvent(defaultCatalog);
 
-                Assert.Equal("home-page-view", writtentUserEvent.EventType);
+                Assert.Equal("detail-page-view", writtentUserEvent.EventType);
                 Assert.Equal("test_visitor_id", writtentUserEvent.VisitorId);
             }
             finally
