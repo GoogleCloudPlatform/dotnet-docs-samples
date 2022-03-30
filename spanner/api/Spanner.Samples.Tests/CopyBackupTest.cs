@@ -38,14 +38,14 @@ public class CopyBackupTest
         string source_backupId = _spannerFixture.BackupId;
         string target_Project_id = _spannerFixture.ProjectId;
         string target_Instance_id = _spannerFixture.InstanceId;
-        string target_backupId = Guid.NewGuid().ToString();
+        string target_backupId = "test_"+Guid.NewGuid().ToString().Substring(0,15);
 
         DateTimeOffset expireTime = DateTimeOffset.UtcNow.AddDays(7);
         DateTimeOffset maxExpireTime = DateTimeOffset.Now.AddDays(10);
 
         Backup backup = copyBackupSample.CopyBackup(source_Instance_id, source_Project_id, source_backupId, 
             target_Instance_id, target_Project_id, target_backupId, expireTime, maxExpireTime);
- 
+
         Assert.NotNull(backup);
     }
 }
