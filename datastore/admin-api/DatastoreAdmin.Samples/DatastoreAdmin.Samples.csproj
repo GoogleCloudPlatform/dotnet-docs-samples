@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Datastore.Admin.V1" Version="1.4.0" />
-    <PackageReference Include="Google.Cloud.Datastore.V1" Version="3.3.0" />
+    <PackageReference Include="Google.Cloud.Datastore.V1" Version="3.4.0" />
   </ItemGroup>
 
 </Project>
