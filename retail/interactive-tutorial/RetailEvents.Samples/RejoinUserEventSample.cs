@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // [START retail_rejoin_user_event]
-// Import user events into a catalog from inline source using Retail API
+// Rejoin user events using Retail API
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
@@ -93,7 +93,7 @@ public class RejoinUserEventSample
 
         Console.WriteLine("The rejoin operation was started.");
 
-        // The purge operation takes several hours or even days to complete.
+        // The rejoin operation takes several hours or even days to complete.
         // You may get the name of the operation
         string operationName = rejoinResponse.Name;
 

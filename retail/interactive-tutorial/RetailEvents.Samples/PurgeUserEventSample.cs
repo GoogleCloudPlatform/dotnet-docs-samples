@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // [START retail_purge_user_event]
-// Import user events into a catalog from inline source using Retail API
+// Purge user events using Retail API
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
