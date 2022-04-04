@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // [START retail_crud_product]
-// Create product in a catalog using Retail API
 
 using Google.Cloud.Retail.V2;
 using System;
@@ -55,7 +54,6 @@ public class CrudProductSample
     {
         return new Product
         {
-            Id = Guid.NewGuid().ToString("N").Substring(0, 14),
             Name = productName,
             Title = "Updated Nest Mini",
             Type = Product.Types.Type.Primary,
