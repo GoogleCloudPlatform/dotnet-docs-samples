@@ -4,6 +4,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup> 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.BigQuery.Storage.V1" Version="2.8.0" />  
+    <PackageReference Include="Google.Cloud.BigQuery.Storage.V1" Version="2.9.0" />  
   </ItemGroup> 
 </Project>
