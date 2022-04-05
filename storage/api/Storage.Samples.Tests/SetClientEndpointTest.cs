@@ -15,13 +15,14 @@
  */
 
 using Xunit;
-public class SetClientEndpointSampleTest
+
+public class SetClientEndpointTest
 {
     [Fact]
-	public void SetEndpoint()
+    public void SetClientEndpoint()
     {
         string endpoint = "https://dummy.googleapis.com";
         var storageClient = new SetClientEndpointSample().SetClientEndpoint(endpoint);
-        Assert.Equal(endpoint,storageClient.Service.BaseUri);
+        Assert.Equal(endpoint, storageClient.Service.BaseUri);
     }
 }
