@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Cloudresourcemanager.v1" Version="1.56.0.2635" />
-    <PackageReference Include="Google.Apis.Iam.v1" Version="1.56.0.2625" />
+    <PackageReference Include="Google.Apis.Cloudresourcemanager.v1" Version="1.57.0.2635" />
+    <PackageReference Include="Google.Apis.Iam.v1" Version="1.57.0.2639" />
   </ItemGroup>
 </Project>

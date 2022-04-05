@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Spanner.Data" Version="3.14.0" />
+    <PackageReference Include="Google.Cloud.Retail.V2" Version="1.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
+    <ProjectReference Include="..\Runner\Runner.csproj" />
   </ItemGroup>
 
 </Project>
