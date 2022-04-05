@@ -5,7 +5,7 @@
     <StartupObject>GoogleCloudSamples.CloudIotMqttExample</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.56.0.2503" />
+    <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.57.0.2503" />
     <PackageReference Include="M2Mqtt" Version="4.3.0" />
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
     <PackageReference Include="jose-jwt" Version="3.2.0" />
