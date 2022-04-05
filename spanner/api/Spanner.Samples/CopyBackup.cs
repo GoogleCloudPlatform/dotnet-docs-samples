@@ -24,7 +24,7 @@ public class CopyBackupSample
 {
     public Backup CopyBackup(string sourceInstanceId, string sourceProjectId, string sourceBackupId, 
         string targetInstanceId, string targetProjectId, string targetBackupId, 
-        DateTimeOffset expireTime, DateTimeOffset maxExpireTime)
+        DateTimeOffset expireTime)
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
@@ -33,7 +33,7 @@ public class CopyBackupSample
             SourceBackupAsBackupName = new BackupName(sourceProjectId, sourceInstanceId, sourceBackupId), 
             ParentAsInstanceName = new InstanceName(targetProjectId, targetInstanceId),
             BackupId = targetBackupId,
-            ExpireTime = (expireTime <= maxExpireTime) ? Timestamp.FromDateTimeOffset(expireTime) : Timestamp.FromDateTimeOffset(maxExpireTime)
+            ExpireTime = Timestamp.FromDateTimeOffset(expireTime) 
         };
 
         var response = databaseAdminClient.CopyBackup(request);
