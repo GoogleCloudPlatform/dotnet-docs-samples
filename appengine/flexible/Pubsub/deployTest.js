@@ -16,7 +16,6 @@
 var casper = require('casper').create();
 var host = casper.cli.args[0];
 
-
 casper.start(host + '/', function (response) {
     console.log('Starting ' + host + '/');
     this.test.assertSelectorHasText('H1', 'Google AppEngine Pubsub Sample');
@@ -105,9 +104,18 @@ casper.thenClick('#Submit', function (response) {
     console.log('Submitted form.');
     this.test.assertEquals(200, response.status);
     this.fill('#MessageForm', {
-        'Message': 'cattfish 3',
+        'Message': 'blobfish 11',
     }, false);
-    this.test.assertSelectorHasText('body', 'blobfish');
+    this.test.assertSelectorHasText('body', 'Push:blobfish');
+});
+
+casper.thenClick('#Submit', function (response) {
+    console.log('Submitted form.');
+    this.test.assertEquals(200, response.status);
+    this.fill('#MessageForm', {
+        'Message': 'blobfish 12',
+    }, false);
+    this.test.assertSelectorHasText('body', 'AuthPush:blobfish');
 });
 
 casper.run(function () {
