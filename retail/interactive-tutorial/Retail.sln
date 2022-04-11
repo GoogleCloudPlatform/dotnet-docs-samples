@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31911.196
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailSearch.Samples", "RetailSearch.Samples\RetailSearch.Samples.csproj", "{9B7EDAE3-1A54-4DEE-815C-1A3652282044}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailSearch.Samples.Tests", "RetailSearch.Samples.Tests\RetailSearch.Samples.Tests.csproj", "{95A91660-6768-4CB1-B986-AF629D85840D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Runner", "Runner\Runner.csproj", "{9446A7B9-379D-4912-9285-6E3DF5BD887F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailPredictions.Samples", "RetailPredictions.Samples\RetailPredictions.Samples.csproj", "{A527CDB2-20AE-4C46-A37B-3D03C93BECAE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailPredictions.Samples.Tests", "RetailPredictions.Samples.Tests\RetailPredictions.Samples.Tests.csproj", "{2210AA52-9FD0-4C79-B36F-8271BC0277F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{9446A7B9-379D-4912-9285-6E3DF5BD887F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9446A7B9-379D-4912-9285-6E3DF5BD887F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9446A7B9-379D-4912-9285-6E3DF5BD887F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A527CDB2-20AE-4C46-A37B-3D03C93BECAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A527CDB2-20AE-4C46-A37B-3D03C93BECAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A527CDB2-20AE-4C46-A37B-3D03C93BECAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A527CDB2-20AE-4C46-A37B-3D03C93BECAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2210AA52-9FD0-4C79-B36F-8271BC0277F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2210AA52-9FD0-4C79-B36F-8271BC0277F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2210AA52-9FD0-4C79-B36F-8271BC0277F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2210AA52-9FD0-4C79-B36F-8271BC0277F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
