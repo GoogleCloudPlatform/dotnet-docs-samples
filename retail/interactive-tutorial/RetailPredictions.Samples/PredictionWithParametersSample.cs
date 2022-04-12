@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_predict]
+// [START retail_prediction_with_parameters]
 // Get predictions from catalog using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -61,7 +61,7 @@ namespace RetailPredictions.Samples
                 UserEvent = new UserEvent
                 {
                     EventType = "detail-page-view",
-                    VisitorId = "281639",
+                    VisitorId = "281639", // A unique identifier to track visitors
                     EventTime = Timestamp.FromDateTime(DateTime.UtcNow)
                 }
             };
@@ -70,16 +70,19 @@ namespace RetailPredictions.Samples
             {
                 Product = new Product
                 {
-                    Id = "55106"
+                    Id = "55106" // An id of real product
                 }
             });
 
+            // Try to update `priceRerankLevel` here
             Value priceRerankLevel = new Value();
             priceRerankLevel.StringValue = "low-price-reranking";
 
+            // Try to update `diversityLevel` here
             Value diversityLevel = new Value();
             diversityLevel.StringValue = "low-diversity";
 
+            // Try to update `returnProduct` here
             Value returnProduct = new Value();
             returnProduct.BoolValue = true;
 
@@ -124,7 +127,7 @@ namespace RetailPredictions.Samples
             return predictResponse;
         }
     }
-    // [END retail_predict]
+    // [END retail_prediction_with_parameters]
 
     /// <summary>
     /// The prediction with parameters tutorial class.

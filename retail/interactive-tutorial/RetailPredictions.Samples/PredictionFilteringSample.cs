@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_predict]
+// [START retail_prediction_filtering]
 // Get predictions from catalog using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -58,32 +58,38 @@ namespace RetailPredictions.Samples
             var predictRequest = new PredictRequest
             {
                 Placement = PlacementName,
-                // Filtering 
-                Filter = "filterOutOfStockItems",
                 UserEvent = new UserEvent
                 {
                     EventType = "detail-page-view",
-                    VisitorId = "281639",
+                    VisitorId = "281639", // A unique identifier to track visitors
                     EventTime = Timestamp.FromDateTime(DateTime.UtcNow)
                    
                 },
-                
             };
+
+            // Try to update filter here
+            predictRequest.Filter = "price<50";
 
             predictRequest.UserEvent.ProductDetails.Add(new ProductDetail
             {
                 Product = new Product
                 {
-                    Id = "55106"
+                    Id = "55106" // An id of real product
                 }
             });
 
+            // Try to update `returnProduct` here
             Value returnProduct = new Value();
             returnProduct.BoolValue = true;
 
+            // Try to update `strictFiltering` here
+            Value strictFiltering = new Value();
+            strictFiltering.BoolValue = false;
+
             Dictionary<string, Value> entries = new Dictionary<string, Value>()
             {
-                { "returnProduct", returnProduct }
+                { "returnProduct", returnProduct },
+                { "strictFiltering", strictFiltering }
             };
 
             predictRequest.Params.Add(entries);
@@ -120,7 +126,7 @@ namespace RetailPredictions.Samples
             return predictResponse;
         }
     }
-    // [END retail_predict]
+    // [END retail_prediction_filtering]
 
     /// <summary>
     /// The prediction filtering tutorial class.
