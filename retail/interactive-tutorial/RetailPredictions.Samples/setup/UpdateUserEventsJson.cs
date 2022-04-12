@@ -40,7 +40,7 @@ namespace RetailPredictions.Samples.setup
             for (int i = 0; i < alllines.Length; i++)
             {
                 string date = GetRandomDate();
-                alllines[i] = Regex.Replace(alllines[i], "\"eventTime\":([0-9]+)", "\"eventTime\":\"" + date + "T10:27:42+00:00\"");
+                alllines[i] = Regex.Replace(alllines[i], "\"eventTime\":\"(\\d{4}-\\d{2}-\\d{2}.*)\"", "\"eventTime\":\"" + date + "T10:27:42+00:00\"");
             }
 
             File.WriteAllLines(FilePath, alllines);
