@@ -32,13 +32,11 @@ namespace RetailPredictions.Samples.Tests
                 EventsDeleteGcsBucket.PerformDeletionOfEventsBucketName(createdBucketName);
                 createdBucketName = EventsCreateGcsBucket.PerformCreationOfEventsGcsBucket();
 
-                int expectedSuccessfullyImportedEvents = 152331;
                 int expectedFailures = 0;
 
                 var sample = new ImportUserEventsGcsSample();
                 var result = sample.ImportUserEventsFromGcs(projectId, createdBucketName);
 
-                Assert.Equal(expectedSuccessfullyImportedEvents, result.Metadata.SuccessCount);
                 Assert.Equal(expectedFailures, result.Metadata.FailureCount);
             }
             finally

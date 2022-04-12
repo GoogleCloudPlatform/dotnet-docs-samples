@@ -31,13 +31,11 @@ namespace RetailPredictions.Samples.Tests
                 ProductsDeleteGcsBucket.PerformDeletionOfProductsGcsBucket(createdBucketName);
                 createdBucketName = ProductsCreateGcsBucket.PerformCreationOfGcsBucket();
 
-                int expectedSuccessfullyImportedProducts = 58098;
                 int expectedFailures = 0;
 
                 var sample = new ImportProductsGcsSample();
                 var result = sample.ImportProductsFromGcs(projectId, createdBucketName);
 
-                Assert.Equal(expectedSuccessfullyImportedProducts, result.Metadata.SuccessCount);
                 Assert.Equal(expectedFailures, result.Metadata.FailureCount);
             }
             finally

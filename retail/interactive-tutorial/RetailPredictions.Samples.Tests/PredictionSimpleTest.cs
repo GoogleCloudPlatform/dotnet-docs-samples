@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Retail.V2;
 using Xunit;
 
 namespace RetailPredictions.Samples.Tests
 {
-    public class PredictionTest
+    public class PredictionSimpleTest
     {
         [Fact]
         public void TestPredictionSimple()
         {
-            const string ExpectedProductId = "86882";
+            const int ExpectedResultCount = 20;
 
-            var predictionResponse = PredictionSimpleTutorial.PerformGetPrediction();
+            PredictResponse predictionResponse = PredictionSimpleTutorial.PerformGetPrediction();
             
-            Assert.Contains(predictionResponse.Results, result => result.Id.Contains(ExpectedProductId));
+            Assert.Equal(ExpectedResultCount, predictionResponse.Results.Count);
         }
     }
 }
