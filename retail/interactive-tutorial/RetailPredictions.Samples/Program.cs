@@ -18,7 +18,6 @@ namespace RetailPredictions.Samples
     {
         static void Main(string[] args)
         {
-            args = new[] { "PredictionFilteringTutorial" };
             Runner.Program.RunScript(args);
          }
     }
