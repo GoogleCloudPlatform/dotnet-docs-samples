@@ -17,12 +17,12 @@ with a MySQL database when running in Cloud Run or Google App Engine Flexible En
 1.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md)
     or newer.
 
-1.  Create a Cloud SQL for Postgres instance by following these 
-    [instructions](https://cloud.google.com/sql/docs/postgres/create-instance).
+1.  Create a Cloud SQL for MySQL instance by following these 
+    [instructions](https://cloud.google.com/sql/docs/mysql/create-instance).
     Note the connection string, database user, and database password that you create.
 
 1.  Create a database for your application by following these 
-    [instructions](https://cloud.google.com/sql/docs/postgres/create-manage-databases).
+    [instructions](https://cloud.google.com/sql/docs/mysql/create-manage-databases).
     Note the database name. 
 
 1.  Replace `your-project-id` in [appsettings.json](appsettings.json) with your Google Cloud Project's project id.
@@ -31,7 +31,7 @@ with a MySQL database when running in Cloud Run or Google App Engine Flexible En
 
 To run this application locally, download and install the `cloud_sql_proxy` by
 following the instructions
-[here](https://cloud.google.com/sql/docs/postgres/sql-proxy#install).
+[here](https://cloud.google.com/sql/docs/mysql/sql-proxy#install).
 
 Instructions are provided below for using the proxy with a TCP connection or a Unix Domain Socket.
 On Linux or Mac OS you can use either option, but on Windows the proxy currently requires a TCP connection.
@@ -55,7 +55,7 @@ Note: Saving credentials in environment variables is convenient, but not secure 
 
 Then use this command to launch the proxy in the background:
 ```bash
-./cloud_sql_proxy -instances=<project-id>:<region>:<instance-name>=tcp:5432 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
+./cloud_sql_proxy -instances=<project-id>:<region>:<instance-name>=tcp:3306 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
 ```
 
 Finally, run the following commands:
@@ -79,7 +79,7 @@ Note: Saving credentials in environment variables is convenient, but not secure 
 
 Then use this command to launch the proxy in a separate PowerShell session:
 ```powershell
-Start-Process -filepath "C:\<path to proxy exe>" -ArgumentList "-instances=<project-id>:<region>:<instance-name>=tcp:5432 -credential_file=<CREDENTIALS_JSON_FILE>"
+Start-Process -filepath "C:\<path to proxy exe>" -ArgumentList "-instances=<project-id>:<region>:<instance-name>=tcp:3306 -credential_file=<CREDENTIALS_JSON_FILE>"
 ```
 Finally, run the following commands:
 ```psm1
@@ -141,7 +141,7 @@ dotnet run
 
 ### Deploy to Cloud Run
 
-See the [Cloud Run documentation](https://cloud.google.com/sql/docs/postgres/connect-run)
+See the [Cloud Run documentation](https://cloud.google.com/sql/docs/mysql/connect-run)
 for more details on connecting a Cloud Run service to Cloud SQL.
 
 Build the container image:
