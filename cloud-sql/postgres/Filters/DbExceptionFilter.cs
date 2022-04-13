@@ -14,21 +14,21 @@
  * the License.
  */
 using System.Data.Common;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Hosting;
 
 // DbExceptionFilterAttribute is an ExceptionFilter to 
 // manage unhandled database exceptions
 public class DbExceptionFilterAttribute : ExceptionFilterAttribute
 {
-    private readonly IHostingEnvironment _hostingEnvironment;
+    private readonly IHostEnvironment _hostingEnvironment;
     private readonly IModelMetadataProvider _modelMetadataProvider;
 
     public DbExceptionFilterAttribute(
-        IHostingEnvironment hostingEnvironment,
+        IHostEnvironment hostingEnvironment,
         IModelMetadataProvider modelMetadataProvider)
     {
         _hostingEnvironment = hostingEnvironment;
