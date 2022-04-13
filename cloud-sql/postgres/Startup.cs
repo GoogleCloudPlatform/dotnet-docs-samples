@@ -16,9 +16,9 @@
 
 using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using Polly;
@@ -49,14 +49,12 @@ namespace CloudSql
             {
                 options.Filters.Add(typeof(DbExceptionFilterAttribute));
             });
+            services.AddMvc(option => option.EnableEndpointRouting = false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
-            ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -76,7 +74,7 @@ namespace CloudSql
         }
     }
 
-        static class StartupExtensions
+    static class StartupExtensions
     {
         public static void OpenWithRetry(this DbConnection connection) =>
             // [START cloud_sql_postgres_dotnet_ado_backoff]
