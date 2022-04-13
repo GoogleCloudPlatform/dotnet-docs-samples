@@ -24,7 +24,6 @@ public class SetClientEndpointSample
     public StorageClient SetClientEndpoint(string endpoint) => new StorageClientBuilder
     {
         BaseUri = endpoint
-
     }.Build();
 }
 // [END storage_set_client_endpoint]
