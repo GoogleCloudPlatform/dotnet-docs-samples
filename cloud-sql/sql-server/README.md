@@ -19,7 +19,7 @@ with a SQL Server database when running in Google App Engine Flexible Environmen
 
 1.  Create a Cloud SQL for SQL Server instance by following these 
     [instructions](https://cloud.google.com/sql/docs/sqlserver/create-instance).
-    Note the connection string, database user, and database password that you create.
+    Note the instance connection name, database user, and database password that you create.
 
 1.  Create a database for your application by following these 
     [instructions](https://cloud.google.com/sql/docs/sqlserver/create-manage-databases).
@@ -44,7 +44,7 @@ To run the sample locally with a TCP connection, set environment variables and l
 Use these terminal commands to initialize environment variables:
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service/account/key.json
-export DB_HOST='127.0.0.1'
+export INSTANCE_HOST='127.0.0.1'
 export DB_USER='<DB_USER_NAME>'
 export DB_PASS='<DB_PASSWORD>'
 export DB_NAME='<DB_NAME>'
@@ -68,7 +68,7 @@ dotnet run
 Use these PowerShell commands to initialize environment variables:
 ```powershell
 $env:GOOGLE_APPLICATION_CREDENTIALS="<CREDENTIALS_JSON_FILE>"
-$env:DB_HOST="127.0.0.1"
+$env:INSTANCE_HOST="127.0.0.1"
 $env:DB_USER="<DB_USER_NAME>"
 $env:DB_PASS="<DB_PASSWORD>"
 $env:DB_NAME="<DB_NAME>"
@@ -93,7 +93,7 @@ Download and run the [Google Cloud SQL Proxy](https://cloud.google.com/sql/docs/
 Then, navigate to the project options menu. Select the default configuration, then set the following environment variables:
 
 ```
-DB_HOST : '127.0.0.1' 
+INSTANCE_HOST : '127.0.0.1' 
 DB_USER : '<DB_USER_NAME>' 
 DB_PASS : '<DB_PASSWORD>'
 DB_NAME : '<DB_NAME>'
@@ -107,9 +107,8 @@ Finally, run the application by clicking the arrow button in the main toolbar, o
 
 ### Deploy to App Engine Flexible
 
-1.  Edit [app.yaml](app.yaml).  Replace `your-project-id:us-central1:instance-name`
-    with your instance connection name, and update the tcp port number to 
-    `1433` for a SQL Server instance. Update the values
+1.  Edit [app.yaml](app.yaml).  Replace `<project-name>:<region>:<instance-name>`
+    with your instance connection name. Update the values
     for `DB_USER`, `DB_PASS`, and `DB_NAME`
 
 2.  Build and deploy the application:
