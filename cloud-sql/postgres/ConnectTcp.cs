@@ -31,9 +31,10 @@ namespace CloudSql
                 // The Cloud SQL proxy provides encryption between the proxy and instance.
                 SslMode = SslMode.Disable,
 
-                // Remember - storing secrets in plain text is potentially unsafe. Consider using
-                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
-                // secrets secret.
+                // Note: Saving credentials in environment variables is convenient, but not
+                // secure - consider a more secure solution such as
+                // Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
+                // keep secrets safe.
                 Host = Environment.GetEnvironmentVariable("INSTANCE_HOST"),     // e.g. '127.0.0.1'
                 // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
                 Username = Environment.GetEnvironmentVariable("DB_USER"), // e.g. 'my-db-user'
