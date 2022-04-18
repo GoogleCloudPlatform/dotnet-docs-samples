@@ -28,10 +28,11 @@ namespace CloudSql
             // "User Id=<DB_USER>;Password=<DB_PASS>;Server=<INSTANCE_HOST>;Database=<DB_NAME>;"
             var connectionString = new SqlConnectionStringBuilder()
             {
-                // Remember - storing secrets in plain text is potentially unsafe. Consider using
-                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
-                // secrets secret.
-                DataSource = Environment.GetEnvironmentVariable("INSTANCE_HOST"),     // e.g. '127.0.0.1'
+                // Note: Saving credentials in environment variables is convenient, but not
+                // secure - consider a more secure solution such as
+                // Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
+                // keep secrets safe.
+                DataSource = Environment.GetEnvironmentVariable("INSTANCE_HOST"), // e.g. '127.0.0.1'
                 // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
                 UserID = Environment.GetEnvironmentVariable("DB_USER"),         // e.g. 'my-db-user'
                 Password = Environment.GetEnvironmentVariable("DB_PASS"),       // e.g. 'my-db-password'
