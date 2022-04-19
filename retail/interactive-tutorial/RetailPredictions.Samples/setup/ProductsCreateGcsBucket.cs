@@ -26,7 +26,7 @@ public static class ProductsCreateGcsBucket
     private static string requestTimeStamp = DateTime.Now.ToUniversalTime().ToString("ddMMyyyyhhmmss");
 
     private static readonly string productFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"RetailPredictions.Samples/resources/{ProductFileName}");
-    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     private static readonly string bucketName = $"{projectId}_products_{requestTimeStamp}";
 
     private static readonly StorageClient storageClient = StorageClient.Create();

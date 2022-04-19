@@ -27,7 +27,7 @@ public static class EventsCreateGcsBucket
     private static string requestTimeStamp = DateTime.Now.ToUniversalTime().ToString("ddMMyyyyhhmmss");
 
     private static readonly string eventsFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"RetailPredictions.Samples/resources/{EventsFileName}");
-    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     private static readonly string bucketName = $"{projectId}_events_{requestTimeStamp}";
 
     private static readonly StorageClient storageClient = StorageClient.Create();
