@@ -23,9 +23,22 @@ try {
 
     # Import secrets:
     .\.kokoro-windows\Import-Secrets.ps1
-        
+
+    # The list of changed subdirectories.
+    $changedDirs = ($(git diff main --name-only | cut -d/ -f 1 | uniq))
+
     # The list of all subdirectories.
     $allDirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
+
+    # If no dirs have changed we run everything since we are most likely on CI.
+    if ($changedDirs.count -gt 0)
+    {
+        $testDirs = $changedDirs
+    }
+    else
+    {
+        $testDirs = $allDirs
+    }
 
     # There are too many tests to run in a single Kokoro job.  So, we split
     # the tests into groups.  Each Kokoro job runs one group.
@@ -38,10 +51,10 @@ try {
         $false   # 3: Everything starting from s to z.
     )
 
-    $groups[0] = $allDirs
-    $groups[1] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("e") -le 0) }
-    $groups[2] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("f") -ge 0) -and ($_.Substring(0, 1).CompareTo("r") -le 0) -and ($IsRunningOnWindows -or -not ($_.Equals("iot"))) }
-    $groups[3] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("s") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
+    $groups[0] = $testDirs
+    $groups[1] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("e") -le 0) }
+    $groups[2] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("f") -ge 0) -and ($_.Substring(0, 1).CompareTo("r") -le 0) -and ($IsRunningOnWindows -or -not ($_.Equals("iot"))) }
+    $groups[3] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("s") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
     $dirs = $groups[$GroupNumber]
 
     # Find all the runTest scripts.
