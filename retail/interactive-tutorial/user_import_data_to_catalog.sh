@@ -17,16 +17,8 @@
 # set the key as GOOGLE_APPLICATION_CREDENTIALS
 export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
 
-# install needed Google client libraries
-for service_dir in {RetailEvents.Samples,RetailProducts.Samples,RetailSearch.Samples}
-  do
-    path=~/cloudshell_open/dotnet-docs-samples/retail/interactive-tutorial/$service_dir
-    cd $path
-    dotnet add package Google.Cloud.Retail.V2
-    dotnet add package Google.Cloud.Storage.V1
-done
-
 # Run the sample for creating the GCS bucket and extract the output of that execution
+cd ~/cloudshell_open/dotnet-docs-samples/retail/interactive-tutorial/RetailProducts.Samples
 output=$(dotnet run -- ProductsCreateGcsBucket)
 
 # Get the bucket name and store it in the env variable BUCKET_NAME
