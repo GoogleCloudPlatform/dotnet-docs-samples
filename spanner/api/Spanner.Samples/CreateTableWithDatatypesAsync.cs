@@ -30,7 +30,7 @@ public class CreateTableWithDataTypesAsyncSample
                     VenueId INT64 NOT NULL,
                     VenueName STRING(100),
                     VenueInfo BYTES(MAX),
-                    Capacity INT64,                    
+                    Capacity INT64,
                     AvailableDates ARRAY<DATE>,
                     LastContactDate DATE,
                     OutdoorVenue BOOL,
