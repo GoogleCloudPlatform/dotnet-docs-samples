@@ -112,13 +112,13 @@ namespace CloudSql
         public static MySqlConnectionStringBuilder GetMySqlConnectionString()
         {
             MySqlConnectionStringBuilder connectionString; 
-            if (Environment.GetEnvironmentVariable("DB_HOST") != null)
+            if (Environment.GetEnvironmentVariable("INSTANCE_HOST") != null)
             {
-                connectionString = NewMysqlTCPConnectionString();
+                connectionString = MySqlTcp.NewMysqlTCPConnectionString();
             }
             else
             {
-                connectionString = NewMysqlUnixSocketConnectionString();
+                connectionString = MySqlUnix.NewMysqlUnixSocketConnectionString();
             }
             // The values set here are for demonstration purposes only. You 
             // should set these values to what works best for your application.
@@ -144,57 +144,6 @@ namespace CloudSql
             connectionString.ConnectionLifeTime = 1800; // 30 minutes
             // [END cloud_sql_mysql_dotnet_ado_lifetime]
             return connectionString;
-        }
-
-        public static MySqlConnectionStringBuilder NewMysqlTCPConnectionString()
-        {
-            // [START cloud_sql_mysql_dotnet_ado_connection_tcp]
-            // Equivalent connection string:
-            // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<DB_HOST>;Database=<DB_NAME>;"
-            var connectionString = new MySqlConnectionStringBuilder()
-            {
-                // The Cloud SQL proxy provides encryption between the proxy and instance.
-                SslMode = MySqlSslMode.None,
-
-                // Remember - storing secrets in plain text is potentially unsafe. Consider using
-                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
-                // secrets secret.
-                Server = Environment.GetEnvironmentVariable("DB_HOST"),   // e.g. '127.0.0.1'
-                // Set Host to 'cloudsql' when deploying to App Engine Flexible environment
-                UserID = Environment.GetEnvironmentVariable("DB_USER"),   // e.g. 'my-db-user'
-                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
-                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
-            };
-            connectionString.Pooling = true;
-            // Specify additional properties here.
-            return connectionString;
-            // [END cloud_sql_mysql_dotnet_ado_connection_tcp]
-        }
-
-        public static MySqlConnectionStringBuilder NewMysqlUnixSocketConnectionString()
-        {
-            // [START cloud_sql_mysql_dotnet_ado_connection_socket]
-            // Equivalent connection string:
-            // "Server=<dbSocketDir>/<INSTANCE_CONNECTION_NAME>;Uid=<DB_USER>;Pwd=<DB_PASS>;Database=<DB_NAME>;Protocol=unix"
-            String dbSocketDir = Environment.GetEnvironmentVariable("DB_SOCKET_PATH") ?? "/cloudsql";
-            String instanceConnectionName = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
-            var connectionString = new MySqlConnectionStringBuilder()
-            {
-                // The Cloud SQL proxy provides encryption between the proxy and instance.
-                SslMode = MySqlSslMode.None,
-                // Remember - storing secrets in plain text is potentially unsafe. Consider using
-                // something like https://cloud.google.com/secret-manager/docs/overview to help keep
-                // secrets secret.
-                Server = String.Format("{0}/{1}", dbSocketDir, instanceConnectionName),
-                UserID = Environment.GetEnvironmentVariable("DB_USER"),   // e.g. 'my-db-user
-                Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
-                Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
-                ConnectionProtocol = MySqlConnectionProtocol.UnixSocket
-            };
-            connectionString.Pooling = true;
-            // Specify additional properties here.
-            return connectionString;
-            // [END cloud_sql_mysql_dotnet_ado_connection_socket]
         }
     }
 }
