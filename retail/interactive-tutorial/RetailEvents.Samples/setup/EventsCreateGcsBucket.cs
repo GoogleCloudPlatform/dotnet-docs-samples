@@ -28,7 +28,7 @@ public static class EventsCreateGcsBucket
 
     private static readonly string eventsFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"RetailEvents.Samples/resources/{EventsFileName}");
     private static readonly string invalidEventsFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"RetailEvents.Samples/resources/{InvalidEventsFileName}");
-    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     private static readonly string bucketName = $"{projectId}_events_{requestTimeStamp}";
 
     private static readonly StorageClient storageClient = StorageClient.Create();
@@ -127,7 +127,6 @@ public static class EventsCreateGcsBucket
     /// Create test resources.
     /// </summary>
     /// <returns>The name of created bucket.</returns>
-    [Runner.Attributes.Example]
     public static string PerformCreationOfEventsGcsBucket()
     {
         // Create a GCS bucket.

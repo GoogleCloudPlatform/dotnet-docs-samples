@@ -23,7 +23,7 @@ namespace RetailEvents.Samples.Tests
         public void TestImportUserEventsGcs()
         {
             string createdBucketName = null;
-            string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
             try
             {

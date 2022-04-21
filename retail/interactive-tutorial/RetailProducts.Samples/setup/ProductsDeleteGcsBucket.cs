@@ -23,7 +23,7 @@ public static class ProductsDeleteGcsBucket
     /// <summary>Delete bucket.</summary>
     private static void DeleteBucket(string bucketName)
     {
-        Console.WriteLine($"Deleting Bucket {bucketName}");
+        Console.WriteLine($"Deleting Bucket {bucketName}.");
 
         try
         {
@@ -41,7 +41,7 @@ public static class ProductsDeleteGcsBucket
     /// <summary>Delete all objects from bucket.</summary>
     private static void DeleteObjectsFromBucket(Bucket bucket)
     {
-        Console.WriteLine($"Deleting object from bucket {bucket.Name}");
+        Console.WriteLine($"Deleting object from bucket {bucket.Name}.");
 
         var blobs = storageClient.ListObjects(bucket.Name);
         foreach (var blob in blobs)
@@ -55,7 +55,6 @@ public static class ProductsDeleteGcsBucket
     /// <summary>
     /// Delete test resources.
     /// </summary>
-    [Runner.Attributes.Example]
     public static void PerformDeletionOfProductsGcsBucket(string bucketName)
     {
         string productsBucketName = bucketName ?? Environment.GetEnvironmentVariable("BUCKET_NAME");

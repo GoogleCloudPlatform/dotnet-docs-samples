@@ -25,7 +25,6 @@ using System;
 public class ImportProductsBigQueryTableSample
 {
     private const string DataSetId = "products";
-    private const string DataSchema = "product";
     private const string TableId = "products";
 
     // To check error handling use the table of invalid products:
@@ -54,8 +53,7 @@ public class ImportProductsBigQueryTableSample
                 {
                     ProjectId = projectId,
                     DatasetId = DataSetId,
-                    TableId = TableId,
-                    DataSchema = DataSchema
+                    TableId = TableId
                 }
             }
         };

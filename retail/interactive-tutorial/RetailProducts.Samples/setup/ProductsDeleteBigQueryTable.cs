@@ -12,30 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Bigquery.v2.Data;
+using Google.Cloud.BigQuery.V2;
 using Google.Cloud.Retail.V2;
 using System;
-using System.Diagnostics;
 
 public static class ProductsDeleteBigQueryTable
 {
-    private const string WindowsTerminalName = "cmd.exe";
-    private const string UnixTerminalName = "/bin/bash";
-    private const string WindowsTerminalPrefix = "/c ";
-    private const string UnixTerminalPrefix = "-c ";
-    private const string WindowsTerminalQuotes = "";
-    private const string UnixTerminalQuotes = "\"";
-
     private const string ProductDataSet = "products";
+    private const string ProductTable = "products";
 
-    private static readonly bool CurrentOSIsWindows = Environment.OSVersion.VersionString.Contains("Windows");
-    private static readonly string CurrentTerminalPrefix = CurrentOSIsWindows ? WindowsTerminalPrefix : UnixTerminalPrefix;
-    private static readonly string CurrentTerminalFile = CurrentOSIsWindows ? WindowsTerminalName : UnixTerminalName;
-    private static readonly string CurrentTerminalQuotes = CurrentOSIsWindows ? WindowsTerminalQuotes : UnixTerminalQuotes;
+    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+    private static readonly string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/0";
 
-    private static readonly string projectNumber = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_NUMBER");
+    private static readonly BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
 
-    private static readonly string defaultCatalog = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/branches/default_branch";
-        
     /// <summary>Delete all products.</summary>
     private static void DeleteAllProducts()
     {
@@ -64,7 +55,7 @@ public static class ProductsDeleteBigQueryTable
             }
             catch (Exception)
             {
-                Console.WriteLine("Ignore PermissionDenied in case the product does not exist at time of deletion");
+                Console.WriteLine("Ignore PermissionDenied in case the product does not exist at time of deletion.");
             }
         }
 
@@ -72,37 +63,64 @@ public static class ProductsDeleteBigQueryTable
     }
 
     /// <summary>Delete Big Query dataset with tables.</summary>
-    private static void DeleteBQDatasetWithTables(string dataset)
+    public static void DeleteBQDatasetWithData(string datasetId)
     {
-        string consoleOutput = string.Empty;
-        Console.WriteLine("Deleting a BigQuery dataset with all tables");
+        Console.WriteLine($"Deleting a {datasetId} BigQuery dataset with all its contents.");
 
-        var deleteDatasetCommand = CurrentTerminalPrefix + CurrentTerminalQuotes + $"bq rm -r -d -f {dataset}" + CurrentTerminalQuotes;
-
-        var procStartInfo = new ProcessStartInfo(CurrentTerminalFile, deleteDatasetCommand)
+        DatasetReference datasetReference = new DatasetReference
         {
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
+            DatasetId = datasetId,
+            ProjectId = projectId
         };
 
-        using (Process process = new Process())
+        DeleteDatasetOptions deleteOptions = new DeleteDatasetOptions
         {
-            process.StartInfo = procStartInfo;
-            process.Start();
+            DeleteContents = true
+        };
 
-            consoleOutput = process.StandardOutput.ReadToEnd();
-            Console.WriteLine(consoleOutput);
+        try
+        {
+            bigQueryClient.DeleteDataset(datasetReference, deleteOptions);
+
+            Console.WriteLine($"Dataset {datasetId} and contents were deleted.");
+        }
+        catch (Exception)
+        {
+            Console.WriteLine($"Dataset {datasetId} does not exist.");
+        }
+    }
+
+    /// <summary>Delete Big Query dataset with tables.</summary>
+    public static void DeleteBQTable(string datasetId, string tableId)
+    {
+        Console.WriteLine($"Deleting a {tableId} BigQuery table.");
+
+        TableReference tableReference = new TableReference
+        {
+            TableId = tableId,
+            DatasetId = datasetId,
+            ProjectId = projectId
+        };
+
+        try
+        {
+            bigQueryClient.DeleteTable(tableReference);
+
+            Console.WriteLine($"Table {tableId} was deleted.");
+        }
+        catch (Exception)
+        {
+            Console.WriteLine($"Table {tableId} does not exist.");
         }
     }
 
     /// <summary>
     /// Delete test resources.
     /// </summary>
-    [Runner.Attributes.Example]
     public static void PerformDeletionOfProductsBigQueryTable()
     {
         DeleteAllProducts();
-        DeleteBQDatasetWithTables(ProductDataSet);
+        DeleteBQDatasetWithData(ProductDataSet);
+        DeleteBQTable(ProductDataSet, ProductTable);
     }
 }

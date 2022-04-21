@@ -9,15 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailSearch.Samples.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Runner", "Runner\Runner.csproj", "{9446A7B9-379D-4912-9285-6E3DF5BD887F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestResourcesSetupCleanup", "TestResourcesSetupCleanup\TestResourcesSetupCleanup.csproj", "{69324A4F-150C-467F-9F6C-C884CD9D9934}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailProducts.Samples", "RetailProducts.Samples\RetailProducts.Samples.csproj", "{3AE8C067-5872-4EF3-AD4E-EAB5EE052312}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailProducts.Samples.Tests", "RetailProducts.Samples.Tests\RetailProducts.Samples.Tests.csproj", "{06C98CFB-7F37-42D4-944E-71E3477731D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetailEvents.Samples", "RetailEvents.Samples\RetailEvents.Samples.csproj", "{181E3A6F-75E4-48DC-AA23-5A77E86822D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailEvents.Samples", "RetailEvents.Samples\RetailEvents.Samples.csproj", "{181E3A6F-75E4-48DC-AA23-5A77E86822D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetailEvents.Samples.Tests", "RetailEvents.Samples.Tests\RetailEvents.Samples.Tests.csproj", "{4626E50F-75FB-4B53-8867-D356D9D9C819}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailEvents.Samples.Tests", "RetailEvents.Samples.Tests\RetailEvents.Samples.Tests.csproj", "{4626E50F-75FB-4B53-8867-D356D9D9C819}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +35,6 @@ Global
 		{9446A7B9-379D-4912-9285-6E3DF5BD887F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9446A7B9-379D-4912-9285-6E3DF5BD887F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9446A7B9-379D-4912-9285-6E3DF5BD887F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69324A4F-150C-467F-9F6C-C884CD9D9934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69324A4F-150C-467F-9F6C-C884CD9D9934}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69324A4F-150C-467F-9F6C-C884CD9D9934}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69324A4F-150C-467F-9F6C-C884CD9D9934}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3AE8C067-5872-4EF3-AD4E-EAB5EE052312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3AE8C067-5872-4EF3-AD4E-EAB5EE052312}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AE8C067-5872-4EF3-AD4E-EAB5EE052312}.Release|Any CPU.ActiveCfg = Release|Any CPU

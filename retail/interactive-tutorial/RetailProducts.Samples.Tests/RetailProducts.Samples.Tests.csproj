@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RetailProducts.Samples\RetailProducts.Samples.csproj" />
-    <ProjectReference Include="..\TestResourcesSetupCleanup\TestResourcesSetupCleanup.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,35 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Bigquery.v2.Data;
+using Google.Cloud.BigQuery.V2;
+using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
 
 public static class ProductsCreateBigQueryTable
 {
     private const string ProductFileName = "products.json";
-
-    private const string WindowsTerminalName = "cmd.exe";
-    private const string UnixTerminalName = "/bin/bash";
-    private const string WindowsTerminalPrefix = "/c ";
-    private const string UnixTerminalPrefix = "-c ";
-    private const string WindowsTerminalQuotes = "";
-    private const string UnixTerminalQuotes = "\"";
-
     private const string ProductDataSet = "products";
     private const string ProductTable = "products";
-    private const string ProductSchema = "resources/product_schema.json";
+    private const string ProductSchema = "product_schema.json";
     private const string InvalidProductTable = "products_some_invalid";
 
-    private static readonly bool CurrentOSIsWindows = Environment.OSVersion.VersionString.Contains("Windows");
-    private static readonly string CurrentTerminalPrefix = CurrentOSIsWindows ? WindowsTerminalPrefix : UnixTerminalPrefix;
-    private static readonly string CurrentTerminalFile = CurrentOSIsWindows ? WindowsTerminalName : UnixTerminalName;
-    private static readonly string CurrentTerminalQuotes = CurrentOSIsWindows ? WindowsTerminalQuotes : UnixTerminalQuotes;
-
     private static readonly string productFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"RetailProducts.Samples/resources/{ProductFileName}");
-    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+    private static readonly string productSchemaFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"RetailProducts.Samples/resources/{ProductSchema}");
+
+    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
+    private static readonly BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
 
     /// <summary>
     /// Get the current solution directory full name.
@@ -62,157 +54,124 @@ public static class ProductsCreateBigQueryTable
     /// <summary>Create a Big Query Dataset.</summary>
     private static void CreateBQDataSet(string dataSetName)
     {
-        var listDataSets = ListBQDataSets();
-        if (!listDataSets.Contains(dataSetName))
-        {
-            string createDataSetCommand = CurrentTerminalPrefix + CurrentTerminalQuotes + $"bq --location=US mk -d --default_table_expiration 3600 --description \"This is my dataset.\" {projectId}:{dataSetName}" + CurrentTerminalQuotes;
-            string consoleOutput = string.Empty;
+        string fullDataSetId = $"{projectId}.{dataSetName}";
+        Console.WriteLine($"Creating dataset {fullDataSetId}");
 
-            var processStartInfo = new ProcessStartInfo(CurrentTerminalFile, createDataSetCommand)
+        try
+        {
+            DatasetReference datasetReference = new DatasetReference
             {
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                DatasetId = dataSetName,
+                ProjectId = projectId
             };
 
-            using (var process = new Process())
+            var dataset = bigQueryClient.GetDataset(datasetReference);
+            Console.WriteLine($"Dataset {fullDataSetId} already exists");
+        }
+        catch (Exception)
+        {
+            Dataset dataset = new Dataset
             {
-                process.StartInfo = processStartInfo;
+                Location = "US"
+            };
 
-                process.Start();
-
-                consoleOutput = process.StandardOutput.ReadToEnd();
-            }
-        }
-        else
-        {
-            Console.WriteLine($"Dataset {dataSetName} already exists.");
-        }
-    }
-
-    /// <summary>List Big Query Datasets.</summary>
-    private static string ListBQDataSets()
-    {
-        string dataSets = string.Empty;
-
-        string listDataSetCommand = CurrentTerminalPrefix + CurrentTerminalQuotes + $"bq ls --project_id {projectId}" + CurrentTerminalQuotes;
-
-        var processStartInfo = new ProcessStartInfo(CurrentTerminalFile, listDataSetCommand)
-        {
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
+            // Construct a Dataset object to send to the API.
+            BigQueryDataset dataSet = bigQueryClient.CreateDataset(dataSetName, dataset);
+            Console.WriteLine($"Dataset {fullDataSetId} created");
         };
-
-        using (var process = new Process())
-        {
-            process.StartInfo = processStartInfo;
-
-            process.Start();
-
-            dataSets = process.StandardOutput.ReadToEnd();
-
-            Console.WriteLine(dataSets);
-        }
-
-        return dataSets;
     }
 
     /// <summary>Create a Big Query Table.</summary>
-    private static void CreateBQTable(string dataSet, string tableName, string schema)
+    private static void CreateAndPopulateBQTable(string dataSetName, string tableName, string tableSchemaFilePath, string tableDataFilePath)
     {
-        var listBQTables = ListBQTables(dataSet);
-        Console.WriteLine($"Creating BigQuery table {tableName}");
+        string fullTableId = $"{projectId}.{dataSetName}.{tableName}";
+        Console.WriteLine($"Check if BQ table {fullTableId} exists");
 
-        if (!listBQTables.Contains(dataSet))
+        TableReference tableReference = new TableReference
         {
-            string consoleOutput = string.Empty;
+            TableId = tableName,
+            DatasetId = dataSetName,
+            ProjectId = projectId
+        };
 
-            var createTableCommand = CurrentTerminalPrefix + CurrentTerminalQuotes + $"bq mk --table {projectId}:{dataSet}.{tableName} {schema}" + CurrentTerminalQuotes;
+        try
+        {
+            BigQueryTable tableToDelete = bigQueryClient.GetTable(tableReference);
 
-            var procStartInfo = new ProcessStartInfo(CurrentTerminalFile, createTableCommand)
+            Console.WriteLine($"Table {tableToDelete.FullyQualifiedId} exists and will be deleted");
+
+            bigQueryClient.DeleteTable(tableReference);
+
+            Console.WriteLine($"Table {tableToDelete.FullyQualifiedId} was deleted.");
+        }
+        catch (Exception)
+        {
+            Console.WriteLine($"Table {fullTableId} does not exist.");
+        }
+
+        Console.WriteLine($"Creating BigQuery Table {fullTableId}");
+
+        TableSchemaBuilder tableSchemaBuilder = new TableSchemaBuilder();
+
+        // Parsing json schema.
+        string jsonSchema = File.ReadAllText(tableSchemaFilePath);
+
+        JsonTextReader jsonReader = new JsonTextReader(new StringReader(jsonSchema))
+        {
+            SupportMultipleContent = true
+        };
+
+        JsonSerializer jsonSerializer = new JsonSerializer();
+
+        while (jsonReader.Read())
+        {
+            TableFieldSchema tableFieldSchema = jsonSerializer.Deserialize<TableFieldSchema>(jsonReader);
+
+            tableSchemaBuilder.Add(tableFieldSchema);
+        }
+
+        TableSchema finalTableSchema = tableSchemaBuilder.Build();
+
+        // Creating a BigQuery table.
+        try
+        {
+            BigQueryTable createdBigQueryTable = bigQueryClient.CreateTable(tableReference, finalTableSchema);
+
+            Console.WriteLine($"Created BigQuery Table {createdBigQueryTable.FullyQualifiedId}");
+
+            try
             {
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+                // Uploading json data to BigQuery table.
+                Console.WriteLine($"Uploading data from json to BigQuery table {createdBigQueryTable.FullyQualifiedId}");
 
-            using (Process process = new Process())
+                using (FileStream sourceStream = File.Open(tableDataFilePath, FileMode.Open))
+                {
+                    BigQueryJob bigQueryJob = bigQueryClient.UploadJson(tableReference, finalTableSchema, sourceStream);
+
+                    var result = bigQueryJob.PollUntilCompleted();
+                }
+
+                BigQueryTable createdTable = bigQueryClient.GetTable(tableReference);
+
+                Console.WriteLine($"Uploaded {createdTable.Resource.NumRows} rows to {createdTable.FullyQualifiedId}");
+            }
+            catch (Exception ex)
             {
-                process.StartInfo = procStartInfo;
-                process.Start();
-
-                consoleOutput = process.StandardOutput.ReadToEnd();
-                Console.WriteLine(consoleOutput);
+                Console.WriteLine($"Table {createdBigQueryTable.FullyQualifiedId} was not populated with data. Error: {ex.Message}");
             }
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine($"Table {tableName} already exists.");
-        }
-
-    }
-
-    /// <summary>List Big Query Tables.</summary>
-    private static string ListBQTables(string dataSet)
-    {
-        string tables = string.Empty;
-        var listTablesCommand = CurrentTerminalPrefix + CurrentTerminalQuotes + $"bq ls {projectId}:{dataSet}" + CurrentTerminalQuotes;
-
-        var procStartInfo = new ProcessStartInfo(CurrentTerminalFile, listTablesCommand)
-        {
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-
-        using (Process process = new Process())
-        {
-            process.StartInfo = procStartInfo;
-            process.Start();
-
-            tables = process.StandardOutput.ReadToEnd();
-            Console.WriteLine("Tables: \n" + tables);
-
-            return tables;
-        }
-    }
-
-    /// <summary>Upload data to Big Query Table.</summary>
-    private static void UploadDataToBQTable(string dataSet, string tableName, string source, string schema)
-    {
-        string consoleOutput = string.Empty;
-        Console.WriteLine($"Uploading data from {source} to the table {dataSet}.{tableName}");
-
-        var uploadDataCommand = CurrentTerminalPrefix + CurrentTerminalQuotes + $"bq load --source_format=NEWLINE_DELIMITED_JSON {projectId}:{dataSet}.{tableName} {source} {schema}" + CurrentTerminalQuotes;
-
-        var procStartInfo = new ProcessStartInfo(CurrentTerminalFile, uploadDataCommand)
-        {
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-
-        using (Process process = new Process())
-        {
-            process.StartInfo = procStartInfo;
-            process.Start();
-
-            consoleOutput = process.StandardOutput.ReadToEnd();
-            Console.WriteLine(consoleOutput);
+            Console.WriteLine($"Table {tableName} was not created. Error: {ex.Message}");
         }
     }
 
     /// <summary>
     /// Create big query table.
     /// </summary>
-    [Runner.Attributes.Example]
     public static void PerformCreationOfBigQueryTable()
     {
         CreateBQDataSet(ProductDataSet);
-        CreateBQTable(ProductDataSet, ProductTable, ProductSchema);
-        UploadDataToBQTable(ProductDataSet, ProductTable, productFilePath, ProductSchema);
-        // CreateBQTable(ProductDataSet, InvalidProductTable, ProductSchema);
-        // UploadDataToBQTable(ProductDataSet, InvalidProductTable, productFilePath, ProductSchema);
+        CreateAndPopulateBQTable(ProductDataSet, ProductTable, productSchemaFilePath, productFilePath);
     }
 }

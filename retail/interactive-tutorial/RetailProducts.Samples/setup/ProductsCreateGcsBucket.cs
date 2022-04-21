@@ -28,8 +28,9 @@ public static class ProductsCreateGcsBucket
 
     private static readonly string productFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"RetailProducts.Samples/resources/{ProductFileName}");
     private static readonly string invalidProductFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"RetailProducts.Samples/resources/{InvalidProductFileName}");
-    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+    private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     private static readonly string bucketName = $"{projectId}_products_{requestTimeStamp}";
+    private static readonly string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/0";
 
     private static readonly StorageClient storageClient = StorageClient.Create();
 
@@ -127,7 +128,6 @@ public static class ProductsCreateGcsBucket
     /// Create test resources.
     /// </summary>
     /// <returns>The name of created bucket.</returns>
-    [Runner.Attributes.Example]
     public static string PerformCreationOfGcsBucket()
     {
         // Create a GCS bucket.

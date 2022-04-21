@@ -23,7 +23,7 @@ namespace RetailProducts.Samples.Tests
         public void TestImportProductsGcs()
         {
             string createdBucketName = null;
-            string projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID");
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
             try 
             {
