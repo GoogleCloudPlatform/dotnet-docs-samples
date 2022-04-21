@@ -22,21 +22,19 @@ using System.Threading.Tasks;
 
 public class GetDatabaseDdlAsyncSample
 {
-    public async Task<List<string>> GetDatabaseDdlAsync(string projectId, string instanceId, string databaseId)
+    public async Task<GetDatabaseDdlResponse> GetDatabaseDdlAsync(string projectId, string instanceId, string databaseId)
     {
         DatabaseAdminClient databaseAdminClient = await DatabaseAdminClient.CreateAsync();
         DatabaseName databaseName = DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId);
-        var databaseDdl = await databaseAdminClient.GetDatabaseDdlAsync(databaseName);
+        GetDatabaseDdlResponse databaseDdl = await databaseAdminClient.GetDatabaseDdlAsync(databaseName);
 
-        var ddlStatements = new List<string>();
         Console.WriteLine($"DDL statements for database {databaseId}:");
         foreach (var statement in databaseDdl.Statements)
         {
             Console.WriteLine(statement);
-            ddlStatements.Add(statement);
         }
 
-        return ddlStatements;
+        return databaseDdl;
     }
 }
 // [END spanner_get_database_ddl]
