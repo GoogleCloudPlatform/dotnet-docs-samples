@@ -29,42 +29,36 @@ namespace RetailPredictions.Samples
     /// </summary>
     public class PredictionFilteringSample
     {
-        private const string Endpoint = "retail.googleapis.com";
-
-        private static readonly string ProjectNumber = Environment.GetEnvironmentVariable("PROJECT_NUMBER");
-        private static readonly string PlacementName = $"projects/{ProjectNumber}/locations/global/catalogs/default_catalog/placements/prediction";
-
         /// <summary>
         /// Get Prediction Service
         /// </summary>
         /// <returns></returns>
         private static PredictionServiceClient GetPredictionService()
         {
-            var predictionServiceClientBuilder = new PredictionServiceClientBuilder
-            {
-                Endpoint = Endpoint
-            };
+            PredictionServiceClientBuilder predictionServiceClientBuilder = new PredictionServiceClientBuilder();
 
-            var predictionServiceClient = predictionServiceClientBuilder.Build();
+            PredictionServiceClient predictionServiceClient = predictionServiceClientBuilder.Build();
             return predictionServiceClient;
         }
 
         /// <summary>
-        /// Get Predict Request
+        /// Get Prediction Request
         /// </summary>
+        /// <param name="projectId">The current project id.</param>
         /// <returns></returns>
-        private static PredictRequest GetPredictRequest()
+        private static PredictRequest GetPredictRequest(string projectId)
         {
-            var predictRequest = new PredictRequest
+            string defaultBranchName = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/prediction";
+
+            PredictRequest predictRequest = new PredictRequest
             {
-                Placement = PlacementName,
+                Placement = defaultBranchName,
                 UserEvent = new UserEvent
                 {
                     EventType = "detail-page-view",
                     VisitorId = "281639", // A unique identifier to track visitors
-                    EventTime = Timestamp.FromDateTime(DateTime.UtcNow)
-                   
-                },
+                    EventTime = Timestamp.FromDateTime(DateTime.UtcNow)   
+                }
             };
 
             // Try to update filter here
@@ -98,12 +92,13 @@ namespace RetailPredictions.Samples
         }
 
         /// <summary>
-        /// Get Predict
+        /// Call the Retail API to get prediction
         /// </summary>
+        /// <param name="projectId">The current project id.</param>
         /// <returns></returns>
-        public static PredictResponse GetPrediction()
+        public static PredictResponse GetPrediction(string projectId)
         {
-            PredictRequest predictRequest = GetPredictRequest();
+            PredictRequest predictRequest = GetPredictRequest(projectId);
             PredictResponse predictResponse = GetPredictionService().Predict(predictRequest);
 
             if (predictResponse.Results is null || !predictResponse.Results.Any())
@@ -136,7 +131,9 @@ namespace RetailPredictions.Samples
         [Example]
         public static PredictResponse PerformGetPrediction()
         {
-            PredictResponse predictResponse = PredictionFilteringSample.GetPrediction();
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+
+            PredictResponse predictResponse = PredictionFilteringSample.GetPrediction(projectId);
             return predictResponse;
         }
     }
