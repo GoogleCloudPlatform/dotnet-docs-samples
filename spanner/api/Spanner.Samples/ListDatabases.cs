@@ -18,6 +18,7 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ListDatabasesSample
 {
@@ -27,7 +28,10 @@ public class ListDatabasesSample
         var instanceName = InstanceName.FromProjectInstance(projectId, instanceId);
         var databases = databaseAdminClient.ListDatabases(instanceName);
 
-        foreach (var database in databases)
+        // We print the first 5 elements for demonstration purposes.
+        // You can print all databases in the sequence by removing the call to Take(5).
+        // The sequence will lazily fetch elements in pages as needed.
+        foreach (var database in databases.Take(5))
         {
             Console.WriteLine($"Default leader for database {database.DatabaseName.DatabaseId}: {database.DefaultLeader}");
         }

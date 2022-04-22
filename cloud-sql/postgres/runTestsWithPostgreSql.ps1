@@ -28,7 +28,7 @@ $proxy = Start-Job -ArgumentList (Get-Location) -ScriptBlock {
 	./cloud_sql_proxy.exe --instances=$env:TEST_CLOUDSQL2_POSTGRESQL_INSTANCE=tcp:5432 `
 		--credential_file=$GOOGLE_APPLICATION_CREDENTIALS
 }
-$env:DB_HOST=$env:TEST_CLOUDSQL2_HOST
+$env:INSTANCE_HOST=$env:TEST_CLOUDSQL2_HOST
 $env:DB_USER=$env:TEST_CLOUDSQL2_USER
 $env:DB_PASS=$env:TEST_CLOUDSQL2_VOTES_PASS
 $env:DB_NAME=$env:TEST_CLOUDSQL2_VOTES_NAME

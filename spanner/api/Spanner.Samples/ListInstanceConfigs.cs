@@ -18,6 +18,7 @@ using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Spanner.Admin.Instance.V1;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ListInstanceConfigsSample
 {
@@ -27,7 +28,10 @@ public class ListInstanceConfigsSample
         var projectName = ProjectName.FromProject(projectId);
         var instanceConfigs = instanceAdminClient.ListInstanceConfigs(projectName);
 
-        foreach (var instanceConfig in instanceConfigs)
+        // We print the first 5 elements for demonstration purposes.
+        // You can print all configs in the sequence by removing the call to Take(5).
+        // The sequence will lazily fetch elements in pages as needed.
+        foreach (var instanceConfig in instanceConfigs.Take(5))
         {
             Console.WriteLine($"Available leader options for instance config {instanceConfig.InstanceConfigName.InstanceConfigId}:");
             foreach (var leader in instanceConfig.LeaderOptions)
