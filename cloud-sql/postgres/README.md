@@ -19,7 +19,7 @@ with a PostgreSQL database when running in Google App Engine Flexible Environmen
 
 1.  Create a Cloud SQL for Postgres instance by following these 
     [instructions](https://cloud.google.com/sql/docs/postgres/create-instance).
-    Note the connection string, database user, and database password that you create.
+    Note the instance connection name, database user, and database password that you create.
 
 1.  Create a database for your application by following these 
     [instructions](https://cloud.google.com/sql/docs/postgres/create-manage-databases).
@@ -44,7 +44,7 @@ To run the sample locally with a TCP connection, set environment variables and l
 Use these terminal commands to initialize environment variables:
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service/account/key.json
-export DB_HOST='127.0.0.1'
+export INSTANCE_HOST='127.0.0.1'
 export DB_USER='<DB_USER_NAME>'
 export DB_PASS='<DB_PASSWORD>'
 export DB_NAME='<DB_NAME>'
@@ -68,7 +68,7 @@ dotnet run
 Use these PowerShell commands to initialize environment variables:
 ```powershell
 $env:GOOGLE_APPLICATION_CREDENTIALS="<CREDENTIALS_JSON_FILE>"
-$env:DB_HOST="127.0.0.1"
+$env:INSTANCE_HOST="127.0.0.1"
 $env:DB_USER="<DB_USER_NAME>"
 $env:DB_PASS="<DB_PASSWORD>"
 $env:DB_NAME="<DB_NAME>"
@@ -93,7 +93,7 @@ Download and run the [Google Cloud SQL Proxy](https://cloud.google.com/sql/docs/
 Then, navigate to the project options menu. Select the default configuration, then set the following environment variables:
 
 ```
-DB_HOST : '127.0.0.1' 
+INSTANCE_HOST : '127.0.0.1' 
 DB_USER : '<DB_USER_NAME>' 
 DB_PASS : '<DB_PASSWORD>'
 DB_NAME : '<DB_NAME>'
@@ -113,16 +113,10 @@ sudo mkdir ./cloudsql
 sudo chown -R $USER ./cloudsql
 ```
 
-You'll also need to initialize an environment variable containing the directory you just created:
-
-```bash
-export DB_SOCKET_DIR=./cloudsql
-```
-
 Use these terminal commands to initialize environment variables:
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service/account/key.json
-export INSTANCE_CONNECTION_NAME='<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>'
+export INSTANCE_UNIX_SOCKET='./cloudsql/<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>'
 export DB_USER='<DB_USER_NAME>'
 export DB_PASS='<DB_PASSWORD>'
 export DB_NAME='<DB_NAME>'
@@ -130,7 +124,7 @@ export DB_NAME='<DB_NAME>'
 
 Then use this command to launch the proxy in the background:
 ```bash
-./cloud_sql_proxy -dir=$DB_SOCKET_DIR --instances=$INSTANCE_CONNECTION_NAME --credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
+./cloud_sql_proxy -dir=./cloudsql --instances=$INSTANCE_CONNECTION_NAME --credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
 
 Finally, run the following commands:
 ```bash
@@ -156,6 +150,7 @@ instance configuration:
 gcloud run deploy run-sql --image gcr.io/[YOUR_PROJECT_ID]/run-sql \              
   --add-cloudsql-instances '<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
   --set-env-vars INSTANCE_CONNECTION_NAME='<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
+  --set-env-vars INSTANCE_UNIX_SOCKET='/cloudsql/<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
   --set-env-vars DB_USER='<DB_USER_NAME>' \
   --set-env-vars DB_PASS='<DB_PASSWORD>' \
   --set-env-vars DB_NAME='<DB_NAME>'
@@ -170,14 +165,15 @@ Secret Manager at runtime via an environment variable.
 Create secrets via the command line:
 ```sh
 echo -n $INSTANCE_CONNECTION_NAME | \
-    gcloud secrets create [CLOUD_SQL_CONNECTION_NAME_SECRET] --data-file=-
+    gcloud secrets create [INSTANCE_CONNECTION_NAME_SECRET] --data-file=-
 ```
 
 Deploy the service to Cloud Run specifying the env var name and secret name:
 ```sh
 gcloud beta run deploy SERVICE --image gcr.io/[YOUR_PROJECT_ID]/run-sql \
     --add-cloudsql-instances $INSTANCE_CONNECTION_NAME \
-    --update-secrets CLOUD_SQL_CONNECTION_NAME=[CLOUD_SQL_CONNECTION_NAME_SECRET]:latest,\
+    --update-secrets INSTANCE_CONNECTION_NAME=[INSTANCE_CONNECTION_NAME_SECRET]:latest,\
+      INSTANCE_UNIX_SOCKET=[INSTANCE_UNIX_SOCKET_SECRET]:latest, \
       DB_USER=[DB_USER_SECRET]:latest, \
       DB_PASS=[DB_PASS_SECRET]:latest, \
       DB_NAME=[DB_NAME_SECRET]:latest
@@ -187,9 +183,8 @@ For more details about using Cloud Run see http://cloud.run.
 
 ### Deploy to App Engine Flexible
 
-1.  Edit [app.yaml](app.yaml).  Replace `your-project-id:us-central1:instance-name`
-    with your instance connection name, and update the tcp port number to 
-    `5432` for a PostgreSQL instance or `3306` for a MySQL instance. Update the values
+1.  Edit [app.yaml](app.yaml).  Replace `<project-name>:<region>:<instance-name>`
+    with your instance connection name. Update the values
     for `DB_USER`, `DB_PASS`, and `DB_NAME`
 
 2.  Build and deploy the application:

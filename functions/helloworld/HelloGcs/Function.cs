@@ -22,6 +22,10 @@ using System.Threading.Tasks;
 
 namespace HelloGcs
 {
+     /// <summary>
+     /// Example Cloud Storage-triggered function.
+     /// This function can process any event from Cloud Storage.
+     /// </summary>
     public class Function : ICloudEventFunction<StorageObjectData>
     {
         private readonly ILogger _logger;

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
@@ -25,11 +24,12 @@ public class ListBackupOperationsTest
         _spannerFixture = spannerFixture;
     }
 
-    [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1583")]
+    [Fact]
     public void TestListBackupOperations()
     {
         ListBackupOperationsSample getBackupOperationsSample = new ListBackupOperationsSample();
-        var operations = getBackupOperationsSample.ListBackupOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId).ToList();
-        Assert.True(operations.Count >= 0);
+        var operations = getBackupOperationsSample.ListBackupOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId);
+        // We iterated over operation on the sample itself, let's not do that again.
+        Assert.NotNull(operations);
     }
 }

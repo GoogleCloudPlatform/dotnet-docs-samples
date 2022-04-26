@@ -48,9 +48,9 @@ public class GetDatabaseDdlAsyncTest
         await _spannerFixture.RunWithTemporaryDatabaseAsync(_spannerFixture.InstanceIdWithMultiRegion, databaseId, async databaseId =>
         {
             var sample = new GetDatabaseDdlAsyncSample();
-            var statements =
+            var response =
                 await sample.GetDatabaseDdlAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithMultiRegion, databaseId);
-            Assert.Collection(statements,
+            Assert.Collection(response.Statements,
                 // Only check the start of the statement, as there is no guarantee on exactly
                 // how Cloud Spanner will format the returned SQL string.
                 statement => Assert.StartsWith($"ALTER DATABASE `{databaseId}` SET OPTIONS (\n  default_leader = 'us-central1'", statement),

@@ -18,6 +18,7 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ListBackupsSample
 {
@@ -70,8 +71,8 @@ public class ListBackupsSample
         var recentReadyBackups = databaseAdminClient.ListBackups(request);
         PrintBackups(recentReadyBackups);
 
-        // List backups in pages.
-        foreach (var page in databaseAdminClient.ListBackups(parentAsInstanceName, pageSize: 5).AsRawResponses())
+        // List backups in pages of 500 elements each
+        foreach (var page in databaseAdminClient.ListBackups(parentAsInstanceName, pageSize: 500).AsRawResponses())
         {
             PrintBackups(page);
         }
@@ -81,7 +82,11 @@ public class ListBackupsSample
 
     private static void PrintBackups(IEnumerable<Backup> backups)
     {
-        foreach (Backup backup in backups)
+        // We print the first 5 elements each time for demonstration purposes.
+        // You can print all backups in the sequence by removing the call to Take(5).
+        // If the sequence has been returned by a paginated operation it will lazily
+        // fetch elements in pages as needed.
+        foreach (Backup backup in backups.Take(5))
         {
             Console.WriteLine($"Backup Name : {backup.Name}");
         };

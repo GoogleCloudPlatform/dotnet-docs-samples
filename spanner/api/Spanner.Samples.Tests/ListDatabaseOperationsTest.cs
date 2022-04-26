@@ -29,7 +29,7 @@ public class ListDatabaseOperationsTest
     public void TestListDatabaseOperations()
     {
         ListDatabaseOperationsSample sample = new ListDatabaseOperationsSample();
-        var operations = sample.ListDatabaseOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId).ToList();
-        Assert.True(operations.Count >= 0);
+        var operations = sample.ListDatabaseOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId);
+        Assert.NotNull(operations);
     }
 }

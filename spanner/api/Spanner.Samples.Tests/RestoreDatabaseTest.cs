@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Common.V1;
 using Grpc.Core;
-using System.Linq;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
@@ -32,17 +32,13 @@ public class RestoreDatabaseTest
         RestoreDatabaseSample restoreDatabaseSample = new RestoreDatabaseSample();
         try
         {
-            restoreDatabaseSample.RestoreDatabase(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.RestoredDatabaseId, _spannerFixture.BackupId);
+            var restoreInfo = restoreDatabaseSample.RestoreDatabase(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.RestoredDatabaseId, _spannerFixture.BackupId);
+            DatabaseName name = DatabaseName.FromProjectInstanceDatabase(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId);
+            Assert.Equal(name.ToString(), restoreInfo.BackupInfo.SourceDatabase);
         }
         catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.FailedPrecondition)
         {
-            // Handles maximum number of pending restores which is currently one for the instance. 
-        }
-        finally
-        {
-            var backupDatabaseId = $"projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{_spannerFixture.BackupDatabaseId}";
-            var databases = _spannerFixture.GetDatabases().Where(c => c.RestoreInfo != null).ToList();
-            Assert.Contains(databases, d => d.RestoreInfo.BackupInfo.SourceDatabase == backupDatabaseId);
+            // Handles maximum number of pending restores which is currently one for the instance.
         }
     }
 }

@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -115,7 +115,7 @@ namespace CloudSql.Controllers
 
             if (validInput)
             {
-                // [START cloud_sql_sqlserver_dotnet_ado_create]
+                // [START cloud_sql_sqlserver_dotnet_ado_connection]
                 insertTimestamp = DateTime.UtcNow;
                 try
                 {
@@ -149,7 +149,7 @@ namespace CloudSql.Controllers
                     // parameters depending on the situation.
                     return StatusCode((int)HttpStatusCode.InternalServerError, ex);
                 }
-                // [END cloud_sql_sqlserver_dotnet_ado_create]
+                // [END cloud_sql_sqlserver_dotnet_ado_connection]
             }
             else
             {
