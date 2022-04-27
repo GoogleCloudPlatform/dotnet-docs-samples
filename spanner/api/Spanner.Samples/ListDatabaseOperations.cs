@@ -19,6 +19,7 @@ using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ListDatabaseOperationsSample
 {
@@ -38,7 +39,10 @@ public class ListDatabaseOperationsSample
         // List the optimize restored databases operations on the instance.
         var operations = databaseAdminClient.ListDatabaseOperations(request);
 
-        foreach (var operation in operations)
+        // We print the first 5 elements for demonstration purposes.
+        // You can print all operations in the sequence by removing the call to Take(5).
+        // The sequence will lazily fetch elements in pages as needed.
+        foreach (var operation in operations.Take(5))
         {
             OptimizeRestoredDatabaseMetadata metadata =
                 operation.Metadata.Unpack<OptimizeRestoredDatabaseMetadata>();

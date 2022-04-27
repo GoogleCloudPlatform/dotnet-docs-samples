@@ -1,5 +1,5 @@
 # start with a powershell image.
-FROM mcr.microsoft.com/powershell
+FROM mcr.microsoft.com/powershell:lts-ubuntu-18.04
 
 RUN apt-get update
 RUN apt-get install wget
@@ -13,6 +13,7 @@ RUN apt-get update
 RUN apt-get -y install dotnet-sdk-2.1
 RUN apt-get -y install dotnet-sdk-2.2
 RUN apt-get -y install dotnet-sdk-3.1
+RUN apt-get -y install dotnet-sdk-6.0
 
 # install phantomjs
 # steps from https://www.vultr.com/docs/how-to-install-phantomjs-on-ubuntu-16-04
@@ -29,8 +30,6 @@ RUN apt-get install python -y
 RUN curl https://github.com/n1k0/casperjs/tarball/1.0.3 -o casperjs-1.0.3.tar.gz -L
 RUN tar xvf casperjs-1.0.3.tar.gz
 ENV PATH "$PATH:/casperjs-casperjs-76fc831/bin"
-# patch bootstrap.js
-COPY bootstrap.js /casperjs-casperjs-76fc831/bin
 
 # install casperjs 1.1
 RUN curl https://github.com/casperjs/casperjs/archive/1.1.4-1.tar.gz -o casperjs-1.1.4-1.tar.gz -L

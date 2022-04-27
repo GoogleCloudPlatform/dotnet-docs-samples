@@ -74,8 +74,6 @@ public class AppendRowsPendingSample
         // SerializedRows repeated field.
         ProtoData protoData = new ProtoData
         {
-            // This is a TEMPORARY WORKAROUND via extension method using reflection until
-            // https://github.com/protocolbuffers/protobuf/issues/9425 is addressed and released.
             WriterSchema = new ProtoSchema { ProtoDescriptor = CustomerRecord.Descriptor.ToProto() },
             Rows = new ProtoRows { SerializedRows = { records.Select(r => r.ToByteString()) } }
         };

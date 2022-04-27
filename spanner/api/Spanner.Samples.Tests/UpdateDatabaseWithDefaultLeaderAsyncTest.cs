@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Admin.Database.V1;
-using Google.Cloud.Spanner.Common.V1;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,14 +32,10 @@ public class UpdateDatabaseWithDefaultLeaderAsyncTest
         {
             var defaultLeader = "us-central1";
             var sample = new UpdateDatabaseWithDefaultLeaderAsyncSample();
-            await sample.UpdateDatabaseWithDefaultLeaderAsync(_spannerFixture.ProjectId,
+            var operation = await sample.UpdateDatabaseWithDefaultLeaderAsync(_spannerFixture.ProjectId,
                 _spannerFixture.InstanceIdWithMultiRegion, databaseId, defaultLeader);
-                
-            var databaseAdminClient = await DatabaseAdminClient.CreateAsync();
-            var database = await databaseAdminClient.GetDatabaseAsync(
-                DatabaseName.FormatProjectInstanceDatabase(_spannerFixture.ProjectId,
-                    _spannerFixture.InstanceIdWithMultiRegion, databaseId));
-            Assert.Equal(defaultLeader, database.DefaultLeader);
+
+            Assert.True(operation.IsCompleted);
         });
     }
 }
