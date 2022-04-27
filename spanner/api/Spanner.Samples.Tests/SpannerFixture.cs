@@ -38,6 +38,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string PostgreSqlDatabaseId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_POSTGRESQL_DATABASE") ?? $"my-db-postgre-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string BackupDatabaseId { get; } = "my-test-database";
     public string BackupId { get; } = "my-test-database-backup";
+    public string CreateCustomInstanceConfigId { get; } = $"custom-name-create-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string UpdateCustomInstanceConfigId { get; } = $"custom-name-update-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string DeleteCustomInstanceConfigId { get; } = $"custom-name-delete-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+
     public string ToBeCancelledBackupId { get; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string RestoredDatabaseId { get; } = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
 
@@ -106,8 +110,29 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     {
         DeleteInstance(InstanceIdWithProcessingUnits);
         DeleteInstance(InstanceIdWithMultiRegion);
+        DeleteInstanceConfig(CreateCustomInstanceConfigId);
+        DeleteInstanceConfig(UpdateCustomInstanceConfigId);
+        DeleteInstanceConfig(DeleteCustomInstanceConfigId);
 
         return Task.CompletedTask;
+    }
+
+    private void DeleteInstanceConfig(string instanceConfigId)
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        var instanceConfigName = new InstanceConfigName(ProjectId, instanceConfigId);
+
+        try
+        {
+            instanceAdminClient.DeleteInstanceConfig(new DeleteInstanceConfigRequest
+            {
+                InstanceConfigName = instanceConfigName
+            });
+        }
+        catch (Exception)
+        {
+            // Silently ignore errors to prevent tests from failing.
+        }
     }
 
     public async Task<T> SafeCreateInstanceAsync<T>(Func<Task<T>> createInstanceAsync)
