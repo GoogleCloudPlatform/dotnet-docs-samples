@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Functions.Hosting" Version="1.0.0" />
     <PackageReference Include="Google.Cloud.Storage.V1" Version="3.7.0" />
-    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.4.0" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.5.0" />
     <PackageReference Include="Google.Events.Protobuf" Version="1.0.0" />
   </ItemGroup>
 </Project>
