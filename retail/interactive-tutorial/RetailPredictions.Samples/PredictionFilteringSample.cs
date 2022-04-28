@@ -16,6 +16,7 @@
 // Get predictions from catalog using Retail API
 
 using Google.Cloud.Retail.V2;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Runner.Attributes;
 using System;
@@ -29,18 +30,6 @@ namespace RetailPredictions.Samples
     /// </summary>
     public class PredictionFilteringSample
     {
-        /// <summary>
-        /// Get Prediction Service
-        /// </summary>
-        /// <returns></returns>
-        private static PredictionServiceClient GetPredictionService()
-        {
-            PredictionServiceClientBuilder predictionServiceClientBuilder = new PredictionServiceClientBuilder();
-
-            PredictionServiceClient predictionServiceClient = predictionServiceClientBuilder.Build();
-            return predictionServiceClient;
-        }
-
         /// <summary>
         /// Get Prediction Request
         /// </summary>
@@ -56,37 +45,26 @@ namespace RetailPredictions.Samples
                 UserEvent = new UserEvent
                 {
                     EventType = "detail-page-view",
-                    VisitorId = "281639", // A unique identifier to track visitors
-                    EventTime = Timestamp.FromDateTime(DateTime.UtcNow)   
-                }
-            };
-
-            // Try to update filter here
-            predictRequest.Filter = "price<50";
-
-            predictRequest.UserEvent.ProductDetails.Add(new ProductDetail
-            {
-                Product = new Product
+                    VisitorId = "test_visitor_id", // A unique identifier to track visitors
+                    EventTime = Timestamp.FromDateTime(DateTime.UtcNow),
+                    ProductDetails = { new ProductDetail { Product = new Product { Id = "test_id" } } } // An id of real product
+                },
+                Filter = "price<50", // Try to update filter here
+                Params =
                 {
-                    Id = "55106" // An id of real product
+                    new MapField<string, Value>
+                    {
+                        new Dictionary<string, Value>
+                        {
+                            // Try to update `returnProduct` here
+                            { "returnProduct", Value.ForBool(true) },
+
+                            // Try to update `strictFiltering` here
+                            { "strictFiltering", Value.ForBool(false) }
+                        }
+                    }
                 }
-            });
-
-            // Try to update `returnProduct` here
-            Value returnProduct = new Value();
-            returnProduct.BoolValue = true;
-
-            // Try to update `strictFiltering` here
-            Value strictFiltering = new Value();
-            strictFiltering.BoolValue = false;
-
-            Dictionary<string, Value> entries = new Dictionary<string, Value>()
-            {
-                { "returnProduct", returnProduct },
-                { "strictFiltering", strictFiltering }
             };
-
-            predictRequest.Params.Add(entries);
 
             return predictRequest;
         }
@@ -99,15 +77,17 @@ namespace RetailPredictions.Samples
         public static PredictResponse GetPrediction(string projectId)
         {
             PredictRequest predictRequest = GetPredictRequest(projectId);
-            PredictResponse predictResponse = GetPredictionService().Predict(predictRequest);
 
-            if (predictResponse.Results is null || !predictResponse.Results.Any())
+            PredictionServiceClient client = PredictionServiceClient.Create();
+            PredictResponse predictResponse = client.Predict(predictRequest);
+
+            if (predictResponse.Results.Count == 0)
             {
-                Console.WriteLine("The search operation returned no matching results.");
+                Console.WriteLine("The prediction operation returned no matching results.");
             }
             else
             {
-                Console.WriteLine("Search results:");
+                Console.WriteLine("Prediction results:");
                 Console.WriteLine($"AttributionToken: {predictResponse.AttributionToken},");
                 Console.WriteLine($"Total Count: {predictResponse.Results.Count},");
                 Console.WriteLine("Items found");

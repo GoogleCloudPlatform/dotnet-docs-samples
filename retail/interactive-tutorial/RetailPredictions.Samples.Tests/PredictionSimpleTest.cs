@@ -22,11 +22,8 @@ namespace RetailPredictions.Samples.Tests
         [Fact]
         public void TestPredictionSimple()
         {
-            const int ExpectedResultCount = 20;
-
             PredictResponse predictionResponse = PredictionSimpleTutorial.PerformGetPrediction();
-            
-            Assert.Equal(ExpectedResultCount, predictionResponse.Results.Count);
+            Assert.NotEmpty(predictionResponse.Results);
         }
     }
 }

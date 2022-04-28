@@ -20,13 +20,10 @@ namespace RetailPredictions.Samples.Tests
     public class PredictionWithParametersTest
     {
         [Fact]
-        public void TestPredictionSimple()
+        public void TestPredictionWithParameters()
         {
-            const int ExpectedResultCount = 20;
-
             PredictResponse predictionResponse = PredictionWithParametersTutorial.PerformGetPrediction();
-
-            Assert.Equal(ExpectedResultCount, predictionResponse.Results.Count);
+            Assert.NotEmpty(predictionResponse.Results);
         }
     }
 }

@@ -20,13 +20,10 @@ namespace RetailPredictions.Samples.Tests
     public class PredictionFilteringTest
     {
         [Fact]
-        public void TestPredictionSimple()
+        public void TestPredictionFiltering()
         {
-            const int ExpectedResultCount = 20;
-
             PredictResponse predictionResponse = PredictionFilteringTutorial.PerformGetPrediction();
-
-            Assert.Equal(ExpectedResultCount, predictionResponse.Results.Count);
+            Assert.NotEmpty(predictionResponse.Results);
         }
     }
 }
