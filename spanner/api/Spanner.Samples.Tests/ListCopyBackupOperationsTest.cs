@@ -30,7 +30,7 @@ public class ListCopyBackupOperationsTest
     {
         ListCopyBackupOperationsSample listCopyBackupOperationsSample = new ListCopyBackupOperationsSample();
 
-        var operations = listCopyBackupOperationsSample.ListCopyBackupOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId,_spannerFixture.BackupId).ToList();
-        Assert.True(operations.Count >= 0);
+        var operations = listCopyBackupOperationsSample.ListCopyBackupOperations(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.BackupDatabaseId,_spannerFixture.BackupId);
+        Assert.NotNull(operations);
     }
 }
