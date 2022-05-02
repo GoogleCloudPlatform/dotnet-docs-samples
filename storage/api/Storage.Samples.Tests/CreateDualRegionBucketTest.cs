@@ -33,6 +33,9 @@ public class CreateDualRegionBucketTest
 
         var storageBucket = createDualRegionBucketSample.CreateDualRegionBucket(_fixture.ProjectId, bucketName, "US-EAST1", "US-WEST1");
 
+        _fixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.TempBucketNames.Add(bucketName);
+
         Assert.Equal("US-EAST1+US-WEST1", storageBucket.Location);
         Assert.Equal("dual-region", storageBucket.LocationType);
     }
