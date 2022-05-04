@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 public class ListCopyBackupOperationsSample
 {
-    public IEnumerable<Operation> ListCopyBackupOperations(string projectId, string instanceId, string databaseId, string backupId = null)
+    public IEnumerable<Operation> ListCopyBackupOperations(string projectId, string instanceId, string databaseId, string backupId)
     {
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
