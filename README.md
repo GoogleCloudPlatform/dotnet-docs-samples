@@ -10,7 +10,7 @@ The samples in this repo cover only _some_ of the total APIs that you can call f
 
 ## Google Cloud Samples
 
-To browse ready to use code samples check [Google Cloud Samples](https://cloud.google.com/docs/samples).
+You can also browse these samples, and more in [Google Cloud Samples](https://cloud.google.com/docs/samples).
 
 
 ### Build Status
