@@ -8,6 +8,11 @@ lists all the _Cloud_ APIs you can call from .NET.
 
 The samples in this repo cover only _some_ of the total APIs that you can call from .NET.
 
+## Google Cloud Samples
+
+To browse ready to use code samples check [Google Cloud Samples](https://cloud.google.com/docs/samples).
+
+
 ### Build Status
 
 | Windows | Linux |
