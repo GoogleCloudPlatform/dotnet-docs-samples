@@ -34,7 +34,7 @@ public class ListCopyBackupOperationsSample
             Filter = filter
         };
 
-        // List the create backup operations on the database.
+        // List the copy backup operations on the database.
         var backupOperations = databaseAdminClient.ListBackupOperations(request);
 
         foreach (var operation in backupOperations)
