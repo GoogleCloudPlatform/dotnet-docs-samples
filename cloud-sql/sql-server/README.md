@@ -55,7 +55,7 @@ Note: Saving credentials in environment variables is convenient, but not secure 
 
 Then use this command to launch the proxy in the background:
 ```bash
-./cloud_sql_proxy -instances=<project-id>:<region>:<instance-name>=tcp:1433 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
+./cloud_sql_proxy -instances=<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>=tcp:1433 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
 ```
 
 Finally, run the following commands:
@@ -79,7 +79,7 @@ Note: Saving credentials in environment variables is convenient, but not secure 
 
 Then use this command to launch the proxy in a separate PowerShell session:
 ```powershell
-Start-Process -filepath "C:\<path to proxy exe>" -ArgumentList "-instances=<project-id>:<region>:<instance-name>=tcp:1433 -credential_file=<CREDENTIALS_JSON_FILE>"
+Start-Process -filepath "C:\<path to proxy exe>" -ArgumentList "-instances=<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>=tcp:1433 -credential_file=<CREDENTIALS_JSON_FILE>"
 ```
 Finally, run the following commands:
 ```psm1
@@ -107,7 +107,7 @@ Finally, run the application by clicking the arrow button in the main toolbar, o
 
 ### Deploy to App Engine Flexible
 
-1.  Edit [app.yaml](app.yaml).  Replace `<project-name>:<region>:<instance-name>`
+1.  Edit [app.yaml](app.yaml).  Replace `<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>`
     with your instance connection name. Update the values
     for `DB_USER`, `DB_PASS`, and `DB_NAME`
 
