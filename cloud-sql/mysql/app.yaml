@@ -12,4 +12,4 @@ env_variables:
     INSTANCE_HOST: cloudsql
 
 beta_settings:
-    cloud_sql_instances: "<project-name>:<region>:<instance-name>=tcp:3306"
+    cloud_sql_instances: "<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>=tcp:3306"

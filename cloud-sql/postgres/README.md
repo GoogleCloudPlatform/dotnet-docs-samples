@@ -55,7 +55,7 @@ Note: Saving credentials in environment variables is convenient, but not secure 
 
 Then use this command to launch the proxy in the background:
 ```bash
-./cloud_sql_proxy -instances=<project-id>:<region>:<instance-name>=tcp:5432 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
+./cloud_sql_proxy -instances=<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>=tcp:5432 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
 ```
 
 Finally, run the following commands:
@@ -79,7 +79,7 @@ Note: Saving credentials in environment variables is convenient, but not secure 
 
 Then use this command to launch the proxy in a separate PowerShell session:
 ```powershell
-Start-Process -filepath "C:\<path to proxy exe>" -ArgumentList "-instances=<project-id>:<region>:<instance-name>=tcp:5432 -credential_file=<CREDENTIALS_JSON_FILE>"
+Start-Process -filepath "C:\<path to proxy exe>" -ArgumentList "-instances=<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>=tcp:5432 -credential_file=<CREDENTIALS_JSON_FILE>"
 ```
 Finally, run the following commands:
 ```psm1
@@ -116,7 +116,7 @@ sudo chown -R $USER ./cloudsql
 Use these terminal commands to initialize environment variables:
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service/account/key.json
-export INSTANCE_UNIX_SOCKET='./cloudsql/<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>'
+export INSTANCE_UNIX_SOCKET='./cloudsql/<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>'
 export DB_USER='<DB_USER_NAME>'
 export DB_PASS='<DB_PASSWORD>'
 export DB_NAME='<DB_NAME>'
@@ -124,7 +124,7 @@ export DB_NAME='<DB_NAME>'
 
 Then use this command to launch the proxy in the background:
 ```bash
-./cloud_sql_proxy -dir=./cloudsql --instances=$INSTANCE_CONNECTION_NAME --credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
+./cloud_sql_proxy -dir=./cloudsql --instances=<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME> --credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
 
 Finally, run the following commands:
 ```bash
@@ -148,9 +148,8 @@ instance configuration:
 
 ```sh
 gcloud run deploy run-sql --image gcr.io/[YOUR_PROJECT_ID]/run-sql \              
-  --add-cloudsql-instances '<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
-  --set-env-vars INSTANCE_CONNECTION_NAME='<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
-  --set-env-vars INSTANCE_UNIX_SOCKET='/cloudsql/<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
+  --add-cloudsql-instances '<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
+  --set-env-vars INSTANCE_UNIX_SOCKET='/cloudsql/<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
   --set-env-vars DB_USER='<DB_USER_NAME>' \
   --set-env-vars DB_PASS='<DB_PASSWORD>' \
   --set-env-vars DB_NAME='<DB_NAME>'
@@ -164,16 +163,15 @@ Secret Manager at runtime via an environment variable.
 
 Create secrets via the command line:
 ```sh
-echo -n $INSTANCE_CONNECTION_NAME | \
-    gcloud secrets create [INSTANCE_CONNECTION_NAME_SECRET] --data-file=-
+echo -n $INSTANCE_UNIX_SOCKET | \
+    gcloud secrets create [INSTANCE_UNIX_SOCKET_SECRET] --data-file=-
 ```
 
 Deploy the service to Cloud Run specifying the env var name and secret name:
 ```sh
 gcloud beta run deploy SERVICE --image gcr.io/[YOUR_PROJECT_ID]/run-sql \
-    --add-cloudsql-instances $INSTANCE_CONNECTION_NAME \
-    --update-secrets INSTANCE_CONNECTION_NAME=[INSTANCE_CONNECTION_NAME_SECRET]:latest,\
-      INSTANCE_UNIX_SOCKET=[INSTANCE_UNIX_SOCKET_SECRET]:latest, \
+    --add-cloudsql-instances '<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
+    --update-secrets INSTANCE_UNIX_SOCKET=[INSTANCE_UNIX_SOCKET_SECRET]:latest, \
       DB_USER=[DB_USER_SECRET]:latest, \
       DB_PASS=[DB_PASS_SECRET]:latest, \
       DB_NAME=[DB_NAME_SECRET]:latest
@@ -183,7 +181,7 @@ For more details about using Cloud Run see http://cloud.run.
 
 ### Deploy to App Engine Flexible
 
-1.  Edit [app.yaml](app.yaml).  Replace `<project-name>:<region>:<instance-name>`
+1.  Edit [app.yaml](app.yaml).  Replace `<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>`
     with your instance connection name. Update the values
     for `DB_USER`, `DB_PASS`, and `DB_NAME`
 
