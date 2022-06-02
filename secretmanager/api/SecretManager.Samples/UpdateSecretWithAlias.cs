@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// [START secretmanager_update_secret]
+// [START secretmanager_update_secret_with_alias]
 
 using Google.Protobuf.WellKnownTypes;
 using Google.Cloud.SecretManager.V1;
@@ -43,4 +43,4 @@ public class UpdateSecretWithAliasSample
         return updatedSecret;
     }
 }
-// [END secretmanager_update_secret]
+// [END secretmanager_update_secret_with_alias]
