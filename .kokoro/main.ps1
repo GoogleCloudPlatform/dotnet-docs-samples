@@ -41,6 +41,10 @@ try {
         $testDirs = $allDirs
     }
 
+    # For diagnosis purposes only
+    Write-Output "Changed dirs: $changedDirs"
+    Write-Output "Test dirs: $testDirs"
+
     # There are too many tests to run in a single Kokoro job.  So, we split
     # the tests into groups.  Each Kokoro job runs one group.
 
@@ -58,13 +62,21 @@ try {
     $groups[3] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("s") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
     $dirs = $groups[$GroupNumber]
 
+    Write-Output "Shard: $GroupNumber"
+    Write-Output "Sharded dirs: $dirs"
+
     if ($dirs.Count -gt 0)
     {
         # Find all the runTest scripts.
         $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
-        $scripts.VersionInfo.FileName `
-            | Sort-Object -Descending -Property {Get-GitTimeStampForScript $_} `
-            | Run-TestScripts -TimeoutSeconds 600
+        Write-Output "Scripts: $scripts"
+
+        if ($scripts.Count -gt 0)
+        {
+            $scripts.VersionInfo.FileName `
+                | Sort-Object -Descending -Property {Get-GitTimeStampForScript $_} `
+                | Run-TestScripts -TimeoutSeconds 600
+        }
     }
 } finally {
     Pop-Location
