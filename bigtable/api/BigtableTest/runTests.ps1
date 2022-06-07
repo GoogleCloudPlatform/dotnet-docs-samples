@@ -12,6 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# Skipping tests because of https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/992
+return
+
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
 Require-Platform Win*

@@ -25,6 +25,7 @@ namespace Pubsub.ViewModels
     {
         public bool MissingProjectId { get; set; } = false;
         public string[] Messages { get; set; }
+        public string[] AuthMessages { get; set; }
         public string PublishedMessage { get; set; }
     }
 }

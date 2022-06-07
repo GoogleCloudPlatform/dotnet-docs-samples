@@ -24,6 +24,8 @@ namespace Pubsub
         public string VerificationToken { get; set; }
         public string TopicId { get; set; }
         public string SubscriptionId { get; set; }
+        public string AuthSubscriptionId { get; set; }
+        public string ServiceAccountEmail { get; set; }
         public string ProjectId { get; set; }
 
         private static readonly string[] s_badProjectIds =
