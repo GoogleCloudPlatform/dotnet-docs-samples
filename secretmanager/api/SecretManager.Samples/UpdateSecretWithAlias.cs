@@ -30,8 +30,8 @@ public class UpdateSecretWithAliasSample
         Secret secret = new Secret
         {
             SecretName = new SecretName(projectId, secretId),
+            VersionAliases = { ["test"] = 1}
         };
-        secret.VersionAliases["test"] = 1;
 
         // Build the field mask.
         FieldMask fieldMask = FieldMask.FromString("versionaliases");
