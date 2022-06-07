@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Api.Gax" Version="3.7.0" />
-    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="4.4.0" />
+    <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore3" Version="4.4.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
     <PackageReference Include="Polly" Version="7.2.3" />
   </ItemGroup>
