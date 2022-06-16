@@ -35,7 +35,11 @@ public class IamGetPolicySample
         // var resourceName = new KeyRingName(projectId, locationId, keyRingId);
 
         // Get the current IAM policy.
-        Policy policy = client.GetIamPolicy(resourceName);
+        Policy policy = client.IAMPolicyClient.GetIamPolicy(
+            new GetIamPolicyRequest
+            {
+                ResourceAsResourceName = resourceName
+            });
 
         // Print the policy.
         foreach (Binding b in policy.Bindings)
