@@ -15,7 +15,7 @@
  */
 
 using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Diagnostics.AspNetCore;
+using Google.Cloud.Diagnostics.AspNetCore3;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
@@ -30,7 +30,7 @@ namespace CloudTasks
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseGoogleDiagnostics(GetProjectId(), "cloud-tasks-endpoint", "0.01")
+                .ConfigureServices(services => services.AddGoogleDiagnosticsForAspNetCore(GetProjectId(), "cloud-tasks-endpoint", "0.01"))
                 .UseStartup<Startup>()
                 .Build();
 
