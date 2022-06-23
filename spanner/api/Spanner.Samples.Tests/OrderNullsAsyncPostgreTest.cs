@@ -65,8 +65,6 @@ public class OrderNullsAsyncPostgreTest
 
     private async Task CreateTableForOrderingAsync(string projectId, string instanceId, string databaseId)
     {
-        DatabaseAdminClient databaseAdminClient = await DatabaseAdminClient.CreateAsync();
-
         // Create a table.
         var singersTable = @"CREATE TABLE SingersForOrder (
             SingerId bigint NOT NULL PRIMARY KEY,
@@ -81,7 +79,7 @@ public class OrderNullsAsyncPostgreTest
             Statements = { singersTable }
         };
 
-        var updateOperation = await databaseAdminClient.UpdateDatabaseDdlAsync(updateDatabaseRequest);
+        var updateOperation = await _spannerFixture.DatabaseAdminClient.UpdateDatabaseDdlAsync(updateDatabaseRequest);
         // Wait until the operation has finished.
         Console.WriteLine("Waiting for the table to be created.");
         var updateResponse = await updateOperation.PollUntilCompletedAsync();

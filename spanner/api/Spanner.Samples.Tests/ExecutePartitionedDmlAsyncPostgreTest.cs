@@ -34,21 +34,16 @@ public class ExecutePartitionedDmlAsyncPostgreTest
     {
         // Arrange.
         // Insert data that cannot be inserted by any other tests to avoid errors.
-        await InsertDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
-        
+        await InsertDataAsync();
+
         // Act.
         var result = await _sample.ExecutePartitionedDmlAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
         Assert.Equal(2, result);
     }
 
-    private async Task InsertDataAsync(string projectId, string instanceId, string databaseId)
+    private async Task InsertDataAsync()
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-
-        using var connection = new SpannerConnection(connectionString);
-        await connection.OpenAsync();
-
-        SpannerBatchCommand batchCommand = connection.CreateBatchDmlCommand();
+        SpannerBatchCommand batchCommand = _spannerFixture.PgSpannerConnection.CreateBatchDmlCommand();
         batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (12, 'Elvis', 'Presley')");
         batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (13, 'John', 'Lennon')");
 

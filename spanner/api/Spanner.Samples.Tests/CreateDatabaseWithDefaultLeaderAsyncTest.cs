@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,11 +28,13 @@ public class CreateDatabaseWithDefaultLeaderAsyncTest
     [Fact]
     public async Task TestCreateDatabaseWithDefaultLeaderAsync()
     {
-        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var databaseId = _spannerFixture.GenerateTempDatabaseId();
         var defaultLeader = "us-central1";
+
         var createDatabaseWithDefaultLeaderAsyncSample = new CreateDatabaseWithDefaultLeaderAsyncSample();
         var database = await createDatabaseWithDefaultLeaderAsyncSample
             .CreateDatabaseWithDefaultLeaderAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithMultiRegion, databaseId, defaultLeader);
+
         Assert.Equal(defaultLeader, database.DefaultLeader);
     }
 }

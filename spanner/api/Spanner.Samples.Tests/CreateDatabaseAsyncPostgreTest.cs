@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Google.Cloud.Spanner.Admin.Database.V1;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -35,7 +33,7 @@ public class CreateDatabaseAsyncPostgreTest
     public async Task TestCreateDatabaseAsyncPostgre()
     {
         // Arrange.
-        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var databaseId = _spannerFixture.GenerateTempDatabaseId();
 
         // Act.
         await _sample.CreateDatabaseAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);

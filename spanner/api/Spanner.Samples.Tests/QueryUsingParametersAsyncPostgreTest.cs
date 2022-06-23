@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Data;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,7 +33,7 @@ public class QueryUsingParametersAsyncPostgreTest
     {
         //Arrange. 
         // Insert data that cannot be inserted by any other tests to avoid errors.
-        await InsertDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await InsertDataAsync();
 
         // Act.
         var result = await _sample.QueryUsingParametersAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
@@ -43,12 +42,9 @@ public class QueryUsingParametersAsyncPostgreTest
         Assert.Single(result);
     }
 
-    private async Task InsertDataAsync(string projectId, string instanceId, string databaseId)
+    private async Task InsertDataAsync()
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        using var connection = new SpannerConnection(connectionString);
-        await connection.OpenAsync();
-        var command = connection.CreateDmlCommand("INSERT INTO Singers(SingerId, FirstName, LastName) VALUES(10, 'Sonu', 'Nigam')");
+        var command = _spannerFixture.PgSpannerConnection.CreateDmlCommand("INSERT INTO Singers(SingerId, FirstName, LastName) VALUES(10, 'Sonu', 'Nigam')");
         await command.ExecuteNonQueryAsync();
     }
 }
