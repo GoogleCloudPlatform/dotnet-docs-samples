@@ -29,7 +29,7 @@ public class GetDatabaseDdlAsyncTest
     [Fact]
     public async Task TestGetDatabaseDdlAsync()
     {
-        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var databaseId = $"my-db-{Guid.NewGuid().ToString("N").Substring(8)}";
         var alterDatabaseStatement = $"ALTER DATABASE `{databaseId}` SET OPTIONS (default_leader = 'us-central1')";
         var createSingersTable =
             @"CREATE TABLE Singers (
