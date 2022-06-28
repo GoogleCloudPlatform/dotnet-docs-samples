@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,11 +28,14 @@ public class DeleteDataAsyncTest
     [Fact]
     public async Task TestDeleteDataAsync()
     {
-        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var databaseId = _spannerFixture.GenerateTempDatabaseId();
+
         CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
-        InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
         await createDatabaseAsyncSample.CreateDatabaseAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
+        InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
         await insertDataAsyncSample.InsertDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
         DeleteDataAsyncSample deleteDataAsyncSample = new DeleteDataAsyncSample();
         var rowCount = await deleteDataAsyncSample.DeleteDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
         Assert.Equal(6, rowCount);

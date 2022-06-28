@@ -14,16 +14,13 @@
  * the License.
  */
 
-using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using Polly;
 using System;
-using System.Data;
 using System.Data.Common;
 
 namespace CloudSql

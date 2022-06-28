@@ -35,13 +35,22 @@ public class IamRemoveMemberSample
         // var resourceName = new KeyRingName(projectId, locationId, keyRingId);
 
         // Get the current IAM policy.
-        Policy policy = client.GetIamPolicy(resourceName);
+        Policy policy = client.IAMPolicyClient.GetIamPolicy(
+            new GetIamPolicyRequest
+            {
+                ResourceAsResourceName = resourceName
+            });
 
         // Add the member to the policy.
         policy.RemoveRoleMember("roles/cloudkms.cryptoKeyEncrypterDecrypter", member);
 
         // Save the updated IAM policy.
-        Policy result = client.SetIamPolicy(resourceName, policy);
+        Policy result = client.IAMPolicyClient.SetIamPolicy(
+            new SetIamPolicyRequest
+            {
+                ResourceAsResourceName = resourceName,
+                Policy = policy
+            });
 
         // Return the resulting policy.
         return result;
