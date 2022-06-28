@@ -34,7 +34,7 @@ public class UpdateSecretWithAliasSample
         };
 
         // Build the field mask.
-        FieldMask fieldMask = FieldMask.FromString("versionaliases");
+        FieldMask fieldMask = FieldMask.FromString("version_aliases");
 
         // Call the API.
         Secret updatedSecret = client.UpdateSecret(secret, fieldMask);
