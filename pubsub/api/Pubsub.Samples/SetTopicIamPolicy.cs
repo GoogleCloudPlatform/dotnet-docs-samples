@@ -39,7 +39,7 @@ public class SetTopicIamPolicySample
             ResourceAsResourceName = TopicName.FromProjectTopic(projectId, topicId),
             Policy = policy
         };
-        Policy response = publisher.SetIamPolicy(request);
+        Policy response = publisher.IAMPolicyClient.SetIamPolicy(request);
         return response;
     }
 }
