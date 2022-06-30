@@ -52,7 +52,6 @@ public class EnableBucketLifecycleManagementSample
             Console.WriteLine($"Days Since Custom Time: \t{rule.Condition.DaysSinceCustomTime}");
             Console.WriteLine($"Days Since Non-current Time: \t{rule.Condition.DaysSinceNoncurrentTime}");
             Console.WriteLine($"IsLive: \t{rule.Condition.IsLive}");
-            Console.WriteLine($"Pattern: \t{rule.Condition.MatchesPattern}");
             Console.WriteLine($"Storage Class: \t{rule.Condition.MatchesStorageClass}");
             Console.WriteLine($"Noncurrent Time Before: \t{rule.Condition.NoncurrentTimeBefore}");
             Console.WriteLine($"Newer Versions: \t{rule.Condition.NumNewerVersions}");
