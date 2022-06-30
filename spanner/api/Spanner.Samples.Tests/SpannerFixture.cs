@@ -35,21 +35,21 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     // Allow environment variables to override the default instance and database names.
     public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
 
-    public string DatabaseId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? $"my-db-{Guid.NewGuid().ToString("N").Substring(8)}";
-    public string PostgreSqlDatabaseId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_POSTGRESQL_DATABASE") ?? $"my-db-pg-{Guid.NewGuid().ToString("N").Substring(11)}";
+    public string DatabaseId { get; private set; }
+    public string PostgreSqlDatabaseId { get; private set; }
 
     public string BackupDatabaseId { get; } = "my-test-database";
     public string BackupId { get; } = "my-test-database-backup";
-    public string ToBeCancelledBackupId { get; } = $"my-backup-{Guid.NewGuid().ToString("N").Substring(12)}";
-    public string RestoredDatabaseId { get; } = $"my-restore-db-{Guid.NewGuid().ToString("N").Substring(16)}";
+    public string ToBeCancelledBackupId { get; } = GenerateId("my-backup-");
+    public string RestoredDatabaseId { get; private set; }
 
     public bool RunCmekBackupSampleTests { get; private set; }
     public const string SkipCmekBackupSamplesMessage = "Spanner CMEK backup sample tests are disabled by default for performance reasons. Set the environment variable RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS=true to enable the test.";
 
-    public string EncryptedDatabaseId { get; } = $"my-enc-db-{Guid.NewGuid().ToString("N").Substring(12)}";
-    public string EncryptedBackupId { get; } = $"my-enc-backup-{Guid.NewGuid().ToString("N").Substring(16)}";
+    public string EncryptedDatabaseId { get; private set; }
+    public string EncryptedBackupId { get; } = GenerateId("my-enc-backup-");
     // 'restore' is abbreviated to prevent the name from becoming longer than 30 characters.
-    public string EncryptedRestoreDatabaseId { get; } = $"my-enc-r-db-{Guid.NewGuid().ToString("N").Substring(14)}";
+    public string EncryptedRestoreDatabaseId { get; private set; }
 
     // These are intentionally kept on the instance to avoid the need to create a new encrypted database and backup for each run.
     public string FixedEncryptedDatabaseId { get; } = "fixed-enc-backup-db";
@@ -61,8 +61,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         Environment.GetEnvironmentVariable("spanner.test.key.ring") ?? "spanner-test-keyring",
         Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key");
 
-    public string InstanceIdWithProcessingUnits { get; } = $"my-ins-pu-{Guid.NewGuid().ToString("N").Substring(12)}";
-    public string InstanceIdWithMultiRegion { get; } = $"my-ins-mr-{Guid.NewGuid().ToString("N").Substring(12)}";
+    public string InstanceIdWithProcessingUnits { get; } = GenerateId("my-ins-pu-");
+    public string InstanceIdWithMultiRegion { get; } = GenerateId("my-ins-mr-");
     public string InstanceConfigId { get; } = "nam6";
 
     private IList<string> TempDbIds { get; } = new List<string>();
@@ -80,6 +80,12 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public async Task InitializeAsync()
     {
+        DatabaseId = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? GenerateTempDatabaseId();
+        PostgreSqlDatabaseId = Environment.GetEnvironmentVariable("TEST_SPANNER_POSTGRESQL_DATABASE") ?? GenerateTempDatabaseId("my-db-pg-");
+        RestoredDatabaseId = GenerateTempDatabaseId("my-restore-db-");
+        EncryptedDatabaseId = GenerateTempDatabaseId("my-enc-db-");
+        EncryptedRestoreDatabaseId = GenerateTempDatabaseId("my-enc-r-db-");
+
         DatabaseAdminClient = await DatabaseAdminClient.CreateAsync();
         InstanceAdminClient = await InstanceAdminClient.CreateAsync();
         AdminSpannerConnection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}");
@@ -114,12 +120,6 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
             cleanupTasks.Add(DeleteBackupAsync(ToBeCancelledBackupId));
             cleanupTasks.Add(DeleteBackupAsync(EncryptedBackupId));
-
-            cleanupTasks.Add(DeleteDatabaseAsync(DatabaseId));
-            cleanupTasks.Add(DeleteDatabaseAsync(PostgreSqlDatabaseId));
-            cleanupTasks.Add(DeleteDatabaseAsync(RestoredDatabaseId));
-            cleanupTasks.Add(DeleteDatabaseAsync(EncryptedDatabaseId));
-            cleanupTasks.Add(DeleteDatabaseAsync(EncryptedRestoreDatabaseId));
 
             foreach(string id in TempDbIds)
             {
@@ -325,8 +325,12 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
         catch(RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
         {
-            // The instance was not created so tests requiring it should have already failed.
-            // Let's not fail here.
+            Console.WriteLine($"Instance {instanceId} was not found for deletion.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception while attempting to delete instance {instanceId}");
+            Console.WriteLine(ex);
         }
     }
 
@@ -338,20 +342,36 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
         catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
         {
-            // The backup was not created so tests requiring it should have already failed.
-            // Let's not fail here.
+            Console.WriteLine($"Backup {backupId} was not found for deletion.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception while attempting to delete backup {backupId}");
+            Console.WriteLine(ex);
         }
     }
 
     private async Task DeleteDatabaseAsync(string databaseId)
     {
-        using var cmd = AdminSpannerConnection.CreateDdlCommand($@"DROP DATABASE {databaseId}");
-        await cmd.ExecuteNonQueryAsync();
+        try
+        {
+            using var cmd = AdminSpannerConnection.CreateDdlCommand($@"DROP DATABASE {databaseId}");
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception while attempting to delete database {databaseId}");
+            Console.WriteLine(ex);
+        }
     }
 
-    public string GenerateTempDatabaseId()
+    public static string GenerateId(string prefix, int maxLength = 30) =>
+        // Guid.ToString("N") returns a string of 32 digits.
+        $"{prefix}{Guid.NewGuid().ToString("N").Substring(prefix.Length + (32 - maxLength))}";
+
+    public string GenerateTempDatabaseId(string prefix = "my-db-")
     {
-        string tempDatabaseId = $"my-db-{Guid.NewGuid().ToString("N").Substring(8)}";
+        string tempDatabaseId = GenerateId(prefix);
         TempDbIds.Add(tempDatabaseId);
         return tempDatabaseId;
     }
@@ -410,7 +430,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         params string[] extraStatements)
     {
         // For temporary DBs we don't need a time based ID, as we delete them inmediately.
-        var databaseId = $"temp-db-{Guid.NewGuid().ToString("N").Substring(0, 20)}";
+        var databaseId = GenerateId("temp-db-");
         await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, extraStatements);
     }
 
@@ -488,6 +508,4 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         var databases = DatabaseAdminClient.ListDatabases(instanceName);
         return databases;
     }
-
-    
 }
