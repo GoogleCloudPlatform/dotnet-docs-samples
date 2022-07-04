@@ -38,13 +38,13 @@ public class RenderController : Controller
     public async Task<IActionResult> Index([FromBody] RenderModel model)
     {
         var markdown = model.Data ?? string.Empty;
-        var renderedHtml = await GetAuthenticatedPostRepsonse(_editorUpstreamRenderUrl, markdown);
+        var renderedHtml = await GetAuthenticatedPostResponse(_editorUpstreamRenderUrl, markdown);
         return Content(renderedHtml);
     }
     // [END cloudrun_secure_request_do]
 
     // [START cloudrun_secure_request]
-    private async Task<string> GetAuthenticatedPostRepsonse(string url, string postBody)
+    private async Task<string> GetAuthenticatedPostResponse(string url, string postBody)
     {
         // Get the OIDC access token from the service account via Application Default Credentials
         GoogleCredential credential = await GoogleCredential.GetApplicationDefaultAsync();  
