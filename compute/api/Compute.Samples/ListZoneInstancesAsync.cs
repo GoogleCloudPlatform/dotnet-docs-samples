@@ -23,35 +23,23 @@ using System.Threading.Tasks;
 
 public class ListZoneInstancesAsyncSample
 {
-    public async Task<IList<Instance>> ListZoneInstancesAsync(string projectId = "your-project-id", string zone = "us-central1-a")
+    public async Task<IList<Instance>> ListZoneInstancesAsync(
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
+        string projectId = "your-project-id", 
+        string zone = "us-central1-a")
     {
-        // Initialize the client that will be used to send instance-related requests.
-        // You should reuse the same client for multiple requests.
+        // Initialize client that will be used to send requests. This client only needs to be created
+        // once, and can be reused for multiple requests.
         InstancesClient client = await InstancesClient.CreateAsync();
-        InstanceList instanceList;
         IList<Instance> allInstances = new List<Instance>();
 
-        // Make the requests to list all VM instances.
-        ListInstancesRequest request = new ListInstancesRequest 
-        { 
-            Project = projectId,
-            Zone = zone,
-        };
-        do
+        // Make the request to list all VM instances in the given zone in the specified project.
+        await foreach(var instance in client.ListAsync(projectId, zone))
         {
-            instanceList = await client.ListAsync(request);
             // The result is an Instance collection.
-            foreach (var instance in instanceList.Items)
-            {
-                Console.WriteLine($"-- Name: {instance.Name}");
-                allInstances.Add(instance);
-            }
-            // Use the NextPageToken value on the request result to make subsequent requests
-            // until all instances have been listed.
-            request.PageToken = instanceList.NextPageToken;
-
-            // When all instances are listed the last result NextPageToken is not set.
-        } while (instanceList.HasNextPageToken);
+            Console.WriteLine($"Instance: {instance.Name}");
+            allInstances.Add(instance);
+        }
 
         return allInstances;
     }

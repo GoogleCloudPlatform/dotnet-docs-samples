@@ -34,7 +34,11 @@ else
         <ul>
             @foreach (string message in Model.Messages)
             {
-                <li>@message</li>
+                <li>Push:@message</li>
+            }
+            @foreach (string message in Model.AuthMessages)
+            {
+                <li>AuthPush:@message</li>
             }
         </ul>
         <p><small>Note: because your application is likely running multiple instances, each instance will have a different list of messages.</small></p>

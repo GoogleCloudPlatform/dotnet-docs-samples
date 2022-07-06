@@ -12,6 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# Skipping tests because of https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/992
+return
+
 Import-Module ..\..\..\BuildTools.psm1 -DisableNameChecking
 
 Require-Platform Win*
@@ -21,5 +24,6 @@ BackupAndEdit-TextFile "..\QuickStart\QuickStart.cs", "..\HelloWorld\HelloWorld.
     @{"YOUR-PROJECT-ID" = $env:GOOGLE_PROJECT_ID;
     "YOUR-INSTANCE-ID" = $env:TEST_BIGTABLE_INSTANCE;} `
 {
-    dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
+    dotnet restore --force
+    dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
 }

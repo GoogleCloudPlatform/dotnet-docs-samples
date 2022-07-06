@@ -20,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 
@@ -57,6 +58,9 @@ namespace GoogleCloudSamples
         public IEnumerable<Type> RetryWhenExceptions { get; set; } = new Type[0];
         public Func<Exception, bool> ShouldRetry { get; set; }
 
+        private static readonly Random _random = new Random();
+        private static readonly object _lock = new object();
+
         /// <summary>
         /// Retry action when assertion fails.
         /// </summary>
@@ -70,13 +74,56 @@ namespace GoogleCloudSamples
                 {
                     return func();
                 }
-                catch (Exception e)
-                when (ShouldCatch(e) && i < MaxTryCount)
+                catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
                 {
-                    Thread.Sleep(delayMs);
+                    int jitteredDelayMs;
+                    lock(_lock)
+                    {
+                        jitteredDelayMs = delayMs/2 + (int)(_random.NextDouble() * delayMs);
+                    }
+                    Thread.Sleep(jitteredDelayMs);
                     delayMs *= (int)DelayMultiplier;
                 }
             }
+        }
+
+        public void Eventually(Action action) =>
+            Eventually(() =>
+            { 
+                action();
+                return 0; 
+            });
+
+
+        public async Task<T> Eventually<T>(Func<Task<T>> asyncFunc)
+        {
+            int delayMs = FirstRetryDelayMs;
+            for (int i = 0; ; ++i)
+            {
+                try
+                {
+                    return await asyncFunc();
+                }
+                catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
+                {
+                    int jitteredDelayMs;
+                    lock (_lock)
+                    {
+                        jitteredDelayMs = delayMs / 2 + (int)(_random.NextDouble() * delayMs);
+                    }
+                    await Task.Delay(jitteredDelayMs);
+                    delayMs *= (int)DelayMultiplier;
+                }
+            }
+        }
+
+        public async Task Eventually(Func<Task> action)
+        {
+            await Eventually(async () =>
+            { 
+                await action();
+                return 0; 
+            });
         }
 
         private bool ShouldCatch(Exception e)
@@ -89,11 +136,6 @@ namespace GoogleCloudSamples
                     return true;
             }
             return false;
-        }
-
-        public void Eventually(Action action)
-        {
-            Eventually(() => { action(); return 0; });
         }
     }
 
@@ -127,7 +169,7 @@ namespace GoogleCloudSamples
                 Console.WriteLine(string.Join(" ", arguments));
 
                 TextWriter consoleOut = Console.Out;
-                StringWriter stringOut = new StringWriter();
+                ThreadSafeStringWriter stringOut = new ThreadSafeStringWriter();
                 Console.SetOut(stringOut);
                 try
                 {
@@ -160,7 +202,7 @@ namespace GoogleCloudSamples
 
                 TextWriter consoleOut = Console.Out;
                 TextReader consoleIn = Console.In;
-                StringWriter stringOut = new StringWriter();
+                ThreadSafeStringWriter stringOut = new ThreadSafeStringWriter();
                 Console.SetOut(stringOut);
                 Console.SetIn(new StringReader(stdIn));
                 try
@@ -185,5 +227,43 @@ namespace GoogleCloudSamples
                 }
             }
         }
+
+        internal class ThreadSafeStringWriter : StringWriter
+        {
+            private readonly object _lock = new object();
+
+            public override void Write(char value)
+            {
+                lock (_lock)
+                {
+                    base.Write(value);
+                }
+            }
+
+            public override void Write(char[] buffer, int index, int count)
+            {
+                lock (_lock)
+                {
+                    base.Write(buffer, index, count);
+                }
+            }
+
+            public override void Write(string value)
+            {
+                lock (_lock)
+                {
+                    base.Write(value);
+                }
+            }
+
+            public override string ToString()
+            {
+                lock (_lock)
+                {
+                    return base.ToString();
+                }
+            }
+        }
+
     }
 }

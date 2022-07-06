@@ -14,10 +14,10 @@
 
 Import-Module -DisableNameChecking ..\..\BuildTools.psm1
 
-dotnet restore
+dotnet restore --force
 BackupAndEdit-TextFile "appsettings.json" `
     @{"YOUR-GOOGLE-PROJECT-ID" = $env:GOOGLE_PROJECT_ID} `
 {
-	dotnet build
+	dotnet build --no-restore
 	Run-KestrelTest 5582 -CasperJs11
 }

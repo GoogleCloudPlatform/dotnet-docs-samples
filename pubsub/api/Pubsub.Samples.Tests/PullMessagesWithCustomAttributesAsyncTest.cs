@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -29,7 +30,7 @@ public class PullMessagesWithCustomAttributesAsyncTest
     }
 
     [Fact]
-    public async void PullMessagesWithCustomAttributesAsync()
+    public async Task PullMessagesWithCustomAttributesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForMessagesWithPullCustomAttributesAsync{randomName}";
@@ -41,7 +42,10 @@ public class PullMessagesWithCustomAttributesAsyncTest
 
         await _publishMessageWithCustomAttributesAsyncSample.PublishMessageWithCustomAttributesAsync(_pubsubFixture.ProjectId, topicId, message);
 
-        var messages = await _pullMessagesWithCustomAttributesAsyncSample.PullMessagesWithCustomAttributesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Contains(messages, m => m.Attributes.Keys.Contains("year") && m.Attributes.Values.Contains("2020"));
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var messages = await _pullMessagesWithCustomAttributesAsyncSample.PullMessagesWithCustomAttributesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Contains(messages, m => m.Attributes.Keys.Contains("year") && m.Attributes.Values.Contains("2020"));
+        });
     }
 }

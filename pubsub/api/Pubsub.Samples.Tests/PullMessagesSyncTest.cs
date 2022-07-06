@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -29,7 +30,7 @@ public class PullMessagesSyncTest
     }
 
     [Fact]
-    public async void PullMessagesSync()
+    public async Task PullMessagesSync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForMessageSyncAck{randomName}";
@@ -41,13 +42,15 @@ public class PullMessagesSyncTest
 
         await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message });
 
-        // Pull and acknowledge the messages
-        var result = _pullMessagesSyncSample.PullMessagesSync(_pubsubFixture.ProjectId, subscriptionId, true);
-        // sometimes UNAVAILABLE response from service.
-        Assert.True(result <= 1);
+        _pubsubFixture.Pull.Eventually(() =>
+        {
+            // Pull and acknowledge the messages
+            var result = _pullMessagesSyncSample.PullMessagesSync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, result);
+        });
 
         //Pull the Message to confirm it's gone after it's acknowledged
-        result = _pullMessagesSyncSample.PullMessagesSync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(result <= 1);
+        var result = _pullMessagesSyncSample.PullMessagesSync(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.Equal(0, result);
     }
 }

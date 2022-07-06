@@ -14,6 +14,7 @@
 
 using Google.Cloud.PubSub.V1;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -31,7 +32,7 @@ public class PublishAvroMessagesAsyncTest
     }
 
     [Fact]
-    public async void PublishBinaryMessages()
+    public async Task PublishBinaryMessages()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicAvroBinaryMessageCreation{randomName}";
@@ -48,12 +49,15 @@ public class PublishAvroMessagesAsyncTest
         Assert.Equal(messageTexts.Count, output);
 
         // Pull the Message to confirm it is valid
-        var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(result > 0);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
+            Assert.True(result > 0);
+        });
     }
 
     [Fact]
-    public async void PublishJsonMessages()
+    public async Task PublishJsonMessages()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForAvroJsonMessageCreation{randomName}";
@@ -70,7 +74,10 @@ public class PublishAvroMessagesAsyncTest
         Assert.Equal(messageTexts.Count, output);
 
         // Pull the Message to confirm it is valid
-        var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
-        Assert.True(result > 0);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var result = await _pullMessagesAsyncSample.PullMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, false);
+            Assert.True(result > 0);
+        });
     }
 }

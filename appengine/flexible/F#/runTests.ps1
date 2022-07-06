@@ -14,6 +14,6 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-dotnet restore
-dotnet build -c dbg
+dotnet restore --force
+dotnet build --no-restore -c dbg
 Run-KestrelTest 11898 -CasperJs11

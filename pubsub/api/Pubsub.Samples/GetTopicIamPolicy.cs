@@ -23,7 +23,10 @@ public class GetTopicIamPolicySample
     {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
-        Policy policy = publisher.GetIamPolicy(topicName);
+        Policy policy = publisher.IAMPolicyClient.GetIamPolicy(new GetIamPolicyRequest
+        {
+            ResourceAsResourceName = topicName
+        });
         return policy;
     }
 }

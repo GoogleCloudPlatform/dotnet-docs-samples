@@ -8,9 +8,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickStart", "QuickStart\Qu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineUtil", "..\..\commandlineutil\Lib\CommandLineUtil.csproj", "{3EEF44EE-21FB-4F38-99C0-C8F711925487}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spanner.Samples", "Spanner.Samples\Spanner.Samples.csproj", "{F4B49B0B-2B95-4B82-91CA-6F36AE0D6AEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spanner.Samples", "Spanner.Samples\Spanner.Samples.csproj", "{F4B49B0B-2B95-4B82-91CA-6F36AE0D6AEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spanner.Samples.Tests", "Spanner.Samples.Tests\Spanner.Samples.Tests.csproj", "{079E2076-FF34-4F2C-BF70-4E3A6F00A116}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spanner.Samples.Tests", "Spanner.Samples.Tests\Spanner.Samples.Tests.csproj", "{079E2076-FF34-4F2C-BF70-4E3A6F00A116}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "testutil", "..\..\testutil\testutil.csproj", "{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +84,18 @@ Global
 		{079E2076-FF34-4F2C-BF70-4E3A6F00A116}.Release|x64.Build.0 = Release|Any CPU
 		{079E2076-FF34-4F2C-BF70-4E3A6F00A116}.Release|x86.ActiveCfg = Release|Any CPU
 		{079E2076-FF34-4F2C-BF70-4E3A6F00A116}.Release|x86.Build.0 = Release|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Debug|x64.Build.0 = Debug|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Debug|x86.Build.0 = Debug|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Release|x64.ActiveCfg = Release|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Release|x64.Build.0 = Release|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Release|x86.ActiveCfg = Release|Any CPU
+		{E71B6A23-F75B-4DD5-A7C4-B8F661BD57B2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

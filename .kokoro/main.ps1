@@ -23,9 +23,27 @@ try {
 
     # Import secrets:
     .\.kokoro-windows\Import-Secrets.ps1
-        
+
+    # The list of changed subdirectories.
+    git config --global --add safe.directory /tmpfs/src/github/dotnet-docs-samples
+    $changedDirs = ($(git diff main --name-only | cut -d/ -f 1 | uniq))
+
     # The list of all subdirectories.
     $allDirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
+
+    # If no dirs have changed we run everything since we are most likely on CI.
+    if ($changedDirs.Count -gt 0)
+    {
+        $testDirs = $changedDirs
+    }
+    else
+    {
+        $testDirs = $allDirs
+    }
+
+    # For diagnosis purposes only
+    Write-Output "Changed dirs: $changedDirs"
+    Write-Output "Test dirs: $testDirs"
 
     # There are too many tests to run in a single Kokoro job.  So, we split
     # the tests into groups.  Each Kokoro job runs one group.
@@ -33,22 +51,33 @@ try {
     # Groups of subdirectories.
     $groups = @(
         $false,  # 0: Everything.
-        $false,  # 1: Everything starting from a to c.
-        $false,  # 2: Everything starting from d to l, except for iot when on Linux because of the BouncyCastle and other dependencies.
-        $false   # 3: Everything starting from m to z.
+        $false,  # 1: Everything starting from a to e.
+        $false,  # 2: Everything starting from f to r, except for iot when on Linux because of the BouncyCastle and other dependencies.
+        $false   # 3: Everything starting from s to z.
     )
 
-    $groups[0] = $allDirs
-    $groups[1] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("j") -le 0) -and ($IsRunningOnWindows -or -not ($_.Equals("iot"))) }
-    $groups[2] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("k") -ge 0) -and ($_.Substring(0, 1).CompareTo("s") -le 0) }
-    $groups[3] = $allDirs | Where-Object { ($_.Substring(0, 1).CompareTo("t") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
+    $groups[0] = $testDirs
+    $groups[1] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("e") -le 0) }
+    $groups[2] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("f") -ge 0) -and ($_.Substring(0, 1).CompareTo("r") -le 0) -and ($IsRunningOnWindows -or -not ($_.Equals("iot"))) }
+    $groups[3] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("s") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
     $dirs = $groups[$GroupNumber]
 
-    # Find all the runTest scripts.
-    $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
-    $scripts.VersionInfo.FileName `
-        | Sort-Object -Descending -Property {Get-GitTimeStampForScript $_} `
-        | Run-TestScripts -TimeoutSeconds 600
+    Write-Output "Shard: $GroupNumber"
+    Write-Output "Sharded dirs: $dirs"
+
+    if ($dirs.Count -gt 0)
+    {
+        # Find all the runTest scripts.
+        $scripts = Get-ChildItem -Path $dirs -Filter *runTest*.ps* -Recurse
+        Write-Output "Scripts: $scripts"
+
+        if ($scripts.Count -gt 0)
+        {
+            $scripts.VersionInfo.FileName `
+                | Sort-Object -Descending -Property {Get-GitTimeStampForScript $_} `
+                | Run-TestScripts -TimeoutSeconds 600
+        }
+    }
 } finally {
     Pop-Location
 }

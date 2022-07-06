@@ -47,16 +47,16 @@ You need to change three settings in the `appsettings.json` file in this project
 It's easiest to deploy to App Engine Flex using the Google Cloud VS extension
 ([https://cloud.google.com/visual-studio/](https://cloud.google.com/visual-studio/)):
 * Right click on the project -> `Publish to Google Cloud` -> `App Engine`  
-* Pick something meaninful for version. Make sure you only use 1 VM, as the server keeps all state in memory only, so all requests must be served by the same instance. 
+* Pick something meaningful for version. Make sure you only use 1 VM, as the server keeps all state in memory only, so all requests must be served by the same instance. 
 
 Alternatively, you can also deploy using `gcloud` command line tool:
 * Publish the app with `dotnet publish -c Release` command.
 * Copy `app.yaml` and `Dockerfile` to `publish` folder.
 * Inside `publish` folder, `gcloud app deploy --version v0` and follow the prompts. 
 
-### A note on DialogFlow Fullfillment
+### A note on DialogFlow Fulfillment
 
-We will use DialogFlow's WebHook to fullfill requests. DialogFlow requires an HTTPS URL for its fulfillment URL. 
+We will use DialogFlow's WebHook to fulfill requests. DialogFlow requires an HTTPS URL for its fulfillment URL. 
 
 By default, App Engine Flex provides a public domain name with HTTPS and certs already setup, so no additional work is needed.
 
@@ -76,7 +76,7 @@ Update the `Fulfillment` `Webhook` with the correct URL for your project.
 
 This must be an HTTPS URL, and will be in the format: `https://<your domain here>/Conversation`.
 
-If you want to test the server locally, you can use [ngrok](https://ngrok.com/) which can expose your local server behind a public HTTP/HTTPS endpoint. Then, you can use the ngrok HTTPS endpoint as fullfillment URL in Dialogflow. However, ASP.NET apps get angry when they see a different host header than expected, so you need to start ngrok as follows:
+If you want to test the server locally, you can use [ngrok](https://ngrok.com/) which can expose your local server behind a public HTTP/HTTPS endpoint. Then, you can use the ngrok HTTPS endpoint as fulfillment URL in Dialogflow. However, ASP.NET apps get angry when they see a different host header than expected, so you need to start ngrok as follows:
 
 `ngrok http [port] -host-header="localhost:[port]"`
 
@@ -113,7 +113,7 @@ To stop talking to the test app, say: *"Goodbye"*.
 
 ## Run
 
-When demoing, first check the server is deployed, then point a web browser to: `https://<your domain here>/`. This updates automatically during the demo in responce to the spoken queries.
+When demoing, first check the server is deployed, then point a web browser to: `https://<your domain here>/`. This updates automatically during the demo in response to the spoken queries.
 
 This web page will auto-reconnect to the server, so does not need refreshing during the demo, even if you re-deploy the server as part of the demo. Although refreshing the page won't do any harm.
 

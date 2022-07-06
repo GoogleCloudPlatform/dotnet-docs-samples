@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -10,15 +10,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Kms.V1" Version="2.1.0" />
+    <PackageReference Include="Google.Cloud.Kms.V1" Version="3.0.0" />
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
     <ProjectReference Include="..\Spanner.Samples\Spanner.Samples.csproj" />
   </ItemGroup>
 

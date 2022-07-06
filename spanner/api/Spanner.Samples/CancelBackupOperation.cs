@@ -22,7 +22,7 @@ using System;
 
 public class CancelBackupOperationSample
 {
-    public bool CancelBackupOperation(string projectId, string instanceId, string databaseId, string backupId)
+    public Operation<Backup, CreateBackupMetadata> CancelBackupOperation(string projectId, string instanceId, string databaseId, string backupId)
     {
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
@@ -46,18 +46,18 @@ public class CancelBackupOperationSample
         Console.WriteLine("Waiting for the operation to finish.");
         Operation<Backup, CreateBackupMetadata> completedOperation = operation.PollUntilCompleted();
 
-        if (!completedOperation.IsFaulted)
-        {
-            Console.WriteLine("The backup was created before the operation was cancelled. Please delete the backup.");
-            BackupName backupAsBackupName = BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
-            databaseAdminClient.DeleteBackup(backupAsBackupName);
-        }
-        else
+        if (completedOperation.IsFaulted)
         {
             Console.WriteLine($"Create backup operation cancelled: {operation.Name}");
         }
+        else
+        {
+            Console.WriteLine("The backup was created before the operation was cancelled. Backup needs to be deleted.");
+            BackupName backupAsBackupName = BackupName.FromProjectInstanceBackup(projectId, instanceId, backupId);
+            databaseAdminClient.DeleteBackup(backupAsBackupName);
+        }
 
-        return completedOperation.IsFaulted;
+        return completedOperation;
     }
 }
 // [END spanner_cancel_backup_create]

@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.808.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageTransfer.Samples", "StorageTransfer.Samples\StorageTransfer.Samples.csproj", "{06E107A0-F899-40F8-B1FF-A9CF882654B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageTransfer.Samples.Tests", "StorageTransfer.Samples.Tests\StorageTransfer.Samples.Tests.csproj", "{B6A5B70B-F240-4F2F-B784-6133F50BE64D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testutil", "..\..\testutil\testutil.csproj", "{FB454B7E-4B48-4184-A548-7139B66C905C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{06E107A0-F899-40F8-B1FF-A9CF882654B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06E107A0-F899-40F8-B1FF-A9CF882654B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06E107A0-F899-40F8-B1FF-A9CF882654B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06E107A0-F899-40F8-B1FF-A9CF882654B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6A5B70B-F240-4F2F-B784-6133F50BE64D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6A5B70B-F240-4F2F-B784-6133F50BE64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6A5B70B-F240-4F2F-B784-6133F50BE64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6A5B70B-F240-4F2F-B784-6133F50BE64D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB454B7E-4B48-4184-A548-7139B66C905C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB454B7E-4B48-4184-A548-7139B66C905C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB454B7E-4B48-4184-A548-7139B66C905C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB454B7E-4B48-4184-A548-7139B66C905C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9C0FBE4-FD9A-49CE-8E1B-C21E37BE12D9}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		BaseDirectory = .
+	EndGlobalSection
+EndGlobal

@@ -17,12 +17,12 @@ with a MySQL database when running in Cloud Run or Google App Engine Flexible En
 1.  Install the [.NET Core SDK, version 2.0](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.5-download.md)
     or newer.
 
-1.  Create a Cloud SQL for Postgres instance by following these 
-    [instructions](https://cloud.google.com/sql/docs/postgres/create-instance).
-    Note the connection string, database user, and database password that you create.
+1.  Create a Cloud SQL for MySQL instance by following these 
+    [instructions](https://cloud.google.com/sql/docs/mysql/create-instance).
+    Note the instance connection name, database user, and database password that you create.
 
 1.  Create a database for your application by following these 
-    [instructions](https://cloud.google.com/sql/docs/postgres/create-manage-databases).
+    [instructions](https://cloud.google.com/sql/docs/mysql/create-manage-databases).
     Note the database name. 
 
 1.  Replace `your-project-id` in [appsettings.json](appsettings.json) with your Google Cloud Project's project id.
@@ -31,7 +31,7 @@ with a MySQL database when running in Cloud Run or Google App Engine Flexible En
 
 To run this application locally, download and install the `cloud_sql_proxy` by
 following the instructions
-[here](https://cloud.google.com/sql/docs/postgres/sql-proxy#install).
+[here](https://cloud.google.com/sql/docs/mysql/sql-proxy#install).
 
 Instructions are provided below for using the proxy with a TCP connection or a Unix Domain Socket.
 On Linux or Mac OS you can use either option, but on Windows the proxy currently requires a TCP connection.
@@ -44,7 +44,7 @@ To run the sample locally with a TCP connection, set environment variables and l
 Use these terminal commands to initialize environment variables:
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service/account/key.json
-export DB_HOST='127.0.0.1'
+export INSTANCE_HOST='127.0.0.1'
 export DB_USER='<DB_USER_NAME>'
 export DB_PASS='<DB_PASSWORD>'
 export DB_NAME='<DB_NAME>'
@@ -55,7 +55,7 @@ Note: Saving credentials in environment variables is convenient, but not secure 
 
 Then use this command to launch the proxy in the background:
 ```bash
-./cloud_sql_proxy -instances=<project-id>:<region>:<instance-name>=tcp:5432 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
+./cloud_sql_proxy -instances=<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>=tcp:3306 -credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
 ```
 
 Finally, run the following commands:
@@ -68,7 +68,7 @@ dotnet run
 Use these PowerShell commands to initialize environment variables:
 ```powershell
 $env:GOOGLE_APPLICATION_CREDENTIALS="<CREDENTIALS_JSON_FILE>"
-$env:DB_HOST="127.0.0.1"
+$env:INSTANCE_HOST="127.0.0.1"
 $env:DB_USER="<DB_USER_NAME>"
 $env:DB_PASS="<DB_PASSWORD>"
 $env:DB_NAME="<DB_NAME>"
@@ -79,7 +79,7 @@ Note: Saving credentials in environment variables is convenient, but not secure 
 
 Then use this command to launch the proxy in a separate PowerShell session:
 ```powershell
-Start-Process -filepath "C:\<path to proxy exe>" -ArgumentList "-instances=<project-id>:<region>:<instance-name>=tcp:5432 -credential_file=<CREDENTIALS_JSON_FILE>"
+Start-Process -filepath "C:\<path to proxy exe>" -ArgumentList "-instances=<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>=tcp:3306 -credential_file=<CREDENTIALS_JSON_FILE>"
 ```
 Finally, run the following commands:
 ```psm1
@@ -93,7 +93,7 @@ Download and run the [Google Cloud SQL Proxy](https://cloud.google.com/sql/docs/
 Then, navigate to the project options menu. Select the default configuration, then set the following environment variables:
 
 ```
-DB_HOST : '127.0.0.1' 
+INSTANCE_HOST : '127.0.0.1' 
 DB_USER : '<DB_USER_NAME>' 
 DB_PASS : '<DB_PASSWORD>'
 DB_NAME : '<DB_NAME>'
@@ -113,16 +113,10 @@ sudo mkdir ./cloudsql
 sudo chown -R $USER ./cloudsql
 ```
 
-You'll also need to initialize an environment variable containing the directory you just created:
-
-```bash
-export DB_SOCKET_DIR=./cloudsql
-```
-
 Use these terminal commands to initialize environment variables:
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service/account/key.json
-export INSTANCE_CONNECTION_NAME='<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>'
+export INSTANCE_UNIX_SOCKET='./cloudsql/<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>'
 export DB_USER='<DB_USER_NAME>'
 export DB_PASS='<DB_PASSWORD>'
 export DB_NAME='<DB_NAME>'
@@ -131,7 +125,7 @@ export DB_NAME='<DB_NAME>'
 
 Then use this command to launch the proxy in the background:
 ```bash
-./cloud_sql_proxy -dir=$DB_SOCKET_DIR --instances=$INSTANCE_CONNECTION_NAME --credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
+./cloud_sql_proxy -dir=./cloudsql --instances=<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME> --credential_file=$GOOGLE_APPLICATION_CREDENTIALS &
 
 Finally, run the following commands:
 ```bash
@@ -141,7 +135,7 @@ dotnet run
 
 ### Deploy to Cloud Run
 
-See the [Cloud Run documentation](https://cloud.google.com/sql/docs/postgres/connect-run)
+See the [Cloud Run documentation](https://cloud.google.com/sql/docs/mysql/connect-run)
 for more details on connecting a Cloud Run service to Cloud SQL.
 
 Build the container image:
@@ -154,8 +148,8 @@ Deploy the service to Cloud Run. Replace environment variables with the correct 
 
 ```sh
 gcloud run deploy run-sql --image gcr.io/[YOUR_PROJECT_ID]/run-sql \              
-  --add-cloudsql-instances '<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
-  --set-env-vars INSTANCE_CONNECTION_NAME='<MY-PROJECT>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
+  --add-cloudsql-instances '<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
+  --set-env-vars INSTANCE_UNIX_SOCKET='/cloudsql/<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>' \
   --set-env-vars DB_USER='<DB_USER_NAME>' \
   --set-env-vars DB_PASS='<DB_PASSWORD>' \
   --set-env-vars DB_NAME='<DB_NAME>'
@@ -163,16 +157,32 @@ gcloud run deploy run-sql --image gcr.io/[YOUR_PROJECT_ID]/run-sql \
 
 Take note of the URL output at the end of the deployment process and navigate your browser to that URL.
 
+It is recommended to use the [Secret Manager integration](https://cloud.google.com/run/docs/configuring/secrets) for Cloud Run instead
+of using environment variables for the SQL configuration. The service injects the SQL credentials from
+Secret Manager at runtime via an environment variable.
+
+Create secrets via the command line:
+```sh
+echo -n $INSTANCE_UNIX_SOCKET | \
+    gcloud secrets create [INSTANCE_UNIX_SOCKET_SECRET] --data-file=-
+```
+
+Deploy the service to Cloud Run specifying the env var name and secret name:
+```sh
+gcloud beta run deploy SERVICE --image gcr.io/[YOUR_PROJECT_ID]/run-sql \
+    --add-cloudsql-instances <PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME> \
+    --update-secrets INSTANCE_UNIX_SOCKET=[INSTANCE_UNIX_SOCKET_SECRET]:latest, \
+      DB_USER=[DB_USER_SECRET]:latest, \
+      DB_PASS=[DB_PASS_SECRET]:latest, \
+      DB_NAME=[DB_NAME_SECRET]:latest
+```
+
 For more details about using Cloud Run see http://cloud.run.
-
-
-
 
 ### Deploy to App Engine Flexible
 
-1.  Edit [app.yaml](app.yaml).  Replace `your-project-id:us-central1:instance-name`
-    with your instance connection name, and update the tcp port number to 
-    `5432` for a PostgreSQL instance or `3306` for a MySQL instance. Update the values
+1.  Edit [app.yaml](app.yaml).  Replace `<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>`
+    with your instance connection name. Update the values
     for `DB_USER`, `DB_PASS`, and `DB_NAME`
 
 2.  Build and deploy the application:

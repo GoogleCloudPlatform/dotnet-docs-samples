@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,9 +28,11 @@ public class CreateDatabaseAsyncTest
     [Fact]
     public async Task TestCreateDatabaseAsync()
     {
-        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var databaseId = _spannerFixture.GenerateTempDatabaseId();
+
         CreateDatabaseAsyncSample sample = new CreateDatabaseAsyncSample();
         await sample.CreateDatabaseAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
         var databases = _spannerFixture.GetDatabases();
         Assert.Contains(databases, d => d.DatabaseName.DatabaseId == databaseId);
     }

@@ -28,14 +28,8 @@ public class UpdateDataWithNumericTest
     [Fact]
     public async Task TestUpdateDataWithNumeric()
     {
-        await _spannerFixture.CreateVenuesTableAndInsertDataAsync();
-
-        AddNumericColumnAsyncSample addColumnSample = new AddNumericColumnAsyncSample();
-        await addColumnSample.AddNumericColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
         UpdateDataWithNumericAsyncSample updateNumericSample = new UpdateDataWithNumericAsyncSample();
-        await updateNumericSample.UpdateDataWithNumericAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-
-        await _spannerFixture.DeleteVenuesTable();
+        var rowCount = await updateNumericSample.UpdateDataWithNumericAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+        Assert.Equal(3, rowCount);
     }
 }

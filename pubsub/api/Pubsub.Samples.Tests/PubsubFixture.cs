@@ -13,10 +13,12 @@
 // limitations under the License.
 
 using Google.Cloud.PubSub.V1;
+using GoogleCloudSamples;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Xunit.Sdk;
 
 [CollectionDefinition(nameof(PubsubFixture))]
 public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
@@ -28,6 +30,13 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string DeadLetterTopic { get; } = $"testDeadLetterTopic{Guid.NewGuid().ToString().Substring(0, 18)}";
     public string AvroSchemaFile { get; } = $"Resources/us-states.avsc";
     public string ProtoSchemaFile { get; } = $"Resources/us-states.proto";
+
+    public RetryRobot Pull { get; } = new RetryRobot
+    {
+        ShouldRetry = ex => ex is XunitException
+            || (ex is RpcException rpcEx 
+                && (rpcEx.StatusCode == StatusCode.DeadlineExceeded || rpcEx.StatusCode == StatusCode.Unavailable))
+    };
 
     public PubsubFixture()
     {

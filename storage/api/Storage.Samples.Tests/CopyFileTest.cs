@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class CopyFileTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public CopyFileTest(BucketFixture bucketFixture)
+    public CopyFileTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -29,9 +29,9 @@ public class CopyFileTest
     {
         CopyFileSample copyFileSample = new CopyFileSample();
         ListFilesSample listFilesSample = new ListFilesSample();
-        copyFileSample.CopyFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName,
-            _bucketFixture.BucketNameRegional, _bucketFixture.CollectRegionalObject("CopyFile.txt"));
-        var files = listFilesSample.ListFiles(_bucketFixture.BucketNameRegional);
+        copyFileSample.CopyFile(_fixture.BucketNameGeneric, _fixture.FileName,
+            _fixture.BucketNameRegional, _fixture.CollectRegionalObject("CopyFile.txt"));
+        var files = listFilesSample.ListFiles(_fixture.BucketNameRegional);
         Assert.Contains(files, c => c.Name == "CopyFile.txt");
     }
 }

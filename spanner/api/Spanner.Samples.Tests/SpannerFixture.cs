@@ -18,6 +18,8 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Admin.Instance.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.Cloud.Spanner.Data;
+using Google.Rpc;
+using GoogleCloudSamples;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
@@ -32,48 +34,72 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // Allow environment variables to override the default instance and database names.
     public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
-    public string DatabaseId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+
+    public string DatabaseId { get; private set; }
+    public string PostgreSqlDatabaseId { get; private set; }
+
     public string BackupDatabaseId { get; } = "my-test-database";
     public string BackupId { get; } = "my-test-database-backup";
-    public string ToBeCancelledBackupId { get; } = $"my-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    public string RestoredDatabaseId { get; } = $"my-restore-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string ToBeCancelledBackupId { get; } = GenerateId("my-backup-");
+    public string RestoredDatabaseId { get; private set; }
 
     public bool RunCmekBackupSampleTests { get; private set; }
     public const string SkipCmekBackupSamplesMessage = "Spanner CMEK backup sample tests are disabled by default for performance reasons. Set the environment variable RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS=true to enable the test.";
-    public string EncryptedDatabaseId { get; } = $"my-enc-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    public string EncryptedBackupId { get; } = $"my-enc-backup-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+
+    public string EncryptedDatabaseId { get; private set; }
+    public string EncryptedBackupId { get; } = GenerateId("my-enc-backup-");
     // 'restore' is abbreviated to prevent the name from becoming longer than 30 characters.
-    public string EncryptedRestoreDatabaseId { get; } = $"my-enc-r-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string EncryptedRestoreDatabaseId { get; private set; }
 
     // These are intentionally kept on the instance to avoid the need to create a new encrypted database and backup for each run.
     public string FixedEncryptedDatabaseId { get; } = "fixed-enc-backup-db";
     public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
 
-    // Encryption key identifiers.
-    private static readonly string _testKeyProjectId = Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private static readonly string _testKeyLocationId = Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1";
-    private static readonly string _testKeyRingId = Environment.GetEnvironmentVariable("spanner.test.key.ring") ?? "spanner-test-keyring";
-    private static readonly string _testKeyId = Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key";
+    public CryptoKeyName KmsKeyName { get; } = new CryptoKeyName(
+        Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
+        Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1",
+        Environment.GetEnvironmentVariable("spanner.test.key.ring") ?? "spanner-test-keyring",
+        Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key");
 
-    public CryptoKeyName KmsKeyName { get; } = new CryptoKeyName(_testKeyProjectId, _testKeyLocationId, _testKeyRingId, _testKeyId);
+    public string InstanceIdWithProcessingUnits { get; } = GenerateId("my-ins-pu-");
+    public string InstanceIdWithMultiRegion { get; } = GenerateId("my-ins-mr-");
+    public string InstanceConfigId { get; } = "nam6";
 
-    public string ConnectionString { get; set; }
+    private IList<string> TempDbIds { get; } = new List<string>();
+
+    public DatabaseAdminClient DatabaseAdminClient { get; private set; }
+    public InstanceAdminClient InstanceAdminClient { get; private set; }
+    public SpannerConnection AdminSpannerConnection { get; private set; }
+    public SpannerConnection SpannerConnection { get; private set; }
+    public SpannerConnection PgSpannerConnection { get; private set; }
+
+    public RetryRobot Retryable { get; } = new RetryRobot
+    {
+        ShouldRetry = ex => ex.IsTransientSpannerFault()
+    };
 
     public async Task InitializeAsync()
     {
+        DatabaseId = Environment.GetEnvironmentVariable("TEST_SPANNER_DATABASE") ?? GenerateTempDatabaseId();
+        PostgreSqlDatabaseId = Environment.GetEnvironmentVariable("TEST_SPANNER_POSTGRESQL_DATABASE") ?? GenerateTempDatabaseId("my-db-pg-");
+        RestoredDatabaseId = GenerateTempDatabaseId("my-restore-db-");
+        EncryptedDatabaseId = GenerateTempDatabaseId("my-enc-db-");
+        EncryptedRestoreDatabaseId = GenerateTempDatabaseId("my-enc-r-db-");
+
+        DatabaseAdminClient = await DatabaseAdminClient.CreateAsync();
+        InstanceAdminClient = await InstanceAdminClient.CreateAsync();
+        AdminSpannerConnection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}");
+        SpannerConnection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}");
+        PgSpannerConnection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{PostgreSqlDatabaseId}");
+
         bool.TryParse(Environment.GetEnvironmentVariable("RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS"), out var runCmekBackupSampleTests);
         RunCmekBackupSampleTests = runCmekBackupSampleTests;
 
-        ConnectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{DatabaseId}";
-        // Don't need to cleanup stale Backups and Databases when instance is new.
-        var isExistingInstance = InitializeInstance();
-        if (isExistingInstance)
-        {
-            await DeleteStaleDatabasesAsync();
-            await DeleteStaleBackupsAsync();
-        }
+        await InitializeInstanceAsync();
+        await CreateInstanceWithMultiRegionAsync();
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
+        await InitializePostgreSqlDatabaseAsync();
 
         // Create encryption key for creating an encrypted database and optionally backing up and restoring an encrypted database.
         await InitializeEncryptionKeys();
@@ -83,92 +109,67 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-        return Task.CompletedTask;
+        try
+        {
+            IList<Task> cleanupTasks = new List<Task>();
+
+            cleanupTasks.Add(DeleteInstanceAsync(InstanceIdWithMultiRegion));
+            cleanupTasks.Add(DeleteInstanceAsync(InstanceIdWithProcessingUnits));
+
+            cleanupTasks.Add(DeleteBackupAsync(ToBeCancelledBackupId));
+            cleanupTasks.Add(DeleteBackupAsync(EncryptedBackupId));
+
+            foreach(string id in TempDbIds)
+            {
+                cleanupTasks.Add(DeleteDatabaseAsync(id));
+            }
+
+            await Task.WhenAll(cleanupTasks);
+        }
+        finally
+        {
+            AdminSpannerConnection?.Dispose();
+            SpannerConnection?.Dispose();
+            PgSpannerConnection?.Dispose();
+        }
     }
 
-    private bool InitializeInstance()
+    private async Task<bool> InitializeInstanceAsync()
     {
-        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
         InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
         try
         {
-            Instance response = instanceAdminClient.GetInstance(instanceName);
+            Instance response = await InstanceAdminClient.GetInstanceAsync(instanceName);
             return true;
         }
         catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
         {
             CreateInstanceSample createInstanceSample = new CreateInstanceSample();
-            createInstanceSample.CreateInstance(ProjectId, InstanceId);
+            await SafeCreateInstanceAsync(() => Task.FromResult(createInstanceSample.CreateInstance(ProjectId, InstanceId)));
             return false;
         }
     }
 
-    /// <summary>
-    /// Deletes 10 oldest databases if the number of databases is more than 89.
-    /// This is to avoid resource exhausted errors.
-    /// </summary>
-    private async Task DeleteStaleDatabasesAsync()
+    private async Task CreateInstanceWithMultiRegionAsync()
     {
-        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
-        var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var databases = databaseAdminClient.ListDatabases(instanceName);
-
-        if (databases.Count() < 90)
+        var projectName = ProjectName.FromProject(ProjectId);
+        Instance instance = new Instance
         {
-            return;
-        }
+            DisplayName = "Multi-region samples test",
+            ConfigAsInstanceConfigName = InstanceConfigName.FromProjectInstanceConfig(ProjectId, InstanceConfigId),
+            InstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceIdWithMultiRegion),
+            NodeCount = 1,
+        };
 
-        var databasesToDelete = databases
-            .OrderBy(db => long.TryParse(
-                db.DatabaseName.DatabaseId
-                    .Replace("my-db-", "").Replace("my-restore-db-", "")
-                    .Replace("my-enc-db-", "").Replace("my-enc-restore-db-", ""),
-                out long creationDate) ? creationDate : long.MaxValue)
-            .Take(10);
-
-        // Delete the databases.
-        foreach (var database in databasesToDelete)
+        await SafeCreateInstanceAsync(async () =>
         {
-            try
-            {
-                await DeleteDatabaseAsync(database.DatabaseName.DatabaseId);
-            }
-            catch (Exception) { }
-        }
-    }
-
-    /// <summary>
-    /// Deletes 10 oldest backups if the number of backups is more than 89.
-    /// This is to avoid resource exhausted errors.
-    /// </summary>
-    private async Task DeleteStaleBackupsAsync()
-    {
-        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
-        var instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var backups = databaseAdminClient.ListBackups(instanceName);
-
-        if (backups.Count() < 90)
-        {
-            return;
-        }
-
-        var backupsToDelete = backups
-            .OrderBy(db => long.TryParse(
-                db.BackupName.BackupId.Replace("my-enc-backup-", ""),
-                out long creationDate) ? creationDate : long.MaxValue)
-            .Take(10);
-
-        // Delete the backups.
-        foreach (var backup in backupsToDelete)
-        {
-            try
-            {
-                await databaseAdminClient.DeleteBackupAsync(backup.BackupName);
-            }
-            catch (Exception) { }
-        }
+            var response = await InstanceAdminClient.CreateInstanceAsync(projectName, InstanceIdWithMultiRegion, instance);
+            // Poll until the returned long-running operation is complete
+            response = await response.PollUntilCompletedAsync();
+            return response.Result;
+        });
     }
 
     private async Task InitializeDatabaseAsync()
@@ -176,19 +177,31 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         // If the database has not been initialized, retry.
         CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
         InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+        InsertStructSampleDataAsyncSample insertStructSampleDataAsyncSample = new InsertStructSampleDataAsyncSample();
         AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
+        AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
         AddIndexAsyncSample addIndexAsyncSample = new AddIndexAsyncSample();
         AddStoringIndexAsyncSample addStoringIndexAsyncSample = new AddStoringIndexAsyncSample();
+        CreateTableWithDataTypesAsyncSample createTableWithDataTypesAsyncSample = new CreateTableWithDataTypesAsyncSample();
+        InsertDataTypesDataAsyncSample insertDataTypesDataAsyncSample = new InsertDataTypesDataAsyncSample();
+        CreateTableWithTimestampColumnAsyncSample createTableWithTimestampColumnAsyncSample =
+            new CreateTableWithTimestampColumnAsyncSample();
         await createDatabaseAsyncSample.CreateDatabaseAsync(ProjectId, InstanceId, DatabaseId);
         await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, DatabaseId);
-        await InsertStructDataAsync();
+        await insertStructSampleDataAsyncSample.InsertStructSampleDataAsync(ProjectId, InstanceId, DatabaseId);
         await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, DatabaseId);
-        await AddCommitTimestampAsync();
+        await addCommitTimestampAsyncSample.AddCommitTimestampAsync(ProjectId, InstanceId, DatabaseId);
         await addIndexAsyncSample.AddIndexAsync(ProjectId, InstanceId, DatabaseId);
+        // Create a new table that includes supported datatypes.
+        await createTableWithDataTypesAsyncSample.CreateTableWithDataTypesAsync(ProjectId, InstanceId, DatabaseId);
+        // Write data to the new table.
+        await insertDataTypesDataAsyncSample.InsertDataTypesDataAsync(ProjectId, InstanceId, DatabaseId);
         // Add storing Index on table.
         await addStoringIndexAsyncSample.AddStoringIndexAsync(ProjectId, InstanceId, DatabaseId);
         // Update the value of MarketingBudgets.
         await RefillMarketingBudgetsAsync(300000, 300000);
+        // Create table with Timestamp column
+        await createTableWithTimestampColumnAsyncSample.CreateTableWithTimestampColumnAsync(ProjectId, InstanceId, DatabaseId);
     }
 
     private async Task InitializeBackupAsync()
@@ -209,13 +222,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             Console.WriteLine($"Database {BackupDatabaseId} already exists.");
         }
 
-        using var connection = new SpannerConnection(ConnectionString);
-        await connection.OpenAsync();
-        var currentTimestamp = (DateTime)connection.CreateSelectCommand("SELECT CURRENT_TIMESTAMP").ExecuteScalar();
         try
         {
             CreateBackupSample createBackupSample = new CreateBackupSample();
-            createBackupSample.CreateBackup(ProjectId, InstanceId, BackupDatabaseId, BackupId, currentTimestamp);
+            createBackupSample.CreateBackup(ProjectId, InstanceId, BackupDatabaseId, BackupId, DateTime.UtcNow.AddMilliseconds(-500));
         }
         catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
         {
@@ -232,36 +242,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    private async Task InitializeEncryptedBackupAsync()
+    private async Task InitializePostgreSqlDatabaseAsync()
     {
-        // Sample backup for encrypted restore test.
-        try
-        {
-            CreateDatabaseWithEncryptionKeyAsyncSample createDatabaseAsyncSample = new CreateDatabaseWithEncryptionKeyAsyncSample();
-            InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
-            await createDatabaseAsyncSample.CreateDatabaseWithEncryptionKeyAsync(ProjectId, InstanceId, FixedEncryptedDatabaseId, KmsKeyName);
-            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, FixedEncryptedDatabaseId);
-        }
-        catch (Exception e) when (e.ToString().Contains("Database already exists"))
-        {
-            // We intentionally keep an existing database around to reduce
-            // the likelihood of test timeouts when creating a backup so
-            // it's ok to get an AlreadyExists error.
-            Console.WriteLine($"Database {FixedEncryptedDatabaseId} already exists.");
-        }
-
-        try
-        {
-            CreateBackupWithEncryptionKeyAsyncSample createBackupSample = new CreateBackupWithEncryptionKeyAsyncSample();
-            await createBackupSample.CreateBackupWithEncryptionKeyAsync(ProjectId, InstanceId, FixedEncryptedDatabaseId, FixedEncryptedBackupId, KmsKeyName);
-        }
-        catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
-        {
-            // We intentionally keep an existing backup around to reduce
-            // the likelihood of test timeouts when creating a backup so
-            // it's ok to get an AlreadyExists error.
-            Console.WriteLine($"Backup {FixedEncryptedBackupId} already exists.");
-        }
+        CreateDatabaseAsyncPostgreSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgreSample();
+        await createDatabaseAsyncSample.CreateDatabaseAsyncPostgre(ProjectId, InstanceId, PostgreSqlDatabaseId);
     }
 
     private async Task InitializeEncryptionKeys()
@@ -301,43 +285,184 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    private async Task DeleteDatabaseAsync(string databaseId)
+    private async Task InitializeEncryptedBackupAsync()
     {
-        string adminConnectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}";
-        using var connection = new SpannerConnection(adminConnectionString);
-        using var cmd = connection.CreateDdlCommand($@"DROP DATABASE {databaseId}");
-        await cmd.ExecuteNonQueryAsync();
-    }
-
-    public IEnumerable<Database> GetDatabases()
-    {
-        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
-        InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
-        var databases = databaseAdminClient.ListDatabases(instanceName);
-        return databases;
-    }
-
-    public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget)
-    {
-        using var connection = new SpannerConnection(ConnectionString);
-        await connection.OpenAsync();
-
-        for (int i = 1; i <= 2; ++i)
+        // Sample backup for encrypted restore test.
+        try
         {
-            var cmd = connection.CreateUpdateCommand("Albums", new SpannerParameterCollection
-                {
-                    { "SingerId", SpannerDbType.Int64, i },
-                    { "AlbumId", SpannerDbType.Int64, i },
-                    { "MarketingBudget", SpannerDbType.Int64, i == 1 ? firstAlbumBudget : secondAlbumBudget },
-                });
-            await cmd.ExecuteNonQueryAsync();
+            CreateDatabaseWithEncryptionKeyAsyncSample createDatabaseAsyncSample = new CreateDatabaseWithEncryptionKeyAsyncSample();
+            InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+            await createDatabaseAsyncSample.CreateDatabaseWithEncryptionKeyAsync(ProjectId, InstanceId, FixedEncryptedDatabaseId, KmsKeyName);
+            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, FixedEncryptedDatabaseId);
+        }
+        catch (Exception e) when (e.ToString().Contains("Database already exists"))
+        {
+            // We intentionally keep an existing database around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Database {FixedEncryptedDatabaseId} already exists.");
+        }
+
+        try
+        {
+            CreateBackupWithEncryptionKeyAsyncSample createBackupSample = new CreateBackupWithEncryptionKeyAsyncSample();
+            await createBackupSample.CreateBackupWithEncryptionKeyAsync(ProjectId, InstanceId, FixedEncryptedDatabaseId, FixedEncryptedBackupId, KmsKeyName);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
+        {
+            // We intentionally keep an existing backup around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Backup {FixedEncryptedBackupId} already exists.");
         }
     }
 
-    public async Task CreateVenuesTableAndInsertDataAsync()
+    private async Task DeleteInstanceAsync(string instanceId)
+    {
+        try
+        {
+            await InstanceAdminClient.DeleteInstanceAsync(InstanceName.FromProjectInstance(ProjectId, instanceId));
+        }
+        catch(RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
+        {
+            Console.WriteLine($"Instance {instanceId} was not found for deletion.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception while attempting to delete instance {instanceId}");
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task DeleteBackupAsync(string backupId)
+    {
+        try
+        {
+            await DatabaseAdminClient.DeleteBackupAsync(BackupName.FromProjectInstanceBackup(ProjectId, InstanceId, backupId));
+        }
+        catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
+        {
+            Console.WriteLine($"Backup {backupId} was not found for deletion.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception while attempting to delete backup {backupId}");
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task DeleteDatabaseAsync(string databaseId)
+    {
+        try
+        {
+            using var cmd = AdminSpannerConnection.CreateDdlCommand($@"DROP DATABASE {databaseId}");
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception while attempting to delete database {databaseId}");
+            Console.WriteLine(ex);
+        }
+    }
+
+    public static string GenerateId(string prefix, int maxLength = 30) =>
+        // Guid.ToString("N") returns a string of 32 digits.
+        $"{prefix}{Guid.NewGuid().ToString("N").Substring(prefix.Length + (32 - maxLength))}";
+
+    public string GenerateTempDatabaseId(string prefix = "my-db-")
+    {
+        string tempDatabaseId = GenerateId(prefix);
+        TempDbIds.Add(tempDatabaseId);
+        return tempDatabaseId;
+    }
+
+    private static readonly string s_retryInfoMetadataKey = RetryInfo.Descriptor.FullName + "-bin";
+    public async Task<T> SafeCreateInstanceAsync<T>(Func<Task<T>> createInstanceAsync)
+    {
+        int attempt = 0;
+        do
+        {
+            try
+            {
+                attempt++;
+                return await createInstanceAsync();
+            }
+            catch (RpcException ex) when (attempt <= 10)
+            {
+                if (StatusCode.Unavailable == ex.StatusCode)
+                {
+                    await RecommendedDelayAsync(ex);
+                }
+                else if (StatusCode.ResourceExhausted == ex.StatusCode && ex.Status.Detail.Contains("requests per minute"))
+                {
+                    await RecommendedDelayAsync(ex, 60);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+        while (true);
+
+        static async Task RecommendedDelayAsync(RpcException exception, int fallbackSeconds = 5)
+        {
+            TimeSpan delay = TimeSpan.FromSeconds(fallbackSeconds);
+            var retryInfoEntry = exception.Trailers.FirstOrDefault(
+                entry => s_retryInfoMetadataKey.Equals(entry.Key, StringComparison.InvariantCultureIgnoreCase));
+            if (retryInfoEntry != null)
+            {
+                var retryInfo = RetryInfo.Parser.ParseFrom(retryInfoEntry.ValueBytes);
+                var recommended = retryInfo.RetryDelay.ToTimeSpan();
+                if (recommended != TimeSpan.Zero)
+                {
+                    delay = recommended;
+                }
+            }
+            await Task.Delay(delay);
+        }
+    }
+
+    public async Task RunWithTemporaryDatabaseAsync(Func<string, Task> testFunction, params string[] extraStatements)
+        => await RunWithTemporaryDatabaseAsync(InstanceId, testFunction, extraStatements);
+
+    public async Task RunWithTemporaryDatabaseAsync(string instanceId, Func<string, Task> testFunction,
+        params string[] extraStatements)
+    {
+        // For temporary DBs we don't need a time based ID, as we delete them inmediately.
+        var databaseId = GenerateId("temp-db-");
+        await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, extraStatements);
+    }
+
+    public async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, params string[] extraStatements)
+    {
+        var operation = await DatabaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
+        {
+            ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
+            CreateStatement = $"CREATE DATABASE `{databaseId}`",
+            ExtraStatements = { extraStatements },
+        });
+        var completedResponse = await operation.PollUntilCompletedAsync();
+        if (completedResponse.IsFaulted)
+        {
+            throw completedResponse.Exception;
+        }
+
+        try
+        {
+            await testFunction(databaseId);
+        }
+        finally
+        {
+            // Cleanup the test database.
+            await DatabaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, instanceId, databaseId));
+        }
+    }
+
+    public async Task CreateVenuesTableAndInsertDataAsync(string databaseId)
     {
         // Create connection to Cloud Spanner.
-        using var connection = new SpannerConnection(ConnectionString);
+        using var connection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
 
         // Define create table statement for Venues.
         string createTableStatement =
@@ -349,97 +474,38 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         using var cmd = connection.CreateDdlCommand(createTableStatement);
         await cmd.ExecuteNonQueryAsync();
 
-        List<Venue> venues = new List<Venue>
-        {
-            new Venue { VenueId = 4, VenueName = "Venue 4" },
-            new Venue { VenueId = 19, VenueName = "Venue 19" },
-            new Venue { VenueId = 42, VenueName = "Venue 42" },
-        };
-
-        await Task.WhenAll(venues.Select(venue =>
+        int[] ids = new int[] { 4, 19, 42 };
+        await Task.WhenAll(ids.Select(id =>
         {
             // Insert rows into the Venues table.
+
             using var cmd = connection.CreateInsertCommand("Venues", new SpannerParameterCollection
             {
-                { "VenueId", SpannerDbType.Int64, venue.VenueId },
-                { "VenueName", SpannerDbType.String, venue.VenueName }
+                { "VenueId", SpannerDbType.Int64, id },
+                { "VenueName", SpannerDbType.String, $"Venue {id}" }
             });
             return cmd.ExecuteNonQueryAsync();
         }));
     }
 
-    public async Task DeleteVenuesTable()
+    public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget)
     {
-        // Create connection to Cloud Spanner.
-        using var connection = new SpannerConnection(ConnectionString);
-
-        // Drop the Venues table.
-        using var cmd = connection.CreateDdlCommand(@"DROP TABLE Venues");
-        await cmd.ExecuteNonQueryAsync();
-    }
-
-    private class Venue
-    {
-        public int VenueId { get; set; }
-        public string VenueName { get; set; }
-    }
-
-    private async Task InsertStructDataAsync()
-    {
-        List<Singer> singers = new List<Singer>
+        for (int i = 1; i <= 2; ++i)
         {
-            new Singer { SingerId = 6, FirstName = "Elena", LastName = "Campbell" },
-            new Singer { SingerId = 7, FirstName = "Gabriel", LastName = "Wright" },
-            new Singer { SingerId = 8, FirstName = "Benjamin", LastName = "Martinez" },
-            new Singer { SingerId = 9, FirstName = "Hannah", LastName = "Harris" }
-        };
-
-        using var connection = new SpannerConnection(ConnectionString);
-        await connection.OpenAsync();
-
-        var rows = await Task.WhenAll(singers.Select(singer =>
-        {
-            var cmd = connection.CreateInsertCommand("Singers",
-              new SpannerParameterCollection
-              {
-                  { "SingerId", SpannerDbType.Int64, singer.SingerId },
-                  { "FirstName", SpannerDbType.String, singer.FirstName },
-                  { "LastName", SpannerDbType.String, singer.LastName }
-              });
-
-            return cmd.ExecuteNonQueryAsync();
-        }));
+            var cmd = SpannerConnection.CreateUpdateCommand("Albums", new SpannerParameterCollection
+                {
+                    { "SingerId", SpannerDbType.Int64, i },
+                    { "AlbumId", SpannerDbType.Int64, i },
+                    { "MarketingBudget", SpannerDbType.Int64, i == 1 ? firstAlbumBudget : secondAlbumBudget },
+                });
+            await cmd.ExecuteNonQueryAsync();
+        }
     }
 
-    private async Task AddCommitTimestampAsync()
+    public IEnumerable<Database> GetDatabases()
     {
-        string alterStatement = "ALTER TABLE Albums ADD COLUMN LastUpdateTime TIMESTAMP OPTIONS (allow_commit_timestamp=true)";
-        using var connection = new SpannerConnection(ConnectionString);
-        var updateCmd = connection.CreateDdlCommand(alterStatement);
-        await updateCmd.ExecuteNonQueryAsync();
-    }
-
-    private class Singer
-    {
-        public int SingerId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-    }
-
-    public async Task CreatePerformancesTableWithTimestampColumnAsync()
-    {
-        using var connection = new SpannerConnection(ConnectionString);
-        // Define create table statement for table with commit timestamp column.
-        string createTableStatement =
-        @"CREATE TABLE Performances (
-                    SingerId       INT64 NOT NULL,
-                    VenueId        INT64 NOT NULL,
-                    EventDate      Date,
-                    Revenue        INT64,
-                    LastUpdateTime TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)
-                ) PRIMARY KEY (SingerId, VenueId, EventDate),
-                    INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
-        var cmd = connection.CreateDdlCommand(createTableStatement);
-        await cmd.ExecuteNonQueryAsync();
+        InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
+        var databases = DatabaseAdminClient.ListDatabases(instanceName);
+        return databases;
     }
 }

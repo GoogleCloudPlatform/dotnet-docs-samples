@@ -18,19 +18,23 @@ using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Google.Apis.Auth;
 using Pubsub.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Collections.Concurrent;
 
 namespace Pubsub.Controllers
 {
     public class HomeController : Controller
     {
         readonly PubsubOptions _options;
-        // Lock protects all the static members.
-        static object s_lock = new object();
-        // Keep the received messages in a list.
-        static List<string> s_receivedMessages = new List<string>();
+        // Keep the messages received on /Push endpoint.
+        static ConcurrentBag<string> s_receivedMessages = new ConcurrentBag<string>();
+        // Keep the messages received on /AuthPush endpoint.
+        static ConcurrentBag<string> s_authenticatedMessages = new ConcurrentBag<string>();
         readonly PublisherClient _publisher;
 
         public HomeController(IOptions<PubsubOptions> options,
@@ -63,7 +67,8 @@ namespace Pubsub.Controllers
                 model.PublishedMessage = messageForm.Message;
             }
             // Render the current list of messages.
-            lock (s_lock) model.Messages = s_receivedMessages.ToArray();
+            model.Messages = s_receivedMessages.ToArray();
+            model.AuthMessages = s_authenticatedMessages.ToArray();
             return View(model);
         }
         // [END gae_flex_pubsub_index]
@@ -85,10 +90,59 @@ namespace Pubsub.Controllers
             }
             var messageBytes = Convert.FromBase64String(body.message.data);
             string message = System.Text.Encoding.UTF8.GetString(messageBytes);
-            lock (s_lock) s_receivedMessages.Add(message);
+            s_receivedMessages.Add(message);
             return new OkResult();
         }
         // [END gae_flex_pubsub_push]
+
+        // [START gaeflex_net_pubsub_auth_push]
+        /// <summary>
+        /// Extended JWT payload to match the pubsub payload format.
+        /// </summary>
+        public class PubSubPayload : JsonWebSignature.Payload
+        {
+            [JsonProperty("email")]
+            public string Email { get; set; }
+            [JsonProperty("email_verified")]
+            public string EmailVerified { get; set; }
+        }
+        /// <summary>
+        /// Handle authenticated push request coming from pubsub.
+        /// </summary>
+        [HttpPost]
+        [Route("/AuthPush")]
+        public async Task<IActionResult> AuthPushAsync([FromBody] PushBody body, [FromQuery] string token)
+        {
+            // Get the Cloud Pub/Sub-generated "Authorization" header.
+            string authorizaionHeader = HttpContext.Request.Headers["Authorization"];
+            string verificationToken = token ?? body.message.attributes["token"];
+            // JWT token comes in `Bearer <JWT>` format substring 7 specifies the postion of first JWT char.
+            string authToken = authorizaionHeader.StartsWith("Bearer ") ? authorizaionHeader.Substring(7) : null;
+            if (verificationToken != _options.VerificationToken || authToken is null)
+            {
+                return new BadRequestResult();
+            }
+            // Verify and decode the JWT.
+            // Note: For high volume push requests, it would save some network
+            // overhead if you verify the tokens offline by decoding them using
+            // Google's Public Cert; caching already seen tokens works best when
+            // a large volume of messages have prompted a single push server to
+            // handle them, in which case they would all share the same token for
+            // a limited time window.
+            var payload = await JsonWebSignature.VerifySignedTokenAsync<PubSubPayload>(authToken);
+
+            // IMPORTANT: you should validate payload details not covered
+            // by signature and audience verification above, including:
+            //   - Ensure that `payload.Email` is equal to the expected service
+            //     account set up in the push subscription settings.
+            //   - Ensure that `payload.Email_verified` is set to true.
+
+            var messageBytes = Convert.FromBase64String(body.message.data);
+            string message = System.Text.Encoding.UTF8.GetString(messageBytes);
+            s_authenticatedMessages.Add(message);
+            return new OkResult();
+        }
+        // [END gaeflex_net_pubsub_auth_push]
 
         public IActionResult Error()
         {
@@ -112,5 +166,6 @@ namespace Pubsub.Controllers
         public string message_id { get; set; }
         public string publish_time { get; set; }
     }
+    
 
 }

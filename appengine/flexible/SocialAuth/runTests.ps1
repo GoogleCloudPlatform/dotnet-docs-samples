@@ -14,6 +14,9 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
+dotnet restore --force
+dotnet build --no-restore
+
 $envars = $env:DataProtection:Bucket, $env:DataProtection:KmsKeyName
 try {
     $env:DataProtection:Bucket = $env:GOOGLE_BUCKET

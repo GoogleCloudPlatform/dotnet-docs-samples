@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -29,7 +30,7 @@ public class PullMessageWithLeaseManagementTest
     }
 
     [Fact]
-    public async void PullMessageWithLeaseManagement()
+    public async Task PullMessageWithLeaseManagement()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForMessageWithLeaseManagement{randomName}";
@@ -40,8 +41,12 @@ public class PullMessageWithLeaseManagementTest
 
         await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { "Hello World!", "Good day.", "Bye bye." });
 
-        // Pull and acknowledge the messages
-        var messageCount = _pullMessageWithLeaseManagementSample.PullMessageWithLeaseManagement(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(3, messageCount);
+        int messageCount = 0;
+        _pubsubFixture.Pull.Eventually(() =>
+        {
+            // Pull and acknowledge the messages
+            messageCount += _pullMessageWithLeaseManagementSample.PullMessageWithLeaseManagement(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(3, messageCount);
+        });
     }
 }

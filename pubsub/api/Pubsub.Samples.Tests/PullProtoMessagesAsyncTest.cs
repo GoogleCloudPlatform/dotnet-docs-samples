@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.PubSub.V1;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -30,7 +31,7 @@ public class PullProtoMessagesAsyncTest
     }
 
     [Fact]
-    public async void PullProtoBinaryMessagesAsync()
+    public async Task PullProtoBinaryMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForProtoBinaryMessageAck{randomName}";
@@ -43,17 +44,20 @@ public class PullProtoMessagesAsyncTest
 
         await _publishProtoMessagesAsyncSample.PublishProtoMessagesAsync(_pubsubFixture.ProjectId, topicId, new Utilities.State[] { new Utilities.State { Name = "New York", PostAbbr = "NY" } });
 
-        // Pull and acknowledge the messages
-        var result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(1, result);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            // Pull and acknowledge the messages
+            var ackedCount = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, ackedCount);
+        });
 
         //Pull the Message to confirm it's gone after it's acknowledged
-        result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(result == 0);
+        var result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.Equal(0, result);
     }
 
     [Fact]
-    public async void PullProtoJsonMessagesAsync()
+    public async Task PullProtoJsonMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForProtoJsonMessageAck{randomName}";
@@ -66,12 +70,15 @@ public class PullProtoMessagesAsyncTest
 
         await _publishProtoMessagesAsyncSample.PublishProtoMessagesAsync(_pubsubFixture.ProjectId, topicId, new Utilities.State[] { new Utilities.State { Name = "New York", PostAbbr = "NY" } });
 
-        // Pull and acknowledge the messages
-        var result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(1, result);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            // Pull and acknowledge the messages
+            var ackedCount = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, ackedCount);
+        });
 
         //Pull the Message to confirm it's gone after it's acknowledged
-        result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(result == 0);
+        var result = await _pullProtoMessagesAsyncSample.PullProtoMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.Equal(0, result);
     }
 }

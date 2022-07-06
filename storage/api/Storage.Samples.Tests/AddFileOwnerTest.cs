@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class AddFileOwnerTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public AddFileOwnerTest(BucketFixture bucketFixture)
+    public AddFileOwnerTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,10 +31,10 @@ public class AddFileOwnerTest
         RemoveFileOwnerSample removeFileOwnerSample = new RemoveFileOwnerSample();
 
         // Add file owner.
-        var result = addFileOwnerSample.AddFileOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, _bucketFixture.ServiceAccountEmail);
-        Assert.Contains(result.Acl, c => c.Role == "OWNER" && c.Email == _bucketFixture.ServiceAccountEmail);
+        var result = addFileOwnerSample.AddFileOwner(_fixture.BucketNameGeneric, _fixture.FileName, _fixture.ServiceAccountEmail);
+        Assert.Contains(result.Acl, c => c.Role == "OWNER" && c.Email == _fixture.ServiceAccountEmail);
 
         // Remove file owner.
-        removeFileOwnerSample.RemoveFileOwner(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, _bucketFixture.ServiceAccountEmail);
+        removeFileOwnerSample.RemoveFileOwner(_fixture.BucketNameGeneric, _fixture.FileName, _fixture.ServiceAccountEmail);
     }
 }

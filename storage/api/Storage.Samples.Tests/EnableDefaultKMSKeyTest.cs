@@ -14,23 +14,23 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class EnableDefaultKMSKeyTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public EnableDefaultKMSKeyTest(BucketFixture bucketFixture)
+    public EnableDefaultKMSKeyTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
     public void EnableDefaultKMSKey()
     {
         EnableDefaultKMSKeySample enableDefaultKMSKeySample = new EnableDefaultKMSKeySample();
-        var bucket = enableDefaultKMSKeySample.EnableDefaultKMSKey(_bucketFixture.ProjectId, _bucketFixture.BucketNameRegional,
-              _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var bucket = enableDefaultKMSKeySample.EnableDefaultKMSKey(_fixture.ProjectId, _fixture.BucketNameRegional,
+              _fixture.KmsKeyLocation, _fixture.KmsKeyRing, _fixture.KmsKeyName);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
         Assert.NotNull(bucket.Encryption.DefaultKmsKeyName);
     }
 }

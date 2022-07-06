@@ -17,27 +17,26 @@
 // [START compute_instances_delete]
 
 using Google.Cloud.Compute.V1;
-using System;
 using System.Threading.Tasks;
 
 public class DeleteInstanceAsyncSample
 {
     public async Task DeleteInstanceAsync(
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
         string projectId = "your-project-id",
         string zone = "us-central1-a",
         string machineName = "test-machine")
     {
 
-        // Initialize the client that will be used to send instance-related requests.
-        // You should reuse the same client for multiple requests.
+        // Initialize client that will be used to send requests. This client only needs to be created
+        // once, and can be reused for multiple requests.
         InstancesClient client = await InstancesClient.CreateAsync();
 
         // Make the request to delete a VM instance.
-        Operation instanceDeletion = await client.DeleteAsync(projectId, zone, machineName);
+        var instanceDeletion = await client.DeleteAsync(projectId, zone, machineName);
 
-        // You may poll the operation until it completes or fails, or for a given amount of time.
-        // If polling times out, the operation may still finish successfully after.
-        await instanceDeletion.PollUntilCompletedAsync(projectId, zone);
+        // Wait for the operation to complete using client-side polling.
+        await instanceDeletion.PollUntilCompletedAsync();
     }
 }
 

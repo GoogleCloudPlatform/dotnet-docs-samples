@@ -107,7 +107,7 @@ can use [this older sample](
 
       deleteUsingDml                    Delete data using a DML statement.
 
-      updateUsingDmlWithTimestamp       Update the timestamp value of specifc records using a DML statement.
+      updateUsingDmlWithTimestamp       Update the timestamp value of specific records using a DML statement.
 
       writeAndReadUsingDml              Insert data using a DML statement and then read the inserted data.
 

@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class PrintBucketAclForUserTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public PrintBucketAclForUserTest(BucketFixture bucketFixture)
+    public PrintBucketAclForUserTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -30,17 +30,17 @@ public class PrintBucketAclForUserTest
         PrintBucketAclForUserSample printBucketAclForUserSample = new PrintBucketAclForUserSample();
         AddBucketOwnerSample addBucketOwnerSample = new AddBucketOwnerSample();
         RemoveBucketOwnerSample removeBucketOwnerSample = new RemoveBucketOwnerSample();
-        string userEmail = _bucketFixture.ServiceAccountEmail;
+        string userEmail = _fixture.ServiceAccountEmail;
 
         // Add bucket owner
-        addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        addBucketOwnerSample.AddBucketOwner(_fixture.BucketNameGeneric, userEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
-        var bucketAclForUser = printBucketAclForUserSample.PrintBucketAclForUser(_bucketFixture.BucketNameGeneric, userEmail);
+        var bucketAclForUser = printBucketAclForUserSample.PrintBucketAclForUser(_fixture.BucketNameGeneric, userEmail);
         Assert.All(bucketAclForUser, c => Assert.Equal(c.Email, userEmail));
 
         // Remove bucket owner
-        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        removeBucketOwnerSample.RemoveBucketOwner(_fixture.BucketNameGeneric, userEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

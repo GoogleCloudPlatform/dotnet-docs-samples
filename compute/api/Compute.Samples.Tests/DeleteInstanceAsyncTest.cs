@@ -38,7 +38,7 @@ namespace Compute.Samples.Tests
 
             await _deleteSample.DeleteInstanceAsync(_fixture.ProjectId, _fixture.Zone, machineName);
 
-            var exception = await Assert.ThrowsAsync<RpcException>(async () => await _fixture.Client.GetAsync(_fixture.ProjectId, _fixture.Zone, machineName));
+            var exception = await Assert.ThrowsAsync<RpcException>(async () => await _fixture.InstancesClient.GetAsync(_fixture.ProjectId, _fixture.Zone, machineName));
             Assert.Equal(StatusCode.NotFound, exception.StatusCode);
         }
     }

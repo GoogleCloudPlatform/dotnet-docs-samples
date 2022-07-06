@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class EnableBucketDefaultEventBasedHoldTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public EnableBucketDefaultEventBasedHoldTest(BucketFixture bucketFixture)
+    public EnableBucketDefaultEventBasedHoldTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,12 +31,12 @@ public class EnableBucketDefaultEventBasedHoldTest
         DisableDefaultEventBasedHoldSample disableDefaultEventBasedHoldSample = new DisableDefaultEventBasedHoldSample();
 
         // Enable default event based hold.
-        var updatedBucket = enableBucketDefaultEventBasedHoldSample.EnableBucketDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var updatedBucket = enableBucketDefaultEventBasedHoldSample.EnableBucketDefaultEventBasedHold(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
         Assert.True(updatedBucket.DefaultEventBasedHold);
 
         // Disable default event based hold.
-        disableDefaultEventBasedHoldSample.DisableDefaultEventBasedHold(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        disableDefaultEventBasedHoldSample.DisableDefaultEventBasedHold(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

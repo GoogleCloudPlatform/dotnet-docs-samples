@@ -16,7 +16,6 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Asset.V1;
-using System;
 
 public class ExportAssetsSample
 {

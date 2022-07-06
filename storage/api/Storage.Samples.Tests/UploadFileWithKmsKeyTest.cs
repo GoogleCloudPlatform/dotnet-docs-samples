@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class UploadFileWithKmsKeyTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public UploadFileWithKmsKeyTest(BucketFixture bucketFixture)
+    public UploadFileWithKmsKeyTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,10 +31,10 @@ public class UploadFileWithKmsKeyTest
         GetMetadataSample getMetadataSample = new GetMetadataSample();
 
         // upload file with kms key
-        uploadFileWithKmsKeySample.UploadFileWithKmsKey(_bucketFixture.ProjectId, _bucketFixture.BucketNameRegional,
-            _bucketFixture.KmsKeyLocation, _bucketFixture.KmsKeyRing, _bucketFixture.KmsKeyName, _bucketFixture.FilePath, "HelloUploadWithKmsKey.txt");
+        uploadFileWithKmsKeySample.UploadFileWithKmsKey(_fixture.ProjectId, _fixture.BucketNameRegional,
+            _fixture.KmsKeyLocation, _fixture.KmsKeyRing, _fixture.KmsKeyName, _fixture.FilePath, "HelloUploadWithKmsKey.txt");
 
-        var metadata = getMetadataSample.GetMetadata(_bucketFixture.BucketNameRegional, "HelloUploadWithKmsKey.txt");
-        Assert.Contains(_bucketFixture.KmsKeyName, metadata.KmsKeyName);
+        var metadata = getMetadataSample.GetMetadata(_fixture.BucketNameRegional, "HelloUploadWithKmsKey.txt");
+        Assert.Contains(_fixture.KmsKeyName, metadata.KmsKeyName);
     }
 }

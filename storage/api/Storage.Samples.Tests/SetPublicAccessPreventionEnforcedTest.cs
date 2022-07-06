@@ -15,14 +15,14 @@
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class SetPublicAccessPreventionEnforcedTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public SetPublicAccessPreventionEnforcedTest(BucketFixture bucketFixture)
+    public SetPublicAccessPreventionEnforcedTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -32,11 +32,11 @@ public class SetPublicAccessPreventionEnforcedTest
 
         var bucketName = Guid.NewGuid().ToString();
         // Create bucket
-        _bucketFixture.CreateBucket(bucketName);
+        _fixture.CreateBucket(bucketName);
 
         // Set public access prevention to enforced.
         var updatedBucket = setPublicAccessPreventionEnforcedSample.SetPublicAccessPreventionEnforced(bucketName);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         Assert.Equal("enforced", updatedBucket.IamConfiguration.PublicAccessPrevention);
     }
