@@ -19,13 +19,11 @@ public class CreateBigQuerySubscriptionTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly CreateBigQuerySubscriptionSample _createBigQuerySubscriptionSample;
-    private ListSubscriptionsSample _listSubscriptionsSample;
 
     public CreateBigQuerySubscriptionTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _createBigQuerySubscriptionSample = new CreateBigQuerySubscriptionSample();
-        _listSubscriptionsSample = new ListSubscriptionsSample();
     }
 
     [Fact]
