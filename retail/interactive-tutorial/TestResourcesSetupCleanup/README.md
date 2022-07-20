@@ -30,10 +30,8 @@ Run the `CreateTestResources.cs` to perform the following actions:
         - insert user events from `TestResourcesSetupCleanup/resources/user_events.json` to the created events table
 
 ```
-$ dotnet run -- CreateTestResources.cs
+$ dotnet run -- CreateTestResourcesTutorial
 ```
-
-In the result 316 products should be created in the test project catalog.
 
 
 ## Remove catalog data
@@ -41,12 +39,12 @@ In the result 316 products should be created in the test project catalog.
 Run the `RemoveTestResources.cs` to perform the following actions:
     - remove all objects from the GCS bucket <BUCKET_NAME>, 
     - remove the <BUCKET_NAME> bucket,
-    - delete all products from the Retail catalog.
     - remove all objects from the GCS bucket <EVENTS_BUCKET_NAME>, 
     - remove the <EVENTS_BUCKET_NAME> bucket,
-    - remove dataset `products` along with tables
-    - remove dataset `user_events` along with tables 
+    - remove dataset `products` along with tables,
+    - remove dataset `user_events` along with tables,
+    - delete all products from the Retail catalog
 
 ```
-$ dotnet run -- RemoveTestResources.cs
+$ dotnet run -- RemoveTestResourcesTutorial
 ```

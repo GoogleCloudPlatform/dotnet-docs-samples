@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,17 +24,15 @@ using System;
 /// </summary>
 public static class RemoveTestResources
 {
-    private const string ProductDataSet = "products";
+    private const string ProductsDataSet = "products";
     private const string EventsDataSet = "user_events";
-    private const string ProductTable = "products";
+    private const string ProductsTable = "products";
     private const string EventsTable = "events";
 
     private static readonly string projectNumber = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_NUMBER");
     private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private static readonly string productBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
+    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
     private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
-
-    private static readonly string defaultCatalog = $"projects/{projectNumber}/locations/global/catalogs/default_catalog/branches/0";
 
     private static readonly StorageClient storageClient = StorageClient.Create();
     private static readonly BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
@@ -76,10 +74,15 @@ public static class RemoveTestResources
     {
         Console.WriteLine($"Deleting all products from catalog, please wait.");
 
+        string locationId = "global";
+        string catalogId = "default_catalog";
+        string branchId = "0";
+        BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
+
         var productServiceClient = ProductServiceClient.Create();
         var listProductsRequest = new ListProductsRequest
         {
-            Parent = defaultCatalog
+            ParentAsBranchName = defaultBranch,
         };
 
         var products = productServiceClient.ListProducts(listProductsRequest);
@@ -103,7 +106,7 @@ public static class RemoveTestResources
             }
         }
 
-           Console.WriteLine($"{deleteCount} products were deleted from {defaultCatalog}");
+        Console.WriteLine($"{deleteCount} products were deleted from {defaultBranch}");
     }
 
     /// <summary>Delete Big Query dataset with tables.</summary>
@@ -118,8 +121,8 @@ public static class RemoveTestResources
         };
 
         DeleteDatasetOptions deleteOptions = new DeleteDatasetOptions
-        { 
-            DeleteContents = true 
+        {
+            DeleteContents = true
         };
 
         try
@@ -145,7 +148,7 @@ public static class RemoveTestResources
             DatasetId = datasetId,
             ProjectId = projectId
         };
-        
+
         try
         {
             bigQueryClient.DeleteTable(tableReference);
@@ -161,17 +164,28 @@ public static class RemoveTestResources
     /// <summary>
     /// Delete test resources.
     /// </summary>
-    public static void PerformDeletionOfTestResources()
+    public static class RemoveTestResourcesTutorial
     {
-        DeleteBucket(productBucketName);
-        DeleteBucket(eventsBucketName);
+        [Runner.Attributes.Example]
+        public static void PerformDeletionOfTestResources()
+        {
+            // Delete products and events GCS buckets
+            DeleteBucket(productsBucketName);
+            DeleteBucket(eventsBucketName);
 
-        DeleteAllProducts();
+            // Delete all products from the Retail catalog
+            // DeleteAllProducts();
 
-        DeleteBQDatasetWithData(ProductDataSet);
-        DeleteBQDatasetWithData(EventsDataSet);
+            // Delete events and products BQ tables
+            DeleteBQTable(ProductsDataSet, ProductsTable);
+            DeleteBQTable(EventsDataSet, EventsTable);
 
-        DeleteBQTable(ProductDataSet, ProductTable);
-        DeleteBQTable(EventsDataSet, EventsTable);
+            // Delete products and events datasets
+            DeleteBQDatasetWithData(ProductsDataSet);
+            DeleteBQDatasetWithData(EventsDataSet);
+
+            // Delete all products from the Retail catalog
+            DeleteAllProducts();
+        }
     }
 }

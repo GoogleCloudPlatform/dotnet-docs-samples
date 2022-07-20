@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,17 +20,7 @@ namespace TestResourcesSetupCleanup
     {
         static void Main(string[] args)
         {
-            try
-            {
-                RemoveTestResources.PerformDeletionOfTestResources();
-                CreateTestResources.PerformCreationOfTestResources();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-            Console.ReadKey();
+            Runner.Program.RunScript(args);
         }
     }
 }

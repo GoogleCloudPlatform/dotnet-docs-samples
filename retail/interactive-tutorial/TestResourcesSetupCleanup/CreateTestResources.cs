@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,13 +42,10 @@ public static class CreateTestResources
     private static readonly string eventsSchemaFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsSchema}");
     private static readonly string productFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductFileName}");
     private static readonly string eventsFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
+
     private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
-    private static readonly string bucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
-
-    private static readonly string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/0";
-    private static readonly string gcsBucket = $"gs://{bucketName}";
-    private static readonly string gcsErrorsBucket = $"{gcsBucket}/error";
+    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
+    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
 
     private static readonly StorageClient storageClient = StorageClient.Create();
     private static readonly BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
@@ -143,9 +140,12 @@ public static class CreateTestResources
         Console.WriteLine($"Uploaded {objectName}.");
     }
 
-    /// <summary>Get import products gcs request.</summary>
+    /// <summary>Get import products GCS request.</summary>
     private static ImportProductsRequest GetImportProductsGcsRequest(string gcsObjectName)
     {
+        string gcsBucket = $"gs://{productsBucketName}";
+        string gcsErrorsBucket = $"{gcsBucket}/error";
+
         var gcsSource = new GcsSource();
         gcsSource.InputUris.Add($"{gcsBucket}/{gcsObjectName}");
 
@@ -161,11 +161,16 @@ public static class CreateTestResources
             GcsPrefix = gcsErrorsBucket
         };
 
+        string locationId = "global";
+        string catalogId = "default_catalog";
+        string branchId = "0";
+        BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
+
         // To check error handling paste the invalid catalog name here:
-        // defaultCatalog = "invalid_catalog_name"
+        // catalogId = "invalid_catalog_name"
         var importRequest = new ImportProductsRequest
         {
-            Parent = defaultCatalog,
+            ParentAsBranchName = defaultBranch,
             ReconciliationMode = ImportProductsRequest.Types.ReconciliationMode.Incremental,
             InputConfig = inputConfig,
             ErrorsConfig = errorsConfig
@@ -306,12 +311,12 @@ public static class CreateTestResources
 
                 Console.WriteLine($"Uploaded {createdTable.Resource.NumRows} rows to {createdTable.FullyQualifiedId}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Table {createdBigQueryTable.FullyQualifiedId} was not populated with data. Error: {ex.Message}");
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine($"Table {tableName} was not created. Error: {ex.Message}");
         }
@@ -320,25 +325,31 @@ public static class CreateTestResources
     /// <summary>
     /// Create test resources.
     /// </summary>
-    public static void PerformCreationOfTestResources()
+
+    public static class CreateTestResourcesTutorial
     {
-        // Create a GCS bucket with products.json file.
-        var createdProductsBucket = CreateBucket(bucketName);
-        UploadBlob(createdProductsBucket.Name, productFilePath, ProductFileName);
+        [Runner.Attributes.Example]
+        public static void PerformCreationOfTestResources()
+        {
+            // Create a GCS bucket with products.json file.
+            var createdProductsBucket = CreateBucket(productsBucketName);
+            UploadBlob(createdProductsBucket.Name, productFilePath, ProductFileName);
 
-        // Create a GCS bucket with user_events.json file.
-        var createdEventsBucket = CreateBucket(bucketName);
-        UploadBlob(createdEventsBucket.Name, eventsFilePath, EventsFileName);
+            // Create a GCS bucket with user_events.json file.
+            var createdEventsBucket = CreateBucket(eventsBucketName);
+            UploadBlob(createdEventsBucket.Name, eventsFilePath, EventsFileName);
 
-        // Import products from the GCS bucket to the Retail catalog.
-        ImportProductsFromGcs();
+            // Import products from the GCS bucket to the Retail catalog.
+            ImportProductsFromGcs();
 
-        // Create a BigQuery table with products.
-        CreateBQDataSet(ProductDataSet);
-        CreateAndPopulateBQTable(ProductDataSet, ProductTable, productSchemaFilePath, productFilePath);
+            // Create a BigQuery table with products.
+            CreateBQDataSet(ProductDataSet);
+            CreateAndPopulateBQTable(ProductDataSet, ProductTable, productSchemaFilePath, productFilePath);
 
-        // Create a BigQuery table with user events.
-        CreateBQDataSet(EventsDataSet);
-        CreateAndPopulateBQTable(EventsDataSet, EventsTable, eventsSchemaFilePath, eventsFilePath);
+            // Create a BigQuery table with user events.
+            CreateBQDataSet(EventsDataSet);
+            CreateAndPopulateBQTable(EventsDataSet, EventsTable, eventsSchemaFilePath, eventsFilePath);
+        }
     }
+
 }
