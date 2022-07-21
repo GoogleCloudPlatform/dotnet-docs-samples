@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_remove_fulfillment_places]
+// [START remove_fulfillment_places]
 
 using Google.Cloud.Retail.V2;
-using Google.LongRunning;
+using Google.Protobuf.WellKnownTypes;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading;
 
 /// <summary>
 /// The remove fulfillment places sample class.
 /// </summary>
-public class RemoveFulfillmentPlacesSample
+public static class RemoveFulfillmentPlaces
 {
     /// <summary>
     /// Get the remove fulfillment places request.
@@ -31,21 +33,34 @@ public class RemoveFulfillmentPlacesSample
     /// <returns>The remove fulfillment places request.</returns>
     private static RemoveFulfillmentPlacesRequest GetRemoveFulfillmentRequest(string productName)
     {
-        RemoveFulfillmentPlacesRequest removeFulfillmentRequest = new RemoveFulfillmentPlacesRequest
+        // The request timestamp
+        DateTime requestTimeStamp = DateTime.Now.ToUniversalTime();
+
+        // The outdated request timestamp
+        // requestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
+
+        var removeFulfillmentRequest = new RemoveFulfillmentPlacesRequest
         {
             Product = productName,
             Type = "pickup-in-store",
-            AllowMissing = true,
-            PlaceIds = { "store0" }
+            RemoveTime = Timestamp.FromDateTime(requestTimeStamp),
+            AllowMissing = true
         };
 
-        Console.WriteLine("Remove fulfillment places request:");
-        Console.WriteLine($"Product Name: {removeFulfillmentRequest.Product}");
-        Console.WriteLine($"Type: {removeFulfillmentRequest.Type}");
-        Console.WriteLine($"Place Ids: {removeFulfillmentRequest.PlaceIds}");
-        Console.WriteLine($"Remove Time: {removeFulfillmentRequest.RemoveTime}");
-        Console.WriteLine();
+        string[] placeIds = { "store0" };
 
+        removeFulfillmentRequest.PlaceIds.Add(placeIds);
+
+        var jsonSerializeSettings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Formatting = Formatting.Indented
+        };
+
+        var removeFulfillmentRequestJson = JsonConvert.SerializeObject(removeFulfillmentRequest, jsonSerializeSettings);
+
+        Console.WriteLine("\nRemove fulfillment places request: \n" + removeFulfillmentRequestJson);
         return removeFulfillmentRequest;
     }
 
@@ -55,42 +70,36 @@ public class RemoveFulfillmentPlacesSample
     /// <param name="productName">The actual name of the retail product.</param>
     public static void RemoveFulfillment(string productName)
     {
-        RemoveFulfillmentPlacesRequest removeFulfillmentRequest = GetRemoveFulfillmentRequest(productName);
+        var removeFulfillmentRequest = GetRemoveFulfillmentRequest(productName);
+        GetProductServiceClient().RemoveFulfillmentPlaces(removeFulfillmentRequest);
 
-        ProductServiceClient client = ProductServiceClient.Create();
-
-        // Make the request.
-        Operation<RemoveFulfillmentPlacesResponse, RemoveFulfillmentPlacesMetadata> response = client.RemoveFulfillmentPlaces(removeFulfillmentRequest);
-
-        Console.WriteLine("The operation was started:");
-        Console.WriteLine(response.Name);
-        Console.WriteLine();
-
-        Console.WriteLine("Please wait till opeartion is done");
-        Console.WriteLine();
-
-        // Poll until the returned long-running operation is complete.
-        Operation<RemoveFulfillmentPlacesResponse, RemoveFulfillmentPlacesMetadata> removeFulfillmentResult = response.PollUntilCompleted();
-
-        Thread.Sleep(60000);
-
-        Console.WriteLine("Remove fulfillment places operation is done");
-        Console.WriteLine();
-
-        Console.WriteLine("Operation result:");
-        Console.WriteLine(removeFulfillmentResult.Result);
-        Console.WriteLine();
+        //This is a long running operation and its result is not immediately present with get operations,
+        // thus we simulate wait with sleep method.
+        Console.WriteLine("\nRemove fulfillment places. Wait 2 minutes:");
+        Thread.Sleep(120000);
     }
-}
-// [END retail_remove_fulfillment_places]
+    private static ProductServiceClient GetProductServiceClient()
+    {
+        string Endpoint = "retail.googleapis.com";
 
-/// <summary>
-/// The remove fulfillment places tutorial class.
-/// </summary>
+        var productServiceClientBuilder = new ProductServiceClientBuilder
+        {
+            Endpoint = Endpoint
+        };
+
+        var productServiceClient = productServiceClientBuilder.Build();
+        return productServiceClient;
+    }
+    // [END remove_fulfillment_places]
+
+    /// <summary>
+    /// The remove fulfillment places tutorial class.
+    /// </summary>
+}
 public static class RemoveFulfillmentPlacesTutorial
 {
     [Runner.Attributes.Example]
-    public static void PerformRemoveFulfillment()
+    public static void PerformAddRemoveFulfillment()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
@@ -100,12 +109,12 @@ public static class RemoveFulfillmentPlacesTutorial
         string productName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch/products/{createdProduct.Id}";
 
         // Remove fulfillment from product.
-        RemoveFulfillmentPlacesSample.RemoveFulfillment(productName);
+        RemoveFulfillmentPlaces.RemoveFulfillment(productName);
 
         // Get product.
-        Product productWithUpdatedFulfillment = GetProductSample.GetRetailProduct(productName);
+        GetProductSample.GetRetailProduct(productName);
 
         // Delete product.
-        DeleteProductSample.DeleteRetailProduct(productWithUpdatedFulfillment.Name);
+        DeleteProductSample.DeleteRetailProduct(productName);
     }
 }
