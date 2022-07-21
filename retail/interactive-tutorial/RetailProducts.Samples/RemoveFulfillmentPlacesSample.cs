@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START remove_fulfillment_places]
+// [START retail_remove_fulfillment_places]
 
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
@@ -95,7 +95,7 @@ public class RemoveFulfillmentPlaces
         return productServiceClient;
     }
 }
-// [END remove_fulfillment_places]
+// [END retail_remove_fulfillment_places]
 
 /// <summary>
 /// The remove fulfillment places tutorial class.
