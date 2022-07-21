@@ -22,23 +22,15 @@ using System;
 /// <summary>
 /// Class that performs creeation of all necessary test resources.
 /// </summary>
-public static class RemoveTestResources
+public class RemoveTestResources
 {
-    private const string ProductsDataSet = "products";
-    private const string EventsDataSet = "user_events";
-    private const string ProductsTable = "products";
-    private const string EventsTable = "events";
-
-    private static readonly string projectNumber = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_NUMBER");
     private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
-    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
 
     private static readonly StorageClient storageClient = StorageClient.Create();
     private static readonly BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
 
     /// <summary>Delete bucket.</summary>
-    private static void DeleteBucket(string bucketName)
+    public static void DeleteBucket(string bucketName)
     {
         Console.WriteLine($"Deleting Bucket {bucketName}.");
 
@@ -56,7 +48,7 @@ public static class RemoveTestResources
     }
 
     /// <summary>Delete all objects from bucket.</summary>
-    private static void DeleteObjectsFromBucket(Bucket bucket)
+    public static void DeleteObjectsFromBucket(Bucket bucket)
     {
         Console.WriteLine($"Deleting object from bucket {bucket.Name}.");
 
@@ -70,7 +62,7 @@ public static class RemoveTestResources
     }
 
     /// <summary>Delete all products.</summary>
-    private static void DeleteAllProducts()
+    public static void DeleteAllProducts()
     {
         Console.WriteLine($"Deleting all products from catalog, please wait.");
 
@@ -160,32 +152,39 @@ public static class RemoveTestResources
             Console.WriteLine($"Table {tableId} does not exist.");
         }
     }
+}
+/// <summary>
+/// Delete test resources.
+/// </summary>
+public static class RemoveTestResourcesTutorial
+{
+    private const string ProductsDataSet = "products";
+    private const string EventsDataSet = "user_events";
+    private const string ProductsTable = "products";
+    private const string EventsTable = "events";
 
-    /// <summary>
-    /// Delete test resources.
-    /// </summary>
-    public static class RemoveTestResourcesTutorial
+    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
+    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
+
+    [Runner.Attributes.Example]
+    public static void PerformDeletionOfTestResources()
     {
-        [Runner.Attributes.Example]
-        public static void PerformDeletionOfTestResources()
-        {
-            // Delete products and events GCS buckets
-            DeleteBucket(productsBucketName);
-            DeleteBucket(eventsBucketName);
+        // Delete products and events GCS buckets
+        RemoveTestResources.DeleteBucket(productsBucketName);
+        RemoveTestResources.DeleteBucket(eventsBucketName);
 
-            // Delete all products from the Retail catalog
-            // DeleteAllProducts();
+        // Delete all products from the Retail catalog
+        // DeleteAllProducts();
 
-            // Delete events and products BQ tables
-            DeleteBQTable(ProductsDataSet, ProductsTable);
-            DeleteBQTable(EventsDataSet, EventsTable);
+        // Delete events and products BQ tables
+        RemoveTestResources.DeleteBQTable(ProductsDataSet, ProductsTable);
+        RemoveTestResources.DeleteBQTable(EventsDataSet, EventsTable);
 
-            // Delete products and events datasets
-            DeleteBQDatasetWithData(ProductsDataSet);
-            DeleteBQDatasetWithData(EventsDataSet);
+        // Delete products and events datasets
+        RemoveTestResources.DeleteBQDatasetWithData(ProductsDataSet);
+        RemoveTestResources.DeleteBQDatasetWithData(EventsDataSet);
 
-            // Delete all products from the Retail catalog
-            DeleteAllProducts();
-        }
+        // Delete all products from the Retail catalog
+        RemoveTestResources.DeleteAllProducts();
     }
 }

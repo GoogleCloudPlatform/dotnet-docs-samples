@@ -26,26 +26,9 @@ using System.Linq;
 /// <summary>
 /// Class that performs creeation of all necessary test resources.
 /// </summary>
-public static class CreateTestResources
+public class CreateTestResources
 {
-    private const string ProductFileName = "products.json";
-    private const string EventsFileName = "user_events.json";
-
-    private const string ProductDataSet = "products";
-    private const string ProductTable = "products";
-    private const string ProductSchema = "product_schema.json";
-    private const string EventsDataSet = "user_events";
-    private const string EventsTable = "events";
-    private const string EventsSchema = "events_schema.json";
-
-    private static readonly string productSchemaFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductSchema}");
-    private static readonly string eventsSchemaFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsSchema}");
-    private static readonly string productFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductFileName}");
-    private static readonly string eventsFilePath = Path.Combine(GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
-
     private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
-    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
 
     private static readonly StorageClient storageClient = StorageClient.Create();
     private static readonly BigQueryClient bigQueryClient = BigQueryClient.Create(projectId);
@@ -55,7 +38,7 @@ public static class CreateTestResources
     /// </summary>
     /// <param name="currentPath">The current path.</param>
     /// <returns>Full name of the current solution directory.</returns>
-    private static string GetSolutionDirectoryFullName(string currentPath = null)
+    public static string GetSolutionDirectoryFullName(string currentPath = null)
     {
         var directory = new DirectoryInfo(currentPath ?? Directory.GetCurrentDirectory());
 
@@ -68,7 +51,7 @@ public static class CreateTestResources
     }
 
     /// <summary>Create GCS bucket.</summary>
-    private static Bucket CreateBucket(string bucketName)
+    public static Bucket CreateBucket(string bucketName)
     {
         var newBucket = new Bucket();
         Console.WriteLine($"\nBucket name: {bucketName}\n");
@@ -97,7 +80,7 @@ public static class CreateTestResources
         return newBucket;
     }
 
-    private static bool CheckIfBucketExists(string newBucketName)
+    public static bool CheckIfBucketExists(string newBucketName)
     {
         var bucketExists = false;
         var bucketsInYourProject = ListBuckets();
@@ -116,7 +99,7 @@ public static class CreateTestResources
     }
 
     /// <summary>List all existing buckets.</summary>
-    private static List<Bucket> ListBuckets()
+    public static List<Bucket> ListBuckets()
     {
         var bucketsList = new List<Bucket>();
         var buckets = storageClient.ListBuckets(projectId);
@@ -131,7 +114,7 @@ public static class CreateTestResources
     }
 
     /// <summary>Upload blob.</summary>
-    private static void UploadBlob(string bucketName, string localPath, string objectName)
+    public static void UploadBlob(string bucketName, string localPath, string objectName)
     {
         var bucket = storageClient.GetBucket(bucketName);
 
@@ -141,7 +124,7 @@ public static class CreateTestResources
     }
 
     /// <summary>Get import products GCS request.</summary>
-    private static ImportProductsRequest GetImportProductsGcsRequest(string gcsObjectName)
+    public static ImportProductsRequest GetImportProductsGcsRequest(string gcsObjectName, string productsBucketName)
     {
         string gcsBucket = $"gs://{productsBucketName}";
         string gcsErrorsBucket = $"{gcsBucket}/error";
@@ -186,9 +169,9 @@ public static class CreateTestResources
     }
 
     /// <summary>Call the Retail API to import products.</summary>
-    private static void ImportProductsFromGcs()
+    public static void ImportProductsFromGcs(string productsBucketName, string productFileName)
     {
-        var importGcsRequest = GetImportProductsGcsRequest(ProductFileName);
+        var importGcsRequest = GetImportProductsGcsRequest(productFileName, productsBucketName);
 
         var client = ProductServiceClient.Create();
         var importResponse = client.ImportProducts(importGcsRequest);
@@ -208,7 +191,7 @@ public static class CreateTestResources
     }
 
     /// <summary>Create a Big Query Dataset.</summary>
-    private static void CreateBQDataSet(string dataSetName)
+    public static void CreateBQDataSet(string dataSetName)
     {
         string fullDataSetId = $"{projectId}.{dataSetName}";
         Console.WriteLine($"Creating dataset {fullDataSetId}");
@@ -238,7 +221,7 @@ public static class CreateTestResources
     }
 
     /// <summary>Create a Big Query Table.</summary>
-    private static void CreateAndPopulateBQTable(string dataSetName, string tableName, string tableSchemaFilePath, string tableDataFilePath)
+    public static void CreateAndPopulateBQTable(string dataSetName, string tableName, string tableSchemaFilePath, string tableDataFilePath)
     {
         string fullTableId = $"{projectId}.{dataSetName}.{tableName}";
         Console.WriteLine($"Check if BQ table {fullTableId} exists");
@@ -321,35 +304,54 @@ public static class CreateTestResources
             Console.WriteLine($"Table {tableName} was not created. Error: {ex.Message}");
         }
     }
+}
 
-    /// <summary>
-    /// Create test resources.
-    /// </summary>
+/// <summary>
+/// Create test resources.
+/// </summary>
 
-    public static class CreateTestResourcesTutorial
+public static class CreateTestResourcesTutorial
+{
+    private static readonly string ProductFileName = "products.json";
+    private static readonly string EventsFileName = "user_events.json";
+
+    private static readonly string ProductDataSet = "products";
+    private static readonly string ProductTable = "products";
+    private static readonly string EventsDataSet = "user_events";
+    private static readonly string EventsTable = "events";
+
+    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
+    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
+
+    private static readonly string productFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductFileName}");
+    private static readonly string eventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
+
+    private static readonly string ProductSchema = "product_schema.json";
+    private static readonly string EventsSchema = "events_schema.json";
+
+    private static readonly string productSchemaFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductSchema}");
+    private static readonly string eventsSchemaFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsSchema}");
+
+    [Runner.Attributes.Example]
+    public static void PerformCreationOfTestResources()
     {
-        [Runner.Attributes.Example]
-        public static void PerformCreationOfTestResources()
-        {
-            // Create a GCS bucket with products.json file.
-            var createdProductsBucket = CreateBucket(productsBucketName);
-            UploadBlob(createdProductsBucket.Name, productFilePath, ProductFileName);
+        // Create a GCS bucket with products.json file.
+        var createdProductsBucket = CreateTestResources.CreateBucket(productsBucketName);
+        CreateTestResources.UploadBlob(createdProductsBucket.Name, productFilePath, ProductFileName);
 
-            // Create a GCS bucket with user_events.json file.
-            var createdEventsBucket = CreateBucket(eventsBucketName);
-            UploadBlob(createdEventsBucket.Name, eventsFilePath, EventsFileName);
+        // Create a GCS bucket with user_events.json file.
+        var createdEventsBucket = CreateTestResources.CreateBucket(eventsBucketName);
+        CreateTestResources.UploadBlob(createdEventsBucket.Name, eventsFilePath, EventsFileName);
 
-            // Import products from the GCS bucket to the Retail catalog.
-            ImportProductsFromGcs();
+        // Import products from the GCS bucket to the Retail catalog.
+        CreateTestResources.ImportProductsFromGcs(productsBucketName, ProductFileName);
 
-            // Create a BigQuery table with products.
-            CreateBQDataSet(ProductDataSet);
-            CreateAndPopulateBQTable(ProductDataSet, ProductTable, productSchemaFilePath, productFilePath);
+        // Create a BigQuery table with products.
+        CreateTestResources.CreateBQDataSet(ProductDataSet);
+        CreateTestResources.CreateAndPopulateBQTable(ProductDataSet, ProductTable, productSchemaFilePath, productFilePath);
 
-            // Create a BigQuery table with user events.
-            CreateBQDataSet(EventsDataSet);
-            CreateAndPopulateBQTable(EventsDataSet, EventsTable, eventsSchemaFilePath, eventsFilePath);
-        }
+        // Create a BigQuery table with user events.
+        CreateTestResources.CreateBQDataSet(EventsDataSet);
+        CreateTestResources.CreateAndPopulateBQTable(EventsDataSet, EventsTable, eventsSchemaFilePath, eventsFilePath);
     }
-
 }
