@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading;
 
@@ -28,22 +30,35 @@ public class SetInventorySample
     /// <summary>
     /// Get the retail product with inventory info.
     /// </summary>
-    /// <param name="product">The actual product.</param>
+    /// <param name="productName">The actual name of the retail product.</param>
     /// <returns>Retail product with updated inventory info.</returns>
-    private static Product SetInventoryForProduct(Product product)
+    private static Product GetProductWithInventoryInfo(string productName)
     {
-        FulfillmentInfo newFulfillmentInfo = new FulfillmentInfo
+        var priceInfo = new PriceInfo
         {
-            Type = "pickup-in-store",
-            PlaceIds = { "store1", "store2" }
+            Price = 15.0f,
+            OriginalPrice = 20.0f,
+            Cost = 8.0f,
+            CurrencyCode = "USD"
         };
 
-        product.FulfillmentInfo.Clear();
-        product.FulfillmentInfo.Add(newFulfillmentInfo);
-        product.PriceInfo.Price = 15.0f;
-        product.PriceInfo.OriginalPrice = 20.0f;
-        product.PriceInfo.Cost = 8.0f;
-        product.PriceInfo.CurrencyCode = "USD";
+        var fulfillmentInfo = new FulfillmentInfo
+        {
+            Type = "pickup-in-store"
+        };
+
+        string[] placeIds = { "store1", "store2" };
+
+        fulfillmentInfo.PlaceIds.Add(placeIds);
+
+        var product = new Product
+        {
+            Name = productName,
+            PriceInfo = priceInfo,
+            Availability = Product.Types.Availability.InStock
+        };
+
+        product.FulfillmentInfo.Add(fulfillmentInfo);
 
         return product;
     }
@@ -51,70 +66,76 @@ public class SetInventorySample
     /// <summary>
     /// Get the set inventory request.
     /// </summary>
-    /// <param name="productWithInventory">The actual product with inventory info.</param>
+    /// <param name="productName">The actual product with inventory info.</param>
     /// <returns>Set inventory request.</returns>
-    private static SetInventoryRequest GetSetInventoryRequest(Product productWithInventory)
+    private static SetInventoryRequest GetSetInventoryRequest(string productName)
     {
-        // The request timestamp.
-        DateTime requestTimeStamp = DateTime.UtcNow;
+        // The request timestamp
+        DateTime requestTimeStamp = DateTime.Now.ToUniversalTime();
 
-        SetInventoryRequest setInventoryRequest = new SetInventoryRequest
+        // The out-of-order request timestamp
+        // request_time = datetime.datetime.now() - datetime.timedelta(days=1)
+
+        string[] paths = { "price_info", "availability", "fulfillment_info", "available_quantity" };
+        var setMask = new FieldMask();
+        setMask.Paths.AddRange(paths);
+
+        var setInventoryRequest = new SetInventoryRequest
         {
-            Inventory = productWithInventory,
+            Inventory = GetProductWithInventoryInfo(productName),
             SetTime = Timestamp.FromDateTime(requestTimeStamp),
             AllowMissing = true,
-            SetMask = new FieldMask
-            {
-                Paths = { "price_info", "availability", "fulfillment_info", "available_quantity" }
-            }
+            SetMask = setMask
         };
 
-        Console.WriteLine("Set inventory request:");
-        Console.WriteLine($"Product name: {setInventoryRequest.Inventory.Name }");
-        Console.WriteLine($"Product fultillment info: {setInventoryRequest.Inventory.FulfillmentInfo}");
-        Console.WriteLine();
+        var jsonSerializeSettings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Formatting = Formatting.Indented
+        };
 
+        var setInventoryRequestJson = JsonConvert.SerializeObject(setInventoryRequest, jsonSerializeSettings);
+
+        Console.WriteLine("\nSet inventory request: \n\n" + setInventoryRequestJson);
         return setInventoryRequest;
     }
 
     /// <summary>
-    /// Call the Retail API to set product inventory
+    /// Call the Retail API to set product inventory.
     /// </summary>
     /// <param name="product">The actual product.</param>
-    public static void SetProductInventory(Product product)
+    public static void SetProductInventory(string productName)
     {
-        Product productWithInventory = SetInventoryForProduct(product);
-        SetInventoryRequest setInventoryRequest = GetSetInventoryRequest(productWithInventory);
+        var setInventoryRequest = GetSetInventoryRequest(productName);
+        GetProductServiceClient().SetInventory(setInventoryRequest);
 
-        ProductServiceClient client = ProductServiceClient.Create();
+        // This is a long running operation and its result is not immediately present with get operations,
+        // thus we simulate wait with sleep method.
+        Console.WriteLine("\nSet inventory. Wait 50 seconds:\n");
+        Thread.Sleep(50000);
+    }
 
-        // Make the request.
-        Operation<SetInventoryResponse, SetInventoryMetadata> response = client.SetInventory(setInventoryRequest);
+    /// <summary>
+    /// Get product service client.
+    /// </summary>
+    private static ProductServiceClient GetProductServiceClient()
+    {
+        string Endpoint = "retail.googleapis.com";
 
-        Console.WriteLine("The operation was started:");
-        Console.WriteLine(response.Name);
-        Console.WriteLine();
+        var productServiceClientBuilder = new ProductServiceClientBuilder
+        {
+            Endpoint = Endpoint
+        };
 
-        Console.WriteLine("Please wait till opeartion is done");
-        Console.WriteLine();
-
-        // Poll until the returned long-running operation is complete.
-        Operation<SetInventoryResponse, SetInventoryMetadata> setInventoryResult = response.PollUntilCompleted();
-
-        Thread.Sleep(60000);
-
-        Console.WriteLine("Set inventory operation is done");
-        Console.WriteLine();
-
-        Console.WriteLine("Operation result:");
-        Console.WriteLine(setInventoryResult.Result);
-        Console.WriteLine();
+        var productServiceClient = productServiceClientBuilder.Build();
+        return productServiceClient;
     }
 }
 // [END retail_set_inventory]
 
 /// <summary>
-/// THe set inventory tutorial class.
+/// The set inventory tutorial class.
 /// </summary>
 public static class SetInventoryTutorial
 {
@@ -127,12 +148,15 @@ public static class SetInventoryTutorial
         Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
         // Set inventory for product.
-        SetInventorySample.SetProductInventory(createdProduct);
+        SetInventorySample.SetProductInventory(createdProduct.Name);
 
         // Get product.
-        Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
+        Product product = GetProductSample.GetRetailProduct(createdProduct.Name);
+
+        Console.WriteLine($"Product price info: {product.PriceInfo}");
+        Console.WriteLine();
 
         // Delete product.
-        DeleteProductSample.DeleteRetailProduct(inventoryProduct.Name);
+        DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
     }
 }

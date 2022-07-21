@@ -35,7 +35,7 @@ namespace RetailProducts.Samples.Tests
                 Assert.Contains(expectedPlaceId, createdProduct.FulfillmentInfo[0].PlaceIds);
 
                 // Remove fulfillment from product.
-                RemoveFulfillmentPlacesSample.RemoveFulfillment(createdProduct.Name);
+                RemoveFulfillmentPlaces.RemoveFulfillment(createdProduct.Name);
 
                 // Get product.
                 Product productWithUpdatedFulfillment = GetProductSample.GetRetailProduct(createdProduct.Name);

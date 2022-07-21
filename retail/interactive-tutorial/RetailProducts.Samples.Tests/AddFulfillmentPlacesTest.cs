@@ -38,6 +38,7 @@ namespace RetailProducts.Samples.Tests
 
                 Assert.Contains("store2", inventoryProduct.FulfillmentInfo[0].PlaceIds);
                 Assert.Contains("store3", inventoryProduct.FulfillmentInfo[0].PlaceIds);
+                Assert.Contains("store4", inventoryProduct.FulfillmentInfo[0].PlaceIds);
             }
             finally
             {

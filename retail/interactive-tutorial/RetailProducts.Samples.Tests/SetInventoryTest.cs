@@ -31,7 +31,7 @@ namespace RetailProducts.Samples.Tests
             try
             {
                 // Set inventory for product.
-                SetInventorySample.SetProductInventory(createdProduct);
+                SetInventorySample.SetProductInventory(createdProduct.Name);
 
                 // Get product.
                 Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
@@ -39,6 +39,7 @@ namespace RetailProducts.Samples.Tests
                 Assert.Contains("store1", inventoryProduct.FulfillmentInfo[0].PlaceIds);
                 Assert.Contains("store2", inventoryProduct.FulfillmentInfo[0].PlaceIds);
                 Assert.Equal("pickup-in-store", inventoryProduct.FulfillmentInfo[0].Type);
+                Assert.Equal(15, inventoryProduct.PriceInfo.Price);
                 Assert.Equal(Product.Types.Availability.InStock, inventoryProduct.Availability);
             }
             finally

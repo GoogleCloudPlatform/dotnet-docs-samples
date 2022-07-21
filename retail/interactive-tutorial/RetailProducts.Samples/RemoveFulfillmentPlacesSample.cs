@@ -24,12 +24,12 @@ using System.Threading;
 /// <summary>
 /// The remove fulfillment places sample class.
 /// </summary>
-public static class RemoveFulfillmentPlaces
+public class RemoveFulfillmentPlaces
 {
     /// <summary>
     /// Get the remove fulfillment places request.
     /// </summary>
-    /// <param name="productName">the actual name of the retail product.</param>
+    /// <param name="productName">The actual name of the retail product.</param>
     /// <returns>The remove fulfillment places request.</returns>
     private static RemoveFulfillmentPlacesRequest GetRemoveFulfillmentRequest(string productName)
     {
@@ -78,6 +78,10 @@ public static class RemoveFulfillmentPlaces
         Console.WriteLine("\nRemove fulfillment places. Wait 2 minutes:");
         Thread.Sleep(120000);
     }
+
+    /// <summary>
+    /// Get product service client.
+    /// </summary>
     private static ProductServiceClient GetProductServiceClient()
     {
         string Endpoint = "retail.googleapis.com";
@@ -90,12 +94,12 @@ public static class RemoveFulfillmentPlaces
         var productServiceClient = productServiceClientBuilder.Build();
         return productServiceClient;
     }
-    // [END remove_fulfillment_places]
-
-    /// <summary>
-    /// The remove fulfillment places tutorial class.
-    /// </summary>
 }
+// [END remove_fulfillment_places]
+
+/// <summary>
+/// The remove fulfillment places tutorial class.
+/// </summary>
 public static class RemoveFulfillmentPlacesTutorial
 {
     [Runner.Attributes.Example]
@@ -106,15 +110,13 @@ public static class RemoveFulfillmentPlacesTutorial
         // Create product.
         Product createdProduct = CreateProductSample.CreateRetailProductWithFulfillment(projectId);
 
-        string productName = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch/products/{createdProduct.Id}";
-
         // Remove fulfillment from product.
-        RemoveFulfillmentPlaces.RemoveFulfillment(productName);
+        RemoveFulfillmentPlaces.RemoveFulfillment(createdProduct.Name);
 
         // Get product.
-        GetProductSample.GetRetailProduct(productName);
+        GetProductSample.GetRetailProduct(createdProduct.Name);
 
         // Delete product.
-        DeleteProductSample.DeleteRetailProduct(productName);
+        DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
     }
 }

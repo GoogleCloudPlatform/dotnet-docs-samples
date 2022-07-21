@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Threading;
 
@@ -31,10 +32,17 @@ public class AddFulfillmentPlacesSample
     /// <returns>Add fulfillment places request.</returns>
     private static AddFulfillmentPlacesRequest GetAddFulfillmentRequest(string productName)
     {
+        // The request timestamp
+        DateTime requestTimeStamp = DateTime.Now.ToUniversalTime();
+
+        // The outdated request timestamp
+        // requestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
+
         AddFulfillmentPlacesRequest addFulfillmentRequest = new AddFulfillmentPlacesRequest
         {
             Product = productName,
             Type = "pickup-in-store",
+            AddTime = Timestamp.FromDateTime(requestTimeStamp),
             AllowMissing = true
         };
 
@@ -57,30 +65,29 @@ public class AddFulfillmentPlacesSample
     /// <param name="productName">The actual name of the retail product.</param>
     public static void AddFulfillment(string productName)
     {
-        AddFulfillmentPlacesRequest addFulfillmentRequest = GetAddFulfillmentRequest(productName);
-        ProductServiceClient client = ProductServiceClient.Create();
+        var addFulfillmentRequest = GetAddFulfillmentRequest(productName);
+        GetProductServiceClient().AddFulfillmentPlaces(addFulfillmentRequest);
 
-        // Make the request.
-        Operation<AddFulfillmentPlacesResponse, AddFulfillmentPlacesMetadata> response = client.AddFulfillmentPlaces(addFulfillmentRequest);
+        // This is a long running operation and its result is not immediately present with get operations,
+        // thus we simulate wait with sleep method.
+        Console.WriteLine("\nAdd fulfillment places. Wait 2 minutes:");
+        Thread.Sleep(120000);
+    }
 
-        Console.WriteLine("The operation was started:");
-        Console.WriteLine(response.Name);
-        Console.WriteLine();
+    /// <summary>
+    /// Get product service client.
+    /// </summary>
+    private static ProductServiceClient GetProductServiceClient()
+    {
+        string Endpoint = "retail.googleapis.com";
 
-        Console.WriteLine("Please wait till opeartion is done");
-        Console.WriteLine();
+        var productServiceClientBuilder = new ProductServiceClientBuilder
+        {
+            Endpoint = Endpoint
+        };
 
-        // Poll until the returned long-running operation is complete.
-        Operation<AddFulfillmentPlacesResponse, AddFulfillmentPlacesMetadata> addFulfillmentResult = response.PollUntilCompleted();
-
-        Thread.Sleep(60000);
-
-        Console.WriteLine("Add fulfillment places operation is done");
-        Console.WriteLine();
-
-        Console.WriteLine("Operation result:");
-        Console.WriteLine(addFulfillmentResult.Result);
-        Console.WriteLine();
+        var productServiceClient = productServiceClientBuilder.Build();
+        return productServiceClient;
     }
 }
 // [END retail_add_fulfillment_places]
@@ -102,9 +109,9 @@ public static class AddFulfillmentPlacesTutorial
         AddFulfillmentPlacesSample.AddFulfillment(createdProduct.Name);
 
         // Get product.
-        Product inventoryProduct = GetProductSample.GetRetailProduct(createdProduct.Name);
+        GetProductSample.GetRetailProduct(createdProduct.Name);
 
         // Delete product.
-        DeleteProductSample.DeleteRetailProduct(inventoryProduct.Name);
+        DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
     }
 }
