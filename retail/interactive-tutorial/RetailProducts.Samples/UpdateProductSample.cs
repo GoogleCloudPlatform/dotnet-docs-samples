@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,6 +59,10 @@ public class UpdateProductSample
         Console.WriteLine($"Product Title: {productToUpdate.Title}");
         Console.WriteLine($"Product Categories: {productToUpdate.Categories}");
         Console.WriteLine($"Product Brands: {productToUpdate.Brands}");
+        Console.WriteLine($"Product Availability: {productToUpdate.Availability}");
+        Console.WriteLine($"Product Price: {productToUpdate.PriceInfo.Price}");
+        Console.WriteLine($"Product OriginalPrice: {productToUpdate.PriceInfo.OriginalPrice}");
+        Console.WriteLine($"Product CurrencyCode: {productToUpdate.PriceInfo.CurrencyCode}");
         Console.WriteLine();
 
         return updateProductRequest;
@@ -76,7 +80,15 @@ public class UpdateProductSample
         ProductServiceClient client = ProductServiceClient.Create();
         Product updatedProduct = client.UpdateProduct(updateProductRequest);
 
-        Console.WriteLine($"Updated title: {updatedProduct.Title}");
+        Console.WriteLine("Updated product:");
+        Console.WriteLine($"Updated Name: {updatedProduct.Name}");
+        Console.WriteLine($"Updated Title: {updatedProduct.Title}");
+        Console.WriteLine($"Updated Categories: {updatedProduct.Categories}");
+        Console.WriteLine($"Updated Brands: {updatedProduct.Brands}");
+        Console.WriteLine($"Updated Availability: {updatedProduct.Availability}");
+        Console.WriteLine($"Updated Price: {updatedProduct.PriceInfo.Price}");
+        Console.WriteLine($"Updated OriginalPrice: {updatedProduct.PriceInfo.OriginalPrice}");
+        Console.WriteLine($"Updated CurrencyCode: {updatedProduct.PriceInfo.CurrencyCode}");
         Console.WriteLine();
 
         return updatedProduct;
