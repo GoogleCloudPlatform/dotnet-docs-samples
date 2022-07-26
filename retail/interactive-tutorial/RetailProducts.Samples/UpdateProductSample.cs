@@ -16,6 +16,7 @@
 // Update product from a catalog using Retail API
 
 using Google.Cloud.Retail.V2;
+using Google.Protobuf.WellKnownTypes;
 using System;
 
 /// <summary>
