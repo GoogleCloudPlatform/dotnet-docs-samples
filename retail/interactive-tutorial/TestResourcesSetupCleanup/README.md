@@ -3,15 +3,9 @@
 ## Required environment variables
 
 To successfully import the catalog data for tests, the following environment variables should be set:
- - GOOGLE_CLOUD_PROJECT_NUMBER
  - GOOGLE_CLOUD_PROJECT_ID 
- - BUCKET_NAME
- - EVENTS_BUCKET_NAME
-
-These values are stored in the Secret Manager and will be submitted as 
-   docker environment variables before the test run.
-
-The Secret Manager name is set in .kokoro/presubmit/common.cfg file, SECRET_MANAGER_KEYS variable.
+ - RETAIL_BUCKET_NAME
+ - RETAIL_EVENTS_BUCKET_NAME
 
 ## Import catalog data
 
@@ -19,10 +13,10 @@ There is a JSON file with valid products prepared in the `TestResourcesSetupClea
 `TestResourcesSetupCleanup/resources/products.json`.
 
 Run the `CreateTestResources.cs` to perform the following actions:
-    - create the GCS bucket <BUCKET_NAME>, 
+    - create the GCS bucket <RETAIL_BUCKET_NAME>, 
         - upload the product data from `TestResourcesSetupCleanup/resources/products.json` file to products bucket,
     - import products to the default branch of the Retail catalog,
-    - create the GCS bucket <EVENTS_BUCKET_NAME>, 
+    - create the GCS bucket <RETAIL_EVENTS_BUCKET_NAME>, 
         - upload the product data from `TestResourcesSetupCleanup/resources/user_events.json` file to events bucket,
     - create a BigQuery dataset and table `products`,
         - insert products from TestResourcesSetupCleanup/resources/products.json to the created products table,

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Google.Apis.Bigquery.v2.Data;
-using Google.Apis.Storage.v1.Data;
 using Google.Cloud.BigQuery.V2;
 using Google.Cloud.Retail.V2;
 using Google.Cloud.Storage.V1;
@@ -36,29 +35,13 @@ public class RemoveTestResources
 
         try
         {
-            var bucketToDelete = storageClient.GetBucket(bucketName);
-            DeleteObjectsFromBucket(bucketToDelete);
-            storageClient.DeleteBucket(bucketToDelete.Name);
-            Console.WriteLine($"Bucket {bucketToDelete.Name} is deleted.");
+            storageClient.DeleteBucket(bucketName, new DeleteBucketOptions { DeleteObjects = true });
+            Console.WriteLine($"Bucket {bucketName} is deleted.");
         }
         catch (Exception)
         {
             Console.WriteLine($"Bucket {bucketName} does not exist.");
         }
-    }
-
-    /// <summary>Delete all objects from bucket.</summary>
-    public static void DeleteObjectsFromBucket(Bucket bucket)
-    {
-        Console.WriteLine($"Deleting object from bucket {bucket.Name}.");
-
-        var blobs = storageClient.ListObjects(bucket.Name);
-        foreach (var blob in blobs)
-        {
-            storageClient.DeleteObject(bucket.Name, blob.Name);
-        }
-
-        Console.WriteLine($"All objects are deleted from a GCS bucket {bucket.Name}.");
     }
 
     /// <summary>Delete all products.</summary>
@@ -128,30 +111,6 @@ public class RemoveTestResources
             Console.WriteLine($"Dataset {datasetId} does not exist.");
         }
     }
-
-    /// <summary>Delete Big Query dataset with tables.</summary>
-    public static void DeleteBQTable(string datasetId, string tableId)
-    {
-        Console.WriteLine($"Deleting a {tableId} BigQuery table.");
-
-        TableReference tableReference = new TableReference
-        {
-            TableId = tableId,
-            DatasetId = datasetId,
-            ProjectId = projectId
-        };
-
-        try
-        {
-            bigQueryClient.DeleteTable(tableReference);
-
-            Console.WriteLine($"Table {tableId} was deleted.");
-        }
-        catch (Exception)
-        {
-            Console.WriteLine($"Table {tableId} does not exist.");
-        }
-    }
 }
 /// <summary>
 /// Delete test resources.
@@ -160,11 +119,9 @@ public static class RemoveTestResourcesTutorial
 {
     private const string ProductsDataSet = "products";
     private const string EventsDataSet = "user_events";
-    private const string ProductsTable = "products";
-    private const string EventsTable = "events";
 
-    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
-    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
+    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("RETAIL_BUCKET_NAME");
+    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("RETAIL_EVENTS_BUCKET_NAME");
 
     [Runner.Attributes.Example]
     public static void PerformDeletionOfTestResources()
@@ -172,13 +129,6 @@ public static class RemoveTestResourcesTutorial
         // Delete products and events GCS buckets
         RemoveTestResources.DeleteBucket(productsBucketName);
         RemoveTestResources.DeleteBucket(eventsBucketName);
-
-        // Delete all products from the Retail catalog
-        // DeleteAllProducts();
-
-        // Delete events and products BQ tables
-        RemoveTestResources.DeleteBQTable(ProductsDataSet, ProductsTable);
-        RemoveTestResources.DeleteBQTable(EventsDataSet, EventsTable);
 
         // Delete products and events datasets
         RemoveTestResources.DeleteBQDatasetWithData(ProductsDataSet);

@@ -99,25 +99,12 @@ public class CreateTestResources
     }
 
     /// <summary>List all existing buckets.</summary>
-    public static List<Bucket> ListBuckets()
-    {
-        var bucketsList = new List<Bucket>();
-        var buckets = storageClient.ListBuckets(projectId);
-
-        foreach (var bucket in buckets)
-        {
-            bucketsList.Add(bucket);
-            Console.WriteLine(bucket.Name);
-        }
-
-        return bucketsList;
-    }
+    public static IEnumerable<Bucket> ListBuckets() =>
+    storageClient.ListBuckets(projectId);
 
     /// <summary>Upload blob.</summary>
     public static void UploadBlob(string bucketName, string localPath, string objectName)
     {
-        var bucket = storageClient.GetBucket(bucketName);
-
         using var fileStream = File.OpenRead(localPath);
         storageClient.UploadObject(bucketName, objectName, null, fileStream);
         Console.WriteLine($"Uploaded {objectName}.");
@@ -149,8 +136,6 @@ public class CreateTestResources
         string branchId = "0";
         BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
 
-        // To check error handling paste the invalid catalog name here:
-        // catalogId = "invalid_catalog_name"
         var importRequest = new ImportProductsRequest
         {
             ParentAsBranchName = defaultBranch,
@@ -320,8 +305,8 @@ public static class CreateTestResourcesTutorial
     private static readonly string EventsDataSet = "user_events";
     private static readonly string EventsTable = "events";
 
-    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("BUCKET_NAME");
-    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("EVENTS_BUCKET_NAME");
+    private static readonly string productsBucketName = Environment.GetEnvironmentVariable("RETAIL_BUCKET_NAME");
+    private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("RETAIL_EVENTS_BUCKET_NAME");
 
     private static readonly string productFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductFileName}");
     private static readonly string eventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
