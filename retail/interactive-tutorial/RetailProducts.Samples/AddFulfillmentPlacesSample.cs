@@ -31,10 +31,10 @@ public class AddFulfillmentPlacesSample
     private static AddFulfillmentPlacesRequest GetAddFulfillmentRequest(string productName)
     {
         // The request timestamp
-        DateTime requestTimeStamp = DateTime.Now.ToUniversalTime();
+        DateTime requestTimeStamp = DateTime.UtcNow;
 
         // The outdated request timestamp
-        // requestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
+        // requestTimeStamp = DateTime.UtcNow.AddDays(-1);
 
         AddFulfillmentPlacesRequest addFulfillmentRequest = new AddFulfillmentPlacesRequest
         {
@@ -50,6 +50,7 @@ public class AddFulfillmentPlacesSample
         Console.WriteLine($"Type: {addFulfillmentRequest.Type}");
         Console.WriteLine($"Add Time: {addFulfillmentRequest.AddTime}");
         Console.WriteLine($"Fulfillment Places: {addFulfillmentRequest.PlaceIds}");
+        Console.WriteLine();
 
         return addFulfillmentRequest;
     }
@@ -61,10 +62,12 @@ public class AddFulfillmentPlacesSample
     public static void AddFulfillment(string productName)
     {
         var addFulfillmentRequest = GetAddFulfillmentRequest(productName);
-        var operation = ProductServiceClient.Create().AddFulfillmentPlaces(addFulfillmentRequest);
+        var client = ProductServiceClient.Create();
+        var operation = client.AddFulfillmentPlaces(addFulfillmentRequest);
 
-        Console.WriteLine("\nAdd fulfillment places. Please, wait.\n");
-        
+        Console.WriteLine("Add fulfillment places. Please, wait.");
+        Console.WriteLine();
+
         operation.PollUntilCompleted();
     }
 }

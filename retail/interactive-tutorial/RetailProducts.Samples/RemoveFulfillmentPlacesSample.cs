@@ -31,10 +31,10 @@ public class RemoveFulfillmentPlaces
     private static RemoveFulfillmentPlacesRequest GetRemoveFulfillmentRequest(string productName)
     {
         // The request timestamp
-        DateTime requestTimeStamp = DateTime.Now.ToUniversalTime();
+        DateTime requestTimeStamp = DateTime.UtcNow;
 
         // The outdated request timestamp
-        // requestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
+        // requestTimeStamp = DateTime.UtcNow.AddDays(-1);
 
         var removeFulfillmentRequest = new RemoveFulfillmentPlacesRequest
         {
@@ -50,6 +50,7 @@ public class RemoveFulfillmentPlaces
         Console.WriteLine($"Type: {removeFulfillmentRequest.Type}");
         Console.WriteLine($"Add Time: {removeFulfillmentRequest.RemoveTime}");
         Console.WriteLine($"Fulfillment Places: {removeFulfillmentRequest.PlaceIds}");
+        Console.WriteLine();
 
         return removeFulfillmentRequest;
     }
@@ -61,9 +62,11 @@ public class RemoveFulfillmentPlaces
     public static void RemoveFulfillment(string productName)
     {
         var removeFulfillmentRequest = GetRemoveFulfillmentRequest(productName);
-        var operation = ProductServiceClient.Create().RemoveFulfillmentPlaces(removeFulfillmentRequest);
+        var client = ProductServiceClient.Create();
+        var operation = client.RemoveFulfillmentPlaces(removeFulfillmentRequest);
 
-        Console.WriteLine("\nRemove fulfillment places. Please, wait.\n");
+        Console.WriteLine("Remove fulfillment places. Please, wait.");
+        Console.WriteLine();
 
         operation.PollUntilCompleted();
     }

@@ -63,10 +63,10 @@ public class SetInventorySample
     private static SetInventoryRequest GetSetInventoryRequest(string productName)
     {
         // The request timestamp
-        DateTime requestTimeStamp = DateTime.Now.ToUniversalTime();
+        DateTime requestTimeStamp = DateTime.UtcNow;
 
         // The out-of-order request timestamp
-        // requestTimeStamp = DateTime.Now.ToUniversalTime().AddDays(-1);
+        // requestTimeStamp = DateTime.UtcNow.AddDays(-1);
 
         var setMask = new FieldMask
         {
@@ -88,6 +88,7 @@ public class SetInventorySample
         Console.WriteLine($"Product Categories: {setInventoryRequest.Inventory.Categories}");
         Console.WriteLine($"Product Fulfillment Info: {setInventoryRequest.Inventory.FulfillmentInfo}");
         Console.WriteLine($"Product Price Info: {setInventoryRequest.Inventory.PriceInfo}");
+        Console.WriteLine();
 
         return setInventoryRequest;
     }
@@ -99,9 +100,11 @@ public class SetInventorySample
     public static void SetProductInventory(string productName)
     {
         var setInventoryRequest = GetSetInventoryRequest(productName);
-        var operation = ProductServiceClient.Create().SetInventory(setInventoryRequest);
+        var client = ProductServiceClient.Create();
+        var operation = client.SetInventory(setInventoryRequest);
 
-        Console.WriteLine("\nSet inventory. Please, wait.\n");
+        Console.WriteLine("Set inventory. Please, wait.");
+        Console.WriteLine();
 
         operation.PollUntilCompleted();
     }
