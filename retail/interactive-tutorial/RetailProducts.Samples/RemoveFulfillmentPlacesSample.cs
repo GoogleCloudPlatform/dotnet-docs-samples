@@ -16,10 +16,7 @@
 
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
-using System.Threading;
 
 /// <summary>
 /// The remove fulfillment places sample class.
@@ -44,23 +41,16 @@ public class RemoveFulfillmentPlaces
             Product = productName,
             Type = "pickup-in-store",
             RemoveTime = Timestamp.FromDateTime(requestTimeStamp),
-            AllowMissing = true
+            AllowMissing = true,
+            PlaceIds = { "store0" }
         };
 
-        string[] placeIds = { "store0" };
+        Console.WriteLine("Remove fulfillment places request:");
+        Console.WriteLine($"Product Name: {removeFulfillmentRequest.Product}");
+        Console.WriteLine($"Type: {removeFulfillmentRequest.Type}");
+        Console.WriteLine($"Add Time: {removeFulfillmentRequest.RemoveTime}");
+        Console.WriteLine($"Fulfillment Places: {removeFulfillmentRequest.PlaceIds}");
 
-        removeFulfillmentRequest.PlaceIds.Add(placeIds);
-
-        var jsonSerializeSettings = new JsonSerializerSettings
-        {
-            NullValueHandling = NullValueHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.Indented
-        };
-
-        var removeFulfillmentRequestJson = JsonConvert.SerializeObject(removeFulfillmentRequest, jsonSerializeSettings);
-
-        Console.WriteLine("\nRemove fulfillment places request: \n" + removeFulfillmentRequestJson);
         return removeFulfillmentRequest;
     }
 
@@ -71,28 +61,11 @@ public class RemoveFulfillmentPlaces
     public static void RemoveFulfillment(string productName)
     {
         var removeFulfillmentRequest = GetRemoveFulfillmentRequest(productName);
-        GetProductServiceClient().RemoveFulfillmentPlaces(removeFulfillmentRequest);
+        var operation = ProductServiceClient.Create().RemoveFulfillmentPlaces(removeFulfillmentRequest);
 
-        //This is a long running operation and its result is not immediately present with get operations,
-        // thus we simulate wait with sleep method.
-        Console.WriteLine("\nRemove fulfillment places. Wait 2 minutes:");
-        Thread.Sleep(120000);
-    }
+        Console.WriteLine("\nRemove fulfillment places. Please, wait.\n");
 
-    /// <summary>
-    /// Get product service client.
-    /// </summary>
-    private static ProductServiceClient GetProductServiceClient()
-    {
-        string Endpoint = "retail.googleapis.com";
-
-        var productServiceClientBuilder = new ProductServiceClientBuilder
-        {
-            Endpoint = Endpoint
-        };
-
-        var productServiceClient = productServiceClientBuilder.Build();
-        return productServiceClient;
+        operation.PollUntilCompleted();
     }
 }
 // [END retail_remove_fulfillment_places]

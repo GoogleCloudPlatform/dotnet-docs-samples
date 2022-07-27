@@ -15,10 +15,8 @@
 // [START retail_add_fulfillment_places]
 
 using Google.Cloud.Retail.V2;
-using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System;
-using System.Threading;
 
 /// <summary>
 /// The add fulfillment places sample class.
@@ -43,18 +41,15 @@ public class AddFulfillmentPlacesSample
             Product = productName,
             Type = "pickup-in-store",
             AddTime = Timestamp.FromDateTime(requestTimeStamp),
-            AllowMissing = true
+            AllowMissing = true,
+            PlaceIds = { "store2", "store3", "store4" }
         };
-
-        string[] placeIds = { "store2", "store3", "store4" };
-
-        addFulfillmentRequest.PlaceIds.AddRange(placeIds);
 
         Console.WriteLine("Add fulfillment places request:");
         Console.WriteLine($"Product Name: {addFulfillmentRequest.Product}");
         Console.WriteLine($"Type: {addFulfillmentRequest.Type}");
         Console.WriteLine($"Add Time: {addFulfillmentRequest.AddTime}");
-        Console.WriteLine();
+        Console.WriteLine($"Fulfillment Places: {addFulfillmentRequest.PlaceIds}");
 
         return addFulfillmentRequest;
     }
@@ -66,28 +61,11 @@ public class AddFulfillmentPlacesSample
     public static void AddFulfillment(string productName)
     {
         var addFulfillmentRequest = GetAddFulfillmentRequest(productName);
-        GetProductServiceClient().AddFulfillmentPlaces(addFulfillmentRequest);
+        var operation = ProductServiceClient.Create().AddFulfillmentPlaces(addFulfillmentRequest);
 
-        // This is a long running operation and its result is not immediately present with get operations,
-        // thus we simulate wait with sleep method.
-        Console.WriteLine("\nAdd fulfillment places. Wait 2 minutes:");
-        Thread.Sleep(120000);
-    }
-
-    /// <summary>
-    /// Get product service client.
-    /// </summary>
-    private static ProductServiceClient GetProductServiceClient()
-    {
-        string Endpoint = "retail.googleapis.com";
-
-        var productServiceClientBuilder = new ProductServiceClientBuilder
-        {
-            Endpoint = Endpoint
-        };
-
-        var productServiceClient = productServiceClientBuilder.Build();
-        return productServiceClient;
+        Console.WriteLine("\nAdd fulfillment places. Please, wait.\n");
+        
+        operation.PollUntilCompleted();
     }
 }
 // [END retail_add_fulfillment_places]
