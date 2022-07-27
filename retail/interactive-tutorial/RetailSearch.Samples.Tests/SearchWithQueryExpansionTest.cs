@@ -26,12 +26,12 @@ namespace RetailSearch.Samples.Tests
 
             var searchResultPages = SearchWithQueryExpansionTutorial.Search();
 
-            var topPages = searchResultPages.Take(3).ToList();
+            var topPages = searchResultPages.Take(2).ToList();
             var firstPage = topPages[0];
-            var thirdPage = topPages[2];
+            var secondPage = topPages[1];
 
             Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
-            Assert.Contains(thirdPage, result => !result.Product.Title.Contains(ExpectedProductTitle));
+            Assert.Contains(secondPage, result => !result.Product.Title.Contains(ExpectedProductTitle));
         }
     }
 }
