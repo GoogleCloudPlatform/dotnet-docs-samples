@@ -23,22 +23,29 @@ public class CreateDualRegionBucketSample
     public Bucket CreateDualRegionBucket(
         string projectId = "your-project-id",
         string bucketName = "your-unique-bucket-name",
+        string location = "your-location",
         string region1 = "your-region1-name",
         string region2 = "your-region2-name")
     {
         var client = StorageClient.Create();
 
-        // Two regions will be concatenated with a '+' to form dual region string, e.g. "US-EAST1+US-WEST1".
-        string dualRegion = $"{region1}+{region2}";
-
         var bucket = new Bucket
         {
             Name = bucketName,
-            Location = dualRegion
+            Location = location,
+            CustomPlacementConfig = new Bucket.CustomPlacementConfigData
+            {
+                DataLocations = new[] { region1, region2 }
+            }
         };
+
         var storageBucket = client.CreateBucket(projectId, bucket);
 
-        Console.WriteLine($"Created storage bucket {storageBucket.Name} in {storageBucket.Location} with location-type {storageBucket.LocationType}.");
+        Console.WriteLine($"Created storage bucket {storageBucket.Name}" +
+            $" in {storageBucket.Location}" +
+            $" with location-type {storageBucket.LocationType} and" +
+            $" dataLocations {string.Join(",", storageBucket.CustomPlacementConfig.DataLocations)}.");
+
         return storageBucket;
     }
 
