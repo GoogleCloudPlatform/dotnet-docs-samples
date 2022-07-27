@@ -100,7 +100,7 @@ public class CreateTestResources
 
     /// <summary>List all existing buckets.</summary>
     public static IEnumerable<Bucket> ListBuckets() =>
-    storageClient.ListBuckets(projectId);
+        storageClient.ListBuckets(projectId);
 
     /// <summary>Upload blob.</summary>
     public static void UploadBlob(string bucketName, string localPath, string objectName)

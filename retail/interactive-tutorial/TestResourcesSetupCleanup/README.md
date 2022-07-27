@@ -31,10 +31,10 @@ $ dotnet run -- CreateTestResourcesTutorial
 ## Remove catalog data
 
 Run the `RemoveTestResources.cs` to perform the following actions:
-    - remove all objects from the GCS bucket <BUCKET_NAME>, 
-    - remove the <BUCKET_NAME> bucket,
-    - remove all objects from the GCS bucket <EVENTS_BUCKET_NAME>, 
-    - remove the <EVENTS_BUCKET_NAME> bucket,
+    - remove all objects from the GCS bucket <RETAIL_BUCKET_NAME>, 
+    - remove the <RETAIL_BUCKET_NAME> bucket,
+    - remove all objects from the GCS bucket <RETAIL_EVENTS_BUCKET_NAME>, 
+    - remove the <RETAIL_EVENTS_BUCKET_NAME> bucket,
     - remove dataset `products` along with tables,
     - remove dataset `user_events` along with tables,
     - delete all products from the Retail catalog
