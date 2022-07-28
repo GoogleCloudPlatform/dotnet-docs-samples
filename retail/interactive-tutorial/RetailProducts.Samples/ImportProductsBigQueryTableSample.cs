@@ -13,14 +13,14 @@
 // limitations under the License.
 
 // [START retail_import_products_from_big_query]
-// Import products into a catalog from big query table using Retail API
+// Import products into a catalog from BigQuery table using Retail API
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
 using System;
 
 /// <summary>
-/// The import products big query table sample class.
+/// The import products BigQuery table sample class.
 /// </summary>
 public class ImportProductsBigQueryTableSample
 {
@@ -31,7 +31,7 @@ public class ImportProductsBigQueryTableSample
     // TableId = "products_some_invalid";
 
     /// <summary>
-    /// Get import products big query request.
+    /// Get import products BigQuery request.
     /// </summary>
     /// <param name="reconciliationMode">The preffered reconciliation mode.</param>
     /// <param name="projectId">The current project id.</param>
@@ -61,7 +61,7 @@ public class ImportProductsBigQueryTableSample
             }
         };
 
-        Console.WriteLine("Import products from big query table request:");
+        Console.WriteLine("Import products from BigQuery table request:");
         Console.WriteLine(importRequest);
         Console.WriteLine();
 
@@ -69,7 +69,7 @@ public class ImportProductsBigQueryTableSample
     }
 
     /// <summary>
-    /// Call the Retail API to import products from a Big Query.
+    /// Call the Retail API to import products from a BigQuery.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
     public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromBigQuery(string projectId)
@@ -105,7 +105,7 @@ public class ImportProductsBigQueryTableSample
 // [END retail_import_products_from_big_query]
 
 /// <summary>
-/// The import products big query table tutorial class.
+/// The import products BigQuery table tutorial class.
 /// </summary>
 public static class ImportProductsBigQueryTableTutorial
 {

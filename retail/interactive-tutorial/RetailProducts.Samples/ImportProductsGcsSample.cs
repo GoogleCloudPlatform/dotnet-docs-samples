@@ -64,7 +64,7 @@ public class ImportProductsGcsSample
             }
         };
 
-        Console.WriteLine("Import products from google cloud source. request:");
+        Console.WriteLine("Import products from google cloud source request:");
         Console.WriteLine(importRequest);
         Console.WriteLine();
 
