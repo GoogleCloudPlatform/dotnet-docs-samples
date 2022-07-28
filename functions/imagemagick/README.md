@@ -10,7 +10,7 @@ Eventually it should have a system test using two Storage buckets
   inappropriate
 - Checks for the existence of a matching file in the "blurred" bucket
 - Uploads a cat image to the "original" bucket
-- Retrives log entries to validate that the image was detected as "OK"
+- Retrieves log entries to validate that the image was detected as "OK"
 - Checks that no matching file was created in the "blurred" bucket
 
 These steps have been checked manually, but this should be automated

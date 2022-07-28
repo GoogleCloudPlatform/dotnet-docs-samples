@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Bigquery.v2.Data;
+using Google.Cloud.BigQuery.V2;
 using Google.Cloud.PubSub.V1;
 using GoogleCloudSamples;
 using Grpc.Core;
@@ -30,11 +32,14 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string DeadLetterTopic { get; } = $"testDeadLetterTopic{Guid.NewGuid().ToString().Substring(0, 18)}";
     public string AvroSchemaFile { get; } = $"Resources/us-states.avsc";
     public string ProtoSchemaFile { get; } = $"Resources/us-states.proto";
+    public string BigQueryDatasetId { get; } = $"testDataSet{Guid.NewGuid().ToString().Substring(24)}";
+    public string BigQueryTableId { get; } = $"testTable{Guid.NewGuid().ToString().Substring(24)}";
+    public string BigQueryTableName { get; }
 
     public RetryRobot Pull { get; } = new RetryRobot
     {
         ShouldRetry = ex => ex is XunitException
-            || (ex is RpcException rpcEx 
+            || (ex is RpcException rpcEx
                 && (rpcEx.StatusCode == StatusCode.DeadlineExceeded || rpcEx.StatusCode == StatusCode.Unavailable))
     };
 
@@ -42,6 +47,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         CreateTopic(DeadLetterTopic);
+        BigQueryTableName = CreateBigQueryTable();
     }
 
     public void Dispose()
@@ -82,6 +88,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
                 // Do nothing, we are deleting on a best effort basis.
             }
         }
+        DeleteBigQueryTable();
     }
 
     public Topic CreateTopic(string topicId)
@@ -122,6 +129,42 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         var schema = createAvroSchemaSampleObject.CreateAvroSchema(ProjectId, schemaId, AvroSchemaFile);
         TempSchemaIds.Add(schemaId);
         return schema;
+    }
+
+    public string CreateBigQueryTable()
+    {
+        BigQueryClient client = BigQueryClient.Create(ProjectId);
+        var dataset = new Dataset
+        {
+            // Specify the geographic location where the dataset should reside.
+            Location = "US"
+        };
+        // Create the dataset
+        var createdDataset = client.CreateDataset(datasetId: BigQueryDatasetId, dataset);
+
+        // Create schema for new table.
+        var schema = new TableSchemaBuilder
+        {
+            { "data", BigQueryDbType.Bytes },
+            { "message_id", BigQueryDbType.String },
+            { "subscription_name", BigQueryDbType.String },
+            { "attributes", BigQueryDbType.String },
+            { "publish_time", BigQueryDbType.Timestamp }
+        }.Build();
+        // Create the table
+        createdDataset.CreateTable(tableId: BigQueryTableId, schema: schema);
+
+        return $"{ProjectId}.{BigQueryDatasetId}.{BigQueryTableId}";
+    }
+
+    public void DeleteBigQueryTable()
+    {
+        BigQueryClient client = BigQueryClient.Create(ProjectId);
+        DeleteDatasetOptions options = new DeleteDatasetOptions
+        {
+          DeleteContents = true
+        };
+        client.DeleteDataset(datasetId: BigQueryDatasetId, options);
     }
 
     public Topic GetTopic(string topicId)
