@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,38 +13,35 @@
 // limitations under the License.
 
 // [START retail_import_products_from_gcs]
-// Import products into a catalog from gcs using Retail API
+// Import products into a catalog from GCS using Retail API
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
 using System;
 
 /// <summary>
-/// The import products gcs sample class.
+/// The import products GCS sample class.
 /// </summary>
 public class ImportProductsGcsSample
 {
-    private const string gcsProductsObject = "products.json";
-
-    // To check error handling use the json with invalid product:
-    // gcsProductsObject = "products_some_invalid.json";
-
     /// <summary>
-    /// Get import products gcs request.
+    /// Get import products GCS request.
     /// </summary>
-    /// <param name="gcsObjectName">The name of the gcs object.</param>
+    /// <param name="gcsObjectName">The name of the GCS object.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>The import products request.</returns>
-    private static ImportProductsRequest GetImportProductsGcsRequest(string gcsObjectName, string projectId, string bucketName)
+    public static ImportProductsRequest GetImportProductsGcsRequest(string gcsObjectName, string projectId, string productsBucketName)
     {
-        string productsBucketName = bucketName ?? Environment.GetEnvironmentVariable("BUCKET_NAME");
         string gcsBucket = $"gs://{productsBucketName}";
-        string gcsErrorsBucket = $"{gcsBucket}/error";
+        string gcsErrorsPrefix = $"{gcsBucket}/error";
 
-        string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch";
+        string locationId = "global";
+        string catalogId = "default_catalog";
+        string branchId = "default_branch";
+        BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
 
         // To check error handling paste the invalid catalog name here:
-        // defaultCatalog = "invalid_catalog_name";
+        // catalogId = "invalid_catalog_name";
 
         var gcsSource = new GcsSource();
         gcsSource.InputUris.Add($"{gcsBucket}/{gcsObjectName}");
@@ -55,7 +52,7 @@ public class ImportProductsGcsSample
 
         var importRequest = new ImportProductsRequest
         {
-            Parent = defaultCatalog,
+            ParentAsBranchName = defaultBranch,
             ReconciliationMode = ImportProductsRequest.Types.ReconciliationMode.Incremental,
             InputConfig = new ProductInputConfig
             {
@@ -63,7 +60,7 @@ public class ImportProductsGcsSample
             },
             ErrorsConfig = new ImportErrorsConfig
             {
-                GcsPrefix = gcsErrorsBucket
+                GcsPrefix = gcsErrorsPrefix
             }
         };
 
@@ -78,8 +75,13 @@ public class ImportProductsGcsSample
     /// Call the Retail API to import products.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
-    public Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromGcs(string projectId, string bucketName = null)
+    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromGcs(string projectId, string bucketName = null)
     {
+        string gcsProductsObject = "products.json";
+
+        // To check error handling use the json with invalid product:
+        // gcsProductsObject = "products_some_invalid.json";
+
         ImportProductsRequest importGcsRequest = GetImportProductsGcsRequest(gcsProductsObject, projectId, bucketName);
 
         ProductServiceClient client = ProductServiceClient.Create();
@@ -105,7 +107,7 @@ public class ImportProductsGcsSample
         Console.WriteLine();
 
         // The imported products needs to be indexed in the catalog before they become available for search.
-        Console.WriteLine("Wait 2 - 5 minutes till products become indexed in the catalog, after that they will be available for search");
+        Console.WriteLine("Wait few minutes till products become indexed in the catalog, after that they will be available for search");
 
         return importResult;
     }
@@ -113,25 +115,16 @@ public class ImportProductsGcsSample
 // [END retail_import_products_from_gcs]
 
 /// <summary>
-/// The import products gcs tutorial class.
+/// The import products GCS tutorial class.
 /// </summary>
 public static class ImportProductsGcsTutorial
 {
     [Runner.Attributes.Example]
-    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromGcs()
+    public static void ImportProductsFromGcs()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new ImportProductsGcsSample();
+        string productsBucketName = Environment.GetEnvironmentVariable("RETAIL_BUCKET_NAME");
 
-        string createdBucketName = null;
-
-        ProductsDeleteGcsBucket.PerformDeletionOfProductsGcsBucket(createdBucketName);
-        createdBucketName = ProductsCreateGcsBucket.PerformCreationOfGcsBucket();
-
-        Operation<ImportProductsResponse, ImportMetadata> importResponse = sample.ImportProductsFromGcs(projectId, createdBucketName);
-
-        ProductsDeleteGcsBucket.PerformDeletionOfProductsGcsBucket(createdBucketName);
-
-        return importResponse;
+        ImportProductsGcsSample.ImportProductsFromGcs(projectId, productsBucketName);
     }
 }

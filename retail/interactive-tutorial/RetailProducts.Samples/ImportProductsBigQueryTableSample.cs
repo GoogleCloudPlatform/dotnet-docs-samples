@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,16 +36,19 @@ public class ImportProductsBigQueryTableSample
     /// <param name="reconciliationMode">The preffered reconciliation mode.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>The import product request.</returns>
-    private static ImportProductsRequest GetImportProductsBigQueryRequest(ImportProductsRequest.Types.ReconciliationMode reconciliationMode, string projectId)
+    public static ImportProductsRequest GetImportProductsBigQueryRequest(ImportProductsRequest.Types.ReconciliationMode reconciliationMode, string projectId)
     {
-        string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog/branches/default_branch";
+        string locationId = "global";
+        string catalogId = "default_catalog";
+        string branchId = "default_branch";
+        BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
 
         // To check error handling paste the invalid catalog name here:
-        // defaultCatalog = "invalid_catalog_name";
+        // catalogId = "invalid_catalog_name";
 
         var importRequest = new ImportProductsRequest
         {
-            Parent = defaultCatalog,
+            ParentAsBranchName = defaultBranch,
             ReconciliationMode = reconciliationMode,
             InputConfig = new ProductInputConfig
             {
@@ -58,7 +61,7 @@ public class ImportProductsBigQueryTableSample
             }
         };
 
-        Console.WriteLine("Import products from big query table. request:");
+        Console.WriteLine("Import products from big query table request:");
         Console.WriteLine(importRequest);
         Console.WriteLine();
 
@@ -69,7 +72,7 @@ public class ImportProductsBigQueryTableSample
     /// Call the Retail API to import products from a Big Query.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
-    public Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromBigQuery(string projectId)
+    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromBigQuery(string projectId)
     {
         // Try the full reconciliation mode here:
         var recoinciliationMode = ImportProductsRequest.Types.ReconciliationMode.Incremental;
@@ -107,10 +110,10 @@ public class ImportProductsBigQueryTableSample
 public static class ImportProductsBigQueryTableTutorial
 {
     [Runner.Attributes.Example]
-    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromBigQuery()
+    public static void ImportProductsFromBigQuery()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new ImportProductsBigQueryTableSample();
-        return sample.ImportProductsFromBigQuery(projectId);
+
+        ImportProductsBigQueryTableSample.ImportProductsFromBigQuery(projectId);
     }
 }
