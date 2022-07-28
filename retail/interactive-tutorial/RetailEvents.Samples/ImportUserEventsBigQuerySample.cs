@@ -20,7 +20,7 @@ using Google.LongRunning;
 using System;
 
 /// <summary>
-/// The import user events big query sample class.
+/// The import user events BigQuery sample class.
 /// </summary>
 public class ImportUserEventsBigQuerySample
 {
@@ -32,11 +32,11 @@ public class ImportUserEventsBigQuerySample
     // TableId = "events_some_invalid";
 
     /// <summary>
-    /// Get import user events big query request.
+    /// Get import user events BigQuery request.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
     /// <returns>The import user events request.</returns>
-    private static ImportUserEventsRequest GetImportUserEventsBigQueryRequest(string projectId)
+    public static ImportUserEventsRequest GetImportUserEventsBigQueryRequest(string projectId)
     {
         string locationId = "global";
         string catalogId = "default_catalog";
@@ -71,7 +71,7 @@ public class ImportUserEventsBigQuerySample
     /// Call the Retail API to import user events.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
-    public Operation<ImportUserEventsResponse, ImportMetadata> ImportProductsFromBigQuery(string projectId)
+    public static Operation<ImportUserEventsResponse, ImportMetadata> ImportProductsFromBigQuery(string projectId)
     {
         ImportUserEventsRequest importBigQueryRequest = GetImportUserEventsBigQueryRequest(projectId);
         UserEventServiceClient client = UserEventServiceClient.Create();
@@ -102,15 +102,15 @@ public class ImportUserEventsBigQuerySample
 // [END retail_import_user_events_from_big_query]
 
 /// <summary>
-/// The import user events big query tutorial class.
+/// The import user events BigQuery tutorial class.
 /// </summary>
 public static class ImportUserEventsBigQueryTutorial
 {
     [Runner.Attributes.Example]
-    public static Operation<ImportUserEventsResponse, ImportMetadata> ImportProductsFromBigQuery()
+    public static void ImportProductsFromBigQuery()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new ImportUserEventsBigQuerySample();
-        return sample.ImportProductsFromBigQuery(projectId);
+
+        ImportUserEventsBigQuerySample.ImportProductsFromBigQuery(projectId);
     }
 }

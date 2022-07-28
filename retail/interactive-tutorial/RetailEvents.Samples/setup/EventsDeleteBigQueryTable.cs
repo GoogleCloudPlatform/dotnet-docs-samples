@@ -17,7 +17,7 @@ public static class EventsDeleteBigQueryTable
     private const string EventsDataSet = "user_events";
 
     /// <summary>
-    /// Delete BQ table with data.
+    /// Delete BigQuery table with data.
     /// </summary>
     [Runner.Attributes.Example]
     public static void PerformDeletionOfEventsBigQueryTable()

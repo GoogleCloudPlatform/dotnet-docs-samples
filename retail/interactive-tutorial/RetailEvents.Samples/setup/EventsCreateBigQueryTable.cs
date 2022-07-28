@@ -25,12 +25,12 @@ public static class EventsCreateBigQueryTable
     private static readonly string eventsSchemaFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsSchema}");
 
     /// <summary>
-    /// Create big query table.
+    /// Create events BigQuery table with data.
     /// </summary>
     [Runner.Attributes.Example]
     public static void PerformCreationOfBigQueryTable()
     {
-        // // Create a BigQuery table with data.
+        // Create a BigQuery table with data.
         CreateTestResources.CreateBQDataSet(EventsDataSet);
         CreateTestResources.CreateAndPopulateBQTable(EventsDataSet, EventsTable, eventsSchemaFilePath, eventsFilePath);
     }

@@ -29,7 +29,7 @@ public static class EventsCreateGcsBucket
     private static readonly string bucketName = $"{projectId}_events_{requestTimeStamp}";
     
     /// <summary>
-    /// Create events GCS bucket.
+    /// Create events GCS bucket with data.
     /// </summary>
     [Runner.Attributes.Example]
     public static void PerformCreationOfEventsGcsBucket()
@@ -39,6 +39,8 @@ public static class EventsCreateGcsBucket
 
         // Upload user_events.json file to a bucket.
         CreateTestResources.UploadBlob(createdProductsBucket.Name, eventsFilePath, EventsFileName);
+
+        // Upload user_events_some_invalid.json file to a bucket.
         CreateTestResources.UploadBlob(createdProductsBucket.Name, invalidEventsFilePath, InvalidEventsFileName);
     }
 }

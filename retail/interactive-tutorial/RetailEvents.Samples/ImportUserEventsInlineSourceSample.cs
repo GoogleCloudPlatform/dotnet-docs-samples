@@ -60,7 +60,7 @@ public class ImportUserEventsInlineSourceSample
     /// <param name="userEventToImport">List of user events to import.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>The import user events request.</returns>
-    private static ImportUserEventsRequest GetImportUserEventsInlineSourceRequest(List<UserEvent> userEventToImport, string projectId)
+    public static ImportUserEventsRequest GetImportUserEventsInlineSourceRequest(List<UserEvent> userEventToImport, string projectId)
     {
         string locationId = "global";
         string catalogId = "default_catalog";
@@ -92,7 +92,7 @@ public class ImportUserEventsInlineSourceSample
     /// Call the Retail API to import user events.
     /// </summary>
     /// <param name="projectId">The current project id.</param>
-    public Operation<ImportUserEventsResponse, ImportMetadata> ImportUserEventsFromInlineSource(string projectId)
+    public static Operation<ImportUserEventsResponse, ImportMetadata> ImportUserEventsFromInlineSource(string projectId)
     {
         List<UserEvent> userEvents = GetUserEvents();
         ImportUserEventsRequest importRequest = GetImportUserEventsInlineSourceRequest(userEvents, projectId);
@@ -129,10 +129,10 @@ public class ImportUserEventsInlineSourceSample
 public static class ImportUserEventsInlineSourceTutorial
 {
     [Runner.Attributes.Example]
-    public static Operation<ImportUserEventsResponse, ImportMetadata> ImportUserEventsFromInlineSource()
+    public static void ImportUserEventsFromInlineSource()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new ImportUserEventsInlineSourceSample();
-        return sample.ImportUserEventsFromInlineSource(projectId);
+
+        ImportUserEventsInlineSourceSample.ImportUserEventsFromInlineSource(projectId);
     }
 }

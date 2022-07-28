@@ -17,7 +17,7 @@ using System;
 public static class EventsDeleteGcsBucket
 {
     /// <summary>
-    /// Delete events GCS bucket.
+    /// Delete events GCS bucket with data.
     /// </summary>
     [Runner.Attributes.Example]
     public static void PerformDeletionOfEventsBucketName()
