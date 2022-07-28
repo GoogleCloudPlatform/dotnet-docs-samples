@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,10 +41,7 @@ public class ImportUserEventsInlineSourceSample
             {
                 EventType = "home-page-view", // EventType = "invalid",
                 VisitorId = "test_visitor_id",
-                EventTime = new Timestamp
-                {
-                    Seconds = DateTime.Now.ToUniversalTime().ToTimestamp().Seconds
-                }
+                EventTime = DateTime.UtcNow.ToTimestamp()
             };
 
             userEvents.Add(userEvent);
@@ -65,24 +62,26 @@ public class ImportUserEventsInlineSourceSample
     /// <returns>The import user events request.</returns>
     private static ImportUserEventsRequest GetImportUserEventsInlineSourceRequest(List<UserEvent> userEventToImport, string projectId)
     {
-        string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
+        string locationId = "global";
+        string catalogId = "default_catalog";
+        CatalogName defaultCatalog = new CatalogName(projectId, locationId, catalogId);
 
         // To check error handling paste the invalid catalog name here:
-        // defaultCatalog = "invalid_catalog_name";
+        // catalogId = "invalid_catalog_name";
 
         UserEventInlineSource inlineSource = new UserEventInlineSource();
         inlineSource.UserEvents.AddRange(userEventToImport);
 
         ImportUserEventsRequest importRequest = new ImportUserEventsRequest
         {
-            Parent = defaultCatalog,
+            ParentAsCatalogName = defaultCatalog,
             InputConfig = new UserEventInputConfig
             {
                 UserEventInlineSource = inlineSource
             }
         };
 
-        Console.WriteLine("Import user events from inline source. request:");
+        Console.WriteLine("Import user events from inline source request:");
         Console.WriteLine(importRequest);
         Console.WriteLine();
 

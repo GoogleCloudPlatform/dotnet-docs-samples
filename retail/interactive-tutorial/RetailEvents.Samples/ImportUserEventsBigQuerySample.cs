@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,14 +38,16 @@ public class ImportUserEventsBigQuerySample
     /// <returns>The import user events request.</returns>
     private static ImportUserEventsRequest GetImportUserEventsBigQueryRequest(string projectId)
     {
-        string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
+        string locationId = "global";
+        string catalogId = "default_catalog";
+        CatalogName defaultCatalog = new CatalogName(projectId, locationId, catalogId);
 
         // To check error handling paste the invalid catalog name here:
-        // defaultCatalog = "invalid_catalog_name";
+        // catalogId = "invalid_catalog_name";
 
         ImportUserEventsRequest importRequest = new ImportUserEventsRequest
         {
-            Parent = defaultCatalog,
+            ParentAsCatalogName = defaultCatalog,
             InputConfig = new UserEventInputConfig
             {
                 BigQuerySource = new BigQuerySource
