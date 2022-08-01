@@ -19,26 +19,15 @@ namespace RetailEvents.Samples.Tests
     public class ImportUserEventsBigQueryTableTest
     {
         [Fact]
-         public void TestImportUserEventsBigQueryTable()
+        public void TestImportUserEventsBigQueryTable()
         {
-            try
-            {
-                UpdateUserEventsJson.PerformUpdateEventsTimeStamp();
-                EventsDeleteBigQueryTable.PerformDeletionOfEventsBigQueryTable();
-                EventsCreateBigQueryTable.PerformCreationOfBigQueryTable();
+            int expectedSuccessfullyImportedEvents = 4;
+            int expectedFailures = 0;
 
-                int expectedSuccessfullyImportedEvents = 4;
-                int expectedFailures = 0;
+            var result = ImportUserEventsBigQueryTutorial.ImportProductsFromBigQuery();
 
-                var result = ImportUserEventsBigQueryTutorial.ImportProductsFromBigQuery();
-
-                Assert.Equal(expectedSuccessfullyImportedEvents, result.Metadata.SuccessCount);
-                Assert.Equal(expectedFailures, result.Metadata.FailureCount);
-            }
-            finally
-            {
-                EventsDeleteBigQueryTable.PerformDeletionOfEventsBigQueryTable();
-            }
+            Assert.Equal(expectedSuccessfullyImportedEvents, result.Metadata.SuccessCount);
+            Assert.Equal(expectedFailures, result.Metadata.FailureCount);
         }
     }
 }

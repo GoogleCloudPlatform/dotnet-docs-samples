@@ -22,28 +22,13 @@ namespace RetailEvents.Samples.Tests
         [Fact]
         public void TestImportUserEventsGcs()
         {
-            string createdBucketName = null;
-            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            int expectedSuccessfullyImportedEvents = 4;
+            int expectedFailures = 0;
 
-            try
-            {
-                UpdateUserEventsJson.PerformUpdateEventsTimeStamp();
-                EventsDeleteGcsBucket.PerformDeletionOfEventsBucketName(createdBucketName);
-                createdBucketName = EventsCreateGcsBucket.PerformCreationOfEventsGcsBucket();
+            var result = ImportUserEventsGcsTutorial.ImportUserEventsFromGcs();
 
-                int expectedSuccessfullyImportedEvents = 4;
-                int expectedFailures = 0;
-
-                var sample = new ImportUserEventsGcsSample();
-                var result = sample.ImportUserEventsFromGcs(projectId, createdBucketName);
-
-                Assert.Equal(expectedSuccessfullyImportedEvents, result.Metadata.SuccessCount);
-                Assert.Equal(expectedFailures, result.Metadata.FailureCount);
-            }
-            finally
-            {
-                EventsDeleteGcsBucket.PerformDeletionOfEventsBucketName(createdBucketName);
-            }
+            Assert.Equal(expectedSuccessfullyImportedEvents, result.Metadata.SuccessCount);
+            Assert.Equal(expectedFailures, result.Metadata.FailureCount);
         }
     }
 }

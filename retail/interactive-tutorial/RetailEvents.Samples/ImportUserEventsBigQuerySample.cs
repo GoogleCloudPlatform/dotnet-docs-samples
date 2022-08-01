@@ -107,10 +107,12 @@ public class ImportUserEventsBigQuerySample
 public static class ImportUserEventsBigQueryTutorial
 {
     [Runner.Attributes.Example]
-    public static void ImportProductsFromBigQuery()
+    public static Operation<ImportUserEventsResponse, ImportMetadata> ImportProductsFromBigQuery()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        ImportUserEventsBigQuerySample.ImportProductsFromBigQuery(projectId);
+        var result = ImportUserEventsBigQuerySample.ImportProductsFromBigQuery(projectId);
+
+        return result;
     }
 }

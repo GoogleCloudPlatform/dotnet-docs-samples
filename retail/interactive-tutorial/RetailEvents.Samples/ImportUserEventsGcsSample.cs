@@ -114,11 +114,13 @@ public class ImportUserEventsGcsSample
 public static class ImportUserEventsGcsTutorial
 {
     [Runner.Attributes.Example]
-    public static void ImportUserEventsFromGcs()
+    public static Operation<ImportUserEventsResponse, ImportMetadata> ImportUserEventsFromGcs()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         string eventsBucketName = Environment.GetEnvironmentVariable("RETAIL_EVENTS_BUCKET_NAME");
 
-        ImportUserEventsGcsSample.ImportUserEventsFromGcs(projectId, eventsBucketName);
+        Operation<ImportUserEventsResponse, ImportMetadata> result = ImportUserEventsGcsSample.ImportUserEventsFromGcs(projectId, eventsBucketName);
+
+        return result;
     }
 }

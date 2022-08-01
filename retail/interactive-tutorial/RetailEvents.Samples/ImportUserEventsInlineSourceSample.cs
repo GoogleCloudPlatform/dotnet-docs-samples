@@ -129,10 +129,12 @@ public class ImportUserEventsInlineSourceSample
 public static class ImportUserEventsInlineSourceTutorial
 {
     [Runner.Attributes.Example]
-    public static void ImportUserEventsFromInlineSource()
+    public static Operation<ImportUserEventsResponse, ImportMetadata> ImportUserEventsFromInlineSource()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        ImportUserEventsInlineSourceSample.ImportUserEventsFromInlineSource(projectId);
+        var result = ImportUserEventsInlineSourceSample.ImportUserEventsFromInlineSource(projectId);
+
+        return result;
     }
 }
