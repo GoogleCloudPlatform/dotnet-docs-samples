@@ -33,6 +33,8 @@ public class SearchWithPageSizeSample
     /// <param name="query">The query.</param>
     /// <param name="pageSize">The size of the page.</param>
     /// <param name="projectId">The current project id.</param>
+    /// <param name="offset">The offset from which the search will start.</param>
+    /// <param name="nextPageToken">The next page token which will allow to obtain the next page of results.</param>
     /// <returns>The search request.</returns>
     private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId, int offset = 0, string nextPageToken = "")
     {
@@ -91,11 +93,6 @@ public class SearchWithPageSizeSample
                 Console.WriteLine(item);
             }
         }
-
-        // PASTE CALL WITH NEXT PAGE TOKEN HERE:
-
-        // PASTE CALL WITH OFFSET HERE:
-
         return searchResultPages;
     }
 }
