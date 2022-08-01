@@ -34,7 +34,7 @@ public class SearchWithPageSizeSample
     /// <param name="pageSize">The size of the page.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>The search request.</returns>
-    private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId)
+    private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId, int offset = 0, string nextPageToken = "")
     {
         string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
@@ -44,6 +44,8 @@ public class SearchWithPageSizeSample
             VisitorId = "123456", // A unique identifier to track visitors
             Query = query,
             PageSize = pageSize,
+            PageToken = nextPageToken,
+            Offset = offset
         };
 
         Console.WriteLine("Search. request:");
@@ -89,6 +91,10 @@ public class SearchWithPageSizeSample
                 Console.WriteLine(item);
             }
         }
+
+        // PASTE CALL WITH NEXT PAGE TOKEN HERE:
+
+        // PASTE CALL WITH OFFSET HERE:
 
         return searchResultPages;
     }
