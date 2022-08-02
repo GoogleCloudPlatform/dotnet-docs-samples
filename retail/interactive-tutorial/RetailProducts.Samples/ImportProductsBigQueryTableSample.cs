@@ -110,10 +110,12 @@ public class ImportProductsBigQueryTableSample
 public static class ImportProductsBigQueryTableTutorial
 {
     [Runner.Attributes.Example]
-    public static void ImportProductsFromBigQuery()
+    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromBigQuery()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        ImportProductsBigQueryTableSample.ImportProductsFromBigQuery(projectId);
+        var result = ImportProductsBigQueryTableSample.ImportProductsFromBigQuery(projectId);
+
+        return result;
     }
 }

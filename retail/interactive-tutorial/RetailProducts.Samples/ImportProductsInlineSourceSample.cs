@@ -194,10 +194,12 @@ public class ImportProductsInlineSourceSample
 public static class ImportProductsInlineSourceTutorial
 {
     [Runner.Attributes.Example]
-    public static void ImportProductsFromInlineSource()
+    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromInlineSource()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
 
-        ImportProductsInlineSourceSample.ImportProductsFromInlineSource(projectId);
+        var result =  ImportProductsInlineSourceSample.ImportProductsFromInlineSource(projectId);
+
+        return result;
     }
 }

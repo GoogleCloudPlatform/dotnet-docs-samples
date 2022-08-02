@@ -120,11 +120,13 @@ public class ImportProductsGcsSample
 public static class ImportProductsGcsTutorial
 {
     [Runner.Attributes.Example]
-    public static void ImportProductsFromGcs()
+    public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromGcs()
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         string productsBucketName = Environment.GetEnvironmentVariable("RETAIL_BUCKET_NAME");
 
-        ImportProductsGcsSample.ImportProductsFromGcs(projectId, productsBucketName);
+        var result = ImportProductsGcsSample.ImportProductsFromGcs(projectId, productsBucketName);
+
+        return result;
     }
 }

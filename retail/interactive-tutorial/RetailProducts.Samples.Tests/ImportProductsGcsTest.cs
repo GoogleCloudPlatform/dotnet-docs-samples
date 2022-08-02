@@ -22,27 +22,13 @@ namespace RetailProducts.Samples.Tests
         [Fact]
         public void TestImportProductsGcs()
         {
-            string createdBucketName = null;
-            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            int expectedSuccessfullyImportedProducts = 316;
+            int expectedFailures = 0;
 
-            try 
-            {
-                ProductsDeleteGcsBucket.PerformDeletionOfProductsGcsBucket(createdBucketName);
-                createdBucketName = ProductsCreateGcsBucket.PerformCreationOfGcsBucket();
+            var result = ImportProductsGcsTutorial.ImportProductsFromGcs();
 
-                int expectedSuccessfullyImportedProducts = 316;
-                int expectedFailures = 0;
-
-                var sample = new ImportProductsGcsSample();
-                var result = sample.ImportProductsFromGcs(projectId, createdBucketName);
-
-                Assert.Equal(expectedSuccessfullyImportedProducts, result.Metadata.SuccessCount);
-                Assert.Equal(expectedFailures, result.Metadata.FailureCount);
-            }
-            finally
-            {
-                ProductsDeleteGcsBucket.PerformDeletionOfProductsGcsBucket(createdBucketName);
-            }
+            Assert.Equal(expectedSuccessfullyImportedProducts, result.Metadata.SuccessCount);
+            Assert.Equal(expectedFailures, result.Metadata.FailureCount);
         }
     }
 }

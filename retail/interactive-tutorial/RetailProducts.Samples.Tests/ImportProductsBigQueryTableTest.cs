@@ -22,23 +22,13 @@ namespace RetailProducts.Samples.Tests
         [Fact]
         public void TestImportProductsBigQueryTable()
         {
-            try
-            {
-                ProductsDeleteBigQueryTable.PerformDeletionOfProductsBigQueryTable();
-                ProductsCreateBigQueryTable.PerformCreationOfBigQueryTable();
+            int expectedSuccessfullyImportedProducts = 316;
+            int expectedFailures = 0;
 
-                int expectedSuccessfullyImportedProducts = 316;
-                int expectedFailures = 0;
+            var result = ImportProductsBigQueryTableTutorial.ImportProductsFromBigQuery();
 
-                var result = ImportProductsBigQueryTableTutorial.ImportProductsFromBigQuery();
-
-                Assert.Equal(expectedSuccessfullyImportedProducts, result.Metadata.SuccessCount);
-                Assert.Equal(expectedFailures, result.Metadata.FailureCount);
-            }
-            finally
-            {
-                ProductsDeleteBigQueryTable.PerformDeletionOfProductsBigQueryTable();
-            }
-         }
+            Assert.Equal(expectedSuccessfullyImportedProducts, result.Metadata.SuccessCount);
+            Assert.Equal(expectedFailures, result.Metadata.FailureCount);
+        }
     }
 }
