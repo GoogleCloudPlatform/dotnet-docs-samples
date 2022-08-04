@@ -35,14 +35,13 @@ public class ImportUserEventsBigQuerySample
         string dataSchema = "user_event";
         string tableId = "events";
         // To check error handling use the table of invalid user events:
-        // TableId = "events_some_invalid";
+        // tableId = "events_some_invalid";
 
         string locationId = "global";
         string catalogId = "default_catalog";
-        CatalogName defaultCatalog = new CatalogName(projectId, locationId, catalogId);
-
         // To check error handling paste the invalid catalog name here:
         // catalogId = "invalid_catalog_name";
+        CatalogName defaultCatalog = new CatalogName(projectId, locationId, catalogId);
 
         ImportUserEventsRequest importRequest = new ImportUserEventsRequest
         {
