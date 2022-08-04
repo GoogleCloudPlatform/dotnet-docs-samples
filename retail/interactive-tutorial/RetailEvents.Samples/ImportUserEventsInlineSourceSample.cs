@@ -67,7 +67,6 @@ public class ImportUserEventsInlineSourceSample
         string locationId = "global";
         string catalogId = "default_catalog";
         CatalogName defaultCatalog = new CatalogName(projectId, locationId, catalogId);
-
         // To check error handling paste the invalid catalog name here:
         // catalogId = "invalid_catalog_name";
 

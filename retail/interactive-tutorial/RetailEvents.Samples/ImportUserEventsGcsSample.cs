@@ -38,7 +38,6 @@ public class ImportUserEventsGcsSample
         string locationId = "global";
         string catalogId = "default_catalog";
         CatalogName defaultCatalog = new CatalogName(projectId, locationId, catalogId);
-
         // To check error handling paste the invalid catalog name here:
         // catalogId = "invalid_catalog_name";
 
@@ -76,7 +75,6 @@ public class ImportUserEventsGcsSample
     public static Operation<ImportUserEventsResponse, ImportMetadata> ImportUserEventsFromGcs(string projectId, string eventsBucketName)
     {
         string gcsEventsObject = "user_events.json";
-
         // To check error handling use the json with invalid user event:
         // string gcsEventsObject = "user_events_some_invalid.json";
 
