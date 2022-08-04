@@ -39,7 +39,6 @@ public class ImportProductsGcsSample
         string catalogId = "default_catalog";
         string branchId = "default_branch";
         BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
-
         // To check error handling paste the invalid catalog name here:
         // catalogId = "invalid_catalog_name";
 
@@ -78,7 +77,6 @@ public class ImportProductsGcsSample
     public static Operation<ImportProductsResponse, ImportMetadata> ImportProductsFromGcs(string projectId, string bucketName = null)
     {
         string gcsProductsObject = "products.json";
-
         // To check error handling use the json with invalid product:
         // gcsProductsObject = "products_some_invalid.json";
 

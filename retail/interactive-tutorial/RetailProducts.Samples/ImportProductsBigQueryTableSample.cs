@@ -24,12 +24,6 @@ using System;
 /// </summary>
 public class ImportProductsBigQueryTableSample
 {
-    private const string DataSetId = "products";
-    private const string TableId = "products";
-
-    // To check error handling use the table of invalid products:
-    // TableId = "products_some_invalid";
-
     /// <summary>
     /// Get import products BigQuery request.
     /// </summary>
@@ -38,11 +32,15 @@ public class ImportProductsBigQueryTableSample
     /// <returns>The import product request.</returns>
     public static ImportProductsRequest GetImportProductsBigQueryRequest(ImportProductsRequest.Types.ReconciliationMode reconciliationMode, string projectId)
     {
+        string dataSetId = "products";
+        string tableId = "products";
+        // To check error handling use the table of invalid products:
+        // TableId = "products_some_invalid";
+
         string locationId = "global";
         string catalogId = "default_catalog";
         string branchId = "default_branch";
         BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
-
         // To check error handling paste the invalid catalog name here:
         // catalogId = "invalid_catalog_name";
 
@@ -55,8 +53,8 @@ public class ImportProductsBigQueryTableSample
                 BigQuerySource = new BigQuerySource
                 {
                     ProjectId = projectId,
-                    DatasetId = DataSetId,
-                    TableId = TableId
+                    DatasetId = dataSetId,
+                    TableId = tableId
                 }
             }
         };

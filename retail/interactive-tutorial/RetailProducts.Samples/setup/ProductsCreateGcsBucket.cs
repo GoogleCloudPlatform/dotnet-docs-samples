@@ -21,7 +21,7 @@ public static class ProductsCreateGcsBucket
     private const string ProductFileName = "products.json";
     private const string InvalidProductFileName = "products_some_invalid.json";
 
-    private static readonly string requestTimeStamp = DateTime.Now.ToUniversalTime().ToString("ddMMyyyyhhmmss");
+    private static readonly string requestTimeStamp = DateTime.UtcNow.ToString("ddMMyyyyhhmmss");
 
     private static readonly string productFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductFileName}");
     private static readonly string invalidProductFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{InvalidProductFileName}");
