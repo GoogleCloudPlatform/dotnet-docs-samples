@@ -21,7 +21,7 @@ public static class EventsCreateGcsBucket
     private const string EventsFileName = "user_events.json";
     private const string InvalidEventsFileName = "user_events_some_invalid.json";
 
-    private static readonly string requestTimeStamp = DateTime.Now.ToUniversalTime().ToString("ddMMyyyyhhmmss");
+    private static readonly string requestTimeStamp = DateTime.UtcNow.ToString("ddMMyyyyhhmmss");
 
     private static readonly string eventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
     private static readonly string invalidEventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{InvalidEventsFileName}");

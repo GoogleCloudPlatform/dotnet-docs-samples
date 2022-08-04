@@ -24,13 +24,6 @@ using System;
 /// </summary>
 public class ImportUserEventsBigQuerySample
 {
-    private const string DataSetId = "user_events";
-    private const string DataSchema = "user_event";
-    private const string TableId = "events";
-
-    // To check error handling use the table of invalid user events:
-    // TableId = "events_some_invalid";
-
     /// <summary>
     /// Get import user events BigQuery request.
     /// </summary>
@@ -38,6 +31,12 @@ public class ImportUserEventsBigQuerySample
     /// <returns>The import user events request.</returns>
     public static ImportUserEventsRequest GetImportUserEventsBigQueryRequest(string projectId)
     {
+        string dataSetId = "user_events";
+        string dataSchema = "user_event";
+        string tableId = "events";
+        // To check error handling use the table of invalid user events:
+        // TableId = "events_some_invalid";
+
         string locationId = "global";
         string catalogId = "default_catalog";
         CatalogName defaultCatalog = new CatalogName(projectId, locationId, catalogId);
@@ -53,9 +52,9 @@ public class ImportUserEventsBigQuerySample
                 BigQuerySource = new BigQuerySource
                 {
                     ProjectId = projectId,
-                    DatasetId = DataSetId,
-                    TableId = TableId,
-                    DataSchema = DataSchema
+                    DatasetId = dataSetId,
+                    TableId = tableId,
+                    DataSchema = dataSchema
                 }
             }
         };

@@ -28,7 +28,7 @@ public static class UpdateUserEventsJson
     private static readonly string InvalidFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{InvalidFileName}");
 
     // Get the yesterday's date
-    private static readonly string RequestTimeStamp = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd");
+    private static readonly string RequestTimeStamp = DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd");
 
     /// <summary>
     /// Update events timestamp.

@@ -75,12 +75,12 @@ public class ImportUserEventsGcsSample
     /// <param name="projectId">The current project id.</param>
     public static Operation<ImportUserEventsResponse, ImportMetadata> ImportUserEventsFromGcs(string projectId, string eventsBucketName)
     {
-        string GcsEventsObject = "user_events.json";
+        string gcsEventsObject = "user_events.json";
 
         // To check error handling use the json with invalid user event:
-        // string GcsEventsObject = "user_events_some_invalid.json";
+        // string gcsEventsObject = "user_events_some_invalid.json";
 
-        ImportUserEventsRequest importGcsRequest = GetImportUserEventsGcsRequest(GcsEventsObject, projectId, eventsBucketName);
+        ImportUserEventsRequest importGcsRequest = GetImportUserEventsGcsRequest(gcsEventsObject, projectId, eventsBucketName);
         UserEventServiceClient client = UserEventServiceClient.Create();
         Operation<ImportUserEventsResponse, ImportMetadata> importResponse = client.ImportUserEvents(importGcsRequest);
 

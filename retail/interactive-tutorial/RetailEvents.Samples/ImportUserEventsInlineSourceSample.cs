@@ -39,7 +39,9 @@ public class ImportUserEventsInlineSourceSample
         {
             UserEvent userEvent = new UserEvent
             {
-                EventType = "home-page-view", // EventType = "invalid",
+                // To check error handling use the invalid event type:
+                // EventType = "invalid",
+                EventType = "home-page-view",
                 VisitorId = "test_visitor_id",
                 EventTime = DateTime.UtcNow.ToTimestamp()
             };
