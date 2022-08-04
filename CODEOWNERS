@@ -14,26 +14,20 @@ bigtable/   @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
 datastore/  @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
 cloud-sql/  @GoogleCloudPlatform/infra-db-dpes @amanda-tarafa @jskeet
 firestore/  @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
-iot/        @gcseh @GoogleCloudPlatform/api-iot @amanda-tarafa @jskeet
-storage/    @GoogleCloudPlatform/storage-dpe @amanda-tarafa @jskeet
+iot/        @GoogleCloudPlatform/api-iot @amanda-tarafa @jskeet
+storage/    @GoogleCloudPlatform/cloud-storage-dpes @shivgautam @amanda-tarafa @jskeet
 
-bigquery/                  @jsimonweb @amanda-tarafa @jskeet
+bigquery/                  @shivgautam @amanda-tarafa @jskeet
 applications/leaderboard/  @jsimonweb @amanda-tarafa @jskeet
 
-spanner/  @skuruppu @amanda-tarafa @jskeet
+spanner/  @GoogleCloudPlatform/api-spanner-dotnet @shivgautam @amanda-tarafa @jskeet
 
 kms/            @sethvargo @amanda-tarafa @jskeet
 secretmanager/  @sethvargo @amanda-tarafa @jskeet
 
-applications/liftAndShiftPetshop/  @simonz130 @amanda-tarafa @jskeet
-
 applications/googlehome-meets-dotnetcontainers/  @meteatamel @amanda-tarafa @jskeet
 run/                                             @meteatamel @jskeet @amanda-tarafa
 
-applications/sudokumb  @SurferJeffAtGoogle @amanda-tarafa @jskeet
-
 securitycenter/  @hsanchez94 @amanda-tarafa @jskeet
-
-dlp/ @pheonixblade9 @amanda-tarafa @jskeet
 
 retail/ @chenlei1216 @amanda-tarafa @jskeet 
