@@ -35,14 +35,14 @@ public class ImportProductsBigQueryTableSample
         string dataSetId = "products";
         string tableId = "products";
         // To check error handling use the table of invalid products:
-        // TableId = "products_some_invalid";
+        // tableId = "products_some_invalid";
 
         string locationId = "global";
         string catalogId = "default_catalog";
         string branchId = "default_branch";
-        BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
         // To check error handling paste the invalid catalog name here:
         // catalogId = "invalid_catalog_name";
+        BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
 
         var importRequest = new ImportProductsRequest
         {

@@ -130,9 +130,9 @@ public class ImportProductsInlineSourceSample
         string locationId = "global";
         string catalogId = "default_catalog";
         string branchId = "default_branch";
-        BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
         // To check error handling paste the invalid catalog name here:
         // catalogId = "invalid_catalog_name";
+        BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
 
         var inlineSource = new ProductInlineSource();
         inlineSource.Products.AddRange(productsToImport);
