@@ -29,6 +29,7 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
     public Secret SecretWithVersions { get; }
     public SecretName SecretForQuickstartName { get; }
     public SecretName SecretToCreateName { get; }
+    public SecretName UmmrSecretToCreateName { get; }
     public SecretVersion SecretVersion { get; }
     public SecretVersion SecretVersionToDestroy { get; }
     public SecretVersion SecretVersionToDisable { get; }
@@ -47,6 +48,7 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
         SecretWithVersions = CreateSecret(RandomId());
         SecretForQuickstartName = new SecretName(ProjectId, RandomId());
         SecretToCreateName = new SecretName(ProjectId, RandomId());
+        UmmrSecretToCreateName = new SecretName(ProjectId, RandomId());
 
         SecretVersion = AddSecretVersion(SecretWithVersions);
         SecretVersionToDestroy = AddSecretVersion(SecretWithVersions);
