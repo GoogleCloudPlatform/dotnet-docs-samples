@@ -100,9 +100,13 @@ public class SearchWithNextPageTokenSample
             Console.WriteLine($"NextPageToken: {singlePage.NextPageToken}");
             Console.WriteLine("Items found in page:");
 
+            int itemCount = 0;
             foreach (SearchResponse.Types.SearchResult item in singlePage)
             {
+                itemCount++;
+                Console.WriteLine($"Item {itemCount}: ");
                 Console.WriteLine(item);
+                Console.WriteLine();
             }
         }
 
