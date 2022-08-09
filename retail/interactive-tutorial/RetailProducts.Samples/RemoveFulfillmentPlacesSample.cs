@@ -17,6 +17,7 @@
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
 using System;
+using System.Threading;
 
 /// <summary>
 /// The remove fulfillment places sample class.
@@ -68,7 +69,9 @@ public class RemoveFulfillmentPlaces
         Console.WriteLine("Remove fulfillment places. Please, wait.");
         Console.WriteLine();
 
+        Thread.Sleep(3000);
         operation.PollUntilCompleted();
+        Thread.Sleep(3000);
     }
 }
 // [END retail_remove_fulfillment_places]

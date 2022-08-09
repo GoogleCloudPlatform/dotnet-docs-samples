@@ -17,6 +17,7 @@
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
 using System;
+using System.Threading;
 
 /// <summary>
 /// The set inventory sample class.
@@ -106,7 +107,9 @@ public class SetInventorySample
         Console.WriteLine("Set inventory. Please, wait.");
         Console.WriteLine();
 
+        Thread.Sleep(3000);
         operation.PollUntilCompleted();
+        Thread.Sleep(3000);
     }
 }
 // [END retail_set_inventory]
