@@ -33,7 +33,7 @@ public class CreateUserManagedReplicationSecretTests
     public void CreatesUmmrSecrets()
     {
         SecretName secretName = _fixture.UserManagedReplicationSecretName;
-        string[] locations = {"us-east4"};
+        string[] locations = {"us-east1", "us-east4", "us-west1"};
         Secret result = _sample.CreateUserManagedReplicationSecret(
           projectId: secretName.ProjectId, secretId: secretName.SecretId, locations: locations);
         Assert.Equal(result.SecretName.SecretId, secretName.SecretId);
