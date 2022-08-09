@@ -31,12 +31,15 @@ public class CreateDualRegionBucketTest
         CreateDualRegionBucketSample createDualRegionBucketSample = new CreateDualRegionBucketSample();
         var bucketName = Guid.NewGuid().ToString();
 
-        var storageBucket = createDualRegionBucketSample.CreateDualRegionBucket(_fixture.ProjectId, bucketName, "US-EAST1", "US-WEST1");
+        var storageBucket = createDualRegionBucketSample.CreateDualRegionBucket(_fixture.ProjectId, bucketName, "US", "US-EAST1", "US-WEST1");
 
         _fixture.SleepAfterBucketCreateUpdateDelete();
         _fixture.TempBucketNames.Add(bucketName);
 
-        Assert.Equal("US-EAST1+US-WEST1", storageBucket.Location);
+        Assert.Equal("US", storageBucket.Location);
         Assert.Equal("dual-region", storageBucket.LocationType);
+        Assert.Collection<string>(storageBucket.CustomPlacementConfig.DataLocations,
+            dataLocation => Assert.Equal("US-EAST1", dataLocation),
+            dataLocation => Assert.Equal("US-WEST1", dataLocation));
     }
 }

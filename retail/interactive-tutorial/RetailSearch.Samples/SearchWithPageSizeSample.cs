@@ -33,8 +33,10 @@ public class SearchWithPageSizeSample
     /// <param name="query">The query.</param>
     /// <param name="pageSize">The size of the page.</param>
     /// <param name="projectId">The current project id.</param>
+    /// <param name="offset">The offset from which the search will start.</param>
+    /// <param name="nextPageToken">The next page token which will allow to obtain the next page of results.</param>
     /// <returns>The search request.</returns>
-    private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId)
+    private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId, int offset = 0, string nextPageToken = "")
     {
         string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
@@ -44,6 +46,8 @@ public class SearchWithPageSizeSample
             VisitorId = "123456", // A unique identifier to track visitors
             Query = query,
             PageSize = pageSize,
+            PageToken = nextPageToken,
+            Offset = offset
         };
 
         Console.WriteLine("Search. request:");
@@ -84,12 +88,15 @@ public class SearchWithPageSizeSample
             Console.WriteLine($"TotalSize: {firstPage.TotalSize},");
             Console.WriteLine("Items found in first page:");
 
+            int itemCount = 0;
             foreach (SearchResponse.Types.SearchResult item in firstPage)
             {
+                itemCount++;
+                Console.WriteLine($"Item {itemCount}: ");
                 Console.WriteLine(item);
+                Console.WriteLine();
             }
         }
-
         return searchResultPages;
     }
 }
