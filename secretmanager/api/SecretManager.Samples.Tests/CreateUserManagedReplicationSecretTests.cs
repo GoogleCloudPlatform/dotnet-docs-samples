@@ -18,23 +18,23 @@ using Xunit;
 using Google.Cloud.SecretManager.V1;
 
 [Collection(nameof(SecretManagerFixture))]
-public class CreateUmmrSecretTests
+public class CreateUserManagedReplicationSecretTests
 {
     private readonly SecretManagerFixture _fixture;
-    private readonly CreateUmmrSecretSample _sample;
+    private readonly CreateUserManagedReplicationSecretSample _sample;
 
-    public CreateUmmrSecretTests(SecretManagerFixture fixture)
+    public CreateUserManagedReplicationSecretTests(SecretManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateUmmrSecretSample();
+        _sample = new CreateUserManagedReplicationSecretSample();
     }
 
     [Fact]
     public void CreatesUmmrSecrets()
     {
-        SecretName secretName = _fixture.UmmrSecretToCreateName;
+        SecretName secretName = _fixture.UserManagedReplicationSecretName;
         string[] locations = {"us-east4"};
-        Secret result = _sample.CreateUmmrSecret(
+        Secret result = _sample.CreateUserManagedReplicationSecret(
           projectId: secretName.ProjectId, secretId: secretName.SecretId, locations: locations);
         Assert.Equal(result.SecretName.SecretId, secretName.SecretId);
     }

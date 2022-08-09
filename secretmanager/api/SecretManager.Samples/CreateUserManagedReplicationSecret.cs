@@ -17,9 +17,9 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
 
-public class CreateUmmrSecretSample
+public class CreateUserManagedReplicationSecretSample
 {
-    public Secret CreateUmmrSecret(string projectId, string secretId, string[] locations){
+    public Secret CreateUserManagedReplicationSecret(string projectId, string secretId, string[] locations){
         // Create the client.
         SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
