@@ -137,15 +137,15 @@ public class ImportProductsInlineSourceSample
         // catalogId = "invalid_catalog_name";
         BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
 
-        var inlineSource = new ProductInlineSource();
-        inlineSource.Products.AddRange(productsToImport);
-
         var importRequest = new ImportProductsRequest
         {
             ParentAsBranchName = defaultBranch,
             InputConfig = new ProductInputConfig
             {
-                ProductInlineSource = inlineSource
+                ProductInlineSource = new ProductInlineSource
+                {
+                    Products = { productsToImport }
+                }
             }
         };
 
