@@ -13,12 +13,6 @@ The samples in this repo cover only _some_ of the total APIs that you can call f
 You can also browse these samples, and more in [Google Cloud Samples](https://cloud.google.com/docs/samples).
 
 
-### Build Status
-
-| Windows | Linux |
-|---------|-------|
-|![Windows][windows-badge] | ![Linux][linux-badge] |
-
 ## Build and Run
 
 To build and run a sample, open the solution file (.sln) with Visual
@@ -47,6 +41,3 @@ But no sample will work until you
 ## Testing
 
 * See [TESTING.md](TESTING.md)
-
-[windows-badge]: https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-windows.png?alt=media
-[linux-badge]: https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-linux.png?alt=media
