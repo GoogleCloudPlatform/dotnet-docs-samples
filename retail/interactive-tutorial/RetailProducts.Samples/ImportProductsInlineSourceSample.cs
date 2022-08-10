@@ -43,19 +43,23 @@ public class ImportProductsInlineSourceSample
             CurrencyCode = "USD"
         };
 
-        string[] colors1 = { "Light blue", "Blue", "Dark blue"};
-        var colorInfo1 = new ColorInfo();
-        colorInfo1.ColorFamilies.Add("Blue");
-        colorInfo1.Colors.AddRange(colors1);
+        var colorInfo1 = new ColorInfo
+        {
+            ColorFamilies = { "Blue" },
+            Colors = { "Light blue", "Blue", "Dark blue" }
+        };
 
-        var fulfillmentInfo1 = new FulfillmentInfo();
-        fulfillmentInfo1.Type = "pickup-in-store";
-        string[] placeIds1 = { "store1", "store2" };
-        fulfillmentInfo1.PlaceIds.AddRange(placeIds1);
+        var fulfillmentInfo1 = new FulfillmentInfo
+        {
+            Type = "pickup-in-store",
+            PlaceIds = { "store1", "store2" },
 
-        string[] paths1 = { "title", "categories", "price_info", "color_info" };
-        var fieldMask1 = new FieldMask();
-        fieldMask1.Paths.AddRange(paths1);
+        };
+
+        var fieldMask1 = new FieldMask
+        {
+            Paths = { "title", "categories", "price_info", "color_info" }
+        };
 
         // To check error handling comment out the product title here:
         var product1 = new Product
@@ -66,11 +70,10 @@ public class ImportProductsInlineSourceSample
             PriceInfo = priceInfo1,
             ColorInfo = colorInfo1,
             RetrievableFields = fieldMask1,
+            Categories = { "Office" },
+            Brands = { "#IamRemarkable" },
+            FulfillmentInfo = { fulfillmentInfo1 }
         };
-
-        product1.Categories.Add("Office");
-        product1.Brands.Add("#IamRemarkable");
-        product1.FulfillmentInfo.Add(fulfillmentInfo1);
 
         // Second product data generation:
         var priceInfo2 = new PriceInfo
@@ -81,21 +84,22 @@ public class ImportProductsInlineSourceSample
             CurrencyCode = "USD"
         };
 
-        string[] colors2 = { "Sky blue" };
-        var colorInfo2 = new ColorInfo();
-        colorInfo2.ColorFamilies.Add("Blue");
-        colorInfo2.Colors.AddRange(colors2);
+        var colorInfo2 = new ColorInfo
+        {
+            ColorFamilies = { "Blue" },
+            Colors = { "Sky blue" }
+        };
 
         var fulfillmentInfo2 = new FulfillmentInfo
         {
-            Type = "pickup-in-store"
+            Type = "pickup-in-store",
+            PlaceIds = { "store2", "store3" }
         };
-        string[] placeIds2 = { "store2", "store3" };
-        fulfillmentInfo2.PlaceIds.AddRange(placeIds2);
 
-        string[] paths2 = { "title", "categories", "price_info", "color_info" };
-        var fieldMask2 = new FieldMask();
-        fieldMask2.Paths.AddRange(paths2);
+        var fieldMask2 = new FieldMask
+        {
+            Paths = { "title", "categories", "price_info", "color_info" }
+        };
 
         // To check error handling comment out the product title here:
         var product2 = new Product
@@ -106,11 +110,10 @@ public class ImportProductsInlineSourceSample
             PriceInfo = priceInfo2,
             ColorInfo = colorInfo2,
             RetrievableFields = fieldMask2,
+            Categories = { "Apparel" },
+            Brands= { "Android" },
+            FulfillmentInfo = { fulfillmentInfo2 }
         };
-
-        product2.Categories.Add("Apparel");
-        product2.Brands.Add("Android");
-        product2.FulfillmentInfo.Add(fulfillmentInfo2);
 
         products.Add(product1);
         products.Add(product2);
