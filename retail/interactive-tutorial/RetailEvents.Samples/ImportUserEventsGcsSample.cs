@@ -76,7 +76,7 @@ public class ImportUserEventsGcsSample
     {
         string gcsEventsObject = "user_events.json";
         // To check error handling use the json with invalid user event:
-        // string gcsEventsObject = "user_events_some_invalid.json";
+        // gcsEventsObject = "user_events_some_invalid.json";
 
         ImportUserEventsRequest importGcsRequest = GetImportUserEventsGcsRequest(gcsEventsObject, projectId, eventsBucketName);
         UserEventServiceClient client = UserEventServiceClient.Create();

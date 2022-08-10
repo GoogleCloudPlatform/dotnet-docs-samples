@@ -59,10 +59,10 @@ public class ImportUserEventsInlineSourceSample
     /// <summary>
     ///  Get import user events from inline source request.
     /// </summary>
-    /// <param name="userEventToImport">List of user events to import.</param>
+    /// <param name="userEventsToImport">List of user events to import.</param>
     /// <param name="projectId">The current project id.</param>
     /// <returns>The import user events request.</returns>
-    public static ImportUserEventsRequest GetImportUserEventsInlineSourceRequest(List<UserEvent> userEventToImport, string projectId)
+    public static ImportUserEventsRequest GetImportUserEventsInlineSourceRequest(List<UserEvent> userEventsToImport, string projectId)
     {
         string locationId = "global";
         string catalogId = "default_catalog";
@@ -70,15 +70,15 @@ public class ImportUserEventsInlineSourceSample
         // catalogId = "invalid_catalog_name";
         CatalogName defaultCatalog = new CatalogName(projectId, locationId, catalogId);
 
-        UserEventInlineSource inlineSource = new UserEventInlineSource();
-        inlineSource.UserEvents.AddRange(userEventToImport);
-
         ImportUserEventsRequest importRequest = new ImportUserEventsRequest
         {
             ParentAsCatalogName = defaultCatalog,
             InputConfig = new UserEventInputConfig
             {
-                UserEventInlineSource = inlineSource
+                UserEventInlineSource = new UserEventInlineSource
+                {
+                    UserEvents = { userEventsToImport }
+                }
             }
         };
 
