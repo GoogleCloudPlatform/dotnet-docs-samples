@@ -41,25 +41,25 @@ public class ImportUserEventsGcsSample
         // catalogId = "invalid_catalog_name";
         CatalogName defaultCatalog = new CatalogName(projectId, locationId, catalogId);
 
-        GcsSource gcsSource = new GcsSource();
-        gcsSource.InputUris.Add($"{gcsBucket}/{gcsObjectName}");
-
-        Console.WriteLine("GCS source:");
-        Console.WriteLine(gcsSource.InputUris);
-        Console.WriteLine();
-
         ImportUserEventsRequest importRequest = new ImportUserEventsRequest
         {
             ParentAsCatalogName = defaultCatalog,
             InputConfig = new UserEventInputConfig
             {
-                GcsSource = gcsSource
+                GcsSource = new GcsSource
+                {
+                    InputUris = { $"{gcsBucket}/{gcsObjectName}" }
+                }
             },
             ErrorsConfig = new ImportErrorsConfig
             {
                 GcsPrefix = gcsErrorsPrefix
             }
         };
+
+        Console.WriteLine("GCS source:");
+        Console.WriteLine(importRequest.InputConfig.GcsSource.InputUris);
+        Console.WriteLine();
 
         Console.WriteLine("Import user events from google cloud source request:");
         Console.WriteLine(importRequest);
