@@ -42,26 +42,26 @@ public class ImportProductsGcsSample
         // catalogId = "invalid_catalog_name";
         BranchName defaultBranch = new BranchName(projectId, locationId, catalogId, branchId);
 
-        var gcsSource = new GcsSource();
-        gcsSource.InputUris.Add($"{gcsBucket}/{gcsObjectName}");
-
-        Console.WriteLine("GCS source:");
-        Console.WriteLine(gcsSource.InputUris);
-        Console.WriteLine();
-
         var importRequest = new ImportProductsRequest
         {
             ParentAsBranchName = defaultBranch,
             ReconciliationMode = ImportProductsRequest.Types.ReconciliationMode.Incremental,
             InputConfig = new ProductInputConfig
             {
-                GcsSource = gcsSource
+                GcsSource = new GcsSource
+                {
+                    InputUris = { $"{gcsBucket}/{gcsObjectName}" }
+                }
             },
             ErrorsConfig = new ImportErrorsConfig
             {
                 GcsPrefix = gcsErrorsPrefix
             }
         };
+
+        Console.WriteLine("GCS source:");
+        Console.WriteLine(importRequest.InputConfig.GcsSource.InputUris);
+        Console.WriteLine();
 
         Console.WriteLine("Import products from google cloud source request:");
         Console.WriteLine(importRequest);
