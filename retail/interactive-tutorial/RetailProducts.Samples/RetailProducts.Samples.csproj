@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,11 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.0.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.0.0" />
     <PackageReference Include="Google.Cloud.Retail.V2" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Runner\Runner.csproj" />
+    <ProjectReference Include="..\TestResourcesSetupCleanup\TestResourcesSetupCleanup.csproj" />
   </ItemGroup>
 
 </Project>
