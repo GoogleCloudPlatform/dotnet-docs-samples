@@ -5,6 +5,6 @@
   </PropertyGroup> 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.BigQuery.Storage.V1" Version="3.1.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.21.4" />  
+    <PackageReference Include="Google.Protobuf" Version="3.21.5" />  
   </ItemGroup> 
 </Project>
