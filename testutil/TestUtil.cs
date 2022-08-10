@@ -77,9 +77,9 @@ namespace GoogleCloudSamples
                 catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
                 {
                     int jitteredDelayMs;
-                    lock (_lock)
+                    lock(_lock)
                     {
-                        jitteredDelayMs = delayMs / 2 + (int)(_random.NextDouble() * delayMs);
+                        jitteredDelayMs = delayMs/2 + (int)(_random.NextDouble() * delayMs);
                     }
                     Thread.Sleep(jitteredDelayMs);
                     delayMs *= (int)DelayMultiplier;
@@ -89,9 +89,9 @@ namespace GoogleCloudSamples
 
         public void Eventually(Action action) =>
             Eventually(() =>
-            {
+            { 
                 action();
-                return 0;
+                return 0; 
             });
 
 
@@ -120,9 +120,9 @@ namespace GoogleCloudSamples
         public async Task Eventually(Func<Task> action)
         {
             await Eventually(async () =>
-            {
+            { 
                 await action();
-                return 0;
+                return 0; 
             });
         }
 

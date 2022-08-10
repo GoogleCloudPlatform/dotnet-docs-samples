@@ -19,13 +19,13 @@
 using Google.Cloud.Video.LiveStream.V1;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
+using System.Threading.Tasks;
 
 public class DeleteInputSample
 {
-    public async void DeleteInputAsync(
+    public async Task DeleteInputAsync(
          string projectId, string locationId, string inputId)
     {
-
         // Create the client.
         LivestreamServiceClient client = LivestreamServiceClient.Create();
 

@@ -26,7 +26,6 @@ public class UpdateInputSample
     public async Task<Input> UpdateInputAsync(
          string projectId, string locationId, string inputId)
     {
-
         // Create the client.
         LivestreamServiceClient client = LivestreamServiceClient.Create();
 

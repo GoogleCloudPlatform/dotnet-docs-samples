@@ -61,7 +61,7 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
         {
             try
             {
-                _deleteInputSample.DeleteInputAsync(ProjectId, LocationId, id);
+                await _deleteInputSample.DeleteInputAsync(ProjectId, LocationId, id);
             }
             catch (Exception e)
             {

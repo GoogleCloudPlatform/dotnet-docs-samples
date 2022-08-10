@@ -26,7 +26,6 @@ public class CreateInputSample
     public async Task<Input> CreateInputAsync(
          string projectId, string locationId, string inputId)
     {
-
         // Create the client.
         LivestreamServiceClient client = LivestreamServiceClient.Create();
 

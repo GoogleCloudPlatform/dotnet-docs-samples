@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace LiveStream.Samples.Tests
 {
     [Collection(nameof(LiveStreamFixture))]
-    public class DeleteInputAsyncTest
+    public class DeleteInputAsyncTest : IAsyncLifetime
     {
         private LiveStreamFixture _fixture;
         private readonly CreateInputSample _createSample;
@@ -43,10 +43,14 @@ namespace LiveStream.Samples.Tests
                     _inputId);
         }
 
+        public async Task DisposeAsync()
+        {
+        }
+
         [Fact]
         public async Task DeletesInputAsync()
         {
-            _deleteSample.DeleteInputAsync(_fixture.ProjectId, _fixture.LocationId, _inputId);
+            await _deleteSample.DeleteInputAsync(_fixture.ProjectId, _fixture.LocationId, _inputId);
         }
     }
 }

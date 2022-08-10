@@ -23,7 +23,6 @@ public class GetInputSample
     public Input GetInput(
          string projectId, string locationId, string inputId)
     {
-
         // Create the client.
         LivestreamServiceClient client = LivestreamServiceClient.Create();
 
