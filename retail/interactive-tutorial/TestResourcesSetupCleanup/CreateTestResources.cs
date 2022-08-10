@@ -300,6 +300,9 @@ public static class CreateTestResourcesTutorial
     private static readonly string ProductFileName = "products.json";
     private static readonly string EventsFileName = "user_events.json";
 
+    private static readonly string InvalidProductFileName = "products_some_invalid.json";
+    private static readonly string InvalidEventsFileName = "user_events_some_invalid.json";
+
     private static readonly string ProductDataSet = "products";
     private static readonly string ProductTable = "products";
     private static readonly string EventsDataSet = "user_events";
@@ -310,6 +313,9 @@ public static class CreateTestResourcesTutorial
 
     private static readonly string productFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductFileName}");
     private static readonly string eventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
+
+    private static readonly string invalidProductFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{InvalidProductFileName}");
+    private static readonly string invalidEventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{InvalidEventsFileName}");
 
     private static readonly string ProductSchema = "product_schema.json";
     private static readonly string EventsSchema = "events_schema.json";
@@ -323,10 +329,12 @@ public static class CreateTestResourcesTutorial
         // Create a GCS bucket with products.json file.
         var createdProductsBucket = CreateTestResources.CreateBucket(productsBucketName);
         CreateTestResources.UploadBlob(createdProductsBucket.Name, productFilePath, ProductFileName);
+        CreateTestResources.UploadBlob(createdProductsBucket.Name, invalidProductFilePath, InvalidProductFileName);
 
         // Create a GCS bucket with user_events.json file.
         var createdEventsBucket = CreateTestResources.CreateBucket(eventsBucketName);
         CreateTestResources.UploadBlob(createdEventsBucket.Name, eventsFilePath, EventsFileName);
+        CreateTestResources.UploadBlob(createdEventsBucket.Name, invalidEventsFilePath, InvalidEventsFileName);
 
         // Import products from the GCS bucket to the Retail catalog.
         CreateTestResources.ImportProductsFromGcs(productsBucketName, ProductFileName);
