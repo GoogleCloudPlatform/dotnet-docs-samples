@@ -96,6 +96,11 @@ public class SearchWithPageSizeSample
                 Console.WriteLine(item);
                 Console.WriteLine();
             }
+
+            // Paste call with next page token here:
+
+            // Paste call with offset here:
+
         }
         return searchResultPages;
     }
