@@ -17,21 +17,25 @@ using System.IO;
 public static class ProductsCreateBigQueryTable
 {
     private const string ProductFileName = "products.json";
+    private const string InvalidProductFileName = "products_some_invalid.json";
     private const string ProductDataSet = "products";
     private const string ProductTable = "products";
+    private const string InvalidProductTable = "products_some_invalid";
     private const string ProductSchema = "product_schema.json";
 
     private static readonly string productFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductFileName}");
+    private static readonly string invalidProductFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{InvalidProductFileName}");
     private static readonly string productSchemaFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{ProductSchema}");
 
     /// <summary>
-    /// Create products BigQuery table with data.
+    /// Create products BigQuery tables with data.
     /// </summary>
     [Runner.Attributes.Example]
     public static void PerformCreationOfBigQueryTable()
     {
-        // Create a BigQuery table with data.
+        // Create a BigQuery tables with data.
         CreateTestResources.CreateBQDataSet(ProductDataSet);
         CreateTestResources.CreateAndPopulateBQTable(ProductDataSet, ProductTable, productSchemaFilePath, productFilePath);
+        CreateTestResources.CreateAndPopulateBQTable(ProductDataSet, InvalidProductTable, productSchemaFilePath, invalidProductFilePath);
     }
 }

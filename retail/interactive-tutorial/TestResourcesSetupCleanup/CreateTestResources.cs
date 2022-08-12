@@ -308,6 +308,9 @@ public static class CreateTestResourcesTutorial
     private static readonly string EventsDataSet = "user_events";
     private static readonly string EventsTable = "events";
 
+    private static readonly string InvalidProductTable = "products_some_invalid";
+    private static readonly string InvalidEventsTable = "user_events_some_invalid";
+
     private static readonly string productsBucketName = Environment.GetEnvironmentVariable("RETAIL_BUCKET_NAME");
     private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("RETAIL_EVENTS_BUCKET_NAME");
 
@@ -326,12 +329,12 @@ public static class CreateTestResourcesTutorial
     [Runner.Attributes.Example]
     public static void PerformCreationOfTestResources()
     {
-        // Create a GCS bucket with products.json file.
+        // Create a GCS bucket with products.json and products_some_invalid.json files.
         var createdProductsBucket = CreateTestResources.CreateBucket(productsBucketName);
         CreateTestResources.UploadBlob(createdProductsBucket.Name, productFilePath, ProductFileName);
         CreateTestResources.UploadBlob(createdProductsBucket.Name, invalidProductFilePath, InvalidProductFileName);
 
-        // Create a GCS bucket with user_events.json file.
+        // Create a GCS bucket with user_events.json and user_events_some_invalid.json files.
         var createdEventsBucket = CreateTestResources.CreateBucket(eventsBucketName);
         CreateTestResources.UploadBlob(createdEventsBucket.Name, eventsFilePath, EventsFileName);
         CreateTestResources.UploadBlob(createdEventsBucket.Name, invalidEventsFilePath, InvalidEventsFileName);
@@ -339,12 +342,14 @@ public static class CreateTestResourcesTutorial
         // Import products from the GCS bucket to the Retail catalog.
         CreateTestResources.ImportProductsFromGcs(productsBucketName, ProductFileName);
 
-        // Create a BigQuery table with products.
+        // Create a BigQuery tables with products.
         CreateTestResources.CreateBQDataSet(ProductDataSet);
         CreateTestResources.CreateAndPopulateBQTable(ProductDataSet, ProductTable, productSchemaFilePath, productFilePath);
+        CreateTestResources.CreateAndPopulateBQTable(ProductDataSet, InvalidProductTable, productSchemaFilePath, invalidProductFilePath);
 
-        // Create a BigQuery table with user events.
+        // Create a BigQuery tables with user events.
         CreateTestResources.CreateBQDataSet(EventsDataSet);
         CreateTestResources.CreateAndPopulateBQTable(EventsDataSet, EventsTable, eventsSchemaFilePath, eventsFilePath);
+        CreateTestResources.CreateAndPopulateBQTable(EventsDataSet, InvalidEventsTable, eventsSchemaFilePath, invalidEventsFilePath);
     }
 }

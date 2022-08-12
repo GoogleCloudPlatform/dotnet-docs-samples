@@ -17,21 +17,25 @@ using System.IO;
 public static class EventsCreateBigQueryTable
 {
     private const string EventsFileName = "user_events.json";
+    private const string InvalidEventsFileName = "user_events_some_invalid.json";
     private const string EventsDataSet = "user_events";
     private const string EventsTable = "events";
+    private const string InvalidEventsTable = "user_events_some_invalid";
     private const string EventsSchema = "events_schema.json";
 
     private static readonly string eventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
+    private static readonly string invalidEventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{InvalidEventsFileName}");
     private static readonly string eventsSchemaFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsSchema}");
 
     /// <summary>
-    /// Create events BigQuery table with data.
+    /// Create events BigQuery tables with data.
     /// </summary>
     [Runner.Attributes.Example]
     public static void PerformCreationOfBigQueryTable()
     {
-        // Create a BigQuery table with data.
+        // Create a BigQuery tables with data.
         CreateTestResources.CreateBQDataSet(EventsDataSet);
         CreateTestResources.CreateAndPopulateBQTable(EventsDataSet, EventsTable, eventsSchemaFilePath, eventsFilePath);
+        CreateTestResources.CreateAndPopulateBQTable(EventsDataSet, InvalidEventsTable, eventsSchemaFilePath, invalidEventsFilePath);
     }
 }
