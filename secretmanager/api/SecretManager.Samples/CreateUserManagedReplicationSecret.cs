@@ -16,10 +16,12 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
+using System.Linq;
 
 public class CreateUserManagedReplicationSecretSample
 {
-    public Secret CreateUserManagedReplicationSecret(string projectId, string secretId, string[] locations){
+    public Secret CreateUserManagedReplicationSecret(string projectId, string secretId, string[] locations)
+    {
         // Create the client.
         SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
@@ -31,18 +33,19 @@ public class CreateUserManagedReplicationSecretSample
         {
             Replication = new Replication
             {
-                UserManaged = new Replication.Types.UserManaged()
+                UserManaged = new Replication.Types.UserManaged
+                {
+                    Replicas = 
+                    { 
+                        locations.Select(location => new Replication.Types.UserManaged.Types.Replica 
+                        {
+                            Location = location 
+                        })
+                    }
+                }
             },
         };
 
-        // Set Replication
-        foreach (string location in locations) {
-            Replication.Types.UserManaged.Types.Replica replication = new Replication.Types.UserManaged.Types.Replica();
-            replication.Location = location;
-            secret.Replication.UserManaged.Replicas.Add(replication);
-        }
-
-        
         // Call the API.
         Secret createdSecret = client.CreateSecret(projectName, secretId, secret);
         return createdSecret;

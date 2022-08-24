@@ -37,5 +37,8 @@ public class CreateUserManagedReplicationSecretTests
         Secret result = _sample.CreateUserManagedReplicationSecret(
           projectId: secretName.ProjectId, secretId: secretName.SecretId, locations: locations);
         Assert.Equal(result.SecretName.SecretId, secretName.SecretId);
+        Assert.Contains(result.Replication.UserManaged.Replicas, r => r.Location == "us-east1");
+        Assert.Contains(result.Replication.UserManaged.Replicas, r => r.Location == "us-east4");
+        Assert.Contains(result.Replication.UserManaged.Replicas, r => r.Location == "us-west1");
     }
 }
