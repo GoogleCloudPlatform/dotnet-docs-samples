@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START functions_cloudevent_pubsub_unit_test]
 // [START functions_pubsub_unit_test]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Testing;
@@ -73,4 +74,5 @@ namespace HelloWorld.Tests
         }
     }
 }
+// [END functions_cloudevent_pubsub_unit_test]
 // [END functions_pubsub_unit_test]
