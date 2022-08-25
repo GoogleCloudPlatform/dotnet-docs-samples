@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START functions_cloudevent_pubsub]
 // [START functions_helloworld_pubsub]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
@@ -38,4 +39,5 @@ namespace HelloPubSub
         }
     }
 }
+// [END functions_cloudevent_pubsub]
 // [END functions_helloworld_pubsub]
