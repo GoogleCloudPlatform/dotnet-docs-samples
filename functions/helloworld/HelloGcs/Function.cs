@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START functions_helloworld_storage]
+// [START functions_cloudevent_storage]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
 using Google.Events.Protobuf.Cloud.Storage.V1;
@@ -47,3 +48,4 @@ namespace HelloGcs
     }
 }
 // [END functions_helloworld_storage]
+// [END functions_cloudevent_storage]
