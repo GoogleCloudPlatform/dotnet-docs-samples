@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START functions_cloudevent_storage_unit_test]
 // [START functions_storage_unit_test]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Testing;
@@ -52,4 +53,5 @@ namespace HelloWorld.Tests
         }
     }
 }
+// [END functions_cloudevent_storage_unit_test]
 // [END functions_storage_unit_test]
