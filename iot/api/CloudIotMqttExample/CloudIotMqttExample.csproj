@@ -8,9 +8,9 @@
     <PackageReference Include="Google.Apis.CloudIot.v1" Version="1.57.0.2700" />
     <PackageReference Include="M2Mqtt" Version="4.3.0" />
     <ProjectReference Include="..\..\..\commandlineutil\Lib\CommandLineUtil.csproj" />
-    <PackageReference Include="jose-jwt" Version="4.0.0" />
+    <PackageReference Include="jose-jwt" Version="4.0.1" />
     <PackageReference Include="BouncyCastle" Version="1.8.9" />
-    <PackageReference Include="NodaTime" Version="3.1.0" />
+    <PackageReference Include="NodaTime" Version="3.1.2" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
