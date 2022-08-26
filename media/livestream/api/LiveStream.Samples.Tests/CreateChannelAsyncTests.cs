@@ -42,9 +42,7 @@ namespace LiveStream.Samples.Tests
 
         public async Task InitializeAsync()
         {
-            await _createInputSample.CreateInputAsync(
-                    _fixture.ProjectId, _fixture.LocationId,
-                    _inputId);
+            await _createInputSample.CreateInputAsync(_fixture.ProjectId, _fixture.LocationId, _inputId);
         }
 
         public async Task DisposeAsync()

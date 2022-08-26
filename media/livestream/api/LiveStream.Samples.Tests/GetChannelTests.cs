@@ -33,7 +33,8 @@ namespace LiveStream.Samples.Tests
         [Fact]
         public void GetsChannel()
         {
-            var result = _getSample.GetChannel(_fixture.ProjectId, _fixture.LocationId, _fixture.TestChannelId);
+            var result = _getSample.GetChannel(
+                _fixture.ProjectId, _fixture.LocationId, _fixture.TestChannelId);
             Assert.Equal(_fixture.ProjectId, result.ChannelName.ProjectId);
             Assert.Equal(_fixture.LocationId, result.ChannelName.LocationId);
             Assert.Equal(_fixture.TestChannelId, result.ChannelName.ChannelId);
