@@ -51,8 +51,7 @@ namespace LiveStream.Samples.Tests
         public async Task InitializeAsync()
         {
             await _createInputSample.CreateInputAsync(
-                    _fixture.ProjectId, _fixture.LocationId,
-                    _inputId);
+                    _fixture.ProjectId, _fixture.LocationId, _inputId);
             await _createChannelSample.CreateChannelAsync(
         _fixture.ProjectId, _fixture.LocationId, _channelId, _inputId, _fixture.ChannelOutputUri);
             await _startChannelSample.StartChannelAsync(_fixture.ProjectId, _fixture.LocationId, _channelId);
