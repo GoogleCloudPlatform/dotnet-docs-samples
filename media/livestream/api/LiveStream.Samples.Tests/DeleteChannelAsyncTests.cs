@@ -50,7 +50,7 @@ namespace LiveStream.Samples.Tests
                     _inputId);
 
             await _createChannelSample.CreateChannelAsync(
-        _fixture.ProjectId, _fixture.LocationId, _channelId, _inputId, _fixture.ChannelOutputUri);
+               _fixture.ProjectId, _fixture.LocationId, _channelId, _inputId, _fixture.ChannelOutputUri);
         }
 
         public async Task DisposeAsync()
