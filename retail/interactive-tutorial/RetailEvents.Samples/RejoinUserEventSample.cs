@@ -127,7 +127,7 @@ public static class RejoinUserEventTutorial
         string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
 
         // To check the error handling try to pass invalid catalog:
-        // defaultCatalog = "projects/{projectId}/locations/global/catalogs/invalid_catalog";
+        // defaultCatalog = $"projects/{projectId}/locations/global/catalogs/invalid_catalog";
 
         WriteUserEventSample.CallWriteUserEvent(defaultCatalog);
 
