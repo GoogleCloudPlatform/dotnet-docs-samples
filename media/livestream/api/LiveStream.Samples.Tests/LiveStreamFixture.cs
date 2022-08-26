@@ -47,8 +47,10 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
     public string TestChannelId { get; set; }
 
     private readonly CreateInputSample _createInputSample = new CreateInputSample();
+    private readonly ListInputsSample _listInputsSample = new ListInputsSample();
     private readonly DeleteInputSample _deleteInputSample = new DeleteInputSample();
     private readonly CreateChannelSample _createChannelSample = new CreateChannelSample();
+    private readonly ListChannelsSample _listChannelsSample = new ListChannelsSample();
     private readonly DeleteChannelSample _deleteChannelSample = new DeleteChannelSample();
     private readonly StopChannelSample _stopChannelSample = new StopChannelSample();
 
@@ -63,6 +65,8 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
 
     public async Task InitializeAsync()
     {
+        await CleanOutdatedResources();
+
         TestInputId = $"{InputIdPrefix}-{RandomId()}";
         InputIds.Add(TestInputId);
         TestInput = await _createInputSample.CreateInputAsync(ProjectId, LocationId, TestInputId);
@@ -76,42 +80,81 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
         TestChannel = await _createChannelSample.CreateChannelAsync(ProjectId, LocationId, TestChannelId, TestInputId, ChannelOutputUri);
     }
 
+    public async Task CleanOutdatedResources()
+    {
+        int ONE_DAY_IN_SECS = 86400;
+        var channels = _listChannelsSample.ListChannels(ProjectId, LocationId);
+        // Delete channels first
+        foreach (Channel channel in channels)
+        {
+            string id = channel.ChannelName.ChannelId;
+            long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            long creation = channel.CreateTime.Seconds;
+            if ((now - creation) >= ONE_DAY_IN_SECS)
+            {
+                await DeleteChannel(id);
+            }
+        }
+        // Delete inputs next. Delete input fails if it is attached to a channel.
+        var inputs = _listInputsSample.ListInputs(ProjectId, LocationId);
+        foreach (Input input in inputs)
+        {
+            string id = input.InputName.InputId;
+            long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            long creation = input.CreateTime.Seconds;
+            if ((now - creation) >= ONE_DAY_IN_SECS)
+            {
+                await DeleteInput(id);
+            }
+        }
+    }
+
     public async Task DisposeAsync()
     {
         // Delete channels first
         foreach (string id in ChannelIds)
         {
-            try
-            {
-                // Channel must be stopped before it can be deleted. Channel stop fails if the
-                // channel is already in the stopped state.
-                await _stopChannelSample.StopChannelAsync(ProjectId, LocationId, id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Stop failed for channel: " + id + " with error: " + e.ToString());
-            }
-            try
-            {
-                await _deleteChannelSample.DeleteChannelAsync(ProjectId, LocationId, id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Delete failed for channel: " + id + " with error: " + e.ToString());
-            }
+            await DeleteChannel(id);
         }
 
         // Delete inputs next. Delete input fails if it is attached to a channel.
         foreach (string id in InputIds)
         {
-            try
-            {
-                await _deleteInputSample.DeleteInputAsync(ProjectId, LocationId, id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Delete failed for input: " + id + " with error: " + e.ToString());
-            }
+            await DeleteInput(id);
+        }
+    }
+
+    public async Task DeleteChannel(string id)
+    {
+        try
+        {
+            // Channel must be stopped before it can be deleted. Channel stop fails if the
+            // channel is already in the stopped state.
+            await _stopChannelSample.StopChannelAsync(ProjectId, LocationId, id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Stop failed for channel: " + id + " with error: " + e.ToString());
+        }
+        try
+        {
+            await _deleteChannelSample.DeleteChannelAsync(ProjectId, LocationId, id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Delete failed for channel: " + id + " with error: " + e.ToString());
+        }
+    }
+
+    public async Task DeleteInput(string id)
+    {
+        try
+        {
+            await _deleteInputSample.DeleteInputAsync(ProjectId, LocationId, id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Delete failed for input: " + id + " with error: " + e.ToString());
         }
     }
 
