@@ -47,5 +47,5 @@ namespace HelloGcs
         }
     }
 }
-// [END functions_helloworld_storage]
 // [END functions_cloudevent_storage]
+// [END functions_helloworld_storage]
