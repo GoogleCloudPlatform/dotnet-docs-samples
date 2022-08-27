@@ -53,5 +53,5 @@ namespace HelloWorld.Tests
         }
     }
 }
-// [END functions_cloudevent_storage_unit_test]
 // [END functions_storage_unit_test]
+// [END functions_cloudevent_storage_unit_test]
