@@ -39,5 +39,5 @@ namespace HelloPubSub
         }
     }
 }
-// [END functions_cloudevent_pubsub]
 // [END functions_helloworld_pubsub]
+// [END functions_cloudevent_pubsub]
