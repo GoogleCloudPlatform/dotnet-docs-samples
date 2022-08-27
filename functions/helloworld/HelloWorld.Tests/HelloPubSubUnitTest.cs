@@ -74,5 +74,5 @@ namespace HelloWorld.Tests
         }
     }
 }
-// [END functions_cloudevent_pubsub_unit_test]
 // [END functions_pubsub_unit_test]
+// [END functions_cloudevent_pubsub_unit_test]
