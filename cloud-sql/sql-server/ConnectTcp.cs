@@ -15,6 +15,7 @@
  */
 
 // [START cloud_sql_sqlserver_dotnet_ado_connect_tcp]
+// [START cloud_sql_sqlserver_dotnet_ado_connect_tcp_sslcerts]
 using Microsoft.Data.SqlClient;
 using System;
 
@@ -38,13 +39,25 @@ namespace CloudSql
                 Password = Environment.GetEnvironmentVariable("DB_PASS"),       // e.g. 'my-db-password'
                 InitialCatalog = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
 
+                // [END cloud_sql_sqlserver_dotnet_ado_connect_tcp_sslcerts]
                 // The Cloud SQL proxy provides encryption between the proxy and instance
                 Encrypt = false,
+                // [START cloud_sql_sqlserver_dotnet_ado_connect_tcp_sslcerts]
             };
+            // [END cloud_sql_sqlserver_dotnet_ado_connect_tcp]
+            // For deployments that connect directly to a Cloud SQL for SQL Server instance
+            // that has "Allow only SSL connections" enabled, without using the Cloud SQL Proxy,
+            // configure encryption as Mandatory.
+            if (Environment.GetEnvironmentVariable("PRIVATE_IP") != null)
+            {
+                connectionString.Encrypt = SqlConnectionEncryptOption.Mandatory;
+            }
+            // [START cloud_sql_sqlserver_dotnet_ado_connect_tcp]
             connectionString.Pooling = true;
             // Specify additional properties here.
             return connectionString;
         }
     }
 }
+// [END cloud_sql_sqlserver_dotnet_ado_connect_tcp_sslcerts]
 // [END cloud_sql_sqlserver_dotnet_ado_connect_tcp]
