@@ -33,7 +33,7 @@ public class ExactlyOnceDeliverySubscriberAsyncSample
         // To get the status of ACKnowledge (ACK) or Not ACKnowledge (NACK) request in exactly once delivery subscriptions,
         // create a subscription handler that inherits from Google.Cloud.PubSub.V1.SubscriptionHandler. 
         // For more information see Google.Cloud.PubSub.V1.SubscriptionHandler reference docs here:
-        // https://cloud.google.com/dotnet/docs/reference/Google.Cloud.PubSub.V1/latest/Google.Cloud.PubSub.V1.SubscriptionHandler?hl=en
+        // https://cloud.google.com/dotnet/docs/reference/Google.Cloud.PubSub.V1/latest/Google.Cloud.PubSub.V1.SubscriptionHandler
         var subscriptionHandler = new SampleSubscriptionHandler();
         Task subscriptionTask = subscriber.StartAsync(subscriptionHandler);
         // The subscriber will be running until it is stopped.
