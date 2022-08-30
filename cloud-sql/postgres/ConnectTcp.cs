@@ -52,7 +52,7 @@ namespace CloudSql
             {
                 connectionString.SslMode = SslMode.VerifyCA;
                 connectionString.SslCertificate =
-                    Environment.GetEnvironmentVariable("DB_CERT"); // 'certs/client.pfx'
+                    Environment.GetEnvironmentVariable("DB_CERT"); // e.g. 'certs/client.pfx'
             }
             // [START cloud_sql_postgres_dotnet_ado_connect_tcp]
             connectionString.Pooling = true;

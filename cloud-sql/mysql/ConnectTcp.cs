@@ -52,7 +52,7 @@ namespace CloudSql
             {
                 connectionString.SslMode = MySqlSslMode.VerifyCA;
                 connectionString.CertificateFile = 
-                    Environment.GetEnvironmentVariable("DB_CERT"); // 'certs/client.pfx'
+                    Environment.GetEnvironmentVariable("DB_CERT"); // e.g. 'certs/client.pfx'
             }
             // [START cloud_sql_mysql_dotnet_ado_connect_tcp]
             connectionString.Pooling = true;
