@@ -20,26 +20,36 @@ using System.Threading.Tasks;
 namespace LiveStream.Samples.Tests
 {
     [Collection(nameof(LiveStreamFixture))]
-    public class DeleteInputAsyncTest : IAsyncLifetime
+    public class DeleteChannelAsyncTest : IAsyncLifetime
     {
         private LiveStreamFixture _fixture;
-        private readonly CreateInputSample _createSample;
-        private readonly DeleteInputSample _deleteSample;
+        private readonly CreateInputSample _createInputSample;
+        private readonly CreateChannelSample _createChannelSample;
+        private readonly DeleteChannelSample _deleteChannelSample;
         private string _inputId;
+        private string _channelId;
 
-        public DeleteInputAsyncTest(LiveStreamFixture fixture)
+        public DeleteChannelAsyncTest(LiveStreamFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateInputSample();
-            _deleteSample = new DeleteInputSample();
+            _createInputSample = new CreateInputSample();
             _inputId = $"{_fixture.InputIdPrefix}-{_fixture.RandomId()}";
             _fixture.InputIds.Add(_inputId);
+
+            _createChannelSample = new CreateChannelSample();
+            _channelId = $"{_fixture.ChannelIdPrefix}-{_fixture.RandomId()}";
+            _fixture.ChannelIds.Add(_channelId);
+
+            _deleteChannelSample = new DeleteChannelSample();
         }
 
         public async Task InitializeAsync()
         {
-            await _createSample.CreateInputAsync(
+            await _createInputSample.CreateInputAsync(
                 _fixture.ProjectId, _fixture.LocationId, _inputId);
+
+            await _createChannelSample.CreateChannelAsync(
+               _fixture.ProjectId, _fixture.LocationId, _channelId, _inputId, _fixture.ChannelOutputUri);
         }
 
         public async Task DisposeAsync()
@@ -47,10 +57,10 @@ namespace LiveStream.Samples.Tests
         }
 
         [Fact]
-        public async Task DeletesInputAsync()
+        public async Task DeletesChannelAsync()
         {
-            await _deleteSample.DeleteInputAsync(
-                _fixture.ProjectId, _fixture.LocationId, _inputId);
+            await _deleteChannelSample.DeleteChannelAsync(
+                _fixture.ProjectId, _fixture.LocationId, _channelId);
         }
     }
 }

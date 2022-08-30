@@ -19,25 +19,25 @@ using Xunit;
 namespace LiveStream.Samples.Tests
 {
     [Collection(nameof(LiveStreamFixture))]
-    public class GetInputTest
+    public class GetChannelTest
     {
         private LiveStreamFixture _fixture;
-        private readonly GetInputSample _getSample;
+        private readonly GetChannelSample _getSample;
 
-        public GetInputTest(LiveStreamFixture fixture)
+        public GetChannelTest(LiveStreamFixture fixture)
         {
             _fixture = fixture;
-            _getSample = new GetInputSample();
+            _getSample = new GetChannelSample();
         }
 
         [Fact]
-        public void GetsInput()
+        public void GetsChannel()
         {
-            var result = _getSample.GetInput(
-                _fixture.ProjectId, _fixture.LocationId, _fixture.TestInputId);
-            Assert.Equal(_fixture.ProjectId, result.InputName.ProjectId);
-            Assert.Equal(_fixture.LocationId, result.InputName.LocationId);
-            Assert.Equal(_fixture.TestInputId, result.InputName.InputId);
+            var result = _getSample.GetChannel(
+                _fixture.ProjectId, _fixture.LocationId, _fixture.TestChannelId);
+            Assert.Equal(_fixture.ProjectId, result.ChannelName.ProjectId);
+            Assert.Equal(_fixture.LocationId, result.ChannelName.LocationId);
+            Assert.Equal(_fixture.TestChannelId, result.ChannelName.ChannelId);
         }
     }
 }

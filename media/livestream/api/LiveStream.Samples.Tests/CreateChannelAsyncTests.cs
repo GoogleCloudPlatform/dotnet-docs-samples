@@ -20,26 +20,29 @@ using System.Threading.Tasks;
 namespace LiveStream.Samples.Tests
 {
     [Collection(nameof(LiveStreamFixture))]
-    public class DeleteInputAsyncTest : IAsyncLifetime
+    public class CreateChannelAsyncTest : IAsyncLifetime
     {
         private LiveStreamFixture _fixture;
-        private readonly CreateInputSample _createSample;
-        private readonly DeleteInputSample _deleteSample;
+        private readonly CreateInputSample _createInputSample;
+        private readonly CreateChannelSample _createChannelSample;
         private string _inputId;
+        private string _channelId;
 
-        public DeleteInputAsyncTest(LiveStreamFixture fixture)
+        public CreateChannelAsyncTest(LiveStreamFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateInputSample();
-            _deleteSample = new DeleteInputSample();
+            _createInputSample = new CreateInputSample();
             _inputId = $"{_fixture.InputIdPrefix}-{_fixture.RandomId()}";
             _fixture.InputIds.Add(_inputId);
+
+            _createChannelSample = new CreateChannelSample();
+            _channelId = $"{_fixture.ChannelIdPrefix}-{_fixture.RandomId()}";
+            _fixture.ChannelIds.Add(_channelId);
         }
 
         public async Task InitializeAsync()
         {
-            await _createSample.CreateInputAsync(
-                _fixture.ProjectId, _fixture.LocationId, _inputId);
+            await _createInputSample.CreateInputAsync(_fixture.ProjectId, _fixture.LocationId, _inputId);
         }
 
         public async Task DisposeAsync()
@@ -47,10 +50,14 @@ namespace LiveStream.Samples.Tests
         }
 
         [Fact]
-        public async Task DeletesInputAsync()
+        public async Task CreatesChannelAsync()
         {
-            await _deleteSample.DeleteInputAsync(
-                _fixture.ProjectId, _fixture.LocationId, _inputId);
+            var result = await _createChannelSample.CreateChannelAsync(
+                _fixture.ProjectId, _fixture.LocationId, _channelId, _inputId, _fixture.ChannelOutputUri);
+
+            Assert.Equal(_fixture.ProjectId, result.ChannelName.ProjectId);
+            Assert.Equal(_fixture.LocationId, result.ChannelName.LocationId);
+            Assert.Equal(_channelId, result.ChannelName.ChannelId);
         }
     }
 }
