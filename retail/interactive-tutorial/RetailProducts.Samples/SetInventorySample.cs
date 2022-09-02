@@ -62,12 +62,6 @@ public class SetInventorySample
     /// <returns>Set inventory request.</returns>
     private static SetInventoryRequest GetSetInventoryRequest(string productName)
     {
-        // The request timestamp
-        DateTime requestTimeStamp = DateTime.UtcNow;
-
-        // The out-of-order request timestamp
-        // requestTimeStamp = DateTime.UtcNow.AddDays(-1);
-
         var setMask = new FieldMask
         {
             Paths = { "price_info", "availability", "fulfillment_info", "available_quantity" }
@@ -76,7 +70,6 @@ public class SetInventorySample
         var setInventoryRequest = new SetInventoryRequest
         {
             Inventory = GetProductWithInventoryInfo(productName),
-            SetTime = Timestamp.FromDateTime(requestTimeStamp),
             AllowMissing = true,
             SetMask = setMask
         };
