@@ -32,19 +32,20 @@ public class PublishMessageWithRetrySettingsAsyncSample
         var backoffMultiplier = 1.3; // default: 1.0
         var totalTimeout = TimeSpan.FromSeconds(100); // default: 600 seconds
 
-        var publisher = await PublisherClient.CreateAsync(topicName,
-               clientCreationSettings: new PublisherClient.ClientCreationSettings(
-                   publisherServiceApiSettings: new PublisherServiceApiSettings
-                   {
-                       PublishSettings = CallSettings.FromRetry(RetrySettings.FromExponentialBackoff(
+        var publisher = await new PublisherClientBuilder
+        {
+            TopicName = topicName,
+            ApiSettings = new PublisherServiceApiSettings
+            {
+                PublishSettings = CallSettings.FromRetry(RetrySettings.FromExponentialBackoff(
                                maxAttempts: maxAttempts,
                                initialBackoff: initialBackoff,
                                maxBackoff: maxBackoff,
                                backoffMultiplier: backoffMultiplier,
                                retryFilter: RetrySettings.FilterForStatusCodes(StatusCode.Unavailable)))
                        .WithTimeout(totalTimeout)
-                   }
-               )).ConfigureAwait(false);
+            }
+        }.BuildAsync();
         string message = await publisher.PublishAsync(messageText);
         Console.WriteLine($"Published message {message}");
     }

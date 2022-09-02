@@ -26,13 +26,16 @@ public class PullProtoMessagesAsyncSample
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         int messageCount = 0;
-        SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName,
-            settings: new SubscriberClient.Settings()
+        SubscriberClient subscriber = await new SubscriberClientBuilder
+        {
+            SubscriptionName = subscriptionName,
+            Settings = new SubscriberClient.Settings
             {
                 AckExtensionWindow = TimeSpan.FromSeconds(4),
                 AckDeadline = TimeSpan.FromSeconds(10),
                 FlowControlSettings = new FlowControlSettings(maxOutstandingElementCount: 100, maxOutstandingByteCount: 10240)
-            });
+            }
+        }.BuildAsync();
         // SubscriberClient runs your message handle function on multiple
         // threads to maximize throughput.
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
