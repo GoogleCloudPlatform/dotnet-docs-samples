@@ -12,4 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+import-module -DisableNameChecking ..\..\..\BuildTools.psm1
+
+Set-TestTimeout 1800
+
 dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }

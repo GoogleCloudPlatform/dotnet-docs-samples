@@ -94,9 +94,8 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public Topic CreateTopic(string topicId)
     {
         var createTopicSampleObject = new CreateTopicSample();
-        var topic = createTopicSampleObject.CreateTopic(ProjectId, topicId);
         TempTopicIds.Add(topicId);
-        return topic;
+        return createTopicSampleObject.CreateTopic(ProjectId, topicId);
     }
 
     public Topic CreateTopicWithSchema(string topicId, string schemaId, Encoding encoding)
@@ -113,6 +112,13 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         var subscription = createSubscriptionSampleObject.CreateSubscription(ProjectId, topicId, subscriptionId);
         TempSubscriptionIds.Add(subscriptionId);
         return subscription;
+    }
+
+    public Subscription CreateExactlyOnceDeliverySubscription(string topicId, string subscriptionId)
+    {
+        var createSubscriptionWithExactlyOnceDeliverySample = new CreateSubscriptionWithExactlyOnceDeliverySample();
+        TempSubscriptionIds.Add(subscriptionId);
+        return createSubscriptionWithExactlyOnceDeliverySample.CreateSubscriptionWithExactlyOnceDelivery(ProjectId, topicId, subscriptionId);
     }
 
     public Schema CreateProtoSchema(string schemaId)
