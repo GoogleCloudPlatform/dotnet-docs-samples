@@ -30,25 +30,20 @@ public class RemoveFulfillmentPlaces
     /// <returns>The remove fulfillment places request.</returns>
     private static RemoveFulfillmentPlacesRequest GetRemoveFulfillmentRequest(string productName)
     {
-        // The request timestamp
-        DateTime requestTimeStamp = DateTime.UtcNow;
-
-        // The outdated request timestamp
-        // requestTimeStamp = DateTime.UtcNow.AddDays(-1);
-
         var removeFulfillmentRequest = new RemoveFulfillmentPlacesRequest
         {
             Product = productName,
             Type = "pickup-in-store",
-            RemoveTime = Timestamp.FromDateTime(requestTimeStamp),
             AllowMissing = true,
             PlaceIds = { "store0" }
         };
 
+        // To send an out-of-order request assign the invalid AddTime here:
+        // removeFulfillmentRequest.AddTime = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1));
+
         Console.WriteLine("Remove fulfillment places request:");
         Console.WriteLine($"Product Name: {removeFulfillmentRequest.Product}");
         Console.WriteLine($"Type: {removeFulfillmentRequest.Type}");
-        Console.WriteLine($"Add Time: {removeFulfillmentRequest.RemoveTime}");
         Console.WriteLine($"Fulfillment Places: {removeFulfillmentRequest.PlaceIds}");
         Console.WriteLine();
 

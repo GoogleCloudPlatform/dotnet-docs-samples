@@ -30,25 +30,20 @@ public class AddFulfillmentPlacesSample
     /// <returns>Add fulfillment places request.</returns>
     private static AddFulfillmentPlacesRequest GetAddFulfillmentRequest(string productName)
     {
-        // The request timestamp
-        DateTime requestTimeStamp = DateTime.UtcNow;
-
-        // The outdated request timestamp
-        // requestTimeStamp = DateTime.UtcNow.AddDays(-1);
-
         AddFulfillmentPlacesRequest addFulfillmentRequest = new AddFulfillmentPlacesRequest
         {
             Product = productName,
             Type = "pickup-in-store",
-            AddTime = Timestamp.FromDateTime(requestTimeStamp),
             AllowMissing = true,
             PlaceIds = { "store2", "store3", "store4" }
         };
 
+        // To send an out-of-order request assign the invalid AddTime here:
+        // addFulfillmentRequest.AddTime = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1));
+
         Console.WriteLine("Add fulfillment places request:");
         Console.WriteLine($"Product Name: {addFulfillmentRequest.Product}");
         Console.WriteLine($"Type: {addFulfillmentRequest.Type}");
-        Console.WriteLine($"Add Time: {addFulfillmentRequest.AddTime}");
         Console.WriteLine($"Fulfillment Places: {addFulfillmentRequest.PlaceIds}");
         Console.WriteLine();
 
