@@ -28,6 +28,7 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
     public string LocationId { get; } = "us-central1";
     public string InputIdPrefix { get; } = "test-input";
     public string ChannelIdPrefix { get; } = "test-channel";
+    public string EventIdPrefix { get; } = "test-event";
     public string ChannelOutputUri { get; } = "gs://my-bucket/my-output-folder/";
 
     public System.Int32 UpdateTopPixels { get; } = 5;
@@ -46,13 +47,35 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
     public Channel TestChannel { get; set; }
     public string TestChannelId { get; set; }
 
+    public Input TestInputForCreateEvent { get; set; }
+    public string TestInputForCreateEventId { get; set; }
+    public Channel TestChannelForCreateEvent { get; set; }
+    public string TestChannelForCreateEventId { get; set; }
+
+    public Input TestInputForDeleteEvent { get; set; }
+    public string TestInputForDeleteEventId { get; set; }
+    public Channel TestChannelForDeleteEvent { get; set; }
+    public string TestChannelForDeleteEventId { get; set; }
+
+    public Input TestInputForGetListEvent { get; set; }
+    public string TestInputForGetListEventId { get; set; }
+    public Channel TestChannelForGetListEvent { get; set; }
+    public string TestChannelForGetListEventId { get; set; }
+
+    public string TestEventId { get; set; }
+
     private readonly CreateInputSample _createInputSample = new CreateInputSample();
     private readonly ListInputsSample _listInputsSample = new ListInputsSample();
     private readonly DeleteInputSample _deleteInputSample = new DeleteInputSample();
     private readonly CreateChannelSample _createChannelSample = new CreateChannelSample();
     private readonly ListChannelsSample _listChannelsSample = new ListChannelsSample();
     private readonly DeleteChannelSample _deleteChannelSample = new DeleteChannelSample();
+    private readonly StartChannelSample _startChannelSample = new StartChannelSample();
     private readonly StopChannelSample _stopChannelSample = new StopChannelSample();
+    private readonly ListChannelEventsSample _listChannelEventsSample = new ListChannelEventsSample();
+    private readonly CreateChannelEventSample _createChannelEventSample = new CreateChannelEventSample();
+    private readonly DeleteChannelEventSample _deleteChannelEventSample = new DeleteChannelEventSample();
+
 
     public LiveStreamFixture()
     {
@@ -78,6 +101,41 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
         TestChannelId = $"{ChannelIdPrefix}-{RandomId()}";
         ChannelIds.Add(TestChannelId);
         TestChannel = await _createChannelSample.CreateChannelAsync(ProjectId, LocationId, TestChannelId, TestInputId, ChannelOutputUri);
+
+        // Channel events
+        TestEventId = $"{EventIdPrefix}-{RandomId()}";
+
+        // Channel events - Create
+        TestInputForCreateEventId = $"{InputIdPrefix}-{RandomId()}";
+        InputIds.Add(TestInputForCreateEventId);
+        TestInputForCreateEvent = await _createInputSample.CreateInputAsync(ProjectId, LocationId, TestInputForCreateEventId);
+
+        TestChannelForCreateEventId = $"{ChannelIdPrefix}-{RandomId()}";
+        ChannelIds.Add(TestChannelForCreateEventId);
+        TestChannelForCreateEvent = await _createChannelSample.CreateChannelAsync(ProjectId, LocationId, TestChannelForCreateEventId, TestInputForCreateEventId, ChannelOutputUri);
+        await _startChannelSample.StartChannelAsync(ProjectId, LocationId, TestChannelForCreateEventId);
+
+        // Channel events - Get and List
+        TestInputForGetListEventId = $"{InputIdPrefix}-{RandomId()}";
+        InputIds.Add(TestInputForGetListEventId);
+        TestInputForGetListEvent = await _createInputSample.CreateInputAsync(ProjectId, LocationId, TestInputForGetListEventId);
+
+        TestChannelForGetListEventId = $"{ChannelIdPrefix}-{RandomId()}";
+        ChannelIds.Add(TestChannelForGetListEventId);
+        TestChannelForGetListEvent = await _createChannelSample.CreateChannelAsync(ProjectId, LocationId, TestChannelForGetListEventId, TestInputForGetListEventId, ChannelOutputUri);
+        await _startChannelSample.StartChannelAsync(ProjectId, LocationId, TestChannelForGetListEventId);
+        _createChannelEventSample.CreateChannelEvent(ProjectId, LocationId, TestChannelForGetListEventId, TestEventId);
+
+        // Channel events - Delete
+        TestInputForDeleteEventId = $"{InputIdPrefix}-{RandomId()}";
+        InputIds.Add(TestInputForDeleteEventId);
+        TestInputForDeleteEvent = await _createInputSample.CreateInputAsync(ProjectId, LocationId, TestInputForDeleteEventId);
+
+        TestChannelForDeleteEventId = $"{ChannelIdPrefix}-{RandomId()}";
+        ChannelIds.Add(TestChannelForDeleteEventId);
+        TestChannelForDeleteEvent = await _createChannelSample.CreateChannelAsync(ProjectId, LocationId, TestChannelForDeleteEventId, TestInputForDeleteEventId, ChannelOutputUri);
+        await _startChannelSample.StartChannelAsync(ProjectId, LocationId, TestChannelForDeleteEventId);
+        _createChannelEventSample.CreateChannelEvent(ProjectId, LocationId, TestChannelForDeleteEventId, TestEventId);
     }
 
     public async Task CleanOutdatedResources()
@@ -136,6 +194,28 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
         {
             Console.WriteLine("Stop failed for channel: " + id + " with error: " + e.ToString());
         }
+
+        try
+        {
+            // Channel events must be deleted before the channel can be deleted.
+            var channelEvents = _listChannelEventsSample.ListChannelEvents(ProjectId, LocationId, id);
+            foreach (Event channelEvent in channelEvents)
+            {
+                try
+                {
+                    _deleteChannelEventSample.DeleteChannelEvent(ProjectId, LocationId, id, channelEvent.EventName.EventId);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Delete failed for channel event: " + channelEvent.EventName.EventId + " with error: " + e.ToString());
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("List events failed for channel: " + id + " with error: " + e.ToString());
+        }
+
         try
         {
             await _deleteChannelSample.DeleteChannelAsync(ProjectId, LocationId, id);
@@ -164,6 +244,6 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
 
     public string RandomId()
     {
-        return $"csharp-{System.Guid.NewGuid()}";
+        return $"cs-{System.Guid.NewGuid()}";
     }
 }
