@@ -15,6 +15,7 @@
  */
 
 // [START cloud_sql_postgres_dotnet_ado_connect_tcp]
+// [START cloud_sql_postgres_dotnet_ado_connect_tcp_sslcerts]
 using Npgsql;
 using System;
 
@@ -28,9 +29,6 @@ namespace CloudSql
             // "Uid=<DB_USER>;Pwd=<DB_PASS>;Host=<INSTANCE_HOST>;Database=<DB_NAME>;"
             var connectionString = new NpgsqlConnectionStringBuilder()
             {
-                // The Cloud SQL proxy provides encryption between the proxy and instance.
-                SslMode = SslMode.Disable,
-
                 // Note: Saving credentials in environment variables is convenient, but not
                 // secure - consider a more secure solution such as
                 // Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
@@ -40,11 +38,28 @@ namespace CloudSql
                 Username = Environment.GetEnvironmentVariable("DB_USER"), // e.g. 'my-db-user'
                 Password = Environment.GetEnvironmentVariable("DB_PASS"), // e.g. 'my-db-password'
                 Database = Environment.GetEnvironmentVariable("DB_NAME"), // e.g. 'my-database'
+                
+                // [END cloud_sql_postgres_dotnet_ado_connect_tcp_sslcerts]
+                // The Cloud SQL proxy provides encryption between the proxy and instance.
+                SslMode = SslMode.Disable,
+                // [START cloud_sql_postgres_dotnet_ado_connect_tcp_sslcerts]
             };
+            // [END cloud_sql_postgres_dotnet_ado_connect_tcp]
+            // For deployments that connect directly to a Cloud SQL instance without
+            // using the Cloud SQL Proxy, configuring SSL certificates will ensure the
+            // connection is encrypted.
+            if (Environment.GetEnvironmentVariable("DB_CERT") != null)
+            {
+                connectionString.SslMode = SslMode.VerifyCA;
+                connectionString.SslCertificate =
+                    Environment.GetEnvironmentVariable("DB_CERT"); // e.g. 'certs/client.pfx'
+            }
+            // [START cloud_sql_postgres_dotnet_ado_connect_tcp]
             connectionString.Pooling = true;
             // Specify additional properties here.
             return connectionString;
         }
     }
 }
+// [END cloud_sql_postgres_dotnet_ado_connect_tcp_sslcerts]
 // [END cloud_sql_postgres_dotnet_ado_connect_tcp]

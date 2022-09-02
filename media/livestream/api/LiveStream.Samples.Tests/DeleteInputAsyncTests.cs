@@ -39,8 +39,7 @@ namespace LiveStream.Samples.Tests
         public async Task InitializeAsync()
         {
             await _createSample.CreateInputAsync(
-                    _fixture.ProjectId, _fixture.LocationId,
-                    _inputId);
+                _fixture.ProjectId, _fixture.LocationId, _inputId);
         }
 
         public async Task DisposeAsync()
@@ -50,7 +49,8 @@ namespace LiveStream.Samples.Tests
         [Fact]
         public async Task DeletesInputAsync()
         {
-            await _deleteSample.DeleteInputAsync(_fixture.ProjectId, _fixture.LocationId, _inputId);
+            await _deleteSample.DeleteInputAsync(
+                _fixture.ProjectId, _fixture.LocationId, _inputId);
         }
     }
 }

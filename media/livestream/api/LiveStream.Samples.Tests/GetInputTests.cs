@@ -33,7 +33,8 @@ namespace LiveStream.Samples.Tests
         [Fact]
         public void GetsInput()
         {
-            var result = _getSample.GetInput(_fixture.ProjectId, _fixture.LocationId, _fixture.TestInputId);
+            var result = _getSample.GetInput(
+                _fixture.ProjectId, _fixture.LocationId, _fixture.TestInputId);
             Assert.Equal(_fixture.ProjectId, result.InputName.ProjectId);
             Assert.Equal(_fixture.LocationId, result.InputName.LocationId);
             Assert.Equal(_fixture.TestInputId, result.InputName.InputId);
