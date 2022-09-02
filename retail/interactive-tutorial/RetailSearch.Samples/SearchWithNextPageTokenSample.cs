@@ -20,6 +20,7 @@
 using Google.Api.Gax;
 using Google.Cloud.Retail.V2;
 using System;
+using System.Linq;
 
 /// <summary>
 /// Search with next page token sample class.
@@ -47,7 +48,7 @@ public class SearchWithNextPageTokenSample
             PageToken = nextPageToken
         };
 
-        Console.WriteLine("Search. request:");
+        Console.WriteLine("Search request:");
         Console.WriteLine($"Placement: {searchRequest.Placement}");
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
@@ -91,9 +92,10 @@ public class SearchWithNextPageTokenSample
         PagedEnumerable<SearchResponse, SearchResponse.Types.SearchResult> searchResultPages = client.Search(searchRequest);
         Page<SearchResponse.Types.SearchResult> singlePage = searchResultPages.ReadPage(pageSize);
 
-        if (singlePage is null)
+        if (!singlePage.Any())
         {
             Console.WriteLine("The search operation returned no matching results.");
+            Console.WriteLine();
         }
         else
         {
