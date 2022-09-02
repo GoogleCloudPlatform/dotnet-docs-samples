@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_for_products_with_page_size]
 // Call Retail API to search for a products in a catalog,
-// limit the number of the products per page and go to the next page using "next_page_token"
-// or jump to chosen page using "offset".
+// limit the number of the products per page and go to the next page using "NextPageToken"
+// or jump to chosen page using "Offset".
 
 using Google.Cloud.Retail.V2;
 using System;
@@ -105,7 +104,6 @@ public class SearchWithPageSizeSample
         return searchResultPages;
     }
 }
-// [END retail_search_for_products_with_page_size]
 
 /// <summary>
 /// Search with page size tutorial.
