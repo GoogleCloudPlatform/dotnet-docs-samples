@@ -74,6 +74,9 @@ public class SetInventorySample
             SetMask = setMask
         };
 
+        // To send an out-of-order request assign the invalid SetTime here:
+        // setInventoryRequest.SetTime = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1));
+
         Console.WriteLine("Set inventory request:");
         Console.WriteLine($"Product Name: {setInventoryRequest.Inventory.Name}");
         Console.WriteLine($"Product Title: {setInventoryRequest.Inventory.Title}");

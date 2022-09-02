@@ -38,6 +38,9 @@ public class AddFulfillmentPlacesSample
             PlaceIds = { "store2", "store3", "store4" }
         };
 
+        // To send an out-of-order request assign the invalid AddTime here:
+        // addFulfillmentRequest.AddTime = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1));
+
         Console.WriteLine("Add fulfillment places request:");
         Console.WriteLine($"Product Name: {addFulfillmentRequest.Product}");
         Console.WriteLine($"Type: {addFulfillmentRequest.Type}");
