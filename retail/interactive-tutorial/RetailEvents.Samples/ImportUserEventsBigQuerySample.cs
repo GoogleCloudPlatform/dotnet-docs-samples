@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_import_user_events_from_big_query]
 // Import user events into a catalog from BigQuery using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -97,7 +96,6 @@ public class ImportUserEventsBigQuerySample
         return importResult;
     }
 }
-// [END retail_import_user_events_from_big_query]
 
 /// <summary>
 /// The import user events BigQuery tutorial class.

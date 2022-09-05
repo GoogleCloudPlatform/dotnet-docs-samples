@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_purge_user_event]
 // Purge user events using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -80,7 +79,6 @@ public class PurgeUserEventSample
         return retrievedResponse;
     }
 }
-// [END retail_purge_user_event]
 
 /// <summary>
 /// The purge user event tutorial class.
