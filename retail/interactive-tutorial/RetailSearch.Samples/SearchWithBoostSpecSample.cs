@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_product_with_boost_spec]
 // Calls the Retail API to search for products in a catalog and reranks the
 // results boosting or burying the products that matched a given condition.
 
@@ -110,7 +109,6 @@ public class SearchWithBoostSpecSample
         return searchResultPages;
     }
 }
-// [END retail_search_product_with_boost_spec]
 
 /// <summary>
 /// Search with boost spec tutorial.

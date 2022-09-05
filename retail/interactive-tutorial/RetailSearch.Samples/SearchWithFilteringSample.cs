@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_for_products_with_filter]
 // Call Retail API to search for a products in a catalog, filter the results by different product fields.
 
 using Google.Cloud.Retail.V2;
@@ -97,7 +96,6 @@ public class SearchWithFilteringSample
         return searchResultPages;
     }
 }
-// [END retail_search_for_products_with_filter]
 
 /// <summary>
 /// Search with filtering tutorial.
