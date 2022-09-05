@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_remove_fulfillment_places]
-
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -66,7 +64,6 @@ public class RemoveFulfillmentPlaces
         operation.PollUntilCompleted();
     }
 }
-// [END retail_remove_fulfillment_places]
 
 /// <summary>
 /// The remove fulfillment places tutorial class.

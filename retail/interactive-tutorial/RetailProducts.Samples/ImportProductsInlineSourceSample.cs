@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_import_products_from_inline_source]
 // Import products into a catalog from inline source using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -188,7 +187,6 @@ public class ImportProductsInlineSourceSample
         return importResult;
     }
 }
-// [END retail_import_products_from_inline_source]
 
 /// <summary>
 /// The import products inline source tutorial class.

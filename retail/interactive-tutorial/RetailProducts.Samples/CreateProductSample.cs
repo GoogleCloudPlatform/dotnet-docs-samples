@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_create_product]
 // Create product in a catalog using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -108,7 +107,6 @@ public class CreateProductSample
         return createdProduct;
     }
 }
-// [END retail_create_product]
 
 /// <summary>
 /// The create product tutorial class.

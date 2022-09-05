@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_get_product]
 // Get product from a catalog using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -65,7 +64,6 @@ public class GetProductSample
         return product;
     }
 }
-// [END retail_get_product]
 
 /// <summary>
 /// The get product tutorial class.

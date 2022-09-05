@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_delete_product]
 // Delete product from a catalog using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -61,7 +60,6 @@ public class DeleteProductSample
         Console.WriteLine();
     }
 }
-// [END retail_delete_product]
 
 /// <summary>
 /// The delete product tutorial class.

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_add_fulfillment_places]
 
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
@@ -66,7 +65,6 @@ public class AddFulfillmentPlacesSample
         operation.PollUntilCompleted();
     }
 }
-// [END retail_add_fulfillment_places]
 
 /// <summary>
 /// The add fulfillment places tutorial class.
