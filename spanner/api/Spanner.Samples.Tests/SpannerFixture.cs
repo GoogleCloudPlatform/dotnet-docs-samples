@@ -271,6 +271,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     {
         CreateDatabaseAsyncPostgreSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgreSample();
         await createDatabaseAsyncSample.CreateDatabaseAsyncPostgre(ProjectId, InstanceId, PostgreSqlDatabaseId);
+        await CreateVenueTablesAndInsertDataAsyncPostgre();
     }
 
     private async Task InitializeEncryptionKeys()
@@ -532,5 +533,49 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
         var databases = DatabaseAdminClient.ListDatabases(instanceName);
         return databases;
+    }
+
+    private async Task CreateVenueTablesAndInsertDataAsyncPostgre()
+    {
+        // We create two venue tables, so that add jsonb column sample, update and query jsonb data sample can run out of order.
+        // One venue table is used in add jsonb column sample while other is used in update and query jsonb data sample. 
+
+        // Define create table statement for VenueDetails.
+        // This table is used in add jsonb column sample.
+        const string createVenueDetailsTableStatement =
+        @"CREATE TABLE VenueDetails (
+            VenueId BIGINT NOT NULL PRIMARY KEY,
+            VenueName VARCHAR(1024))";
+
+        // Define create table statement for VenueInformation.
+        // This table is used in update and query jsonb data sample.
+        const string createVenueInformationTableStatement =
+        @"CREATE TABLE VenueInformation (
+            VenueId BIGINT NOT NULL PRIMARY KEY,
+            VenueName VARCHAR(1024),
+            Details JSONB)";
+
+        await CreateTablesAsyncPostgre(new[] { createVenueDetailsTableStatement, createVenueInformationTableStatement });
+
+        // Insert data only in VenueInformation table.
+        int[] ids = new int[] { 4, 19, 42 };
+        await Task.WhenAll(ids.Select(id =>
+        {
+            using var cmd = PgSpannerConnection.CreateInsertCommand("VenueInformation", new SpannerParameterCollection
+            {
+                { "VenueId", SpannerDbType.Int64, id },
+                { "VenueName", SpannerDbType.String, $"Venue {id}" }
+            });
+            return cmd.ExecuteNonQueryAsync();
+        }));
+    }
+
+    private async Task CreateTablesAsyncPostgre(string[] createTableStatements)
+    {
+        foreach (var createTableStatement in createTableStatements)
+        {
+            using var cmd = PgSpannerConnection.CreateDdlCommand(createTableStatement);
+            await cmd.ExecuteNonQueryAsync();
+        }
     }
 }
