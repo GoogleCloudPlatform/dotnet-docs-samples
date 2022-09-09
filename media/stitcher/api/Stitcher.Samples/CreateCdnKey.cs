@@ -25,7 +25,7 @@ public class CreateCdnKeySample
 {
     public CdnKey CreateCdnKey(
         string projectId, string location, string cdnKeyId, string hostname,
-        string gcdnKeyName, string? gcdnPrivateKey, string akamaiTokenKey)
+        string gcdnKeyName, string gcdnPrivateKey, string akamaiTokenKey)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();

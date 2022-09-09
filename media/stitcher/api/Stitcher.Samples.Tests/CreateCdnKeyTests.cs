@@ -31,8 +31,8 @@ namespace Stitcher.Samples.Tests
         {
             _fixture = fixture;
             _createSample = new CreateCdnKeySample();
-            _akamaiCdnKeyId = $"{_fixture.AkamaiCdnKeyIdPrefix}-{_fixture.RandomId()}";
-            _cloudCdnKeyId = $"{_fixture.CloudCdnKeyIdPrefix}-{_fixture.RandomId()}";
+            _akamaiCdnKeyId = $"{_fixture.AkamaiCdnKeyIdPrefix}-{_fixture.TimestampId()}";
+            _cloudCdnKeyId = $"{_fixture.CloudCdnKeyIdPrefix}-{_fixture.TimestampId()}";
         }
 
         [Fact]

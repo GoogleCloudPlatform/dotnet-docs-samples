@@ -48,8 +48,10 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
     public string AkamaiTokenKey { get; } = "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==";
 
     private readonly CreateSlateSample _createSlateSample = new CreateSlateSample();
+    private readonly ListSlatesSample _listSlatesSample = new ListSlatesSample();
     private readonly DeleteSlateSample _deleteSlateSample = new DeleteSlateSample();
     private readonly CreateCdnKeySample _createCdnKeySample = new CreateCdnKeySample();
+    private readonly ListCdnKeysSample _listCdnKeysSample = new ListCdnKeysSample();
     private readonly DeleteCdnKeySample _deleteCdnKeySample = new DeleteCdnKeySample();
 
     public StitcherFixture()
@@ -60,13 +62,66 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
 
-        TestSlateId = $"{SlateIdPrefix}-{RandomId()}";
+        CleanOutdatedResources();
+
+        TestSlateId = $"{SlateIdPrefix}-{TimestampId()}";
         SlateIds.Add(TestSlateId);
         TestSlate = _createSlateSample.CreateSlate(ProjectId, LocationId, TestSlateId, TestSlateUri);
 
-        TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{RandomId()}";
+        TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{TimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
         TestCloudCdnKey = _createCdnKeySample.CreateCdnKey(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, CloudCdnKeyName, CloudCdnTokenKey, null);
+    }
+
+    public void CleanOutdatedResources()
+    {
+        int TWO_HOURS_IN_SECS = 7200;
+        // Slates don't include creation time information, so encode it
+        // in the slate name. Slates have a low quota limit, so we need to
+        // remove outdated ones before the test begins (and creates more).
+        var slates = _listSlatesSample.ListSlates(ProjectId, LocationId);
+        foreach (Slate slate in slates)
+        {
+            string id = slate.SlateName.SlateId;
+            DeleteSlate(id);
+            // string[] subs = id.Split('-');
+            // if (subs.Length > 0)
+            // {
+            //     string temp = subs[(subs.Length - 1)];
+            //     bool success = long.TryParse(temp, out long creation);
+            //     if (success)
+            //     {
+            //         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            //         if ((now - creation) >= TWO_HOURS_IN_SECS)
+            //         {
+            //             DeleteSlate(id);
+            //         }
+            //     }
+            // }
+        }
+        // CDN keys don't include creation time information, so encode it
+        // in the key name. CDN keys have a low quota limit, so we need to
+        // remove outdated ones before the test begins (and creates more).
+        var cdnKeys = _listCdnKeysSample.ListCdnKeys(ProjectId, LocationId);
+        foreach (CdnKey cdnKey in cdnKeys)
+        {
+            string id = cdnKey.CdnKeyName.CdnKeyId;
+            DeleteCdnKey(id);
+            // string[] subs = id.Split('-');
+            // if (subs.Length > 0)
+            // {
+            //     string temp = subs[(subs.Length - 1)];
+            //     bool success = long.TryParse(temp, out long creation);
+            //     if (success)
+            //     {
+            //         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            //         if ((now - creation) >= TWO_HOURS_IN_SECS)
+            //         {
+            //             DeleteCdnKey(id);
+            //         }
+            //     }
+            // }
+        }
     }
 
     public void Dispose()
@@ -74,27 +129,42 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
         // Delete slates.
         foreach (string id in SlateIds)
         {
-            try
-            {
-                _deleteSlateSample.DeleteSlate(ProjectId, LocationId, id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Delete failed for slate: " + id + " with error: " + e.ToString());
-            }
+            DeleteSlate(id);
         }
         // Delete CDN keys.
         foreach (string id in CdnKeyIds)
         {
-            try
-            {
-                _deleteCdnKeySample.DeleteCdnKey(ProjectId, LocationId, id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Delete failed for CDN key: " + id + " with error: " + e.ToString());
-            }
+            DeleteCdnKey(id);
         }
+    }
+
+    public void DeleteSlate(string id)
+    {
+        try
+        {
+            _deleteSlateSample.DeleteSlate(ProjectId, LocationId, id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Delete failed for slate: " + id + " with error: " + e.ToString());
+        }
+    }
+
+    public void DeleteCdnKey(string id)
+    {
+        try
+        {
+            _deleteCdnKeySample.DeleteCdnKey(ProjectId, LocationId, id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Delete failed for CDN key: " + id + " with error: " + e.ToString());
+        }
+    }
+
+    public string TimestampId()
+    {
+        return $"csharp-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     }
 
     public string RandomId()

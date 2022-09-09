@@ -32,7 +32,7 @@ namespace Stitcher.Samples.Tests
             _fixture = fixture;
             _createSample = new CreateCdnKeySample();
             _deleteSample = new DeleteCdnKeySample();
-            _cdnKeyId = $"{_fixture.CloudCdnKeyIdPrefix}-{_fixture.RandomId()}";
+            _cdnKeyId = $"{_fixture.CloudCdnKeyIdPrefix}-{_fixture.TimestampId()}";
 
             _fixture.CdnKeyIds.Add(_cdnKeyId);
             _createSample.CreateCdnKey(

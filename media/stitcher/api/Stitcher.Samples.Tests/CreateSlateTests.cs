@@ -30,7 +30,7 @@ namespace Stitcher.Samples.Tests
         {
             _fixture = fixture;
             _createSample = new CreateSlateSample();
-            _slateId = $"{_fixture.SlateIdPrefix}-{_fixture.RandomId()}";
+            _slateId = $"{_fixture.SlateIdPrefix}-{_fixture.TimestampId()}";
         }
 
         [Fact]

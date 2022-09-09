@@ -32,7 +32,7 @@ namespace Stitcher.Samples.Tests
             _fixture = fixture;
             _createSample = new CreateSlateSample();
             _deleteSample = new DeleteSlateSample();
-            _slateId = $"{_fixture.SlateIdPrefix}-{_fixture.RandomId()}";
+            _slateId = $"{_fixture.SlateIdPrefix}-{_fixture.TimestampId()}";
 
             _fixture.SlateIds.Add(_slateId);
             _createSample.CreateSlate(
