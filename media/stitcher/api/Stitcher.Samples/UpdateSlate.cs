@@ -28,9 +28,6 @@ public class UpdateSlateSample
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        // Build the parent location name.
-        LocationName parentLocation = new LocationName(projectId, location);
-
         UpdateSlateRequest request = new UpdateSlateRequest
         {
             Slate = new Slate

@@ -25,13 +25,10 @@ public class UpdateCdnKeySample
 {
     public CdnKey UpdateCdnKey(
         string projectId, string location, string cdnKeyId, string hostname,
-        string gcdnKeyname, string gcdnPrivateKey, string akamaiTokenKey)
+        string gcdnKeyName, string gcdnPrivateKey, string akamaiTokenKey)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
-
-        // Build the parent location name.
-        LocationName parentLocation = new LocationName(projectId, location);
 
         CdnKey cdnKey = new CdnKey
         {
@@ -40,21 +37,21 @@ public class UpdateCdnKeySample
         };
 
         string path;
-        if (akamaiTokenKey != "")
+        if (akamaiTokenKey is null)
+        {
+            path = "google_cdn_key";
+            cdnKey.GoogleCdnKey = new GoogleCdnKey
+            {
+                KeyName = gcdnKeyName,
+                PrivateKey = ByteString.CopyFromUtf8(gcdnPrivateKey)
+            };
+        }
+        else
         {
             path = "akamai_cdn_key";
             cdnKey.AkamaiCdnKey = new AkamaiCdnKey
             {
                 TokenKey = ByteString.CopyFromUtf8(akamaiTokenKey)
-            };
-        }
-        else
-        {
-            path = "google_cdn_key";
-            cdnKey.GoogleCdnKey = new GoogleCdnKey
-            {
-                KeyName = gcdnKeyname,
-                PrivateKey = ByteString.CopyFromUtf8(gcdnPrivateKey)
             };
         }
 

@@ -36,21 +36,25 @@ namespace Stitcher.Samples.Tests
         }
 
         [Fact]
-        public void CreatesCdnKey()
+        public void CreatesCdnKey_Akamai()
         {
             // Run the sample code and create an Akamai CDN key.
+            _fixture.CdnKeyIds.Add(_akamaiCdnKeyId);
             var result = _createSample.CreateCdnKey(
                 _fixture.ProjectId, _fixture.LocationId,
-                _akamaiCdnKeyId, _fixture.Hostname, "", "", _fixture.AkamaiTokenKey);
-            _fixture.CdnKeyIds.Add(_akamaiCdnKeyId);
+                _akamaiCdnKeyId, _fixture.Hostname, null, null, _fixture.AkamaiTokenKey);
 
             Assert.Equal(_akamaiCdnKeyId, result.CdnKeyName.CdnKeyId);
+        }
 
+        [Fact]
+        public void CreatesCdnKey_CloudCdn()
+        {
             // Run the sample code and create a Cloud CDN key.
-            result = _createSample.CreateCdnKey(
-                _fixture.ProjectId, _fixture.LocationId,
-                _cloudCdnKeyId, _fixture.Hostname, _fixture.CloudCdnKeyName, _fixture.CloudCdnTokenKey, "");
             _fixture.CdnKeyIds.Add(_cloudCdnKeyId);
+            var result = _createSample.CreateCdnKey(
+                _fixture.ProjectId, _fixture.LocationId,
+                _cloudCdnKeyId, _fixture.Hostname, _fixture.CloudCdnKeyName, _fixture.CloudCdnTokenKey, null);
 
             Assert.Equal(_cloudCdnKeyId, result.CdnKeyName.CdnKeyId);
         }

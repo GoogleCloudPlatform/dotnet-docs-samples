@@ -27,9 +27,6 @@ public class CreateSlateSample
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        // Build the parent location name.
-        LocationName parentLocation = new LocationName(projectId, location);
-
         CreateSlateRequest request = new CreateSlateRequest
         {
             ParentAsLocationName = LocationName.FromProjectLocation(projectId, location),

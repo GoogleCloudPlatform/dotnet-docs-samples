@@ -66,7 +66,7 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
 
         TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{RandomId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
-        TestCloudCdnKey = _createCdnKeySample.CreateCdnKey(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, CloudCdnKeyName, CloudCdnTokenKey, "");
+        TestCloudCdnKey = _createCdnKeySample.CreateCdnKey(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, CloudCdnKeyName, CloudCdnTokenKey, null);
     }
 
     public void Dispose()

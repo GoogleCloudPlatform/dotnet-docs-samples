@@ -20,37 +20,34 @@ using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
 using Google.Protobuf;
 
+
 public class CreateCdnKeySample
 {
     public CdnKey CreateCdnKey(
         string projectId, string location, string cdnKeyId, string hostname,
-        string gcdnKeyname, string gcdnPrivateKey, string akamaiTokenKey)
+        string gcdnKeyName, string? gcdnPrivateKey, string akamaiTokenKey)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
-
-        // Build the parent location name.
-        LocationName parentLocation = new LocationName(projectId, location);
 
         CdnKey cdnKey = new CdnKey
         {
             Hostname = hostname
         };
 
-
-        if (akamaiTokenKey != "")
+        if (akamaiTokenKey is null)
         {
-            cdnKey.AkamaiCdnKey = new AkamaiCdnKey
+            cdnKey.GoogleCdnKey = new GoogleCdnKey
             {
-                TokenKey = ByteString.CopyFromUtf8(akamaiTokenKey)
+                KeyName = gcdnKeyName,
+                PrivateKey = ByteString.CopyFromUtf8(gcdnPrivateKey)
             };
         }
         else
         {
-            cdnKey.GoogleCdnKey = new GoogleCdnKey
+            cdnKey.AkamaiCdnKey = new AkamaiCdnKey
             {
-                KeyName = gcdnKeyname,
-                PrivateKey = ByteString.CopyFromUtf8(gcdnPrivateKey)
+                TokenKey = ByteString.CopyFromUtf8(akamaiTokenKey)
             };
         }
 

@@ -37,9 +37,9 @@ namespace Stitcher.Samples.Tests
         public void CreatesSlate()
         {
             // Run the sample code.
+            _fixture.SlateIds.Add(_slateId);
             var result = _createSample.CreateSlate(
                 _fixture.ProjectId, _fixture.LocationId, _slateId, _fixture.TestSlateUri);
-            _fixture.SlateIds.Add(_slateId);
 
             Assert.Equal(_slateId, result.SlateName.SlateId);
         }

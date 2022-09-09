@@ -34,10 +34,10 @@ namespace Stitcher.Samples.Tests
             _deleteSample = new DeleteSlateSample();
             _slateId = $"{_fixture.SlateIdPrefix}-{_fixture.RandomId()}";
 
+            _fixture.SlateIds.Add(_slateId);
             _createSample.CreateSlate(
                 _fixture.ProjectId, _fixture.LocationId,
                 _slateId, _fixture.TestSlateUri);
-            _fixture.SlateIds.Add(_slateId);
         }
 
         [Fact]

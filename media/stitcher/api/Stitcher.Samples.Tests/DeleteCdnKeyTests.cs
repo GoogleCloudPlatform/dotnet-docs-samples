@@ -34,10 +34,10 @@ namespace Stitcher.Samples.Tests
             _deleteSample = new DeleteCdnKeySample();
             _cdnKeyId = $"{_fixture.CloudCdnKeyIdPrefix}-{_fixture.RandomId()}";
 
+            _fixture.CdnKeyIds.Add(_cdnKeyId);
             _createSample.CreateCdnKey(
                 _fixture.ProjectId, _fixture.LocationId,
-                _cdnKeyId, _fixture.Hostname, _fixture.CloudCdnKeyName, _fixture.CloudCdnTokenKey, "");
-            _fixture.CdnKeyIds.Add(_cdnKeyId);
+                _cdnKeyId, _fixture.Hostname, _fixture.CloudCdnKeyName, _fixture.CloudCdnTokenKey, null);
         }
 
         [Fact]
