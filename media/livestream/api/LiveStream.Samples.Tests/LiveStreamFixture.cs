@@ -140,7 +140,7 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
 
     public async Task CleanOutdatedResources()
     {
-        int ONE_DAY_IN_SECS = 86400;
+        int TWO_HOURS_IN_SECS = 7200;
         var channels = _listChannelsSample.ListChannels(ProjectId, LocationId);
         // Delete channels first
         foreach (Channel channel in channels)
@@ -148,7 +148,7 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
             string id = channel.ChannelName.ChannelId;
             long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             long creation = channel.CreateTime.Seconds;
-            if ((now - creation) >= ONE_DAY_IN_SECS)
+            if ((now - creation) >= TWO_HOURS_IN_SECS)
             {
                 await DeleteChannel(id);
             }
@@ -160,7 +160,7 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
             string id = input.InputName.InputId;
             long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             long creation = input.CreateTime.Seconds;
-            if ((now - creation) >= ONE_DAY_IN_SECS)
+            if ((now - creation) >= TWO_HOURS_IN_SECS)
             {
                 await DeleteInput(id);
             }
