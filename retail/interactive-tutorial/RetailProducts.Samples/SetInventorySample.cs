@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_set_inventory]
-
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -105,7 +103,6 @@ public class SetInventorySample
         operation.PollUntilCompleted();
     }
 }
-// [END retail_set_inventory]
 
 /// <summary>
 /// The set inventory tutorial class.

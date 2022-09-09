@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_product_with_facet_spec]
-
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
@@ -111,7 +109,6 @@ public class SearchWithFacetSpecSample
         return searchResultPages;
     }
 }
-// [END retail_search_product_with_facet_spec]
 
 /// <summary>
 /// Search with facet spec tutorial.

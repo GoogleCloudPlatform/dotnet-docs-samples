@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_write_user_event]
 // Import user events into a catalog from inline source using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -102,7 +101,6 @@ public class WriteUserEventSample
         return userEvent;
     }
 }
-// [END retail_write_user_event]
 
 /// <summary>
 /// Write user event tutorial class.

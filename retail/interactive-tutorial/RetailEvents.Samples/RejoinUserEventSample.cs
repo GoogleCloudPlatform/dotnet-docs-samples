@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_rejoin_user_event]
 // Rejoin user events using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -113,7 +112,6 @@ public class RejoinUserEventSample
         return rejoinResponse;
     }
 }
-// [END retail_rejoin_user_event]
 
 /// <summary>
 /// The rejoin user event tutorial class.

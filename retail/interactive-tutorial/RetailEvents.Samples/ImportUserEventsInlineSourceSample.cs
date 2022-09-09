@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_import_user_events_from_inline_source]
 // Import user events into a catalog from inline source using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -122,7 +121,6 @@ public class ImportUserEventsInlineSourceSample
         return importResult;
     }
 }
-// [END retail_import_user_events_from_inline_source]
 
 /// <summary>
 /// The import user events inline source tutorial class.

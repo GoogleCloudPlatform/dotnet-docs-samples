@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_import_products_from_gcs]
 // Import products into a catalog from GCS using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -110,7 +109,6 @@ public class ImportProductsGcsSample
         return importResult;
     }
 }
-// [END retail_import_products_from_gcs]
 
 /// <summary>
 /// The import products GCS tutorial class.

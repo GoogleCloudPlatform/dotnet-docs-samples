@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_import_products_from_big_query]
 // Import products into a catalog from BigQuery table using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -100,7 +99,6 @@ public class ImportProductsBigQueryTableSample
         return importResult;
     }
 }
-// [END retail_import_products_from_big_query]
 
 /// <summary>
 /// The import products BigQuery table tutorial class.

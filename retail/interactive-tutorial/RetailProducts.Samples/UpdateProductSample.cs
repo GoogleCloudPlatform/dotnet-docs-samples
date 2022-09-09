@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_update_product]
 // Update product from a catalog using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -95,7 +94,6 @@ public class UpdateProductSample
         return updatedProduct;
     }
 }
-// [END retail_update_product]
 
 /// <summary>
 /// The update product tutorial class.
