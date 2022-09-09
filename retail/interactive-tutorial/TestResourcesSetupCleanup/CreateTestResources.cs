@@ -309,7 +309,7 @@ public static class CreateTestResourcesTutorial
     private static readonly string EventsTable = "events";
 
     private static readonly string InvalidProductTable = "products_some_invalid";
-    private static readonly string InvalidEventsTable = "user_events_some_invalid";
+    private static readonly string InvalidEventsTable = "events_some_invalid";
 
     private static readonly string productsBucketName = Environment.GetEnvironmentVariable("RETAIL_BUCKET_NAME");
     private static readonly string eventsBucketName = Environment.GetEnvironmentVariable("RETAIL_EVENTS_BUCKET_NAME");
