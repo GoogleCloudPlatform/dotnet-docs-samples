@@ -83,21 +83,20 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
         foreach (Slate slate in slates)
         {
             string id = slate.SlateName.SlateId;
-            DeleteSlate(id);
-            // string[] subs = id.Split('-');
-            // if (subs.Length > 0)
-            // {
-            //     string temp = subs[(subs.Length - 1)];
-            //     bool success = long.TryParse(temp, out long creation);
-            //     if (success)
-            //     {
-            //         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            //         if ((now - creation) >= TWO_HOURS_IN_SECS)
-            //         {
-            //             DeleteSlate(id);
-            //         }
-            //     }
-            // }
+            string[] subs = id.Split('-');
+            if (subs.Length > 0)
+            {
+                string temp = subs[(subs.Length - 1)];
+                bool success = long.TryParse(temp, out long creation);
+                if (success)
+                {
+                    long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    if ((now - creation) >= TWO_HOURS_IN_SECS)
+                    {
+                        DeleteSlate(id);
+                    }
+                }
+            }
         }
         // CDN keys don't include creation time information, so encode it
         // in the key name. CDN keys have a low quota limit, so we need to
@@ -106,21 +105,20 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
         foreach (CdnKey cdnKey in cdnKeys)
         {
             string id = cdnKey.CdnKeyName.CdnKeyId;
-            DeleteCdnKey(id);
-            // string[] subs = id.Split('-');
-            // if (subs.Length > 0)
-            // {
-            //     string temp = subs[(subs.Length - 1)];
-            //     bool success = long.TryParse(temp, out long creation);
-            //     if (success)
-            //     {
-            //         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            //         if ((now - creation) >= TWO_HOURS_IN_SECS)
-            //         {
-            //             DeleteCdnKey(id);
-            //         }
-            //     }
-            // }
+            string[] subs = id.Split('-');
+            if (subs.Length > 0)
+            {
+                string temp = subs[(subs.Length - 1)];
+                bool success = long.TryParse(temp, out long creation);
+                if (success)
+                {
+                    long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    if ((now - creation) >= TWO_HOURS_IN_SECS)
+                    {
+                        DeleteCdnKey(id);
+                    }
+                }
+            }
         }
     }
 
