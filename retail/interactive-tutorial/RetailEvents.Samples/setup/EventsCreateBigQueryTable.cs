@@ -20,7 +20,7 @@ public static class EventsCreateBigQueryTable
     private const string InvalidEventsFileName = "user_events_some_invalid.json";
     private const string EventsDataSet = "user_events";
     private const string EventsTable = "events";
-    private const string InvalidEventsTable = "user_events_some_invalid";
+    private const string InvalidEventsTable = "events_some_invalid";
     private const string EventsSchema = "events_schema.json";
 
     private static readonly string eventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{EventsFileName}");
