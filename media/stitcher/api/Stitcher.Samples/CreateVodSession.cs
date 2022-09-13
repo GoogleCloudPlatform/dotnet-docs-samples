@@ -30,7 +30,8 @@ public class CreateVodSessionSample
         CreateVodSessionRequest request = new CreateVodSessionRequest
         {
             ParentAsLocationName = LocationName.FromProjectLocation(projectId, location),
-            VodSession = new VodSession()
+            VodSession = new VodSession
+
             {
                 SourceUri = sourceUri,
                 AdTagUri = adTagUri
