@@ -14,34 +14,28 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_create_vod_session]
+// [START video_stitcher_get_live_ad_tag_detail]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
 
-public class CreateVodSessionSample
+public class GetLiveAdTagDetailSample
 {
-    public VodSession CreateVodSession(
-        string projectId, string location, string sourceUri, string adTagUri)
+    public LiveAdTagDetail GetLiveAdTagDetail(
+        string projectId, string location, string sessionId, string adTagDetailId)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        CreateVodSessionRequest request = new CreateVodSessionRequest
+        GetLiveAdTagDetailRequest request = new GetLiveAdTagDetailRequest
         {
-            ParentAsLocationName = LocationName.FromProjectLocation(projectId, location),
-            VodSession = new VodSession
-            {
-                SourceUri = sourceUri,
-                AdTagUri = adTagUri
-            }
+            LiveAdTagDetailName = LiveAdTagDetailName.FromProjectLocationLiveSessionLiveAdTagDetail(projectId, location, sessionId, adTagDetailId)
         };
 
         // Call the API.
-        VodSession session = client.CreateVodSession(request);
+        LiveAdTagDetail liveAdTagDetail = client.GetLiveAdTagDetail(request);
 
         // Return the result.
-        return session;
+        return liveAdTagDetail;
     }
 }
-// [END video_stitcher_create_vod_session]
+// [END video_stitcher_get_live_ad_tag_detail]
