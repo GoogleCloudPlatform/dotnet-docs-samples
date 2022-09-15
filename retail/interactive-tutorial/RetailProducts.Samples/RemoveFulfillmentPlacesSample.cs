@@ -36,8 +36,8 @@ public class RemoveFulfillmentPlaces
             PlaceIds = { "store0" }
         };
 
-        // To send an out-of-order request assign the invalid AddTime here:
-        // removeFulfillmentRequest.AddTime = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1));
+        // To send an out-of-order request assign the invalid RemoveTime here:
+        // removeFulfillmentRequest.RemoveTime = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1));
 
         Console.WriteLine("Remove fulfillment places request:");
         Console.WriteLine($"Product Name: {removeFulfillmentRequest.Product}");
