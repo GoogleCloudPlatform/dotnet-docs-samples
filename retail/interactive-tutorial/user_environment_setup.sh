@@ -29,21 +29,48 @@ trap 'failure' ERR
 project_id=$1
 echo "Project ID: $project_id"
 gcloud config set project "$project_id"
-export GOOGLE_PROJECT_ID=$GOOGLE_PROJECT_ID
 
-# Create service account.
-timestamp=$(date +%s)
-service_account_id="service-acc-$timestamp"
-echo "Service Account: $service_account_id"
-gcloud iam service-accounts create "$service_account_id"
+email=$(gcloud auth list --filter="status:ACTIVE account:$project_id.iam.gserviceaccount.com" --format="value(account)")
+echo $email
 
-# Assign necessary roles to your new service account.
-for role in {retail.admin,editor}
-do
-    gcloud projects add-iam-policy-binding "$project_id" --member="serviceAccount:$service_account_id@$project_id.iam.gserviceaccount.com" --role=roles/"${role}"
-done
-echo "Wait ~60 seconds to be sure the appropriate roles have been assigned to your service account"
-sleep 60
+# Check if user has service account active
+if [ -z "$email" ]
+then
+	# Create a new service account 
+    timestamp=$(date +%s)
+    service_account_id="service-acc-$timestamp"
+    echo "Service Account: $service_account_id"
+    gcloud iam service-accounts create "$service_account_id"
+else
+    service_account_id="${email%@*}"
+	# Log out of service account
+    gcloud auth revoke 2>/dev/null
+fi
+echo "$service_account_id"
+
+
+editor=$(gcloud projects get-iam-policy $project_id  \
+--flatten="bindings[].members" \
+--format='table(bindings.role)' \
+--filter="bindings.members:$service_account_id ROLE=roles/editor")
+
+retail_admin=$(gcloud projects get-iam-policy $project_id  \
+--flatten="bindings[].members" \
+--format='table(bindings.role)' \
+--filter="bindings.members:$service_account_id ROLE=roles/retail.admin")
+
+
+# Check if any of the needed roles is missing
+if [ -z "$editor" ] || [ -z "$retail_admin" ]
+then
+    # Assign necessary roles to your new service account.
+    for role in {retail.admin,editor}
+    do
+        gcloud projects add-iam-policy-binding "$project_id" --member="serviceAccount:$service_account_id@$project_id.iam.gserviceaccount.com" --role=roles/"${role}"
+    done
+    echo "Wait ~60 seconds to be sure the appropriate roles have been assigned to your service account"
+    sleep 60   
+fi
 
 # Upload your service account key file.
 service_acc_email="$service_account_id@$project_id.iam.gserviceaccount.com"
@@ -52,8 +79,6 @@ gcloud iam service-accounts keys create ~/key.json --iam-account "$service_acc_e
 # Activate the service account using the key.
 gcloud auth activate-service-account --key-file ~/key.json
 
-# Set the key as the GOOGLE_APPLICATION_CREDENTIALS environment.
-export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
 
 # Install necessary Google Cloud Retail libraries.
 for service_dir in \
