@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_for_products_with_page_size]
 // Call Retail API to search for a products in a catalog,
-// limit the number of the products per page and go to the next page using "next_page_token"
-// or jump to chosen page using "offset".
+// limit the number of the products per page and go to the next page using "NextPageToken"
+// or jump to chosen page using "Offset".
 
 using Google.Cloud.Retail.V2;
 using System;
@@ -33,8 +32,10 @@ public class SearchWithPageSizeSample
     /// <param name="query">The query.</param>
     /// <param name="pageSize">The size of the page.</param>
     /// <param name="projectId">The current project id.</param>
+    /// <param name="offset">The offset from which the search will start.</param>
+    /// <param name="nextPageToken">The next page token which will allow to obtain the next page of results.</param>
     /// <returns>The search request.</returns>
-    private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId)
+    private static SearchRequest GetSearchRequest(string query, int pageSize, string projectId, int offset = 0, string nextPageToken = "")
     {
         string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
@@ -44,9 +45,11 @@ public class SearchWithPageSizeSample
             VisitorId = "123456", // A unique identifier to track visitors
             Query = query,
             PageSize = pageSize,
+            PageToken = nextPageToken,
+            Offset = offset
         };
 
-        Console.WriteLine("Search. request:");
+        Console.WriteLine("Search request:");
         Console.WriteLine($"Placement: {searchRequest.Placement}");
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
@@ -70,9 +73,9 @@ public class SearchWithPageSizeSample
         SearchServiceClient client = SearchServiceClient.Create();
         SearchRequest searchRequest = GetSearchRequest(query, pageSize, projectId);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
-        SearchResponse firstPage = searchResultPages.FirstOrDefault();
+        SearchResponse firstPage = searchResultPages.First();
 
-        if (firstPage is null)
+        if (firstPage.TotalSize == 0)
         {
             Console.WriteLine("The search operation returned no matching results.");
         }
@@ -84,16 +87,23 @@ public class SearchWithPageSizeSample
             Console.WriteLine($"TotalSize: {firstPage.TotalSize},");
             Console.WriteLine("Items found in first page:");
 
+            int itemCount = 0;
             foreach (SearchResponse.Types.SearchResult item in firstPage)
             {
+                itemCount++;
+                Console.WriteLine($"Item {itemCount}: ");
                 Console.WriteLine(item);
+                Console.WriteLine();
             }
-        }
 
+            // Paste call with next page token here:
+
+            // Paste call with offset here:
+
+        }
         return searchResultPages;
     }
 }
-// [END retail_search_for_products_with_page_size]
 
 /// <summary>
 /// Search with page size tutorial.

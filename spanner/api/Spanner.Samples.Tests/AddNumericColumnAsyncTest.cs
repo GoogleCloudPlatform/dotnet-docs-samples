@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,11 +28,11 @@ public class AddNumericColumnAsyncTest
     [Fact]
     public async Task TestAddNumericColumnAsync()
     {
-        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-        CreateDatabaseAsyncSample sample = new CreateDatabaseAsyncSample();
-        await sample.CreateDatabaseAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
-        await _spannerFixture.CreateVenuesTableAndInsertDataAsync(databaseId);
-        AddNumericColumnAsyncSample addNumericColumnAsyncSample = new AddNumericColumnAsyncSample();
-        await addNumericColumnAsyncSample.AddNumericColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.CreateVenuesTableAndInsertDataAsync(databaseId);
+            AddNumericColumnAsyncSample addNumericColumnAsyncSample = new AddNumericColumnAsyncSample();
+            await addNumericColumnAsyncSample.AddNumericColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        });
     }
 }

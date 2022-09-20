@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_for_products_with_next_page_token]
 // Call Retail API to search for a products in a catalog,
 // limit the number of the products per page and go to the next page using "next_page_token"
 // or jump to chosen page using "offset".
@@ -20,6 +19,7 @@
 using Google.Api.Gax;
 using Google.Cloud.Retail.V2;
 using System;
+using System.Linq;
 
 /// <summary>
 /// Search with next page token sample class.
@@ -47,7 +47,7 @@ public class SearchWithNextPageTokenSample
             PageToken = nextPageToken
         };
 
-        Console.WriteLine("Search. request:");
+        Console.WriteLine("Search request:");
         Console.WriteLine($"Placement: {searchRequest.Placement}");
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
@@ -91,25 +91,29 @@ public class SearchWithNextPageTokenSample
         PagedEnumerable<SearchResponse, SearchResponse.Types.SearchResult> searchResultPages = client.Search(searchRequest);
         Page<SearchResponse.Types.SearchResult> singlePage = searchResultPages.ReadPage(pageSize);
 
-        if (singlePage is null)
+        if (!singlePage.Any())
         {
             Console.WriteLine("The search operation returned no matching results.");
+            Console.WriteLine();
         }
         else
         {
             Console.WriteLine($"NextPageToken: {singlePage.NextPageToken}");
             Console.WriteLine("Items found in page:");
 
+            int itemCount = 0;
             foreach (SearchResponse.Types.SearchResult item in singlePage)
             {
+                itemCount++;
+                Console.WriteLine($"Item {itemCount}: ");
                 Console.WriteLine(item);
+                Console.WriteLine();
             }
         }
 
         return singlePage;
     }
 }
-// [END retail_search_for_products_with_next_page_token]
 
 /// <summary>
 /// Search with next page token tutorial.

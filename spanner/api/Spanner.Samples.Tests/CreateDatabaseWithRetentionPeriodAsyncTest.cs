@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,12 +28,12 @@ public class CreateDatabaseWithRetentionPeriodAsyncTest
     [Fact]
     public async Task TestCreateDatabaseWithRetentionPeriodAsync()
     {
-        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var databaseId = _spannerFixture.GenerateTempDatabaseId();
+
         var sample = new CreateDatabaseWithRetentionPeriodAsyncSample();
         await sample.CreateDatabaseWithRetentionPeriodAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
         var databases = _spannerFixture.GetDatabases();
-        Assert.Contains(databases, d => d.DatabaseName.DatabaseId == databaseId);
-        var database = databases.Where(d => d.DatabaseName.DatabaseId == databaseId).FirstOrDefault();
-        Assert.Equal("7d", database.VersionRetentionPeriod);
+        Assert.Contains(databases, d => d.DatabaseName.DatabaseId == databaseId && d.VersionRetentionPeriod == "7d");
     }
 }

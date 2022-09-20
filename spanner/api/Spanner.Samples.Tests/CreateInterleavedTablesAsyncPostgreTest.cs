@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,7 +37,7 @@ public class CreateInterleavedTablesAsyncPostgreTest
         await _sample.CreateInterleavedTablesAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         //Assert.
-        var tables = await ListTableNamesAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var tables = await ListTableNamesAsync();
         Assert.Collection(tables.OrderBy(j => j),
             item1 => Assert.Equal("albums", item1),
             item2 => Assert.Equal("authors", item2),
@@ -46,13 +45,9 @@ public class CreateInterleavedTablesAsyncPostgreTest
             item4 => Assert.Equal("singers", item4));
     }
 
-    private async Task<List<string>> ListTableNamesAsync(string projectId, string instanceId, string databaseId)
+    private async Task<List<string>> ListTableNamesAsync()
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        using var connection = new SpannerConnection(connectionString);
-        await connection.OpenAsync();
-
-        var command = connection.CreateSelectCommand("SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema='public' OR table_schema=''");
+        var command = _spannerFixture.PgSpannerConnection.CreateSelectCommand("SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema='public' OR table_schema=''");
 
         var tableNames = new List<string>();
         using var reader = await command.ExecuteReaderAsync();

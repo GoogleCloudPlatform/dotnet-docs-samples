@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveStream.Samples", "LiveStream.Samples\LiveStream.Samples.csproj", "{B6A974FC-19C3-4B94-9269-A36D08370182}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveStream.Samples.Tests", "LiveStream.Samples.Tests\LiveStream.Samples.Tests.csproj", "{1F853F60-50D4-4CB6-AEC5-6A2243B4BA38}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6A974FC-19C3-4B94-9269-A36D08370182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6A974FC-19C3-4B94-9269-A36D08370182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6A974FC-19C3-4B94-9269-A36D08370182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6A974FC-19C3-4B94-9269-A36D08370182}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F853F60-50D4-4CB6-AEC5-6A2243B4BA38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F853F60-50D4-4CB6-AEC5-6A2243B4BA38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F853F60-50D4-4CB6-AEC5-6A2243B4BA38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F853F60-50D4-4CB6-AEC5-6A2243B4BA38}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

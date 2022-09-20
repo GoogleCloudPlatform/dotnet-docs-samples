@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,15 +28,15 @@ public class GetDatabaseDefaultLeaderFromInformationSchemaAsyncTest
     [Fact]
     public async Task TestGetDatabaseDefaultLeaderFromInformationSchemaAsync()
     {
-        var databaseId = $"my-db-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var databaseId = _spannerFixture.GenerateTempDatabaseId();
         var defaultLeader = "us-central1";
-        var sample = new CreateDatabaseWithDefaultLeaderAsyncSample();
-        var getDatabaseDefaultLeaderFromInformationSchemaAsyncSample = new GetDatabaseDefaultLeaderFromInformationSchemaAsyncSample();
 
         // Create Database with default leader
+        var sample = new CreateDatabaseWithDefaultLeaderAsyncSample();
         await sample.CreateDatabaseWithDefaultLeaderAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithMultiRegion, databaseId, defaultLeader);
 
         // Get Database default leader
+        var getDatabaseDefaultLeaderFromInformationSchemaAsyncSample = new GetDatabaseDefaultLeaderFromInformationSchemaAsyncSample();
         var leader = await getDatabaseDefaultLeaderFromInformationSchemaAsyncSample
             .GetDatabaseDefaultLeaderFromInformationSchemaAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithMultiRegion, databaseId);
 

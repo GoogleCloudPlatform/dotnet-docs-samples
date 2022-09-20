@@ -39,7 +39,7 @@ public class SetSubscriptionIamPolicySample
             ResourceAsResourceName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId),
             Policy = policy
         };
-        Policy response = publisher.SetIamPolicy(request);
+        Policy response = publisher.IAMPolicyClient.SetIamPolicy(request);
         return response;
     }
 }

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit;
 using Google.Cloud.Spanner.Admin.Database.V1;
-using Google.Cloud.Spanner.Common.V1;
 using System;
+using Xunit;
 
 [Collection(nameof(SpannerFixture))]
 public class CopyBackupTest
@@ -30,15 +29,13 @@ public class CopyBackupTest
     [Fact]
     public void CopyBackup()
     {
-        DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
-
         CopyBackupSample copyBackupSample = new CopyBackupSample();
         string source_Project_id = _spannerFixture.ProjectId;
         string source_Instance_id = _spannerFixture.InstanceId;
         string source_backupId = _spannerFixture.BackupId;
         string target_Project_id = _spannerFixture.ProjectId;
         string target_Instance_id = _spannerFixture.InstanceId;
-        string target_backupId = "test_" + Guid.NewGuid().ToString("N").Substring(0,16);
+        string target_backupId = SpannerFixture.GenerateId("test_", 16);
         DateTimeOffset expireTime = DateTimeOffset.UtcNow.AddHours(12);
 
         Backup backup = copyBackupSample.CopyBackup(source_Instance_id, source_Project_id, source_backupId, 

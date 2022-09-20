@@ -36,7 +36,12 @@ For instructions regarding development environment setup, please visit [the docu
 
 ## Style
 
-Samples in this repository follow the [framework coding
+The [Google Cloud Samples Style Guide][style-guide] is considered the primary
+guidelines for all Google Cloud samples. 
+
+[style-guide]: https://googlecloudplatform.github.io/samples-style-guide/
+
+Samples in this repository also follow the [framework coding
 style](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md).
 This is enforced using [CodeFormatter](https://github.com/dotnet/codeformatter).
 
