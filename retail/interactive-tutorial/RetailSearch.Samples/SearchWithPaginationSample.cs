@@ -24,7 +24,7 @@ using System.Linq;
 /// <summary>
 /// Search with page size sample class.
 /// </summary>
-public class SearchWithPageSizeSample
+public class SearchWithPaginationSample
 {
     /// <summary>
     /// Get search request.
@@ -108,13 +108,13 @@ public class SearchWithPageSizeSample
 /// <summary>
 /// Search with page size tutorial.
 /// </summary>
-public static class SearchWithPageSizeTutorial
+public static class SearchWithPaginationTutorial
 {
     [Runner.Attributes.Example]
     public static IEnumerable<SearchResponse> Search()
     {
         var projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        var sample = new SearchWithPageSizeSample();
+        var sample = new SearchWithPaginationSample();
         return sample.Search(projectId);
     }
 }

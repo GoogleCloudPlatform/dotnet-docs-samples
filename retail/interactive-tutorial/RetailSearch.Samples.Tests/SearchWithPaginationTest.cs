@@ -17,15 +17,15 @@ using Xunit;
 
 namespace RetailSearch.Samples.Tests
 {
-    public class SearchWithPageSizeTest
+    public class SearchWithPaginationTest
     {
         [Fact]
-        public void TestSearchWithPageSize()
+        public void TestSearchWithPagination()
         {
             const int pageSize = 6;
             const string ExpectedProductTitle = "Hoodie";
 
-            var firstPage = SearchWithPageSizeTutorial.Search().First();
+            var firstPage = SearchWithPaginationTutorial.Search().First();
 
             Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
             Assert.True(firstPage.Results.Count <= pageSize);
