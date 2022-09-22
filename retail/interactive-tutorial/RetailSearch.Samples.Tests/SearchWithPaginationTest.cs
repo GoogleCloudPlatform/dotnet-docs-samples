@@ -17,18 +17,18 @@ using Xunit;
 
 namespace RetailSearch.Samples.Tests
 {
-    public class SearchWithNextPageTokenTest
+    public class SearchWithPaginationTest
     {
         [Fact]
-        public void TestSearchWithNextPageToken()
+        public void TestSearchWithPagination()
         {
+            const int pageSize = 6;
             const string ExpectedProductTitle = "Hoodie";
 
-            var firstPage = SearchWithNextPageTokenTutorial.Search();
+            var firstPage = SearchWithPaginationTutorial.Search().First();
 
             Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
+            Assert.True(firstPage.Results.Count <= pageSize);
         }
     }
 }
-
-
