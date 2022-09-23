@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+using System;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class DeleteSlateTest
+    public class DeleteSlateTest : IDisposable
     {
         private StitcherFixture _fixture;
         private readonly CreateSlateSample _createSample;
@@ -38,6 +39,12 @@ namespace Stitcher.Samples.Tests
             _createSample.CreateSlate(
                 _fixture.ProjectId, _fixture.LocationId,
                 _slateId, _fixture.TestSlateUri);
+        }
+
+        [Fact]
+        public void Dispose()
+        {
+            _fixture.DeleteSlate(_slateId);
         }
 
         [Fact]

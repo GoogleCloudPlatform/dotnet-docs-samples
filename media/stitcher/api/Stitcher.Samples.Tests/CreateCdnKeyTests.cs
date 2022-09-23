@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+using System;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class CreateCdnKeyTest
+    public class CreateCdnKeyTest : IDisposable
     {
         private StitcherFixture _fixture;
         private readonly CreateCdnKeySample _createSample;
@@ -33,6 +34,13 @@ namespace Stitcher.Samples.Tests
             _createSample = new CreateCdnKeySample();
             _akamaiCdnKeyId = $"{_fixture.AkamaiCdnKeyIdPrefix}-{_fixture.TimestampId()}";
             _cloudCdnKeyId = $"{_fixture.CloudCdnKeyIdPrefix}-{_fixture.TimestampId()}";
+        }
+
+        [Fact]
+        public void Dispose()
+        {
+            _fixture.DeleteCdnKey(_akamaiCdnKeyId);
+            _fixture.DeleteCdnKey(_cloudCdnKeyId);
         }
 
         [Fact]
