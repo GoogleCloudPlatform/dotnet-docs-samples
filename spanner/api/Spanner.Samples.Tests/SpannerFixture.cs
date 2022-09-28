@@ -162,35 +162,6 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    public async Task<T> SafeCreateInstanceAsync<T>(Func<Task<T>> createInstanceAsync)
-    {
-        int attempt = 0;
-        do
-        {
-            try
-            {
-                attempt++;
-                return await createInstanceAsync();
-            }
-            catch(RpcException ex) when (attempt <= 10)
-            {
-                if (StatusCode.Unavailable == ex.StatusCode)
-                {
-                    await RecommendedDelayAsync(ex);
-                }
-                else if (StatusCode.ResourceExhausted == ex.StatusCode && ex.Status.Detail.Contains("requests per minute"))
-                {
-                    await RecommendedDelayAsync(ex, 60);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-        while (true);
-    }
-
     private async Task<bool> InitializeInstanceAsync()
     {
         InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
