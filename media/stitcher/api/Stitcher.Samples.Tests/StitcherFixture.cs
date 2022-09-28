@@ -18,6 +18,7 @@ using Google.Cloud.Video.Stitcher.V1;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Xunit;
@@ -187,5 +188,24 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
         {
             return await response.Content.ReadAsStringAsync();
         }
+    }
+
+    public async Task GetManifestAndRendition(string playUri)
+    {
+        // To get ad tag details, you need to make a request to the main manifest and
+        // a rendition first. This supplies media player information to the API.
+        //
+        // Curl the playUri first. The last line of the response will contain a
+        // renditions location. Curl the live session name with the rendition
+        // location appended.
+        string renditions = await GetHttpResponse(playUri);
+        Match m = Regex.Match(renditions, "renditions/.*", RegexOptions.IgnoreCase);
+
+        // playUri will be in the following format:
+        // https://videostitcher.googleapis.com/v1/projects/{project}/locations/{location}/liveSessions/{session-id}/manifest.m3u8?signature=...
+        // Replace manifest.m3u8?signature=... with the renditions location.
+        string tmp = playUri.Substring(0, playUri.LastIndexOf("/"));
+        string stitchedUrl = $"{tmp}/{m.Value}";
+        await GetHttpResponse(stitchedUrl); // Curl the live session name with rendition
     }
 }

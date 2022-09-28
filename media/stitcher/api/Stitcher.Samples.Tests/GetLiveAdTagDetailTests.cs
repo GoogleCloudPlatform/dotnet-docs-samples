@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -46,21 +45,7 @@ namespace Stitcher.Samples.Tests
         }
         public async Task InitializeAsync()
         {
-            // To get ad tag details, you need to make a request to the main manifest and
-            // a rendition first. This supplies media player information to the API.
-            //
-            // Curl the playUri first. The last line of the response will contain a
-            // renditions location. Curl the live session name with the rendition
-            // location appended.
-            string renditions = await _fixture.GetHttpResponse(_playUri);
-            Match m = Regex.Match(renditions, "renditions/.*", RegexOptions.IgnoreCase);
-
-            // playUri will be in the following format:
-            // https://videostitcher.googleapis.com/v1/projects/{project}/locations/{location}/liveSessions/{session-id}/manifest.m3u8?signature=...
-            // Replace manifest.m3u8?signature=... with the renditions location.
-            string tmp = _playUri.Substring(0, _playUri.LastIndexOf("/"));
-            string stitchedUrl = $"{tmp}/{m.Value}";
-            await _fixture.GetHttpResponse(stitchedUrl); // Curl the live session name with rendition
+            await _fixture.GetManifestAndRendition(_playUri);
 
             var adTagDetails = _listSample.ListLiveAdTagDetails(_fixture.ProjectId, _fixture.LocationId, _liveSessionId);
             // Only one adTagDetail in list.
