@@ -41,7 +41,6 @@ namespace Stitcher.Samples.Tests
                 _slateId, _fixture.TestSlateUri);
         }
 
-        [Fact]
         public void Dispose()
         {
             _fixture.DeleteSlate(_slateId);

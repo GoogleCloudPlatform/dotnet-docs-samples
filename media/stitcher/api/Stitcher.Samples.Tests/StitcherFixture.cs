@@ -60,6 +60,8 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
     private readonly ListCdnKeysSample _listCdnKeysSample = new ListCdnKeysSample();
     private readonly DeleteCdnKeySample _deleteCdnKeySample = new DeleteCdnKeySample();
 
+    private HttpClient httpClient;
+
     public StitcherFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -77,6 +79,8 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
         TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{TimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
         TestCloudCdnKey = _createCdnKeySample.CreateCdnKey(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, CloudCdnKeyName, CloudCdnTokenKey, null);
+
+        httpClient = new HttpClient();
     }
 
     public void CleanOutdatedResources()
@@ -140,6 +144,7 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
         {
             DeleteCdnKey(id);
         }
+        httpClient.Dispose();
     }
 
     public void DeleteSlate(string id)
@@ -178,12 +183,9 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
 
     public async Task<String> GetHttpResponse(string url)
     {
-        using (var httpClient = new HttpClient())
+        using (var response = await httpClient.GetAsync(url))
         {
-            using (var response = await httpClient.GetAsync(url))
-            {
-                return await response.Content.ReadAsStringAsync();
-            }
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

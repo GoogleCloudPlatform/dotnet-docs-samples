@@ -41,7 +41,6 @@ namespace Stitcher.Samples.Tests
                 _cdnKeyId, _fixture.Hostname, _fixture.CloudCdnKeyName, _fixture.CloudCdnTokenKey, null);
         }
 
-        [Fact]
         public void Dispose()
         {
             _fixture.DeleteCdnKey(_cdnKeyId);

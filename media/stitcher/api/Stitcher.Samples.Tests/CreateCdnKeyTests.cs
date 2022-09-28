@@ -36,7 +36,6 @@ namespace Stitcher.Samples.Tests
             _cloudCdnKeyId = $"{_fixture.CloudCdnKeyIdPrefix}-{_fixture.TimestampId()}";
         }
 
-        [Fact]
         public void Dispose()
         {
             _fixture.DeleteCdnKey(_akamaiCdnKeyId);

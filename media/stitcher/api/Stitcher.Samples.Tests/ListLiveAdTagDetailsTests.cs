@@ -40,23 +40,18 @@ namespace Stitcher.Samples.Tests
                _fixture.ProjectId, _fixture.LocationId, _fixture.LiveSourceUri, _fixture.LiveAdTagUri, _fixture.TestSlateId);
             _liveSessionId = result.LiveSessionName.LiveSessionId;
             _playUri = result.PlayUri;
-
-            Assert.NotNull(_playUri);
         }
 
         public async Task InitializeAsync()
         {
-            // To get ad tag details, you need to curl the main manifest and
+            // To get ad tag details, you need to make a request to the main manifest and
             // a rendition first. This supplies media player information to the API.
             //
             // Curl the playUri first. The last line of the response will contain a
             // renditions location. Curl the live session name with the rendition
             // location appended.
             string renditions = await _fixture.GetHttpResponse(_playUri);
-            Assert.NotNull(renditions);
-
             Match m = Regex.Match(renditions, "renditions/.*", RegexOptions.IgnoreCase);
-            Assert.True(m.Success);
 
             // playUri will be in the following format:
             // https://videostitcher.googleapis.com/v1/projects/{project}/locations/{location}/liveSessions/{session-id}/manifest.m3u8?signature=...

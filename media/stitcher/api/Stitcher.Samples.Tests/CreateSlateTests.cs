@@ -34,7 +34,6 @@ namespace Stitcher.Samples.Tests
             _slateId = $"{_fixture.SlateIdPrefix}-{_fixture.TimestampId()}";
         }
 
-        [Fact]
         public void Dispose()
         {
             _fixture.DeleteSlate(_slateId);
