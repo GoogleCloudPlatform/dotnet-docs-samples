@@ -6,6 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Functions.Hosting" Version="1.0.0" />
-    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0" />
+    <PackageReference Include="Google.Events.Protobuf" Version="1.2.0" />
   </ItemGroup>
 </Project>

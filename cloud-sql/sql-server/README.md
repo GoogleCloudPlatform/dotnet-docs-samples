@@ -119,7 +119,7 @@ Finally, run the application by clicking the arrow button in the main toolbar, o
     PS > dotnet publish
     PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
     ```
-        #### Bash
+    #### Bash
     ```bash
     dotnet restore
     dotnet publish

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_crud_product]
-
 using Google.Cloud.Retail.V2;
 using System;
 
@@ -183,7 +181,6 @@ public class CrudProductSample
         Console.WriteLine();
     }
 }
-// [END retail_crud_product]
 
 /// <summary>
 /// The crud product tutorial class.

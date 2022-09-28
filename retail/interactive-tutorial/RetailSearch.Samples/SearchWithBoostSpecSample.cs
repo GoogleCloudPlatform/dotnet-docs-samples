@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_search_product_with_boost_spec]
 // Calls the Retail API to search for products in a catalog and reranks the
 // results boosting or burying the products that matched a given condition.
 
@@ -57,7 +56,7 @@ public class SearchWithBoostSpecSample
             }
         };
 
-        Console.WriteLine("Search. request:");
+        Console.WriteLine("Search request:");
         Console.WriteLine($"Placement: {searchRequest.Placement}");
         Console.WriteLine($"Query: {searchRequest.Query}");
         Console.WriteLine($"VisitorId: {searchRequest.VisitorId}");
@@ -83,9 +82,9 @@ public class SearchWithBoostSpecSample
         SearchServiceClient client = SearchServiceClient.Create();
         SearchRequest searchRequest = GetSearchRequest(query, condition, boost, projectId);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
-        SearchResponse firstPage = searchResultPages.FirstOrDefault();
+        SearchResponse firstPage = searchResultPages.First();
 
-        if (firstPage is null)
+        if (firstPage.TotalSize == 0)
         {
             Console.WriteLine("The search operation returned no matching results.");
         }
@@ -97,16 +96,19 @@ public class SearchWithBoostSpecSample
             Console.WriteLine($"TotalSize: {firstPage.TotalSize},");
             Console.WriteLine("Items found in first page:");
 
+            int itemCount = 0;
             foreach (SearchResponse.Types.SearchResult item in firstPage)
             {
+                itemCount++;
+                Console.WriteLine($"Item {itemCount}: ");
                 Console.WriteLine(item);
+                Console.WriteLine();
             }
         }
 
         return searchResultPages;
     }
 }
-// [END retail_search_product_with_boost_spec]
 
 /// <summary>
 /// Search with boost spec tutorial.

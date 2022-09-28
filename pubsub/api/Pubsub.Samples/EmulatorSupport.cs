@@ -50,22 +50,22 @@ public class EmulatorSupportSample
         SubscriptionName subscriptionName = new SubscriptionName(projectId, subscriptionId);
         subscriberService.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 60);
 
-        // Create the PublisherClient using PublisherClient.ClientCreationSettings
-        // and call the WithEmulatorDection method.
-        PublisherClient publisher = await PublisherClient.CreateAsync(
-            topicName, 
-            new PublisherClient.ClientCreationSettings()
-                .WithEmulatorDetection(EmulatorDetection.EmulatorOrProduction));
+        // Create the PublisherClient using PublisherClientBuilder to set the EmulatorDetection property.
+        PublisherClient publisher = await new PublisherClientBuilder
+        {
+            TopicName = topicName,
+            EmulatorDetection = EmulatorDetection.EmulatorOrProduction
+        }.BuildAsync();
         // Use the client as you'd normally do, to send a message in this example.
         await publisher.PublishAsync("Hello, Pubsub");
         await publisher.ShutdownAsync(TimeSpan.FromSeconds(15));
 
-        // Create the SubscriberClient using SubscriberClient.ClientCreationSettings
-        // and call the WithEmulatorDection method.
-        SubscriberClient subscriber = await SubscriberClient.CreateAsync(
-            subscriptionName,
-            new SubscriberClient.ClientCreationSettings()
-                .WithEmulatorDetection(EmulatorDetection.EmulatorOrProduction));
+        // Create the SubscriberClient using SubscriberClientBuild to set the EmulatorDetection property.
+        SubscriberClient subscriber = await new SubscriberClientBuilder
+        {
+            SubscriptionName = subscriptionName,
+            EmulatorDetection = EmulatorDetection.EmulatorOrProduction
+        }.BuildAsync();
         List<PubsubMessage> receivedMessages = new List<PubsubMessage>();
 
         // Use the client as you'd normally do, to listen for messages in this example.

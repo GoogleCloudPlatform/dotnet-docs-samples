@@ -32,9 +32,13 @@ public class PublishOrderedMessagesAsyncSample
             EnableMessageOrdering = true
         };
 
-        // Sending messages to the same region ensures they are received in order even when multiple publishers are used.
-        var clientCreationSettings = new PublisherClient.ClientCreationSettings(serviceEndpoint: "us-east1-pubsub.googleapis.com:443");
-        PublisherClient publisher = await PublisherClient.CreateAsync(topicName, clientCreationSettings, customSettings);
+        PublisherClient publisher = await new PublisherClientBuilder
+        {
+            TopicName = topicName,
+            // Sending messages to the same region ensures they are received in order even when multiple publishers are used.
+            Endpoint = "us-east1-pubsub.googleapis.com:443",
+            Settings = customSettings
+        }.BuildAsync();
 
         int publishedMessageCount = 0;
         var publishTasks = keysAndMessages.Select(async keyAndMessage =>

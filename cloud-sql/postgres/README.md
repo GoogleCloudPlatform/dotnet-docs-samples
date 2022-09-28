@@ -193,9 +193,81 @@ For more details about using Cloud Run see http://cloud.run.
     PS > dotnet publish
     PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.1\publish\app.yaml
     ```
-        #### Bash
+    #### Bash
     ```bash
     dotnet restore
     dotnet publish
     gcloud beta app deploy ./bin/Debug/netcoreapp2.1/publish/app.yaml
+    ```
+
+## Configure SSL Certificates
+For deployments that connect directly to a Cloud SQL instance with TCP,
+without using the Cloud SQL Proxy,
+configuring SSL certificates will ensure the connection is encrypted. 
+1. Use the gcloud CLI to [download the server certificate](https://cloud.google.com/sql/docs/mysql/configure-ssl-instance#server-certs) for your Cloud SQL instance. Replace INSTANCE_NAME with the name of your Cloud SQL instance.
+    - Get information about the service certificate:
+        ```
+        gcloud beta sql ssl server-ca-certs list --instance=INSTANCE_NAME
+        ```
+    - Create a server certificate:
+        ```
+        gcloud beta sql ssl server-ca-certs create --instance=INSTANCE_NAME
+        ```
+    - Download the certificate information to a local PEM file
+        ```
+        gcloud beta sql ssl server-ca-certs list --format="value(cert)" --instance=INSTANCE_NAME > certs/server-ca.pem
+        ```
+
+1. Use the gcloud CLI to [create and download a client public key certificate and client private key](https://cloud.google.com/sql/docs/mysql/configure-ssl-instance#client-certs).  Replace INSTANCE_NAME with the name of your Cloud SQL instance and replace CERT_NAME with certificate name of your choice.
+    - Create a client certificate using the ssl client-certs create command:
+        ```
+        gcloud sql ssl client-certs create CERT_NAME certs/client-key.pem --instance=INSTANCE_NAME
+        ```
+    - Retrieve the public key for the certificate you just created and copy it into the client-cert.pem file with the ssl client-certs describe command:
+        ```
+        gcloud sql ssl client-certs describe CERT_NAME --instance=INSTANCE_NAME --format="value(cert)" > certs/client-cert.pem
+        ```
+
+1. Add SSL server certificate on client computer.
+    - Linux (Debian)
+        ```
+        sudo cp certs/server-ca.pem /usr/local/share/ca-certificates/server-ca-mysql.crt
+        sudo update-ca-certificates
+        ```
+    - Windows
+        
+        1. Click the **Start** menu and type **mmc**.
+        2. Select the **mmc** application to open it.
+        3. Click the **File** menu and select **Add/Remove Snap-in**.
+        4. Select the **Certificates** and click **Add >**.
+        5. In the **Certficates Snap-in" dialog window, select **Computer account** and click **Next**.
+        6. In the **Select Computer** dialog window with **Local computer** selected, click **Finish**.
+        7. Click **OK** to complete the process of adding the **Certificates** Snap-in.
+        8. Expand the **Certificates (Local Computer)** Snap-in item and then expand the **Trusted Root Certification Authorities** item. 
+        9. Right-click the **Certificates** item (that appears below the **Trusted Root Certification Authorities** item) and select **All Tasks > Import**. 
+        10. In the **Certificate Import Wizard** dialog window, click **Next**.
+        11. Click the **Browse** button.
+        12. In the **Open** file dialog window, change the file type from **X.509 Certifcate (*.cer,*.crt)** to be **All Files (*.*)**.
+        13. Browse to and select the **server-ca.pem** file that you created in a previous step and then click **Open**.
+        14. Click **Next** in the **Certificate Import Wizard > File to Import** dialog window.
+        14. With **Place all certificates in the following store** selected and **Trusted Root Certification Authorities** specified as the **Certifcate store**, click **Next** in the **Certificate Import Wizard > Certificate Store** dialog window.
+        15. Click **Finish** to import the server certificate. 
+        16. You will see a dialog window that confirms the certificate import was successful. Click **OK**.
+
+
+1. Use openssl to combine the client SSL certificate and key into a .pfx file.
+   ```
+   openssl pkcs12 -export -in certs/client-cert.pem -inkey certs/client-key.pem -certfile certs/server-ca.pem -out certs/client.pfx
+   ```
+
+1. Specify the .pfx file as the client certifcate via Environment variable:
+
+    #### Linux
+    ```
+    export DB_CERT='certs/client.pfx'
+    ```
+
+    #### Windows/PowerShell
+    ```
+    $env:DB_CERT="certs/client.pfx"
     ```

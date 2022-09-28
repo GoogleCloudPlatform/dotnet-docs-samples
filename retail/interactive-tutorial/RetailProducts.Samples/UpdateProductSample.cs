@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_update_product]
 // Update product from a catalog using Retail API
 
 using Google.Cloud.Retail.V2;
+using Google.Protobuf.WellKnownTypes;
 using System;
 
 /// <summary>
@@ -59,6 +59,10 @@ public class UpdateProductSample
         Console.WriteLine($"Product Title: {productToUpdate.Title}");
         Console.WriteLine($"Product Categories: {productToUpdate.Categories}");
         Console.WriteLine($"Product Brands: {productToUpdate.Brands}");
+        Console.WriteLine($"Product Availability: {productToUpdate.Availability}");
+        Console.WriteLine($"Product Price: {productToUpdate.PriceInfo.Price}");
+        Console.WriteLine($"Product OriginalPrice: {productToUpdate.PriceInfo.OriginalPrice}");
+        Console.WriteLine($"Product CurrencyCode: {productToUpdate.PriceInfo.CurrencyCode}");
         Console.WriteLine();
 
         return updateProductRequest;
@@ -76,13 +80,20 @@ public class UpdateProductSample
         ProductServiceClient client = ProductServiceClient.Create();
         Product updatedProduct = client.UpdateProduct(updateProductRequest);
 
-        Console.WriteLine($"Updated title: {updatedProduct.Title}");
+        Console.WriteLine("Updated product:");
+        Console.WriteLine($"Updated Name: {updatedProduct.Name}");
+        Console.WriteLine($"Updated Title: {updatedProduct.Title}");
+        Console.WriteLine($"Updated Categories: {updatedProduct.Categories}");
+        Console.WriteLine($"Updated Brands: {updatedProduct.Brands}");
+        Console.WriteLine($"Updated Availability: {updatedProduct.Availability}");
+        Console.WriteLine($"Updated Price: {updatedProduct.PriceInfo.Price}");
+        Console.WriteLine($"Updated OriginalPrice: {updatedProduct.PriceInfo.OriginalPrice}");
+        Console.WriteLine($"Updated CurrencyCode: {updatedProduct.PriceInfo.CurrencyCode}");
         Console.WriteLine();
 
         return updatedProduct;
     }
 }
-// [END retail_update_product]
 
 /// <summary>
 /// The update product tutorial class.

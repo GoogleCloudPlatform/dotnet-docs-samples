@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_rejoin_user_event]
 // Rejoin user events using Retail API
 
 using Google.Cloud.Retail.V2;
@@ -113,7 +112,6 @@ public class RejoinUserEventSample
         return rejoinResponse;
     }
 }
-// [END retail_rejoin_user_event]
 
 /// <summary>
 /// The rejoin user event tutorial class.
@@ -127,7 +125,7 @@ public static class RejoinUserEventTutorial
         string defaultCatalog = $"projects/{projectId}/locations/global/catalogs/default_catalog";
 
         // To check the error handling try to pass invalid catalog:
-        // defaultCatalog = "projects/{projectId}/locations/global/catalogs/invalid_catalog";
+        // defaultCatalog = $"projects/{projectId}/locations/global/catalogs/invalid_catalog";
 
         WriteUserEventSample.CallWriteUserEvent(defaultCatalog);
 

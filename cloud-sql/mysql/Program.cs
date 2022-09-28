@@ -15,14 +15,12 @@
  */
 
 using CloudSql.Settings;
-using Google.Cloud.Diagnostics.AspNetCore;
+using Google.Cloud.Diagnostics.AspNetCore3;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using MySql.Data.MySqlClient;
 using System;
-using System.Data.Common;
 using System.IO;
 
 namespace CloudSql
@@ -43,10 +41,11 @@ namespace CloudSql
             ReadAppSettings();
 
             return WebHost.CreateDefaultBuilder(args)
-                .UseGoogleDiagnostics(
-                    AppSettings.GoogleCloudSettings.ProjectId,
-                    AppSettings.GoogleCloudSettings.ServiceName,
-                    AppSettings.GoogleCloudSettings.Version)
+                .ConfigureServices(services =>
+                    services.AddGoogleDiagnosticsForAspNetCore(
+                        AppSettings.GoogleCloudSettings.ProjectId,
+                        AppSettings.GoogleCloudSettings.ServiceName,
+                        AppSettings.GoogleCloudSettings.Version))
                 .UseStartup<Startup>()
                 .UsePortEnvironmentVariable();
         }

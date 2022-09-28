@@ -32,7 +32,11 @@ public class ResumePublishSample
             EnableMessageOrdering = true
         };
 
-        PublisherClient publisher = await PublisherClient.CreateAsync(topicName, settings: customSettings);
+        PublisherClient publisher = await new PublisherClientBuilder
+        {
+            TopicName = topicName,
+            Settings = customSettings
+        }.BuildAsync();
 
         int publishedMessageCount = 0;
         var publishTasks = keysAndMessages.Select(async keyAndMessage =>

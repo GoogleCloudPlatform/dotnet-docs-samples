@@ -15,14 +15,12 @@
  */
 
 using CloudSql.Settings;
-using Google.Cloud.Diagnostics.AspNetCore;
+using Google.Cloud.Diagnostics.AspNetCore3;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using System;
-using System.Data.Common;
-using System.Data.SqlClient;
 using System.IO;
 
 namespace CloudSql
@@ -41,13 +39,15 @@ namespace CloudSql
         public static IWebHostBuilder BuildWebHost(string[] args) 
         {
             ReadAppSettings();
-            
+
             return WebHost.CreateDefaultBuilder(args)
-                    .UseGoogleDiagnostics(AppSettings.GoogleCloudSettings.ProjectId,
-                        AppSettings.GoogleCloudSettings.ServiceName,
-                        AppSettings.GoogleCloudSettings.Version)
-                .UseStartup<Startup>()
-                .UsePortEnvironmentVariable();
+                     .ConfigureServices(services =>
+                         services.AddGoogleDiagnosticsForAspNetCore(
+                             AppSettings.GoogleCloudSettings.ProjectId,
+                             AppSettings.GoogleCloudSettings.ServiceName,
+                             AppSettings.GoogleCloudSettings.Version))
+                    .UseStartup<Startup>()
+                    .UsePortEnvironmentVariable();
         }
 
         /// <summary>
