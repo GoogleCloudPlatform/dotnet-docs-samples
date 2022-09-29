@@ -37,14 +37,14 @@ namespace Stitcher.Samples.Tests
             _createSample = new CreateLiveSessionSample();
             _getSample = new GetLiveAdTagDetailSample();
             _listSample = new ListLiveAdTagDetailsSample();
-
+        }
+        public async Task InitializeAsync()
+        {
             var session = _createSample.CreateLiveSession(
                _fixture.ProjectId, _fixture.LocationId, _fixture.LiveSourceUri, _fixture.LiveAdTagUri, _fixture.TestSlateId);
             _liveSessionId = session.LiveSessionName.LiveSessionId;
             _playUri = session.PlayUri;
-        }
-        public async Task InitializeAsync()
-        {
+
             await _fixture.GetManifestAndRendition(_playUri);
 
             var adTagDetails = _listSample.ListLiveAdTagDetails(_fixture.ProjectId, _fixture.LocationId, _liveSessionId);
