@@ -38,6 +38,12 @@ public class ListInstanceConfigsSample
             {
                 Console.WriteLine(leader);
             }
+
+            Console.WriteLine($"Available optional replica for instance config {instanceConfig.InstanceConfigName.InstanceConfigId}:");
+            foreach (var optionalReplica in instanceConfig.OptionalReplicas)
+            {
+                Console.WriteLine($"Replica type - {optionalReplica.Type}, default leader location - {optionalReplica.DefaultLeaderLocation}, location - {optionalReplica.Location}");
+            }
         }
         return instanceConfigs;
     }

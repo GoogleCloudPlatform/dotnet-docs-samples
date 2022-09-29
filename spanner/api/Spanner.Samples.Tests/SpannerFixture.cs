@@ -40,6 +40,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public string BackupDatabaseId { get; } = "my-test-database";
     public string BackupId { get; } = "my-test-database-backup";
+    public string CreateCustomInstanceConfigId { get; } = $"custom-name-create-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string UpdateCustomInstanceConfigId { get; } = $"custom-name-update-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+    public string DeleteCustomInstanceConfigId { get; } = $"custom-name-delete-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     public string ToBeCancelledBackupId { get; } = GenerateId("my-backup-");
     public string RestoredDatabaseId { get; private set; }
 
@@ -121,6 +124,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             cleanupTasks.Add(DeleteBackupAsync(ToBeCancelledBackupId));
             cleanupTasks.Add(DeleteBackupAsync(EncryptedBackupId));
 
+            DeleteInstanceConfig(CreateCustomInstanceConfigId);
+            DeleteInstanceConfig(UpdateCustomInstanceConfigId);
+            DeleteInstanceConfig(DeleteCustomInstanceConfigId);
+
             foreach(string id in TempDbIds)
             {
                 cleanupTasks.Add(DeleteDatabaseAsync(id));
@@ -133,6 +140,24 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             AdminSpannerConnection?.Dispose();
             SpannerConnection?.Dispose();
             PgSpannerConnection?.Dispose();
+        }
+    }
+
+    private void DeleteInstanceConfig(string instanceConfigId)
+    {
+        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        var instanceConfigName = new InstanceConfigName(ProjectId, instanceConfigId);
+
+        try
+        {
+            instanceAdminClient.DeleteInstanceConfig(new DeleteInstanceConfigRequest
+            {
+                InstanceConfigName = instanceConfigName
+            });
+        }
+        catch (Exception)
+        {
+            // Silently ignore errors to prevent tests from failing.
         }
     }
 
