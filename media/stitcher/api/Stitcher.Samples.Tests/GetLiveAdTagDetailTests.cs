@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -49,10 +50,7 @@ namespace Stitcher.Samples.Tests
 
             var adTagDetails = _listSample.ListLiveAdTagDetails(_fixture.ProjectId, _fixture.LocationId, _liveSessionId);
             // Only one adTagDetail in list.
-            foreach (Google.Cloud.Video.Stitcher.V1.LiveAdTagDetail adTagDetail in adTagDetails)
-            {
-                _adTagDetailId = adTagDetail.LiveAdTagDetailName.LiveAdTagDetailId;
-            }
+            _adTagDetailId = adTagDetails.First().LiveAdTagDetailName.LiveAdTagDetailId;
         }
 
         public async Task DisposeAsync()
