@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_create_slate]
+// [START videostitcher_create_slate]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
@@ -44,4 +44,4 @@ public class CreateSlateSample
         return slate;
     }
 }
-// [END video_stitcher_create_slate]
+// [END videostitcher_create_slate]

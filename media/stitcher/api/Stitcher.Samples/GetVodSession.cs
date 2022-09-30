@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_get_vod_session]
+// [START videostitcher_get_vod_session]
 
 using Google.Cloud.Video.Stitcher.V1;
 
@@ -38,4 +38,4 @@ public class GetVodSessionSample
         return session;
     }
 }
-// [END video_stitcher_get_vod_session]
+// [END videostitcher_get_vod_session]

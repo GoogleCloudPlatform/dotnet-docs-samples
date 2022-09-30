@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_get_live_ad_tag_detail]
+// [START videostitcher_get_live_ad_tag_detail]
 
 using Google.Cloud.Video.Stitcher.V1;
 
@@ -38,4 +38,4 @@ public class GetLiveAdTagDetailSample
         return liveAdTagDetail;
     }
 }
-// [END video_stitcher_get_live_ad_tag_detail]
+// [END videostitcher_get_live_ad_tag_detail]

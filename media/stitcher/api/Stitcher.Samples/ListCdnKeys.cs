@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_list_cdn_keys]
+// [START videostitcher_list_cdn_keys]
 
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
@@ -40,4 +40,4 @@ public class ListCdnKeysSample
         return response;
     }
 }
-// [END video_stitcher_list_cdn_keys]
+// [END videostitcher_list_cdn_keys]

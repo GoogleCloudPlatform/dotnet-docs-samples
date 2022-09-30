@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_get_slate]
+// [START videostitcher_get_slate]
 
 using Google.Cloud.Video.Stitcher.V1;
 
@@ -38,4 +38,4 @@ public class GetSlateSample
         return response;
     }
 }
-// [END video_stitcher_get_slate]
+// [END videostitcher_get_slate]

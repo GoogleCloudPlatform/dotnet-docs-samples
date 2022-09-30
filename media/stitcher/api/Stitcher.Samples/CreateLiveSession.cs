@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_create_live_session]
+// [START videostitcher_create_live_session]
 
 using Google.Cloud.Video.Stitcher.V1;
 
@@ -49,4 +49,4 @@ public class CreateLiveSessionSample
         return session;
     }
 }
-// [END video_stitcher_create_live_session]
+// [END videostitcher_create_live_session]

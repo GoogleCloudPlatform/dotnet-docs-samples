@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_update_slate]
+// [START videostitcher_update_slate]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
 using Google.Protobuf.WellKnownTypes;
 
@@ -45,4 +44,4 @@ public class UpdateSlateSample
         return slate;
     }
 }
-// [END video_stitcher_update_slate]
+// [END videostitcher_update_slate]
