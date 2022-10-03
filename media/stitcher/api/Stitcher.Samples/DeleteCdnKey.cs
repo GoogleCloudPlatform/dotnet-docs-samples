@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_delete_cdn_key]
+// [START videostitcher_delete_cdn_key]
 
 using Google.Cloud.Video.Stitcher.V1;
 
@@ -35,4 +35,4 @@ public class DeleteCdnKeySample
         client.DeleteCdnKey(request);
     }
 }
-// [END video_stitcher_delete_cdn_key]
+// [END videostitcher_delete_cdn_key]

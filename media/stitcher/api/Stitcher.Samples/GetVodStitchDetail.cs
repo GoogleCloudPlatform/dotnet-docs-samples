@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_get_vod_stitch_detail]
+// [START videostitcher_get_vod_stitch_detail]
 
 using Google.Cloud.Video.Stitcher.V1;
 
@@ -38,4 +38,4 @@ public class GetVodStitchDetailSample
         return vodStitchDetail;
     }
 }
-// [END video_stitcher_get_vod_stitch_detail]
+// [END videostitcher_get_vod_stitch_detail]

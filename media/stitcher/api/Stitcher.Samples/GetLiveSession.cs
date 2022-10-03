@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-// [START videostitcher_delete_slate]
+// [START videostitcher_get_live_session]
 
 using Google.Cloud.Video.Stitcher.V1;
 
-public class DeleteSlateSample
+public class GetLiveSessionSample
 {
-    public void DeleteSlate(
-        string projectId, string location, string slateId)
+    public LiveSession GetLiveSession(
+        string projectId, string location, string sessionId)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        DeleteSlateRequest request = new DeleteSlateRequest
+        GetLiveSessionRequest request = new GetLiveSessionRequest
         {
-            SlateName = SlateName.FromProjectLocationSlate(projectId, location, slateId)
+            LiveSessionName = LiveSessionName.FromProjectLocationLiveSession(projectId, location, sessionId)
         };
 
         // Call the API.
-        client.DeleteSlate(request);
+        LiveSession session = client.GetLiveSession(request);
+
+        // Return the result.
+        return session;
     }
 }
-// [END videostitcher_delete_slate]
+// [END videostitcher_get_live_session]

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_update_cdn_key]
+// [START videostitcher_update_cdn_key]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -68,4 +67,4 @@ public class UpdateCdnKeySample
         return newCdnKey;
     }
 }
-// [END video_stitcher_update_cdn_key]
+// [END videostitcher_update_cdn_key]

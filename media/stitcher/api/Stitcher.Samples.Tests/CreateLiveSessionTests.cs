@@ -14,40 +14,31 @@
  * limitations under the License.
  */
 
-using System;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class CreateSlateTest : IDisposable
+    public class CreateLiveSessionTest
     {
         private StitcherFixture _fixture;
-        private readonly CreateSlateSample _createSample;
+        private readonly CreateLiveSessionSample _createSample;
 
-        private string _slateId;
-
-        public CreateSlateTest(StitcherFixture fixture)
+        public CreateLiveSessionTest(StitcherFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateSlateSample();
-            _slateId = $"{_fixture.SlateIdPrefix}-{_fixture.TimestampId()}";
-        }
-
-        public void Dispose()
-        {
-            _fixture.DeleteSlate(_slateId);
+            _createSample = new CreateLiveSessionSample();
         }
 
         [Fact]
-        public void CreatesSlate()
+        public void CreatesLiveSession()
         {
             // Run the sample code.
-            _fixture.SlateIds.Add(_slateId);
-            var result = _createSample.CreateSlate(
-                _fixture.ProjectId, _fixture.LocationId, _slateId, _fixture.TestSlateUri);
+            var result = _createSample.CreateLiveSession(
+                _fixture.ProjectId, _fixture.LocationId, _fixture.LiveSourceUri, _fixture.LiveAdTagUri, _fixture.TestSlateId);
 
-            Assert.Equal(_slateId, result.SlateName.SlateId);
+            Assert.Equal(_fixture.LocationId, result.LiveSessionName.LocationId);
+            Assert.Contains("/liveSessions/", result.LiveSessionName.ToString());
         }
     }
 }

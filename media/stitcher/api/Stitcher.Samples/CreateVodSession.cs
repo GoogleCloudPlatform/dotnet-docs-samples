@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_create_vod_session]
+// [START videostitcher_create_vod_session]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
@@ -31,7 +31,6 @@ public class CreateVodSessionSample
         {
             ParentAsLocationName = LocationName.FromProjectLocation(projectId, location),
             VodSession = new VodSession
-
             {
                 SourceUri = sourceUri,
                 AdTagUri = adTagUri
@@ -45,4 +44,4 @@ public class CreateVodSessionSample
         return session;
     }
 }
-// [END video_stitcher_create_vod_session]
+// [END videostitcher_create_vod_session]

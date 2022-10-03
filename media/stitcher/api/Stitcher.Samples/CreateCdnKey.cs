@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_create_cdn_key]
+// [START videostitcher_create_cdn_key]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
@@ -65,4 +65,4 @@ public class CreateCdnKeySample
         return newCdnKey;
     }
 }
-// [END video_stitcher_create_cdn_key]
+// [END videostitcher_create_cdn_key]

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_list_vod_ad_tag_details]
+// [START videostitcher_list_vod_ad_tag_details]
 
 using Google.Api.Gax;
 using Google.Cloud.Video.Stitcher.V1;
@@ -39,4 +39,4 @@ public class ListVodAdTagDetailsSample
         return response;
     }
 }
-// [END video_stitcher_list_vod_ad_tag_details]
+// [END videostitcher_list_vod_ad_tag_details]

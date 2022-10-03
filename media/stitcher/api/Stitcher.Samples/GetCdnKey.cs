@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_get_cdn_key]
+// [START videostitcher_get_cdn_key]
 
 using Google.Cloud.Video.Stitcher.V1;
 
@@ -38,4 +38,4 @@ public class GetCdnKeySample
         return response;
     }
 }
-// [END video_stitcher_get_cdn_key]
+// [END videostitcher_get_cdn_key]
