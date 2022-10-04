@@ -104,6 +104,13 @@ public class SearchWithFacetSpecSample
                 Console.WriteLine(item);
                 Console.WriteLine();
             }
+            Console.WriteLine($"Facets:");
+            var facets = firstPage.Facets.AsEnumerable().First().Values;
+            foreach (var item in facets)
+            {
+                Console.WriteLine(item);
+            }
+            Console.WriteLine();
         }
 
         return searchResultPages;
