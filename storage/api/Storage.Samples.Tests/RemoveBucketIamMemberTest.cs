@@ -15,14 +15,14 @@
 using System.Linq;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class RemoveBucketIamMemberTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public RemoveBucketIamMemberTest(BucketFixture bucketFixture)
+    public RemoveBucketIamMemberTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -35,13 +35,15 @@ public class RemoveBucketIamMemberTest
         ViewBucketIamMembersSample viewBucketIamMembersSample = new ViewBucketIamMembersSample();
 
         // Add bucket Iam member.
-        addBucketIamMemberSample.AddBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        addBucketIamMemberSample.AddBucketIamMember(_fixture.BucketNameGeneric, role, $"{memberType}:{_fixture.ServiceAccountEmail}");
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove bucket Iam member.
-        removeBucketIamMemberSample.RemoveBucketIamMember(_bucketFixture.BucketNameGeneric, role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        removeBucketIamMemberSample.RemoveBucketIamMember(_fixture.BucketNameGeneric, role, $"{memberType}:{_fixture.ServiceAccountEmail}");
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Get bucket Iam member.
-        var result = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketNameGeneric);
-        Assert.DoesNotContain(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_bucketFixture.ServiceAccountEmail}");
+        var result = viewBucketIamMembersSample.ViewBucketIamMembers(_fixture.BucketNameGeneric);
+        Assert.DoesNotContain(result.Bindings.Where(b => b.Role == role).SelectMany(b => b.Members), m => m == $"{memberType}:{_fixture.ServiceAccountEmail}");
     }
 }

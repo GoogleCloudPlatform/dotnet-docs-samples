@@ -105,12 +105,33 @@ namespace Pubsub
             {
                 logger.LogWarning(0, e, "Could not create topic {0}", topicName);
             }
+            // Create push subscription for /Push endpoint.
             var subscriptionName = new SubscriptionName(
                     options.ProjectId, options.SubscriptionId);
             var pushConfig = new PushConfig()
             {
                 PushEndpoint = $"https://{options.ProjectId}.appspot.com/Push"
             };
+            CreateOrModifySubscription(subscriptionName, topicName, pushConfig, logger);
+            
+            // Create push subscription for /AuthPush endpoint.
+            var authSubscriptionName = new SubscriptionName(
+                options.ProjectId, options.AuthSubscriptionId);
+            // To enable authentication in subscription.
+            var oidcToken = new PushConfig.Types.OidcToken();
+            oidcToken.ServiceAccountEmail = options.ServiceAccountEmail;
+            var authPushConfig = new PushConfig
+            {
+                PushEndpoint = $"https://{options.ProjectId}.appspot.com/AuthPush",
+                OidcToken = oidcToken
+            };
+            CreateOrModifySubscription(authSubscriptionName, topicName, authPushConfig, logger);
+        }
+        /// <summary>
+        /// Create a subscription if it not exits otherwise update the existing one.
+        /// </summary>
+        static void CreateOrModifySubscription(SubscriptionName subscriptionName,TopicName topicName,PushConfig pushConfig,ILogger logger)
+        {
             var subscriber = SubscriberServiceApiClient.Create();
             try
             {
@@ -125,6 +146,12 @@ namespace Pubsub
                 logger.LogWarning(1, e, "Could not create subscription {0}",
                     subscriptionName);
             }
+            catch (Grpc.Core.RpcException e)
+            {
+                logger.LogWarning(2, e, "Could not create subscription {0}",
+                    subscriptionName);
+                return;
+            }
             try
             {
                 subscriber.ModifyPushConfig(subscriptionName, pushConfig);
@@ -132,9 +159,11 @@ namespace Pubsub
             catch (Grpc.Core.RpcException e)
             when (e.Status.StatusCode == Grpc.Core.StatusCode.PermissionDenied)
             {
-                logger.LogWarning(2, e, "Could not modify subscription {0}",
+                logger.LogWarning(3, e, "Could not modify subscription {0}",
                     subscriptionName);
             }
+            return;
         }
+
     }
 }

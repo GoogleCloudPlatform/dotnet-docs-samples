@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31829.152
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigQueryStorage.Samples", "BigQueryStorage.Samples\BigQueryStorage.Samples.csproj", "{FDA71CDE-077F-4133-8C21-074F2053BEB9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigQueryStorage.Samples.Tests", "BigQueryStorage.Samples.Tests\BigQueryStorage.Samples.Tests.csproj", "{3DCB2F98-2636-4F73-91FC-379379C290E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDA71CDE-077F-4133-8C21-074F2053BEB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA71CDE-077F-4133-8C21-074F2053BEB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA71CDE-077F-4133-8C21-074F2053BEB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA71CDE-077F-4133-8C21-074F2053BEB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DCB2F98-2636-4F73-91FC-379379C290E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DCB2F98-2636-4F73-91FC-379379C290E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DCB2F98-2636-4F73-91FC-379379C290E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DCB2F98-2636-4F73-91FC-379379C290E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F156B3D4-76AB-4D1E-9000-0887D749DCF2}
+	EndGlobalSection
+EndGlobal

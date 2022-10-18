@@ -15,7 +15,6 @@
  */
 
 using Google.Cloud.Asset.V1;
-using System;
 using Xunit;
 
 [Collection(nameof(AssetFixture))]
@@ -38,9 +37,12 @@ public class AnalyzeIamPolicyLongrunningGcsTest
         string fullResourceName =
             $"//cloudresourcemanager.googleapis.com/projects/{_fixture.ProjectId}";
         string uri = $"gs://{_fixture.BucketName}/my-analysis.json";
-        AnalyzeIamPolicyLongrunningRequest returnedRequest =
-            _sample.AnalyzeIamPolicyLongrunning(scope, fullResourceName, uri);
 
-        Assert.Equal(uri, returnedRequest.OutputConfig.GcsDestination.Uri);
+        _fixture.Retry.Eventually(() =>
+        {
+            AnalyzeIamPolicyLongrunningResponse result =
+                _sample.AnalyzeIamPolicyLongrunning(scope, fullResourceName, uri);
+            Assert.NotNull(result);
+        });
     }
 }

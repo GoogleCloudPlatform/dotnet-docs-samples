@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -29,24 +30,33 @@ public class PullMessagesWithFlowControlAsyncTest
     }
 
     [Fact]
-    public async void PullMessagesWithFlowControlAsync()
+    public async Task PullMessagesWithFlowControlAsync()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForMessageWithFlowControlAck{randomName}";
-        string subscriptionId = $"testSubscriptionForMessageWithFlowControlAck{randomName}";
-        var message = _pubsubFixture.RandomName();
-
+        string topicId = $"testTopicForMessageWithFlowControlAck{_pubsubFixture.RandomName()}";
         _pubsubFixture.CreateTopic(topicId);
-        _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message });
+        // For this sample in particular, we need to retry the sbscription creation, the message publishing etc.
+        // That's because this sample is configuring the ack deadline of the subscriber, which will be extended
+        // automatically. While Pub/Sub has sent a message to a subscriber it will avoid sending it to another subscriber
+        // of the same subscription until the ack deadline has expired. Since we are renewing the ack deadline, it won't
+        // expire (soon) and if the message is sent but not acked, then Pub/Sub won't attempt to send the message
+        // to a different susbcriber even if we keep retrying, as it is waiting for the ack deadline to expire, which we
+        // keep extending.
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            string subscriptionId = $"testSubscriptionForMessageWithFlowControlAck{_pubsubFixture.RandomName()}";
+            _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
-        // Pull and acknowledge the messages
-        var result = await _pullMessagesCustomAsyncSample.PullMessagesWithFlowControlAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(1, result);
+            var message = _pubsubFixture.RandomName();
+            await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message });
 
-        //Pull the Message to confirm it's gone after it's acknowledged
-        result = await _pullMessagesCustomAsyncSample.PullMessagesWithFlowControlAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(result == 0);
+            // Pull and acknowledge the messages
+            var result = await _pullMessagesCustomAsyncSample.PullMessagesWithFlowControlAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, result);
+
+            //Pull the Message to confirm it's gone after it's acknowledged
+            result = await _pullMessagesCustomAsyncSample.PullMessagesWithFlowControlAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(0, result);
+        });
     }
 }

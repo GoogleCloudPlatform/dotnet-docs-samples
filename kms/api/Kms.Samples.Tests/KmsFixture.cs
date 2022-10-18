@@ -46,6 +46,9 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
     public string HsmKeyId { get; }
     public CryptoKeyName HsmKeyName { get; }
 
+    public string MacKeyId { get; }
+    public CryptoKeyName MacKeyName { get; }
+
     public string SymmetricKeyId { get; }
     public CryptoKeyName SymmetricKeyName { get; }
 
@@ -80,6 +83,10 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         HsmKeyId = RandomId();
         HsmKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, HsmKeyId);
         CreateHsmKey(HsmKeyId);
+
+        MacKeyId = RandomId();
+        MacKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, MacKeyId);
+        CreateMacKey(MacKeyId);
 
         SymmetricKeyId = RandomId();
         SymmetricKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, SymmetricKeyId);
@@ -233,6 +240,30 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
                 VersionTemplate = new CryptoKeyVersionTemplate
                 {
                     Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption,
+                    ProtectionLevel = ProtectionLevel.Hsm,
+                },
+            },
+        };
+        request.CryptoKey.Labels["foo"] = "bar";
+        request.CryptoKey.Labels["zip"] = "zap";
+
+        return client.CreateCryptoKey(request);
+    }
+
+    public CryptoKey CreateMacKey(string keyId)
+    {
+        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
+
+        var request = new CreateCryptoKeyRequest
+        {
+            ParentAsKeyRingName = KeyRingName,
+            CryptoKeyId = keyId,
+            CryptoKey = new CryptoKey
+            {
+                Purpose = CryptoKey.Types.CryptoKeyPurpose.Mac,
+                VersionTemplate = new CryptoKeyVersionTemplate
+                {
+                    Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.HmacSha256,
                     ProtectionLevel = ProtectionLevel.Hsm,
                 },
             },

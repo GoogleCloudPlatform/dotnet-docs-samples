@@ -17,6 +17,7 @@
 // [START kms_create_key_hsm]
 
 using Google.Cloud.Kms.V1;
+using Google.Protobuf.WellKnownTypes;
 
 public class CreateKeyHsmSample
 {
@@ -38,6 +39,12 @@ public class CreateKeyHsmSample
             {
                 ProtectionLevel = ProtectionLevel.Hsm,
                 Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption,
+            },
+
+            // Optional: customize how long key versions should be kept before destroying.
+            DestroyScheduledDuration = new Duration
+            {
+                Seconds = 24 * 60 * 60,
             }
         };
 

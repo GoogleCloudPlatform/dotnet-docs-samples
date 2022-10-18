@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class EnableBucketLifecycleManagementTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public EnableBucketLifecycleManagementTest(BucketFixture bucketFixture)
+    public EnableBucketLifecycleManagementTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,12 +31,12 @@ public class EnableBucketLifecycleManagementTest
         var disableBucketLifecycleManagementSample = new DisableBucketLifecycleManagementSample();
 
         // Enable bucket lifecycle management.
-        var bucket = enableBucketLifecycleManagementSample.EnableBucketLifecycleManagement(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        var bucket = enableBucketLifecycleManagementSample.EnableBucketLifecycleManagement(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
         Assert.Contains(bucket.Lifecycle.Rule, r => r.Condition.Age == 100 && r.Action.Type == "Delete");
 
         // Disable bucket lifecycle management.
-        disableBucketLifecycleManagementSample.DisableBucketLifecycleManagement(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        disableBucketLifecycleManagementSample.DisableBucketLifecycleManagement(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START storage_upload_file]
+// [START storage_stream_file_upload]
 
 using Google.Cloud.Storage.V1;
 using System;
@@ -31,4 +32,6 @@ public class UploadFileSample
         Console.WriteLine($"Uploaded {objectName}.");
     }
 }
+
+// [END storage_stream_file_upload]
 // [END storage_upload_file]

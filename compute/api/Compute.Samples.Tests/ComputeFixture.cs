@@ -15,10 +15,14 @@
  */
 
 using Google.Cloud.Compute.V1;
+using Google.Cloud.Storage.V1;
+using GoogleCloudSamples;
+using Grpc.Core;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Compute.Samples.Tests
 {
@@ -27,17 +31,51 @@ namespace Compute.Samples.Tests
     {
         public string ProjectId { get; }
 
-        public string Zone { get => "us-central1-a"; }
+        public string Zone => "us-central1-a";
 
-        public string MachineType { get => "n1-standard-1"; }
+        public string MachineType => "n1-standard-1";
 
-        public string DiskImage { get => "projects/debian-cloud/global/images/family/debian-10"; }
+        public string DiskImage => "projects/debian-cloud/global/images/family/debian-10";
 
-        public string DiskSizeGb { get => "10"; }
+        public long DiskSizeGb => 10;
+
+        public string NetworkName => "default";
+
+        public string NetworkResourceUri => $"global/networks/{NetworkName}";
+
+        public string UsageReportBucketName { get; } = GenerateName("b");
+
+        public string UsageReportPrefix => "test-usage";
+
+        public string PublicImagesProjectId => "windows-sql-cloud";
 
         private IList<string> MachinesToDelete { get; } = new List<string>();
 
-        public InstancesClient Client { get; } = InstancesClient.Create();
+        private IList<string> FirewallRulesToDelete { get; } = new List<string>();
+
+        public InstancesClient InstancesClient { get; } = InstancesClient.Create();
+
+        public FirewallsClient FirewallsClient { get; } = FirewallsClient.Create();
+
+        public ProjectsClient ProjectsClient { get; } = ProjectsClient.Create();
+
+        private StorageClient StorageClient { get; } = StorageClient.Create();
+
+        public RetryRobot AssertConcurrently { get; } = new RetryRobot
+        { 
+            RetryWhenExceptions = new Type[] { typeof(XunitException) },
+            // We wait a little longer than default to let the concurrent test execution
+            // finish before reattempting.
+            FirstRetryDelayMs = 30_000,
+            MaxTryCount = 15
+        };
+
+        // Because of internal policies for firewall creation.
+        public RetryRobot FirewallRuleCreated { get; } = new RetryRobot
+        {
+            ShouldRetry = (ex) => ex is RpcException rpcEx 
+                && (rpcEx.StatusCode == StatusCode.NotFound || rpcEx.Message.Contains("resourceNotReady"))
+        };
 
         public ComputeFixture()
         {
@@ -47,15 +85,28 @@ namespace Compute.Samples.Tests
                 throw new Exception(
                     "Please set the environment variable GOOGLE_PROJECT_ID to the ID of the project you want to run these tests in.");
             }
+
+            StorageClient.CreateBucket(ProjectId, UsageReportBucketName);
         }
 
         public string GenerateMachineName()
         {
-            string name = $"i-{DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfff", CultureInfo.InvariantCulture)}";
+            string name = GenerateName("i");
             // We always add them to the deletion list. We delete on a best effort basis anyway.
             MachinesToDelete.Add(name);
             return name;
         }
+
+        public string GenerateFirewallRuleName()
+        {
+            string name = GenerateName("fr");
+            // We always add them to the deletion list. We delete on a best effort basis anyway.
+            FirewallRulesToDelete.Add(name);
+            return name;
+        }
+
+        private static string GenerateName(string prefix) =>
+            $"{prefix}-{DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfffffff", CultureInfo.InvariantCulture)}";
 
         private bool _disposed = false;
         public void Dispose()
@@ -65,19 +116,45 @@ namespace Compute.Samples.Tests
                 return;
             }
 
+            BestEffortCleanup(() => StorageClient.DeleteBucket(UsageReportBucketName, new DeleteBucketOptions { DeleteObjects = true }));
+
             foreach(var machineName in MachinesToDelete)
+            {
+                // We don't poll, we delete on a best effort basis.
+                BestEffortCleanup(() => InstancesClient.Delete(ProjectId, Zone, machineName));
+            }
+
+            foreach(var firewallRule in FirewallRulesToDelete)
+            {
+                // We don't poll, we delete on a best effort basis.
+                BestEffortCleanup(() => FirewallsClient.Delete(ProjectId, firewallRule));
+            }
+
+            BestEffortCleanup(() =>
+            {
+                // We reset the UsageExportBucket on cleanup, so we don't have to do it
+                // on each test. This is not infalible as someone may have a set export
+                // bucket and this will just remove the any bucket, but doing on each
+                // tests is also not infalible.
+                // We should have a separate dedicated project for these tests, and still
+                // some flakiness may occure because different runs of the tests may happen
+                // at the same time.
+                ProjectsClient.SetUsageExportBucket(ProjectId, new UsageExportLocation());
+            });
+
+            _disposed = true;
+
+            static void BestEffortCleanup(Action cleanupAction)
             {
                 try
                 {
-                    // We don't poll, we delete on a best effort basis.
-                    Client.Delete(ProjectId, Zone, machineName);
+                    cleanupAction();
                 }
                 catch
-                { 
+                {
                     // Do nothing, we delete on a best effort basis.
                 }
             }
-            _disposed = true;
         }
     }
 }

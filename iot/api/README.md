@@ -54,7 +54,7 @@ service account JSON from the Google Cloud Console:
       listDevices           List devices in the provided Cloud IoT Core Registry.
       listDevicesForGateway List devices bound to a gateway.
       listGateways          List gateways in a registry.
-      unbindAllDevices      Unbinds all devices in a given registry. Mainly for cleaing registry.
+      unbindAllDevices      Unbinds all devices in a given registry. Mainly for cleaning registry.
       unbindDeviceFromGateway   Unbinds a device from a gateway.
       patchDeviceEs         Patch device with ES encryption type.
       patchDeviceRsa        Create device with RSA encryption type.
@@ -92,7 +92,7 @@ the following setup.
 
 4. Connect a device using the HTTP or MQTT device samples in the [CloudIotMqttExample](./CloudIotMqttExample) folder.
 
-5. Programmattically control device configuration and using the device manager sample in the [CloudIotMqttExample](./CloudIotMqttExample) folder.
+5. Programmatically control device configuration and using the device manager sample in the [CloudIotMqttExample](./CloudIotMqttExample) folder.
 
 ## Running the sample
 

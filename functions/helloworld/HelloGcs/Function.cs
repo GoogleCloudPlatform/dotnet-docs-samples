@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START functions_helloworld_storage]
+// [START functions_cloudevent_storage]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
 using Google.Events.Protobuf.Cloud.Storage.V1;
@@ -22,6 +23,10 @@ using System.Threading.Tasks;
 
 namespace HelloGcs
 {
+     /// <summary>
+     /// Example Cloud Storage-triggered function.
+     /// This function can process any event from Cloud Storage.
+     /// </summary>
     public class Function : ICloudEventFunction<StorageObjectData>
     {
         private readonly ILogger _logger;
@@ -42,4 +47,5 @@ namespace HelloGcs
         }
     }
 }
+// [END functions_cloudevent_storage]
 // [END functions_helloworld_storage]

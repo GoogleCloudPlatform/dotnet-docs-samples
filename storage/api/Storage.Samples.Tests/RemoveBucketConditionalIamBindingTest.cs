@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class RemoveBucketConditionalIamBindingTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public RemoveBucketConditionalIamBindingTest(BucketFixture bucketFixture)
+    public RemoveBucketConditionalIamBindingTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -36,27 +36,27 @@ public class RemoveBucketConditionalIamBindingTest
         string role = "roles/storage.objectViewer";
 
         // Enable Uniform bucket level access.
-        enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        enableUniformBucketLevelAccessSample.EnableUniformBucketLevelAccess(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Add Conditional Binding.
-        addBucketConditionalIamBindingSample.AddBucketConditionalIamBinding(_bucketFixture.BucketNameGeneric,
-           role, $"{memberType}:{_bucketFixture.ServiceAccountEmail}", "title", "description",
+        addBucketConditionalIamBindingSample.AddBucketConditionalIamBinding(_fixture.BucketNameGeneric,
+           role, $"{memberType}:{_fixture.ServiceAccountEmail}", "title", "description",
            "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Remove Conditional Binding.
-        removeBucketConditionalIamBindingSample.RemoveBucketConditionalIamBinding(_bucketFixture.BucketNameGeneric,
+        removeBucketConditionalIamBindingSample.RemoveBucketConditionalIamBinding(_fixture.BucketNameGeneric,
             role, "title", "description",
             "resource.name.startsWith(\"projects/_/buckets/bucket-name/objects/prefix-a-\")");
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // Get Bucket Iam Members.
-        var policy = viewBucketIamMembersSample.ViewBucketIamMembers(_bucketFixture.BucketNameGeneric);
-        Assert.DoesNotContain(policy.Bindings, c => c.Members.Contains($"{memberType}:{_bucketFixture.ServiceAccountEmail}"));
+        var policy = viewBucketIamMembersSample.ViewBucketIamMembers(_fixture.BucketNameGeneric);
+        Assert.DoesNotContain(policy.Bindings, c => c.Members.Contains($"{memberType}:{_fixture.ServiceAccountEmail}"));
 
         // Disable Uniform bucket level access
-        disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(_bucketFixture.BucketNameGeneric);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        disableUniformBucketLevelAccessSample.DisableUniformBucketLevelAccess(_fixture.BucketNameGeneric);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

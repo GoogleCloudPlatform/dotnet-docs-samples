@@ -235,7 +235,7 @@ namespace GoogleCloudSamples
             }
             catch (Google.GoogleApiException e)
             {
-                Assert.True(e.Error.Code == 400);
+                Assert.Equal(400, e.Error.Code);
             }
             finally
             {
@@ -409,7 +409,7 @@ namespace GoogleCloudSamples
                 Resource = $"projects/{ProjectId}/topics/{topicName.TopicId}",
                 Policy = policy
             };
-            Policy response = publisher.SetIamPolicy(request);
+            Policy response = publisher.IAMPolicyClient.SetIamPolicy(request);
             Console.WriteLine($"Topic IAM Policy updated: {response}");
         }
 

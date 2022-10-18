@@ -969,37 +969,42 @@ namespace GoogleCloudSamples.Spanner
             {
                 await connection.OpenAsync();
 
-                // Insert rows into the Singers table.
-                var cmd = connection.CreateInsertCommand("Singers",
-                    new SpannerParameterCollection
-                    {
-                        { "SingerId", SpannerDbType.Int64 },
-                        { "FirstName", SpannerDbType.String },
-                        { "LastName", SpannerDbType.String }
-                    });
-                await Task.WhenAll(singers.Select(singer =>
+                await connection.RunWithRetriableTransactionAsync(async transaction =>
                 {
-                    cmd.Parameters["SingerId"].Value = singer.SingerId;
-                    cmd.Parameters["FirstName"].Value = singer.FirstName;
-                    cmd.Parameters["LastName"].Value = singer.LastName;
-                    return cmd.ExecuteNonQueryAsync();
-                }));
+                    // Insert rows into the Singers table.
+                    var cmd = connection.CreateInsertCommand("Singers",
+                        new SpannerParameterCollection
+                        {
+                            { "SingerId", SpannerDbType.Int64 },
+                            { "FirstName", SpannerDbType.String },
+                            { "LastName", SpannerDbType.String }
+                        });
+                    cmd.Transaction = transaction;
+                    await Task.WhenAll(singers.Select(singer =>
+                    {
+                        cmd.Parameters["SingerId"].Value = singer.SingerId;
+                        cmd.Parameters["FirstName"].Value = singer.FirstName;
+                        cmd.Parameters["LastName"].Value = singer.LastName;
+                        return cmd.ExecuteNonQueryAsync();
+                    }));
 
-                // Insert rows into the Albums table.
-                cmd = connection.CreateInsertCommand("Albums",
-                    new SpannerParameterCollection
+                    // Insert rows into the Albums table.
+                    cmd = connection.CreateInsertCommand("Albums",
+                        new SpannerParameterCollection
+                        {
+                            { "SingerId", SpannerDbType.Int64 },
+                            { "AlbumId", SpannerDbType.Int64 },
+                            { "AlbumTitle", SpannerDbType.String }
+                        });
+                    cmd.Transaction = transaction;
+                    await Task.WhenAll(albums.Select(album =>
                     {
-                        { "SingerId", SpannerDbType.Int64 },
-                        { "AlbumId", SpannerDbType.Int64 },
-                        { "AlbumTitle", SpannerDbType.String }
-                    });
-                await Task.WhenAll(albums.Select(album =>
-                {
-                    cmd.Parameters["SingerId"].Value = album.SingerId;
-                    cmd.Parameters["AlbumId"].Value = album.AlbumId;
-                    cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;
-                    return cmd.ExecuteNonQueryAsync();
-                }));
+                        cmd.Parameters["SingerId"].Value = album.SingerId;
+                        cmd.Parameters["AlbumId"].Value = album.AlbumId;
+                        cmd.Parameters["AlbumTitle"].Value = album.AlbumTitle;
+                        return cmd.ExecuteNonQueryAsync();
+                    }));
+                });
                 Console.WriteLine("Inserted data.");
             }
         }

@@ -20,7 +20,8 @@ try {
 	$job = Run-Kestrel $url
 	Set-Location ../IO.SwaggerTest
 	$env:ASPNETCORE_URLS = $url
-	dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
+	dotnet restore --force
+    dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
 } finally {
 	Stop-Job $job
 	Receive-Job $job

@@ -30,7 +30,10 @@ public class ImportEntitiesTest
         ExportEntitiesSample exportEntitiesSample = new ExportEntitiesSample();
         ImportEntitiesSample importEntitiesSample = new ImportEntitiesSample();
         var outputUrl = exportEntitiesSample.ExportEntities(_datastoreAdminFixture.ProjectId, $"gs://{_datastoreAdminFixture.BucketName}", _datastoreAdminFixture.Kind, _datastoreAdminFixture.Namespace);
-        var isCompleted = importEntitiesSample.ImportEntities(_datastoreAdminFixture.ProjectId, outputUrl, _datastoreAdminFixture.Kind, _datastoreAdminFixture.Namespace);
-        Assert.True(isCompleted);
+        _datastoreAdminFixture.BeforeRpcDeadline.Eventually(() =>
+        {
+            var isCompleted = importEntitiesSample.ImportEntities(_datastoreAdminFixture.ProjectId, outputUrl, _datastoreAdminFixture.Kind, _datastoreAdminFixture.Namespace);
+            Assert.True(isCompleted);
+        });
     }
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Grpc.Core;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
@@ -26,11 +27,13 @@ public class CreateInstanceTest
     }
 
     [Fact]
-    public void TestCreateInstance()
+    public async Task TestCreateInstance()
     {
         CreateInstanceSample createInstanceSample = new CreateInstanceSample();
-        // Instance already exists since it was created in the test setup so it should throw an exception.
-        var exception = Assert.Throws<RpcException>(() => createInstanceSample.CreateInstance(_spannerFixture.ProjectId, _spannerFixture.InstanceId));
+
+        RpcException exception = await Assert.ThrowsAsync<RpcException>(() => _spannerFixture.SafeCreateInstanceAsync(() =>
+            Task.FromResult(createInstanceSample.CreateInstance(_spannerFixture.ProjectId, _spannerFixture.InstanceId))));
+
         Assert.Equal(StatusCode.AlreadyExists, exception.StatusCode);
     }
 }

@@ -23,7 +23,10 @@ public class GetSubscriptionIamPolicySample
     {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
-        Policy policy = publisher.GetIamPolicy(subscriptionName);
+        Policy policy = publisher.IAMPolicyClient.GetIamPolicy(new GetIamPolicyRequest
+        {
+            ResourceAsResourceName = subscriptionName
+        });
         return policy;
     }
 }

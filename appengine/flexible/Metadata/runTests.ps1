@@ -14,8 +14,8 @@
 
 Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-dotnet restore
-dotnet build
+dotnet restore --force
+dotnet build --no-restore
 # Detect if I'm running in the Google Cloud.
 $runningWithGoogleCloudIpAddress = $false
 try {

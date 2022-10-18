@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using Google;
 using Google.Apis.Auth.OAuth2;
-using Xunit;
-
-using System.Collections.Generic;
 using Google.Apis.Iam.v1;
 using Google.Apis.Iam.v1.Data;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using Xunit;
 
 namespace GoogleCloudSamples
 {
@@ -64,18 +65,25 @@ namespace GoogleCloudSamples
                 RoleId = "csharpTestCustomRole" + new Random().Next()
             };
 
-            role = service.Projects.Roles.Create(request, "projects/" + _project).Execute();
-            return role;
+            try
+            {
+                return service.Projects.Roles.Create(request, "projects/" + _project).Execute();
+            }
+            catch(GoogleApiException ex) when (ex.HttpStatusCode == HttpStatusCode.TooManyRequests && ex.Error.Message.Contains("Maximum number of roles reached"))
+            {
+                Skip.If(true, "Maximum number of roles reached.");
+                throw; // We should never throw here (Skip throws), but we need to make the compiler happy.
+            }
         }
 
-        public String ParseRoleName(Role role)
+        public string ParseRoleName(Role role)
         {
             var roleNameComponents = role.Name.Split('/');
             var roleNameShort = roleNameComponents[2] + "/" + roleNameComponents[3];
             return roleNameShort;
         }
 
-        [Fact]
+        [SkippableFact]
         public void TestAccess()
         {
             var service = InitializeService();

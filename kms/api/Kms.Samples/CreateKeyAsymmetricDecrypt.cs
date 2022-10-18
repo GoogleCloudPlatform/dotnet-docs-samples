@@ -17,6 +17,7 @@
 // [START kms_create_key_asymmetric_decrypt]
 
 using Google.Cloud.Kms.V1;
+using Google.Protobuf.WellKnownTypes;
 
 public class CreateKeyAsymmetricDecryptSample
 {
@@ -37,6 +38,12 @@ public class CreateKeyAsymmetricDecryptSample
             VersionTemplate = new CryptoKeyVersionTemplate
             {
                 Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.RsaDecryptOaep2048Sha256,
+            },
+
+            // Optional: customize how long key versions should be kept before destroying.
+            DestroyScheduledDuration = new Duration
+            {
+                Seconds = 24 * 60 * 60,
             }
         };
 

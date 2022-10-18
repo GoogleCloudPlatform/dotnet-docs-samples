@@ -8,11 +8,10 @@ lists all the _Cloud_ APIs you can call from .NET.
 
 The samples in this repo cover only _some_ of the total APIs that you can call from .NET.
 
-### Build Status
+## Google Cloud Samples
 
-| Windows | Linux |
-|---------|-------|
-|![Windows][windows-badge] | ![Linux][linux-badge] |
+You can also browse these samples, and more in [Google Cloud Samples](https://cloud.google.com/docs/samples).
+
 
 ## Build and Run
 
@@ -42,6 +41,3 @@ But no sample will work until you
 ## Testing
 
 * See [TESTING.md](TESTING.md)
-
-[windows-badge]: https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-windows.png?alt=media
-[linux-badge]: https://www.googleapis.com/download/storage/v1/b/silver-python2-kokoro-badges/o/dotnet-docs-samples%2Fsystem_tests-linux.png?alt=media

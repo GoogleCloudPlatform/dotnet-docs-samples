@@ -9,7 +9,7 @@ env_variables:
     DB_USER: <your-username>
     DB_PASS: <your-password>
     DB_NAME: <your-database-name>
-    DB_HOST: cloudsql
+    INSTANCE_HOST: cloudsql
     
 beta_settings:
-    cloud_sql_instances: "your-project-id:us-central1:instance-name=tcp:1433"
+    cloud_sql_instances: "<PROJECT-ID>:<INSTANCE-REGION>:<INSTANCE-NAME>=tcp:1433"

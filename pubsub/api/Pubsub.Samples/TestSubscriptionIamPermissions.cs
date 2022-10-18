@@ -27,7 +27,7 @@ public class TestSubscriptionIamPermissionsSample
             Permissions = { "pubsub.subscriptions.get", "pubsub.subscriptions.update" }
         };
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-        TestIamPermissionsResponse response = publisher.TestIamPermissions(request);
+        TestIamPermissionsResponse response = publisher.IAMPolicyClient.TestIamPermissions(request);
         return response;
     }
 }

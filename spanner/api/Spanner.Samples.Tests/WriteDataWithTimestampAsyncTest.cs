@@ -29,7 +29,6 @@ public class WriteDataWithTimestampAsyncTest
     public async Task TestWriteDataWithTimestampAsync()
     {
         WriteDataWithTimestampAsyncSample sample = new WriteDataWithTimestampAsyncSample();
-        await _spannerFixture.CreatePerformancesTableWithTimestampColumnAsync();
         var rowCount = await sample.WriteDataWithTimestampAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
         Assert.Equal(3, rowCount);
     }

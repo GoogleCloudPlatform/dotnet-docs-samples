@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class PrintFileAclTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public PrintFileAclTest(BucketFixture bucketFixture)
+    public PrintFileAclTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -31,18 +31,18 @@ public class PrintFileAclTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         AddFileOwnerSample addFileOwnerSample = new AddFileOwnerSample();
 
-        string userEmail = _bucketFixture.ServiceAccountEmail;
-        uploadFileSample.UploadFile(_bucketFixture.BucketNameGeneric, _bucketFixture.FilePath, _bucketFixture.Collect("HelloAddObjectOwner.txt"));
+        string userEmail = _fixture.ServiceAccountEmail;
+        uploadFileSample.UploadFile(_fixture.BucketNameGeneric, _fixture.FilePath, _fixture.Collect("HelloAddObjectOwner.txt"));
 
         // print file acl
-        var fileAcl = printFileAclSample.PrintObjectAcl(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt");
+        var fileAcl = printFileAclSample.PrintObjectAcl(_fixture.BucketNameGeneric, "HelloAddObjectOwner.txt");
         Assert.DoesNotContain(fileAcl, c => c.Email == userEmail);
 
         // add file owner
-        addFileOwnerSample.AddFileOwner(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt", userEmail);
+        addFileOwnerSample.AddFileOwner(_fixture.BucketNameGeneric, "HelloAddObjectOwner.txt", userEmail);
 
         // print file acl
-        fileAcl = printFileAclSample.PrintObjectAcl(_bucketFixture.BucketNameGeneric, "HelloAddObjectOwner.txt");
+        fileAcl = printFileAclSample.PrintObjectAcl(_fixture.BucketNameGeneric, "HelloAddObjectOwner.txt");
         Assert.Contains(fileAcl, c => c.Email == userEmail);
     }
 }

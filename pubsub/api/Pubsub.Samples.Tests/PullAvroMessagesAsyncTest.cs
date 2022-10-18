@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.PubSub.V1;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -30,7 +31,7 @@ public class PullAvroMessagesAsyncTest
     }
 
     [Fact]
-    public async void PullAvroBinaryMessagesAsync()
+    public async Task PullAvroBinaryMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForAvroBinaryMessageAck{randomName}";
@@ -43,17 +44,20 @@ public class PullAvroMessagesAsyncTest
 
         await _publishAvroMessagesAsyncSample.PublishAvroMessagesAsync(_pubsubFixture.ProjectId, topicId, new AvroUtilities.State[] { new AvroUtilities.State { name = "New York", post_abbr = "NY" } });
 
-        // Pull and acknowledge the messages
-        var result = await _pullAvroMessagesAsyncSample.PullAvroMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(1, result);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            // Pull and acknowledge the messages
+            var result = await _pullAvroMessagesAsyncSample.PullAvroMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, result);
+        });
 
         //Pull the Message to confirm it's gone after it's acknowledged
-        result = await _pullAvroMessagesAsyncSample.PullAvroMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(result == 0);
+        var result = await _pullAvroMessagesAsyncSample.PullAvroMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.Equal(0, result);
     }
 
     [Fact]
-    public async void PullAvroJsonMessagesAsync()
+    public async Task PullAvroJsonMessagesAsync()
     {
         string randomName = _pubsubFixture.RandomName();
         string topicId = $"testTopicForAvroMessageJsonAck{randomName}";
@@ -66,12 +70,15 @@ public class PullAvroMessagesAsyncTest
 
         await _publishAvroMessagesAsyncSample.PublishAvroMessagesAsync(_pubsubFixture.ProjectId, topicId, new AvroUtilities.State[] { new AvroUtilities.State { name = "New York", post_abbr = "NY" } });
 
-        // Pull and acknowledge the messages
-        var result = await _pullAvroMessagesAsyncSample.PullAvroMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.Equal(1, result);
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            // Pull and acknowledge the messages
+            var result = await _pullAvroMessagesAsyncSample.PullAvroMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+            Assert.Equal(1, result);
+        });
 
         //Pull the Message to confirm it's gone after it's acknowledged
-        result = await _pullAvroMessagesAsyncSample.PullAvroMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
-        Assert.True(result == 0);
+        var result = await _pullAvroMessagesAsyncSample.PullAvroMessagesAsync(_pubsubFixture.ProjectId, subscriptionId, true);
+        Assert.Equal(0, result);
     }
 }

@@ -14,10 +14,7 @@
 //
 // [START asset_quickstart_analyze_iam_policy]
 
-using Google.Api.Gax;
 using Google.Cloud.Asset.V1;
-using System.Collections.Generic;
-using System.Linq;
 
 public class AnalyzeIamPolicySample
 {

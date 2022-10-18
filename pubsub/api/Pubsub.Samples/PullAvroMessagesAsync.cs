@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_subscribe_avro_messages]
+// [START pubsub_subscribe_avro_records]
 
 using Avro.IO;
 using Avro.Specific;
@@ -30,13 +30,16 @@ public class PullAvroMessagesAsyncSample
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         int messageCount = 0;
-        SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName,
-            settings: new SubscriberClient.Settings()
+        SubscriberClient subscriber = await new SubscriberClientBuilder
+        {
+            SubscriptionName = subscriptionName,
+            Settings = new SubscriberClient.Settings
             {
                 AckExtensionWindow = TimeSpan.FromSeconds(4),
                 AckDeadline = TimeSpan.FromSeconds(10),
                 FlowControlSettings = new FlowControlSettings(maxOutstandingElementCount: 100, maxOutstandingByteCount: 10240)
-            });
+            }
+        }.BuildAsync();
         // SubscriberClient runs your message handle function on multiple
         // threads to maximize throughput.
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
@@ -72,4 +75,4 @@ public class PullAvroMessagesAsyncSample
         return messageCount;
     }
 }
-// [END pubsub_subscribe_avro_messages]
+// [END pubsub_subscribe_avro_records]

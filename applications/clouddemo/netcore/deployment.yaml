@@ -34,14 +34,16 @@ spec:
   type: NodePort
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: clouddemo-netcore
 spec:
-  backend:
-    serviceName: clouddemo-netcore
-    servicePort: 80
+  defaultBackend:
+    service:
+      name: clouddemo-netcore
+      port:
+        number: 80
 
 ---
 apiVersion: apps/v1

@@ -12,4 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-dotnet test --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
+# Deactivate tests, as they are flaky, and this product is being retired.
+# See https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1621
+# Samples will be deleted as soon as they are removed from docs.
+# See https://github.com/GoogleCloudPlatform/dotnet-docs-samples/pull/1873
+# dotnet restore --force
+# dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }

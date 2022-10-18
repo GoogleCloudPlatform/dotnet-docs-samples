@@ -14,14 +14,14 @@
 
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class PrintBucketAclTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public PrintBucketAclTest(BucketFixture bucketFixture)
+    public PrintBucketAclTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -30,22 +30,22 @@ public class PrintBucketAclTest
         PrintBucketAclSample printBucketAclSample = new PrintBucketAclSample();
         AddBucketOwnerSample addBucketOwnerSample = new AddBucketOwnerSample();
         RemoveBucketOwnerSample removeBucketOwnerSample = new RemoveBucketOwnerSample();
-        string userEmail = _bucketFixture.ServiceAccountEmail;
+        string userEmail = _fixture.ServiceAccountEmail;
 
         // print bucket acl
-        var bucketAcl = printBucketAclSample.PrintBucketAcl(_bucketFixture.BucketNameGeneric);
+        var bucketAcl = printBucketAclSample.PrintBucketAcl(_fixture.BucketNameGeneric);
         Assert.DoesNotContain(bucketAcl, c => c.Email == userEmail);
 
         // add bucket owner
-        addBucketOwnerSample.AddBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        addBucketOwnerSample.AddBucketOwner(_fixture.BucketNameGeneric, userEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
 
         // print bucket acl
-        bucketAcl = printBucketAclSample.PrintBucketAcl(_bucketFixture.BucketNameGeneric);
+        bucketAcl = printBucketAclSample.PrintBucketAcl(_fixture.BucketNameGeneric);
         Assert.Contains(bucketAcl, c => c.Email == userEmail);
 
         // remove owner.
-        removeBucketOwnerSample.RemoveBucketOwner(_bucketFixture.BucketNameGeneric, userEmail);
-        _bucketFixture.SleepAfterBucketCreateUpdateDelete();
+        removeBucketOwnerSample.RemoveBucketOwner(_fixture.BucketNameGeneric, userEmail);
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

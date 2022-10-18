@@ -27,7 +27,7 @@ public class ListBackupOperationsSample
         // Create the DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
-        var filter = $"(metadata.database:{databaseId}) AND (metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata)";
+        var filter = $"(metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata) AND (metadata.database:{databaseId})";
         ListBackupOperationsRequest request = new ListBackupOperationsRequest
         {
             ParentAsInstanceName = InstanceName.FromProjectInstance(projectId, instanceId),

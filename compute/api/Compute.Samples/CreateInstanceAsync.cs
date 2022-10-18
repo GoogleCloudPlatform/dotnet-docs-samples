@@ -15,20 +15,22 @@
  */
 
 // [START compute_instances_create]
+// [START compute_instances_operation_check]
 
 using Google.Cloud.Compute.V1;
-using System;
 using System.Threading.Tasks;
 
 public class CreateInstanceAsyncSample
 {
     public async Task CreateInstanceAsync(
+        // TODO(developer): Set your own default values for these parameters or pass different values when calling this method.
         string projectId = "your-project-id",
         string zone = "us-central1-a",
         string machineName = "test-machine",
         string machineType = "n1-standard-1",
         string diskImage = "projects/debian-cloud/global/images/family/debian-10",
-        string diskSizeGb = "10")
+        long diskSizeGb = 10,
+        string networkName = "default")
     {
         Instance instance = new Instance
         {
@@ -42,7 +44,7 @@ public class CreateInstanceAsyncSample
                 {
                     AutoDelete = true,
                     Boot = true,
-                    Type = AttachedDisk.Types.Type.Persistent,
+                    Type = ComputeEnumConstants.AttachedDisk.Type.Persistent,
                     InitializeParams = new AttachedDiskInitializeParams 
                     {
                         // See https://cloud.google.com/compute/docs/images for more information on available images.
@@ -51,22 +53,22 @@ public class CreateInstanceAsyncSample
                     }
                 }
             },
-            // Instance creation requires at least one network interface.
-            // The "default" network interface is created automatically for every project.
-            NetworkInterfaces = { new NetworkInterface { Name = "default" } }
+            NetworkInterfaces = { new NetworkInterface { Name = networkName } }
         };
 
-        // Initialize the client that will be used to send instance-related requests.
-        // You should reuse the same client for multiple requests.
+        // Initialize client that will be used to send requests. This client only needs to be created
+        // once, and can be reused for multiple requests.
         InstancesClient client = await InstancesClient.CreateAsync();
 
-        // Make the request to create a VM instance.
-        Operation instanceCreation = await client.InsertAsync(projectId, zone, instance);
+        // Insert the instance in the specified project and zone.
+        var instanceCreation = await client.InsertAsync(projectId, zone, instance);
 
-        // You may poll the operation until it completes or fails, or for a given amount of time.
-        // If polling times out, the operation may still finish successfully after.
-        await instanceCreation.PollUntilCompletedAsync(projectId, zone);
+        // Wait for the operation to complete using client-side polling.
+        // The server-side operation is not affected by polling,
+        // and might finish successfully even if polling times out.
+        await instanceCreation.PollUntilCompletedAsync();
     }
 }
 
+// [END compute_instances_operation_check]
 // [END compute_instances_create]

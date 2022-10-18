@@ -15,14 +15,14 @@
 using System;
 using Xunit;
 
-[Collection(nameof(BucketFixture))]
+[Collection(nameof(StorageFixture))]
 public class GenerateV4UploadSignedUrlTest
 {
-    private readonly BucketFixture _bucketFixture;
+    private readonly StorageFixture _fixture;
 
-    public GenerateV4UploadSignedUrlTest(BucketFixture bucketFixture)
+    public GenerateV4UploadSignedUrlTest(StorageFixture fixture)
     {
-        _bucketFixture = bucketFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class GenerateV4UploadSignedUrlTest
     {
         GenerateV4UploadSignedUrlSample generateV4UploadSignedUrlSample = new GenerateV4UploadSignedUrlSample();
         var credentialFilePath = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
-        var signedUrl = generateV4UploadSignedUrlSample.GenerateV4UploadSignedUrl(_bucketFixture.BucketNameGeneric, _bucketFixture.FileName, credentialFilePath);
+        var signedUrl = generateV4UploadSignedUrlSample.GenerateV4UploadSignedUrl(_fixture.BucketNameGeneric, _fixture.FileName, credentialFilePath);
         Assert.NotNull(signedUrl);
     }
 }
