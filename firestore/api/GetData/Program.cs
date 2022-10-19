@@ -198,7 +198,7 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_add_subcollection]
-            // [START firestore_data_add_subcollection]
+            // [START firestore_data_add_sub_collection]
             DocumentReference cityRef = db.Collection("cities").Document("SF");
             CollectionReference subcollectionRef = cityRef.Collection("neighborhoods");
             Dictionary<string, object> data = new Dictionary<string, object>
