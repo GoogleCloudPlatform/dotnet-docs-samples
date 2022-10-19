@@ -38,7 +38,9 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_start_at_field_query_cursor]
+            // [START firestore_query_cursor_start_at_field_value_single]
             Query query = citiesRef.OrderBy("Population").StartAt(1000000);
+            // [END firestore_query_cursor_start_at_field_value_single]
             // [END fs_start_at_field_query_cursor]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
@@ -52,7 +54,9 @@ Where command is one of
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
             // [START fs_end_at_field_query_cursor]
+            // [START firestore_query_cursor_end_at_field_value_single]
             Query query = citiesRef.OrderBy("Population").EndAt(1000000);
+            // [END firestore_query_cursor_end_at_field_value_single]
             // [END fs_end_at_field_query_cursor]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
@@ -65,10 +69,12 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_document_snapshot_cursor]
+            // [START firestore_query_cursor_start_at_document]
             CollectionReference citiesRef = db.Collection("cities");
             DocumentReference docRef = citiesRef.Document("SF");
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
             Query query = citiesRef.OrderBy("Population").StartAt(snapshot);
+            // [END firestore_query_cursor_start_at_document]
             // [END fs_document_snapshot_cursor]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
@@ -81,6 +87,7 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_paginated_query_cursor]
+            // [START firestore_query_cursor_pagination]
             CollectionReference citiesRef = db.Collection("cities");
             Query firstQuery = citiesRef.OrderBy("Population").Limit(3);
 
@@ -96,6 +103,7 @@ Where command is one of
             // Note: this will not have the desired effect if multiple cities have the exact same population value
             Query secondQuery = citiesRef.OrderBy("Population").StartAfter(lastPopulation);
             QuerySnapshot secondQuerySnapshot = await secondQuery.GetSnapshotAsync();
+            // [END firestore_query_cursor_pagination]
             // [END fs_paginated_query_cursor]
             foreach (DocumentSnapshot documentSnapshot in secondQuerySnapshot.Documents)
             {
@@ -107,8 +115,10 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_multiple_cursor_conditions]
+            // [START firestore_query_cursor_start_at_field_value_multi]
             Query query1 = db.Collection("cities").OrderBy("Name").OrderBy("State").StartAt("Springfield");
             Query query2 = db.Collection("cities").OrderBy("Name").OrderBy("State").StartAt("Springfield", "Missouri");
+            // [END firestore_query_cursor_start_at_field_value_multi]
             // [END fs_multiple_cursor_conditions]
             QuerySnapshot snapshot1 = await query1.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in snapshot1.Documents)
