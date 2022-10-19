@@ -34,8 +34,10 @@ Where command is one of
         private static void InitializeProjectId(string project)
         {
             // [START fs_initialize_project_id]
+            // [START firestore_setup_client_create_with_project_id]
             FirestoreDb db = FirestoreDb.Create(project);
             Console.WriteLine("Created Cloud Firestore client with project ID: {0}", project);
+            // [END firestore_setup_client_create_with_project_id]
             // [END fs_initialize_project_id]
         }
 
@@ -43,6 +45,7 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_add_data_1]
+            // [START firestore_setup_dataset_pt1]
             DocumentReference docRef = db.Collection("users").Document("alovelace");
             Dictionary<string, object> user = new Dictionary<string, object>
             {
@@ -51,6 +54,7 @@ Where command is one of
                 { "Born", 1815 }
             };
             await docRef.SetAsync(user);
+            // [END firestore_setup_dataset_pt1]
             // [END fs_add_data_1]
             Console.WriteLine("Added data to the alovelace document in the users collection.");
         }
@@ -59,6 +63,7 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_add_data_2]
+            // [START firestore_setup_dataset_pt2]
             DocumentReference docRef = db.Collection("users").Document("aturing");
             Dictionary<string, object> user = new Dictionary<string, object>
             {
@@ -68,6 +73,7 @@ Where command is one of
                 { "Born", 1912 }
             };
             await docRef.SetAsync(user);
+            // [END firestore_setup_dataset_pt2]
             // [END fs_add_data_2]
             Console.WriteLine("Added data to the aturing document in the users collection.");
         }
@@ -76,6 +82,7 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             // [START fs_get_all]
+            // [START firestore_setup_dataset_read]
             CollectionReference usersRef = db.Collection("users");
             QuerySnapshot snapshot = await usersRef.GetSnapshotAsync();
             foreach (DocumentSnapshot document in snapshot.Documents)
@@ -91,6 +98,7 @@ Where command is one of
                 Console.WriteLine("Born: {0}", documentDictionary["Born"]);
                 Console.WriteLine();
             }
+            // [END firestore_setup_dataset_read]
             // [END fs_get_all]
         }
 
