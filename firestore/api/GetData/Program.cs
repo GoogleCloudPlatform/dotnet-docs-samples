@@ -207,7 +207,7 @@ Where command is one of
             };
             await subcollectionRef.Document("Marina").SetAsync(data);
             // [END firestore_data_add_sub_collection]
-            // [END fs_add_sub_collection]
+            // [END fs_add_subcollection]
             Console.WriteLine("Added data to the Marina document in the neighborhoods subcollection in the SF document in the cities collection.");
         }
 
