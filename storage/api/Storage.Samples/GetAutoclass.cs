@@ -15,6 +15,7 @@
 // [START storage_get_autoclass]
 
 using Google.Cloud.Storage.V1;
+using System;
 using static Google.Apis.Storage.v1.Data.Bucket;
 
 public class GetAutoclassSample
@@ -23,6 +24,7 @@ public class GetAutoclassSample
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
+        Console.WriteLine($"Autoclass enabled is set to {bucket.Autoclass.Enabled} for {bucketName} at {bucket.Autoclass.ToggleTime}.");
         return bucket.Autoclass;
     }
 }
