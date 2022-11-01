@@ -34,19 +34,16 @@ Where command is one of
         private static async Task DeleteDoc(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_delete_doc]
             // [START firestore_data_delete_doc]
             DocumentReference cityRef = db.Collection("cities").Document("DC");
             await cityRef.DeleteAsync();
             // [END firestore_data_delete_doc]
-            // [END fs_delete_doc]
             Console.WriteLine("Deleted the DC document in the cities collection.");
         }
 
         private static async Task DeleteField(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_delete_field]
             // [START firestore_data_delete_field]
             DocumentReference cityRef = db.Collection("cities").Document("BJ");
             Dictionary<string, object> updates = new Dictionary<string, object>
@@ -55,11 +52,9 @@ Where command is one of
             };
             await cityRef.UpdateAsync(updates);
             // [END firestore_data_delete_field]
-            // [END fs_delete_field]
             Console.WriteLine("Deleted the Capital field from the BJ document in the cities collection.");
         }
 
-        // [START fs_delete_collection]
         // [START firestore_data_delete_collection]
         private static async Task DeleteCollection(CollectionReference collectionReference, int batchSize)
         {
@@ -78,7 +73,6 @@ Where command is one of
             Console.WriteLine("Finished deleting all documents from the collection.");
         }
         // [END firestore_data_delete_collection]
-        // [END fs_delete_collection]
 
         public static void Main(string[] args)
         {
