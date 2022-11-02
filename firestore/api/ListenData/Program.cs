@@ -69,11 +69,9 @@ Where command is one of
 
             // Stop the listener when you no longer want to receive updates.
             Console.WriteLine("Stopping the listener");
-            // [START fs_detach_listener]
             // [START firestore_listen_detach]
             await listener.StopAsync();
             // [END firestore_listen_detach]
-            // [END fs_detach_listener]
         }
 
         private static async Task ListenMultiple(string project)
