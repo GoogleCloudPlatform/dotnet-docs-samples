@@ -37,11 +37,9 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_start_at_field_query_cursor]
             // [START firestore_query_cursor_start_at_field_value_single]
             Query query = citiesRef.OrderBy("Population").StartAt(1000000);
             // [END firestore_query_cursor_start_at_field_value_single]
-            // [END fs_start_at_field_query_cursor]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
