@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -40,7 +41,20 @@ public class QueryJsonbDataUsingParameterAsyncPostgreTest
         // Act - Query the VenueInformation table.
         var venues = await _sample.QueryJsonbDataUsingParameterAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
-        // Assert that VenueId 19 exists in the queried data from the table.
-        Assert.Contains(venues, v => v.VenueId == 19);
+        // Assert that venues collection is not empty and all the venues in the collection have a rating greater than 2.
+        Assert.NotEmpty(venues);
+        Assert.All(venues, v => AssertRating(v.Details, 2));
+    }
+
+    // Asserts that the rating of the given venue details is greater than the threshold value.
+    private static void AssertRating(string details, int threshold)
+    {
+        var venueDetails = JsonConvert.DeserializeObject<Details>(details);
+        Assert.True(venueDetails.Rating > threshold);
+    }
+
+    private struct Details
+    {
+        public int Rating { get; set; }
     }
 }

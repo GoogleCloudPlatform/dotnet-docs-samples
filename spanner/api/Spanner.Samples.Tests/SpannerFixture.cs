@@ -537,27 +537,18 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task CreateVenueTablesAndInsertDataAsyncPostgre()
     {
-        // We create two venue tables, so that add jsonb column sample, update and query jsonb data sample can run out of order.
-        // One venue table is used in add jsonb column sample while other is used in update and query jsonb data sample. 
-
-        // Define create table statement for VenueDetails.
-        // This table is used in add jsonb column sample.
-        const string createVenueDetailsTableStatement =
-        @"CREATE TABLE VenueDetails (
-            VenueId BIGINT NOT NULL PRIMARY KEY,
-            VenueName VARCHAR(1024))";
+        // We create VenueInformation table so that update and query jsonb data sample can run out of order. 
 
         // Define create table statement for VenueInformation.
-        // This table is used in update and query jsonb data sample.
         const string createVenueInformationTableStatement =
         @"CREATE TABLE VenueInformation (
             VenueId BIGINT NOT NULL PRIMARY KEY,
             VenueName VARCHAR(1024),
             Details JSONB)";
 
-        await CreateTablesAsyncPostgre(new[] { createVenueDetailsTableStatement, createVenueInformationTableStatement });
+        await CreateTableAsyncPostgre(createVenueInformationTableStatement);
 
-        // Insert data only in VenueInformation table.
+        // Insert data in VenueInformation table.
         int[] ids = new int[] { 4, 19, 42 };
         await Task.WhenAll(ids.Select(id =>
         {
@@ -570,12 +561,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }));
     }
 
-    private async Task CreateTablesAsyncPostgre(string[] createTableStatements)
+    public async Task CreateTableAsyncPostgre(string createTableStatement)
     {
-        foreach (var createTableStatement in createTableStatements)
-        {
-            using var cmd = PgSpannerConnection.CreateDdlCommand(createTableStatement);
-            await cmd.ExecuteNonQueryAsync();
-        }
+        using var cmd = PgSpannerConnection.CreateDdlCommand(createTableStatement);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

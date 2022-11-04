@@ -85,8 +85,8 @@ public class UpdateDataWithJsonbAsyncPostgreSample
             // Update rows in the Venues table.
             using var cmd = connection.CreateUpdateCommand("VenueInformation", new SpannerParameterCollection
             {
-                    { "VenueId", SpannerDbType.Int64, venue.VenueId },
-                    { "Details", SpannerDbType.PgJsonb, venue.Details }
+                { "VenueId", SpannerDbType.Int64, venue.VenueId },
+                { "Details", SpannerDbType.PgJsonb, venue.Details }
             });
             return cmd.ExecuteNonQueryAsync();
         }));

@@ -31,8 +31,20 @@ public class AddJsonbColumnAsyncPostgreTest
     [Fact]
     public async Task TestAddJsonbColumnAsyncPostgre()
     {
+        // Arrange - Create VenueDetails table.
+        await CreateVenueDetailsTable();
         // Act - Add a JSONB column to the VenueDetails table.
         await _sample.AddJsonbColumnAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
         // If we reach here without error, we are good. 
+    }
+
+    private async Task CreateVenueDetailsTable()
+    {
+        // Define create table statement for VenueDetails.
+        const string createVenueDetailsTableStatement =
+        @"CREATE TABLE VenueDetails (
+            VenueId BIGINT NOT NULL PRIMARY KEY,
+            VenueName VARCHAR(1024))";
+        await _spannerFixture.CreateTableAsyncPostgre(createVenueDetailsTableStatement);
     }
 }
