@@ -25,6 +25,7 @@ using System.Net;
 using System.Threading;
 using Xunit;
 using Xunit.Sdk;
+using static Google.Apis.Storage.v1.Data.Bucket;
 
 [CollectionDefinition(nameof(StorageFixture))]
 public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
@@ -198,10 +199,10 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         } while (true);
     }
 
-    public void CreateBucket(string bucketName, string location = null)
+    public void CreateBucket(string bucketName, string location = null, AutoclassData autoclassData = null)
     {
         StorageClient storageClient = StorageClient.Create();
-        storageClient.CreateBucket(ProjectId, new Bucket { Name = bucketName, Location = location });
+        storageClient.CreateBucket(ProjectId, new Bucket { Name = bucketName, Location = location, Autoclass = autoclassData });
         SleepAfterBucketCreateUpdateDelete();
         TempBucketNames.Add(bucketName);
     }
