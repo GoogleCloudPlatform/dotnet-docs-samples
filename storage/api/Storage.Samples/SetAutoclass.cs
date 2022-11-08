@@ -21,13 +21,13 @@ using System;
 
 public class SetAutoclassSample
 {
-    public Bucket SetAutoclass(string bucketName, bool enable)
+    public Bucket SetAutoclass(string bucketName)
     {
         // Note: Only patch requests that disable autoclass are currently supported.
         // To enable autoclass, you must set it at bucket creation time.
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
-        bucket.Autoclass = new AutoclassData { Enabled = enable };
+        bucket.Autoclass = new AutoclassData { Enabled = false };
         storage.PatchBucket(bucket);
         Console.WriteLine($"Autoclass enabled is set to {bucket.Autoclass.Enabled} for {bucketName} at {bucket.Autoclass.ToggleTime}.");
         return bucket;

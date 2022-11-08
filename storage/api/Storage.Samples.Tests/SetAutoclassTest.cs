@@ -31,8 +31,7 @@ public class SetAutoclassTest
         var bucketName = Guid.NewGuid().ToString();
         _fixture.CreateBucket(bucketName, autoclassData: new AutoclassData { Enabled = true });
         var setAutoclassSample = new SetAutoclassSample();
-        var enable = false;
-        var bucket = setAutoclassSample.SetAutoclass(bucketName, enable);
-        Assert.Equal(enable, bucket.Autoclass.Enabled);
+        var bucket = setAutoclassSample.SetAutoclass(bucketName);
+        Assert.Equal(false, bucket.Autoclass.Enabled);
     }
 }
