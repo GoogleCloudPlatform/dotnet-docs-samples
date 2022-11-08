@@ -43,7 +43,6 @@ Where command is one of
         private static async Task QueryCreateExamples(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_query_create_examples]
             // [START firestore_query_filter_dataset]
             CollectionReference citiesRef = db.Collection("cities");
             await citiesRef.Document("SF").SetAsync(new Dictionary<string, object>(){
@@ -88,13 +87,11 @@ Where command is one of
             });
             Console.WriteLine("Added example cities data to the cities collection.");
             // [END firestore_query_filter_dataset]
-            // [END fs_query_create_examples]
         }
 
         private static async Task CreateQueryState(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_create_query_state]
             // [START firestore_query_filter_eq_string]
             CollectionReference citiesRef = db.Collection("cities");
             Query query = citiesRef.WhereEqualTo("State", "CA");
@@ -104,13 +101,11 @@ Where command is one of
                 Console.WriteLine("Document {0} returned by query State=CA", documentSnapshot.Id);
             }
             // [END firestore_query_filter_eq_string]
-            // [END fs_create_query_state]
         }
 
         private static async Task CreateQueryCapital(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_create_query_capital]
             // [START firestore_query_filter_eq_boolean]
             CollectionReference citiesRef = db.Collection("cities");
             Query query = citiesRef.WhereEqualTo("Capital", true);
@@ -120,20 +115,17 @@ Where command is one of
                 Console.WriteLine("Document {0} returned by query Capital=true", documentSnapshot.Id);
             }
             // [END firestore_query_filter_eq_boolean]
-            // [END fs_create_query_capital]
         }
 
         private static async Task SimpleQueries(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_simple_queries]
             // [START firestore_query_filter_single_examples]
             Query stateQuery = citiesRef.WhereEqualTo("State", "CA");
             Query populationQuery = citiesRef.WhereGreaterThan("Population", 1000000);
             Query nameQuery = citiesRef.WhereGreaterThanOrEqualTo("Name", "San Francisco");
             // [END firestore_query_filter_single_examples]
-            // [END fs_simple_queries]
             QuerySnapshot stateQuerySnapshot = await stateQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in stateQuerySnapshot.Documents)
             {
@@ -155,11 +147,9 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_array_contains_query]
             // [START firestore_query_filter_array_contains]
             Query query = citiesRef.WhereArrayContains("Regions", "west_coast");
             // [END firestore_query_filter_array_contains]
-            // [END fs_array_contains_query]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -171,11 +161,9 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_query_filter_array_contains_any]
             // [START firestore_query_filter_array_contains_any]
             Query query = citiesRef.WhereArrayContainsAny("Regions", new[] { "west_coast", "east_coast" });
             // [END firestore_query_filter_array_contains_any]
-            // [END fs_query_filter_array_contains_any]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -187,11 +175,9 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_query_filter_in]
             // [START firestore_query_filter_in]
             Query query = citiesRef.WhereIn("Country", new[] { "USA", "Japan" });
             // [END firestore_query_filter_in]
-            // [END fs_query_filter_in]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -203,12 +189,10 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_query_filter_in_with_array]
             // [START firestore_query_filter_in_with_array]
             Query query = citiesRef.WhereIn("Regions",
                 new[] { new[] { "west_coast" }, new[] { "east_coast" } });
             // [END firestore_query_filter_in_with_array]
-            // [END fs_query_filter_in_with_array]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -220,7 +204,6 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_collection_group_query_data_setup]
             // [START firestore_query_collection_group_dataset]
             await citiesRef.Document("SF").Collection("landmarks").Document()
                 .CreateAsync(new { Name = "Golden Gate Bridge", Type = "bridge" });
@@ -241,9 +224,7 @@ Where command is one of
             await citiesRef.Document("BJ").Collection("landmarks").Document()
                 .CreateAsync(new { Name = "Beijing Ancient Observatory", Type = "museum" });
             // [END firestore_query_collection_group_dataset]
-            // [END fs_collection_group_query_data_setup]
 
-            // [START fs_collection_group_query]
             // [START firestore_query_collection_group_filter_eq]
             Query museums = db.CollectionGroup("landmarks").WhereEqualTo("Type", "museum");
             QuerySnapshot querySnapshot = await museums.GetSnapshotAsync();
@@ -252,20 +233,17 @@ Where command is one of
                 Console.WriteLine($"{document.Reference.Path}: {document.GetValue<string>("Name")}");
             }
             // [END firestore_query_collection_group_filter_eq]
-            // [END fs_collection_group_query]
         }
 
         private static async Task ChainedQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_chained_query]
             // [START firestore_query_filter_compound_multi_eq]
             Query chainedQuery = citiesRef
                 .WhereEqualTo("State", "CA")
                 .WhereEqualTo("Name", "San Francisco");
             // [END firestore_query_filter_compound_multi_eq]
-            // [END fs_chained_query]
             QuerySnapshot querySnapshot = await chainedQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -277,13 +255,11 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_composite_index_chained_query]
             // [START firestore_query_filter_compound_multi_eq_lt]
             Query chainedQuery = citiesRef
                 .WhereEqualTo("State", "CA")
                 .WhereLessThan("Population", 1000000);
             // [END firestore_query_filter_compound_multi_eq_lt]
-            // [END fs_composite_index_chained_query]
             QuerySnapshot querySnapshot = await chainedQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -295,13 +271,11 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_range_query]
             // [START firestore_query_filter_range_valid]
             Query rangeQuery = citiesRef
                 .WhereGreaterThanOrEqualTo("State", "CA")
                 .WhereLessThanOrEqualTo("State", "IN");
             // [END firestore_query_filter_range_valid]
-            // [END fs_range_query]
             QuerySnapshot querySnapshot = await rangeQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -313,13 +287,11 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_invalid_range_query]
             // [START firestore_query_filter_range_invalid]
             Query invalidRangeQuery = citiesRef
                 .WhereGreaterThanOrEqualTo("State", "CA")
                 .WhereGreaterThan("Population", 1000000);
             // [END firestore_query_filter_range_invalid]
-            // [END fs_invalid_range_query]
         }
 
         public static void Main(string[] args)

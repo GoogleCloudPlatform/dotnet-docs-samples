@@ -38,7 +38,6 @@ C:\> dotnet run command YOUR_PROJECT_ID
 Where command is one of
     distributed-counter
 ";
-        // [START fs_counter_classes]
         // [START firestore_solution_sharded_counter_custom_type]
         /// <summary>
         /// Shard is a document that contains the count.
@@ -50,9 +49,7 @@ Where command is one of
             public int Count { get; set; }
         }
         // [END firestore_solution_sharded_counter_custom_type]
-        // [END fs_counter_classes]
 
-        // [START fs_create_counter]
         // [START firestore_solution_sharded_counter_create]
         /// <summary>
         /// Create a given number of shards as a
@@ -71,9 +68,7 @@ Where command is one of
             await Task.WhenAll(tasks);
         }
         // [END firestore_solution_sharded_counter_create]
-        // [END fs_create_counter]
 
-        // [START fs_increment_counter]
         // [START firestore_solution_sharded_counter_increment]
         /// <summary>
         /// Increment a randomly picked shard by 1.
@@ -91,9 +86,7 @@ Where command is one of
             await shardRef.UpdateAsync("count", FieldValue.Increment(1));
         }
         // [END firestore_solution_sharded_counter_increment]
-        // [END fs_increment_counter]
 
-        // [START fs_get_count]
         // [START firestore_solution_sharded_counter_get]
         /// <summary>
         /// Get total count across all shards.
@@ -106,7 +99,6 @@ Where command is one of
             return snapshotList.Sum(shard => shard.GetValue<int>("count"));
         }
         // [END firestore_solution_sharded_counter_get]
-        // [END fs_get_count]
 
         public static void Main(string[] args)
         {
