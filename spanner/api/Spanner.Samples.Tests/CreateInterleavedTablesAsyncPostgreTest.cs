@@ -36,13 +36,10 @@ public class CreateInterleavedTablesAsyncPostgreTest
         // Act.
         await _sample.CreateInterleavedTablesAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
-        //Assert.
+        // Assert that both interleaved tables are created.
         var tables = await ListTableNamesAsync();
-        Assert.Collection(tables.OrderBy(j => j),
-            item1 => Assert.Equal("albums", item1),
-            item2 => Assert.Equal("authors", item2),
-            item3 => Assert.Equal("books", item3),
-            item4 => Assert.Equal("singers", item4));
+        Assert.Contains("authors", tables);
+        Assert.Contains("books", tables);
     }
 
     private async Task<List<string>> ListTableNamesAsync()
