@@ -25,7 +25,7 @@ public class QueryJsonbDataUsingParameterAsyncPostgreSample
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         using var connection = new SpannerConnection(connectionString);
         // Get all the venues with a rating greater than 2.
-        /* Details is a column of type Jsonb. Some of the data persisted in the Details column has the following structure:
+        /* Details is a column of type JSONB. Some of the data persisted in the Details column has the following structure:
            [{
                  "name": "string",
                  "available": true,

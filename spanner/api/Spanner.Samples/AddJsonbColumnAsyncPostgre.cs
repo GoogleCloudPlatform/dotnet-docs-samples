@@ -28,7 +28,7 @@ public class AddJsonbColumnAsyncPostgreSample
         using var connection = new SpannerConnection(connectionString);
         using var ddlCmd = connection.CreateDdlCommand(alterStatement);
         await ddlCmd.ExecuteNonQueryAsync();
-        Console.WriteLine($"Added the jsonb column named Details to VenueDetails table.");
+        Console.WriteLine($"Added the JSONB column named Details to VenueDetails table.");
     }
 }
 // [END spanner_postgresql_jsonb_add_column]

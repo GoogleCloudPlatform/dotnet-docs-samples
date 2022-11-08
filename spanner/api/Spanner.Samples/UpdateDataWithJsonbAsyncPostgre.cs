@@ -40,25 +40,14 @@ public class UpdateDataWithJsonbAsyncPostgreSample
             new VenueInformation
             {
                 VenueId = 4,
-                // PostgreSQL JSONB sorts first by key length and then lexicographically with equivalent key length 
-                // and takes the last value in the case of duplicate keys.
-                Details = @"[
-                {
-                    ""name"": null,
-                    ""available"": true
-                },
+                // In the case of repeated field names in the JSON, PostgreSQL JSONB will keep the value of the last field appearance.
+                // For instance, in the following example, the value for name will be room 3.
+                Details = @"
                 {
                     ""name"": ""room 2"",
                     ""available"": false,
                     ""name"": ""room 3""
-                },
-                {
-                    ""main hall"": 
-                    {
-                        ""description"": ""this is the biggest space"",
-                        ""size"": 200
-                    }
-                }]"
+                }"
             },
             new VenueInformation
             {
