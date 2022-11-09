@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using Google.Api.Gax.ResourceNames;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Iam.v1;
+using Google.Apis.Iam.v1.Data;
 using Google.Cloud.Kms.V1;
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Admin.Instance.V1;
@@ -75,6 +78,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public SpannerConnection AdminSpannerConnection { get; private set; }
     public SpannerConnection SpannerConnection { get; private set; }
     public SpannerConnection PgSpannerConnection { get; private set; }
+    public string ServiceAccountId { get; } = "SpannerTestAccount";
+    public string ServiceAccountDisplayName { get; } = "SpannerSamplesTest";
+    public ServiceAccount SpannerServiceAccount { get; private set; }
 
     public RetryRobot Retryable { get; } = new RetryRobot
     {
@@ -103,7 +109,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
         await InitializePostgreSqlDatabaseAsync();
-
+        IList<ServiceAccount> serviceAccounts = ListServiceAccounts();
+        var ServiceAccounts = serviceAccounts.Where(account => account.DisplayName == ServiceAccountDisplayName).ToList();
+        SpannerServiceAccount = (serviceAccounts.Count() > 0) ? serviceAccounts.First() : CreateServiceAccount();
         // Create encryption key for creating an encrypted database and optionally backing up and restoring an encrypted database.
         await InitializeEncryptionKeys();
         if (RunCmekBackupSampleTests)
@@ -127,6 +135,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             DeleteInstanceConfig(CreateCustomInstanceConfigId);
             DeleteInstanceConfig(UpdateCustomInstanceConfigId);
             DeleteInstanceConfig(DeleteCustomInstanceConfigId);
+            DeleteServiceAccount();
 
             foreach(string id in TempDbIds)
             {
@@ -533,6 +542,52 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
         var databases = DatabaseAdminClient.ListDatabases(instanceName);
         return databases;
+    }
+
+    private ServiceAccount CreateServiceAccount()
+    {
+        var credential = GoogleCredential.GetApplicationDefault().CreateScoped(IamService.Scope.CloudPlatform);
+        var service = new IamService(new IamService.Initializer
+        {
+            HttpClientInitializer = credential
+        });
+
+        var request = new CreateServiceAccountRequest
+        {
+            AccountId = ServiceAccountId,
+            ServiceAccount = new ServiceAccount
+            {
+                DisplayName = ServiceAccountDisplayName
+            }
+        };
+        var serviceAccount = service.Projects.ServiceAccounts.Create(
+            request, $"projects/{ProjectId}").Execute();
+        return serviceAccount;
+    }
+
+    private void DeleteServiceAccount()
+    {
+        var credential = GoogleCredential.GetApplicationDefault().CreateScoped(IamService.Scope.CloudPlatform);
+        var service = new IamService(new IamService.Initializer
+        {
+            HttpClientInitializer = credential
+        });
+        service.Projects.ServiceAccounts.Delete(SpannerServiceAccount.Name).Execute();
+    }
+
+    private IList<ServiceAccount> ListServiceAccounts()
+    {
+        var credential = GoogleCredential.GetApplicationDefault()
+            .CreateScoped(IamService.Scope.CloudPlatform);
+        var service = new IamService(new IamService.Initializer
+        {
+            HttpClientInitializer = credential
+        });
+
+        var response = service.Projects.ServiceAccounts.List(
+            $"projects/{ProjectId}" ).Execute();
+
+        return response.Accounts;
     }
 
     private async Task CreateVenueTablesAndInsertDataAsyncPostgre()

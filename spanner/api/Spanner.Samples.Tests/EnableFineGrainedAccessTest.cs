@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+﻿// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,28 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class ReadStaleDataAsyncTest
+public class EnableFineGrainedAccessTest
 {
     private readonly SpannerFixture _spannerFixture;
-    private readonly TimeSpan delay = TimeSpan.FromSeconds(15);
 
-    public ReadStaleDataAsyncTest(SpannerFixture spannerFixture)
-    {
+    public EnableFineGrainedAccessTest(SpannerFixture spannerFixture) =>
         _spannerFixture = spannerFixture;
-    }
 
     [Fact]
-    public async Task TestReadStaleDataAsync()
+    public void TestEnableFineGrainedAccess()
     {
-        ReadStaleDataAsyncSample sample = new ReadStaleDataAsyncSample();
-        await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000);
-        await Task.Delay(delay);
-        var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(albums, a => a.SingerId == 1 && a.AlbumId == 1 && a.MarketingBudget == 300000);
+        string databaseRole = "testrole";
+        var enableFineGrainedAccessSample = new EnableFineGrainedAccessSample();
+        var updatedPolicy = enableFineGrainedAccessSample.EnableFineGrainedAccess(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
+            _spannerFixture.DatabaseId, databaseRole, $"serviceAccount:{_spannerFixture.SpannerServiceAccount.Email}");
+
+        Assert.Contains(updatedPolicy.Bindings, b => b.Role == "roles/spanner.fineGrainedAccessUser");
     }
 }
