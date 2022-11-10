@@ -33,7 +33,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 {
     public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // Allow environment variables to override the default instance and database names.
-    public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
+    public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance-test";
 
     public string DatabaseId { get; private set; }
     public string PostgreSqlDatabaseId { get; private set; }
