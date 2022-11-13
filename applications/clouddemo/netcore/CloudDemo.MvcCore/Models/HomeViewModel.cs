@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -24,9 +24,9 @@ namespace CloudDemo.MvcCore.Models
     public class HomeViewModel
     {
         public bool IsRunningOnGoogleCloud => this.CloudRuntime != null;
-        public string CloudRuntime { get; }
+        public string? CloudRuntime { get; }
 
-        public HomeViewModel(string runtime)
+        public HomeViewModel(string? runtime)
         {
             this.CloudRuntime = runtime;
         }
