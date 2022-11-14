@@ -1,5 +1,5 @@
 ﻿#
-# Copyright 2022 Google LLC
+# Copyright 2020 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -19,7 +19,7 @@
 # under the License.
 #
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 EXPOSE 8080
 
 #------------------------------------------------------------------------------
