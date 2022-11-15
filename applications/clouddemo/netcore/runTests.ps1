@@ -13,4 +13,4 @@
 # the License.
 
 dotnet restore --force
-dotnet publish --no-restore -c Release -f netcoreapp3.1 2>&1 | %{ "$_" }
+dotnet publish --no-restore -c Release -f net6.0 2>&1 | %{ "$_" }
