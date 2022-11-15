@@ -116,7 +116,7 @@ namespace Pubsub.Controllers
             // Get the Cloud Pub/Sub-generated "Authorization" header.
             string authorizaionHeader = HttpContext.Request.Headers["Authorization"];
             string verificationToken = token ?? body.message.attributes["token"];
-            // JWT token comes in `Bearer <JWT>` format substring 7 specifies the postion of first JWT char.
+            // JWT token comes in `Bearer <JWT>` format substring 7 specifies the position of first JWT char.
             string authToken = authorizaionHeader.StartsWith("Bearer ") ? authorizaionHeader.Substring(7) : null;
             if (verificationToken != _options.VerificationToken || authToken is null)
             {
